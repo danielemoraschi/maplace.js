@@ -13,6 +13,7 @@ var html_dropdown = (function () {
     html_dropdown.prototype.getHtml = function() {
         var self = this,
             html = '',
+            title,
             a = 0;
 
         if(this.Locate.ln>1) {
@@ -32,7 +33,15 @@ var html_dropdown = (function () {
             });
         }
 
-        this.html_element = $('<div class="wrap_controls"></div>').append($('<div class="controls_title">'+this.Locate.o.controls_title+'</div>')).append(html);
+        title = this.Locate.o.controls_title;
+        if(this.Locate.o.controls_title) {
+            title = $('<div class="controls_title"></div>').css(this.Locate.o.apply_style?{
+                fontWeight: 'bold',
+                padding: '3px 0 5px'
+            }:{}).append( this.Locate.o.controls_title );
+        }
+
+        this.html_element = $('<div class="wrap_controls"></div>').append(title).append(html);
         
         return this.html_element;
     }
@@ -54,7 +63,12 @@ var html_ullist = (function () {
             function() {
                 return self.html_a_action(this);
             }
-        );
+        ).css(this.Locate.o.apply_style?{
+            color: '#666',
+            display: 'block',
+            padding: '5px',
+            textDecoration: 'none'
+        }:{});
     };
 
     html_ullist.prototype.html_a_action = function(obj, i) {
@@ -72,8 +86,13 @@ var html_ullist = (function () {
     };
 
     html_ullist.prototype.getHtml = function() {
-        var html = $("<ul class='ullist controls'></ul>"),
-            a = 0;
+        var html = $("<ul class='ullist controls'></ul>").css(this.Locate.o.apply_style?{
+            margin: 0,
+            padding: 0,
+            listStyleType: 'none'
+        }:{}),
+        title,
+        a = 0;
 
         if(this.Locate.ShowOnMenu(this.Locate.view_all_key)) {
             html.append( $('<li></li>').append( this.html_a(false, this.Locate.view_all_key, this.Locate.o.view_all_text) ) );
@@ -83,7 +102,15 @@ var html_ullist = (function () {
             if(this.Locate.ShowOnMenu(a)) html.append( $('<li></li>').append( this.html_a(a) ) );
         }
 
-        this.html_element = $('<div class="wrap_controls"></div>').append($('<div class="controls_title">'+this.Locate.o.controls_title+'</div>')).append(html);
+        title = this.Locate.o.controls_title;
+        if(this.Locate.o.controls_title) {
+            title = $('<div class="controls_title"></div>').css(this.Locate.o.apply_style?{
+                fontWeight: 'bold',
+                padding: '3px 0 5px'
+            }:{}).append( this.Locate.o.controls_title );
+        }
+
+        this.html_element = $('<div class="wrap_controls"></div>').append(title).append(html);
 
         return this.html_element;
     }
@@ -147,9 +174,12 @@ var Locate = (function () {
     	    map_options: {},   
             stroke_options: {},
             directions_options: {},
+            directions_panel: null,
             draggable: false,  
             show_infowindow: true,
+            show_markers: true,
     	    infowindow_type: 'bubble',
+            apply_style: true,
             beforeViewAll: function() {},
             afterViewAll: function() {},
             beforeShowCurrent: function(index, marker, content) {},
@@ -159,7 +189,8 @@ var Locate = (function () {
             afterCloseInfowindow: function(index, marker, content) {},
             before_open_infowindow: function(index, marker, content) {},
             afterOpenInfowindow: function(index, marker, content) {},
-            afterRoute: function(distance, status, result) {}
+            afterRoute: function(distance, status, result) {},
+            onPolylineClick: function(obj) {}
     	};
 
         this.Init( args );
@@ -204,6 +235,9 @@ var Locate = (function () {
             case 'polyline':
                 this.create_polyline(this.o.locations);
                 break;
+            case 'polygon':
+                this.create_polygon(this.o.locations);
+                break;
             case 'directions':
                 this.create_directions(this.o.locations);
                 break;
@@ -216,15 +250,17 @@ var Locate = (function () {
         };
     };
 
-    Locate.prototype.create_marker = function(index, point) {
+    Locate.prototype.create_marker = function(index, point) {       
         var self = this,
             marker, a, point_infow,
             latlng = new google.maps.LatLng(point.lat, point.lon);
+            orig_visible = point.visible===false ? false : true;
 
         $.extend(point, {
             position: latlng,
             map: this.oMap,
-            zIndex: 10000
+            zIndex: 10000,
+            visible: (this.o.show_markers===false ? false : orig_visible)
         });
 
         if(point.image) {
@@ -253,7 +289,7 @@ var Locate = (function () {
             self.oMap.panTo(latlng);
             if(point.zoom) self.oMap.setZoom(point.zoom);
 
-            if(self.current_control) self.current_control.activateCurrent(index+1);
+            if(self.current_control && self.o.generate_controls) self.current_control.activateCurrent(index+1);
             self.current_index = index;
 
             self.o.afterShowCurrent(index, marker, point.html||'');
@@ -263,6 +299,8 @@ var Locate = (function () {
         this.markers.push(marker);
 
         this.o.afterCreateMarker(index, marker, point.html||'');
+
+        point.visible = orig_visible;
 
         return marker;
     };
@@ -286,6 +324,32 @@ var Locate = (function () {
         });
 
         this.Polyline = new google.maps.Polyline(this.def_stroke_options);
+    };
+
+    Locate.prototype.create_polygon = function(points) {
+        var self = this,
+            a = 0,
+            latlng,
+            path = [];
+
+        for (a; a < this.ln; a++) {
+            latlng = new google.maps.LatLng(points[a].lat, points[a].lon);
+            path.push(latlng);
+
+            this.create_marker(a, points[a]);
+        }
+
+        $.extend(this.def_stroke_options, {
+            paths: path,
+            editable: this.o.draggable,
+            map: this.oMap
+        });
+
+        this.Polyline = new google.maps.Polygon(this.def_stroke_options);
+
+        google.maps.event.addListener(this.Polyline, 'click', function(obj) {
+            self.o.onPolylineClick(obj);
+        });   
     };
 
     Locate.prototype.create_directions = function(points) {
@@ -330,6 +394,11 @@ var Locate = (function () {
         });
 
         this.directionsDisplay.setMap(this.oMap);
+
+        if(this.o.directions_panel) {
+            this.o.directions_panel = $(this.o.directions_panel);
+            this.directionsDisplay.setPanel(this.o.directions_panel.get(0));
+        }
 
         if(this.o.draggable) google.maps.event.addListener(this.directionsDisplay, 'directions_changed', function() {
             distance = self.compute_distance(self.directionsDisplay.directions);
@@ -394,7 +463,25 @@ var Locate = (function () {
             this.controls_wrapper.append( this.get_html_controls() );
             return;
         }
-        this.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].push( $('<div class="on_gmap '+this.o.controls_type+' gmap_controls"></div>').append(this.get_html_controls()).get(0) );
+
+        var cntr = $('<div class="on_gmap '+this.o.controls_type+' gmap_controls"></div>').css(this.o.apply_style?{
+            margin: '5px'
+        }:{}),
+
+        inner = $(this.get_html_controls()).css(this.o.apply_style?{
+            background: '#fff',
+            padding: '5px',
+            border: '1px solid rgb(113,123,135)',
+            fontSize: '12px',
+            boxShadow: 'rgba(0, 0, 0, 0.4) 0px 2px 4px',
+            maxHeight: this.map_div.find('.canvas_map').outerHeight()-70,
+            overflowY: 'auto',
+            overflowX: 'hidden'
+        }:{});
+
+        cntr.append(inner);
+
+        this.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].push( cntr.get(0) );
     };
 
     Locate.prototype.reset_map = function() {      
@@ -456,7 +543,7 @@ var Locate = (function () {
         if(index==this.view_all_key) {
             this.o.beforeViewAll();
             this.current_index = index;
-            if(this.o.locations.length>0) {
+            if(this.o.locations.length>0 && this.o.generate_controls) {
                 this.current_control.activateCurrent(index);
                 this.oMap.fitBounds(this.oBounds);
             }
@@ -529,6 +616,7 @@ var Locate = (function () {
         }
 
         if(this.ln==1) {
+            this.o.generate_controls = false;
             this.ViewOnMap(1); 
         }
         else {
