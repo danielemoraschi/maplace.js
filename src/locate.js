@@ -138,26 +138,9 @@ var Locate = (function () {
         this.view_all_key = 'all';
         this.markers = [];
         this.Polyline = null;
-        this.def_stroke_options = {
-            strokeColor:"#0000FF",
-            strokeOpacity:0.8,
-            strokeWeight:2,
-            fillColor:"#0000FF",
-            fillOpacity:0.4
-        };
+        this.Polygon = null;
         this.directionsService = null;
         this.directionsDisplay = null;
-        this.def_directions_options = {
-            travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
-            optimizeWaypoints: false,
-            provideRouteAlternatives: false,
-            avoidHighways: false,
-            avoidTolls: false
-        };
-    	this.def_map_options = {
-    	    mapTypeId: google.maps.MapTypeId.ROADMAP
-    	};
 
     	this.o = {
     	    gmap: '#gmap',
@@ -171,9 +154,25 @@ var Locate = (function () {
             view_all_text: 'View All',
             start: 0,
     	    locations: [],
-    	    map_options: {},   
-            stroke_options: {},
-            directions_options: {},
+    	    map_options: {
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                zoom: 2
+            },   
+            stroke_options: {
+                strokeColor:"#0000FF",
+                strokeOpacity:0.8,
+                strokeWeight:2,
+                fillColor:"#0000FF",
+                fillOpacity:0.4
+            },
+            directions_options: {
+                travelMode: google.maps.TravelMode.DRIVING,
+                unitSystem: google.maps.UnitSystem.METRIC,
+                optimizeWaypoints: false,
+                provideRouteAlternatives: false,
+                avoidHighways: false,
+                avoidTolls: false
+            },
             directions_panel: null,
             draggable: false,  
             show_infowindow: true,
@@ -203,7 +202,6 @@ var Locate = (function () {
             m;
 
         if(!this.gm_active) {
-            this.oBounds = new google.maps.LatLngBounds();
             this.gm_active = true;
             try {
                 this.map_div.css({
@@ -216,14 +214,14 @@ var Locate = (function () {
                     height: this.map_div.height()+'px'
                 }).appendTo( this.map_div );
 
-                this.oMap = new google.maps.Map(m.get(0), this.def_map_options);
-                //google.maps.OverlayInfoWindow = _overlay_infowindow;
-                if(self.def_map_options.zoom) google.maps.event.addListenerOnce(this.oMap, 'idle', function(){
-                    self.oMap.setZoom(self.def_map_options.zoom);
-                });
+                this.oMap = new google.maps.Map(m.get(0), this.o.map_options);
             } 
             catch(err) { this.errors.push(err.toString()); }
         }
+        else {
+            self.oMap.setOptions(this.o.map_options);
+        }
+
         this.Debug('Locate.create_objMap');
     };
 
@@ -318,12 +316,12 @@ var Locate = (function () {
             this.create_marker(a, points[a]);
         }
 
-        $.extend(this.def_stroke_options, {
+        $.extend(this.o.stroke_options, {
             path: path,
             map: this.oMap
         });
 
-        this.Polyline = new google.maps.Polyline(this.def_stroke_options);
+        this.Polyline = new google.maps.Polyline(this.o.stroke_options);
     };
 
     Locate.prototype.create_polygon = function(points) {
@@ -339,15 +337,15 @@ var Locate = (function () {
             this.create_marker(a, points[a]);
         }
 
-        $.extend(this.def_stroke_options, {
+        $.extend(this.o.stroke_options, {
             paths: path,
             editable: this.o.draggable,
             map: this.oMap
         });
 
-        this.Polyline = new google.maps.Polygon(this.def_stroke_options);
+        this.Polygon = new google.maps.Polygon(this.o.stroke_options);
 
-        google.maps.event.addListener(this.Polyline, 'click', function(obj) {
+        google.maps.event.addListener(this.Polygon, 'click', function(obj) {
             self.o.onPolylineClick(obj);
         });   
     };
@@ -382,7 +380,7 @@ var Locate = (function () {
             }
         }
 
-        $.extend(this.def_directions_options, {
+        $.extend(this.o.directions_options, {
             origin: origin,
             destination: destination,
             waypoints: waypoints
@@ -405,7 +403,7 @@ var Locate = (function () {
             self.o.afterRoute(distance);
         });
 
-        this.directionsService.route(this.def_directions_options, function(result, status) {
+        this.directionsService.route(this.o.directions_options, function(result, status) {
             if (status == google.maps.DirectionsStatus.OK) {
                 distance = self.compute_distance(result);
                 self.directionsDisplay.setDirections(result);
@@ -502,6 +500,9 @@ var Locate = (function () {
                 self.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].removeAt(index);
             });
         }
+
+        this.oBounds = new google.maps.LatLngBounds();
+
         this.Debug('Locate.reset_map');
     };     
 
@@ -629,12 +630,7 @@ var Locate = (function () {
     };
 
     Locate.prototype.Init = function(args) {
-        if(args) {
-            $.extend(this.o, args);
-            $.extend(this.def_map_options, args.map_options);
-            $.extend(this.def_stroke_options, args.stroke_options);
-            $.extend(this.def_directions_options, args.directions_options);
-        }
+        $.extend(true, this.o, args);
 
         this.controls['dropdown'] || this.AddControl('dropdown', html_dropdown);    
         this.controls['list'] || this.AddControl('list', html_ullist);
@@ -642,12 +638,21 @@ var Locate = (function () {
         this.ln = this.o.locations.length;
         this.map_div = $(this.o.gmap);
         this.controls_wrapper = $(this.o.controls);
+
+        if(this.Polygon) this.Polygon.setMap(null);
         if(this.Polyline) this.Polyline.setMap(null);
         if(this.directionsDisplay) this.directionsDisplay.setMap(null);
 
         this.reset_map();
         this.create_objMap();
         this.add_markers_to_objMap();
+
+        var self = this;
+        if(self.o.map_options.zoom) google.maps.event.addListenerOnce(this.oMap, 'idle', function(){
+            if(self.ln==1) self.oMap.setZoom(self.o.locations[0].zoom||self.o.map_options.zoom);
+            else if(self.ln>0) self.oMap.fitBounds(self.oBounds);
+            else self.oMap.setZoom(self.o.map_options.zoom);
+        });
     }
 
 
