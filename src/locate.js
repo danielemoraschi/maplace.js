@@ -17,7 +17,7 @@ var html_dropdown = (function () {
             a = 0;
 
         if(this.Locate.ln>1) {
-            html += '<select class="dropdown controls">';
+            html += '<select class="dropdown controls '+this.Locate.o.controls_cssclass+'">';
 
             if(this.Locate.ShowOnMenu(this.Locate.view_all_key)) {
                 html += '<option value="'+this.Locate.view_all_key+'">'+this.Locate.o.view_all_text+'</option>';
@@ -37,7 +37,8 @@ var html_dropdown = (function () {
         if(this.Locate.o.controls_title) {
             title = $('<div class="controls_title"></div>').css(this.Locate.o.apply_style?{
                 fontWeight: 'bold',
-                padding: '3px 0 5px'
+                fontSize: this.Locate.o.controls_on_map?'12px':'inherit',
+                padding: '3px 10px 5px 0'
             }:{}).append( this.Locate.o.controls_title );
         }
 
@@ -67,6 +68,7 @@ var html_ullist = (function () {
             color: '#666',
             display: 'block',
             padding: '5px',
+            fontSize: this.Locate.o.controls_on_map?'12px':'inherit',
             textDecoration: 'none'
         }:{});
     };
@@ -86,7 +88,7 @@ var html_ullist = (function () {
     };
 
     html_ullist.prototype.getHtml = function() {
-        var html = $("<ul class='ullist controls'></ul>").css(this.Locate.o.apply_style?{
+        var html = $("<ul class='ullist controls "+this.Locate.o.controls_cssclass+"'></ul>").css(this.Locate.o.apply_style?{
             margin: 0,
             padding: 0,
             listStyleType: 'none'
@@ -106,7 +108,8 @@ var html_ullist = (function () {
         if(this.Locate.o.controls_title) {
             title = $('<div class="controls_title"></div>').css(this.Locate.o.apply_style?{
                 fontWeight: 'bold',
-                padding: '3px 0 5px'
+                padding: '3px 10px 5px 0',
+                fontSize: this.Locate.o.controls_on_map?'12px':'inherit',
             }:{}).append( this.Locate.o.controls_title );
         }
 
@@ -125,12 +128,14 @@ var Locate = (function () {
 
     function Locate(args) {
     	this.errors = [];
+        this.initialized = false;
     	this.dev = true;
     	this.infowindow;
         this.ln = 0;
     	this.oMap = false;
         this.oBounds = null;
         this.map_div = null;
+        this.canvas_map = null;
         this.gm_active = false;
         this.controls_wrapper;
         this.current_control;
@@ -143,27 +148,28 @@ var Locate = (function () {
         this.directionsDisplay = null;
 
     	this.o = {
-    	    gmap: '#gmap',
-            type: 'marker',
-    	    controls: '#controls',
+    	    map_div: '#gmap',
+    	    controls_div: '#controls',
     	    generate_controls: true,
     	    controls_type: 'dropdown',
+            controls_cssclass: '',
             controls_title: '',
             controls_on_map: true,
+            type: 'marker',
             view_all: true,
             view_all_text: 'View All',
             start: 0,
     	    locations: [],
     	    map_options: {
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
-                zoom: 2
+                zoom: 1
             },   
             stroke_options: {
-                strokeColor:"#0000FF",
-                strokeOpacity:0.8,
-                strokeWeight:2,
-                fillColor:"#0000FF",
-                fillOpacity:0.4
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                fillOpacity: 0.4
             },
             directions_options: {
                 travelMode: google.maps.TravelMode.DRIVING,
@@ -175,7 +181,7 @@ var Locate = (function () {
             },
             directions_panel: null,
             draggable: false,  
-            show_infowindow: true,
+            show_infowindows: true,
             show_markers: true,
     	    infowindow_type: 'bubble',
             apply_style: true,
@@ -186,20 +192,22 @@ var Locate = (function () {
             afterCreateMarker: function(index, marker, content) {},
             beforeCloseInfowindow: function(index, marker, content) {},
             afterCloseInfowindow: function(index, marker, content) {},
-            before_open_infowindow: function(index, marker, content) {},
+            beforeOpenInfowindow: function(index, marker, content) {},
             afterOpenInfowindow: function(index, marker, content) {},
             afterRoute: function(distance, status, result) {},
             onPolylineClick: function(obj) {}
     	};
 
-        this.Init( args );
+        this.AddControl('dropdown', html_dropdown);    
+        this.AddControl('list', html_ullist);
+
+        this.Init(args, true);
     };
 
     Locate.prototype.controls = {};
 
     Locate.prototype.create_objMap = function() {
-        var self = this,
-            m;
+        var self = this;
 
         if(!this.gm_active) {
             this.gm_active = true;
@@ -209,12 +217,12 @@ var Locate = (function () {
                     overflow: 'hidden'
                 });
                 
-                m = $('<div>').addClass('canvas_map').css({
-                    width: this.map_div.width()+'px',
-                    height: this.map_div.height()+'px'
+                this.canvas_map = $('<div>').addClass('canvas_map').css({
+                    width: this.map_div.width(),
+                    height: this.map_div.height()
                 }).appendTo( this.map_div );
 
-                this.oMap = new google.maps.Map(m.get(0), this.o.map_options);
+                this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
             } 
             catch(err) { this.errors.push(err.toString()); }
         }
@@ -280,8 +288,8 @@ var Locate = (function () {
 
             self.o.beforeShowCurrent(index, marker, point.html||'');
 
-            point_infow = point.show_infowindow===false ? false : true;
-            if(self.o.show_infowindow && point_infow) {
+            point_infow = point.show_infowindows===false ? false : true;
+            if(self.o.show_infowindows && point_infow) {
                 self.open_infowindow(index, marker, {content: point.html||'', type: point.type||self.o.infowindow_type, 'oMap': self.oMap});
             }
             self.oMap.panTo(latlng);
@@ -303,6 +311,7 @@ var Locate = (function () {
         return marker;
     };
 
+
     Locate.prototype.create_polyline = function(points) {
         var self = this,
             a = 0,
@@ -321,7 +330,9 @@ var Locate = (function () {
             map: this.oMap
         });
 
-        this.Polyline = new google.maps.Polyline(this.o.stroke_options);
+        this.Polyline 
+            ? this.Polyline.setOptions(this.o.stroke_options) 
+            : this.Polyline = new google.maps.Polyline(this.o.stroke_options);
     };
 
     Locate.prototype.create_polygon = function(points) {
@@ -343,7 +354,9 @@ var Locate = (function () {
             map: this.oMap
         });
 
-        this.Polygon = new google.maps.Polygon(this.o.stroke_options);
+        this.Polygon 
+            ? this.Polygon.setOptions(this.o.stroke_options) 
+            : this.Polygon = new google.maps.Polygon(this.o.stroke_options);
 
         google.maps.event.addListener(this.Polygon, 'click', function(obj) {
             self.o.onPolylineClick(obj);
@@ -386,10 +399,10 @@ var Locate = (function () {
             waypoints: waypoints
         });
 
-        this.directionsService = new google.maps.DirectionsService();
-        this.directionsDisplay = new google.maps.DirectionsRenderer({
-            draggable: this.o.draggable
-        });
+        this.directionsService || (this.directionsService = new google.maps.DirectionsService());
+        this.directionsDisplay 
+            ? this.directionsDisplay.setOptions({ draggable: this.o.draggable }) 
+            : this.directionsDisplay = new google.maps.DirectionsRenderer({ draggable: this.o.draggable });
 
         this.directionsDisplay.setMap(this.oMap);
 
@@ -439,7 +452,7 @@ var Locate = (function () {
         if( args.content ) {
             if(this.type_to_open[args.type||this.o.infowindow_type]) {
 
-                this.o.before_open_infowindow(index, marker, args.content);
+                this.o.beforeOpenInfowindow(index, marker, args.content);
 
                 this.type_to_open[args.type||this.o.infowindow_type](this, args);
                 this.infowindow.open(this.oMap, marker);
@@ -470,7 +483,6 @@ var Locate = (function () {
             background: '#fff',
             padding: '5px',
             border: '1px solid rgb(113,123,135)',
-            fontSize: '12px',
             boxShadow: 'rgba(0, 0, 0, 0.4) 0px 2px 4px',
             maxHeight: this.map_div.find('.canvas_map').outerHeight()-70,
             overflowY: 'auto',
@@ -484,6 +496,10 @@ var Locate = (function () {
 
     Locate.prototype.reset_map = function() {      
     	var self = this;
+
+        if(this.Polyline) this.Polyline.setMap(null);
+        if(this.Polygon) this.Polygon.setMap(null);
+        if(this.directionsDisplay) this.directionsDisplay.setMap(null);
 
         if (this.markers) {
             for (i in this.markers) {
@@ -609,50 +625,65 @@ var Locate = (function () {
         if(this.dev && this.errors.length) console.log(msg+': ', this.errors);
     };
 
-    Locate.prototype.Load = function(opt) {
-        this.Init(opt);
-        
-        if(this.ln>1 && this.o.generate_controls) {
-            this.generate_controls();
-        }
-
+    Locate.prototype.PerformLoad = function() {
         if(this.ln==1) {
-            this.o.generate_controls = false;
             this.ViewOnMap(1); 
         }
+        else if(this.ln==0) {
+            if(this.o.map_options.set_center) {
+                this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+            } else {
+                this.oMap.fitBounds(this.oBounds);
+            }
+            this.oMap.setZoom(this.o.map_options.zoom);
+        }
         else {
+            this.oMap.fitBounds(this.oBounds);
+
             if(typeof(this.o.start-0) == 'number' && this.o.start>0 && this.o.start<=this.ln) {
                 this.ViewOnMap(this.o.start); 
             } else {
                 this.ViewOnMap(this.view_all_key);
             }
         }
-    };
+    }
 
-    Locate.prototype.Init = function(args) {
-        $.extend(true, this.o, args);
-
-        this.controls['dropdown'] || this.AddControl('dropdown', html_dropdown);    
-        this.controls['list'] || this.AddControl('list', html_ullist);
-
+    Locate.prototype.Load = function(opt) {
+        this.Init(opt);
+        
         this.ln = this.o.locations.length;
-        this.map_div = $(this.o.gmap);
-        this.controls_wrapper = $(this.o.controls);
-
-        if(this.Polygon) this.Polygon.setMap(null);
-        if(this.Polyline) this.Polyline.setMap(null);
-        if(this.directionsDisplay) this.directionsDisplay.setMap(null);
+        this.map_div = $(this.o.map_div);
+        this.controls_wrapper = $(this.o.controls_div);
 
         this.reset_map();
         this.create_objMap();
         this.add_markers_to_objMap();
+        
+        if(this.ln>1 && this.o.generate_controls) {
+            this.generate_controls();
+        }
+        else {
+            this.o.generate_controls = false;
+        }
 
         var self = this;
-        if(self.o.map_options.zoom) google.maps.event.addListenerOnce(this.oMap, 'idle', function(){
-            if(self.ln==1) self.oMap.setZoom(self.o.locations[0].zoom||self.o.map_options.zoom);
-            else if(self.ln>0) self.oMap.fitBounds(self.oBounds);
-            else self.oMap.setZoom(self.o.map_options.zoom);
+        if(!this.initialized) google.maps.event.addListenerOnce(this.oMap, 'idle', function() {
+            self.PerformLoad();
         });
+        else this.PerformLoad();
+
+        google.maps.event.addListener(this.oMap, 'resize', function() {
+            self.canvas_map.css({
+                width: self.map_div.width(),
+                height: self.map_div.height()
+            });
+        });
+
+        this.initialized = true;
+    };
+
+    Locate.prototype.Init = function(args, construct) {
+        $.extend(true, this.o, args);
     }
 
 
