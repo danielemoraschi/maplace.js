@@ -136,7 +136,11 @@
         */
         function Locate(args) {
             this.VERSION = '0.1.0';
+<<<<<<< HEAD
         	this.errors = [];
+=======
+            this.errors = [];
+>>>>>>> 69ca4ea941e972ce89dfe61306544eecba696ba2
             this.initialized = false;
         	this.dev = true;
         	this.infowindow;
@@ -570,9 +574,15 @@
                 console.log(msg + ': ', this.errors);
             }
         };
+<<<<<<< HEAD
 
 
 
+=======
+
+
+
+>>>>>>> 69ca4ea941e972ce89dfe61306544eecba696ba2
         /////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////
 
@@ -735,4 +745,3 @@
     }
 
 })(jQuery, this, google);
-
