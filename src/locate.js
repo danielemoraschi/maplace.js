@@ -221,8 +221,18 @@
             this.AddControl('dropdown', html_dropdown);    
             this.AddControl('list', html_ullist);
 
-            this.Init(args, true);
+            this._init(args, true);
         }
+
+        Locate.prototype._init = function (args, construct) {
+            $.extend(true, this.o, args);
+
+            this.ln = this.o.locations.length;
+
+            for (var i=0; i < this.ln; i++) {
+                $.extend(this.o.locations[i], this.o.commons);
+            }
+        };
 
         Locate.prototype.controls = {};
 
@@ -250,7 +260,7 @@
                 self.oMap.setOptions(this.o.map_options);
             }
 
-            this.Debug('Locate.create_objMap');
+            this.debug('Locate.create_objMap');
         };
 
         Locate.prototype.add_markers_to_objMap = function () {
@@ -274,6 +284,7 @@
             marker: function (index) { 
                 var self = this,
                     point = this.o.locations[index],
+                    html = point.html || '',
                     marker, 
                     a, 
                     point_infow,
@@ -298,11 +309,11 @@
                 marker = new google.maps.Marker( point );
                 a = google.maps.event.addListener(marker, 'click', function () {
 
-                    self.o.beforeShowCurrent(index, marker, point.html||'');
+                    self.o.beforeShowCurrent(index, marker, html);
 
                     point_infow = point.show_infowindows===false ? false : true;
                     if (self.o.show_infowindows && point_infow) {
-                        self.open_infowindow(index, marker, {content: point.html||'', type: point.type||self.o.infowindow_type, 'oMap': self.oMap});
+                        self.open_infowindow(index, marker, {content: html, type: point.type || self.o.infowindow_type, 'oMap': self.oMap});
                     }
                     self.oMap.panTo(latlng);
                     if (point.zoom) {
@@ -314,13 +325,13 @@
                     }
                     self.current_index = index;
 
-                    self.o.afterShowCurrent(index, marker, point.html||'');
+                    self.o.afterShowCurrent(index, marker, html);
                 });
 
                 this.oBounds.extend(latlng);
                 this.markers.push(marker);
 
-                this.o.afterCreateMarker(index, marker, point.html||'');
+                this.o.afterCreateMarker(index, marker, html);
 
                 point.visible = orig_visible;
 
@@ -540,8 +551,38 @@
 
             this.oBounds = new google.maps.LatLngBounds();
 
-            this.Debug('Locate.reset_map');
-        };     
+            this.debug('Locate.reset_map');
+        }; 
+
+        Locate.prototype.perform_load = function () {
+            if (this.ln == 1) {
+                this.ViewOnMap(1); 
+            }
+            else if (this.ln === 0) {
+                if (this.o.map_options.set_center) {
+                    this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                } else {
+                    this.oMap.fitBounds(this.oBounds);
+                }
+                this.oMap.setZoom(this.o.map_options.zoom);
+            }
+            else {
+                this.oMap.fitBounds(this.oBounds);
+
+                if (typeof(this.o.start-0) == 'number' && this.o.start > 0 && this.o.start <= this.ln) {
+                    this.ViewOnMap(this.o.start); 
+                } else {
+                    this.ViewOnMap(this.view_all_key);
+                }
+            }
+        };
+
+        Locate.prototype.debug = function (msg) {
+            if (this.dev && this.errors.length) {
+                console.log(msg + ': ', this.errors);
+            }
+        };
+
 
 
         /****** // ******/
@@ -604,7 +645,7 @@
                     catch(err) { this.errors.push(err.toString()); }
                 }
             }
-            this.Debug('Locate.ViewOnMap');
+            this.debug('Locate.ViewOnMap');
         };
 
         Locate.prototype.SetMarkers = function (locs, reload) {
@@ -656,37 +697,8 @@
             }
         };
 
-        Locate.prototype.Debug = function (msg) {
-            if (this.dev && this.errors.length) {
-                console.log(msg + ': ', this.errors);
-            }
-        };
-
-        Locate.prototype.PerformLoad = function () {
-            if (this.ln == 1) {
-                this.ViewOnMap(1); 
-            }
-            else if (this.ln === 0) {
-                if (this.o.map_options.set_center) {
-                    this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
-                } else {
-                    this.oMap.fitBounds(this.oBounds);
-                }
-                this.oMap.setZoom(this.o.map_options.zoom);
-            }
-            else {
-                this.oMap.fitBounds(this.oBounds);
-
-                if (typeof(this.o.start-0) == 'number' && this.o.start > 0 && this.o.start <= this.ln) {
-                    this.ViewOnMap(this.o.start); 
-                } else {
-                    this.ViewOnMap(this.view_all_key);
-                }
-            }
-        };
-
         Locate.prototype.Load = function (opt) {
-            this.Init(opt);
+            this._init(opt);
             
             this.map_div = $(this.o.map_div);
             this.controls_wrapper = $(this.o.controls_div);
@@ -705,11 +717,11 @@
             var self = this;
             if (!this.initialized) {
                 google.maps.event.addListenerOnce(this.oMap, 'idle', function () {
-                    self.PerformLoad();
+                    self.perform_load();
                 });
             }
             else {
-                this.PerformLoad();
+                this.perform_load();
             }
 
             google.maps.event.addListener(this.oMap, 'resize', function () {
@@ -721,16 +733,6 @@
 
             this.initialized = true;
         };
-
-        Locate.prototype.Init = function (args, construct) {
-            $.extend(true, this.o, args);
-
-            this.ln = this.o.locations.length;
-
-            for (var i=0; i < this.ln; i++) {
-                $.extend(this.o.locations[i], this.o.commons);
-            }
-        }
 
 
         return Locate;
