@@ -12,10 +12,10 @@
     * @version  0.1.0
     */
 
+
     var html_dropdown,
         html_ullist,
         Locate;
-
 
     html_dropdown = {
         activateCurrent: function (index) {
@@ -37,7 +37,7 @@
 
                 for (a = 0; a < this.ln; a += 1) {
                     if (this.ShowOnMenu(a)) {
-                        html += '<option value="' + (a + 1) + '">' + (this.o.locations[a].title || ('#' + (a + 1))) + '</option>';
+                        html += '<option value="' + (a+1) + '">' + (this.o.locations[a].title || ('#' + (a+1))) + '</option>';
                     }
                 }
                 html += '</select>';
@@ -68,7 +68,7 @@
             var self = this,
                 index = hash || (i + 1),
                 title = title || this.o.locations[i].title,
-                el_a = $('<a data-load="' + index + '" id="ullist_a_' + index + '" href="#' + index + '" title="' + title + '"><span>' + (title || ('#' + (i + 1))) + '</span></a>');
+                el_a = $('<a data-load="' + index + '" id="ullist_a_' + index + '" href="#' + index + '" title="' + title + '"><span>' + (title || ('#' + (i+1))) + '</span></a>');
             
             el_a.css(this.o.controls_applycss ? {
                 color: '#666',
@@ -578,11 +578,9 @@
 
 
         Locate.prototype.AddControl = function (name, func) {
-            if (!name) {
+            if (!name || !func) {
                 return false;
             }
-
-            func = func || function (){};
             this.controls[name] = func;
             return true;
         };
