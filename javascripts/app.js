@@ -129,7 +129,6 @@ function showGroup(index) {
       map_div: '#gmap-9',
       controls_div: '#controls-9',
       controls_type: 'list',
-      generate_controls: true,
       controls_on_map: false
     });
     showGroup(0);

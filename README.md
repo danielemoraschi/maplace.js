@@ -1,2 +1,440 @@
-Locate.js
-=========
+# Locate.js 
+A Google Maps Helper for jQuery.
+Helps you to embed Google Maps into your website, quickly create markers and menu of locations for the map.
+
+## Demo
+
+## Setup
+Download the latest version of Locate.js and include the Google Maps API v3 along with jQuery.
+
+### JS
+```javascript
+new Locate({
+	locations: data,
+	controls_type: 'list',
+	controls_on_map: false
+}).Load();
+```
+
+### HTML
+```html
+<div id="controls"></div>
+<div id="gmap"></div>
+```
+
+### Locations Array
+```javascript
+var data = [{
+        lat: 45.9,
+        lon: 10.9,
+        title: 'Title A1',
+        html: '<h3>Content A1</h3>',
+        zoom: 8,
+        icon: 'http://www.google.com/mapfiles/markerA.png'
+    },{
+        lat: 44.8,
+        lon: 1.7,
+        title: 'Title B1',
+        html: '<h3>Content B1</h3>',
+        icon: 'http://www.google.com/mapfiles/markerB.png',
+        show_infowindow: false
+    }
+];
+```
+
+## Options
+<table>
+	<thead>
+	  <tr>
+	    <th>Option</th>
+	    <th>Type</th>
+	    <th width="200" style="width:200px">Default</th>
+	    <th>Description</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td>map_div</td>
+	    <td>string</td>
+	    <td>#gmap</td>
+	    <td>
+	      Where you want to show the Map
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>controls_div</td>
+	    <td>string</td>
+	    <td>#controls</td>
+	    <td>
+	      Where you want to show the menu.
+	      <strong>generate_controls</strong> must be <strong>true</strong>
+	      <strong>controls_on_map</strong> must be <strong>false</strong>
+	      At least more then one location on map
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>generate_controls</td>
+	    <td>boolean</td>
+	    <td>true</td>
+	    <td>
+	      If <strong>false</strong>, the menu will not generated
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>controls_type</td>
+	    <td>string</td>
+	    <td>dropdown</td>
+	    <td>
+	      Set the menu type, choose between: <strong>dropdown</strong> |<strong>list</strong>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>controls_on_map</td>
+	    <td>boolean</td>
+	    <td>true</td>
+	    <td>
+	      If <strong>false</strong>, the menu will be generated into the element defined by the property <strong>controls_div</strong>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>controls_title</td>
+	    <td>string</td>
+	    <td></td>
+	    <td>
+	      Add a title/header text to the menu
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>controls_cssclass</td>
+	    <td>string</td>
+	    <td></td>
+	    <td>
+	      Add a custom class to the menu element
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>controls_applycss</td>
+	    <td>boolean</td>
+	    <td>true</td>
+	    <td>
+	      If<strong>false</strong>, defaults styles to the menu will not be applied
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>type</td>
+	    <td>string</td>
+	    <td>marker</td>
+	    <td>
+	      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>view_all</td>
+	    <td>boolean</td>
+	    <td>true</td>
+	    <td>
+	      If <strong>false</strong> the link "view all" will not be created
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>view_all_text</td>
+	    <td>string</td>
+	    <td>View All</td>
+	    <td>
+	      Set the text of the link "view all"
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>start</td>
+	    <td>integer</td>
+	    <td>0</td>
+	    <td>
+	      Set the first location to show, "0" for "view all"
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>locations</td>
+	    <td>Array [locations]</td>
+	    <td>[]</td>
+	    <td>
+	      List of locations beeing marked on the map. Every entry in this array has to be in JSON
+	      Check at the location docs page for more details
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>commons</td>
+	    <td>object</td>
+	    <td>{}</td>
+	    <td>
+	      Overwrite every locations with a set of commons property
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>show_markers</td>
+	    <td>boolean</td>
+	    <td>true</td>
+	    <td>
+	      If <strong>false</strong>, markers will not be visible on the map (this overwrite the property <strong>visible</strong> of every location)
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>show_infowindows</td>
+	    <td>boolean</td>
+	    <td>true</td>
+	    <td>
+	      If <strong>false</strong>, infowindows will not be created
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>infowindow_type</td>
+	    <td>string</td>
+	    <td>bubble</td>
+	    <td>
+	      By now, only <strong>bubble</strong> is supported.
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>map_options</td>
+	    <td>Object</td>
+	    <td> 
+	    <code>
+		{<br/>
+			mapTypeId: 'ROADMAP',<br/>
+			zoom: 1<br/>
+		}
+		</code>
+		</td> 	
+	    <td>
+	      Map options object, as defined by Google
+	      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>stroke_options</td>
+	    <td>Object</td>
+	    <td> 
+		<code>
+		{<br/>
+		strokeColor: '#0000FF',<br/>
+		strokeOpacity: 0.8,<br/>
+		strokeWeight: 2,<br/>
+		fillColor: '#0000FF',<br/>
+		fillOpacity: 0.4<br/>
+		}
+		</code>
+	    </td>
+	    <td>
+	      Stroke options object, as defined by Google
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>directions_options</td>
+	    <td>Object</td>
+	    <td> 
+		<code>
+		{<br/>
+		travelMode: 'DRIVING',<br/>
+		unitSystem: 'METRIC',<br/>
+		optimizeWaypoints: false,<br/>
+		provideRouteAlternatives: false,<br/>
+		avoidHighways: false,<br/>
+		avoidTolls: false<br/>
+		}
+		</code>
+	    </td>
+	    <td>
+	      Direction options object, as defined by Google
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>directions_panel</td>
+	    <td>string</td>
+	    <td>null</td>
+	    <td>
+	      ID or class of the div in which to display the directions steps.
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>draggable</td>
+	    <td>boolean</td>
+	    <td>false</td>
+	    <td>
+	      If <strong>true</strong>, allows the user to drag and modify the <strong>route</strong>, the <strong>polyline</strong> or the <strong>polygon</strong>
+	    </td>
+	  </tr>
+	</tbody>
+</table>
+
+## Methods
+<table>
+	<thead>
+	  <tr>
+	    <th>Function</th>
+	    <th>Params</th>
+	    <th>Return</th>
+	    <th>Description</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td>AddControl</td>
+	    <td>string [name], function</td>
+	    <td></td>
+	    <td>Add you own menu type to the map. Check Menu Docs page for more details.</td>
+	  </tr>
+	  <tr>
+	    <td>CloseInfoWindow</td>
+	    <td></td>
+	    <td></td>
+	    <td>Close the current infowindow, if any open</td>
+	  </tr>
+	  <tr>
+	    <td>ShowOnMenu</td>
+	    <td>integer [index]</td>
+	    <td>boolean</td>
+	    <td>Get if a location has to be or is on menu</td>
+	  </tr>
+	  <tr>
+	    <td>ViewOnMap</td>
+	    <td>integer [index]</td>
+	    <td></td>
+	    <td>Triggers to show a location on map</td>
+	  </tr>
+	  <tr>
+	    <td>SetLocations</td>
+	    <td>array [locations], boolean [reload]</td>
+	    <td></td>
+	    <td>Replace the current locations</td>
+	  </tr>
+	  <tr>
+	    <td>AddLocations</td>
+	    <td>array [locations] | object [location], boolean [reload]</td>
+	    <td></td>
+	    <td>Add a location or multiple locations to the currents</td>
+	  </tr>
+	  <tr>
+	    <td>RemoveLocations</td>
+	    <td>array [indexes] | integer [index], boolean [reload]</td>
+	    <td></td>
+	    <td>Remove a location or multiple locations</td>
+	  </tr>
+	  <tr>
+	    <td>Load</td>
+	    <td>null | object [options]</td>
+	    <td></td>
+	    <td>Loads or update the current configuration and construct the map.</td>
+	  </tr>
+	</tbody>
+</table>
+
+
+## Events
+<table>
+	<thead>
+	  <tr>
+	    <th>Option</th>
+	    <th>Type</th>
+	    <th>Default</th>
+	    <th>Description</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td>beforeViewAll</td>
+	    <td>function</td>
+	    <td></td>
+	    <td>
+	      Fires before showing all the locations
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>afterViewAll</td>
+	    <td>function</td>
+	    <td></td>
+	    <td>
+	      Fires after showing all the locations
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>beforeShowCurrent</td>
+	    <td>function</td>
+	    <td>(index, location, marker){}</td>
+	    <td>
+	      Fires before showing the current triggered location
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>afterShowCurrent</td>
+	    <td>function</td>
+	    <td>(index, location, marker){}</td>
+	    <td>
+	      Fires after showing the current triggered location
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>afterCreateMarker</td>
+	    <td>function</td>
+	    <td>(index, location, marker){}</td>
+	    <td>
+	      Fires after a marker creation
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>beforeCloseInfowindow</td>
+	    <td>function</td>
+	    <td>(index, location){}</td>
+	    <td>
+	      Fires before closing the infowindow
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>afterCloseInfowindow</td>
+	    <td>function</td>
+	    <td>(index, location){}</td>
+	    <td>
+	      Function called after closing the infowindow
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>beforeOpenInfowindow</td>
+	    <td>function</td>
+	    <td>(index, location, marker){}</td>
+	    <td>
+	      Fires before opening the infowindow
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>afterOpenInfowindow</td>
+	    <td>function</td>
+	    <td>(index, location, marker){}</td>
+	    <td>
+	      Fires after opening the infowindow
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>afterRoute</td>
+	    <td>function</td>
+	    <td>(distance, status, result){}</td>
+	    <td>
+	      Fires after the route calcoule
+	    </td>
+	  </tr>
+	  <tr>
+	    <td>onPolylineClick</td>
+	    <td>function</td>
+	    <td>(obj) {}</td>
+	    <td>
+	      Fires when click on polylines
+	    </td>
+	  </tr>
+	  
+	</tbody>
+</table>
+
+## Requirements
+Locate.js requires jQuery and Google Maps Library v3.
+
+## Source code
+All efforts have been made to keep the source as clean and readable as possible.</br>
+Locate.js is released under an MIT License.
+

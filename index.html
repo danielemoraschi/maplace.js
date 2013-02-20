@@ -34,8 +34,8 @@
   <div class="row"> 
     <div class="description four columns">
       <p>
-        Locate.js helps you to embed Google Maps into your website, quickly create markers and generate a menu of locations for the map.<br/>
-        Locate.js's hard depends on <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a>, you need have both in your page.
+        Locate.js helps you to embed Google Maps into your website, quickly create markers menu of locations for the map.<br/>
+        Locate.js's hard depends on <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a>, you need to have both in your page.
       </p>
       <p>
         <ul>
@@ -68,7 +68,7 @@
 
       <dl class="tabs">
         <dd class="active "><a href="#Examples">Examples</a></dd>
-        <dd><a href="#Install">Guides</a></dd>
+        <dd><a href="#Setup">Setup</a></dd>
         <dd><a href="#Docs">Docs</a></dd>
         <dd><a href="#Locationsdocs">Location Docs</a></dd>
         <dd><a href="#Menudocs">Menu Docs</a></dd>
@@ -422,7 +422,6 @@ var locate = new Locate({
   map_div: '#gmap-mixed',
   controls_div: '#controls-mixed',
   controls_type: 'list',
-  generate_controls: true,
   controls_on_map: false
 });
 
@@ -515,13 +514,13 @@ $('#load_bigdata').click(function(e) {
         </li>
 
         
-        <li class="install" id="InstallTab">
+        <li class="install" id="SetupTab">
 
           <section class="row">
             <div class="four columns mobile-two">
 
 <h2>Requirements</h2>
-<p>Download the latest version of Locate.js and include the Google Maps API along with jQuery.</p>
+<p>Download the latest version of Locate.js and include the Google Maps API v3 along with jQuery.</p>
 <pre class="prettyprint">
 &lt;script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"&gt;
 &lt;/script&gt;
@@ -959,7 +958,7 @@ new Locate({
                     <td>function</td>
                     <td>(obj) {}</td>
                     <td>
-                      Fires when click on a polyline
+                      Fires when click on polylines
                     </td>
                   </tr>
                   
