@@ -235,8 +235,8 @@ new Locate({
   controls_on_map: false,
   show_infowindow: false,
   start: 1,
-  afterShowCurrent: function(index, marker, content) {
-    $('#info').html(content);
+  afterShowCurrent: function(index, location, marker) {
+    $('#info').html(location.html);
   }
 }).Load(); 
 </pre>
@@ -282,7 +282,6 @@ new Locate({
   controls_div: '#controls-polyline',
   controls_type: 'list',
   controls_on_map: false,
-  show_infowindow: true,
   view_all_text: 'Start',
   type: 'polyline'
 }).Load(); 
@@ -344,7 +343,7 @@ new Locate({
 <pre class="prettyprint">
 &lt;h2&gt;Route &lt;strong id="km"&gt;&lt;/strong&gt;&lt;/h2&gt;
 &lt;div id="gmap-route"&gt;&lt;/div&gt;
-&lt;div id="panel"&gt;&lt;/div&gt;
+&lt;div id="route"&gt;&lt;/div&gt;
 </pre>
                 </li>
               </ul>
@@ -507,7 +506,7 @@ $('#load_bigdata').click(function(e) {
 <h3>Html</h3>
 <pre class="prettyprint">
 &lt;div id="panel"&gt;
-  &lt;a class="button" id="load_bigdata" href="#"&gt;loads 4k points&lt;/a&gt;
+  &lt;a class="button" id="load_bigdata" href="#"&gt;load 4k points&lt;/a&gt;
 &lt;/div&gt;
 &lt;div id="gmap-big" style="display:none"&gt;&lt;/div&gt;
 </pre>
@@ -653,6 +652,14 @@ new Locate({
                     </td>
                   </tr>
                   <tr>
+                    <td>controls_applycss</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                      If <strong><em>false</em></strong>, defaults styles to the menu will not be applied
+                    </td>
+                  </tr>
+                  <tr>
                     <td>type</td>
                     <td>string</td>
                     <td>marker</td>
@@ -722,14 +729,6 @@ new Locate({
                     <td>bubble</td>
                     <td>
                       By now, only <strong>bubble</strong> is supported.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>apply_style</td>
-                    <td>boolean</td>
-                    <td>true</td>
-                    <td>
-                      If <strong><em>false</em></strong>, defaults styles to the menu will not be applied
                     </td>
                   </tr>
                   <tr>
@@ -898,7 +897,7 @@ new Locate({
                   <tr>
                     <td>beforeShowCurrent</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location, marker){}</td>
                     <td>
                       Fires before showing the current triggered location
                     </td>
@@ -906,7 +905,7 @@ new Locate({
                   <tr>
                     <td>afterShowCurrent</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location, marker){}</td>
                     <td>
                       Fires after showing the current triggered location
                     </td>
@@ -914,7 +913,7 @@ new Locate({
                   <tr>
                     <td>afterCreateMarker</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location, marker){}</td>
                     <td>
                       Fires after a marker creation
                     </td>
@@ -922,7 +921,7 @@ new Locate({
                   <tr>
                     <td>beforeCloseInfowindow</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location){}</td>
                     <td>
                       Fires before closing the infowindow
                     </td>
@@ -930,7 +929,7 @@ new Locate({
                   <tr>
                     <td>afterCloseInfowindow</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location){}</td>
                     <td>
                       Function called after closing the infowindow
                     </td>
@@ -938,7 +937,7 @@ new Locate({
                   <tr>
                     <td>beforeOpenInfowindow</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location, marker){}</td>
                     <td>
                       Fires before opening the infowindow
                     </td>
@@ -946,7 +945,7 @@ new Locate({
                   <tr>
                     <td>afterOpenInfowindow</td>
                     <td>function</td>
-                    <td>(index, marker, content){}</td>
+                    <td>(index, location, marker){}</td>
                     <td>
                       Fires after opening the infowindow
                     </td>
@@ -1086,7 +1085,7 @@ var html_checks = {
             }
 
             //iterate the locations
-            for (var a = 0; a < this.ln; a++) {
+            for (var a = 0; a &lt; this.ln; a++) {
                 if(this.ShowOnMenu(a)) 
                   html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="' + (a+1) + '"/&gt;' 
                        + (this.o.locations[a].title || ('#' + (a+1))) + '&lt;/label&gt;';

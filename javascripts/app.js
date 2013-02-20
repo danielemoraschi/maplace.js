@@ -74,8 +74,8 @@ function showGroup(index) {
       show_infowindows: false,
       view_all: false,
       locations: LocsB,
-      afterShowCurrent: function(index, marker, content) {
-        $('#info').html(content);
+      afterShowCurrent: function(index, location, marker) {
+        $('#info').html(location.html);
       }
     }).Load();
 

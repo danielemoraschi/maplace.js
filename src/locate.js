@@ -49,7 +49,7 @@
 
             title = this.o.controls_title;
             if (this.o.controls_title) {
-                title = $('<div class="controls_title"></div>').css(this.o.apply_style ? {
+                title = $('<div class="controls_title"></div>').css(this.o.controls_applycss ? {
                     fontWeight: 'bold',
                     fontSize: this.o.controls_on_map ? '12px' : 'inherit',
                     padding: '3px 10px 5px 0'
@@ -70,7 +70,7 @@
                 title = title || this.o.locations[i].title,
                 el_a = $('<a data-load="' + index + '" id="ullist_a_' + index + '" href="#' + index + '" title="' + title + '"><span>' + (title || ('#' + (i + 1))) + '</span></a>');
             
-            el_a.css(this.o.apply_style ? {
+            el_a.css(this.o.controls_applycss ? {
                 color: '#666',
                 display: 'block',
                 padding: '5px',
@@ -93,7 +93,7 @@
         },
 
         getHtml: function () {
-            var html = $("<ul class='ullist controls " + this.o.controls_cssclass + "'></ul>").css(this.o.apply_style ? {
+            var html = $("<ul class='ullist controls " + this.o.controls_cssclass + "'></ul>").css(this.o.controls_applycss ? {
                 margin: 0,
                 padding: 0,
                 listStyleType: 'none'
@@ -113,7 +113,7 @@
 
             title = this.o.controls_title;
             if (this.o.controls_title) {
-                title = $('<div class="controls_title"></div>').css(this.o.apply_style ? {
+                title = $('<div class="controls_title"></div>').css(this.o.controls_applycss ? {
                     fontWeight: 'bold',
                     padding: '3px 10px 5px 0',
                     fontSize: this.o.controls_on_map ? '12px' : 'inherit'
@@ -131,10 +131,7 @@
 
         /**
         * Create a new instance of Locate
-        *
         * @class Locate
-        * @return {Locate} Returns a new Locate
-        * @type {Object}
         * @constructor  
         */
         function Locate(args) {
@@ -166,6 +163,7 @@
                 controls_cssclass: '',
                 controls_title: '',
                 controls_on_map: true,
+                controls_applycss: true,
                 type: 'marker',
                 view_all: true,
                 view_all_text: 'View All',
@@ -196,16 +194,15 @@
                 show_infowindows: true,
                 show_markers: true,
         	    infowindow_type: 'bubble',
-                apply_style: true,
                 beforeViewAll: function () {},
                 afterViewAll: function () {},
-                beforeShowCurrent: function (index, marker, content) {},
-                afterShowCurrent: function (index, marker, content) {},
-                afterCreateMarker: function (index, marker, content) {},
-                beforeCloseInfowindow: function (index, marker, content) {},
-                afterCloseInfowindow: function (index, marker, content) {},
-                beforeOpenInfowindow: function (index, marker, content) {},
-                afterOpenInfowindow: function (index, marker, content) {},
+                beforeShowCurrent: function (index, location, marker) {},
+                afterShowCurrent: function (index, location, marker) {},
+                afterCreateMarker: function (index, location, marker) {},
+                beforeCloseInfowindow: function (index, location) {},
+                afterCloseInfowindow: function (index, location) {},
+                beforeOpenInfowindow: function (index, location, marker) {},
+                afterOpenInfowindow: function (index, location, marker) {},
                 afterRoute: function (distance, status, result) {},
                 onPolylineClick: function (obj) {}
         	};
@@ -259,7 +256,7 @@
 
             switch (type) {
                 case 'marker':
-                    for (a; a<this.ln; a++) {
+                    for (a; a < this.ln; a++) {
                         this.create.marker.call(this, a);
                     }
                     break;
@@ -299,11 +296,11 @@
                 marker = new google.maps.Marker( point );
                 a = google.maps.event.addListener(marker, 'click', function () {
 
-                    self.o.beforeShowCurrent(index, marker, html);
+                    self.o.beforeShowCurrent(index, point, marker);
 
                     point_infow = point.show_infowindows===false ? false : true;
                     if (self.o.show_infowindows && point_infow) {
-                        self.open_infowindow(index, marker, {content: html, type: point.type || self.o.infowindow_type, 'oMap': self.oMap});
+                        self.open_infowindow(index, marker);
                     }
                     self.oMap.panTo(latlng);
                     if (point.zoom) {
@@ -315,13 +312,13 @@
                     }
                     self.current_index = index;
 
-                    self.o.afterShowCurrent(index, marker, html);
+                    self.o.afterShowCurrent(index, point, marker);
                 });
 
                 this.oBounds.extend(latlng);
                 this.markers.push(marker);
 
-                this.o.afterCreateMarker(index, marker, html);
+                this.o.afterCreateMarker(index, point, marker);
 
                 point.visible = orig_visible;
 
@@ -454,23 +451,23 @@
         };
 
         Locate.prototype.type_to_open = {
-        	bubble: function (omap, args) {
-        		omap.infowindow = new google.maps.InfoWindow(args);
+        	bubble: function (location) {
+        		this.infowindow = new google.maps.InfoWindow({
+                    content: location.html||''
+                });
         	}
         };
 
-        Locate.prototype.open_infowindow = function (index, marker, args) {
-            this.CloseInfoWindow();        
-            if ( args.content ) {
-                if (this.type_to_open[args.type || this.o.infowindow_type]) {
+        Locate.prototype.open_infowindow = function (index, marker) {
+            this.CloseInfoWindow();
+            var point = this.o.locations[index],
+                type = point.type || this.o.infowindow_type;
 
-                    this.o.beforeOpenInfowindow(index, marker, args.content);
-
-                    this.type_to_open[args.type || this.o.infowindow_type](this, args);
-                    this.infowindow.open(this.oMap, marker);
-
-                    this.o.afterOpenInfowindow(index, marker, args.content);
-                }
+            if (point.html && this.type_to_open[type]) {
+                this.o.beforeOpenInfowindow(index, point, marker);
+                this.type_to_open[type].call(this, point);
+                this.infowindow.open(this.oMap, marker);
+                this.o.afterOpenInfowindow(index, point, marker);
             }
         };
 
@@ -490,11 +487,11 @@
                 return;
             }
 
-            var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>').css(this.o.apply_style ? {
+            var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>').css(this.o.controls_applycss ? {
                 margin: '5px'
             } : {}),
 
-            inner = $(this.get_html_controls()).css(this.o.apply_style ? {
+            inner = $(this.get_html_controls()).css(this.o.controls_applycss ? {
                 background: '#fff',
                 padding: '5px',
                 border: '1px solid rgb(113,123,135)',
@@ -577,6 +574,7 @@
 
 
         /////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////
 
 
         Locate.prototype.AddControl = function (name, func) {
@@ -591,10 +589,10 @@
 
         Locate.prototype.CloseInfoWindow = function () {
             if (this.infowindow && (this.current_index || this.current_index===0)) {
-                this.o.beforeCloseInfowindow(this.current_index);        
+                this.o.beforeCloseInfowindow(this.current_index, this.o.locations[this.current_index]);        
                 this.infowindow.close();
                 this.infowindow = null;
-                this.o.afterCloseInfowindow(this.current_index); 
+                this.o.afterCloseInfowindow(this.current_index, this.o.locations[this.current_index]); 
             }
         };
 
@@ -622,11 +620,8 @@
                     if(this.current_control && this.current_control.activateCurrent) {
                         this.current_control.activateCurrent.apply(this, [index]);
                     }
-                    this.oMap.fitBounds(this.oBounds);
                 }
-                else {
-                    this.oMap.fitBounds(this.oBounds);
-                }
+                this.oMap.fitBounds(this.oBounds);
                 this.CloseInfoWindow();
                 this.o.afterViewAll();
             }
