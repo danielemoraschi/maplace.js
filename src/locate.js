@@ -2,11 +2,14 @@
     'use strict';
 
     /**
+    * Locate.js 0.1.0
+    *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
+    * For all details and documentation:
+    * http://locatejs.org
     *
-    * @author   Daniele Moraschi
-    * @version  1.0
+    * @version  0.1.0
     */
 
     var html_dropdown,
@@ -14,100 +17,83 @@
         Locate;
 
 
-    html_dropdown = (function() {
-
-        function html_dropdown(locate) {
-            this.Locate = locate;
-            this.html_element = null;
-        }
-
-        html_dropdown.prototype.activateCurrent = function (index) {
+    html_dropdown = {
+        activateCurrent: function (index) {
             this.html_element.find('select').val(index);
-        };
+        },
 
-        html_dropdown.prototype.getHtml = function () {
+        getHtml: function () {
             var self = this,
                 html = '',
                 title,
                 a;
 
-            if (this.Locate.ln > 1) {
-                html += '<select class="dropdown controls ' + this.Locate.o.controls_cssclass + '">';
+            if (this.ln > 1) {
+                html += '<select class="dropdown controls ' + this.o.controls_cssclass + '">';
 
-                if (this.Locate.ShowOnMenu(this.Locate.view_all_key)) {
-                    html += '<option value="' + this.Locate.view_all_key + '">' + this.Locate.o.view_all_text + '</option>';
+                if (this.ShowOnMenu(this.view_all_key)) {
+                    html += '<option value="' + this.view_all_key + '">' + this.o.view_all_text + '</option>';
                 }
 
-                for (a = 0; a < this.Locate.ln; a += 1) {
-                    if (this.Locate.ShowOnMenu(a)) {
-                        html += '<option value="' + (a + 1) + '">' + (this.Locate.o.locations[a].title || ('#' + (a + 1))) + '</option>';
+                for (a = 0; a < this.ln; a += 1) {
+                    if (this.ShowOnMenu(a)) {
+                        html += '<option value="' + (a + 1) + '">' + (this.o.locations[a].title || ('#' + (a + 1))) + '</option>';
                     }
                 }
                 html += '</select>';
 
                 html = $(html).bind('change', function () {
-                    self.Locate.ViewOnMap(this.value);
+                    self.ViewOnMap(this.value);
                 });
             }
 
-            title = this.Locate.o.controls_title;
-            if (this.Locate.o.controls_title) {
-                title = $('<div class="controls_title"></div>').css(this.Locate.o.apply_style ? {
+            title = this.o.controls_title;
+            if (this.o.controls_title) {
+                title = $('<div class="controls_title"></div>').css(this.o.apply_style ? {
                     fontWeight: 'bold',
-                    fontSize: this.Locate.o.controls_on_map ? '12px' : 'inherit',
+                    fontSize: this.o.controls_on_map ? '12px' : 'inherit',
                     padding: '3px 10px 5px 0'
-                } : {}).append(this.Locate.o.controls_title);
+                } : {}).append(this.o.controls_title);
             }
 
             this.html_element = $('<div class="wrap_controls"></div>').append(title).append(html);
 
             return this.html_element;
-        };
-
-
-        return html_dropdown;
-
-    })();
-
-
-
-    html_ullist = (function() {
-
-        function html_ullist(locate) {
-            this.Locate = locate;
-            this.html_element = null;
         }
+    };
 
-        html_ullist.prototype.html_a = function (i, hash, title) {
+
+    html_ullist = {
+        html_a: function (i, hash, title) {
             var self = this,
                 index = hash || (i + 1),
-                title = title || this.Locate.o.locations[i].title,
+                title = title || this.o.locations[i].title,
                 el_a = $('<a data-load="' + index + '" id="ullist_a_' + index + '" href="#' + index + '" title="' + title + '"><span>' + (title || ('#' + (i + 1))) + '</span></a>');
             
-            el_a.css(this.Locate.o.apply_style ? {
+            el_a.css(this.o.apply_style ? {
                 color: '#666',
                 display: 'block',
                 padding: '5px',
-                fontSize: this.Locate.o.controls_on_map ? '12px' : 'inherit',
+                fontSize: this.o.controls_on_map ? '12px' : 'inherit',
                 textDecoration: 'none'
             } : {});
 
             el_a.on('click', function (e) {
                 e.preventDefault();
                 var i = $(this).attr('data-load');
-                self.Locate.ViewOnMap(i);
+                self.ViewOnMap(i);
             });
 
             return el_a;
-        };
+        },
 
-        html_ullist.prototype.activateCurrent = function (index) {
+        activateCurrent: function (index) {
             this.html_element.find('li').removeClass('active');
             this.html_element.find('#ullist_a_' + index).parent().addClass('active');
-        };
+        },
 
-        html_ullist.prototype.getHtml = function () {
-            var html = $("<ul class='ullist controls " + this.Locate.o.controls_cssclass + "'></ul>").css(this.Locate.o.apply_style ? {
+        getHtml: function () {
+            var html = $("<ul class='ullist controls " + this.o.controls_cssclass + "'></ul>").css(this.o.apply_style ? {
                 margin: 0,
                 padding: 0,
                 listStyleType: 'none'
@@ -115,35 +101,30 @@
             title,
             a = 0;
 
-            if (this.Locate.ShowOnMenu(this.Locate.view_all_key)) {
-                html.append($('<li></li>').append(this.html_a(false, this.Locate.view_all_key, this.Locate.o.view_all_text)));
+            if (this.ShowOnMenu(this.view_all_key)) {
+                html.append($('<li></li>').append(html_ullist.html_a.call(this, false, this.view_all_key, this.o.view_all_text)));
             }
 
-            for (a; a < this.Locate.ln; a++) {
-                if (this.Locate.ShowOnMenu(a)) {
-                    html.append($('<li></li>').append(this.html_a(a)));
+            for (a; a < this.ln; a++) {
+                if (this.ShowOnMenu(a)) {
+                    html.append($('<li></li>').append(html_ullist.html_a.call(this, a)));
                 }
             }
 
-            title = this.Locate.o.controls_title;
-            if (this.Locate.o.controls_title) {
-                title = $('<div class="controls_title"></div>').css(this.Locate.o.apply_style ? {
+            title = this.o.controls_title;
+            if (this.o.controls_title) {
+                title = $('<div class="controls_title"></div>').css(this.o.apply_style ? {
                     fontWeight: 'bold',
                     padding: '3px 10px 5px 0',
-                    fontSize: this.Locate.o.controls_on_map ? '12px' : 'inherit'
-                } : {}).append(this.Locate.o.controls_title);
+                    fontSize: this.o.controls_on_map ? '12px' : 'inherit'
+                } : {}).append(this.o.controls_title);
             }
 
             this.html_element = $('<div class="wrap_controls"></div>').append(title).append(html);
 
             return this.html_element;
-        };
-
-
-        return html_ullist;
-
-    })();
-
+        }
+    };
 
 
     Locate = (function() {
@@ -157,6 +138,7 @@
         * @constructor  
         */
         function Locate(args) {
+            this.VERSION = '0.1.0';
         	this.errors = [];
             this.initialized = false;
         	this.dev = true;
@@ -166,7 +148,6 @@
             this.oBounds = null;
             this.map_div = null;
             this.canvas_map = null;
-            this.gm_active = false;
             this.controls_wrapper;
             this.current_control;
             this.current_index;
@@ -231,7 +212,6 @@
 
             this.AddControl('dropdown', html_dropdown);    
             this.AddControl('list', html_ullist);
-
             this._init(args, true);
         }
 
@@ -250,8 +230,7 @@
         Locate.prototype.create_objMap = function () {
             var self = this;
 
-            if (!this.gm_active) {
-                this.gm_active = true;
+            if (!this.initialized) {
                 try {
                     this.map_div.css({
                         position: 'relative',
@@ -281,7 +260,7 @@
             switch (type) {
                 case 'marker':
                     for (a; a<this.ln; a++) {
-                        this.create.marker.apply(this, [a]);
+                        this.create.marker.call(this, a);
                     }
                     break;
                 default:
@@ -331,8 +310,8 @@
                         self.oMap.setZoom(point.zoom);
                     }
 
-                    if (self.current_control && self.o.generate_controls) {
-                        self.current_control.activateCurrent(index+1);
+                    if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {
+                        self.current_control.activateCurrent.call(self, index+1);
                     }
                     self.current_index = index;
 
@@ -360,7 +339,7 @@
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     path.push(latlng);
 
-                    this.create.marker.apply(this, [a]);
+                    this.create.marker.call(this, a);
                 }
 
                 $.extend(this.o.stroke_options, {
@@ -382,7 +361,7 @@
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     path.push(latlng);
 
-                    this.create.marker.apply(this, [a]);
+                    this.create.marker.call(this, a);
                 }
 
                 $.extend(this.o.stroke_options, {
@@ -424,7 +403,7 @@
                             stopover: stopover
                         });
                     }
-                    this.create.marker.apply(this, [a]);
+                    this.create.marker.call(this, a);
                 }
 
                 $.extend(this.o.directions_options, {
@@ -496,9 +475,10 @@
         };
 
         Locate.prototype.get_html_controls = function () {
-            this.current_control = new this.controls[this.o.controls_type](this);
-            if (this.controls[this.o.controls_type]) {
-                return this.current_control.getHtml();
+            if(this.controls[this.o.controls_type] && this.controls[this.o.controls_type].getHtml) {
+                this.current_control = this.controls[this.o.controls_type];
+
+                return this.current_control.getHtml.apply(this);
             }
             return '';
         };
@@ -639,7 +619,9 @@
                 this.o.beforeViewAll();
                 this.current_index = index;
                 if (this.o.locations.length > 0 && this.o.generate_controls) {
-                    this.current_control.activateCurrent(index);
+                    if(this.current_control && this.current_control.activateCurrent) {
+                        this.current_control.activateCurrent.apply(this, [index]);
+                    }
                     this.oMap.fitBounds(this.oBounds);
                 }
                 else {

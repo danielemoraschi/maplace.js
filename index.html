@@ -1060,54 +1060,51 @@ new Locate({
             <h2 class="four columns mobile-two">Adding a new menu type</h2>
             <div class="four columns mobile-two">
               <p>
-                This is a simple checkbox menu example. Methods <strong>activateCurrent</strong> and <strong>getHtml</strong> are <u>required</u>!
+                This is a simple checkbox menu example. You need to define two methods: <strong>activateCurrent</strong> and <strong>getHtml</strong><br/>
+                <strong><em>this</em></strong> will be scoped to the current Locate instance.
               </p>
 <pre class="prettyprint">
-function html_checks(locate) {
-    this.l = locate;
-    this.html_element = null;
-}
+var html_checks = {
+    //required: called by Locate.js to activate the current voice on menu
+    activateCurrent: function(index) {
+        this.html_element.find("input[value='" + index + "']").attr('checked', true);
+    },
+    //required: called by Locate.js to get the html of the menu
+    getHtml: function() {
+        var self = this,
+            html = '';
 
-//required: called by Locate.js to activate the current voice on menu
-html_checks.prototype.activateCurrent = function(index) {
-    this.html_element.find("input[value='"+index+"']").attr('checked', true);
-};
+        //if more than one location
+        if(this.ln > 1) {
+            html += '&lt;div class="checkbox controls ' + this.o.controls_cssclass + '"&gt;';
 
-//required: called by Locate.js to get the html of the menu
-html_checks.prototype.getHtml = function() {
-    var self = this,
-        html = '';
+            //check "view all" link
+            //use ShowOnMenu(index) to know if a location has to appear on menu
+            if(this.ShowOnMenu(this.view_all_key)) {
+                html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="'
+                     + this.view_all_key + '"/&gt;' + this.o.view_all_text + '&lt;/label&gt;';
+            }
 
-    //if more than one location
-    if(this.l.ln>1) {
-        html += '&lt;div class="checkbox controls '+this.l.o.controls_cssclass+'"&gt;';
-
-        //check "view all" link
-        //use ShowOnMenu(index) to know if a location has to appear on menu
-        if(this.l.ShowOnMenu(this.l.view_all_key)) {
-            html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="'
-                 +this.l.view_all_key+'"/&gt;'+this.l.o.view_all_text+'&lt;/label&gt;';
+            //iterate the locations
+            for (var a = 0; a < this.ln; a++) {
+                if(this.ShowOnMenu(a)) 
+                  html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="' + (a+1) + '"/&gt;' 
+                       + (this.o.locations[a].title || ('#' + (a+1))) + '&lt;/label&gt;';
+            }
+            html += '&lt;/div&gt;';
         }
 
-        //iterate the locations
-        for (a = 0; a &lt; this.l.ln; a++) {
-            if(this.l.ShowOnMenu(a)) 
-              html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="'+(a+1)+'"/&gt;' 
-                   + (this.l.o.locations[a].title||('#'+(a+1))) + '&lt;/label&gt;';
-        }
-        html += '&lt;/div&gt;';
+        this.html_element = $('&lt;div class="wrap_controls"&gt;&lt;/div&gt;').append(html);
+
+        //event on change
+        //use ViewOnMap(index) to trigger the marker on map
+        this.html_element.find('input[type=radio]').bind('change', function() {
+            self.ViewOnMap(this.value); 
+        });
+        
+        return this.html_element;
     }
-
-    this.html_element = $('&lt;div class="wrap_controls"&gt;&lt;/div&gt;').append(html);
-
-    //event on change
-    //use ViewOnMap(index) to trigger the marker on map
-    this.html_element.find('input[type=radio]').bind('change', function() {
-        self.l.ViewOnMap(this.value); 
-    });
-    
-    return this.html_element;
-}
+};
 </pre>
 <pre class="prettyprint">
 //new Locate object
@@ -1277,7 +1274,7 @@ var LocsD = [
   <script src="javascripts/foundation.min.js"></script>
   <script src="javascripts/prettify.js"></script>
 
-  <script src="src/locate.min.js"></script>
+  <script src="src/locate.js"></script>
 
   <script src="javascripts/app.js"></script>
   
