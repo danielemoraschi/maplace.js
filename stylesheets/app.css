@@ -1,5 +1,5 @@
 /* -----------------------------------------
-   Website
+   General
 ----------------------------------------- */
 
 header {
@@ -11,7 +11,7 @@ header {
 }
 
 header h1 {
-	font-family: "Open Sans";
+	font-family: "Open Sans", sans-serif;
 	font-weight: 600;
 	margin-top: 30px;
 	font-size: 50px;
@@ -51,7 +51,7 @@ header h1 a {
 }
 
 h2 {
-	font-family: "Open Sans";
+	font-family: "Open Sans", sans-serif;
 	font-size: 32px;
 	font-weight: 400;
 	height: 40px;
@@ -204,7 +204,7 @@ select {
 
 
 /* -----------------------------------------
-   Locate.js
+   Examples
 ----------------------------------------- */
 
 .gmap * {

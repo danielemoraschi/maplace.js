@@ -26,10 +26,10 @@
       <div class="four columns">
         <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Locate.js</a></h1>
         <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Maplace.js</a></h1>
-        <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Maplaces.js</a></h1>
+        <!--<h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Maplaces.js</a></h1>
         <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Placemark.js</a></h1>
         <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Himap.js</a></h1>
-        <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Placemap.js</a></h1>
+        <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Placemap.js</a></h1>-->
         <p>A Google Maps Markers Helper for jQuery</p>
         <div class="line"></div>
       </div>
@@ -39,15 +39,12 @@
   <div class="row"> 
     <div class="description four columns">
       <p>
-        Locate.js helps you embed Google Maps into your website, quickly create markers and generate a menu to focus related point on the map. Menu are easily customizable and you can customize it extending with your own.
+        Locate.js helps you embed Google Maps into your website, quickly create markers and generate a menu to focus related location on the map. Menu are easily customizable and you can customize it extending with your own.
       </p>
       <p>
-        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. 
         <ul>
           <li>Works in all major browsers, including IE6</li>
           <li>MIT License, so do with it what you will.</li>
-          <li>Aliquam elementum magna in magna eleifend pharetra fringilla metus sollicitudin.</li>
-          <li>Quisque at elit ac tellus interdum tristique.</li>
         </ul>
       </p>
       <div class="row"> 
@@ -56,10 +53,10 @@
             <h2>Download</h2>
             <div class="row"> 
               <div class="two columns mobile-one">
-                <a class="success button" href="src/locate.js" target="_blank">locate.js</a>
+                <a class="success button" href="src/locate.js" target="_blank">locate.js (26kb)</a>
               </div>
               <div class="two columns mobile-one">
-                <a class="success button right" href="src/locate.min.js" target="_blank">locate.min.js</a>
+                <a class="success button right" href="src/locate.min.js" target="_blank">locate.min.js (13kb)</a>
               </div>
             </div>
           </div>
@@ -75,11 +72,11 @@
 
       <dl class="tabs">
         <dd class="active "><a href="#Examples">Examples</a></dd>
-        <dd><a href="#Install">Install</a></dd>
+        <dd><a href="#Install">Guides</a></dd>
         <dd><a href="#Docs">Docs</a></dd>
-        <dd><a href="#Pointsdocs">Point Docs</a></dd>
+        <dd><a href="#Locationsdocs">Location Docs</a></dd>
         <dd><a href="#Menudocs">Menu Docs</a></dd>
-        <dd id="fex" class="right"><a href="#File">Points file example</a></dd>
+        <dd id="fex" class="right"><a href="#File">Locations file example</a></dd>
       </dl>
 
 
@@ -447,8 +444,8 @@ function showGroup(index) {
   $.getJSON('ajax/test.json', { type: index }, function(data) {
     //loads data into the map
     locate.Load({
-      locations: data.points,
-      view_all_text: data.points.title,
+      locations: data.locations,
+      view_all_text: data.title,
       type: data.type
     });
   });
@@ -486,7 +483,7 @@ showGroup(0);
               <ul class="tabs-content">
                 <li class="active" id="example9Tab">
                   <div style="height:auto;text-align:center" class="panel" id="panel">
-                    <a style="width:auto" class="success button" id="load_bigdata" href="#">load 4k points</a>
+                    <a style="width:auto" class="success button" id="load_bigdata" href="#">load 4k locations</a>
                   </div>
                   <div class="gmap" id="gmap-10" style="display:none"></div>
                 </li>
@@ -575,7 +572,6 @@ new Locate({
   }
 }).Load(); 
 </pre>
-<pre class="prettyprint">
             </div>
           </section>
 
@@ -613,7 +609,7 @@ new Locate({
                       Where you want to show the menu.<br/>
                       <strong>generate_controls</strong> must be <strong><em>true</em></strong><br/>
                       <strong>controls_on_map</strong> must be <strong><em>false</em></strong><br/>
-                      At least more then one point on map
+                      At least more then one location on map
                     </td>
                   </tr>
                   <tr>
@@ -685,15 +681,15 @@ new Locate({
                     <td>integer</td>
                     <td>0</td>
                     <td>
-                      Set the first point to show, "0" for "view all"
+                      Set the first location to show, "0" for "view all"
                     </td>
                   </tr>
                   <tr>
                     <td>locations</td>
-                    <td>Array &lt;points&gt;</td>
+                    <td>Array &lt;locations&gt;</td>
                     <td>[]</td>
                     <td>
-                      List of points beeing marked on the map. Every entry in this array has to be in JSON<br/>Check at the point docs page for more details
+                      List of locations beeing marked on the map. Every entry in this array has to be in JSON<br/>Check at the location docs page for more details
                     </td>
                   </tr>
                   <tr>
@@ -709,7 +705,7 @@ new Locate({
                     <td>boolean</td>
                     <td>true</td>
                     <td>
-                      If <strong><em>false</em></strong>, markers will not be visible on the map (this overwrite the property <strong>visible</strong> of every point)
+                      If <strong><em>false</em></strong>, markers will not be visible on the map (this overwrite the property <strong>visible</strong> of every location)
                     </td>
                   </tr>
                   <tr>
@@ -749,7 +745,7 @@ new Locate({
                     </td>
                     <td>
                       Map options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a><br/>
-                      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one point
+                      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
                     </td>
                   </tr>
                   <tr>
@@ -830,37 +826,37 @@ new Locate({
                     <td>CloseInfoWindow</td>
                     <td></td>
                     <td></td>
-                    <td>Close the current infowindow, if any</td>
+                    <td>Close the current infowindow, if any open</td>
                   </tr>
                   <tr>
                     <td>ShowOnMenu</td>
                     <td>integer &lt;<strong>index</strong>&gt;</td>
                     <td>boolean</td>
-                    <td>Get if a point is on menu</td>
+                    <td>Get if a location has to be or is on menu</td>
                   </tr>
                   <tr>
                     <td>ViewOnMap</td>
                     <td>integer &lt;<strong>index</strong>&gt;</td>
                     <td></td>
-                    <td>Triggers to show a point on the map</td>
+                    <td>Triggers to show a location on map</td>
                   </tr>
                   <tr>
-                    <td>SetMarkers</td>
-                    <td>array &lt;<strong>points</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
+                    <td>SetLocations</td>
+                    <td>array &lt;<strong>locations</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
                     <td></td>
                     <td>Replace the current locations</td>
                   </tr>
                   <tr>
-                    <td>AddMarkers</td>
-                    <td>array &lt;<strong>points</strong>&gt; | object &lt;<strong>point</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
+                    <td>AddLocations</td>
+                    <td>array &lt;<strong>locations</strong>&gt; | object &lt;<strong>location</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
                     <td></td>
-                    <td>Add a marker or multiple markers to the current locations</td>
+                    <td>Add a location or multiple locations to the currents</td>
                   </tr>
                   <tr>
-                    <td>RemoveMarkers</td>
+                    <td>RemoveLocations</td>
                     <td>array &lt;<strong>indexes</strong>&gt; | integer &lt;<strong>index</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
                     <td></td>
-                    <td>Remove a marker or multiple markers</td>
+                    <td>Remove a location or multiple locations</td>
                   </tr>
                   <tr>
                     <td>Load</td>
@@ -888,7 +884,7 @@ new Locate({
                     <td>function</td>
                     <td></td>
                     <td>
-                      Fires before showing all the points
+                      Fires before showing all the locations
                     </td>
                   </tr>
                   <tr>
@@ -896,7 +892,7 @@ new Locate({
                     <td>function</td>
                     <td></td>
                     <td>
-                      Fires after showing all the points
+                      Fires after showing all the locations
                     </td>
                   </tr>
                   <tr>
@@ -904,7 +900,7 @@ new Locate({
                     <td>function</td>
                     <td>(index, marker, content){}</td>
                     <td>
-                      Fires before showing the current triggered point
+                      Fires before showing the current triggered location
                     </td>
                   </tr>
                   <tr>
@@ -912,7 +908,7 @@ new Locate({
                     <td>function</td>
                     <td>(index, marker, content){}</td>
                     <td>
-                      Fires after showing the current triggered point
+                      Fires after showing the current triggered location
                     </td>
                   </tr>
                   <tr>
@@ -980,7 +976,7 @@ new Locate({
         </li>
 
 
-        <li class="docs" id="PointsdocsTab">
+        <li class="docs" id="LocationsdocsTab">
           <section class="row">
             <h2 class="four columns mobile-two">Options</h2>
             <div class="four columns mobile-two">
@@ -1082,18 +1078,18 @@ html_checks.prototype.getHtml = function() {
     var self = this,
         html = '';
 
-    //if more than one point
+    //if more than one location
     if(this.l.ln>1) {
         html += '&lt;div class="checkbox controls '+this.l.o.controls_cssclass+'"&gt;';
 
         //check "view all" link
-        //use ShowOnMenu(index) to know if a point has to appear on menu
+        //use ShowOnMenu(index) to know if a location has to appear on menu
         if(this.l.ShowOnMenu(this.l.view_all_key)) {
             html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="'
                  +this.l.view_all_key+'"/&gt;'+this.l.o.view_all_text+'&lt;/label&gt;';
         }
 
-        //iterate the points
+        //iterate the locations
         for (a = 0; a &lt; this.l.ln; a++) {
             if(this.l.ShowOnMenu(a)) 
               html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="'+(a+1)+'"/&gt;' 
@@ -1104,7 +1100,7 @@ html_checks.prototype.getHtml = function() {
 
     this.html_element = $('&lt;div class="wrap_controls"&gt;&lt;/div&gt;').append(html);
 
-    //bind events to focus on change
+    //event on change
     //use ViewOnMap(index) to trigger the marker on map
     this.html_element.find('input[type=radio]').bind('change', function() {
         self.l.ViewOnMap(this.value); 
@@ -1280,7 +1276,8 @@ var LocsD = [
 
   <script src="javascripts/foundation.min.js"></script>
   <script src="javascripts/prettify.js"></script>
-  <script src="src/locate.js"></script>
+
+  <script src="src/locate.min.js"></script>
 
   <script src="javascripts/app.js"></script>
   

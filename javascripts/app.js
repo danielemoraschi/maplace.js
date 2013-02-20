@@ -1,5 +1,6 @@
 var locate, bigdata;
 
+//Mixed / Ajax Example
 function showGroup(index) {
   var el = $('#g'+index);
   $('#mixed li').removeClass('active');
@@ -23,16 +24,28 @@ function showGroup(index) {
     $.fn.foundationMediaQueryViewer ? $doc.foundationMediaQueryViewer() : null;
     $.fn.foundationTabs             ? $doc.foundationTabs() : null;
 
+    if (Modernizr.touch && !window.location.hash) {
+      $(window).load(function () {
+        setTimeout(function () {
+          window.scrollTo(0, 1);
+        }, 0);
+      });
+    }
+
     prettyPrint();
 
+
+    //Just the map
     new Locate().Load();
 
+    //Simple Example, dropdown on map
     new Locate({
       map_div: '#gmap-2',
       controls_title: 'Choose a location:',
       locations: LocsA
     }).Load();
 
+    //Simple Example, menu on map
     new Locate({
       map_div: '#gmap-3',
       controls_type: 'list',
@@ -40,6 +53,7 @@ function showGroup(index) {
       locations: LocsB
     }).Load();
 
+    //Simple Example, external menu
     new Locate({
       map_div: '#gmap-4',
       controls_type: 'list',
@@ -50,6 +64,7 @@ function showGroup(index) {
       locations: LocsA.concat(LocsB)
     }).Load();
     
+    //Tabs Example
     new Locate({
       map_div: '#gmap-5',
       controls_div: '#controls-5',
@@ -64,6 +79,7 @@ function showGroup(index) {
       }
     }).Load();
 
+    //Polyline Example
     new Locate({
       map_div: '#gmap-6',
       controls_div: '#controls-6',
@@ -76,6 +92,7 @@ function showGroup(index) {
       type: 'polyline'
     }).Load();
 
+    //Directions route Example
     new Locate({
       map_div: '#gmap-7',
       generate_controls: false,
@@ -89,6 +106,7 @@ function showGroup(index) {
       }
     }).Load();
 
+    //Polygon Example
     new Locate({
       map_div: '#gmap-8',
       controls_div: '#controls-8',
@@ -101,12 +119,12 @@ function showGroup(index) {
       draggable: true
     }).Load();
 
+    //Mixed / Ajax Example
     $('#mixed a').click(function(e) {
       e.preventDefault();
       var index = $(this).attr('data-load');
       showGroup(index);
     });
-
     locate = new Locate({
       map_div: '#gmap-9',
       controls_div: '#controls-9',
@@ -116,28 +134,21 @@ function showGroup(index) {
     });
     showGroup(0);
 
+    //Big Data Example
     bigdata = new Locate({
       map_div: '#gmap-10',
       show_infowindows: false,
       locations: big4k
     });
-
     $('#load_bigdata').click(function(e) {
       e.preventDefault();
-      $('#panel').fadeOut('fast', function() {
-        $('#gmap-10').fadeIn();
+      $('#panel').fadeOut(200, function() {
+        $('#gmap-10').fadeIn(200);
         bigdata.Load();
       });
     });
 
   });
 
-  if (Modernizr.touch && !window.location.hash) {
-    $(window).load(function () {
-      setTimeout(function () {
-        window.scrollTo(0, 1);
-      }, 0);
-    });
-  }
 
 })(jQuery, this);

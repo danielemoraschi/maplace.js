@@ -4,6 +4,9 @@
     /**
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
+    *
+    * @author   Daniele Moraschi
+    * @version  1.0
     */
 
     var html_dropdown,
@@ -145,6 +148,14 @@
 
     Locate = (function() {
 
+        /**
+        * Create a new instance of Locate
+        *
+        * @class Locate
+        * @return {Locate} Returns a new Locate
+        * @type {Object}
+        * @constructor  
+        */
         function Locate(args) {
         	this.errors = [];
             this.initialized = false;
@@ -341,11 +352,11 @@
 
             polyline: function () {
                 var self = this,
-                    a = 0,
+                    a,
                     latlng,
                     path = [];
 
-                for (a; a<this.ln; a++) {
+                for (a = 0; a < this.ln; a++) {
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     path.push(latlng);
 
@@ -363,11 +374,11 @@
 
             polygon: function () {
                 var self = this,
-                    a = 0,
+                    a,
                     latlng,
                     path = [];
 
-                for (a; a<this.ln; a++) {
+                for (a = 0; a < this.ln; a++) {
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     path.push(latlng);
 
@@ -390,7 +401,7 @@
 
             directions: function () {
                 var self = this,
-                    a = 0,
+                    a,
                     stopover,
                     latlng,
                     origin,
@@ -398,7 +409,7 @@
                     waypoints = [],
                     distance = 0;
 
-                for (a; a<this.ln; a++) {
+                for (a = 0; a < this.ln; a++) {
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     if (a===0) {
                         origin = latlng;
@@ -585,7 +596,8 @@
 
 
 
-        /****** // ******/
+        /////////////////////////////////////////////////////////////////////////
+
 
         Locate.prototype.AddControl = function (name, func) {
             if (!name) {
@@ -648,7 +660,7 @@
             this.debug('Locate.ViewOnMap');
         };
 
-        Locate.prototype.SetMarkers = function (locs, reload) {
+        Locate.prototype.SetLocations = function (locs, reload) {
             this.o.locations = locs;
 
             if (reload) {
@@ -656,7 +668,7 @@
             }
         };
 
-        Locate.prototype.AddMarkers = function (locs, reload) {
+        Locate.prototype.AddLocations = function (locs, reload) {
             var self = this;
 
             if ($.isArray(locs)) {
@@ -674,7 +686,7 @@
             }
         };
 
-        Locate.prototype.RemoveMarkers = function (locs, reload) {
+        Locate.prototype.RemoveLocations = function (locs, reload) {
             var self = this, 
                 k = 0;
 
@@ -746,7 +758,6 @@
     else {
         window.Locate = Locate;
     }
-
 
 })(jQuery, this, google);
 
