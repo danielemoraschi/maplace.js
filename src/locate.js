@@ -17,6 +17,8 @@
         html_ullist,
         Locate;
 
+
+    //dropdown menu type
     html_dropdown = {
         activateCurrent: function (index) {
             this.html_element.find('select').val(index);
@@ -63,6 +65,7 @@
     };
 
 
+    //ul list menu type
     html_ullist = {
         html_a: function (i, hash, title) {
             var self = this,
@@ -127,6 +130,7 @@
     };
 
 
+
     Locate = (function() {
 
         /**
@@ -139,6 +143,9 @@
         	this.errors = [];
             this.initialized = false;
         	this.dev = true;
+            this.markers = [];
+            this.oMap = false;
+
         	this.infowindow;
             this.ln = 0;
         	this.oMap = false;
@@ -155,6 +162,7 @@
             this.directionsService = null;
             this.directionsDisplay = null;
 
+            //default options
         	this.o = {
                 map_div: '#gmap',
         	    controls_div: '#controls',
@@ -194,6 +202,8 @@
                 show_infowindows: true,
                 show_markers: true,
         	    infowindow_type: 'bubble',
+
+                //events
                 beforeViewAll: function () {},
                 afterViewAll: function () {},
                 beforeShowCurrent: function (index, location, marker) {},
@@ -207,23 +217,31 @@
                 onPolylineClick: function (obj) {}
         	};
 
+            //adds the menus
             this.AddControl('dropdown', html_dropdown);    
             this.AddControl('list', html_ullist);
+
+            //init
             this._init(args, true);
         }
 
+        //loads the options
         Locate.prototype._init = function (args, construct) {
             $.extend(true, this.o, args);
 
+            //store the locations length
             this.ln = this.o.locations.length;
 
+            //update locations with commons
             for (var i=0; i < this.ln; i++) {
                 $.extend(this.o.locations[i], this.o.commons);
             }
         };
 
+        //where to store the menus
         Locate.prototype.controls = {};
 
+        //initialize google map object
         Locate.prototype.create_objMap = function () {
             var self = this;
 
@@ -234,6 +252,7 @@
                         overflow: 'hidden'
                     });
                     
+                    //create the container div into map_div
                     this.canvas_map = $('<div>').addClass('canvas_map').css({
                         width: this.map_div.width(),
                         height: this.map_div.height()
@@ -243,17 +262,21 @@
                 } 
                 catch(err) { this.errors.push(err.toString()); }
             }
+
+            //if already initialized loads the new options
             else {
                 self.oMap.setOptions(this.o.map_options);
             }
 
-            this.debug('Locate.create_objMap');
+            this.debug('01');
         };
 
+        //adds markers to the map
         Locate.prototype.add_markers_to_objMap = function () {
-            var a = 0, 
+            var a = 0,
                 type = this.o.type || 'marker';
 
+            //switch how to display the locations
             switch (type) {
                 case 'marker':
                     for (a; a < this.ln; a++) {
@@ -266,14 +289,15 @@
             }
         };
 
+        //wrapper for the map types
         Locate.prototype.create = {
 
+            //single marker
             marker: function (index) { 
                 var self = this,
                     point = this.o.locations[index],
                     html = point.html || '',
-                    marker, 
-                    a, 
+                    marker, a, 
                     point_infow,
                     latlng = new google.maps.LatLng(point.lat, point.lon),
                     orig_visible = point.visible===false ? false : true;
@@ -282,6 +306,7 @@
                     position: latlng,
                     map: this.oMap,
                     zIndex: 10000,
+                    //temporary overwite visible property
                     visible: (this.o.show_markers===false ? false : orig_visible)
                 });
 
@@ -293,49 +318,61 @@
                     });
                 }
 
-                marker = new google.maps.Marker( point );
+                //create the marker and add click event
+                marker = new google.maps.Marker(point);
                 a = google.maps.event.addListener(marker, 'click', function () {
 
                     self.o.beforeShowCurrent(index, point, marker);
 
+                    //show infowindow?
                     point_infow = point.show_infowindows===false ? false : true;
                     if (self.o.show_infowindows && point_infow) {
                         self.open_infowindow(index, marker);
                     }
+
+                    //pan and zoom the map
                     self.oMap.panTo(latlng);
                     if (point.zoom) {
                         self.oMap.setZoom(point.zoom);
                     }
 
+                    //activate related menu link
                     if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {
                         self.current_control.activateCurrent.call(self, index+1);
                     }
+
+                    //update current location index
                     self.current_index = index;
 
                     self.o.afterShowCurrent(index, point, marker);
                 });
-
+                
+                //extends bounds with this location
                 this.oBounds.extend(latlng);
+
+                //store the new marker
                 this.markers.push(marker);
 
                 this.o.afterCreateMarker(index, point, marker);
 
+                //restore the property visible
                 point.visible = orig_visible;
 
                 return marker;
             },
 
 
+            //polyline mode
             polyline: function () {
                 var self = this,
                     a,
                     latlng,
                     path = [];
 
+                //create the path and location marker
                 for (a = 0; a < this.ln; a++) {
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     path.push(latlng);
-
                     this.create.marker.call(this, a);
                 }
 
@@ -348,16 +385,17 @@
             },
 
 
+            //polygon mode
             polygon: function () {
                 var self = this,
                     a,
                     latlng,
                     path = [];
 
+                //create the path and location marker
                 for (a = 0; a < this.ln; a++) {
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
                     path.push(latlng);
-
                     this.create.marker.call(this, a);
                 }
 
@@ -375,6 +413,7 @@
             },
 
 
+            //directions mode
             directions: function () {
                 var self = this,
                     a,
@@ -385,14 +424,19 @@
                     waypoints = [],
                     distance = 0;
 
+                //create the waypoints and location marker
                 for (a = 0; a < this.ln; a++) {
                     latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
+
+                    //first location start point
                     if (a===0) {
                         origin = latlng;
                     }
+                    //last location end point
                     else if (a===(this.ln-1)) {
                         destination = latlng;
                     }
+                    //waypoints in the middle
                     else {
                         stopover = this.o.locations[a].stopover===true ? true : false;
                         waypoints.push({
@@ -414,6 +458,7 @@
 
                 this.directionsDisplay.setMap(this.oMap);
 
+                //show the directions panel
                 if (this.o.directions_panel) {
                     this.o.directions_panel = $(this.o.directions_panel);
                     this.directionsDisplay.setPanel(this.o.directions_panel.get(0));
@@ -427,16 +472,18 @@
                 }
 
                 this.directionsService.route(this.o.directions_options, function (result, status) {
+                    //when directions found
                     if (status == google.maps.DirectionsStatus.OK) {
                         distance = self.compute_distance(result);
                         self.directionsDisplay.setDirections(result);
                     }
-
                     self.o.afterRoute(distance, status, result);
                 });
             }
         };
 
+
+        //gets distance of the route
         Locate.prototype.compute_distance = function (result) {
             var total = 0,
                 i,
@@ -450,7 +497,10 @@
             return total;
         };
 
+
+        //wrapper for the infowindow types
         Locate.prototype.type_to_open = {
+            //google default infowindow
         	bubble: function (location) {
         		this.infowindow = new google.maps.InfoWindow({
                     content: location.html||''
@@ -458,11 +508,14 @@
         	}
         };
 
+        //opens infowindow
         Locate.prototype.open_infowindow = function (index, marker) {
+            //close if any open
             this.CloseInfoWindow();
             var point = this.o.locations[index],
                 type = point.type || this.o.infowindow_type;
 
+            //show if content and valid infowindow type provided
             if (point.html && this.type_to_open[type]) {
                 this.o.beforeOpenInfowindow(index, point, marker);
                 this.type_to_open[type].call(this, point);
@@ -471,6 +524,7 @@
             }
         };
 
+        //gets the html for the menu
         Locate.prototype.get_html_controls = function () {
             if(this.controls[this.o.controls_type] && this.controls[this.o.controls_type].getHtml) {
                 this.current_control = this.controls[this.o.controls_type];
@@ -480,13 +534,17 @@
             return '';
         };
 
+        //creates menu
         Locate.prototype.generate_controls = function () {
+            //append menu on the div container
             if (!this.o.controls_on_map) {
                 this.controls_wrapper.empty();
                 this.controls_wrapper.append( this.get_html_controls() );
                 return;
             }
 
+            //else 
+            //controls in map
             var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>').css(this.o.controls_applycss ? {
                 margin: '5px'
             } : {}),
@@ -504,22 +562,18 @@
 
             cntr.append(inner);
 
+            //attach controls
             this.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].push(cntr.get(0));
         };
 
+        //resets obj map, markers, bounds, listeners, controllers
         Locate.prototype.reset_map = function () {      
         	var self = this,
                 i = 0;
 
-            if (this.Polyline) {
-                this.Polyline.setMap(null);
-            }
-            if (this.Polygon) {
-                this.Polygon.setMap(null);
-            }
-            if (this.directionsDisplay) {
-                this.directionsDisplay.setMap(null);
-            }
+            this.Polyline && this.Polyline.setMap(null);
+            this.Polygon && this.Polygon.setMap(null);
+            this.directionsDisplay && this.directionsDisplay.setMap(null);
 
             if (this.markers) {
                 for (i in this.markers) {
@@ -539,13 +593,16 @@
 
             this.oBounds = new google.maps.LatLngBounds();
 
-            this.debug('Locate.reset_map');
+            this.debug('02');
         }; 
 
+        //perform the first view of the map
         Locate.prototype.perform_load = function () {
+            //one location
             if (this.ln == 1) {
                 this.ViewOnMap(1); 
             }
+            //no locations
             else if (this.ln === 0) {
                 if (this.o.map_options.set_center) {
                     this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
@@ -554,9 +611,10 @@
                 }
                 this.oMap.setZoom(this.o.map_options.zoom);
             }
+            //n locations
             else {
                 this.oMap.fitBounds(this.oBounds);
-
+                //check the start option
                 if (typeof(this.o.start-0) == 'number' && this.o.start > 0 && this.o.start <= this.ln) {
                     this.ViewOnMap(this.o.start); 
                 } else {
@@ -577,6 +635,7 @@
         /////////////////////////////////////////////////////////////////////////
 
 
+        //add a custom menu to the class
         Locate.prototype.AddControl = function (name, func) {
             if (!name || !func) {
                 return false;
@@ -585,6 +644,7 @@
             return true;
         };
 
+        //close the opened infowindow if any
         Locate.prototype.CloseInfoWindow = function () {
             if (this.infowindow && (this.current_index || this.current_index===0)) {
                 this.o.beforeCloseInfowindow(this.current_index, this.o.locations[this.current_index]);        
@@ -594,6 +654,7 @@
             }
         };
 
+        //check if a location has to be shown on menu
         Locate.prototype.ShowOnMenu = function (index) {
             if (index == this.view_all_key && this.o.view_all && this.ln > 1) {
                 return true;
@@ -606,23 +667,23 @@
                     return true;
                 }
             }
-
             return false;
         };
 
+        //triggers to show a location on map
         Locate.prototype.ViewOnMap = function (index) {
+            //view all
             if (index == this.view_all_key) {
                 this.o.beforeViewAll();
                 this.current_index = index;
-                if (this.o.locations.length > 0 && this.o.generate_controls) {
-                    if(this.current_control && this.current_control.activateCurrent) {
-                        this.current_control.activateCurrent.apply(this, [index]);
-                    }
+                if (this.o.locations.length > 0 && this.o.generate_controls && this.current_control && this.current_control.activateCurrent) {
+                    this.current_control.activateCurrent.apply(this, [index]);
                 }
                 this.oMap.fitBounds(this.oBounds);
                 this.CloseInfoWindow();
                 this.o.afterViewAll();
             }
+            //specific location
             else {
                 index = parseInt(index, 10);
                 if (typeof(index-0) == 'number' && index > 0 && index <= this.ln) {
@@ -632,17 +693,16 @@
                     catch(err) { this.errors.push(err.toString()); }
                 }
             }
-            this.debug('Locate.ViewOnMap');
+            this.debug('03');
         };
 
+        //replace current locations
         Locate.prototype.SetLocations = function (locs, reload) {
             this.o.locations = locs;
-
-            if (reload) {
-                this.Load();
-            }
+            reload && this.Load();
         };
 
+        //add a location or many locations
         Locate.prototype.AddLocations = function (locs, reload) {
             var self = this;
 
@@ -651,16 +711,14 @@
                     self.o.locations.push( value );
                 });
             }
-
             if ($.isPlainObject(locs)) {
                 this.o.locations.push( locs );
             }
 
-            if (reload) {
-                this.Load();
-            }
+            reload && this.Load();
         };
 
+        //remove a location or many locations
         Locate.prototype.RemoveLocations = function (locs, reload) {
             var self = this, 
                 k = 0;
@@ -679,21 +737,26 @@
                 }
             }
 
-            if (reload) {
-                this.Load();
-            }
+            reload && this.Load();
         };
 
-        Locate.prototype.Load = function (opt) {
-            this._init(opt);
+        //creates the map and menu
+        Locate.prototype.Load = function (args) {
+            //update currents options if args
+            this._init(args);
             
+            //store jquery references
             this.map_div = $(this.o.map_div);
             this.controls_wrapper = $(this.o.controls_div);
 
+            //reset/init google map objects
             this.reset_map();
             this.create_objMap();
+
+            //add markers
             this.add_markers_to_objMap();
             
+            //generate controls
             if (this.ln > 1 && this.o.generate_controls) {
                 this.generate_controls();
             }
@@ -702,15 +765,19 @@
             }
 
             var self = this;
+
+            //first call
             if (!this.initialized) {
                 google.maps.event.addListenerOnce(this.oMap, 'idle', function () {
                     self.perform_load();
                 });
             }
+            //any others call
             else {
                 this.perform_load();
             }
 
+            //adapt the div size on resize
             google.maps.event.addListener(this.oMap, 'resize', function () {
                 self.canvas_map.css({
                     width: self.map_div.width(),

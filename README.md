@@ -25,20 +25,19 @@ new Locate({
 ### Locations Array
 ```javascript
 var data = [{
-        lat: 45.9,
-        lon: 10.9,
-        title: 'Title A1',
-        html: '<h3>Content A1</h3>',
-        zoom: 8,
-        icon: 'http://www.google.com/mapfiles/markerA.png'
-    },{
-        lat: 44.8,
-        lon: 1.7,
-        title: 'Title B1',
-        html: '<h3>Content B1</h3>',
-        icon: 'http://www.google.com/mapfiles/markerB.png',
-        show_infowindow: false
-    }
+	    lat: 45.9,
+	    lon: 10.9,
+	    title: 'Title A1',
+	    html: '<h3>Content A1</h3>',
+	    zoom: 8,
+	    icon: 'http://www.google.com/mapfiles/markerA.png'
+	},{
+	    lat: 44.8,
+	    lon: 1.7,
+	    title: 'Title B1',
+	    html: '<h3>Content B1</h3>',
+	    show_infowindow: false
+	}
 ];
 ```
 
@@ -117,7 +116,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If<strong>false</strong>, defaults styles to the menu will not be applied
+	      If <strong>false</strong>, default style to the menu will not be applied
 	    </td>
 	  </tr>
 	  <tr>
@@ -133,7 +132,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If <strong>false</strong> the link "view all" will not be created
+	      If <strong>false</strong> the "view all" link will not be created
 	    </td>
 	  </tr>
 	  <tr>
@@ -141,7 +140,7 @@ var data = [{
 	    <td>string</td>
 	    <td>View All</td>
 	    <td>
-	      Set the text of the link "view all"
+	      Set the text of the "view all" link
 	    </td>
 	  </tr>
 	  <tr>
@@ -166,7 +165,7 @@ var data = [{
 	    <td>object</td>
 	    <td>{}</td>
 	    <td>
-	      Overwrite every locations with a set of commons property
+	      Add or overwrite every location with a set of commons property
 	    </td>
 	  </tr>
 	  <tr>
@@ -205,7 +204,7 @@ var data = [{
 		</code>
 		</td> 	
 	    <td>
-	      Map options object, as defined by Google
+	      Map options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a><br/>
 	      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
 	    </td>
 	  </tr>
@@ -224,7 +223,7 @@ var data = [{
 		</code>
 	    </td>
 	    <td>
-	      Stroke options object, as defined by Google
+	      Stroke options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>
 	    </td>
 	  </tr>
 	  <tr>
@@ -243,7 +242,7 @@ var data = [{
 		</code>
 	    </td>
 	    <td>
-	      Direction options object, as defined by Google
+	      Direction options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#DirectionsRequest" target="_blank">Google</a>
 	    </td>
 	  </tr>
 	  <tr>
@@ -435,6 +434,6 @@ var data = [{
 Locate.js requires jQuery and Google Maps Library v3.
 
 ## Source code
-All efforts have been made to keep the source as clean and readable as possible.</br>
+All efforts have been made to keep the source as clean and readable as possible.<br/>
 Locate.js is released under an MIT License.
 
