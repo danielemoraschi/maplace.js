@@ -101,14 +101,13 @@
                 padding: 0,
                 listStyleType: 'none'
             } : {}),
-            title,
-            a = 0;
+            title, a;
 
             if (this.ShowOnMenu(this.view_all_key)) {
                 html.append($('<li></li>').append(html_ullist.html_a.call(this, false, this.view_all_key, this.o.view_all_text)));
             }
 
-            for (a; a < this.ln; a++) {
+            for (a = 0; a < this.ln; a++) {
                 if (this.ShowOnMenu(a)) {
                     html.append($('<li></li>').append(html_ullist.html_a.call(this, a)));
                 }
@@ -146,15 +145,15 @@
             this.markers = [];
             this.oMap = false;
 
-        	this.infowindow;
+        	this.infowindow = null;
             this.ln = 0;
         	this.oMap = false;
             this.oBounds = null;
             this.map_div = null;
             this.canvas_map = null;
-            this.controls_wrapper;
-            this.current_control;
-            this.current_index;
+            this.controls_wrapper = null;
+            this.current_control = null;
+            this.current_index = null;
             this.view_all_key = 'all';
             this.markers = [];
             this.Polyline = null;
@@ -277,13 +276,13 @@
 
         //adds markers to the map
         Locate.prototype.add_markers_to_objMap = function () {
-            var a = 0,
+            var a,
                 type = this.o.type || 'marker';
 
             //switch how to display the locations
             switch (type) {
                 case 'marker':
-                    for (a; a < this.ln; a++) {
+                    for (a = 0; a < this.ln; a++) {
                         this.create.marker.call(this, a);
                     }
                     break;
@@ -804,4 +803,3 @@
     }
 
 })(jQuery, this, google);
-
