@@ -84,6 +84,9 @@ var LocsB = [
 ];
 
 
+var LocsAB = LocsA.concat(LocsB);
+
+
 var LocsC = [
     {
         lat: 45.4654,

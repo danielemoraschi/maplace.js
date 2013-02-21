@@ -27,9 +27,16 @@
 
   <header>
     <div class="row"> 
-      <div class="four columns">
-        <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Himap.js</a></h1>
-        <p>A Google Maps Helper.</p>
+      <div class="four columns mobile-two">
+        <h1><a href="" title="Locate.js - Google Maps Markers Helper for jQuery">Maplace.js</a></h1>
+        <p>
+          Google maps made easy.
+        </p>
+        <div class="socials">
+          <a href="https://twitter.com/share" class="twitter-share-button" data-via="_tomorro" data-hashtags="locatejs">Tweet</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          <iframe src="http://ghbtns.com/github-btn.html?user=danielemoraschi&amp;repo=Locate.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="100" height="20"></iframe>
+        </div>
         <div class="line"></div>
       </div>
     </div>
@@ -43,12 +50,18 @@
       </p>
       <p>
         <ul>
+          <li>Straightforward implementation with simple options</li>
+          <li>Can run as many map as required</li>
+          <li>No API key needed</li>
+          <li>Markers and custom icons and zoom level</li>
+          <li>Routing, Polygons and Polylines</li>
+          <li>Custom menus controls as plugin</li>
           <li>Works in all major browsers, including IE6</li>
           <li>MIT License, so do with it what you will.</li>
         </ul>
       </p>
       <div class="row"> 
-        <div class="two columns center">
+        <div class="four columns center">
           <div class="panel">
             <h2>Download
 
@@ -61,14 +74,6 @@
                 <a class="success button right" href="https://github.com/danielemoraschi/Locate.js/raw/master/src/locate.min.js" target="_blank">locate.min.js (13kb)</a>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="two columns center">
-          <div class="panel">
-            <h2></h2>
-            <a href="https://twitter.com/share" data-size="large" class="twitter-share-button" data-via="_tomorro" data-hashtags="locatejs">Tweet</a>
-            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-            <iframe src="http://ghbtns.com/github-btn.html?user=danielemoraschi&amp;repo=Locate.js&amp;type=watch&amp;count=true&size=large" allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30"></iframe>
           </div>
         </div>
       </div>
@@ -188,11 +193,10 @@ new Locate({
 <h3>JS</h3>
 <pre class="prettyprint">
 new Locate({
-  locations: LocsA.concat(LocsB),
+  locations: LocsAB,
   map_div: '#gmap-menu',
-  controls_on_map: false,
-  view_all: false,
-  start: 3
+  controls_type: 'list',
+  controls_on_map: false
 }).Load(); 
 </pre>
 <h3>Html</h3>
@@ -333,10 +337,10 @@ new Locate({
 <h3>JS</h3>
 <pre class="prettyprint">
 new Locate({
+  locations: LocsD,
   map_div: '#gmap-route',
   generate_controls: false,
   show_markers: false,
-  locations: LocsD,
   type: 'directions',
   draggable: true,
   directions_panel: '#route',
@@ -378,10 +382,9 @@ new Locate({
   locations: LocsC,
   map_div: '#gmap-polygon',
   controls_div: '#controls-polygon',
-  controls_type: 'list',
   generate_controls: false,
-  show_infowindow: false,
   show_markers: false,
+  locations: LocsC,
   type: 'polygon',
   draggable: true
 }).Load(); 
@@ -1203,6 +1206,8 @@ var LocsB = [
       zoom: 6
   }
 ];
+
+var LocsAB = LocsA.concat(LocsB);
 
 var LocsC = [
   {

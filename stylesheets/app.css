@@ -5,7 +5,6 @@
 header {
 	border-top: 10px solid #a72200;
 	background: #fff;
-	height: 150px;
 	color: #222;
 	margin-bottom: 20px;
 }
@@ -175,6 +174,13 @@ select {
 	vertical-align: middle;
 }
 
+.socials {
+	position: absolute;
+	bottom: 20px;
+	right: -10px;
+}
+
+
 @media only screen and (max-width: 767px) {
 
 	h2 { 
@@ -200,6 +206,9 @@ select {
 		height: auto;
 	}
 
+	.socials {
+		position: static;
+	}
 }
 
 

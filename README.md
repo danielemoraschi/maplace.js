@@ -1,5 +1,5 @@
 # Locate.js 
-A Google Maps Helper for jQuery.
+A Google Maps Helper.
 Helps you to embed Google Maps into your website, quickly create markers and menu of locations for the map.
 
 ## Demo

@@ -58,10 +58,8 @@ function showGroup(index) {
       map_div: '#gmap-4',
       controls_type: 'list',
       controls_cssclass: 'side-nav',
-      start: 3,
       controls_on_map: false,
-      view_all: false,
-      locations: LocsA.concat(LocsB)
+      locations: LocsAB
     }).Load();
     
     //Tabs Example
@@ -110,11 +108,9 @@ function showGroup(index) {
     new Locate({
       map_div: '#gmap-8',
       controls_div: '#controls-8',
-      controls_type: 'list',
       generate_controls: false,
-      show_infowindows: false,
-      locations: LocsC,
       show_markers: false,
+      locations: LocsC,
       type: 'polygon',
       draggable: true
     }).Load();
