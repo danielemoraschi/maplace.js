@@ -235,6 +235,10 @@
             //update locations with commons
             for (var i=0; i < this.ln; i++) {
                 $.extend(this.o.locations[i], this.o.commons);
+                if(this.o.locations[i].html) {
+                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i);
+                    this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
+                }
             }
         };
 
@@ -332,9 +336,7 @@
 
                     //pan and zoom the map
                     self.oMap.panTo(latlng);
-                    if (point.zoom) {
-                        self.oMap.setZoom(point.zoom);
-                    }
+                    point.zoom && self.oMap.setZoom(point.zoom);
 
                     //activate related menu link
                     if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {

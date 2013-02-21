@@ -132,8 +132,11 @@ function showGroup(index) {
     //Big Data Example
     bigdata = new Locate({
       map_div: '#gmap-10',
-      show_infowindows: false,
-      locations: big4k
+      locations: big4k,
+      commons: {
+        zoom: 8,
+        html: '%index'
+      }
     });
     $('#load_bigdata').click(function(e) {
       e.preventDefault();

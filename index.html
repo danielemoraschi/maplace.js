@@ -500,7 +500,11 @@ showGroup(0);
 bigdata = new Locate({
   map_div: '#gmap-big',
   show_infowindows: false,
-  locations: big4k
+  locations: big4k,
+  commons: {
+    zoom: 8,
+    html: '%index'
+  }
 });
 
 $('#load_bigdata').click(function(e) {
@@ -1014,7 +1018,11 @@ new Locate({
                   <tr>
                     <td>html</td>
                     <td>string</td>
-                    <td>Html content for the infowindow</td>
+                    <td>
+                      Html content for the infowindow<br/>
+                      String <strong>%index</strong> will be replaced with the location index<br/>
+                      String <strong>%title</strong> will be replaced with the location title if exist
+                    </td>
                   </tr>
                   <tr>
                     <td>icon</td>
