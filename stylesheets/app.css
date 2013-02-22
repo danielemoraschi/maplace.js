@@ -20,6 +20,10 @@ header h1 a {
 	color: #222;
 }
 
+ul, ol, dl {
+	margin-bottom: 20px
+}
+
 .gmap {
 	height: 300px;
 	width: 100%;

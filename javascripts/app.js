@@ -1,4 +1,4 @@
-var locate, bigdata;
+var maplace, bigdata;
 
 //Mixed / Ajax Example
 function showGroup(index) {
@@ -6,7 +6,7 @@ function showGroup(index) {
   $('#mixed li').removeClass('active');
   $(el).parent().addClass('active');
   $.getJSON('data/ajax.php', { type: index }, function(data) {
-    locate.Load({
+    maplace.Load({
       locations: data.points,
       view_all_text: data.title,
       type: data.type
@@ -36,17 +36,17 @@ function showGroup(index) {
 
 
     //Just the map
-    new Locate().Load();
+    new Maplace().Load();
 
     //Simple Example, dropdown on map
-    new Locate({
+    new Maplace({
       map_div: '#gmap-2',
       controls_title: 'Choose a location:',
       locations: LocsA
     }).Load();
 
     //Simple Example, menu on map
-    new Locate({
+    new Maplace({
       map_div: '#gmap-3',
       controls_type: 'list',
       controls_title: 'Choose a location:',
@@ -54,7 +54,7 @@ function showGroup(index) {
     }).Load();
 
     //Simple Example, external menu
-    new Locate({
+    new Maplace({
       map_div: '#gmap-4',
       controls_type: 'list',
       controls_cssclass: 'side-nav',
@@ -63,7 +63,7 @@ function showGroup(index) {
     }).Load();
     
     //Tabs Example
-    new Locate({
+    new Maplace({
       map_div: '#gmap-5',
       controls_div: '#controls-5',
       start: 1,
@@ -78,7 +78,7 @@ function showGroup(index) {
     }).Load();
 
     //Polyline Example
-    new Locate({
+    new Maplace({
       map_div: '#gmap-6',
       controls_div: '#controls-6',
       controls_cssclass: 'side-nav',
@@ -91,7 +91,7 @@ function showGroup(index) {
     }).Load();
 
     //Directions route Example
-    new Locate({
+    new Maplace({
       map_div: '#gmap-7',
       generate_controls: false,
       show_markers: false,
@@ -105,7 +105,7 @@ function showGroup(index) {
     }).Load();
 
     //Polygon Example
-    new Locate({
+    new Maplace({
       map_div: '#gmap-8',
       controls_div: '#controls-8',
       generate_controls: false,
@@ -121,7 +121,7 @@ function showGroup(index) {
       var index = $(this).attr('data-load');
       showGroup(index);
     });
-    locate = new Locate({
+    maplace = new Maplace({
       map_div: '#gmap-9',
       controls_div: '#controls-9',
       controls_type: 'list',
@@ -130,7 +130,7 @@ function showGroup(index) {
     showGroup(0);
 
     //Big Data Example
-    bigdata = new Locate({
+    bigdata = new Maplace({
       map_div: '#gmap-10',
       locations: big4k,
       commons: {

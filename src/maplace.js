@@ -2,12 +2,12 @@
     'use strict';
 
     /**
-    * Locate.js 0.1.0
+    * Maplace.js 0.1.0
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
-    * http://locatejs.org
+    * http://maplacejs.org
     *
     * @version  0.1.0
     */
@@ -15,7 +15,7 @@
 
     var html_dropdown,
         html_ullist,
-        Locate;
+        Maplace;
 
 
     //dropdown menu type
@@ -130,24 +130,24 @@
 
 
 
-    Locate = (function() {
+    Maplace = (function() {
 
         /**
-        * Create a new instance of Locate
-        * @class Locate
+        * Create a new instance of Maplace
+        * @class Maplace
         * @constructor  
         */
-        function Locate(args) {
+        function Maplace(args) {
             this.VERSION = '0.1.0';
-        	this.errors = [];
+            this.errors = [];
             this.initialized = false;
-        	this.dev = true;
+            this.dev = true;
             this.markers = [];
             this.oMap = false;
 
-        	this.infowindow = null;
+            this.infowindow = null;
             this.ln = 0;
-        	this.oMap = false;
+            this.oMap = false;
             this.oBounds = null;
             this.map_div = null;
             this.canvas_map = null;
@@ -162,11 +162,11 @@
             this.directionsDisplay = null;
 
             //default options
-        	this.o = {
+            this.o = {
                 map_div: '#gmap',
-        	    controls_div: '#controls',
-        	    generate_controls: true,
-        	    controls_type: 'dropdown',
+                controls_div: '#controls',
+                generate_controls: true,
+                controls_type: 'dropdown',
                 controls_cssclass: '',
                 controls_title: '',
                 controls_on_map: true,
@@ -175,9 +175,9 @@
                 view_all: true,
                 view_all_text: 'View All',
                 start: 0,
-        	    locations: [],
+                locations: [],
                 commons: {},
-        	    map_options: {
+                map_options: {
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     zoom: 1
                 },   
@@ -200,7 +200,7 @@
                 draggable: false,  
                 show_infowindows: true,
                 show_markers: true,
-        	    infowindow_type: 'bubble',
+                infowindow_type: 'bubble',
 
                 //events
                 beforeViewAll: function () {},
@@ -214,7 +214,7 @@
                 afterOpenInfowindow: function (index, location, marker) {},
                 afterRoute: function (distance, status, result) {},
                 onPolylineClick: function (obj) {}
-        	};
+            };
 
             //adds the menus
             this.AddControl('dropdown', html_dropdown);    
@@ -225,7 +225,7 @@
         }
 
         //loads the options
-        Locate.prototype._init = function (args, construct) {
+        Maplace.prototype._init = function (args, construct) {
             $.extend(true, this.o, args);
 
             //store the locations length
@@ -242,10 +242,10 @@
         };
 
         //where to store the menus
-        Locate.prototype.controls = {};
+        Maplace.prototype.controls = {};
 
         //initialize google map object
-        Locate.prototype.create_objMap = function () {
+        Maplace.prototype.create_objMap = function () {
             var self = this;
 
             if (!this.initialized) {
@@ -275,7 +275,7 @@
         };
 
         //adds markers to the map
-        Locate.prototype.add_markers_to_objMap = function () {
+        Maplace.prototype.add_markers_to_objMap = function () {
             var a,
                 type = this.o.type || 'marker';
 
@@ -293,7 +293,7 @@
         };
 
         //wrapper for the map types
-        Locate.prototype.create = {
+        Maplace.prototype.create = {
 
             //single marker
             marker: function (index) { 
@@ -485,7 +485,7 @@
 
 
         //gets distance of the route
-        Locate.prototype.compute_distance = function (result) {
+        Maplace.prototype.compute_distance = function (result) {
             var total = 0,
                 i,
                 myroute = result.routes[0],
@@ -500,17 +500,17 @@
 
 
         //wrapper for the infowindow types
-        Locate.prototype.type_to_open = {
+        Maplace.prototype.type_to_open = {
             //google default infowindow
-        	bubble: function (location) {
-        		this.infowindow = new google.maps.InfoWindow({
+            bubble: function (location) {
+                this.infowindow = new google.maps.InfoWindow({
                     content: location.html||''
                 });
-        	}
+            }
         };
 
         //opens infowindow
-        Locate.prototype.open_infowindow = function (index, marker) {
+        Maplace.prototype.open_infowindow = function (index, marker) {
             //close if any open
             this.CloseInfoWindow();
             var point = this.o.locations[index],
@@ -526,7 +526,7 @@
         };
 
         //gets the html for the menu
-        Locate.prototype.get_html_controls = function () {
+        Maplace.prototype.get_html_controls = function () {
             if(this.controls[this.o.controls_type] && this.controls[this.o.controls_type].getHtml) {
                 this.current_control = this.controls[this.o.controls_type];
 
@@ -536,7 +536,7 @@
         };
 
         //creates menu
-        Locate.prototype.generate_controls = function () {
+        Maplace.prototype.generate_controls = function () {
             //append menu on the div container
             if (!this.o.controls_on_map) {
                 this.controls_wrapper.empty();
@@ -568,8 +568,8 @@
         };
 
         //resets obj map, markers, bounds, listeners, controllers
-        Locate.prototype.reset_map = function () {      
-        	var self = this,
+        Maplace.prototype.reset_map = function () {      
+            var self = this,
                 i = 0;
 
             this.Polyline && this.Polyline.setMap(null);
@@ -598,7 +598,7 @@
         }; 
 
         //perform the first view of the map
-        Locate.prototype.perform_load = function () {
+        Maplace.prototype.perform_load = function () {
             //one location
             if (this.ln == 1) {
                 this.ViewOnMap(1); 
@@ -624,7 +624,7 @@
             }
         };
 
-        Locate.prototype.debug = function (msg) {
+        Maplace.prototype.debug = function (msg) {
             if (this.dev && this.errors.length) {
                 console.log(msg + ': ', this.errors);
             }
@@ -637,7 +637,7 @@
 
 
         //add a custom menu to the class
-        Locate.prototype.AddControl = function (name, func) {
+        Maplace.prototype.AddControl = function (name, func) {
             if (!name || !func) {
                 return false;
             }
@@ -646,7 +646,7 @@
         };
 
         //close the opened infowindow if any
-        Locate.prototype.CloseInfoWindow = function () {
+        Maplace.prototype.CloseInfoWindow = function () {
             if (this.infowindow && (this.current_index || this.current_index===0)) {
                 this.o.beforeCloseInfowindow(this.current_index, this.o.locations[this.current_index]);        
                 this.infowindow.close();
@@ -656,7 +656,7 @@
         };
 
         //check if a location has to be shown on menu
-        Locate.prototype.ShowOnMenu = function (index) {
+        Maplace.prototype.ShowOnMenu = function (index) {
             if (index == this.view_all_key && this.o.view_all && this.ln > 1) {
                 return true;
             }
@@ -672,7 +672,7 @@
         };
 
         //triggers to show a location on map
-        Locate.prototype.ViewOnMap = function (index) {
+        Maplace.prototype.ViewOnMap = function (index) {
             //view all
             if (index == this.view_all_key) {
                 this.o.beforeViewAll();
@@ -698,13 +698,13 @@
         };
 
         //replace current locations
-        Locate.prototype.SetLocations = function (locs, reload) {
+        Maplace.prototype.SetLocations = function (locs, reload) {
             this.o.locations = locs;
             reload && this.Load();
         };
 
         //add a location or many locations
-        Locate.prototype.AddLocations = function (locs, reload) {
+        Maplace.prototype.AddLocations = function (locs, reload) {
             var self = this;
 
             if ($.isArray(locs)) {
@@ -720,7 +720,7 @@
         };
 
         //remove a location or many locations
-        Locate.prototype.RemoveLocations = function (locs, reload) {
+        Maplace.prototype.RemoveLocations = function (locs, reload) {
             var self = this, 
                 k = 0;
 
@@ -742,7 +742,7 @@
         };
 
         //creates the map and menu
-        Locate.prototype.Load = function (args) {
+        Maplace.prototype.Load = function (args) {
             //update currents options if args
             this._init(args);
             
@@ -790,16 +790,16 @@
         };
 
 
-        return Locate;
+        return Maplace;
 
     })();
 
 
     if (typeof define == 'function' && define.amd) {
-        define(function() { return Locate; });
+        define(function() { return Maplace; });
     }
     else {
-        window.Locate = Locate;
+        window.Maplace = Maplace;
     }
 
 })(jQuery, this, google);

@@ -1,15 +1,14 @@
-# Locate.js 
-Google maps made easy.
-Locate.js helps you to add Google Maps into your website, quickly create markers and menu of locations for the map.
+# Maplace.js 
+Helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.
 
 ## Demo
 
 ## Setup
-Download the latest version of Locate.js and include the Google Maps API v3 along with jQuery.
+Download the latest version of Maplace.js and include the Google Maps API v3 along with jQuery.
 
 ### JS
 ```javascript
-new Locate({
+new Maplace({
 	locations: data,
 	controls_type: 'list',
 	controls_on_map: false
@@ -431,9 +430,9 @@ var data = [{
 </table>
 
 ## Requirements
-Locate.js requires jQuery and Google Maps Library v3.
+Maplace.js requires jQuery and Google Maps Library v3.
 
 ## Source code
 All efforts have been made to keep the source as clean and readable as possible.<br/>
-Locate.js is released under an MIT License.
+Maplace.js is released under an MIT License.
 
