@@ -118,6 +118,14 @@ var data = [{
 	      If <strong>false</strong>, default style to the menu will not be applied
 	    </td>
 	  </tr>
+      <tr>
+        <td>controls_position</td>
+        <td>string</td>
+        <td>'RIGHT_TOP'</td>
+        <td>
+          Controls position on the right, below top-right elements of the map.
+        </td>
+      </tr>
 	  <tr>
 	    <td>type</td>
 	    <td>string</td>

@@ -7,7 +7,7 @@
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
-    * http://maplacejs.org
+    * http://maplacejs.cm
     *
     * @version  0.1.0
     */
@@ -133,7 +133,7 @@
     Maplace = (function() {
 
         /**
-        * Create a new instance of Maplace
+        * Create a new instance
         * @class Maplace
         * @constructor  
         */
@@ -171,6 +171,7 @@
                 controls_title: '',
                 controls_on_map: true,
                 controls_applycss: true,
+                controls_position: google.maps.ControlPosition.RIGHT_TOP,
                 type: 'marker',
                 view_all: true,
                 view_all_text: 'View All',
@@ -235,7 +236,7 @@
             for (var i=0; i < this.ln; i++) {
                 $.extend(this.o.locations[i], this.o.commons);
                 if(this.o.locations[i].html) {
-                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i);
+                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i+1);
                     this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
                 }
             }
@@ -483,7 +484,6 @@
             }
         };
 
-
         //gets distance of the route
         Maplace.prototype.compute_distance = function (result) {
             var total = 0,
@@ -497,7 +497,6 @@
 
             return total;
         };
-
 
         //wrapper for the infowindow types
         Maplace.prototype.type_to_open = {
@@ -564,7 +563,7 @@
             cntr.append(inner);
 
             //attach controls
-            this.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].push(cntr.get(0));
+            this.oMap.controls[this.o.controls_position].push(cntr.get(0));
         };
 
         //resets obj map, markers, bounds, listeners, controllers
@@ -587,8 +586,8 @@
             }
 
             if (this.o.controls_on_map && this.oMap.controls) {
-                this.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].forEach(function (element, index) {
-                    self.oMap.controls[google.maps.ControlPosition.RIGHT_TOP].removeAt(index);
+                this.oMap.controls[this.o.controls_position].forEach(function (element, index) {
+                    self.oMap.controls[this.o.controls_position].removeAt(index);
                 });
             }
 

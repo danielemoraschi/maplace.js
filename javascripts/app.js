@@ -1,24 +1,9 @@
-var maplace, bigdata;
-
-//Mixed / Ajax Example
-function showGroup(index) {
-  var el = $('#g'+index);
-  $('#mixed li').removeClass('active');
-  $(el).parent().addClass('active');
-  $.getJSON('data/ajax.php', { type: index }, function(data) {
-    maplace.Load({
-      locations: data.points,
-      view_all_text: data.title,
-      type: data.type
-    });
-  });
-}
-
 ;(function ($, window, undefined) {
   'use strict';
 
   var $doc = $(document),
-      Modernizr = window.Modernizr;
+      Modernizr = window.Modernizr,
+      maplace, bigdata;
 
   $(document).ready(function() {
     $.fn.foundationMediaQueryViewer ? $doc.foundationMediaQueryViewer() : null;
@@ -90,9 +75,20 @@ function showGroup(index) {
       type: 'polyline'
     }).Load();
 
-    //Directions route Example
+    //Polygon Example
     new Maplace({
       map_div: '#gmap-7',
+      controls_div: '#controls-7',
+      controls_type: 'list',
+      show_markers: false,
+      locations: LocsA,
+      type: 'polygon',
+      draggable: true
+    }).Load();
+
+    //Directions route Example
+    new Maplace({
+      map_div: '#gmap-8',
       generate_controls: false,
       show_markers: false,
       locations: LocsD,
@@ -104,18 +100,19 @@ function showGroup(index) {
       }
     }).Load();
 
-    //Polygon Example
-    new Maplace({
-      map_div: '#gmap-8',
-      controls_div: '#controls-8',
-      generate_controls: false,
-      show_markers: false,
-      locations: LocsC,
-      type: 'polygon',
-      draggable: true
-    }).Load();
-
     //Mixed / Ajax Example
+    function showGroup(index) {
+      var el = $('#g'+index);
+      $('#mixed li').removeClass('active');
+      $(el).parent().addClass('active');
+      $.getJSON('data/ajax.php', { type: index }, function(data) {
+        maplace.Load({
+          locations: data.points,
+          view_all_text: data.title,
+          type: data.type
+        });
+      });
+    }
     $('#mixed a').click(function(e) {
       e.preventDefault();
       var index = $(this).attr('data-load');
@@ -134,14 +131,14 @@ function showGroup(index) {
       map_div: '#gmap-10',
       locations: big4k,
       commons: {
-        zoom: 8,
+        zoom: 5,
         html: '%index'
       }
     });
     $('#load_bigdata').click(function(e) {
       e.preventDefault();
-      $('#panel').fadeOut(200, function() {
-        $('#gmap-10').fadeIn(200);
+      $('#panel').fadeOut(10, function() {
+        $('#gmap-10').fadeIn(10);
         bigdata.Load();
       });
     });
