@@ -746,7 +746,7 @@
 
         //check if Load was called before
         Maplace.prototype.Loaded = function () {
-            return this.Loaded;
+            return this.loaded;
         };
 
         //creates the map and menu
