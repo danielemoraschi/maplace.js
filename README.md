@@ -1,4 +1,4 @@
-# Maplace.js 
+# maplace.js 
 Helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.
 
 ## Demo
