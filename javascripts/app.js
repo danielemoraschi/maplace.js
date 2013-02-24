@@ -144,7 +144,6 @@
       var index = $(this).attr('data-load');
       showGroup(index);
     });
-    
 
     //Big Data Example
     var bigdata = new Maplace({

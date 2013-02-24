@@ -744,7 +744,7 @@
             reload && this.Load();
         };
 
-        //check if Load was called before
+        //check if a Load() was already called before
         Maplace.prototype.Loaded = function () {
             return this.loaded;
         };

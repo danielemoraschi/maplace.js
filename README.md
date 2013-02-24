@@ -330,6 +330,12 @@ var data = [{
 	    <td></td>
 	    <td>Loads or update the current configuration and construct the map.</td>
 	  </tr>
+	  <tr>
+        <td>Loaded</td>
+        <td></td>
+        <td></td>
+        <td>Check if a Load() was already called before.<br/></td>
+      </tr>
 	</tbody>
 </table>
 
