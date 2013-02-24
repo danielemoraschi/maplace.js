@@ -334,7 +334,7 @@ var data = [{
         <td>Loaded</td>
         <td></td>
         <td></td>
-        <td>Check if a Load() was already called before.<br/></td>
+        <td>Check if a Load() was already called.<br/></td>
       </tr>
 	</tbody>
 </table>
