@@ -140,7 +140,7 @@
         function Maplace(args) {
             this.VERSION = '0.1.0';
             this.errors = [];
-            this.initialized = false;
+            this.loaded = false;
             this.dev = true;
             this.markers = [];
             this.oMap = false;
@@ -240,6 +240,10 @@
                     this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
                 }
             }
+
+            //store dom references
+            this.map_div = $(this.o.map_div);
+            this.controls_wrapper = $(this.o.controls_div);
         };
 
         //where to store the menus
@@ -249,7 +253,7 @@
         Maplace.prototype.create_objMap = function () {
             var self = this;
 
-            if (!this.initialized) {
+            if (!this.loaded) {
                 try {
                     this.map_div.css({
                         position: 'relative',
@@ -267,7 +271,7 @@
                 catch(err) { this.errors.push(err.toString()); }
             }
 
-            //if already initialized loads the new options
+            //if already loaded loads the new options
             else {
                 self.oMap.setOptions(this.o.map_options);
             }
@@ -567,7 +571,7 @@
         };
 
         //resets obj map, markers, bounds, listeners, controllers
-        Maplace.prototype.reset_map = function () {      
+        Maplace.prototype.init_map = function () {      
             var self = this,
                 i = 0;
 
@@ -740,17 +744,18 @@
             reload && this.Load();
         };
 
+        //check if Load was called before
+        Maplace.prototype.Loaded = function () {
+            return this.Loaded;
+        };
+
         //creates the map and menu
         Maplace.prototype.Load = function (args) {
             //update currents options if args
-            this._init(args);
+            args && this._init(args);
             
-            //store jquery references
-            this.map_div = $(this.o.map_div);
-            this.controls_wrapper = $(this.o.controls_div);
-
             //reset/init google map objects
-            this.reset_map();
+            this.init_map();
             this.create_objMap();
 
             //add markers
@@ -767,7 +772,7 @@
             var self = this;
 
             //first call
-            if (!this.initialized) {
+            if (!this.loaded) {
                 google.maps.event.addListenerOnce(this.oMap, 'idle', function () {
                     self.perform_load();
                 });
@@ -785,7 +790,7 @@
                 });
             });
 
-            this.initialized = true;
+            this.loaded = true;
         };
 
 

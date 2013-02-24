@@ -2,8 +2,7 @@
   'use strict';
 
   var $doc = $(document),
-      Modernizr = window.Modernizr,
-      maplace, bigdata;
+      Modernizr = window.Modernizr;
 
   $(document).ready(function() {
     $.fn.foundationMediaQueryViewer ? $doc.foundationMediaQueryViewer() : null;
@@ -19,36 +18,57 @@
 
     prettyPrint();
 
+    var _oldShow = $.fn.show;
+
+    $.fn.show = function(speed, oldCallback) {
+      return $(this).each(function() {
+        var
+          obj         = $(this),
+          newCallback = function() {
+            if ($.isFunction(oldCallback)) {
+              oldCallback.apply(obj);
+            }
+
+            obj.trigger('afterShow');
+          };
+
+        // you can trigger a before show if you want
+        obj.trigger('beforeShow');
+
+        // now use the old function to show the element passing the new callback
+        _oldShow.apply(obj, [speed, newCallback]);
+      });
+    }
 
     //Just the map
     new Maplace().Load();
 
     //Simple Example, dropdown on map
-    new Maplace({
+    var dropdown = new Maplace({
       map_div: '#gmap-2',
       controls_title: 'Choose a location:',
       locations: LocsA
-    }).Load();
+    });
 
     //Simple Example, menu on map
-    new Maplace({
+    var ullist = new Maplace({
       map_div: '#gmap-3',
       controls_type: 'list',
       controls_title: 'Choose a location:',
       locations: LocsB
-    }).Load();
+    });
 
     //Simple Example, external menu
-    new Maplace({
+    var menu = new Maplace({
       map_div: '#gmap-4',
       controls_type: 'list',
       controls_cssclass: 'side-nav',
       controls_on_map: false,
       locations: LocsAB
-    }).Load();
-    
+    });
+
     //Tabs Example
-    new Maplace({
+    var tabs = new Maplace({
       map_div: '#gmap-5',
       controls_div: '#controls-5',
       start: 1,
@@ -60,10 +80,10 @@
       afterShowCurrent: function(index, location, marker) {
         $('#info').html(location.html);
       }
-    }).Load();
+    });
 
     //Polyline Example
-    new Maplace({
+    var polyline = new Maplace({
       map_div: '#gmap-6',
       controls_div: '#controls-6',
       controls_cssclass: 'side-nav',
@@ -73,10 +93,10 @@
       view_all_text: 'Start',
       locations: LocsA,
       type: 'polyline'
-    }).Load();
+    });
 
     //Polygon Example
-    new Maplace({
+    var polygon = new Maplace({
       map_div: '#gmap-7',
       controls_div: '#controls-7',
       controls_type: 'list',
@@ -84,10 +104,10 @@
       locations: LocsA,
       type: 'polygon',
       draggable: true
-    }).Load();
+    });
 
     //Directions route Example
-    new Maplace({
+    var directions = new Maplace({
       map_div: '#gmap-8',
       generate_controls: false,
       show_markers: false,
@@ -98,15 +118,21 @@
       afterRoute: function(distance) {
         $('#km').text(': '+(distance/1000)+'km');
       }
-    }).Load();
+    });
 
     //Mixed / Ajax Example
+    var mixed = new Maplace({
+      map_div: '#gmap-9',
+      controls_div: '#controls-9',
+      controls_type: 'list',
+      controls_on_map: false
+    });
     function showGroup(index) {
       var el = $('#g'+index);
       $('#mixed li').removeClass('active');
       $(el).parent().addClass('active');
       $.getJSON('data/ajax.php', { type: index }, function(data) {
-        maplace.Load({
+        mixed.Load({
           locations: data.points,
           view_all_text: data.title,
           type: data.type
@@ -118,16 +144,10 @@
       var index = $(this).attr('data-load');
       showGroup(index);
     });
-    maplace = new Maplace({
-      map_div: '#gmap-9',
-      controls_div: '#controls-9',
-      controls_type: 'list',
-      controls_on_map: false
-    });
-    showGroup(0);
+    
 
     //Big Data Example
-    bigdata = new Maplace({
+    var bigdata = new Maplace({
       map_div: '#gmap-10',
       locations: big4k,
       commons: {
@@ -143,7 +163,54 @@
       });
     });
 
-  });
 
+
+    
+    $('#markers').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !dropdown.Loaded() && dropdown.Load();
+        !ullist.Loaded() && ullist.Load();
+      } 
+    }); 
+
+    $('#menu').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !menu.Loaded() && menu.Load();
+      } 
+    }); 
+
+    $('#dtabs').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !tabs.Loaded() && tabs.Load();
+      } 
+    }); 
+
+    $('#polyline').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !polyline.Loaded() && polyline.Load();
+      } 
+    }); 
+
+    $('#polygon').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !polygon.Loaded() && polygon.Load();
+      } 
+    }); 
+
+    $('#directions').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !directions.Loaded() && directions.Load();
+      } 
+    }); 
+
+    $('#dmixed').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !mixed.Loaded() && showGroup(0);
+      } 
+    });     
+
+
+
+  });//ready
 
 })(jQuery, this);
