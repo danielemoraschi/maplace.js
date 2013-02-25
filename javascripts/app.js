@@ -18,30 +18,8 @@
 
     prettyPrint();
 
-    var _oldShow = $.fn.show;
-
-    $.fn.show = function(speed, oldCallback) {
-      return $(this).each(function() {
-        var
-          obj         = $(this),
-          newCallback = function() {
-            if ($.isFunction(oldCallback)) {
-              oldCallback.apply(obj);
-            }
-
-            obj.trigger('afterShow');
-          };
-
-        // you can trigger a before show if you want
-        obj.trigger('beforeShow');
-
-        // now use the old function to show the element passing the new callback
-        _oldShow.apply(obj, [speed, newCallback]);
-      });
-    }
-
     //Just the map
-    new Maplace().Load();
+    var simple = new Maplace();
 
     //Simple Example, dropdown on map
     var dropdown = new Maplace({
@@ -116,7 +94,7 @@
       draggable: true,
       directions_panel: '#route',
       afterRoute: function(distance) {
-        $('#km').text(': '+(distance/1000)+'km');
+        $('#km').text((distance/1000)+'km');
       }
     });
 
@@ -185,7 +163,12 @@
 
 
 
-    
+    $('#simple').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !simple.Loaded() && simple.Load();
+      } 
+    });
+
     $('#markers').bind('inview', function(event, isInView) {
       if (isInView) {
         !dropdown.Loaded() && dropdown.Load();

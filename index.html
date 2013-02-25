@@ -57,7 +57,7 @@
         <p><strong>Maplacejs requires JavaScript to be enabled.</strong></p>
       </noscript>
       <p>
-        Maplace.js helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.<br/>
+        Maplace.js helps you to embed <strong>Google Maps</strong> into your website, quickly <strong>create markers</strong> and controls for the <strong>locations on map</strong>.<br/>
         It's hard depends on <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> so you need to have both in your page.
       </p>
       <h2>Features</h2>
@@ -65,9 +65,9 @@
         <li>Straightforward implementation with simple options</li>
         <li>Can run as many map as required</li>
         <li>No API key needed</li>
-        <li>Markers and custom icons, zoom level and controls</li>
-        <li>Supports for Directions, Polygons and Polylines</li>
-        <li>Custom controls as plugin</li>
+        <li>Markers and <strong>custom icons</strong>, zoom level and controls</li>
+        <li>Supports for <strong>Directions</strong>, <strong>Polygons</strong>, <strong>Polylines</strong>, <strong>Fusion tables</strong></li>
+        <li><strong>Custom controls</strong> as plugin</li>
         <li>Works in all major browsers, including IE6 (this website not so much)</li>
         <li>MIT License, so do with it what you will.</li>
       </ul>
@@ -354,7 +354,7 @@ new Maplace({
 
 
           <section id="directions" class="row">
-            <h2 class="two columns mobile-one">Route <strong id='km'></strong></h2>
+            <h2 class="two columns mobile-one">Route: <strong id='km'></strong></h2>
             <div class="two columns mobile-one">
               <dl class="right tabs pill small">
                 <dd class="active"><a href="#example7">Example</a></dd>
@@ -625,14 +625,19 @@ $(function() {
 <pre class="prettyprint">
 new Maplace({
   show_markers: false,
-  locations: [{lat: 45.9, lon: 10.9}]
+  locations: [{
+    lat: 45.9, 
+    lon: 10.9,
+    zoom: 8
+  }]
 }).Load(); 
 
 //or
 
 new Maplace({
   map_options: {
-    set_center: [45.9, 10.9]
+    set_center: [45.9, 10.9],
+    zoom: 8
   }
 }).Load(); 
 </pre>
@@ -753,7 +758,7 @@ new Maplace({
                     <td>string</td>
                     <td>View All</td>
                     <td>
-                      Set the text of the link "view all"
+                      Set a custom text for the link "view all"
                     </td>
                   </tr>
                   <tr>
@@ -769,7 +774,7 @@ new Maplace({
                     <td>Array &lt;locations&gt;</td>
                     <td>[]</td>
                     <td>
-                      List of locations beeing marked on the map. Every entry in this array has to be in JSON<br/>Check at the location docs page for more details
+                      List of locations beeing marked on the map.<br/>Check at the location docs page for more details
                     </td>
                   </tr>
                   <tr>
@@ -801,7 +806,7 @@ new Maplace({
                     <td>string</td>
                     <td>bubble</td>
                     <td>
-                      By now, only <strong>bubble</strong> is supported.
+                      Only <strong>bubble</strong> is supported.
                     </td>
                   </tr>
                   <tr>
@@ -868,13 +873,9 @@ new Maplace({
                     </td>
                   </tr>
                   <tr>
-                    <td>stroke_options</td>
+                    <td>fusion_options</td>
                     <td>Object</td>
-                    <td> 
-<pre class="prettyprint">
-{}
-</pre>
-                    </td>
+                    <td>{}</td>
                     <td>
                       Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank">Google</a>
                     </td>
@@ -1285,8 +1286,8 @@ var LocsD = [
             <h2 class="four columns mobile-two">Adding a new menu type</h2>
             <div class="four columns mobile-two">
               <p>
-                This is a simple checkbox menu example. You need to define two methods: <strong>activateCurrent</strong> and <strong>getHtml</strong><br/>
-                <strong><em>this</em></strong> will be scoped to the current Maplace instance.
+                This is a simple checkbox menu example. You have to define two methods to make it works: <strong>activateCurrent</strong> and <strong>getHtml</strong><br/>
+                and <strong><em>this</em></strong> variable will be scoped to the current Maplace instance.
               </p>
 <pre class="prettyprint">
 var html_checks = {

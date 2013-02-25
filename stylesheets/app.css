@@ -88,6 +88,10 @@ h3 {
 	padding-left: 20px;
 }
 
+.description strong {
+	font-weight: normal;
+}
+
 .tabs.pill {
 	margin-bottom: 20px;
 }
@@ -210,6 +214,10 @@ select {
 
 	.gmap_controls.tabs .ullist li a {
 		padding: 0px 6px !important;
+	}
+
+	#directions h2 {
+		height: auto;
 	}
 }
 

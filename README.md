@@ -147,7 +147,7 @@ var data = [{
 	    <td>string</td>
 	    <td>View All</td>
 	    <td>
-	      Set the text of the "view all" link
+	      Set a custom text for the link "view all"
 	    </td>
 	  </tr>
 	  <tr>
@@ -163,8 +163,7 @@ var data = [{
 	    <td>Array [locations]</td>
 	    <td>[]</td>
 	    <td>
-	      List of locations beeing marked on the map. Every entry in this array has to be in JSON
-	      Check at the location docs page for more details
+	      List of locations beeing marked on the map
 	    </td>
 	  </tr>
 	  <tr>
@@ -196,7 +195,7 @@ var data = [{
 	    <td>string</td>
 	    <td>bubble</td>
 	    <td>
-	      By now, only <strong>bubble</strong> is supported.
+	      Only <strong>bubble</strong> is supported.
 	    </td>
 	  </tr>
 	  <tr>
@@ -261,13 +260,9 @@ var data = [{
 	    </td>
 	  </tr>
       <tr>
-        <td>stroke_options</td>
+        <td>fusion_options</td>
         <td>Object</td>
-        <td> 
-<code>
-{}
-</code>
-        </td>
+        <td>{}</td>
         <td>
           Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank">Google</a>
         </td>
