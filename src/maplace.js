@@ -158,6 +158,7 @@
             this.markers = [];
             this.Polyline = null;
             this.Polygon = null;
+            this.Fusion = null;
             this.directionsService = null;
             this.directionsDisplay = null;
 
@@ -197,6 +198,7 @@
                     avoidHighways: false,
                     avoidTolls: false
                 },
+                fusion_options: {},
                 directions_panel: null,
                 draggable: false,  
                 show_infowindows: true,
@@ -206,8 +208,8 @@
                 //events
                 beforeViewAll: function () {},
                 afterViewAll: function () {},
-                beforeShowCurrent: function (index, location, marker) {},
-                afterShowCurrent: function (index, location, marker) {},
+                beforeShow: function (index, location, marker) {},
+                afterShow: function (index, location, marker) {},
                 afterCreateMarker: function (index, location, marker) {},
                 beforeCloseInfowindow: function (index, location) {},
                 afterCloseInfowindow: function (index, location) {},
@@ -232,7 +234,7 @@
             //store the locations length
             this.ln = this.o.locations.length;
 
-            //update locations with commons
+            //update with commons
             for (var i=0; i < this.ln; i++) {
                 $.extend(this.o.locations[i], this.o.commons);
                 if(this.o.locations[i].html) {
@@ -330,7 +332,7 @@
                 marker = new google.maps.Marker(point);
                 a = google.maps.event.addListener(marker, 'click', function () {
 
-                    self.o.beforeShowCurrent(index, point, marker);
+                    self.o.beforeShow(index, point, marker);
 
                     //show infowindow?
                     point_infow = point.show_infowindows===false ? false : true;
@@ -350,7 +352,7 @@
                     //update current location index
                     self.current_index = index;
 
-                    self.o.afterShowCurrent(index, point, marker);
+                    self.o.afterShow(index, point, marker);
                 });
                 
                 //extends bounds with this location
@@ -416,6 +418,17 @@
                 google.maps.event.addListener(this.Polygon, 'click', function (obj) {
                     self.o.onPolylineClick(obj);
                 });   
+            },
+
+
+            //fusion tables
+            fusion: function () {
+                $.extend(this.o.fusion_options, {
+                    styles: [this.o.stroke_options],
+                    map: this.oMap
+                });
+
+                this.Fusion ? this.Fusion.setOptions(this.o.fusion_options) : this.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
             },
 
 
@@ -577,6 +590,7 @@
 
             this.Polyline && this.Polyline.setMap(null);
             this.Polygon && this.Polygon.setMap(null);
+            this.Fusion && this.Fusion.setMap(null);
             this.directionsDisplay && this.directionsDisplay.setMap(null);
 
             if (this.markers) {

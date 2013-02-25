@@ -2,10 +2,10 @@
 <!--[if IE 8]> <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
 
-  <title>Maplace.js - Google Maps made easy</title>
+  <title>Maplace.js - A small Google Maps Javascript helper.</title>
   <meta name="description" content="Maplace.js helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.">
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -16,13 +16,9 @@
   <meta property="og:image" content="/images/red-dot.png">
   <meta property="og:url" content="http://maplacejs.com">
 
-  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Oxygen:700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="stylesheets/normalize.css">
-  <link rel="stylesheet" href="stylesheets/foundation.min.css">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|Oxygen:700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="stylesheets/libs.min.css">
   <link rel="stylesheet" href="stylesheets/app.css">
-  <link rel="stylesheet" href="stylesheets/prettify/prettify.css">
-  <link rel="stylesheet" href="stylesheets/prettify/theme.css">
 </head>
 <body>
 
@@ -32,7 +28,7 @@
     <div class="row"> 
       <div class="four columns mobile-two">
         <h1><a href="http://maplacejs.com" title="Maplace.js - Google Maps made easy">Maplace.js</a></h1>
-        <p>Google Maps made easy.</p>
+        <p>A small Google Maps Javascript helper.</p>
         <div class="socials">
           
           <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="maplacejs">Tweet</a>
@@ -57,33 +53,34 @@
   
   <div class="row"> 
     <div class="description four columns">
+      <noscript>
+        <p><strong>Maplacejs requires JavaScript to be enabled.</strong></p>
+      </noscript>
       <p>
         Maplace.js helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.<br/>
         It's hard depends on <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> so you need to have both in your page.
       </p>
       <h2>Features</h2>
-      <p>
-        <ul>
-          <li>Straightforward implementation with simple options</li>
-          <li>Can run as many map as required</li>
-          <li>No API key needed</li>
-          <li>Markers and custom icons, zoom level and controls</li>
-          <li>Supports for Routing, Polygons and Polylines</li>
-          <li>Custom controls as plugin</li>
-          <li>Works in all major browsers, including IE6 (this website not so much)</li>
-          <li>MIT License, so do with it what you will.</li>
-        </ul>
-      </p>
+      <ul>
+        <li>Straightforward implementation with simple options</li>
+        <li>Can run as many map as required</li>
+        <li>No API key needed</li>
+        <li>Markers and custom icons, zoom level and controls</li>
+        <li>Supports for Directions, Polygons and Polylines</li>
+        <li>Custom controls as plugin</li>
+        <li>Works in all major browsers, including IE6 (this website not so much)</li>
+        <li>MIT License, so do with it what you will.</li>
+      </ul>
       <div class="row"> 
         <div class="four columns center">
           <div class="panel">
             <h2>Download</h2>
             <div class="row"> 
               <div class="two columns mobile-one">
-                <a class="success button" href="src/maplace.js" target="_blank">maplace.js (28kb)</a>
+                <a class="success button" href="src/maplace.js" target="_blank">maplace.js (29kb)</a>
               </div>
               <div class="two columns mobile-one">
-                <a class="success button right" href="src/maplace.min.js" target="_blank">maplace.min.js (12kb)</a>
+                <a class="success button right" href="src/maplace.min.js" target="_blank">maplace.min.js (13kb)</a>
               </div>
             </div>
           </div>
@@ -256,7 +253,7 @@ new Maplace({
   controls_on_map: false,
   show_infowindow: false,
   start: 1,
-  afterShowCurrent: function(index, location, marker) {
+  afterShow: function(index, location, marker) {
     $('#info').html(location.html);
   }
 }).Load(); 
@@ -424,10 +421,10 @@ new Maplace({
                   <div class="row">
                     <div class="four columns">
                         <dl id="mixed" class="tabs">
-                            <li><a href="javascript:void(0)" data-load="0" id="g0" title="Group A">Group A</a></li>
-                            <li><a href="javascript:void(0)" data-load="1" id="g1" title="Group B">Group B</a></li>
-                            <li><a href="javascript:void(0)" data-load="2" id="g2" title="Group C">Group C</a></li>
-                            <li><a href="javascript:void(0)" data-load="3" id="g3" title="Group D">Group D</a></li>
+                            <dd><a href="javascript:void(0)" data-load="0" id="g0" title="Group A">Group A</a></dd>
+                            <dd><a href="javascript:void(0)" data-load="1" id="g1" title="Group B">Group B</a></dd>
+                            <dd><a href="javascript:void(0)" data-load="2" id="g2" title="Group C">Group C</a></dd>
+                            <dd><a href="javascript:void(0)" data-load="3" id="g3" title="Group D">Group D</a></dd>
                         </dl>
                     </div>
                   </div>
@@ -480,6 +477,52 @@ showGroup(0);
 &lt;/ul&gt;
 &lt;div id="controls-mixed"&gt;&lt;/div&gt;
 &lt;div id="gmap-mixed"&gt;&lt;/div&gt;
+</pre>
+                </li>
+              </ul>
+            </div>
+            <div class="four columns mobile-two"><div class="line"></div></div>
+          </section>
+
+
+          <section id="fusion" class="row">
+            <h2 class="two columns mobile-one">Fusion Tables</h2>
+            <div class="two columns mobile-one">
+              <dl class="right tabs pill small">
+                <dd class="active"><a href="#example10">Example</a></dd>
+                <dd><a href="#code10">Code</a></dd>
+              </dl>
+            </div>
+            <div class="four columns mobile-two">
+              <ul class="tabs-content">
+                <li class="active" id="example10Tab">
+                  <div class="gmap" id="gmap-11"></div>
+                </li>
+                <li class="code" id="code10Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+  map_div: '#gmap-fusion',
+  type: 'fusion',
+  map_options: {
+    zoom: 2,
+    set_center: [31.1, -39.4]
+  },
+  fusion_options: {
+    query: {
+      from: '423292',
+      select: 'location'
+    },
+    heatmap: {
+      enabled: true
+    },
+    suppressInfoWindows: true
+  }
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-fusion"&gt;&lt;/div&gt;
 </pre>
                 </li>
               </ul>
@@ -549,7 +592,7 @@ $('#load_bigdata').click(function(e) {
 <h2>Requirements</h2>
 <p>Download the latest version of Maplace.js and include the Google Maps API v3 along with jQuery.</p>
 <pre class="prettyprint">
-&lt;script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"&gt;
+&lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7"&gt;
 &lt;/script&gt;
 &lt;script src="http://code.jquery.com/jquery-1.9.0.min.js"&gt;&lt;/script&gt;
 &lt;script src="maplace.min.js"&gt;&lt;/script&gt;
@@ -694,7 +737,7 @@ new Maplace({
                     <td>string</td>
                     <td>marker</td>
                     <td>
-                      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong>
+                      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
                     </td>
                   </tr>
                   <tr>
@@ -792,7 +835,8 @@ new Maplace({
 </pre>
                     </td>
                     <td>
-                      Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>
+                      Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a><br/>
+                      Used in Polyline/Polygon/Directions/Fusion mode.
                     </td>
                   </tr>
                   <tr>
@@ -821,6 +865,18 @@ new Maplace({
                     <td>null</td>
                     <td>
                       ID or class of the div in which to display the directions steps.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>stroke_options</td>
+                    <td>Object</td>
+                    <td> 
+<pre class="prettyprint">
+{}
+</pre>
+                    </td>
+                    <td>
+                      Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank">Google</a>
                     </td>
                   </tr>
                   <tr>
@@ -931,7 +987,7 @@ new Maplace({
                     </td>
                   </tr>
                   <tr>
-                    <td>beforeShowCurrent</td>
+                    <td>beforeShow</td>
                     <td>function</td>
                     <td>(index, location, marker){}</td>
                     <td>
@@ -939,7 +995,7 @@ new Maplace({
                     </td>
                   </tr>
                   <tr>
-                    <td>afterShowCurrent</td>
+                    <td>afterShow</td>
                     <td>function</td>
                     <td>(index, location, marker){}</td>
                     <td>
@@ -1304,16 +1360,12 @@ maplace.Load({
     </div>
   </div>
 
-  <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7?1343675510"></script>
-
-  <script src="data/points.js"></script> 
-  <script src="data/points_big.js"></script> 
-
-  <script src="javascripts/foundation.min.js"></script>
-  <script src="javascripts/prettify.js"></script>
+  <script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7?1343675510"></script>
+  <script src="javascripts/libs.min.js"></script>
 
   <script src="src/maplace.js"></script>
 
+  <script src="data/points.js"></script> 
   <script src="javascripts/app.js"></script>
 </body>
 </html>

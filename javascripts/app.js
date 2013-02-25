@@ -77,7 +77,7 @@
       show_infowindows: false,
       view_all: false,
       locations: LocsB,
-      afterShowCurrent: function(index, location, marker) {
+      afterShow: function(index, location, marker) {
         $('#info').html(location.html);
       }
     });
@@ -145,6 +145,27 @@
       showGroup(index);
     });
 
+    //Fusion
+    var fusion = new Maplace({
+      map_div: '#gmap-11',
+      type: 'fusion',
+      map_options: {
+        zoom: 2,
+        set_center: [31.1, -39.4]
+      },
+      fusion_options: {
+        query: {
+          from: '423292',
+          select: 'location'
+        },
+        heatmap: {
+          enabled: true
+        },
+        suppressInfoWindows: true
+      }
+    });
+
+
     //Big Data Example
     var bigdata = new Maplace({
       map_div: '#gmap-10',
@@ -205,6 +226,12 @@
     $('#dmixed').bind('inview', function(event, isInView) {
       if (isInView) {
         !mixed.Loaded() && showGroup(0);
+      } 
+    }); 
+
+    $('#fusion').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !fusion.Loaded() && fusion.Load();
       } 
     });     
 

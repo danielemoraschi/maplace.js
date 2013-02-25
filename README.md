@@ -131,7 +131,7 @@ var data = [{
 	    <td>string</td>
 	    <td>marker</td>
 	    <td>
-	      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong>
+	      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
 	    </td>
 	  </tr>
 	  <tr>
@@ -260,6 +260,18 @@ var data = [{
 	      ID or class of the div in which to display the directions steps.
 	    </td>
 	  </tr>
+      <tr>
+        <td>stroke_options</td>
+        <td>Object</td>
+        <td> 
+<code>
+{}
+</code>
+        </td>
+        <td>
+          Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank">Google</a>
+        </td>
+      </tr>
 	  <tr>
 	    <td>draggable</td>
 	    <td>boolean</td>
@@ -368,7 +380,7 @@ var data = [{
 	    </td>
 	  </tr>
 	  <tr>
-	    <td>beforeShowCurrent</td>
+	    <td>beforeShow</td>
 	    <td>function</td>
 	    <td>(index, location, marker){}</td>
 	    <td>
@@ -376,7 +388,7 @@ var data = [{
 	    </td>
 	  </tr>
 	  <tr>
-	    <td>afterShowCurrent</td>
+	    <td>afterShow</td>
 	    <td>function</td>
 	    <td>(index, location, marker){}</td>
 	    <td>
