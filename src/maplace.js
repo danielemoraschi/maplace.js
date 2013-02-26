@@ -144,6 +144,7 @@
             this.dev = true;
             this.markers = [];
             this.oMap = false;
+            this.view_all_key = 'all';
 
             this.infowindow = null;
             this.ln = 0;
@@ -154,8 +155,6 @@
             this.controls_wrapper = null;
             this.current_control = null;
             this.current_index = null;
-            this.view_all_key = 'all';
-            this.markers = [];
             this.Polyline = null;
             this.Polygon = null;
             this.Fusion = null;
@@ -220,7 +219,7 @@
                 onPolylineClick: function (obj) {}
             };
 
-            //adds the menus
+            //default menu types
             this.AddControl('dropdown', html_dropdown);    
             this.AddControl('list', html_ullist);
 
@@ -249,7 +248,7 @@
             this.controls_wrapper = $(this.o.controls_div);
         };
 
-        //where to store the menus
+        //where to store the menu types
         Maplace.prototype.controls = {};
 
         //initialize google map object
@@ -257,7 +256,7 @@
             var self = this,
                 count = 0, i;
 
-
+            //if styled
             for (i in this.o.styles) {
                 if (this.o.styles.hasOwnProperty(i)) {
                     if(count===0) {
@@ -294,6 +293,7 @@
                 self.oMap.setOptions(this.o.map_options);
             }
 
+            //if styled
             count = 0;
             for (i in this.o.styles) {
                 if (this.o.styles.hasOwnProperty(i)) {
@@ -343,7 +343,7 @@
                     position: latlng,
                     map: this.oMap,
                     zIndex: 10000,
-                    //temporary overwite visible property
+                    //temp visible property
                     visible: (this.o.show_markers===false ? false : orig_visible)
                 });
 
@@ -390,7 +390,7 @@
 
                 this.o.afterCreateMarker(index, point, marker);
 
-                //restore the property visible
+                //restore the visible property
                 point.visible = orig_visible;
 
                 return marker;
@@ -528,7 +528,7 @@
             }
         };
 
-        //gets distance of the route
+        //route distance
         Maplace.prototype.compute_distance = function (result) {
             var total = 0,
                 i,
@@ -552,7 +552,7 @@
             }
         };
 
-        //opens infowindow
+        //open the infowindow
         Maplace.prototype.open_infowindow = function (index, marker) {
             //close if any open
             this.CloseInfoWindow();
@@ -578,7 +578,7 @@
             return '';
         };
 
-        //creates menu
+        //creates the controls menu
         Maplace.prototype.generate_controls = function () {
             //append menu on the div container
             if (!this.o.controls_on_map) {
@@ -689,7 +689,7 @@
             return true;
         };
 
-        //close the opened infowindow if any
+        //close the open infowindow
         Maplace.prototype.CloseInfoWindow = function () {
             if (this.infowindow && (this.current_index || this.current_index===0)) {
                 this.o.beforeCloseInfowindow(this.current_index, this.o.locations[this.current_index]);        
@@ -699,7 +699,7 @@
             }
         };
 
-        //check if a location has to be shown on menu
+        //check if a location has to be in menu
         Maplace.prototype.ShowOnMenu = function (index) {
             if (index == this.view_all_key && this.o.view_all && this.ln > 1) {
                 return true;
@@ -715,7 +715,7 @@
             return false;
         };
 
-        //triggers to show a location on map
+        //triggers to show a location in map
         Maplace.prototype.ViewOnMap = function (index) {
             //view all
             if (index == this.view_all_key) {
@@ -747,7 +747,7 @@
             reload && this.Load();
         };
 
-        //add a location or many locations
+        //adds one or more locations
         Maplace.prototype.AddLocations = function (locs, reload) {
             var self = this;
 
@@ -763,7 +763,7 @@
             reload && this.Load();
         };
 
-        //remove a location or many locations
+        //remove one or more locations
         Maplace.prototype.RemoveLocations = function (locs, reload) {
             var self = this, 
                 k = 0;
@@ -785,7 +785,7 @@
             reload && this.Load();
         };
 
-        //check if a Load() was already called before
+        //check if already initialized with a Load()
         Maplace.prototype.Loaded = function () {
             return this.loaded;
         };
