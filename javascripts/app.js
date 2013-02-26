@@ -102,6 +102,7 @@
     var styled = new Maplace({
       map_div: '#gmap-12',
       locations: LocsAB,
+      start: 3,
       styles: {
         'Other style': [{
           stylers: [
@@ -126,6 +127,13 @@
           featureType: 'all',
           stylers: [
             { invert_lightness: 'true' }
+          ]
+        }],
+        'Greyscale': [{              
+          featureType: 'all',
+          stylers: [
+            { saturation: -100 },
+            { gamma: 0.50 }
           ]
         }]
       }
