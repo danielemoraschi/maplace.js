@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width">
 
   <title>Maplace.js - A small Google Maps Javascript helper.</title>
-  <meta name="description" content="Maplace.js helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.">
+  <meta name="description" content="Maplace.js helps you to embed Google Maps into your website, quickly creating markers and context menu for the locations on map.">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
 
   <meta name="author" content="Daniele Moraschi - daniele.moraschi@gmail.com">
   <meta property="og:title" content="Maplace.js - Google Maps made easy">
-  <meta property="og:description" content="Maplace.js helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.">
+  <meta property="og:description" content="Maplace.js helps you to embed Google Maps into your website, quickly create markers and context menu for the locations on map.">
   <meta property="og:image" content="images/red-dot.png">
   <meta property="og:url" content="http://maplacejs.com">
 
@@ -21,6 +21,14 @@
   <link rel="stylesheet" href="stylesheets/app.css">
 </head>
 <body>
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=431057636976449";
+  fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
 
   <a href="https://github.com/danielemoraschi/maplace.js" target="_blank"><img style="position:absolute;top:0;right:0;border:0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
 
@@ -33,6 +41,8 @@
           
           <a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="maplacejs">Tweet</a>
           <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+          <div style="width:120px;top:-3px;" class="fb-like" data-href="http://maplacejs.com/"  data-send="false" data-layout="button_count" data-width="120" data-show-faces="false" data-font="lucida grande"></div>
 
           <div class="g-plusone" data-size="medium"></div>
           <script type="text/javascript">
@@ -58,18 +68,16 @@
       </noscript>
       <p>
         Maplace.js helps you to embed <strong>Google Maps</strong> into your website, quickly <strong>create markers</strong> and controls for the <strong>locations on map</strong>.<br/>
-        It's hard depends on <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> so you need to have both in your page.
+        <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> are required so you need to have both in your page.
       </p>
       <h2>Features</h2>
       <ul>
         <li>Straightforward implementation with simple options</li>
-        <li>Can run as many map as required</li>
-        <li>No API key needed</li>
-        <li>Markers and <strong>custom icons</strong>, zoom level and controls</li>
-        <li>Supports for <strong>Directions</strong>, <strong>Polygons</strong>, <strong>Polylines</strong>, <strong>Fusion tables</strong></li>
-        <li><strong>Custom controls</strong> as plugin</li>
+        <li>Can run as many maps as required</li>
+        <li>Markers and <strong>custom icons</strong>, zoom level and <strong>custom controls menu</strong></li>
+        <li>Supports for <strong>Directions</strong>, <strong>Polygons</strong>, <strong>Polylines</strong>, <strong>Fusion tables</strong> and <strong>styled maps</strong></li>
         <li>Works in all major browsers, including IE6 (this website not so much)</li>
-        <li>MIT License, so do with it what you will.</li>
+        <li>Released under the MIT license</li>
       </ul>
       <div class="row"> 
         <div class="four columns center">
@@ -103,7 +111,7 @@
         <li class="active" id="ExamplesTab">
           
           <section id="simple" class="row">
-            <h2 class="two columns mobile-one">Simple</h2>
+            <h2 class="two columns mobile-one">Hello, World</h2>
             <div class="two columns mobile-one">
               <dl class="right tabs pill small">
                 <dd class="active"><a href="#example1">Example</a></dd>
@@ -399,6 +407,58 @@ new Maplace({
 &lt;h2&gt;Route &lt;strong id="km"&gt;&lt;/strong&gt;&lt;/h2&gt;
 &lt;div id="gmap-route"&gt;&lt;/div&gt;
 &lt;div id="route"&gt;&lt;/div&gt;
+</pre>
+                </li>
+              </ul>
+            </div>
+            <div class="four columns mobile-two"><div class="line"></div></div>
+          </section>
+
+
+          <section id="styled" class="row">
+            <h2 class="two columns mobile-one">Styled</h2>
+            <div class="two columns mobile-one">
+              <dl class="right tabs pill small">
+                <dd class="active"><a href="#example12">Example</a></dd>
+                <dd><a href="#code12">Code</a></dd>
+              </dl>
+            </div>
+            <div class="four columns mobile-two">
+              <ul class="tabs-content">
+                <li class="active" id="example12Tab">
+                  <div class="gmap" id="gmap-12"></div>
+                </li>
+                <li class="code" id="code12Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+map_div: '#gmap-styled',
+locations: LocsAB,
+style_title: 'My style',
+styles: [{
+  stylers: [
+      { hue: "#00ffe6" },
+      { saturation: -20 }
+  ]
+  }, {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [
+          { lightness: 100 },
+          { visibility: "simplified" }
+      ]
+  }, {
+      featureType: "road",
+      elementType: "labels",
+      stylers: [
+          { visibility: "off" }
+      ]
+  }],
+}).Load(); 
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-styled"&gt;&lt;/div&gt;
 </pre>
                 </li>
               </ul>
@@ -823,6 +883,26 @@ new Maplace({
                     <td>
                       Map options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a><br/>
                       The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>styles</td>
+                    <td>Array</td>
+                    <td> 
+<pre class="prettyprint">
+[]
+</pre>
+                    </td>
+                    <td>
+                      Styles options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>style_title</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>
+                      If defined, it create a new map type to which to apply styles.
                     </td>
                   </tr>
                   <tr>

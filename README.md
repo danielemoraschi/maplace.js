@@ -214,6 +214,22 @@ var data = [{
 	      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
 	    </td>
 	  </tr>
+      <tr>
+        <td>styles</td>
+        <td>Array</td>
+        <td>[]</td>
+        <td>
+          Styles options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
+        </td>
+      </tr>
+      <tr>
+        <td>style_title</td>
+        <td>string</td>
+        <td></td>
+        <td>
+          If defined, it create a new map type to which to apply styles.
+        </td>
+      </tr>
 	  <tr>
 	    <td>stroke_options</td>
 	    <td>Object</td>

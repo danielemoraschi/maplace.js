@@ -198,6 +198,8 @@
                     avoidHighways: false,
                     avoidTolls: false
                 },
+                styles: [],
+                style_title: false,
                 fusion_options: {},
                 directions_panel: null,
                 draggable: false,  
@@ -255,6 +257,16 @@
         Maplace.prototype.create_objMap = function () {
             var self = this;
 
+            if(this.o.styles.length>0 && !this.o.style_title) {
+                this.o.map_options.styles = this.o.styles;
+            }
+
+            if(this.o.styles.length>0 && this.o.style_title) {
+                this.o.map_options.mapTypeControlOptions = {
+                    mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+                };
+            }
+
             if (!this.loaded) {
                 try {
                     this.map_div.css({
@@ -277,6 +289,13 @@
             else {
                 self.oMap.setOptions(this.o.map_options);
             }
+
+            if(this.o.styles.length>0 && this.o.style_title) {
+                this.styledMap = new google.maps.StyledMapType(this.o.styles, {name: this.o.style_title});
+                this.oMap.mapTypes.set('map_style', this.styledMap);
+                this.oMap.setMapTypeId('map_style');
+            }
+
 
             this.debug('01');
         };

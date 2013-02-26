@@ -98,6 +98,32 @@
       }
     });
 
+    //Styled Example
+    var styled = new Maplace({
+      map_div: '#gmap-12',
+      locations: LocsAB,
+      style_title: 'My style',
+      styles: [{
+          stylers: [
+              { hue: "#00ffe6" },
+              { saturation: -20 }
+          ]
+          }, {
+              featureType: "road",
+              elementType: "geometry",
+              stylers: [
+                  { lightness: 100 },
+                  { visibility: "simplified" }
+              ]
+          }, {
+              featureType: "road",
+              elementType: "labels",
+              stylers: [
+                  { visibility: "off" }
+              ]
+          }],
+    });
+
     //Mixed / Ajax Example
     var mixed = new Maplace({
       map_div: '#gmap-9',
@@ -142,7 +168,6 @@
         suppressInfoWindows: true
       }
     });
-
 
     //Big Data Example
     var bigdata = new Maplace({
@@ -205,6 +230,12 @@
         !directions.Loaded() && directions.Load();
       } 
     }); 
+
+    $('#styled').bind('inview', function(event, isInView) {
+      if (isInView) {
+        !styled.Loaded() && styled.Load();
+      } 
+    });
 
     $('#dmixed').bind('inview', function(event, isInView) {
       if (isInView) {
