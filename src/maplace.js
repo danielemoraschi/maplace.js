@@ -198,8 +198,7 @@
                     avoidHighways: false,
                     avoidTolls: false
                 },
-                styles: [],
-                style_title: false,
+                styles: {},
                 fusion_options: {},
                 directions_panel: null,
                 draggable: false,  
@@ -255,17 +254,22 @@
 
         //initialize google map object
         Maplace.prototype.create_objMap = function () {
-            var self = this;
+            var self = this,
+                count = 0, i;
 
-            if(this.o.styles.length>0 && !this.o.style_title) {
-                this.o.map_options.styles = this.o.styles;
+
+            for (i in this.o.styles) {
+                if (this.o.styles.hasOwnProperty(i)) {
+                    if(count===0) {
+                        this.o.map_options.mapTypeControlOptions = {
+                            mapTypeIds: [google.maps.MapTypeId.ROADMAP]
+                        };
+                    }
+                    count++;
+                    this.o.map_options.mapTypeControlOptions.mapTypeIds.push('map_style_' + count)
+                }
             }
 
-            if(this.o.styles.length>0 && this.o.style_title) {
-                this.o.map_options.mapTypeControlOptions = {
-                    mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
-                };
-            }
 
             if (!this.loaded) {
                 try {
@@ -290,12 +294,16 @@
                 self.oMap.setOptions(this.o.map_options);
             }
 
-            if(this.o.styles.length>0 && this.o.style_title) {
-                this.styledMap = new google.maps.StyledMapType(this.o.styles, {name: this.o.style_title});
-                this.oMap.mapTypes.set('map_style', this.styledMap);
-                this.oMap.setMapTypeId('map_style');
+            count = 0;
+            for (i in this.o.styles) {
+                if (this.o.styles.hasOwnProperty(i)) {
+                    count++;
+                    this.oMap.mapTypes.set('map_style_' + count, new google.maps.StyledMapType(this.o.styles[i], { 
+                        name: i
+                    }));
+                    this.oMap.setMapTypeId('map_style_' + count);
+                }
             }
-
 
             this.debug('01');
         };

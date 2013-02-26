@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width">
 
   <title>Maplace.js - A small Google Maps Javascript helper.</title>
-  <meta name="description" content="Maplace.js helps you to embed Google Maps into your website, quickly creating markers and context menu for the locations on map.">
+  <meta name="description" content="Maplace.js helps you to embed Google Maps into your website, quickly creating markers and controls menu for the locations on map.">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
 
   <meta name="author" content="Daniele Moraschi - daniele.moraschi@gmail.com">
   <meta property="og:title" content="Maplace.js - Google Maps made easy">
-  <meta property="og:description" content="Maplace.js helps you to embed Google Maps into your website, quickly create markers and context menu for the locations on map.">
+  <meta property="og:description" content="Maplace.js helps you to embed Google Maps into your website, quickly create markers and controls menu for the locations on map.">
   <meta property="og:image" content="images/red-dot.png">
   <meta property="og:url" content="http://maplacejs.com">
 
@@ -67,7 +67,7 @@
         <p><strong>Maplacejs requires JavaScript to be enabled.</strong></p>
       </noscript>
       <p>
-        Maplace.js helps you to embed <strong>Google Maps</strong> into your website, quickly <strong>create markers</strong> and controls for the <strong>locations on map</strong>.<br/>
+        Maplace.js helps you to embed <strong>Google Maps</strong> into your website, quickly <strong>create markers</strong> and controls menu for the <strong>locations on map</strong>.<br/>
         <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> are required so you need to have both in your page.
       </p>
       <h2>Features</h2>
@@ -85,7 +85,7 @@
             <h2>Download</h2>
             <div class="row"> 
               <div class="two columns mobile-one">
-                <a class="success button" href="src/maplace.js" target="_blank">maplace.js (29kb)</a>
+                <a class="success button" href="src/maplace.js" target="_blank">maplace.js (30kb)</a>
               </div>
               <div class="two columns mobile-one">
                 <a class="success button right" href="src/maplace.min.js" target="_blank">maplace.min.js (13kb)</a>
@@ -432,28 +432,35 @@ new Maplace({
 <h3>JS</h3>
 <pre class="prettyprint">
 new Maplace({
-map_div: '#gmap-styled',
-locations: LocsAB,
-style_title: 'My style',
-styles: [{
-  stylers: [
-      { hue: "#00ffe6" },
-      { saturation: -20 }
-  ]
-  }, {
+  map_div: '#gmap-styled',
+  locations: LocsAB,
+  styles: {
+    'Other style': [{
+      stylers: [
+          { hue: "#00ffe6" },
+          { saturation: -20 }
+      ]
+    }, {
       featureType: "road",
       elementType: "geometry",
       stylers: [
           { lightness: 100 },
           { visibility: "simplified" }
       ]
-  }, {
+    }, {
       featureType: "road",
       elementType: "labels",
       stylers: [
           { visibility: "off" }
       ]
-  }],
+    }],
+    'Night': [{
+      featureType: 'all',
+      stylers: [
+        { invert_lightness: 'true' }
+      ]
+    }]
+  }
 }).Load(); 
 </pre>
 <h3>Html</h3>
@@ -887,22 +894,14 @@ new Maplace({
                   </tr>
                   <tr>
                     <td>styles</td>
-                    <td>Array</td>
+                    <td>Object</td>
                     <td> 
 <pre class="prettyprint">
-[]
+{}
 </pre>
                     </td>
                     <td>
                       Styles options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>style_title</td>
-                    <td>string</td>
-                    <td></td>
-                    <td>
-                      If defined, it create a new map type to which to apply styles.
                     </td>
                   </tr>
                   <tr>

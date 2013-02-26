@@ -102,26 +102,33 @@
     var styled = new Maplace({
       map_div: '#gmap-12',
       locations: LocsAB,
-      style_title: 'My style',
-      styles: [{
+      styles: {
+        'Other style': [{
           stylers: [
               { hue: "#00ffe6" },
               { saturation: -20 }
           ]
-          }, {
-              featureType: "road",
-              elementType: "geometry",
-              stylers: [
-                  { lightness: 100 },
-                  { visibility: "simplified" }
-              ]
-          }, {
-              featureType: "road",
-              elementType: "labels",
-              stylers: [
-                  { visibility: "off" }
-              ]
-          }],
+        }, {
+          featureType: "road",
+          elementType: "geometry",
+          stylers: [
+              { lightness: 100 },
+              { visibility: "simplified" }
+          ]
+        }, {
+          featureType: "road",
+          elementType: "labels",
+          stylers: [
+              { visibility: "off" }
+          ]
+        }],
+        'Night': [{
+          featureType: 'all',
+          stylers: [
+            { invert_lightness: 'true' }
+          ]
+        }]
+      }
     });
 
     //Mixed / Ajax Example

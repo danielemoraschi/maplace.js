@@ -1,5 +1,5 @@
 # Maplace.js 
-Helps you to embed Google Maps into your website, quickly create markers and controls for the locations on map.
+Helps you to embed Google Maps into your website, quickly create markers and controls menu for the locations on map.
 
 ## Demo
 
@@ -216,18 +216,10 @@ var data = [{
 	  </tr>
       <tr>
         <td>styles</td>
-        <td>Array</td>
-        <td>[]</td>
+        <td>Object</td>
+        <td>{}</td>
         <td>
           Styles options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
-        </td>
-      </tr>
-      <tr>
-        <td>style_title</td>
-        <td>string</td>
-        <td></td>
-        <td>
-          If defined, it create a new map type to which to apply styles.
         </td>
       </tr>
 	  <tr>
