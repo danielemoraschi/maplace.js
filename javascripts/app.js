@@ -2,7 +2,8 @@
   'use strict';
 
   var $doc = $(document),
-      Modernizr = window.Modernizr;
+      Modernizr = window.Modernizr,
+      lt_ie9 = false;
 
   $(document).ready(function() {
     $.fn.foundationMediaQueryViewer ? $doc.foundationMediaQueryViewer() : null;
@@ -17,6 +18,10 @@
     }
 
     prettyPrint();
+
+    if($('html').hasClass('lt-ie9')) {
+      lt_ie9 = true;
+    }
 
     //Just the map
     var simple = new Maplace();
@@ -202,67 +207,81 @@
     });
 
 
-
-    $('#simple').bind('inview', function(event, isInView) {
+    $('#simple').one('inview', function(event, isInView) {
       if (isInView) {
-        !simple.Loaded() && simple.Load();
+        simple.Load();
       } 
     });
 
-    $('#markers').bind('inview', function(event, isInView) {
+    $('#markers').one('inview', function(event, isInView) {
       if (isInView) {
-        !dropdown.Loaded() && dropdown.Load();
-        !ullist.Loaded() && ullist.Load();
+        dropdown.Load();
+        ullist.Load();
       } 
     }); 
 
-    $('#menu').bind('inview', function(event, isInView) {
+    $('#menu').one('inview', function(event, isInView) {
       if (isInView) {
-        !menu.Loaded() && menu.Load();
+        menu.Load();
       } 
     }); 
 
-    $('#dtabs').bind('inview', function(event, isInView) {
+    $('#dtabs').one('inview', function(event, isInView) {
       if (isInView) {
-        !tabs.Loaded() && tabs.Load();
+        tabs.Load();
       } 
     }); 
 
-    $('#polyline').bind('inview', function(event, isInView) {
+    $('#polyline').one('inview', function(event, isInView) {
       if (isInView) {
-        !polyline.Loaded() && polyline.Load();
+        polyline.Load();
       } 
     }); 
 
-    $('#polygon').bind('inview', function(event, isInView) {
+    $('#polygon').one('inview', function(event, isInView) {
       if (isInView) {
-        !polygon.Loaded() && polygon.Load();
+        polygon.Load();
       } 
     }); 
 
-    $('#directions').bind('inview', function(event, isInView) {
+    $('#directions').one('inview', function(event, isInView) {
       if (isInView) {
-        !directions.Loaded() && directions.Load();
+        directions.Load();
       } 
     }); 
 
-    $('#styled').bind('inview', function(event, isInView) {
+    $('#styled').one('inview', function(event, isInView) {
       if (isInView) {
-        !styled.Loaded() && styled.Load();
+        styled.Load();
       } 
     });
 
-    $('#dmixed').bind('inview', function(event, isInView) {
+    $('#dmixed').one('inview', function(event, isInView) {
       if (isInView) {
-        !mixed.Loaded() && showGroup(0);
+        showGroup(0);
       } 
     }); 
 
-    $('#fusion').bind('inview', function(event, isInView) {
+    $('#fusion').one('inview', function(event, isInView) {
       if (isInView) {
-        !fusion.Loaded() && fusion.Load();
+        fusion.Load();
       } 
-    });     
+    });
+
+
+    if(lt_ie9) {
+      simple.Load();
+      dropdown.Load();
+      ullist.Load();
+      menu.Load();
+      tabs.Load();
+      polyline.Load();
+      polygon.Load();
+      directions.Load();
+      styled.Load();
+      showGroup(0);
+      fusion.Load();
+    }
 
 
 

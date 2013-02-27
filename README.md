@@ -2,6 +2,7 @@
 Helps you to embed Google Maps into your website, quickly create markers and controls menu for the locations on map.
 
 ## Demo
+See **[demo website](http://maplacejs.com/)**
 
 ## Setup
 Download the latest version of Maplace.js and include the Google Maps API v3 along with jQuery.

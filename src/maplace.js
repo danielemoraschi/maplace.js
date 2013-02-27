@@ -265,7 +265,7 @@
                         };
                     }
                     count++;
-                    this.o.map_options.mapTypeControlOptions.mapTypeIds.push('map_style_' + count)
+                    this.o.map_options.mapTypeControlOptions.mapTypeIds.push('map_style_' + count);
                 }
             }
 
@@ -632,7 +632,7 @@
 
             if (this.o.controls_on_map && this.oMap.controls) {
                 this.oMap.controls[this.o.controls_position].forEach(function (element, index) {
-                    self.oMap.controls[this.o.controls_position].removeAt(index);
+                    try{ self.oMap.controls[this.o.controls_position].removeAt(index); } catch(err){ self.errors.push(err); }
                 });
             }
 
