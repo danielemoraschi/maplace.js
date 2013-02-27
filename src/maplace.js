@@ -699,7 +699,7 @@
             }
         };
 
-        //check if a location has to be in menu
+        //checks if a location has to be in menu
         Maplace.prototype.ShowOnMenu = function (index) {
             if (index == this.view_all_key && this.o.view_all && this.ln > 1) {
                 return true;

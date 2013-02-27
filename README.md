@@ -67,7 +67,7 @@ var data = [{
 	      Where you want to show the menu.
 	      <strong>generate_controls</strong> must be <strong>true</strong>
 	      <strong>controls_on_map</strong> must be <strong>false</strong>
-	      At least more then one location on map
+	      At least more than one location on map
 	    </td>
 	  </tr>
 	  <tr>
@@ -83,7 +83,7 @@ var data = [{
 	    <td>string</td>
 	    <td>dropdown</td>
 	    <td>
-	      Set the menu type, choose between: <strong>dropdown</strong> |<strong>list</strong>
+	      To set the menu type choose between: <strong>dropdown</strong> | <strong>list</strong>
 	    </td>
 	  </tr>
 	  <tr>
@@ -91,7 +91,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If <strong>false</strong>, the menu will be generated into the element defined by the property <strong>controls_div</strong>
+	      If <strong><em>false</em></strong>, the menu will be generated into the element defined by the property <strong>controls_div</strong>
 	    </td>
 	  </tr>
 	  <tr>
@@ -115,7 +115,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If <strong>false</strong>, default style to the menu will not be applied
+	      If <strong><em>false</em></strong>, default styles to the menu will not be applied
 	    </td>
 	  </tr>
       <tr>
@@ -131,7 +131,7 @@ var data = [{
 	    <td>string</td>
 	    <td>marker</td>
 	    <td>
-	      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
+	      To set the Map type choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
 	    </td>
 	  </tr>
 	  <tr>
@@ -139,7 +139,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If <strong>false</strong> the "view all" link will not be created
+	      If <strong><em>false</em></strong> the link "view all" will not be created
 	    </td>
 	  </tr>
 	  <tr>
@@ -155,7 +155,7 @@ var data = [{
 	    <td>integer</td>
 	    <td>0</td>
 	    <td>
-	      Set the first location to show, "0" for "view all"
+	      Set the first location to show, <strong><em>0</em></strong> stands for "view all"
 	    </td>
 	  </tr>
 	  <tr>
@@ -163,7 +163,7 @@ var data = [{
 	    <td>Array [locations]</td>
 	    <td>[]</td>
 	    <td>
-	      List of locations beeing marked on the map
+	      List of locations being marked on the map
 	    </td>
 	  </tr>
 	  <tr>
@@ -171,7 +171,7 @@ var data = [{
 	    <td>object</td>
 	    <td>{}</td>
 	    <td>
-	      Add or overwrite every location with a set of commons property
+	      Overwrite every location with a set of common properties
 	    </td>
 	  </tr>
 	  <tr>
@@ -179,7 +179,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If <strong>false</strong>, markers will not be visible on the map (this overwrite the property <strong>visible</strong> of every location)
+	      If <strong><em>false</em></strong>, markers will not be visible on the map
 	    </td>
 	  </tr>
 	  <tr>
@@ -187,7 +187,7 @@ var data = [{
 	    <td>boolean</td>
 	    <td>true</td>
 	    <td>
-	      If <strong>false</strong>, infowindows will not be created
+	      If <strong><em>false</em></strong>, infowindows will not be created
 	    </td>
 	  </tr>
 	  <tr>
@@ -195,7 +195,7 @@ var data = [{
 	    <td>string</td>
 	    <td>bubble</td>
 	    <td>
-	      Only <strong>bubble</strong> is supported.
+	      Only <strong>bubble</strong> is supported
 	    </td>
 	  </tr>
 	  <tr>
@@ -210,8 +210,8 @@ var data = [{
 		</code>
 		</td> 	
 	    <td>
-	      Map options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a><br/>
-	      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
+	      Map options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a>.<br/>
+	      The property <strong>center</strong> will be ignored. Check at the Install page to see how to center the map with only one location
 	    </td>
 	  </tr>
       <tr>
@@ -219,7 +219,7 @@ var data = [{
         <td>Object</td>
         <td>{}</td>
         <td>
-          Styles options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
+          Style options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
         </td>
       </tr>
 	  <tr>
@@ -237,7 +237,8 @@ var data = [{
 		</code>
 	    </td>
 	    <td>
-	      Stroke options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>
+	      Stroke options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>.<br/>
+	      Used in Polyline/Polygon/Directions/Fusion Map type.
 	    </td>
 	  </tr>
 	  <tr>
@@ -301,19 +302,19 @@ var data = [{
 	    <td>AddControl</td>
 	    <td>string [name], function</td>
 	    <td></td>
-	    <td>Add you own menu type to the map. Check Menu Docs page for more details.</td>
+	    <td>Add you own menu type to the map</td>
 	  </tr>
 	  <tr>
 	    <td>CloseInfoWindow</td>
 	    <td></td>
 	    <td></td>
-	    <td>Close the current infowindow, if any open</td>
+	    <td>Close the current infowindow</td>
 	  </tr>
 	  <tr>
 	    <td>ShowOnMenu</td>
 	    <td>integer [index]</td>
 	    <td>boolean</td>
-	    <td>Get if a location has to be or is on menu</td>
+	    <td>Checks if a location has to be shown on menu</td>
 	  </tr>
 	  <tr>
 	    <td>ViewOnMap</td>
@@ -331,25 +332,25 @@ var data = [{
 	    <td>AddLocations</td>
 	    <td>array [locations] | object [location], boolean [reload]</td>
 	    <td></td>
-	    <td>Add a location or multiple locations to the currents</td>
+	    <td>Adds one or many locations</td>
 	  </tr>
 	  <tr>
 	    <td>RemoveLocations</td>
 	    <td>array [indexes] | integer [index], boolean [reload]</td>
 	    <td></td>
-	    <td>Remove a location or multiple locations</td>
+	    <td>Delete one or many locations</td>
 	  </tr>
 	  <tr>
 	    <td>Load</td>
 	    <td>null | object [options]</td>
 	    <td></td>
-	    <td>Loads or update the current configuration and construct the map.</td>
+	    <td>Loads or update the current configuration and construct the map</td>
 	  </tr>
 	  <tr>
         <td>Loaded</td>
         <td></td>
         <td></td>
-        <td>Check if a Load() was already called.<br/></td>
+        <td>Checks if a Load() was already been called<br/></td>
       </tr>
 	</tbody>
 </table>

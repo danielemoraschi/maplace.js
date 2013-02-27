@@ -80,7 +80,7 @@
       </noscript>
       <p>
         Maplace.js helps you to embed <strong>Google Maps</strong> into your website, quickly <strong>create markers</strong> and controls menu for the <strong>locations on map</strong>.<br/>
-        <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> are required so you need to have both in your page.
+        It requires <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> so you need to have both in your page.
       </p>
       <h2>Features</h2>
       <ul>
@@ -708,7 +708,7 @@ $(function() {
 });
 &lt;/script&gt;
 </pre>
-<p>If you want to center the map on a single location without any markers, you have two options:</p>
+<p>If you want to center the map on a single location without any marker, you have two options:</p>
 <pre class="prettyprint">
 new Maplace({
   show_markers: false,
@@ -765,7 +765,7 @@ new Maplace({
                       Where you want to show the menu.<br/>
                       <strong>generate_controls</strong> must be <strong><em>true</em></strong><br/>
                       <strong>controls_on_map</strong> must be <strong><em>false</em></strong><br/>
-                      At least more then one location on map
+                      At least more than one location on map
                     </td>
                   </tr>
                   <tr>
@@ -781,7 +781,7 @@ new Maplace({
                     <td>string</td>
                     <td>dropdown</td>
                     <td>
-                      Set the menu type, choose between: <strong>dropdown</strong> | <strong>list</strong>
+                      To set the menu type choose between: <strong>dropdown</strong> | <strong>list</strong>
                     </td>
                   </tr>
                   <tr>
@@ -813,7 +813,7 @@ new Maplace({
                     <td>boolean</td>
                     <td>true</td>
                     <td>
-                      If <strong><em>false</em></strong>, defaults styles to the menu will not be applied
+                      If <strong><em>false</em></strong>, default styles to the menu will not be applied
                     </td>
                   </tr>
                   <tr>
@@ -829,7 +829,7 @@ new Maplace({
                     <td>string</td>
                     <td>marker</td>
                     <td>
-                      Set the Map type, choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
+                      To set the Map type choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
                     </td>
                   </tr>
                   <tr>
@@ -853,7 +853,7 @@ new Maplace({
                     <td>integer</td>
                     <td>0</td>
                     <td>
-                      Set the first location to show, "0" for "view all"
+                      Set the first location to show, <strong><em>0</em></strong> stands for "view all"
                     </td>
                   </tr>
                   <tr>
@@ -861,7 +861,7 @@ new Maplace({
                     <td>Array &lt;locations&gt;</td>
                     <td>[]</td>
                     <td>
-                      List of locations beeing marked on the map.<br/>Check at the location docs page for more details
+                      List of locations being marked on the map.<br/>Check the location docs page for more details
                     </td>
                   </tr>
                   <tr>
@@ -869,7 +869,7 @@ new Maplace({
                     <td>object</td>
                     <td>{}</td>
                     <td>
-                      Overwrite every locations with a set of commons property
+                      Overwrite every location with a set of common properties
                     </td>
                   </tr>
                   <tr>
@@ -877,7 +877,7 @@ new Maplace({
                     <td>boolean</td>
                     <td>true</td>
                     <td>
-                      If <strong><em>false</em></strong>, markers will not be visible on the map (this overwrite the property <strong>visible</strong> of every location)
+                      If <strong><em>false</em></strong>, markers will not be visible on the map
                     </td>
                   </tr>
                   <tr>
@@ -893,7 +893,7 @@ new Maplace({
                     <td>string</td>
                     <td>bubble</td>
                     <td>
-                      Only <strong>bubble</strong> is supported.
+                      Only <strong>bubble</strong> is supported
                     </td>
                   </tr>
                   <tr>
@@ -908,8 +908,8 @@ new Maplace({
 </pre>
                     </td>
                     <td>
-                      Map options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a><br/>
-                      The property <strong>center</strong> will be ignored, check the Install page to see how to center the map with only one location
+                      Map options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a>.<br/>
+                      The property <strong>center</strong> will be ignored. Check at the Install page to see how to center the map with only one location
                     </td>
                   </tr>
                   <tr>
@@ -921,7 +921,7 @@ new Maplace({
 </pre>
                     </td>
                     <td>
-                      Styles options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
+                      Style options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
                     </td>
                   </tr>
                   <tr>
@@ -939,8 +939,8 @@ new Maplace({
 </pre>
                     </td>
                     <td>
-                      Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a><br/>
-                      Used in Polyline/Polygon/Directions/Fusion mode.
+                      Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>.<br/>
+                      Used in Polyline/Polygon/Directions/Fusion Map type.
                     </td>
                   </tr>
                   <tr>
@@ -984,7 +984,7 @@ new Maplace({
                     <td>boolean</td>
                     <td>false</td>
                     <td>
-                      If <strong><em>true</em></strong>, allows the user to drag and modify the <strong>route</strong>, the <strong>polyline</strong> or the <strong>polygon</strong>
+                      If <strong><em>true</em></strong>, allow the users to drag and modify the <strong>route</strong>, the <strong>polyline</strong> or the <strong>polygon</strong>
                     </td>
                   </tr>
                 </tbody>
@@ -1005,19 +1005,19 @@ new Maplace({
                     <td>AddControl</td>
                     <td>string &lt;<strong>name</strong>&gt;, function</td>
                     <td></td>
-                    <td>Add you own menu type to the map. Check Menu Docs page for more details.</td>
+                    <td>Add you own menu type to the map. Check at the Menu Docs page for more details.</td>
                   </tr>
                   <tr>
                     <td>CloseInfoWindow</td>
                     <td></td>
                     <td></td>
-                    <td>Close the current infowindow, if any open</td>
+                    <td>Close the current infowindow</td>
                   </tr>
                   <tr>
                     <td>ShowOnMenu</td>
                     <td>integer &lt;<strong>index</strong>&gt;</td>
                     <td>boolean</td>
-                    <td>Check if a location has to be shown on menu</td>
+                    <td>Checks if a location has to be shown on menu</td>
                   </tr>
                   <tr>
                     <td>ViewOnMap</td>
@@ -1035,25 +1035,25 @@ new Maplace({
                     <td>AddLocations</td>
                     <td>array &lt;<strong>locations</strong>&gt; | object &lt;<strong>location</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
                     <td></td>
-                    <td>Add a location or many locations</td>
+                    <td>Adds one or many locations</td>
                   </tr>
                   <tr>
                     <td>RemoveLocations</td>
                     <td>array &lt;<strong>indexes</strong>&gt; | integer &lt;<strong>index</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
                     <td></td>
-                    <td>Remove a location or many locations</td>
+                    <td>Delete one or many locations</td>
                   </tr>
                   <tr>
                     <td>Load</td>
                     <td>null | object &lt;<strong>options</strong>&gt;</td>
                     <td></td>
-                    <td>Loads or update the current configuration and construct the map.<br/></td>
+                    <td>Loads or updates the current configuration and constructs the map</td>
                   </tr>
                   <tr>
                     <td>Loaded</td>
                     <td></td>
                     <td></td>
-                    <td>Check if a Load() was already called.<br/></td>
+                    <td>Checks if a Load() was already been called<br/></td>
                   </tr>
                 </tbody>
               </table>
@@ -1201,7 +1201,7 @@ new Maplace({
                     <td>
                       Html content for the infowindow<br/>
                       String <strong>%index</strong> will be replaced with the location index<br/>
-                      String <strong>%title</strong> will be replaced with the content of the title if exist
+                      String <strong>%title</strong> will be replaced with the content of the title
                     </td>
                   </tr>
                   <tr>
@@ -1230,7 +1230,7 @@ new Maplace({
                     <td>
                       Available in type: <strong>directions</strong><br/>
                       If <strong><em>true</em></strong>, indicates that this waypoint is a stop between the origin and destination.<br/>
-                      This has the effect of splitting the route into two. <strong><em>false</em></strong> by default
+                      This has the effect of splitting the route in two. <strong><em>false</em></strong> by default
                     </td>
                   </tr>
                   <tr>
@@ -1385,7 +1385,7 @@ var LocsD = [
             <h2 class="four columns mobile-two">Adding a new menu type</h2>
             <div class="four columns mobile-two">
               <p>
-                This is a simple checkbox menu example. You have to define two methods to make it works: <strong>activateCurrent</strong> and <strong>getHtml</strong><br/>
+                This is a simple checkbox menu example. You have to define two methods to make it work: <strong>activateCurrent</strong> and <strong>getHtml</strong><br/>
                 and <strong><em>this</em></strong> variable will be scoped to the current Maplace instance.
               </p>
 <pre class="prettyprint">
