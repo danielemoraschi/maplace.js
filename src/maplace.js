@@ -223,29 +223,8 @@
             this.AddControl('list', html_ullist);
 
             //init
-            this.args = args;
-        }
-
-        //loads the options
-        Maplace.prototype._init = function (args) {
             $.extend(true, this.o, args);
-
-            //store the locations length
-            this.ln = this.o.locations.length;
-
-            //update all locations with commons
-            for (var i=0; i < this.ln; i++) {
-                $.extend(this.o.locations[i], this.o.commons);
-                if(this.o.locations[i].html) {
-                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i+1);
-                    this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
-                }
-            }
-
-            //store dom references
-            this.map_div = $(this.o.map_div);
-            this.controls_wrapper = $(this.o.controls_div);
-        };
+        }
 
         //where to store the menu types
         Maplace.prototype.controls = {};
@@ -801,30 +780,29 @@
             return this.loaded;
         };
 
+        //loads the options
+        Maplace.prototype._init = function () {
+            //store the locations length
+            this.ln = this.o.locations.length;
+
+            //update all locations with commons
+            for (var i=0; i < this.ln; i++) {
+                $.extend(this.o.locations[i], this.o.commons);
+                if(this.o.locations[i].html) {
+                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i+1);
+                    this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
+                }
+            }
+
+            //store dom references
+            this.map_div = $(this.o.map_div);
+            this.controls_wrapper = $(this.o.controls_div);
+        };
+
         //creates the map and menu
         Maplace.prototype.Load = function (args) {
-            //first call
-            if (!this.loaded) {
-                //if new args, updates current options
-                if(args!==true && args!==false) {
-                    this._init(args || this.args);
-                }
-                //else use the init options
-                else {
-                    this._init(this.args);
-                }
-            }
-            //other calls
-            else {
-                //if args is true, force reload init options
-                if(args===true) {
-                    this._init(this.args);
-                }
-                //if new args, updates current options
-                else if(args!==false) {
-                    this._init(args);
-                }
-            }
+            $.extend(true, this.o, args);
+            this._init();
             
             //reset/init google map objects
             this.init_map();
