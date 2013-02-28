@@ -723,7 +723,7 @@
         //replace current locations
         Maplace.prototype.SetLocations = function (locs, reload) {
             this.o.locations = locs;
-            reload && this.Load(true);
+            reload && this.Load();
         };
 
         //adds one or more locations to the end of the array
@@ -739,7 +739,7 @@
                 this.o.locations.push(locs);
             }
 
-            reload && this.Load(true);
+            reload && this.Load();
         };
 
         //adds a location at the specific index
@@ -750,7 +750,7 @@
                 this.o.locations.splice(index, 0, location);
             }
 
-            reload && this.Load(true);
+            reload && this.Load();
         };
 
         //remove one or more locations
@@ -772,7 +772,7 @@
                 }
             }
 
-            reload && this.Load(true);
+            reload && this.Load();
         };
 
         //check if already initialized with a Load()
