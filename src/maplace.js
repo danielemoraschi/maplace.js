@@ -7,7 +7,7 @@
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
-    * http://maplacejs.cm
+    * http://maplacejs.com
     *
     * @version  0.1.0
     */
