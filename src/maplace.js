@@ -2,14 +2,14 @@
     'use strict';
 
     /**
-    * Maplace.js 0.1.0
+    * Maplace.js 0.1.1
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.0
+    * @version  0.1.1
     */
 
 
@@ -129,7 +129,6 @@
     };
 
 
-
     Maplace = (function() {
 
         /**
@@ -138,7 +137,7 @@
         * @constructor  
         */
         function Maplace(args) {
-            this.VERSION = '0.1.0';
+            this.VERSION = '0.1.1';
             this.errors = [];
             this.loaded = false;
             this.dev = true;
@@ -224,11 +223,11 @@
             this.AddControl('list', html_ullist);
 
             //init
-            this._init(args, true);
+            this.args = args;
         }
 
         //loads the options
-        Maplace.prototype._init = function (args, construct) {
+        Maplace.prototype._init = function (args) {
             $.extend(true, this.o, args);
 
             //store the locations length
@@ -708,7 +707,8 @@
             index = parseInt(index, 10);
             if (typeof(index-0) == 'number' && index >= 0 && index < this.ln) {
                 var visible = this.o.locations[index].visible === false ? false : true;
-                if (visible) {
+                var on_menu = this.o.locations[index].on_menu === false ? false : true;
+                if (visible && on_menu) {
                     return true;
                 }
             }
@@ -744,10 +744,10 @@
         //replace current locations
         Maplace.prototype.SetLocations = function (locs, reload) {
             this.o.locations = locs;
-            reload && this.Load();
+            reload && this.Load(true);
         };
 
-        //adds one or more locations
+        //adds one or more locations to the end of the array
         Maplace.prototype.AddLocations = function (locs, reload) {
             var self = this;
 
@@ -757,10 +757,21 @@
                 });
             }
             if ($.isPlainObject(locs)) {
-                this.o.locations.push( locs );
+                this.o.locations.push(locs);
             }
 
-            reload && this.Load();
+            reload && this.Load(true);
+        };
+
+        //adds a location at the specific index
+        Maplace.prototype.AddLocation = function (location, index, reload) {
+            var self = this;
+
+            if ($.isPlainObject(location)) {
+                this.o.locations.splice(index, 0, location);
+            }
+
+            reload && this.Load(true);
         };
 
         //remove one or more locations
@@ -782,7 +793,7 @@
                 }
             }
 
-            reload && this.Load();
+            reload && this.Load(true);
         };
 
         //check if already initialized with a Load()
@@ -792,8 +803,28 @@
 
         //creates the map and menu
         Maplace.prototype.Load = function (args) {
-            //update currents options if args
-            args && this._init(args);
+            //first call
+            if (!this.loaded) {
+                //if new args, updates current options
+                if(args!==true && args!==false) {
+                    this._init(args || this.args);
+                }
+                //else use the init options
+                else {
+                    this._init(this.args);
+                }
+            }
+            //other calls
+            else {
+                //if args is true, force reload init options
+                if(args===true) {
+                    this._init(this.args);
+                }
+                //if new args, updates current options
+                else if(args!==false) {
+                    this._init(args);
+                }
+            }
             
             //reset/init google map objects
             this.init_map();
@@ -826,7 +857,7 @@
                     });
                 });
             }
-            //any others calls
+            //any other calls
             else {
                 this.perform_load();
             }

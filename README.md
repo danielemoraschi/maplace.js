@@ -335,6 +335,12 @@ var data = [{
 	    <td></td>
 	    <td>Adds one or many locations</td>
 	  </tr>
+      <tr>
+        <td>AddLocation</td>
+        <td>object [location], integer [index], boolean [reload]</td>
+        <td></td>
+        <td>Adds one location at the specific index</td>
+      </tr>
 	  <tr>
 	    <td>RemoveLocations</td>
 	    <td>array [indexes] | integer [index], boolean [reload]</td>
@@ -343,9 +349,9 @@ var data = [{
 	  </tr>
 	  <tr>
 	    <td>Load</td>
-	    <td>null | object [options]</td>
+	    <td>null | boolean | object [options]</td>
 	    <td></td>
-	    <td>Loads or update the current configuration and construct the map</td>
+	    <td>Loads, updates the current options or force to reload the current options and construct the map</td>
 	  </tr>
 	  <tr>
         <td>Loaded</td>
