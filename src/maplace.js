@@ -234,7 +234,7 @@
             //store the locations length
             this.ln = this.o.locations.length;
 
-            //update with commons
+            //update all locations with commons
             for (var i=0; i < this.ln; i++) {
                 $.extend(this.o.locations[i], this.o.commons);
                 if(this.o.locations[i].html) {
@@ -269,7 +269,7 @@
                 }
             }
 
-
+            //if init
             if (!this.loaded) {
                 try {
                     this.map_div.css({
@@ -288,7 +288,7 @@
                 catch(err) { this.errors.push(err.toString()); }
             }
 
-            //if already loaded loads the new options
+            //else loads the new options
             else {
                 self.oMap.setOptions(this.o.map_options);
             }
@@ -680,7 +680,7 @@
         /////////////////////////////////////////////////////////////////////////
 
 
-        //add a custom menu to the class
+        //adds a custom menu to the class
         Maplace.prototype.AddControl = function (name, func) {
             if (!name || !func) {
                 return false;
@@ -689,7 +689,7 @@
             return true;
         };
 
-        //close the open infowindow
+        //close the infowindow
         Maplace.prototype.CloseInfoWindow = function () {
             if (this.infowindow && (this.current_index || this.current_index===0)) {
                 this.o.beforeCloseInfowindow(this.current_index, this.o.locations[this.current_index]);        
@@ -817,19 +817,19 @@
                 google.maps.event.addListenerOnce(this.oMap, 'idle', function () {
                     self.perform_load();
                 });
+
+                //adapt the div size on resize
+                google.maps.event.addListener(this.oMap, 'resize', function () {
+                    self.canvas_map.css({
+                        width: self.map_div.width(),
+                        height: self.map_div.height()
+                    });
+                });
             }
-            //any others call
+            //any others calls
             else {
                 this.perform_load();
             }
-
-            //adapt the div size on resize
-            google.maps.event.addListener(this.oMap, 'resize', function () {
-                self.canvas_map.css({
-                    width: self.map_div.width(),
-                    height: self.map_div.height()
-                });
-            });
 
             this.loaded = true;
         };
