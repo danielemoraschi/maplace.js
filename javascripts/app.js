@@ -17,6 +17,10 @@
       });
     }
 
+    $("body").iealert({
+      support: 'ie7'
+    });
+
     prettyPrint();
 
     if($('html').hasClass('lt-ie9')) {
