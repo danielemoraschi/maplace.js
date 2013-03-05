@@ -473,3 +473,11 @@ Maplace.js requires jQuery and Google Maps Library v3.
 All efforts have been made to keep the source as clean and readable as possible.<br/>
 Maplace.js is released under an MIT License.
 
+## Changelog
+
+- **(Planned) 0.2.0**  
+Custom InfoWindow
+
+- **0.1.0**  
+Initial release
+
