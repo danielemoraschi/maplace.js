@@ -623,6 +623,7 @@
         Maplace.prototype.perform_load = function () {
             //one location
             if (this.ln == 1) {
+                this.oMap.setCenter(this.markers[0].getPosition());
                 this.ViewOnMap(1); 
             }
             //no locations
