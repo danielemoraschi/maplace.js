@@ -2,14 +2,14 @@
     'use strict';
 
     /**
-    * Maplace.js 0.1.1
+    * Maplace.js 0.1.2
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.1
+    * @version  0.1.2
     */
 
 
@@ -137,7 +137,7 @@
         * @constructor  
         */
         function Maplace(args) {
-            this.VERSION = '0.1.1';
+            this.VERSION = '0.1.2';
             this.errors = [];
             this.loaded = false;
             this.dev = true;
@@ -803,6 +803,7 @@
         //creates the map and menu
         Maplace.prototype.Load = function (args) {
             $.extend(true, this.o, args);
+            args && args.locations && (this.o.locations = args.locations);
             this._init();
             
             //reset/init google map objects
