@@ -805,6 +805,7 @@
 			
 			//generate controls
 			if ((this.ln > 1 && this.o.generate_controls) || this.o.force_generate_controls)  {
+				this.o.generate_controls = true;
 				this.generate_controls();
 			}
 			else {
