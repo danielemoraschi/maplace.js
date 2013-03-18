@@ -163,7 +163,8 @@
         mixed.Load({
           locations: data.points,
           view_all_text: data.title,
-          type: data.type
+          type: data.type,
+          force_generate_controls: true
         });
       });
     }
