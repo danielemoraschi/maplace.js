@@ -205,7 +205,7 @@ var data = [{
 	    <td> 
 	    <code>
 		{<br/>
-			mapTypeId: 'ROADMAP',<br/>
+			mapTypeId: google.maps.MapTypeId.ROADMAP, //or roadmap<br/>
 			zoom: 1<br/>
 		}
 		</code>
