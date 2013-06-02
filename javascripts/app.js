@@ -7,8 +7,6 @@
 
   $(document).ready(function() {
     
-    google.maps.visualRefresh = true;
-    
     $.fn.foundationMediaQueryViewer ? $doc.foundationMediaQueryViewer() : null;
     $.fn.foundationTabs             ? $doc.foundationTabs() : null;
 

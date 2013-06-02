@@ -797,6 +797,7 @@
 			this._init();
 			
 			//reset/init google map objects
+			this.o.visualRefresh === false ? (google.maps.visualRefresh = false) : (google.maps.visualRefresh = true);
 			this.init_map();
 			this.create_objMap();
 
