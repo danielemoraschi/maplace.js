@@ -16,14 +16,14 @@ var LocsA = [
         lon: 10.9,
         title: 'Title A1',
         html: '<h3>Content A1</h3>',
-        icon: 'http://www.google.com/mapfiles/markerA.png'
+        icon: 'http://maps.google.com/mapfiles/markerA.png'
     },
     {
         lat: 44.8,
         lon: 1.7,
         title: 'Title B1',
         html: '<h3>Content B1</h3>',
-        icon: 'http://www.google.com/mapfiles/markerB.png',
+        icon: 'http://maps.google.com/mapfiles/markerB.png',
         show_infowindow: false
     },
     {
@@ -35,7 +35,7 @@ var LocsA = [
             '<p>Lorem Ipsum..</p>'
         ].join(''),
         zoom: 8,
-        icon: 'http://www.google.com/mapfiles/markerC.png'
+        icon: 'http://maps.google.com/mapfiles/markerC.png'
     }
 ];
 

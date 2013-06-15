@@ -2,14 +2,14 @@
 	'use strict';
 
 	/**
-	* Maplace.js 0.1.2
+	* Maplace.js 0.1.2b
 	*
 	* Copyright (c) 2013 Daniele Moraschi
 	* Licensed under the MIT license
 	* For all details and documentation:
 	* http://maplacejs.com
 	*
-	* @version  0.1.2
+	* @version  0.1.2b
 	*/
 
 
@@ -258,8 +258,8 @@
 					
 					//create the container div into map_div
 					this.canvas_map = $('<div>').addClass('canvas_map').css({
-						width: this.map_div.width(),
-						height: this.map_div.height()
+						width: '100%',
+						height: '100%'
 					}).appendTo(this.map_div);
 
 					this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
