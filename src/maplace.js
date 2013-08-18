@@ -2,14 +2,14 @@
 	'use strict';
 
 	/**
-	* Maplace.js 0.1.2b
+	* Maplace.js 0.1.2c
 	*
 	* Copyright (c) 2013 Daniele Moraschi
 	* Licensed under the MIT license
 	* For all details and documentation:
 	* http://maplacejs.com
 	*
-	* @version  0.1.2b
+	* @version  0.1.2c
 	*/
 
 
@@ -203,6 +203,7 @@
 				show_infowindows: true,
 				show_markers: true,
 				infowindow_type: 'bubble',
+				listeners: {},
 
 				//events
 				beforeViewAll: function () {},
@@ -828,6 +829,18 @@
 						height: self.map_div.height()
 					});
 				});
+
+				//add custom listeners
+				var i;
+				for (i in this.o.listeners) {
+					var map = this.oMap,
+						myListener = this.o.listeners[i];
+					if (this.o.listeners.hasOwnProperty(i)) {
+						google.maps.event.addListener(this.oMap, i, function () {
+							myListener(map);
+						});
+					}
+				}
 			}
 			//any other calls
 			else {
