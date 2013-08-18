@@ -836,8 +836,8 @@
 					var map = this.oMap,
 						myListener = this.o.listeners[i];
 					if (this.o.listeners.hasOwnProperty(i)) {
-						google.maps.event.addListener(this.oMap, i, function () {
-							myListener(map);
+						google.maps.event.addListener(this.oMap, i, function (event) {
+							myListener(map, event);
 						});
 					}
 				}
