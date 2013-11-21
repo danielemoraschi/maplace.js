@@ -620,8 +620,12 @@
 		Maplace.prototype.perform_load = function () {
 			//one location
 			if (this.ln === 1) {
-				this.oMap.setCenter(this.markers[0].getPosition());
-				this.ViewOnMap(1);
+				if (this.o.map_options.set_center) {
+					this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+				} else {
+					this.oMap.setCenter(this.markers[0].getPosition());
+					this.ViewOnMap(1);
+				}
 			} else if (this.ln === 0) { //no locations
 				if (this.o.map_options.set_center) {
 					this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
