@@ -3,42 +3,42 @@
 ----------------------------------------- */
 
 header {
-	border-top: 10px solid #a72200;
-	background: #fff;
-	color: #222;
-	margin-bottom: 20px;
+    border-top: 10px solid #a72200;
+    background: #fff;
+    color: #222;
+    margin-bottom: 20px;
 }
 
 header h1 {
-	font-family: "Oxygen", sans-serif;
-	text-transform: capitalize;
-	font-weight: 700;
-	margin-top: 50px;
-	font-size: 50px;
+    font-family: "Oxygen", sans-serif;
+    text-transform: capitalize;
+    font-weight: 700;
+    margin-top: 50px;
+    font-size: 50px;
 }
 
 header h1 a {
-	color: #222;
+    color: #222;
 }
 
 ul, ol, dl {
-	margin-bottom: 20px
+    margin-bottom: 20px
 }
 
 .gmap {
-	height: 300px;
-	width: 100%;
-	padding: 3px;
-	border: 5px solid #ddd;
-	font-size: 90%;
+    height: 300px;
+    width: 100%;
+    padding: 3px;
+    border: 5px solid #ddd;
+    font-size: 90%;
 }
 
 .gmap + .gmap {
-	margin: 5px 0;
+    margin: 5px 0;
 }
 
 .canvas_map {
-	width: 100% !important;
+    width: 100% !important;
 }
 
 .gmap img, .gmap object, .gmap embed { max-width: none; height: auto }
@@ -46,108 +46,108 @@ ul, ol, dl {
 .gmap *,.gmap *:before,.gmap *:after{-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;}
 
 .tabs-content li {
-	list-style-type: none !important;
+    list-style-type: none !important;
 }
 
 .line {
-	border-bottom: 3px solid #ddd;
-	margin-top: 10px;
+    border-bottom: 3px solid #ddd;
+    margin-top: 10px;
 }
 
 h2 {
-	font-family: "Open Sans", sans-serif;
-	font-size: 32px;
-	font-weight: 400;
-	height: 40px;
-	line-height: 40px;
-	margin-bottom: 20px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 20px;
 }
 
 .install h2 {
 }
 
 .panel h2 {
-	font-size: 28px;
+    font-size: 28px;
 }
 
 h3 {
-	font-size: 22px;
-	margin: 0 0 5px;
+    font-size: 22px;
+    margin: 0 0 5px;
 }
 
 .code h3 {
-	margin: 15px 0 12px;
-	font-weight: normal;
+    margin: 15px 0 12px;
+    font-weight: normal;
 }
 
 .description {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .description ul {
-	padding-left: 20px;
+    padding-left: 20px;
 }
 
 .description strong {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 .tabs.pill {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .tabs.pill.small a {
-	padding: 0 8px;
-	font-size: 12px;
-	line-height: 22px;
-	height: 22px;
+    padding: 0 8px;
+    font-size: 12px;
+    line-height: 22px;
+    height: 22px;
 }
 
 .tabs.pill dd.active, .tabs.pill li.active,
 .tabs.pill dd, .tabs.pill li {
-	margin-top: 24px;
+    margin-top: 24px;
 }
 
 section {
-	padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 section.last {
-	padding-bottom: 0;
+    padding-bottom: 0;
 }
 
 
 header .line {
-	border-bottom: 3px solid #444;
+    border-bottom: 3px solid #444;
 }
 
 section.last .line {
-	border: none;
+    border: none;
 }
 
 footer {
-	padding-top: 10px;
-	border-top: 3px solid #444;
+    padding-top: 10px;
+    border-top: 3px solid #444;
 }
 
 ul.side-nav li {
-	margin: 0;
+    margin: 0;
 }
 
 .tabs .right {
-	float: right !important;
+    float: right !important;
 }
 
 .docs .prettyprint {
-	font-size: 12px;
+    font-size: 12px;
 }
 
 .panel {
-	height: 140px;
+    height: 140px;
 }
 
 .panel .button {
-	width: 100%;
+    width: 100%;
 }
 
 select {
@@ -155,70 +155,70 @@ select {
 }
 
 .mobile-one .right {
-	float: right!important
+    float: right!important
 }
 
 .adp-directions {
-	width: 100%;
+    width: 100%;
 }
 
 #controls {
-	margin-bottom: 20px;
-	float: left;
-	width: 100%;
+    margin-bottom: 20px;
+    float: left;
+    width: 100%;
 }
 
 #controls .ullist {
-	margin: 0px; 
-	padding: 0px; 
-	list-style-type: none;
+    margin: 0px; 
+    padding: 0px; 
+    list-style-type: none;
 }
 
 #controls-9 .wrap_controls {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 #route table tbody tr td.adp-text {
-	padding: 9px 25px;
-	vertical-align: middle;
+    padding: 9px 25px;
+    vertical-align: middle;
 }
 
 .socials {
-	position: absolute;
-	bottom: 20px;
-	right: -10px;
+    position: absolute;
+    bottom: 20px;
+    right: -10px;
 }
 
 
 @media only screen and (max-width: 767px) {
 
-	h2 { 
-		font-size: 24px;
-	}
+    h2 { 
+        font-size: 24px;
+    }
 
-	h3 {
-		font-size: 20px;
-	}
+    h3 {
+        font-size: 20px;
+    }
 
-	.tabs dd a, .tabs li a {
-		padding: 0px 6px;
-	}
+    .tabs dd a, .tabs li a {
+        padding: 0px 6px;
+    }
 
-	.panel {
-		height: auto;
-	}
+    .panel {
+        height: auto;
+    }
 
-	.socials {
-		position: static;
-	}
+    .socials {
+        position: static;
+    }
 
-	.gmap_controls.tabs .ullist li a {
-		padding: 0px 6px !important;
-	}
+    .gmap_controls.tabs .ullist li a {
+        padding: 0px 6px !important;
+    }
 
-	#directions h2 {
-		height: auto;
-	}
+    #directions h2 {
+        height: auto;
+    }
 }
 
 
@@ -227,52 +227,52 @@ select {
 ----------------------------------------- */
 
 .gmap * {
-	font-size: 100%;
+    font-size: 100%;
 }
 
 .ullist {
-	width: 100%;
+    width: 100%;
 }
 
 .tab-content {
-	margin: 0 0 20px;
+    margin: 0 0 20px;
 }
 
 .menu .ullist li {
-	width: 49%;
-	float: left;
-	margin-right: 1%
+    width: 49%;
+    float: left;
+    margin-right: 1%
 }
 
 .menu .ullist li.active a,
 .menu .ullist li a:hover {
-	color: #B82200 !important;
-	background-color: #eee !important;
+    color: #B82200 !important;
+    background-color: #eee !important;
 }
 
 .tabs .ullist li a{
-	padding: 0px 23.8px !important;
+    padding: 0px 23.8px !important;
 }
 
 .tabs .ullist li a:hover {
-	color: #6f6f6f !important;
-	background-color: transparent !important;
+    color: #6f6f6f !important;
+    background-color: transparent !important;
 }
 
 .tabs .ullist li.active a{
-	font-weight: bold;
-	color: #3c3c3c !important;
-	background-color: #fff !important;
+    font-weight: bold;
+    color: #3c3c3c !important;
+    background-color: #fff !important;
 }
 
 .ullist li.active a {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .ullist li.active a,
 .ullist li a:hover {
-	color: #B82200 !important;
-	background-color: #eee !important;
+    color: #B82200 !important;
+    background-color: #eee !important;
 }
 
 

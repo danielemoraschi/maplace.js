@@ -156,6 +156,7 @@
       controls_type: 'list',
       controls_on_map: false
     });
+
     function showGroup(index) {
       var el = $('#g'+index);
       $('#mixed li').removeClass('active');
@@ -169,6 +170,7 @@
         });
       });
     }
+
     $('#mixed a').click(function(e) {
       e.preventDefault();
       var index = $(this).attr('data-load');
@@ -204,6 +206,7 @@
         html: '%index'
       }
     });
+
     $('#load_bigdata').click(function(e) {
       e.preventDefault();
       $('#panel').fadeOut(10, function() {
