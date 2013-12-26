@@ -353,7 +353,7 @@
                             circe_stroke_opz = $.extend(def_opz, point.stroke_options || {});
 
                         $.extend(circe, circe_stroke_opz);
-                        $.extend(circe, point.circe_options || {});
+                        $.extend(circe, point.circle_options || {});
 
                         circe.radius = circe.radius || this.o.circle_radius;
                         circe.center = point.position;
