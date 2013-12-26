@@ -186,7 +186,7 @@
                     strokeOpacity: 0.8,
                     strokeWeight: 2,
                     fillColor: '#0000FF',
-                    fillOpacity: 0.4
+                    fillOpacity: 0.4,
                 },
                 directions_options: {
                     travelMode: google.maps.TravelMode.DRIVING,
@@ -196,6 +196,7 @@
                     avoidHighways: false,
                     avoidTolls: false
                 },
+                circle_radius: 10000,
                 styles: {},
                 fusion_options: {},
                 directions_panel: null,
@@ -216,7 +217,9 @@
                 beforeOpenInfowindow: function (index, location, marker) {},
                 afterOpenInfowindow: function (index, location, marker) {},
                 afterRoute: function (distance, status, result) {},
-                onPolylineClick: function (obj) {}
+                onPolylineClick: function (obj) {},
+                circleRaiusChanged: function (index, circle, marker) {},
+                circleCenterChanged: function (index, circle, marker) {}
             };
 
             //default menu types
@@ -294,6 +297,7 @@
             //switch how to display the locations
             switch (type) {
                 case 'marker':
+                case 'circle':
                     for (a = 0; a < this.ln; a++) {
                         this.create.marker.call(this, a);
                     }
@@ -317,7 +321,8 @@
                     image_w,
                     image_h,
                     latlng = new google.maps.LatLng(point.lat, point.lon),
-                    orig_visible = point.visible === false ? false : true;
+                    orig_visible = point.visible === false ? false : true,
+                    type = point.type || this.o.type;
 
                 $.extend(point, {
                     position: latlng,
@@ -331,20 +336,52 @@
                     image_w = point.image_w || 32;
                     image_h = point.image_h || 32;
                     $.extend(point, {
-                        icon: new google.maps.MarkerImage(point.image, new google.maps.Size(image_w, image_h), new google.maps.Point(0, 0), new google.maps.Point(image_w / 2, image_h / 2))
+                        icon: new google.maps.MarkerImage(
+                                point.image,
+                                new google.maps.Size(image_w, image_h),
+                                new google.maps.Point(0, 0),
+                                new google.maps.Point(image_w / 2, image_h / 2)
+                            )
                     });
                 }
 
                 //create the marker and add click event
-                marker = new google.maps.Marker(point);
-                a = google.maps.event.addListener(marker, 'click', function () {
+                switch (type) {
+                    case 'circle':
+                        var circe = point,
+                            def_opz = this.o.stroke_options || {},
+                            circe_stroke_opz = $.extend(def_opz, point.stroke_options || {});
+
+                        $.extend(circe, circe_stroke_opz);
+                        $.extend(circe, point.circe_options || {});
+
+                        circe.radius = circe.radius || this.o.circle_radius;
+                        circe.center = point.position;
+
+                        marker = new google.maps.Circle(circe);
+
+                        google.maps.event.addListener(marker, 'center_changed', function() {
+                            self.o.circleCenterChanged(index, circe, marker);
+                        });
+
+                        google.maps.event.addListener(marker, 'radius_changed', function() {
+                            self.o.circleRaiusChanged(index, circe, marker);
+                        });
+
+                    default:
+                        if(!marker || !point.hide_marker) {
+                            marker = new google.maps.Marker(point);
+                        }
+                }
+                
+                google.maps.event.addListener(marker, 'click', function (ev) {
 
                     self.o.beforeShow(index, point, marker);
 
                     //show infowindow?
                     point_infow = point.show_infowindows === false ? false : true;
                     if (self.o.show_infowindows && point_infow) {
-                        self.open_infowindow(index, marker);
+                        self.open_infowindow(index, marker, ev);
                     }
 
                     //pan and zoom the map
@@ -396,7 +433,9 @@
                     map: this.oMap
                 });
 
-                this.Polyline ? this.Polyline.setOptions(this.o.stroke_options) : this.Polyline = new google.maps.Polyline(this.o.stroke_options);
+                this.Polyline
+                    ? this.Polyline.setOptions(this.o.stroke_options)
+                    : this.Polyline = new google.maps.Polyline(this.o.stroke_options);
             },
 
 
@@ -420,7 +459,9 @@
                     map: this.oMap
                 });
 
-                this.Polygon ? this.Polygon.setOptions(this.o.stroke_options) : this.Polygon = new google.maps.Polygon(this.o.stroke_options);
+                this.Polygon
+                    ? this.Polygon.setOptions(this.o.stroke_options)
+                    : this.Polygon = new google.maps.Polygon(this.o.stroke_options);
 
                 google.maps.event.addListener(this.Polygon, 'click', function (obj) {
                     self.o.onPolylineClick(obj);
@@ -435,7 +476,9 @@
                     map: this.oMap
                 });
 
-                this.Fusion ? this.Fusion.setOptions(this.o.fusion_options) : this.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
+                this.Fusion
+                    ? this.Fusion.setOptions(this.o.fusion_options)
+                    : this.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
             },
 
 
@@ -476,7 +519,9 @@
                 });
 
                 this.directionsService || (this.directionsService = new google.maps.DirectionsService());
-                this.directionsDisplay ? this.directionsDisplay.setOptions({ draggable: this.o.draggable }) : this.directionsDisplay = new google.maps.DirectionsRenderer({ draggable: this.o.draggable });
+                this.directionsDisplay 
+                    ? this.directionsDisplay.setOptions({ draggable: this.o.draggable })
+                    : this.directionsDisplay = new google.maps.DirectionsRenderer({ draggable: this.o.draggable });
 
                 this.directionsDisplay.setMap(this.oMap);
 
@@ -529,16 +574,17 @@
         };
 
         //open the infowindow
-        Maplace.prototype.open_infowindow = function (index, marker) {
+        Maplace.prototype.open_infowindow = function (index, marker, ev) {
             //close if any open
             this.CloseInfoWindow();
             var point = this.o.locations[index],
-                type = point.type || this.o.infowindow_type;
+                type = this.o.infowindow_type;
 
             //show if content and valid infowindow type provided
             if (point.html && this.type_to_open[type]) {
                 this.o.beforeOpenInfowindow(index, point, marker);
                 this.type_to_open[type].call(this, point);
+                //if(ev) this.infoWindow.setPosition(ev.latLng);
                 this.infowindow.open(this.oMap, marker);
                 this.o.afterOpenInfowindow(index, point, marker);
             }
@@ -565,9 +611,9 @@
 
             //else 
             //controls in map
-            var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>').css(this.o.controls_applycss ? {
-                margin: '5px'
-            } : {}),
+            var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>')
+                .css(this.o.controls_applycss ? { margin: '5px' } : {}),
+
                 inner = $(this.get_html_controls()).css(this.o.controls_applycss ? {
                     background: '#fff',
                     padding: '5px',
@@ -598,7 +644,11 @@
             if (this.markers) {
                 for (i in this.markers) {
                     if (this.markers[i]) {
-                        try { this.markers[i].setMap(null); } catch (err) { self.errors.push(err); }
+                        try { 
+                            this.markers[i].setMap(null);
+                        } catch (err) {
+                            self.errors.push(err);
+                        }
                     }
                 }
                 this.markers.length = 0;
@@ -607,7 +657,11 @@
 
             if (this.o.controls_on_map && this.oMap.controls) {
                 this.oMap.controls[this.o.controls_position].forEach(function (element, index) {
-                    try { self.oMap.controls[this.o.controls_position].removeAt(index); } catch (err) { self.errors.push(err); }
+                    try {
+                        self.oMap.controls[this.o.controls_position].removeAt(index);
+                    } catch (err) { 
+                        self.errors.push(err);
+                    }
                 });
             }
 
@@ -813,8 +867,7 @@
             if ((this.ln > 1 && this.o.generate_controls) || this.o.force_generate_controls)  {
                 this.o.generate_controls = true;
                 this.generate_controls();
-            }
-            else {
+            } else {
                 this.o.generate_controls = false;
             }
 
@@ -845,9 +898,8 @@
                         });
                     }
                 }
-            }
-            //any other calls
-            else {
+            //all other calls
+            } else {
                 this.perform_load();
             }
 
@@ -862,8 +914,7 @@
 
     if (typeof define == 'function' && define.amd) {
         define(function() { return Maplace; });
-    }
-    else {
+    } else {
         window.Maplace = Maplace;
     }
 
