@@ -2,14 +2,14 @@
     'use strict';
 
     /**
-    * Maplace.js 0.1.2c
+    * Maplace.js 0.1.3
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.2c
+    * @version  0.1.3
     */
 
 
@@ -137,11 +137,11 @@
         * @constructor  
         */
         function Maplace(args) {
-            this.VERSION = '0.1.2';
+            this.VERSION = '0.1.3';
             this.errors = [];
             this.loaded = false;
-            this.dev = true;
             this.markers = [];
+            this.circles = [];
             this.oMap = false;
             this.view_all_key = 'all';
 
@@ -176,7 +176,7 @@
                 view_all_text: 'View All',
                 start: 0,
                 locations: [],
-                commons: {},
+                shared: {},
                 map_options: {
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     zoom: 1
@@ -186,7 +186,7 @@
                     strokeOpacity: 0.8,
                     strokeWeight: 2,
                     fillColor: '#0000FF',
-                    fillOpacity: 0.4,
+                    fillOpacity: 0.4
                 },
                 directions_options: {
                     travelMode: google.maps.TravelMode.DRIVING,
@@ -196,11 +196,14 @@
                     avoidHighways: false,
                     avoidTolls: false
                 },
-                circle_radius: 10000,
+                circle_options: {
+                    radius: 100
+                },
                 styles: {},
                 fusion_options: {},
                 directions_panel: null,
                 draggable: false,
+                editable: false,
                 show_infowindows: true,
                 show_markers: true,
                 infowindow_type: 'bubble',
@@ -212,19 +215,34 @@
                 beforeShow: function (index, location, marker) {},
                 afterShow: function (index, location, marker) {},
                 afterCreateMarker: function (index, location, marker) {},
+
                 beforeCloseInfowindow: function (index, location) {},
                 afterCloseInfowindow: function (index, location) {},
                 beforeOpenInfowindow: function (index, location, marker) {},
                 afterOpenInfowindow: function (index, location, marker) {},
+
                 afterRoute: function (distance, status, result) {},
                 onPolylineClick: function (obj) {},
-                circleRaiusChanged: function (index, circle, marker) {},
-                circleCenterChanged: function (index, circle, marker) {}
+                onPolylineChanged: function(index, obj, newPathArray) {},
+                onPolygonClick: function (obj) {},
+                onPolygonChanged: function(index, obj, newPathArray) {},
+
+                circleRadiusChanged: function (index, circle, marker) {},
+                circleCenterChanged: function (index, circle, marker) {},
+
+                drag: function (index, location, marker) {},
+                dragEnd: function (index, location, marker) {},
+                dragStart: function (index, location, marker) {}
             };
 
             //default menu types
             this.AddControl('dropdown', html_dropdown);
             this.AddControl('list', html_ullist);
+
+            if(args && args.type === 'directions') {
+                args.show_markers === undefined && (args.show_markers = false);
+                args.show_infowindows === undefined && (args.show_infowindows = false);
+            }
 
             //init
             $.extend(true, this.o, args);
@@ -235,6 +253,7 @@
 
         //initialize google map object
         Maplace.prototype.create_objMap = function () {
+            this.errors = [];
             var self = this,
                 count = 0,
                 i;
@@ -270,7 +289,9 @@
                 } catch (err) {
                     this.errors.push(err.toString());
                 }
-            } else { //else loads the new options
+
+            //else loads the new optionsl
+            } else {
                 self.oMap.setOptions(this.o.map_options);
             }
 
@@ -292,14 +313,15 @@
         //adds markers to the map
         Maplace.prototype.add_markers_to_objMap = function () {
             var a,
+                point,
                 type = this.o.type || 'marker';
 
             //switch how to display the locations
             switch (type) {
                 case 'marker':
-                case 'circle':
                     for (a = 0; a < this.ln; a++) {
-                        this.create.marker.call(this, a);
+                        point = this.create_objPoint(a);
+                        this.create.marker.call(this, a, point);
                     }
                     break;
                 default:
@@ -308,109 +330,261 @@
             }
         };
 
+        //create the main object point
+        Maplace.prototype.create_objPoint = function (index) {
+            var point = $.extend({}, this.o.locations[index]),
+                html = point.html || '',
+                marker;
+
+            !point.type && (point.type = this.o.type);
+
+            $.extend(point, {
+                position: new google.maps.LatLng(point.lat, point.lon),
+                map: this.oMap,
+                zIndex: 10000,
+                visible: (this.o.show_markers === false ? false : point.visible)
+            });
+
+            if (point.image) {
+                point.icon = new google.maps.MarkerImage(
+                    point.image,
+                    new google.maps.Size(point.image_w || 32, point.image_h || 32),
+                    new google.maps.Point(0, 0),
+                    new google.maps.Point(image_w / 2, image_h / 2)
+                );
+            }
+
+            return point;
+        };
+
+        //create the main object circle
+        Maplace.prototype.create_objCircle = function (point) {
+            var def_stroke_opz,
+                def_circle_opz,
+                point,
+                circle;
+            
+            circle = $.extend({}, point);
+            def_stroke_opz = $.extend({}, this.o.stroke_options);
+            def_circle_opz = $.extend({}, this.o.circle_options);
+
+            $.extend(def_stroke_opz, point.stroke_options || {});
+            $.extend(circle, def_stroke_opz);
+            
+            $.extend(def_circle_opz, point.circle_options || {});
+            $.extend(circle, def_circle_opz);
+
+            circle.radius = circle.radius || this.o.circle_radius;
+            circle.center = point.position;
+            circle.draggable = false;
+            circle.zIndex = 9000;
+
+            return circle;
+        };
+
+        //create the main object point
+        Maplace.prototype.add_markerEv = function (index, point, marker) {
+            var self = this;
+
+            google.maps.event.addListener(marker, 'click', function (ev) {
+                self.o.beforeShow(index, point, marker);
+
+                //show infowindow?
+                if (self.o.show_infowindows && (point.show_infowindow === false ? false : true)) {
+                    self.open_infowindow(index, marker, ev);
+                }
+
+                //pan and zoom the map
+                self.oMap.panTo(point.position);
+                point.zoom && self.oMap.setZoom(point.zoom);
+
+                //activate related menu link
+                if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {
+                    self.current_control.activateCurrent.call(self, index + 1);
+                }
+
+                //update current location index
+                self.current_index = index;
+
+                self.o.afterShow(index, point, marker);
+            });
+
+            if(point.draggable) {
+                this.add_dragEv(index, point, marker);
+            }
+        };
+
+        //add events to circles objs
+        Maplace.prototype.add_circleEv = function (index, circle, marker) {
+            var self = this;
+
+            google.maps.event.addListener(marker, 'click', function () {
+                self.ViewOnMap(index + 1);
+            });
+
+            google.maps.event.addListener(marker, 'center_changed', function() {
+                self.o.circleCenterChanged(index, circle, marker);
+            });
+
+            google.maps.event.addListener(marker, 'radius_changed', function() {
+                self.o.circleRadiusChanged(index, circle, marker);
+            });
+
+            if(circle.draggable) {
+                this.add_dragEv(index, circle, marker);
+            }
+        };
+
+        //add drag events
+        Maplace.prototype.add_dragEv = function (index, obj, marker) {
+            var self = this;
+
+            google.maps.event.addListener(marker, 'drag', function (ev) {
+                var pos,
+                    extraType;
+
+                if(marker.getPosition) {
+                    pos = marker.getPosition();
+                } else if(marker.getCenter) {
+                    pos = marker.getCenter();
+                } else {
+                    return;
+                }
+
+                //update circle position
+                if(self.circles[index]) {
+                    self.circles[index].setCenter(pos);
+                }
+
+                //update polygon or polyline if defined
+                if(self.Polyline) {
+                    extraType = 'Polyline';
+                } else if(self.Polygon) {
+                    extraType = 'Polygon';
+                }
+
+                if(extraType) {
+                    var path = self[extraType].getPath(),
+                        pathArray = path.getArray();
+
+                    pathArray[index].nb = pos.lat();
+                    pathArray[index].ob = pos.lng();
+                    
+                    self[extraType].setPath(pathArray);
+                    self.add_polyEv(extraType);
+                }
+
+                //fire drag event
+                self.o.drag(index, obj, marker);
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function() {
+                self.o.dragEnd(index, obj, marker);
+            });
+
+            google.maps.event.addListener(marker, 'dragstart', function() {
+                self.o.dragStart(index, obj, marker);
+            });
+
+            google.maps.event.addListener(marker, 'center_changed', function() {
+                //update marker position
+                if(self.markers[index] && marker.getCenter) {
+                    self.markers[index].setPosition(marker.getCenter());
+                }
+
+                self.o.drag(index, obj, marker);
+            });
+        };
+
+        //add events to poly objs
+        Maplace.prototype.add_polyEv = function (typeName) {
+            var self = this;
+
+            google.maps.event.addListener(this[typeName].getPath(), 'set_at', function(index, obj) {
+                var item = self[typeName].getPath().getAt(index),
+                    newPos = new google.maps.LatLng(item.lat(), item.lng());
+
+                self.markers[index] && self.markers[index].setPosition(newPos);
+                self.circles[index] && self.circles[index].setCenter(newPos);
+
+                self.o['on' + typeName + 'Changed'](index, obj, self[typeName].getPath().getArray());
+            });
+        };
+
         //wrapper for the map types
         Maplace.prototype.create = {
 
             //single marker
-            marker: function (index) {
+            marker: function (index, point, marker) {
                 var self = this,
-                    point = this.o.locations[index],
-                    html = point.html || '',
-                    marker, a,
-                    point_infow,
-                    image_w,
-                    image_h,
-                    latlng = new google.maps.LatLng(point.lat, point.lon),
-                    orig_visible = point.visible === false ? false : true,
-                    type = point.type || this.o.type;
+                    circle;
 
-                $.extend(point, {
-                    position: latlng,
-                    map: this.oMap,
-                    zIndex: 10000,
-                    //temp visible property
-                    visible: (this.o.show_markers === false ? false : orig_visible)
-                });
-
-                if (point.image) {
-                    image_w = point.image_w || 32;
-                    image_h = point.image_h || 32;
-                    $.extend(point, {
-                        icon: new google.maps.MarkerImage(
-                                point.image,
-                                new google.maps.Size(image_w, image_h),
-                                new google.maps.Point(0, 0),
-                                new google.maps.Point(image_w / 2, image_h / 2)
-                            )
-                    });
+                if(point.hide_marker) {
+                    point.visible = false; 
                 }
+
+                //allow mix circles with markers
+                if(point.type == 'circle' && !marker) {
+                    circle = this.create_objCircle(point);
+                    
+                    if(!point.visible) {
+                        circle.draggable = point.draggable;
+                    }
+
+                    marker = new google.maps.Circle(circle);
+                    this.add_circleEv(index, circle, marker);
+
+                    //store the new circle
+                    this.circles[index] = marker;
+                }
+
+                point.type = 'marker';
 
                 //create the marker and add click event
-                switch (type) {
-                    case 'circle':
-                        var circe = point,
-                            def_opz = this.o.stroke_options || {},
-                            circe_stroke_opz = $.extend(def_opz, point.stroke_options || {});
-
-                        $.extend(circe, circe_stroke_opz);
-                        $.extend(circe, point.circle_options || {});
-
-                        circe.radius = circe.radius || this.o.circle_radius;
-                        circe.center = point.position;
-
-                        marker = new google.maps.Circle(circe);
-
-                        google.maps.event.addListener(marker, 'center_changed', function() {
-                            self.o.circleCenterChanged(index, circe, marker);
-                        });
-
-                        google.maps.event.addListener(marker, 'radius_changed', function() {
-                            self.o.circleRaiusChanged(index, circe, marker);
-                        });
-
-                    default:
-                        if(!marker || !point.hide_marker) {
-                            marker = new google.maps.Marker(point);
-                        }
-                }
-                
-                google.maps.event.addListener(marker, 'click', function (ev) {
-
-                    self.o.beforeShow(index, point, marker);
-
-                    //show infowindow?
-                    point_infow = point.show_infowindows === false ? false : true;
-                    if (self.o.show_infowindows && point_infow) {
-                        self.open_infowindow(index, marker, ev);
-                    }
-
-                    //pan and zoom the map
-                    self.oMap.panTo(latlng);
-                    point.zoom && self.oMap.setZoom(point.zoom);
-
-                    //activate related menu link
-                    if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {
-                        self.current_control.activateCurrent.call(self, index + 1);
-                    }
-
-                    //update current location index
-                    self.current_index = index;
-
-                    self.o.afterShow(index, point, marker);
-                });
+                marker = new google.maps.Marker(point);
+                this.add_markerEv(index, point, marker);
                 
                 //extends bounds with this location
-                this.oBounds.extend(latlng);
+                this.oBounds.extend(point.position);
 
                 //store the new marker
-                this.markers.push(marker);
+                this.markers[index] = marker;
 
                 this.o.afterCreateMarker(index, point, marker);
 
-                //restore the visible property
-                point.visible = orig_visible;
-
                 return marker;
+            },
+
+
+            //circle mode
+            circle: function () {
+                var self = this,
+                    a,
+                    point,
+                    circle,
+                    marker;
+
+                for (a = 0; a < this.ln; a++) {
+                    point = this.create_objPoint(a);
+
+                    //allow mix markers with circles
+                    if(point.type == 'circle') {
+                        circle = this.create_objCircle(point);
+
+                        if(point.hide_marker) {
+                            circle.draggable = point.draggable;
+                        }
+
+                        marker = new google.maps.Circle(circle);
+                        this.add_circleEv(a, circle, marker);
+
+                        //store the new circle
+                        this.circles[a] = marker;
+                    }
+
+                    point.type = 'marker';
+                    this.create.marker.call(this, a, point, marker);
+                }
             },
 
 
@@ -418,24 +592,28 @@
             polyline: function () {
                 var self = this,
                     a,
-                    latlng,
-                    path = [];
+                    point,
+                    stroke = $.extend({}, this.o.stroke_options);
+                
+                stroke.path = [];
+                stroke.draggable = this.o.draggable;
+                stroke.editable = this.o.editable;
+                stroke.map = this.oMap;
+                stroke.zIndex = 11000;
 
                 //create the path and location marker
                 for (a = 0; a < this.ln; a++) {
-                    latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
-                    path.push(latlng);
-                    this.create.marker.call(this, a);
+                    point = this.create_objPoint(a);
+                    this.create.marker.call(this, a, point);
+
+                    stroke.path.push(point.position);
                 }
 
-                $.extend(this.o.stroke_options, {
-                    path: path,
-                    map: this.oMap
-                });
-
                 this.Polyline
-                    ? this.Polyline.setOptions(this.o.stroke_options)
-                    : this.Polyline = new google.maps.Polyline(this.o.stroke_options);
+                    ? this.Polyline.setOptions(stroke)
+                    : this.Polyline = new google.maps.Polyline(stroke);
+
+                this.add_polyEv('Polyline');
             },
 
 
@@ -443,38 +621,39 @@
             polygon: function () {
                 var self = this,
                     a,
-                    latlng,
-                    path = [];
+                    point,
+                    stroke = $.extend({}, this.o.stroke_options);
+                
+                stroke.path = [];
+                stroke.draggable = this.o.draggable;
+                stroke.editable = this.o.editable;
+                stroke.map = this.oMap;
+                stroke.zIndex = 11000;
 
                 //create the path and location marker
                 for (a = 0; a < this.ln; a++) {
-                    latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
-                    path.push(latlng);
-                    this.create.marker.call(this, a);
+                    point = this.create_objPoint(a);
+                    this.create.marker.call(this, a, point);
+
+                    stroke.path.push(point.position);
                 }
 
-                $.extend(this.o.stroke_options, {
-                    paths: path,
-                    editable: this.o.draggable,
-                    map: this.oMap
-                });
-
                 this.Polygon
-                    ? this.Polygon.setOptions(this.o.stroke_options)
-                    : this.Polygon = new google.maps.Polygon(this.o.stroke_options);
+                    ? this.Polygon.setOptions(stroke)
+                    : this.Polygon = new google.maps.Polygon(stroke);
 
                 google.maps.event.addListener(this.Polygon, 'click', function (obj) {
-                    self.o.onPolylineClick(obj);
+                    self.o.onPolygonClick(obj);
                 });
+
+                this.add_polyEv('Polygon');
             },
 
 
             //fusion tables
             fusion: function () {
-                $.extend(this.o.fusion_options, {
-                    styles: [this.o.stroke_options],
-                    map: this.oMap
-                });
+                this.o.fusion_options.styles = [this.o.stroke_options];
+                this.o.fusion_options.map = this.oMap;
 
                 this.Fusion
                     ? this.Fusion.setOptions(this.o.fusion_options)
@@ -486,8 +665,8 @@
             directions: function () {
                 var self = this,
                     a,
+                    point,
                     stopover,
-                    latlng,
                     origin,
                     destination,
                     waypoints = [],
@@ -495,28 +674,31 @@
 
                 //create the waypoints and location marker
                 for (a = 0; a < this.ln; a++) {
-                    latlng = new google.maps.LatLng(this.o.locations[a].lat, this.o.locations[a].lon);
+                    point = this.create_objPoint(a);
 
                     //first location start point
                     if (a === 0) {
-                        origin = latlng;
-                    } else if (a === (this.ln - 1)) { //last location end point
-                        destination = latlng;
-                    } else { //waypoints in the middle
+                        origin = point.position;
+
+                    //last location end point
+                    } else if (a === (this.ln - 1)) {
+                        destination = point.position;
+
+                    //waypoints in the middle
+                    } else {
                         stopover = this.o.locations[a].stopover === true ? true : false;
                         waypoints.push({
-                            location: latlng,
+                            location: point.position,
                             stopover: stopover
                         });
                     }
-                    this.create.marker.call(this, a);
+
+                    this.create.marker.call(this, a, point);
                 }
 
-                $.extend(this.o.directions_options, {
-                    origin: origin,
-                    destination: destination,
-                    waypoints: waypoints
-                });
+                this.o.directions_options.origin = origin;
+                this.o.directions_options.destination = destination;
+                this.o.directions_options.waypoints = waypoints;
 
                 this.directionsService || (this.directionsService = new google.maps.DirectionsService());
                 this.directionsDisplay 
@@ -539,7 +721,7 @@
                 }
 
                 this.directionsService.route(this.o.directions_options, function (result, status) {
-                    //when directions found
+                    //directions found
                     if (status === google.maps.DirectionsStatus.OK) {
                         distance = self.compute_distance(result);
                         self.directionsDisplay.setDirections(result);
@@ -584,7 +766,6 @@
             if (point.html && this.type_to_open[type]) {
                 this.o.beforeOpenInfowindow(index, point, marker);
                 this.type_to_open[type].call(this, point);
-                //if(ev) this.infoWindow.setPosition(ev.latLng);
                 this.infowindow.open(this.oMap, marker);
                 this.o.afterOpenInfowindow(index, point, marker);
             }
@@ -633,27 +814,35 @@
 
         //resets obj map, markers, bounds, listeners, controllers
         Maplace.prototype.init_map = function () {
-            var self = this,
-                i = 0;
+            this.errors = [];
+            var self = this;
 
             this.Polyline && this.Polyline.setMap(null);
             this.Polygon && this.Polygon.setMap(null);
             this.Fusion && this.Fusion.setMap(null);
             this.directionsDisplay && this.directionsDisplay.setMap(null);
 
-            if (this.markers) {
-                for (i in this.markers) {
-                    if (this.markers[i]) {
-                        try { 
-                            this.markers[i].setMap(null);
-                        } catch (err) {
-                            self.errors.push(err);
-                        }
-                    }
+            for (var i = this.markers.length - 1; i >= 0; i -= 1) {
+                try { 
+                    this.markers[i] && this.markers[i].setMap(null);
+                } catch (err) {
+                    self.errors.push(err);
                 }
-                this.markers.length = 0;
-                this.markers = [];
             }
+
+            this.markers.length = 0;
+            this.markers = [];
+
+            for (var i = this.circles.length - 1; i >= 0; i -= 1) {
+                try { 
+                    this.circles[i] && this.circles[i].setMap(null);
+                } catch (err) {
+                    self.errors.push(err);
+                }
+            }
+
+            this.circles.length = 0;
+            this.circles = [];
 
             if (this.o.controls_on_map && this.oMap.controls) {
                 this.oMap.controls[this.o.controls_position].forEach(function (element, index) {
@@ -680,14 +869,18 @@
                     this.oMap.setCenter(this.markers[0].getPosition());
                     this.ViewOnMap(1);
                 }
-            } else if (this.ln === 0) { //no locations
+
+            //no locations
+            } else if (this.ln === 0) {
                 if (this.o.map_options.set_center) {
                     this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
                 } else {
                     this.oMap.fitBounds(this.oBounds);
                 }
                 this.oMap.setZoom(this.o.map_options.zoom);
-            } else { //n locations
+
+            //n+ locations
+            } else {
                 this.oMap.fitBounds(this.oBounds);
                 //check the start option
                 if (typeof (this.o.start - 0) === 'number' && this.o.start > 0 && this.o.start <= this.ln) {
@@ -699,11 +892,12 @@
         };
 
         Maplace.prototype.debug = function (msg) {
-            if (this.dev && this.errors.length) {
-                console.log(msg + ': ', this.errors);
+            if (this.errors.length) {
+                for (var i = this.errors.length - 1; i >= 0; i--) {
+                    console.log(this.errors[i].stack);
+                };
             }
         };
-
 
 
         /////////////////////////////////////////////////////////////////////////
@@ -739,6 +933,7 @@
             if (typeof (index - 0) === 'number' && index >= 0 && index < this.ln) {
                 var visible = this.o.locations[index].visible === false ? false : true,
                     on_menu = this.o.locations[index].on_menu === false ? false : true;
+
                 if (visible && on_menu) {
                     return true;
                 }
@@ -748,6 +943,8 @@
 
         //triggers to show a location in map
         Maplace.prototype.ViewOnMap = function (index) {
+            this.errors = [];
+
             //view all
             if (index === this.view_all_key) {
                 this.o.beforeViewAll();
@@ -758,13 +955,14 @@
                 this.oMap.fitBounds(this.oBounds);
                 this.CloseInfoWindow();
                 this.o.afterViewAll();
+
             } else { //specific location
                 index = parseInt(index, 10);
                 if (typeof (index - 0) === 'number' && index > 0 && index <= this.ln) {
                     try {
                         google.maps.event.trigger(this.markers[index - 1], 'click');
                     } catch (err) {
-                        this.errors.push(err.toString());
+                        this.errors.push(err);
                     }
                 }
             }
@@ -786,6 +984,7 @@
                     self.o.locations.push(value);
                 });
             }
+
             if ($.isPlainObject(locs)) {
                 this.o.locations.push(locs);
             }
@@ -835,10 +1034,11 @@
             //store the locations length
             this.ln = this.o.locations.length;
 
-            //update all locations with commons
+            //update all locations with shared
             for (var i = 0; i < this.ln; i++) {
-                $.extend(this.o.locations[i], this.o.commons);
-                if(this.o.locations[i].html) {
+                var common = $.extend({}, this.o.shared);
+                this.o.locations[i] = $.extend(common, this.o.locations[i]);
+                if (this.o.locations[i].html) {
                     this.o.locations[i].html = this.o.locations[i].html.replace('%index', i+1);
                     this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
                 }
@@ -892,6 +1092,7 @@
                 for (i in this.o.listeners) {
                     var map = this.oMap,
                         myListener = this.o.listeners[i];
+
                     if (this.o.listeners.hasOwnProperty(i)) {
                         google.maps.event.addListener(this.oMap, i, function (event) {
                             myListener(map, event);
@@ -904,6 +1105,8 @@
             }
 
             this.loaded = true;
+
+            return this;
         };
 
 
