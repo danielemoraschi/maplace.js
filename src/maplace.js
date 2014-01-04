@@ -162,8 +162,8 @@
 
 			//default options
 			this.o = {
-				map_div: '#gmap',
-				controls_div: '#controls',
+				map_div: undefined,
+				controls_div: undefined,
 				generate_controls: true,
 				controls_type: 'dropdown',
 				controls_cssclass: '',
@@ -791,6 +791,12 @@
 			}
 
 			//store dom references
+			if (typeof(this.o.map_div) === 'undefined') {
+				this.o.map_div = '#gmap';
+			}
+			if (typeof(this.o.controls_div) === 'undefined') {
+				this.o.controls_div = '#controls';
+			}
 			this.map_div = $(this.o.map_div);
 			this.controls_wrapper = $(this.o.controls_div);
 		};
