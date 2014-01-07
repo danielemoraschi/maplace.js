@@ -178,8 +178,7 @@
                 locations: [],
                 shared: {},
                 map_options: {
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    zoom: 1
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
                 },
                 stroke_options: {
                     strokeColor: '#0000FF',
@@ -197,7 +196,8 @@
                     avoidTolls: false
                 },
                 circle_options: {
-                    radius: 100
+                    radius: 100,
+                    visible: true
                 },
                 styles: {},
                 fusion_options: {},
@@ -240,8 +240,8 @@
             this.AddControl('list', html_ullist);
 
             if(args && args.type === 'directions') {
-                args.show_markers === undefined && (args.show_markers = false);
-                args.show_infowindows === undefined && (args.show_infowindows = false);
+                !args.show_markers && (args.show_markers = false);
+                !args.show_infowindows && (args.show_infowindows = false);
             }
 
             //init
@@ -334,16 +334,15 @@
         Maplace.prototype.create_objPoint = function (index) {
             var point = $.extend({}, this.o.locations[index]),
                 html = point.html || '',
+                visibility = point.visible === undefined ? undefined : point.visible,
                 marker;
 
             !point.type && (point.type = this.o.type);
 
-            $.extend(point, {
-                position: new google.maps.LatLng(point.lat, point.lon),
-                map: this.oMap,
-                zIndex: 10000,
-                visible: (this.o.show_markers === false ? false : point.visible)
-            });
+            point.position = new google.maps.LatLng(point.lat, point.lon);
+            point.map = this.oMap;
+            point.zIndex = 10000;
+            point.visible = visibility === undefined  ? this.o.show_markers : visibility;
 
             if (point.image) {
                 point.icon = new google.maps.MarkerImage(
@@ -374,7 +373,6 @@
             $.extend(def_circle_opz, point.circle_options || {});
             $.extend(circle, def_circle_opz);
 
-            circle.radius = circle.radius || this.o.circle_radius;
             circle.center = point.position;
             circle.draggable = false;
             circle.zIndex = 9000;
@@ -519,14 +517,10 @@
                 var self = this,
                     circle;
 
-                if(point.hide_marker) {
-                    point.visible = false; 
-                }
-
                 //allow mix circles with markers
                 if(point.type == 'circle' && !marker) {
                     circle = this.create_objCircle(point);
-                    
+
                     if(!point.visible) {
                         circle.draggable = point.draggable;
                     }
@@ -571,7 +565,7 @@
                     if(point.type == 'circle') {
                         circle = this.create_objCircle(point);
 
-                        if(point.hide_marker) {
+                        if(!point.visible) {
                             circle.draggable = point.draggable;
                         }
 
@@ -865,29 +859,43 @@
             if (this.ln === 1) {
                 if (this.o.map_options.set_center) {
                     this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                
                 } else {
                     this.oMap.setCenter(this.markers[0].getPosition());
                     this.ViewOnMap(1);
                 }
 
+                this.o.map_options.zoom && this.oMap.setZoom(this.o.map_options.zoom);
+
             //no locations
             } else if (this.ln === 0) {
                 if (this.o.map_options.set_center) {
                     this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                
                 } else {
                     this.oMap.fitBounds(this.oBounds);
                 }
-                this.oMap.setZoom(this.o.map_options.zoom);
+
+                this.oMap.setZoom(this.o.map_options.zoom || 1);
 
             //n+ locations
             } else {
                 this.oMap.fitBounds(this.oBounds);
+                
                 //check the start option
                 if (typeof (this.o.start - 0) === 'number' && this.o.start > 0 && this.o.start <= this.ln) {
                     this.ViewOnMap(this.o.start);
+                
+                //check if set_center exists
+                } else if (this.o.map_options.set_center) {
+                    this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                
+                //view all
                 } else {
                     this.ViewOnMap(this.view_all_key);
                 }
+
+                this.o.map_options.zoom && this.oMap.setZoom(this.o.map_options.zoom);
             }
         };
 
@@ -931,10 +939,8 @@
 
             index = parseInt(index, 10);
             if (typeof (index - 0) === 'number' && index >= 0 && index < this.ln) {
-                var visible = this.o.locations[index].visible === false ? false : true,
-                    on_menu = this.o.locations[index].on_menu === false ? false : true;
-
-                if (visible && on_menu) {
+                var on_menu = this.o.locations[index].on_menu === false ? false : true;
+                if (on_menu) {
                     return true;
                 }
             }
