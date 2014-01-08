@@ -239,7 +239,7 @@
             this.AddControl('dropdown', html_dropdown);
             this.AddControl('list', html_ullist);
 
-            if(args && args.type === 'directions') {
+            if (args && args.type === 'directions') {
                 !args.show_markers && (args.show_markers = false);
                 !args.show_infowindows && (args.show_infowindows = false);
             }
@@ -407,7 +407,7 @@
                 self.o.afterShow(index, point, marker);
             });
 
-            if(point.draggable) {
+            if (point.draggable) {
                 this.add_dragEv(index, point, marker);
             }
         };
@@ -428,7 +428,7 @@
                 self.o.circleRadiusChanged(index, circle, marker);
             });
 
-            if(circle.draggable) {
+            if (circle.draggable) {
                 this.add_dragEv(index, circle, marker);
             }
         };
@@ -441,27 +441,27 @@
                 var pos,
                     extraType;
 
-                if(marker.getPosition) {
+                if (marker.getPosition) {
                     pos = marker.getPosition();
-                } else if(marker.getCenter) {
+                } else if (marker.getCenter) {
                     pos = marker.getCenter();
                 } else {
                     return;
                 }
 
                 //update circle position
-                if(self.circles[index]) {
+                if (self.circles[index]) {
                     self.circles[index].setCenter(pos);
                 }
 
                 //update polygon or polyline if defined
-                if(self.Polyline) {
+                if (self.Polyline) {
                     extraType = 'Polyline';
-                } else if(self.Polygon) {
+                } else if (self.Polygon) {
                     extraType = 'Polygon';
                 }
 
-                if(extraType) {
+                if (extraType) {
                     var path = self[extraType].getPath(),
                         pathArray = path.getArray();
 
@@ -486,7 +486,7 @@
 
             google.maps.event.addListener(marker, 'center_changed', function() {
                 //update marker position
-                if(self.markers[index] && marker.getCenter) {
+                if (self.markers[index] && marker.getCenter) {
                     self.markers[index].setPosition(marker.getCenter());
                 }
 
@@ -518,10 +518,10 @@
                     circle;
 
                 //allow mix circles with markers
-                if(point.type == 'circle' && !marker) {
+                if (point.type == 'circle' && !marker) {
                     circle = this.create_objCircle(point);
 
-                    if(!point.visible) {
+                    if (!point.visible) {
                         circle.draggable = point.draggable;
                     }
 
@@ -562,10 +562,10 @@
                     point = this.create_objPoint(a);
 
                     //allow mix markers with circles
-                    if(point.type == 'circle') {
+                    if (point.type == 'circle') {
                         circle = this.create_objCircle(point);
 
-                        if(!point.visible) {
+                        if (!point.visible) {
                             circle.draggable = point.draggable;
                         }
 
@@ -1045,7 +1045,7 @@
                 var common = $.extend({}, this.o.shared);
                 this.o.locations[i] = $.extend(common, this.o.locations[i]);
                 if (this.o.locations[i].html) {
-                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i+1);
+                    this.o.locations[i].html = this.o.locations[i].html.replace('%index', i + 1);
                     this.o.locations[i].html = this.o.locations[i].html.replace('%title', (this.o.locations[i].title || ''));
                 }
             }
