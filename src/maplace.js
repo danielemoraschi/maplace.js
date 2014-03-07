@@ -145,6 +145,8 @@
 			this.oMap = false;
 			this.view_all_key = 'all';
 
+			this.bicycling_layer = new google.maps.BicyclingLayer();
+			this.bicycling_layer_shown = false;
 			this.infowindow = null;
 			this.ln = 0;
 			this.oMap = false;
@@ -267,8 +269,7 @@
 					this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
 					
 					if (this.o.bicycling_layer) {
-					  var l = new google.maps.BicyclingLayer();
-					  l.setMap(this.oMap);
+						this.ShowBicyclingLayer();
 					}
 				} catch (err) {
 					this.errors.push(err.toString());
@@ -721,6 +722,16 @@
 				}
 			}
 			this.debug('03');
+		};
+
+		Maplace.prototype.ShowBicyclingLayer = function () {
+		  this.bicycling_layer.setMap(this.oMap);
+			this.bicycling_layer_shown = true;
+		};
+
+		Maplace.prototype.HideBicyclingLayer = function () {
+			this.bicycling_layer.setMap(null)
+			this.bicycling_layer_shown = false;
 		};
 
 		//replace current locations
