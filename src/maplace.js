@@ -177,6 +177,7 @@
 				start: 0,
 				locations: [],
 				commons: {},
+				bicycling_layer: false,
 				map_options: {
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 					zoom: 1
@@ -264,6 +265,11 @@
 					}).appendTo(this.map_div);
 
 					this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
+					
+					if (this.o.bicycling_layer) {
+					  var l = new google.maps.BicyclingLayer();
+					  l.setMap(this.oMap);
+					}
 				} catch (err) {
 					this.errors.push(err.toString());
 				}
