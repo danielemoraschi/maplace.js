@@ -724,11 +724,13 @@
 			this.debug('03');
 		};
 
+		//overlay the bicycling layer on the map
 		Maplace.prototype.ShowBicyclingLayer = function () {
 		  this.bicycling_layer.setMap(this.oMap);
 			this.bicycling_layer_shown = true;
 		};
 
+		//remove the bicycling layer from the map
 		Maplace.prototype.HideBicyclingLayer = function () {
 			this.bicycling_layer.setMap(null)
 			this.bicycling_layer_shown = false;
