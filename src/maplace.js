@@ -793,6 +793,11 @@
 			return this.loaded;
 		};
 
+		//check if bicycling layer has been overlayed on map
+		Maplace.prototype.BicyclingLayerShown = function () {
+			return this.bicycling_layer_shown;
+		};
+
 		//loads the options
 		Maplace.prototype._init = function () {
 			//store the locations length
