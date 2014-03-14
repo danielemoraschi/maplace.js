@@ -145,6 +145,8 @@
 			this.oMap = false;
 			this.view_all_key = 'all';
 
+			this.bicycling_layer = new google.maps.BicyclingLayer();
+			this.bicycling_layer_shown = false;
 			this.infowindow = null;
 			this.ln = 0;
 			this.oMap = false;
@@ -177,6 +179,7 @@
 				start: 0,
 				locations: [],
 				commons: {},
+				bicycling_layer: false,
 				map_options: {
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 					zoom: 1
@@ -264,6 +267,10 @@
 					}).appendTo(this.map_div);
 
 					this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
+					
+					if (this.o.bicycling_layer) {
+						this.ShowBicyclingLayer();
+					}
 				} catch (err) {
 					this.errors.push(err.toString());
 				}
@@ -717,6 +724,18 @@
 			this.debug('03');
 		};
 
+		//overlay the bicycling layer on the map
+		Maplace.prototype.ShowBicyclingLayer = function () {
+		  this.bicycling_layer.setMap(this.oMap);
+			this.bicycling_layer_shown = true;
+		};
+
+		//remove the bicycling layer from the map
+		Maplace.prototype.HideBicyclingLayer = function () {
+			this.bicycling_layer.setMap(null)
+			this.bicycling_layer_shown = false;
+		};
+
 		//replace current locations
 		Maplace.prototype.SetLocations = function (locs, reload) {
 			this.o.locations = locs;
@@ -774,6 +793,11 @@
 		//check if already initialized with a Load()
 		Maplace.prototype.Loaded = function () {
 			return this.loaded;
+		};
+
+		//check if bicycling layer has been overlayed on map
+		Maplace.prototype.BicyclingLayerShown = function () {
+			return this.bicycling_layer_shown;
 		};
 
 		//loads the options
