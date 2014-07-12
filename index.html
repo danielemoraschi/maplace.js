@@ -481,14 +481,18 @@ new Maplace({
 
 
                     <section id="styled" class="row">
-                        <h2 class="two columns mobile-one">Styled</h2>
+                        <h2 class="two columns mobile-one">Styled
+                            <p>More Google Maps styles on the website:
+                                <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a>
+                            </p>
+                        </h2>
                         <div class="two columns mobile-one">
                             <dl class="right tabs pill small">
                                 <dd class="active"><a href="#example12">Example</a></dd>
                                 <dd><a href="#code12">Code</a></dd>
                             </dl>
                         </div>
-                        <div class="four columns mobile-two">
+                        <div style="margin-top:20px" class="four columns mobile-two">
                             <ul class="tabs-content">
                                 <li class="active" id="example12Tab">
                                     <div class="gmap" id="gmap-12"></div>
@@ -499,27 +503,12 @@ new Maplace({
 new Maplace({
     map_div: '#gmap-styled',
     locations: LocsAB,
-    start: 3,
+    start: 1,
+    styles: styles,
+    map_options: {
+        zoom: 5
+    }
     styles: {
-        'Other style': [{
-            stylers: [
-                    { hue: "#00ffe6" },
-                    { saturation: -20 }
-            ]
-        }, {
-            featureType: "road",
-            elementType: "geometry",
-            stylers: [
-                    { lightness: 100 },
-                    { visibility: "simplified" }
-            ]
-        }, {
-            featureType: "road",
-            elementType: "labels",
-            stylers: [
-                    { visibility: "off" }
-            ]
-        }],
         'Night': [{
             featureType: 'all',
             stylers: [
@@ -1786,7 +1775,8 @@ maplace.Load({
 
     <script src="src/maplace.js?v=0.1.3"></script>
 
-    <script src="data/points.js?v=0.1.3"></script> 
+    <script src="data/points.js?v=0.1.3"></script>
+    <script src="data/styles.js?v=0.1.3"></script>
     <script src="javascripts/app.js?v=0.1.3"></script>
 </body>
 </html>
