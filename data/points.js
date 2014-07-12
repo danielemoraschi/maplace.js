@@ -1,22 +1,12 @@
 
-var P1 = [
-    {
-        lat: 45.468945,
-        lon: 45.73684365,
-        title: 'Title',
-        html: 'Content',
-        zoom: 10,
-        animation: google.maps.Animation.DROP
-    }
-];
-
 var LocsA = [
     {
         lat: 45.9,
         lon: 10.9,
         title: 'Title A1',
         html: '<h3>Content A1</h3>',
-        icon: 'http://maps.google.com/mapfiles/markerA.png'
+        icon: 'http://maps.google.com/mapfiles/markerA.png',
+        animation: google.maps.Animation.DROP
     },
     {
         lat: 44.8,

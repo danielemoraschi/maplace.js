@@ -1264,6 +1264,30 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                             This event is fired when the circle's center is changed.
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>drag</td>
+                                        <td>function</td>
+                                        <td>(index, location, marker){}</td>
+                                        <td>
+                                            This event is fired while a marker is dragged.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>dragEnd</td>
+                                        <td>function</td>
+                                        <td>(index, location, marker){}</td>
+                                        <td>
+                                            This event is fired when the drag event ends.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>dragStart</td>
+                                        <td>function</td>
+                                        <td>(index, location, marker){}</td>
+                                        <td>
+                                            This event is fired when the drag event starts.
+                                        </td>
+                                    </tr>
                                     
                                 </tbody>
                             </table>
@@ -1328,7 +1352,14 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                     <tr>
                                         <td>visible</td>
                                         <td>boolean</td>
-                                        <td>If <strong><em>true</em></strong>, the marker is visible, <strong><em>true</em></strong> by default</td>
+                                        <td>If <strong><em>true</em></strong>, the marker is visible, <strong><em>false</em></strong> by default</td>
+                                    </tr>
+                                    <tr>
+                                        <td>animation</td>
+                                        <td>Object</td>
+                                        <td>
+                                            Animation options as defined by <a href="https://developers.google.com/maps/documentation/javascript/examples/marker-animations" target="_blank">Google</a>.<br/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>stopover</td>
@@ -1337,14 +1368,6 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                             Available in type: <strong>directions</strong><br/>
                                             If <strong><em>true</em></strong>, indicates that this waypoint is a stop between the origin and destination.<br/>
                                             This has the effect of splitting the route in two. <strong><em>false</em></strong> by default
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>hide_marker</td>
-                                        <td>boolean</td>
-                                        <td>
-                                            Available in type: <strong>circle</strong><br/>
-                                            If <strong><em>false</em></strong>, the marker will not be visible
                                         </td>
                                     </tr>
                                     <tr>
@@ -1383,50 +1406,19 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
 <pre class="prettyprint points">
 var LocsA = [
     {
-            lat: 45.9,
-            lon: 10.9,
-            title: 'Title A1',
-            html: '&lt;h3&gt;Content A1&lt;/h3&gt;',
-            icon: 'http://maps.google.com/mapfiles/markerA.png'
-    },
-    {
-            lat: 44.8,
-            lon: 1.7,
-            title: 'Title B1',
-            html: '&lt;h3&gt;Content B1&lt;/h3&gt;',
-            icon: 'http://maps.google.com/mapfiles/markerB.png',
-            show_infowindow: false
-    },
-    {
-            lat: 51.5,
-            lon: -1.1,
-            title: 'Title C1',
-            html: [
-                    '&lt;h3&gt;Content C1&lt;/h3&gt;',
-                    '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-            ].join(''),
-            icon: 'http://maps.google.com/mapfiles/markerC.png'
-    }
-];
-
-
-var LocsAv2 = [
-    {
         lat: 45.9,
         lon: 10.9,
-        title: 'Zone A1',
-        html: 'Content A1',
-
-        type : 'circle',
-        circle_options: {
-            radius: 200000,
-        }
+        title: 'Title A1',
+        html: '<h3>Content A1</h3>',
+        icon: 'http://maps.google.com/mapfiles/markerA.png',
+        animation: google.maps.Animation.DROP
     },
     {
         lat: 44.8,
         lon: 1.7,
         title: 'Title B1',
-        html: 'Content B1',
+        html: '<h3>Content B1</h3>',
+        icon: 'http://maps.google.com/mapfiles/markerB.png',
         show_infowindow: false
     },
     {
@@ -1434,54 +1426,89 @@ var LocsAv2 = [
         lon: -1.1,
         title: 'Title C1',
         html: [
-            'Content C1&lt;br/&gt;',
-            'Lorem Ipsum..'
+            '<h3>Content C1</h3>',
+            '<p>Lorem Ipsum..</p>'
         ].join(''),
         zoom: 8,
+        icon: 'http://maps.google.com/mapfiles/markerC.png'
+    }
+];
+
+var LocsAv2 = [
+    {
+        lat: 45.9,
+        lon: 10.9,
+        title: 'Zone A1',
+        html: '<h3>Content A1</h3>',
+        type : 'circle',
+        circle_options: {
+            radius: 200000
+        },
+        draggable: true
+    },
+    {
+        lat: 44.8,
+        lon: 1.7,
+        title: 'Draggable',
+        html: '<h3>Content B1</h3>',
+        show_infowindow: false,
+        visible: true,
+        draggable: true
+    },
+    {
+        lat: 51.5,
+        lon: -1.1,
+        title: 'Title C1',
+        html: [
+            '<h3>Content C1</h3>',
+            '<p>Lorem Ipsum..</p>'
+        ].join(''),
+        zoom: 8,
+        visible: true
     }
 ];
 
 
 var LocsB = [
     {
-            lat: 52.1,
-            lon: 11.3,
-            title: 'Title A2',
-            html: [
-                    '&lt;h3&gt;Content A2&lt;/h3&gt;',
-                    '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-            ].join(''),
-            zoom: 8
+        lat: 52.1,
+        lon: 11.3,
+        title: 'Title A2',
+        html: [
+            '<h3>Content A2</h3>',
+            '<p>Lorem Ipsum..</p>'
+        ].join(''),
+        zoom: 8
     },
     {
-            lat: 51.2,
-            lon: 22.2,
-            title: 'Title B2',
-            html: [
-                    '&lt;h3&gt;Content B2&lt;/h3&gt;',
-                    '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-            ].join(''),
-            zoom: 8
+        lat: 51.2,
+        lon: 22.2,
+        title: 'Title B2',
+        html: [
+            '<h3>Content B2</h3>',
+            '<p>Lorem Ipsum..</p>'
+        ].join(''),
+        zoom: 8
     },
     {
-            lat: 49.4,
-            lon: 35.9,
-            title: 'Title C2',
-            html: [
-                    '&lt;h3&gt;Content C2&lt;/h3&gt;',
-                    '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-            ].join(''),
-            zoom: 4
+        lat: 49.4,
+        lon: 35.9,
+        title: 'Title C2',
+        html: [
+            '<h3>Content C2</h3>',
+            '<p>Lorem Ipsum..</p>'
+        ].join(''),
+        zoom: 4
     },
     {
-            lat: 47.8,
-            lon: 15.6,
-            title: 'Title D2',
-            html: [
-                    '&lt;h3&gt;Content D2&lt;/h3&gt;',
-                    '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-            ].join(''),
-            zoom: 6
+        lat: 47.8,
+        lon: 15.6,
+        title: 'Title D2',
+        html: [
+            '<h3>Content D2</h3>',
+            '<p>Lorem Ipsum..</p>'
+        ].join(''),
+        zoom: 6
     }
 ];
 
@@ -1492,8 +1519,8 @@ var LocsBv2 = [
         lon: 11.3,
         title: 'Title A2',
         html: [
-            'Content A2&lt;br/&gt;',
-            'Lorem Ipsum..'
+            '<h3>Content A2</h3>',
+            '<p>Lorem Ipsum..</p>'
         ].join(''),
         zoom: 8
     },
@@ -1502,14 +1529,13 @@ var LocsBv2 = [
         lon: 22.2,
         title: 'Title B2',
         html: [
-            'Content B2&lt;br/&gt;',
-            'Lorem Ipsum..'
+            '<h3>Content B2</h3>',
+            '<p>Lorem Ipsum..</p>'
         ].join(''),
         zoom: 8,
-
         type : 'circle',
         circle_options: {
-            radius: 100000,
+            radius: 100000
         }
     },
     {
@@ -1517,8 +1543,8 @@ var LocsBv2 = [
         lon: 35.9,
         title: 'Title C2',
         html: [
-            'Content C2&lt;br/&gt;',
-            'Lorem Ipsum..'
+            '<h3>Content C2</h3>',
+            '<p>Lorem Ipsum..</p>'
         ].join(''),
         zoom: 4
     },
@@ -1527,8 +1553,8 @@ var LocsBv2 = [
         lon: 15.6,
         title: 'Title D2',
         html: [
-            'Content D2&lt;br/&gt;',
-            'Lorem Ipsum..'
+            '<h3>Content D2</h3>',
+            '<p>Lorem Ipsum..</p>'
         ].join(''),
         zoom: 6
     }
@@ -1537,74 +1563,82 @@ var LocsBv2 = [
 
 var LocsAB = LocsA.concat(LocsB);
 
+
 var LocsC = [
     {
-            lat: 45.4654,
-            lon: 9.1866,
-            title: 'Milan, Italy'
+        lat: 45.4654,
+        lon: 9.1866,
+        title: 'Milan, Italy',
+        type : 'circle',
+        circle_options: {
+            radius: 1000
+        },
+        visible: false
     },
     {
-            lat: 47.36854,
-            lon: 8.53910,
-            title: 'Zurich, Switzerland'
+        lat: 47.36854,
+        lon: 8.53910,
+        title: 'Zurich, Switzerland'
     },
     {
-            lat: 48.892,
-            lon: 2.359,
-            title: 'Paris, France'
+        lat: 48.892,
+        lon: 2.359,
+        title: 'Paris, France'
     },
     {
-            lat: 48.13654,
-            lon: 11.57706,
-            title: 'Munich, Germany'
+        lat: 48.13654,
+        lon: 11.57706,
+        title: 'Munich, Germany'
     }
 ];
 
 var LocsD = [
     {
-            lat: 45.4654,
-            lon: 9.1866,
-            title: 'Milan, Italy',
-            html: '&lt;h3&gt;Milan, Italy&lt;/h3&gt;'
+        lat: 45.4654,
+        lon: 9.1866,
+        title: 'Milan, Italy',
+        html: '<h3>Milan, Italy</h3>'
     },
     {
-            lat: 47.36854,
-            lon: 8.53910,
-            title: 'Zurich, Switzerland',
-            html: '&lt;h3&gt;Zurich, Switzerland&lt;/h3&gt;',
-            visible: false
+        lat: 47.36854,
+        lon: 8.53910,
+        title: 'Zurich, Switzerland',
+        html: '<h3>Zurich, Switzerland</h3>',
+        visible: false
     },
     {
-            lat: 48.892,
-            lon: 2.359,
-            title: 'Paris, France',
-            html: '&lt;h3&gt;Paris, France&lt;/h3&gt;',
-            stopover: true
+        lat: 48.892,
+        lon: 2.359,
+        title: 'Paris, France',
+        html: '<h3>Paris, France</h3>',
+        stopover: true
     },
     {
-            lat: 48.13654,
-            lon: 11.57706,
-            title: 'Munich, Germany',
-            html: '&lt;h3&gt;Munich, Germany&lt;/h3&gt;'
+        lat: 48.13654,
+        lon: 11.57706,
+        title: 'Munich, Germany',
+        html: '<h3>Munich, Germany</h3>'
     }
 ];
-
 
 var Circles = [
     {
         lat: 51.51386,
         lon: -0.09559,
+        title: 'Draggable marker',
         circle_options: {
             radius: 160
         },
         stroke_options: {
             strokeColor: '#aaaa00',
             fillColor: '#eeee00'
-        }
+        },
+        draggable: true
     },
     {
         lat: 51.51420,
         lon: -0.09303,
+        title: 'Draggable circle',
         circle_options: {
             radius: 50
         },
@@ -1612,7 +1646,8 @@ var Circles = [
             strokeColor: '#aa0000',
             fillColor: '#ee0000'
         },
-        hide_marker: true
+        visible: false,
+        draggable: true
     },
     {
         lat: 51.51498,
@@ -1620,7 +1655,8 @@ var Circles = [
         circle_options: {
             radius: 80
         },
-        hide_marker: true
+        visible: false,
+        draggable: true
     },
     {
         lat: 51.51328,
@@ -1631,7 +1667,8 @@ var Circles = [
         },
         title: 'Editable circle',
         html: 'Change my size',
-        hide_marker: true
+        visible: false,
+        draggable: true
     },
     {
         lat: 51.51211,
@@ -1643,14 +1680,15 @@ var Circles = [
             strokeColor: '#00aa00',
             fillColor: '#00aa00'
         },
-        hide_marker: true
+        visible: false
     },
     {
         lat: 51.51226,
         lon: -0.09435,
         circle_options: {
             radius: 100
-        }
+        },
+        draggable: true
     },
     {
         lat: 51.513,
@@ -1660,7 +1698,6 @@ var Circles = [
         html: 'I\'m a simple marker.'
     }
 ];
-
 </pre>
                         </div>
                     </section>

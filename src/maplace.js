@@ -329,9 +329,7 @@
         //create the main object point
         Maplace.prototype.create_objPoint = function (index) {
             var point = $.extend({}, this.o.locations[index]),
-                html = point.html || '',
-                visibility = point.visible === undefined ? undefined : point.visible,
-                marker;
+                visibility = point.visible === undefined ? undefined : point.visible;
 
             !point.type && (point.type = this.o.type);
 
