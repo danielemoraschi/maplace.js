@@ -29,7 +29,7 @@
     }
 
     //Just the map
-    var simple = new Maplace();
+    var simple = new Maplace().Load();
 
     //Simple Example, dropdown on map
     var dropdown = new Maplace({
@@ -43,7 +43,7 @@
       map_div: '#gmap-3',
       controls_type: 'list',
       controls_title: 'Choose a location:',
-      locations: LocsB
+      locations: LocsBv2
     });
 
     //Simple Example, external menu
@@ -79,8 +79,9 @@
       controls_on_map: false,
       show_infowindows: true,
       view_all_text: 'Start',
-      locations: LocsA,
-      type: 'polyline'
+      locations: LocsAv2,
+      type: 'polyline',
+      editable: true
     });
 
     //Polygon Example
@@ -89,19 +90,19 @@
       controls_div: '#controls-7',
       controls_type: 'list',
       show_markers: false,
-      locations: LocsA,
+      locations: LocsAv2,
       type: 'polygon',
-      draggable: true
+      editable: true
     });
 
     //Directions route Example
     var directions = new Maplace({
       map_div: '#gmap-8',
       generate_controls: false,
-      show_markers: false,
       locations: LocsD,
       type: 'directions',
       draggable: true,
+      editable: true,
       directions_panel: '#route',
       afterRoute: function(distance) {
         $('#km').text((distance/1000)+'km');
@@ -112,40 +113,10 @@
     var styled = new Maplace({
       map_div: '#gmap-12',
       locations: LocsAB,
-      start: 3,
-      styles: {
-        'Other style': [{
-          stylers: [
-              { hue: "#00ffe6" },
-              { saturation: -20 }
-          ]
-        }, {
-          featureType: "road",
-          elementType: "geometry",
-          stylers: [
-              { lightness: 100 },
-              { visibility: "simplified" }
-          ]
-        }, {
-          featureType: "road",
-          elementType: "labels",
-          stylers: [
-              { visibility: "off" }
-          ]
-        }],
-        'Night': [{
-          featureType: 'all',
-          stylers: [
-            { invert_lightness: 'true' }
-          ]
-        }],
-        'Greyscale': [{              
-          featureType: 'all',
-          stylers: [
-            { saturation: -100 },
-            { gamma: 0.50 }
-          ]
-        }]
+      start: 1,
+      styles: styles,
+      map_options: {
+          zoom: 5
       }
     });
 
@@ -156,6 +127,7 @@
       controls_type: 'list',
       controls_on_map: false
     });
+
     function showGroup(index) {
       var el = $('#g'+index);
       $('#mixed li').removeClass('active');
@@ -169,6 +141,7 @@
         });
       });
     }
+
     $('#mixed a').click(function(e) {
       e.preventDefault();
       var index = $(this).attr('data-load');
@@ -199,17 +172,39 @@
     var bigdata = new Maplace({
       map_div: '#gmap-10',
       locations: big4k,
-      commons: {
+      type: 'circle',
+      shared: {
         zoom: 5,
-        html: '%index'
+        html: '%index',
+        radius: 10000,
       }
     });
+
     $('#load_bigdata').click(function(e) {
       e.preventDefault();
       $('#panel').fadeOut(10, function() {
         $('#gmap-10').fadeIn(10);
         bigdata.Load();
       });
+    });
+
+    //Circles Example
+    var circles = new Maplace({
+      locations: Circles,
+      controls_type: 'list',
+      map_div: '#gmap-circles',
+      start: 4,
+      view_all_text: 'Points of interest',
+      type: 'circle',
+      shared: {
+        zoom: 16,
+        html: '%index'
+      },
+      circleRadiusChanged: function(index, point, marker) {
+          $('#radiusInfo').text(
+            ' - point #' + (index + 1) + ' size: ' + parseInt(marker.getRadius()) + 'mt.'
+          );
+      }
     });
 
 
@@ -274,6 +269,12 @@
       } 
     });
 
+    $('#circles').one('inview', function(event, isInView) {
+      if (isInView) {
+        circles.Load();
+      } 
+    });
+
 
     if(lt_ie9) {
       simple.Load();
@@ -287,6 +288,7 @@
       styled.Load();
       showGroup(0);
       fusion.Load();
+      circles.Load();
     }
 
 

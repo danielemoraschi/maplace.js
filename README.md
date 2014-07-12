@@ -36,7 +36,7 @@ var data = [{
 	    lon: 1.7,
 	    title: 'Title B1',
 	    html: '<h3>Content B1</h3>',
-	    show_infowindows: false
+	    show_infowindow: false
 	}
 ];
 ```
@@ -477,6 +477,46 @@ var data = [{
 	      Fires when click on polylines
 	    </td>
 	  </tr>
+	  <tr>
+      <td>circleRadiusChanged</td>
+          <td>function</td>
+          <td>(index, location, marker){}</td>
+          <td>
+              This event is fired when the circle's radius is changed.
+          </td>
+      </tr>
+      <tr>
+          <td>circleCenterChanged</td>
+          <td>function</td>
+          <td>(index, location, marker){}</td>
+          <td>
+              This event is fired when the circle's center is changed.
+          </td>
+      </tr>
+      <tr>
+          <td>drag</td>
+          <td>function</td>
+          <td>(index, location, marker){}</td>
+          <td>
+              This event is fired while a marker is dragged.
+          </td>
+      </tr>
+      <tr>
+          <td>dragEnd</td>
+          <td>function</td>
+          <td>(index, location, marker){}</td>
+          <td>
+              This event is fired when the drag event ends.
+          </td>
+      </tr>
+      <tr>
+          <td>dragStart</td>
+          <td>function</td>
+          <td>(index, location, marker){}</td>
+          <td>
+              This event is fired when the drag event starts.
+          </td>
+      </tr>
 	  
 	</tbody>
 </table>
@@ -490,9 +530,21 @@ Maplace.js is released under an MIT License.
 
 ## Changelog
 
-- **(Planned) 0.2.0**  
-Custom InfoWindow
+**v0.1.3**
+- Added circles support allowing mixed markers/circles
+- Removed 'hide_marker' option for consistency with "visible"
+- Added support to set the initial center position and zoom of the Map
+- Improved editable polyline and polygon when visible markers
+- Added drag events between markers, circles, polyline and polygon
+- Return "this" for public functions to allow method chaining
+- Renamed property 'commons' to 'shared' now overridden by location specific options
+- Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling
+- Changed debug strategy
+- General fixes and enhancements
 
-- **0.1.0**  
-Initial release
+**v0.1.2**
+- General fixes and enhancements
+
+**v0.1.0**
+- Initial release
 
