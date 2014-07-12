@@ -358,7 +358,6 @@
         Maplace.prototype.create_objCircle = function (point) {
             var def_stroke_opz,
                 def_circle_opz,
-                point,
                 circle;
             
             circle = $.extend({}, point);
@@ -896,6 +895,7 @@
 
         Maplace.prototype.debug = function (code, msg) {
             this.o.debug && console.log(code, msg);
+            return this;
         };
 
 
@@ -906,10 +906,11 @@
         //adds a custom menu to the class
         Maplace.prototype.AddControl = function (name, func) {
             if (!name || !func) {
+                self.debug('AddControl', 'Missing "name" and "func" callback.');
                 return false;
             }
             this.controls[name] = func;
-            return true;
+            return this;
         };
 
         //close the infowindow
@@ -920,6 +921,7 @@
                 this.infowindow = null;
                 this.o.afterCloseInfowindow(this.current_index, this.o.locations[this.current_index]);
             }
+            return this;
         };
 
         //checks if a location has to be in menu
@@ -963,12 +965,14 @@
                     }
                 }
             }
+            return this;
         };
 
         //replace current locations
         Maplace.prototype.SetLocations = function (locs, reload) {
             this.o.locations = locs;
             reload && this.Load();
+            return this;
         };
 
         //adds one or more locations to the end of the array
@@ -986,6 +990,7 @@
             }
 
             reload && this.Load();
+            return this;
         };
 
         //adds a location at the specific index
@@ -997,6 +1002,7 @@
             }
 
             reload && this.Load();
+            return this;
         };
 
         //remove one or more locations
@@ -1018,6 +1024,7 @@
             }
 
             reload && this.Load();
+            return this;
         };
 
         //check if already initialized with a Load()
@@ -1043,6 +1050,7 @@
             //store dom references
             this.map_div = $(this.o.map_div);
             this.controls_wrapper = $(this.o.controls_div);
+            return this;
         };
 
         //creates the map and menu
