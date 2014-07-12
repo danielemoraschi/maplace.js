@@ -161,7 +161,7 @@
 
             //default options
             this.o = {
-                debug: true,
+                debug: false,
                 map_div: '#gmap',
                 controls_div: '#controls',
                 generate_controls: true,
