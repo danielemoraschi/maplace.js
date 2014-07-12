@@ -36,7 +36,7 @@ var data = [{
 	    lon: 1.7,
 	    title: 'Title B1',
 	    html: '<h3>Content B1</h3>',
-	    show_infowindows: false
+	    show_infowindow: false
 	}
 ];
 ```
