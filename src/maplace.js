@@ -138,7 +138,6 @@
         */
         function Maplace(args) {
             this.VERSION = '0.1.3';
-            this.errors = [];
             this.loaded = false;
             this.markers = [];
             this.circles = [];
@@ -162,6 +161,7 @@
 
             //default options
             this.o = {
+                debug: true,
                 map_div: '#gmap',
                 controls_div: '#controls',
                 generate_controls: true,
@@ -253,7 +253,6 @@
 
         //initialize google map object
         Maplace.prototype.create_objMap = function () {
-            this.errors = [];
             var self = this,
                 count = 0,
                 i;
@@ -286,8 +285,9 @@
                     }).appendTo(this.map_div);
 
                     this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
+
                 } catch (err) {
-                    this.errors.push(err.toString());
+                    this.debug('create_objMap::' + this.map_div.selector, err.toString());
                 }
 
             //else loads the new optionsl
@@ -306,8 +306,6 @@
                     this.oMap.setMapTypeId('map_style_' + count);
                 }
             }
-
-            this.debug('01');
         };
 
         //adds markers to the map
@@ -808,7 +806,6 @@
 
         //resets obj map, markers, bounds, listeners, controllers
         Maplace.prototype.init_map = function () {
-            this.errors = [];
             var self = this;
 
             this.Polyline && this.Polyline.setMap(null);
@@ -820,7 +817,7 @@
                 try { 
                     this.markers[i] && this.markers[i].setMap(null);
                 } catch (err) {
-                    self.errors.push(err);
+                    self.debug('init_map::markers::setMap', err.stack);
                 }
             }
 
@@ -831,7 +828,7 @@
                 try { 
                     this.circles[i] && this.circles[i].setMap(null);
                 } catch (err) {
-                    self.errors.push(err);
+                    self.debug('init_map::circles::setMap', err.stack);
                 }
             }
 
@@ -843,14 +840,12 @@
                     try {
                         self.oMap.controls[this.o.controls_position].removeAt(index);
                     } catch (err) { 
-                        self.errors.push(err);
+                        self.debug('init_map::removeAt', err.stack);
                     }
                 });
             }
 
             this.oBounds = new google.maps.LatLngBounds();
-
-            this.debug('02');
         };
 
         //perform the first view of the map
@@ -899,12 +894,8 @@
             }
         };
 
-        Maplace.prototype.debug = function (msg) {
-            if (this.errors.length) {
-                for (var i = this.errors.length - 1; i >= 0; i--) {
-                    console.log(this.errors[i].stack);
-                };
-            }
+        Maplace.prototype.debug = function (code, msg) {
+            this.o.debug && console.log(code, msg);
         };
 
 
@@ -944,13 +935,12 @@
                     return true;
                 }
             }
+
             return false;
         };
 
         //triggers to show a location in map
         Maplace.prototype.ViewOnMap = function (index) {
-            this.errors = [];
-
             //view all
             if (index === this.view_all_key) {
                 this.o.beforeViewAll();
@@ -962,17 +952,17 @@
                 this.CloseInfoWindow();
                 this.o.afterViewAll();
 
-            } else { //specific location
+            //specific location
+            } else {
                 index = parseInt(index, 10);
                 if (typeof (index - 0) === 'number' && index > 0 && index <= this.ln) {
                     try {
                         google.maps.event.trigger(this.markers[index - 1], 'click');
                     } catch (err) {
-                        this.errors.push(err);
+                        this.debug('ViewOnMap::trigger', err.stack);
                     }
                 }
             }
-            this.debug('03');
         };
 
         //replace current locations
