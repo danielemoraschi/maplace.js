@@ -531,20 +531,20 @@ Maplace.js is released under an MIT License.
 ## Changelog
 
 - **0.1.3**
-Added circles support allowing mixed markers/circles
-Removed 'hide_marker' option for consistency with "visible"
-Added support to set the initial center position and zoom of the Map
-Improved editable polyline and polygon when visible markers
-Added drag events between markers, circles, polyline and polygon
-Return "this" for public functions to allow method chaining
-Renamed property 'commons' to 'shared' now overridden by location specific options
-Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling
-Changed debug strategy
-General fixes and enhancements
+⋅⋅* Added circles support allowing mixed markers/circles
+⋅⋅* Removed 'hide_marker' option for consistency with "visible"
+⋅⋅* Added support to set the initial center position and zoom of the Map
+⋅⋅* Improved editable polyline and polygon when visible markers
+⋅⋅* Added drag events between markers, circles, polyline and polygon
+⋅⋅* Return "this" for public functions to allow method chaining
+⋅⋅* Renamed property 'commons' to 'shared' now overridden by location specific options
+⋅⋅* Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling
+⋅⋅* Changed debug strategy
+⋅⋅* General fixes and enhancements
 
 - **0.1.2**
-General fixes and enhancements
+⋅⋅* General fixes and enhancements
 
 - **0.1.0**  
-Initial release
+⋅⋅* Initial release
 
