@@ -223,9 +223,7 @@
 
                 afterRoute: function (distance, status, result) {},
                 onPolylineClick: function (obj) {},
-                onPolylineChanged: function(index, obj, newPathArray) {},
                 onPolygonClick: function (obj) {},
-                onPolygonChanged: function(index, obj, newPathArray) {},
 
                 circleRadiusChanged: function (index, circle, marker) {},
                 circleCenterChanged: function (index, circle, marker) {},
