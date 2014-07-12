@@ -118,6 +118,7 @@
                 <dd><a href="#Docs">Docs</a></dd>
                 <dd><a href="#Locationsdocs">Locations Docs</a></dd>
                 <dd><a href="#Menudocs">Menu Docs</a></dd>
+                <dd style="float:right"><a href="#changelog">Change log</a></dd>
             </dl>
 
         </div>
@@ -197,6 +198,55 @@ new Maplace({
                         </div>
                         <div class="four columns mobile-two"><div class="line"></div></div>
                     </section>
+
+
+                    <section id="circles" class="row">
+                        <h2 class="three columns mobile-one">Circles <strong id="radiusInfo"></strong></h2>
+                        <div class="one columns mobile-one">
+                            <dl class="right tabs pill small">
+                                <dd class="active"><a href="#exampleCircles">Example</a></dd>
+                                <dd><a href="#codeCircles">Code</a></dd>
+                            </dl>
+                        </div>
+                        <div class="four columns mobile-two">
+                            <ul class="tabs-content">
+                                <li class="active" id="exampleCirclesTab">
+                                    <div class="row">
+                                        <div class="four columns">
+                                            <div class="gmap" id="gmap-circles"></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="code" id="codeCirclesTab">
+                                    <h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: Circles,
+    map_div: '#gmap-circles',
+    start: 4,
+    view_all_text: 'Points of interest',
+    type: 'circle',
+    shared: {
+        zoom: 16,
+        html: '%index'
+    },
+    circleRadiusChanged: function(index, point, marker) {
+      $('#radiusInfo').text(
+        ' - point #' + (index+1) + ' size: ' + parseInt(marker.getRadius()) + 'mt.'
+      );
+    }
+}).Load();
+</pre>
+                                    <h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-circles"&gt;&lt;/div&gt;
+</pre>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="four columns mobile-two"><div class="line"></div></div>
+                    </section>
+
 
                     <section id="menu" class="row">
                         <h2 class="two columns mobile-one">Menu</h2>
@@ -295,8 +345,8 @@ new Maplace({
 
 
                     <section id="polyline" class="row">
-                        <h2 class="two columns mobile-one">Path / Polyline</h2>
-                        <div class="two columns mobile-one">
+                        <h2 class="three columns mobile-one">Path / Polyline + mixed circles</h2>
+                        <div class="one columns mobile-one">
                             <dl class="right tabs pill small">
                                 <dd class="active"><a href="#example5">Example</a></dd>
                                 <dd><a href="#code5">Code</a></dd>
@@ -318,7 +368,7 @@ new Maplace({
 <h3>JS</h3>
 <pre class="prettyprint">
 new Maplace({
-    locations: LocsA,
+    locations: LocsAv2,
     map_div: '#gmap-polyline',
     controls_div: '#controls-polyline',
     controls_type: 'list',
@@ -515,6 +565,7 @@ new Maplace({
                                                         <dd><a href="javascript:void(0)" data-load="1" id="g1" title="Group B">Group B</a></dd>
                                                         <dd><a href="javascript:void(0)" data-load="2" id="g2" title="Group C">Group C</a></dd>
                                                         <dd><a href="javascript:void(0)" data-load="3" id="g3" title="Group D">Group D</a></dd>
+                                                        <li><a href="javascript:void(0)" data-load="4" id="g4" title="Group E">Group E</a></li>
                                                 </dl>
                                         </div>
                                     </div>
@@ -565,6 +616,7 @@ showGroup(0);
     &lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="1" id="g1" title=&quot;Group B&quot;&gt;Group B&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="2" id="g2" title=&quot;Group C&quot;&gt;Group C&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="3" id="g3" title=&quot;Group D&quot;&gt;Group D&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="4" id="g4" title=&quot;Group E&quot;&gt;Group E&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div id="controls-mixed"&gt;&lt;/div&gt;
 &lt;div id="gmap-mixed"&gt;&lt;/div&gt;
@@ -645,7 +697,7 @@ bigdata = new Maplace({
     map_div: '#gmap-big',
     show_infowindows: false,
     locations: big4k,
-    commons: {
+    shared: {
         zoom: 8,
         html: '%index'
     }
@@ -842,7 +894,7 @@ new Maplace({
                                         <td>string</td>
                                         <td>marker</td>
                                         <td>
-                                            To set the Map type choose between: <strong>marker</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
+                                            To set the Map type choose between: <strong>marker</strong> | <strong>circle</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
                                         </td>
                                     </tr>
                                     <tr>
@@ -878,7 +930,7 @@ new Maplace({
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>commons</td>
+                                        <td>shared</td>
                                         <td>object</td>
                                         <td>{}</td>
                                         <td>
@@ -893,14 +945,7 @@ new Maplace({
                                             If <strong><em>false</em></strong>, markers will not be visible on the map
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>show_infowindows</td>
-                                        <td>boolean</td>
-                                        <td>true</td>
-                                        <td>
-                                            If <strong><em>false</em></strong>, infowindows will not be created
-                                        </td>
-                                    </tr>
+                                     
                                     <tr>
                                         <td>infowindow_type</td>
                                         <td>string</td>
@@ -961,7 +1006,7 @@ new Maplace({
                                         </td>
                                         <td>
                                             Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>.<br/>
-                                            Used in Polyline/Polygon/Directions/Fusion Map type.
+                                            Used when in Polyline/Polygon/Directions/Fusion/Circle Map type.
                                         </td>
                                     </tr>
                                     <tr>
@@ -998,6 +1043,20 @@ new Maplace({
                                         <td>{}</td>
                                         <td>
                                             Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank">Google</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>circle_options</td>
+                                        <td>Object</td>
+                                        <td> 
+<pre class="prettyprint">
+{
+    radius: 100
+}
+</pre>
+                                        </td>
+                                        <td>
+                                            Default circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank">Google</a>.<br/>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1200,6 +1259,22 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                             Fires when click on polylines
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>circleRadiusChanged</td>
+                                        <td>function</td>
+                                        <td>(index, location, marker){}</td>
+                                        <td>
+                                            This event is fired when the circle's radius is changed.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>circleCenterChanged</td>
+                                        <td>function</td>
+                                        <td>(index, location, marker){}</td>
+                                        <td>
+                                            This event is fired when the circle's center is changed.
+                                        </td>
+                                    </tr>
                                     
                                 </tbody>
                             </table>
@@ -1276,6 +1351,31 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td>hide_marker</td>
+                                        <td>boolean</td>
+                                        <td>
+                                            Available in type: <strong>circle</strong><br/>
+                                            If <strong><em>false</em></strong>, the marker will not be visible
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>stroke_options</td>
+                                        <td>Object</td>
+                                        <td>
+                                            Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank">Google</a>.<br/>
+                                            Defines the style of the <strong>circle</strong> specific for each location.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>circle_options</td>
+                                        <td>Object</td>
+                                        <td>
+                                            Available in type: <strong>circle</strong><br/>
+                                            Circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank">Google</a>.<br/>
+                                            Defines the options of the circle specific for each location.
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td>*</td>
                                         <td></td>
                                         <td>Whatever you want to pass and catch in your menu function.</td>
@@ -1283,7 +1383,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                     <tr>
                                         <td></td>
                                         <td></td>
-                                        <td>For other options look at the <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" target="_blank">Google page</a></td>
+                                        <td>For other options please refer to <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" target="_blank">Google page</a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1319,6 +1419,39 @@ var LocsA = [
             icon: 'http://maps.google.com/mapfiles/markerC.png'
     }
 ];
+
+
+var LocsAv2 = [
+    {
+        lat: 45.9,
+        lon: 10.9,
+        title: 'Zone A1',
+        html: 'Content A1',
+
+        type : 'circle',
+        circle_options: {
+            radius: 200000,
+        }
+    },
+    {
+        lat: 44.8,
+        lon: 1.7,
+        title: 'Title B1',
+        html: 'Content B1',
+        show_infowindow: false
+    },
+    {
+        lat: 51.5,
+        lon: -1.1,
+        title: 'Title C1',
+        html: [
+            'Content C1&lt;br/&gt;',
+            'Lorem Ipsum..'
+        ].join(''),
+        zoom: 8,
+    }
+];
+
 
 var LocsB = [
     {
@@ -1362,6 +1495,56 @@ var LocsB = [
             zoom: 6
     }
 ];
+
+
+var LocsBv2 = [
+    {
+        lat: 52.1,
+        lon: 11.3,
+        title: 'Title A2',
+        html: [
+            'Content A2&lt;br/&gt;',
+            'Lorem Ipsum..'
+        ].join(''),
+        zoom: 8
+    },
+    {
+        lat: 51.2,
+        lon: 22.2,
+        title: 'Title B2',
+        html: [
+            'Content B2&lt;br/&gt;',
+            'Lorem Ipsum..'
+        ].join(''),
+        zoom: 8,
+
+        type : 'circle',
+        circle_options: {
+            radius: 100000,
+        }
+    },
+    {
+        lat: 49.4,
+        lon: 35.9,
+        title: 'Title C2',
+        html: [
+            'Content C2&lt;br/&gt;',
+            'Lorem Ipsum..'
+        ].join(''),
+        zoom: 4
+    },
+    {
+        lat: 47.8,
+        lon: 15.6,
+        title: 'Title D2',
+        html: [
+            'Content D2&lt;br/&gt;',
+            'Lorem Ipsum..'
+        ].join(''),
+        zoom: 6
+    }
+];
+
 
 var LocsAB = LocsA.concat(LocsB);
 
@@ -1416,6 +1599,79 @@ var LocsD = [
             html: '&lt;h3&gt;Munich, Germany&lt;/h3&gt;'
     }
 ];
+
+
+var Circles = [
+    {
+        lat: 51.51386,
+        lon: -0.09559,
+        circle_options: {
+            radius: 160
+        },
+        stroke_options: {
+            strokeColor: '#aaaa00',
+            fillColor: '#eeee00'
+        }
+    },
+    {
+        lat: 51.51420,
+        lon: -0.09303,
+        circle_options: {
+            radius: 50
+        },
+        stroke_options: {
+            strokeColor: '#aa0000',
+            fillColor: '#ee0000'
+        },
+        hide_marker: true
+    },
+    {
+        lat: 51.51498,
+        lon: -0.09097,
+        circle_options: {
+            radius: 80
+        },
+        hide_marker: true
+    },
+    {
+        lat: 51.51328,
+        lon: -0.09021,
+        circle_options: {
+            radius: 160,
+            editable: true
+        },
+        title: 'Editable circle',
+        html: 'Change my size',
+        hide_marker: true
+    },
+    {
+        lat: 51.51211,
+        lon: -0.09050,
+        circle_options: {
+            radius: 130
+        },
+        stroke_options: {
+            strokeColor: '#00aa00',
+            fillColor: '#00aa00'
+        },
+        hide_marker: true
+    },
+    {
+        lat: 51.51226,
+        lon: -0.09435,
+        circle_options: {
+            radius: 100
+        }
+    },
+    {
+        lat: 51.513,
+        lon: -0.08410,
+        type: 'marker',
+        title: 'Simple marker',
+        html: 'I\'m a simple marker.'
+    }
+];
+
 </pre>
                         </div>
                     </section>
@@ -1490,6 +1746,29 @@ maplace.Load({
                     </section>
                 </li>
 
+
+                <li id="changelogTab">
+                    <section class="row">
+                        <div class="four columns mobile-one">
+                            <h3>Version 1.2.3</h3>
+                            <p>28 December, 2013</p>
+                            <ul class="normal-list">
+                                <li>jh xusncj asnjcn</li>
+                                <li>jh xusncj asnjcn</li>
+                                <li>jh xusncj asnjcn</li>
+                            </ul>
+                            <hr>
+                            <h3>Version 1.2.3</h3>
+                            <p>28 December, 2013</p>
+                            <ul class="normal-list">
+                                <li>jh xusncj asnjcn</li>
+                                <li>jh xusncj asnjcn</li>
+                                <li>jh xusncj asnjcn</li>
+                            </ul>
+                        </div>
+                    </section>
+                </li>
+
             </ul>
         </div>
     </div>
@@ -1503,11 +1782,11 @@ maplace.Load({
     </div>
 
     <script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7?1343675510"></script>
-    <script src="javascripts/libs.min.js?v=0.1.2b"></script>
+    <script src="javascripts/libs.min.js?v=0.1.3"></script>
 
-    <script src="src/maplace.min.js?v=0.1.2c"></script>
+    <script src="src/maplace.js?v=0.1.3"></script>
 
-    <script src="data/points.js?v=0.1.2b"></script> 
-    <script src="javascripts/app.js?v=0.1.2b"></script>
+    <script src="data/points.js?v=0.1.3"></script> 
+    <script src="javascripts/app.js?v=0.1.3"></script>
 </body>
 </html>
