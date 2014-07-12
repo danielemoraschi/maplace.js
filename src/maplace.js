@@ -460,12 +460,17 @@
 
                 if (extraType) {
                     var path = self[extraType].getPath(),
-                        pathArray = path.getArray();
+                        pathArray = path.getArray(),
+                        arr = [],
+                        i = 0;
 
-                    pathArray[index].nb = pos.lat();
-                    pathArray[index].ob = pos.lng();
-                    
-                    self[extraType].setPath(pathArray);
+                    for(; i < pathArray.length; ++i) {
+                        arr[i] = index === i
+                            ? new google.maps.LatLng(pos.lat(), pos.lng())
+                            : new google.maps.LatLng(pathArray[i].lat(), pathArray[i].lng());
+                    }
+
+                    self[extraType].setPath(new google.maps.MVCArray(arr));
                     self.add_polyEv(extraType);
                 }
 
