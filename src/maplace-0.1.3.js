@@ -387,7 +387,6 @@
                 }
 
                 //pan and zoom the map
-                self.o.pan_on_click
                 if (self.o.pan_on_click && (point.pan_on_click === false ? false : true)) {
                     self.oMap.panTo(point.position);
                     point.zoom && self.oMap.setZoom(point.zoom);
