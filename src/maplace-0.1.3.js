@@ -174,6 +174,7 @@
                 type: 'marker',
                 view_all: true,
                 view_all_text: 'View All',
+                pan_on_click: true,
                 start: 0,
                 locations: [],
                 shared: {},
@@ -386,8 +387,11 @@
                 }
 
                 //pan and zoom the map
-                self.oMap.panTo(point.position);
-                point.zoom && self.oMap.setZoom(point.zoom);
+                self.o.pan_on_click
+                if (self.o.pan_on_click && (point.pan_on_click === false ? false : true)) {
+                    self.oMap.panTo(point.position);
+                    point.zoom && self.oMap.setZoom(point.zoom);
+                }
 
                 //activate related menu link
                 if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {
