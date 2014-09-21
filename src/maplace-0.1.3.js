@@ -2,14 +2,14 @@
     'use strict';
 
     /**
-    * Maplace.js 0.1.31
+    * Maplace.js 0.1.32
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.31
+    * @version  0.1.32
     */
 
 
@@ -137,7 +137,7 @@
         * @constructor  
         */
         function Maplace(args) {
-            this.VERSION = '0.1.31';
+            this.VERSION = '0.1.32';
             this.loaded = false;
             this.markers = [];
             this.circles = [];
@@ -334,8 +334,9 @@
 
             !point.type && (point.type = this.o.type);
 
-            point.position = new google.maps.LatLng(point.lat, point.lon);
+            //set obj map
             point.map = this.oMap;
+            point.position = new google.maps.LatLng(point.lat, point.lon);
             point.zIndex = 10000;
             point.visible = visibility === undefined  ? this.o.show_markers : visibility;
 
@@ -859,7 +860,7 @@
                     this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
                 
                 } else {
-                    this.oMap.setCenter(this.markers[0].getPosition());
+                    this.oMap.fitBounds(this.oBounds);
                     this.ViewOnMap(1);
                 }
 
@@ -1062,7 +1063,7 @@
             $.extend(true, this.o, args);
             args && args.locations && (this.o.locations = args.locations);
             this._init();
-            
+
             //reset/init google map objects
             this.o.visualRefresh === false ? (google.maps.visualRefresh = false) : (google.maps.visualRefresh = true);
             this.init_map();
