@@ -137,7 +137,7 @@
         * @constructor  
         */
         function Maplace(args) {
-            this.VERSION = '0.1.32';
+            this.VERSION = '0.1.33';
             this.loaded = false;
             this.markers = [];
             this.circles = [];
