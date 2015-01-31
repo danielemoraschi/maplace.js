@@ -5,7 +5,7 @@ $t = $_GET['type'];
 
 switch($t) {
 	case 4:
-		echo '{"title":"Group E","type":"circle","points":[{"lat":52.1,"lon":11.3,"title":"Title A2","html":"<h3>Content A2</h3><p>Lorem Ipsum..</p>","zoom":8,"circle_options":{"radius":30000}}]}';
+		echo '{"title":"Group E","type":"circle","locations":[{"lat":52.1,"lon":11.3,"title":"Title A2","html":"<h3>Content A2</h3><p>Lorem Ipsum..</p>","zoom":8,"circle_options":{"radius":30000}}]}';
 		break;
 	case 3:
 		echo '{"title":"Group D","type":"polygon","locations":[{"lat":52.1,"lon":11.3,"title":"Title A2","html":"<h3>Content A2</h3><p>Lorem Ipsum..</p>","zoom":8},{"lat":51.2,"lon":22.2,"title":"Title B2","html":"<h3>Content B2</h3><p>Lorem Ipsum..</p>","zoom":8},{"lat":49.4,"lon":35.9,"title":"Title C2","html":"<h3>Content C2</h3><p>Lorem Ipsum..</p>","zoom":4},{"lat":47.8,"lon":15.6,"title":"Title D2","html":"<h3>Content D2</h3><p>Lorem Ipsum..</p>","zoom":6}]}';
