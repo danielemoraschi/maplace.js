@@ -345,7 +345,7 @@
                     point.image,
                     new google.maps.Size(point.image_w || 32, point.image_h || 32),
                     new google.maps.Point(0, 0),
-                    new google.maps.Point(image_w / 2, image_h / 2)
+                    new google.maps.Point((point.image_w || 32) / 2, (point.image_h || 32)  / 2)
                 );
             }
 
