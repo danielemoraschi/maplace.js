@@ -1,0 +1,32 @@
+{
+  "name": "Maplace.js",
+  "version": "0.1.33",
+  "description": "Google Maps jQuery plugin and markers helper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/danielemoraschi/maplace.js.git"
+  },
+  "keywords": [
+    "google",
+    "maps",
+    "googlemaps",
+    "maps",
+    "maplace",
+    "maplacejs",
+    "jquery",
+    "markers",
+    "locations",
+    "circles",
+    "directions"
+  ],
+  "author": "Daniele Moraschi <daniele.moraschi@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danielemoraschi/maplace.js/issues"
+  },
+  "homepage": "https://github.com/danielemoraschi/maplace.js"
+}
