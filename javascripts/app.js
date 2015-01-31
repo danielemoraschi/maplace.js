@@ -134,7 +134,7 @@
       $(el).parent().addClass('active');
       $.getJSON('data/ajax.php', { type: index }, function(data) {
         mixed.Load({
-          locations: data.points,
+          locations: data.locations,
           view_all_text: data.title,
           type: data.type,
           force_generate_controls: true

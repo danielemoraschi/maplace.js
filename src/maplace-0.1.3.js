@@ -2,14 +2,14 @@
     'use strict';
 
     /**
-    * Maplace.js 0.1.32
+    * Maplace.js 0.1.33
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.32
+    * @version  0.1.33
     */
 
 
@@ -137,7 +137,7 @@
         * @constructor  
         */
         function Maplace(args) {
-            this.VERSION = '0.1.32';
+            this.VERSION = '0.1.33';
             this.loaded = false;
             this.markers = [];
             this.circles = [];
@@ -145,6 +145,7 @@
             this.view_all_key = 'all';
 
             this.infowindow = null;
+            this.maxZIndex = 0;
             this.ln = 0;
             this.oMap = false;
             this.oBounds = null;
@@ -337,8 +338,10 @@
             //set obj map
             point.map = this.oMap;
             point.position = new google.maps.LatLng(point.lat, point.lon);
-            point.zIndex = 10000;
+            point.zIndex = point.zIndex === undefined ? 10000 : (point.zIndex + 100);
             point.visible = visibility === undefined  ? this.o.show_markers : visibility;
+
+            this.o.maxZIndex = point.zIndex > this.maxZIndex ? point.zIndex : this.maxZIndex;
 
             if (point.image) {
                 point.icon = new google.maps.MarkerImage(
@@ -370,7 +373,7 @@
 
             circle.center = point.position;
             circle.draggable = false;
-            circle.zIndex = 9000;
+            circle.zIndex = point.zIndex > 0 ? point.zIndex - 10 : 1;
 
             return circle;
         };
@@ -595,7 +598,7 @@
                 stroke.draggable = this.o.draggable;
                 stroke.editable = this.o.editable;
                 stroke.map = this.oMap;
-                stroke.zIndex = 11000;
+                stroke.zIndex = this.o.maxZIndex + 100;
 
                 //create the path and location marker
                 for (a = 0; a < this.ln; a++) {
@@ -624,7 +627,7 @@
                 stroke.draggable = this.o.draggable;
                 stroke.editable = this.o.editable;
                 stroke.map = this.oMap;
-                stroke.zIndex = 11000;
+                stroke.zIndex = this.o.maxZIndex + 100;
 
                 //create the path and location marker
                 for (a = 0; a < this.ln; a++) {
