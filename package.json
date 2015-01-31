@@ -1,5 +1,5 @@
 {
-  "name": "Maplace.js",
+  "name": "maplace-js",
   "version": "0.1.33",
   "description": "Google Maps jQuery plugin and markers helper",
   "main": "index.js",
