@@ -2,14 +2,14 @@
     'use strict';
 
     /**
-    * Maplace.js 0.1.32
+    * Maplace.js 0.1.33
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.32
+    * @version  0.1.33
     */
 
 
