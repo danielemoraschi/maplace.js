@@ -143,6 +143,7 @@
             this.circles = [];
             this.oMap = false;
             this.view_all_key = 'all';
+            this.view_clustered = true;
 
             this.infowindow = null;
             this.maxZIndex = 0;
@@ -959,6 +960,14 @@
                     this.current_control.activateCurrent.apply(this, [index]);
                 }
                 this.oMap.fitBounds(this.oBounds);
+                
+                //check if MarkerClusterer function exist and check is clustered view is enabled
+                //mandatory lib: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js
+                if (this.view_clustered && (typeof MarkerClusterer == 'function')) {
+                    var mcOptions = {gridSize: 50, maxZoom: 15};
+                    var markerCluster = new MarkerClusterer(this.oMap, this.markers, mcOptions);
+                }
+                
                 this.CloseInfoWindow();
                 this.o.afterViewAll();
 
