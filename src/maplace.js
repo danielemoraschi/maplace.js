@@ -1,3 +1,15 @@
+/**
+* Maplace.js
+*
+* Copyright (c) 2013 Daniele Moraschi
+* Licensed under the MIT license
+* For all details and documentation:
+* http://maplacejs.com
+*
+* @version  @VERSION
+* @preserve
+*/
+
 ;(function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(['jquery'], factory);
@@ -8,18 +20,6 @@
     }
 } (this, function ($) {
     'use strict';
-
-    /**
-    * Maplace.js @VERSION
-    *
-    * Copyright (c) 2013 Daniele Moraschi
-    * Licensed under the MIT license
-    * For all details and documentation:
-    * http://maplacejs.com
-    *
-    * @version  @VERSION
-    */
-
 
     var html_dropdown,
         html_ullist,
