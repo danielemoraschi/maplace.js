@@ -2,7 +2,7 @@
   "name": "maplace-js",
   "version": "0.1.33",
   "description": "Google Maps jQuery plugin and markers helper",
-  "main": "index.js",
+  "main": "src/maplace-0.1.3.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
