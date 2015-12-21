@@ -18,13 +18,12 @@
     } else {
         root.Maplace = factory(root.jQuery);
     }
+
 } (this, function ($) {
     'use strict';
 
     var html_dropdown,
-        html_ullist,
-        Maplace;
-
+        html_ullist;
 
     //dropdown menu type
     html_dropdown = {
@@ -142,7 +141,7 @@
     * @class Maplace
     * @constructor
     */
-    function Maplace(args) {
+    function Maplace (args) {
         this.VERSION = '@VERSION';
         this.loaded = false;
         this.markers = [];
@@ -474,7 +473,7 @@
                     i = 0;
 
                 for(; i < pathArray.length; ++i) {
-                    arr[i] = index === i
+                    arr[i] = (index === i)
                         ? new google.maps.LatLng(pos.lat(), pos.lng())
                         : new google.maps.LatLng(pathArray[i].lat(), pathArray[i].lng());
                 }
@@ -529,7 +528,7 @@
                 circle;
 
             //allow mix circles with markers
-            if (point.type == 'circle' && !marker) {
+            if (point.type === 'circle' && !marker) {
                 circle = this.create_objCircle(point);
 
                 if (!point.visible) {
@@ -573,7 +572,7 @@
                 point = this.create_objPoint(a);
 
                 //allow mix markers with circles
-                if (point.type == 'circle') {
+                if (point.type === 'circle') {
                     circle = this.create_objCircle(point);
 
                     if (!point.visible) {
@@ -837,9 +836,9 @@
         this.markers.length = 0;
         this.markers = [];
 
-        for (var i = this.circles.length - 1; i >= 0; i -= 1) {
+        for (var e = this.circles.length - 1; e >= 0; e -= 1) {
             try {
-                this.circles[i] && this.circles[i].setMap(null);
+                this.circles[e] && this.circles[e].setMap(null);
             } catch (err) {
                 self.debug('init_map::circles::setMap', err.stack);
             }
@@ -1106,15 +1105,20 @@
             });
 
             //add custom listeners
-            var i;
+            var i, callback = function (event, listener, map) {
+                listener(map, event);
+            };
+
             for (i in this.o.listeners) {
                 var map = this.oMap,
                     myListener = this.o.listeners[i];
 
                 if (this.o.listeners.hasOwnProperty(i)) {
-                    google.maps.event.addListener(this.oMap, i, function (event) {
-                        myListener(map, event);
-                    });
+                    google.maps.event.addListener(
+                        this.oMap,
+                        i,
+                        callback(event, myListener, map)
+                    );
                 }
             }
         //all other calls

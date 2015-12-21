@@ -6,7 +6,7 @@
       lt_ie9 = false;
 
   $(document).ready(function() {
-    
+
     $.fn.foundationMediaQueryViewer ? $doc.foundationMediaQueryViewer() : null;
     $.fn.foundationTabs             ? $doc.foundationTabs() : null;
 
@@ -211,68 +211,68 @@
     $('#simple').one('inview', function(event, isInView) {
       if (isInView) {
         simple.Load();
-      } 
+      }
     });
 
     $('#markers').one('inview', function(event, isInView) {
       if (isInView) {
         dropdown.Load();
         ullist.Load();
-      } 
-    }); 
+      }
+    });
 
     $('#menu').one('inview', function(event, isInView) {
       if (isInView) {
         menu.Load();
-      } 
-    }); 
+      }
+    });
 
     $('#dtabs').one('inview', function(event, isInView) {
       if (isInView) {
         tabs.Load();
-      } 
-    }); 
+      }
+    });
 
     $('#polyline').one('inview', function(event, isInView) {
       if (isInView) {
         polyline.Load();
-      } 
-    }); 
+      }
+    });
 
     $('#polygon').one('inview', function(event, isInView) {
       if (isInView) {
         polygon.Load();
-      } 
-    }); 
+      }
+    });
 
     $('#directions').one('inview', function(event, isInView) {
       if (isInView) {
         directions.Load();
-      } 
-    }); 
+      }
+    });
 
     $('#styled').one('inview', function(event, isInView) {
       if (isInView) {
         styled.Load();
-      } 
+      }
     });
 
     $('#dmixed').one('inview', function(event, isInView) {
       if (isInView) {
         showGroup(0);
-      } 
-    }); 
+      }
+    });
 
     $('#fusion').one('inview', function(event, isInView) {
       if (isInView) {
         fusion.Load();
-      } 
+      }
     });
 
     $('#circles').one('inview', function(event, isInView) {
       if (isInView) {
         circles.Load();
-      } 
+      }
     });
 
 

@@ -5,9 +5,9 @@
   "homepage": "https://github.com/danielemoraschi/maplace.js",
   "main": "dist/maplace.js",
   "scripts": {
-    "build": "npm install && grunt",
+    "build": "npm install && grunt build",
     "start": "grunt watch",
-    "test": "echo \"Warning: no test specified\" && exit 1"
+    "test": "grunt travis -v"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "grunt": "~0.4.5",
     "grunt-string-replace": "~1.2.1",
     "grunt-contrib-uglify": "~0.11.0",
-    "grunt-contrib-watch": "~0.6.1"
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-jshint": "~0.11.3"
   }
 }
