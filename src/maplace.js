@@ -803,7 +803,7 @@
             inner = $(this.get_html_controls()).css(this.o.controls_applycss ? {
                 background: '#fff',
                 padding: '5px',
-                border: '1px solid rgb(113,123,135)',
+                border: '1px solid #ccc',
                 boxShadow: 'rgba(0, 0, 0, 0.4) 0px 2px 4px',
                 maxHeight: this.map_div.find('.canvas_map').outerHeight() - 80,
                 minWidth: 100,
