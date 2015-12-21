@@ -48,12 +48,12 @@
     <a href="https://github.com/danielemoraschi/maplace.js" target="_blank"><img style="position:absolute;top:0;right:0;border:0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
 
     <header>
-        <div class="row"> 
+        <div class="row">
             <div class="four columns mobile-two">
                 <h1><a href="http://maplacejs.com" title="Maplace.js - Google Maps made easy">Maplace.js</a></h1>
                 <p>A Google Maps Javascript plugin for jQuery.</p>
                 <div class="socials">
-                    
+
                 <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://maplacejs.com/" data-hashtags="maplacejs" data-dnt="true">Tweet</a>
                 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
@@ -75,8 +75,8 @@
             </div>
         </div>
     </header>
-    
-    <div class="row"> 
+
+    <div class="row">
         <div class="description four columns">
             <noscript>
                 <p><strong>Maplacejs requires JavaScript to be enabled.</strong></p>
@@ -94,11 +94,11 @@
                 <li>Works in all major browsers, including IE6 (this website not so much)</li>
                 <li>Released under the MIT license</li>
             </ul>
-            <div class="row"> 
+            <div class="row">
                 <div class="four columns center">
                     <div class="panel">
                         <h2>Download</h2>
-                        <div class="row"> 
+                        <div class="row">
                             <div class="two columns mobile-one">
                                 <a class="success button" href="src/maplace-0.1.3.js" target="_blank">maplace-0.1.3.js (38.81KB)</a>
                             </div>
@@ -125,7 +125,7 @@
         <div class="four columns">
             <ul class="tabs-content">
                 <li class="active" id="ExamplesTab">
-                    
+
                     <section id="simple" class="row">
                         <h2 class="two columns mobile-one">Hello, World</h2>
                         <div class="two columns mobile-one">
@@ -142,9 +142,9 @@
                                 <li class="code" id="code1Tab">
 <h3>JS</h3>
 <pre class="prettyprint">
-var maplace = new Maplace(); 
-maplace.Load(); 
-// or new Maplace().Load(); 
+var maplace = new Maplace();
+maplace.Load();
+// or new Maplace().Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -278,7 +278,7 @@ new Maplace({
     map_div: '#gmap-menu',
     controls_type: 'list',
     controls_on_map: false
-}).Load(); 
+}).Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -329,7 +329,7 @@ new Maplace({
     afterShow: function(index, location, marker) {
         $('#info').html(location.html);
     }
-}).Load(); 
+}).Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -375,7 +375,7 @@ new Maplace({
     controls_on_map: false,
     view_all_text: 'Start',
     type: 'polyline'
-}).Load(); 
+}).Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -413,7 +413,7 @@ new Maplace({
     show_markers: false,
     type: 'polygon',
     draggable: true
-}).Load(); 
+}).Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -465,7 +465,7 @@ new Maplace({
     afterRoute: function(distance) {
         $('#km').text(': '+(distance/1000)+'km');
     }
-}).Load(); 
+}).Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -515,7 +515,7 @@ new Maplace({
                 { invert_lightness: 'true' }
             ]
         }],
-        'Greyscale': [{              
+        'Greyscale': [{
             featureType: 'all',
             stylers: [
                 { saturation: -100 },
@@ -523,7 +523,7 @@ new Maplace({
             ]
         }]
     }
-}).Load(); 
+}).Load();
 </pre>
 <h3>Html</h3>
 <pre class="prettyprint">
@@ -715,7 +715,7 @@ $('#load_bigdata').click(function(e) {
 
                 </li>
 
-                
+
                 <li class="install" id="SetupTab">
 
                     <section class="row">
@@ -758,11 +758,11 @@ $(function() {
 new Maplace({
     show_markers: false,
     locations: [{
-        lat: 45.9, 
+        lat: 45.9,
         lon: 10.9,
         zoom: 8
     }]
-}).Load(); 
+}).Load();
 
 //or
 
@@ -771,7 +771,7 @@ new Maplace({
         set_center: [45.9, 10.9],
         zoom: 8
     }
-}).Load(); 
+}).Load();
 </pre>
                         </div>
                     </section>
@@ -779,7 +779,7 @@ new Maplace({
 
                 </li>
 
-                
+
                 <li class="docs" id="DocsTab">
                     <section class="row">
                         <h2 class="four columns mobile-two">Options</h2>
@@ -934,7 +934,7 @@ new Maplace({
                                             If <strong><em>false</em></strong>, markers will not be visible on the map
                                         </td>
                                     </tr>
-                                     
+
                                     <tr>
                                         <td>infowindow_type</td>
                                         <td>string</td>
@@ -954,7 +954,7 @@ new Maplace({
                                     <tr>
                                         <td>map_options</td>
                                         <td>Object</td>
-                                        <td> 
+                                        <td>
 <pre class="prettyprint">
 {
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -970,7 +970,7 @@ new Maplace({
                                     <tr>
                                         <td>styles</td>
                                         <td>Object</td>
-                                        <td> 
+                                        <td>
 <pre class="prettyprint">
 {}
 </pre>
@@ -982,7 +982,7 @@ new Maplace({
                                     <tr>
                                         <td>stroke_options</td>
                                         <td>Object</td>
-                                        <td> 
+                                        <td>
 <pre class="prettyprint">
 {
     strokeColor: '#0000FF',
@@ -1001,13 +1001,13 @@ new Maplace({
                                     <tr>
                                         <td>directions_options</td>
                                         <td>Object</td>
-                                        <td> 
+                                        <td>
 <pre class="prettyprint">
 {
     travelMode: google.maps.TravelMode.DRIVING,
     unitSystem: google.maps.UnitSystem.METRIC,
     optimizeWaypoints: false,
-    provideRouteAlternatives: 
+    provideRouteAlternatives:
         false,
     avoidHighways: false,
     avoidTolls: false
@@ -1037,7 +1037,7 @@ new Maplace({
                                     <tr>
                                         <td>circle_options</td>
                                         <td>Object</td>
-                                        <td> 
+                                        <td>
 <pre class="prettyprint">
 {
     radius: 100
@@ -1288,7 +1288,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                             This event is fired when the drag event starts.
                                         </td>
                                     </tr>
-                                    
+
                                 </tbody>
                             </table>
                         </div>
@@ -1736,8 +1736,8 @@ var html_checks = {
 
                         //iterate the locations
                         for (var a = 0; a &lt; this.ln; a++) {
-                                if(this.ShowOnMenu(a)) 
-                                    html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="' + (a+1) + '"/&gt;' 
+                                if(this.ShowOnMenu(a))
+                                    html += '&lt;label&gt;&lt;input type="radio" name="gmap" value="' + (a+1) + '"/&gt;'
                                              + (this.o.locations[a].title || ('#' + (a+1))) + '&lt;/label&gt;';
                         }
                         html += '&lt;/div&gt;';
@@ -1748,9 +1748,9 @@ var html_checks = {
                 //event on change
                 //use ViewOnMap(index) to trigger the marker on map
                 this.html_element.find('input[type=radio]').bind('change', function() {
-                        self.ViewOnMap(this.value); 
+                        self.ViewOnMap(this.value);
                 });
-                
+
                 return this.html_element;
         }
 };
@@ -1806,8 +1806,8 @@ maplace.Load({
             </ul>
         </div>
     </div>
-    
-    <div class="row">   
+
+    <div class="row">
         <div class="four columns mobile-two">
             <footer>
                 <p>Built by <strong>Daniele Moraschi</strong> | Released under the MIT license | Fork this project from the <a href="https://github.com/danielemoraschi/Maplace.js" target="_blank">GitHub repository</a>.</p>
@@ -1816,6 +1816,7 @@ maplace.Load({
     </div>
 
     <script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.13"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="javascripts/libs.min.js?v=0.1.33"></script>
 
     <script src="src/maplace-0.1.3.min.js?v=0.1.33"></script>
