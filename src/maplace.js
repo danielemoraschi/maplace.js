@@ -6,18 +6,18 @@
     } else {
         root.Maplace = factory(root.jQuery);
     }
-}(this, function ($) {
+} (this, function ($) {
     'use strict';
 
     /**
-    * Maplace.js 0.1.33
+    * Maplace.js @VERSION
     *
     * Copyright (c) 2013 Daniele Moraschi
     * Licensed under the MIT license
     * For all details and documentation:
     * http://maplacejs.com
     *
-    * @version  0.1.33
+    * @version  @VERSION
     */
 
 
@@ -143,7 +143,7 @@
     * @constructor
     */
     function Maplace(args) {
-        this.VERSION = '0.1.33';
+        this.VERSION = '@VERSION';
         this.loaded = false;
         this.markers = [];
         this.circles = [];
