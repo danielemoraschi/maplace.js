@@ -97,13 +97,13 @@
             <div class="row">
                 <div class="four columns center">
                     <div class="panel">
-                        <h2>Download</h2>
+                        <h2>Download @VERSION</h2>
                         <div class="row">
                             <div class="two columns mobile-one">
-                                <a class="success button" href="src/maplace-0.1.3.js" target="_blank">maplace-0.1.3.js (38.81KB)</a>
+                                <a class="success button" href="dist/maplace.js" target="_blank">maplace.js (38.81KB)</a>
                             </div>
                             <div class="two columns mobile-one">
-                                <a class="success button right" href="src/maplace-0.1.3.min.js" target="_blank">maplace-0.1.3.min.js (16.79KB)</a>
+                                <a class="success button right" href="src/maplace.min.js" target="_blank">maplace.min.js (16.79KB)</a>
                             </div>
                         </div>
                     </div>
@@ -1817,12 +1817,12 @@ maplace.Load({
 
     <script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.13"></script>
     <script src="node_modules/jquery/dist/jquery.js"></script>
-    <script src="javascripts/libs.min.js?v=0.1.33"></script>
+    <script src="javascripts/libs.min.js?v=@VERSION"></script>
 
-    <script src="src/maplace-0.1.3.min.js?v=0.1.33"></script>
+    <script src="dist/maplace.min.js?v=@VERSION"></script>
 
-    <script src="data/points.js?v=0.1.33"></script>
-    <script src="data/styles.js?v=0.1.33"></script>
-    <script src="javascripts/app.js?v=0.1.33"></script>
+    <script src="data/points.js?v=@VERSION"></script>
+    <script src="data/styles.js?v=@VERSION"></script>
+    <script src="javascripts/app.js?v=@VERSION"></script>
 </body>
 </html>
