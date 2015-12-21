@@ -97,13 +97,13 @@
             <div class="row">
                 <div class="four columns center">
                     <div class="panel">
-                        <h2>Download @VERSION</h2>
+                        <h2>Download v@VERSION</h2>
                         <div class="row">
                             <div class="two columns mobile-one">
-                                <a class="success button" href="dist/maplace.js" target="_blank">maplace.js (38.81KB)</a>
+                                <a class="success button" href="dist/maplace.js" target="_blank">maplace.js</a>
                             </div>
                             <div class="two columns mobile-one">
-                                <a class="success button right" href="src/maplace.min.js" target="_blank">maplace.min.js (16.79KB)</a>
+                                <a class="success button right" href="dist/maplace.min.js" target="_blank">maplace.min.js</a>
                             </div>
                         </div>
                     </div>
@@ -726,7 +726,7 @@ $('#load_bigdata').click(function(e) {
 <pre class="prettyprint">
 &lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7"&gt;
 &lt;/script&gt;
-&lt;script src="http://code.jquery.com/jquery-1.9.0.min.js"&gt;&lt;/script&gt;
+&lt;script src="http://code.jquery.com/jquery-2.1.4.min.js"&gt;&lt;/script&gt;
 &lt;script src="maplace.min.js"&gt;&lt;/script&gt;
 </pre>
 
@@ -1776,6 +1776,13 @@ maplace.Load({
                 <li id="changelogTab">
                     <section class="row">
                         <div class="four columns mobile-one">
+                            <h3>v0.2.0</h3>
+                            <ul class="normal-list">
+                                <li>Updated to jQuery ~2.1</li>
+                                <li>Source directory for the build moved from "src" to "dist"</li>
+                                <li>Use Grunt tasks to generate distrubution artifact</li>
+                            </ul>
+
                             <h3>v0.1.3</h3>
                             <ul class="normal-list">
                                 <li>Added circles support allowing mixed markers/circles</li>

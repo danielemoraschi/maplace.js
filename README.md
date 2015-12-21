@@ -1,4 +1,4 @@
-# Maplace.js 
+# Maplace.js
 Helps you to embed Google Maps into your website, quickly create markers and controls menu for the locations on map.
 
 ## Demo
@@ -202,14 +202,14 @@ var data = [{
 	  <tr>
 	    <td>map_options</td>
 	    <td>Object</td>
-	    <td> 
+	    <td>
 	    <code>
 		{<br/>
 			mapTypeId: google.maps.MapTypeId.ROADMAP, //or roadmap<br/>
 			zoom: 1<br/>
 		}
 		</code>
-		</td> 	
+		</td>
 	    <td>
 	      Map options object, as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a>.<br/>
 	      The property <strong>center</strong> will be ignored. Check at the Install page to see how to center the map with only one location
@@ -226,7 +226,7 @@ var data = [{
 	  <tr>
 	    <td>stroke_options</td>
 	    <td>Object</td>
-	    <td> 
+	    <td>
 		<code>
 		{<br/>
 		strokeColor: '#0000FF',<br/>
@@ -245,7 +245,7 @@ var data = [{
 	  <tr>
 	    <td>directions_options</td>
 	    <td>Object</td>
-	    <td> 
+	    <td>
 		<code>
 		{<br/>
 		travelMode: 'DRIVING',<br/>
@@ -517,7 +517,7 @@ var data = [{
               This event is fired when the drag event starts.
           </td>
       </tr>
-	  
+
 	</tbody>
 </table>
 
@@ -529,6 +529,11 @@ All efforts have been made to keep the source as clean and readable as possible.
 Maplace.js is released under an MIT License.
 
 ## Changelog
+
+**v0.2.0**
+- Updated to jQuery ~2.1
+- Source directory for the build moved from "src" to "dist"
+- Use Grunt tasks to generate distrubution artifact
 
 **v0.1.3**
 - Added circles support allowing mixed markers/circles
@@ -547,4 +552,3 @@ Maplace.js is released under an MIT License.
 
 **v0.1.0**
 - Initial release
-
