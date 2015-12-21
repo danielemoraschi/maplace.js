@@ -1780,7 +1780,8 @@ maplace.Load({
                             <ul class="normal-list">
                                 <li>Updated to jQuery ~2.1</li>
                                 <li>Source directory for the build moved from "src" to "dist"</li>
-                                <li>Use Grunt tasks to generate distrubution artifact</li>
+                                <li>Use Grunt tasks to generate distribution artifact</li>
+                                <li>Changed default border color for in-map menu panel to #ccc</li>
                             </ul>
 
                             <h3>v0.1.3</h3>

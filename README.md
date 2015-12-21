@@ -533,7 +533,8 @@ Maplace.js is released under an MIT License.
 **v0.2.0**
 - Updated to jQuery ~2.1
 - Source directory for the build moved from "src" to "dist"
-- Use Grunt tasks to generate distrubution artifact
+- Use Grunt tasks to generate distribution artifact
+- Changed default border color for in-map menu panel to #ccc
 
 **v0.1.3**
 - Added circles support allowing mixed markers/circles
