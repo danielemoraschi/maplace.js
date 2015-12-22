@@ -60,9 +60,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
-    // Build task.
+    // Tasks.
     grunt.registerTask('build', ['string-replace', 'uglify']);
-
     grunt.registerTask('travis', [
         'jshint',
         'build'
