@@ -1,6 +1,6 @@
 {
   "name": "maplace-js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Google Maps jQuery plugin and markers helper",
   "homepage": "https://github.com/danielemoraschi/maplace.js",
   "main": "dist/maplace.js",
