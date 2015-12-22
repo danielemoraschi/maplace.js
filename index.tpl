@@ -20,8 +20,8 @@
     <meta property="fb:app_id" content="431057636976449">
 
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|Oxygen:700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="stylesheets/libs.min.css">
-    <link rel="stylesheet" href="stylesheets/app.css">
+    <link rel="stylesheet" href="stylesheets/libs.min.css?v=@VERSION">
+    <link rel="stylesheet" href="stylesheets/app.css?v=@VERSION">
 
     <script type="text/javascript">
         /*var _gaq = _gaq || [];
@@ -1824,7 +1824,7 @@ maplace.Load({
     </div>
 
     <script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.13"></script>
-    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js?v=@VERSION"></script>
     <script src="javascripts/libs.min.js?v=@VERSION"></script>
 
     <script src="dist/maplace.min.js?v=@VERSION"></script>
