@@ -7,7 +7,8 @@
   "scripts": {
     "build": "npm install && grunt build",
     "start": "grunt watch",
-    "test": "grunt travis -v"
+    "test": "grunt travis -v",
+    "postinstall": "grunt build"
   },
   "repository": {
     "type": "git",
