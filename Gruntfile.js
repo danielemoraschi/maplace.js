@@ -46,6 +46,30 @@ module.exports = function (grunt) {
                     replacements: [{
                         pattern: /@VERSION/g,
                         replacement: '<%= pkg.version %>'
+                    },{
+                        pattern: /\/\/@GA/g,
+                        replacement: [
+                            "var _gaq = _gaq || [];",
+                            "_gaq.push(['_setAccount', 'UA-3593281-30']);",
+                            "_gaq.push(['_trackPageview']);",
+                            "_gaq.push(['_trackPageLoadTime']);",
+                            "(function() {",
+                                "var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;",
+                                "ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';",
+                                "var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);",
+                            "})();"
+                        ].join(' ')
+                    }]
+                }
+            },
+            versionIndexDev: {
+                files: {
+                    './index.html': ['index.tpl']
+                },
+                options: {
+                    replacements: [{
+                        pattern: /@VERSION/g,
+                        replacement: '<%= pkg.version %>'
                     }]
                 }
             }
@@ -62,7 +86,7 @@ module.exports = function (grunt) {
             web: {
                 files: ['**/*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
                     'stylesheets/*.css'],
-                tasks: ['web'],
+                tasks: ['web-dev'],
                 options: {
                     spawn: false,
                     debounceDelay: 250
@@ -81,5 +105,6 @@ module.exports = function (grunt) {
     // Tasks.
     grunt.registerTask('build', ['jshint', 'string-replace:version', 'uglify']);
     grunt.registerTask('web', ['build', 'string-replace:versionIndex']);
+    grunt.registerTask('web-dev', ['build', 'string-replace:versionIndexDev']);
     grunt.registerTask('test', ['build']);
 };
