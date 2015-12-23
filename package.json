@@ -7,8 +7,17 @@
   "scripts": {
     "build": "npm install && grunt build",
     "start": "grunt watch",
-    "test": "grunt travis -v"
+    "test": "grunt test -v"
   },
+  "files": [
+      "dist",
+      "src",
+      "Gruntfile.js",
+      "package.json",
+      "bower.json",
+      "README.md",
+      "LICENSE-MIT"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/danielemoraschi/maplace.js.git"
