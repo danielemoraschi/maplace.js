@@ -1,6 +1,6 @@
 {
   "name": "maplace-js",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "authors": [
     "DanieleMoraschi<daniele.moraschi@gmail.com>"
   ],
@@ -12,7 +12,14 @@
   },
   "ignore": [
     "**/.*",
-    "dist",
+    "data",
+    "images",
+    "javascripts",
+    "stylesheets",
+    "favicon.ico",
+    "humans.txt",
+    "index.tpl",
+    "robots.txt",
     "node_modules",
     "bower_components",
     "test",
