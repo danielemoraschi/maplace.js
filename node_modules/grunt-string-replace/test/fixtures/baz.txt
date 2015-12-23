@@ -1,0 +1,2 @@
+Replace string
+There are no replacement patterns on this file.

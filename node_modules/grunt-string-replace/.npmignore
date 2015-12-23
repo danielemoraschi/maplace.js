@@ -1,0 +1,4 @@
+tmp/
+tmp_baz/
+*.sublime-*
+node_modules/
