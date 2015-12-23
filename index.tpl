@@ -90,20 +90,33 @@
                 <li>Straightforward implementation with simple options</li>
                 <li>Can run as many maps as required</li>
                 <li>Markers and <strong>custom icons</strong>, zoom level and <strong>custom controls menu</strong></li>
-                <li>Supports for <strong>Directions</strong>, <strong>Polygons</strong>, <strong>Polylines</strong>, <strong>Fusion tables</strong> and <strong>styled maps</strong></li>
-                <li>Works in all major browsers, including IE6 (this website not so much)</li>
+                <li>Supports for <strong>Directions</strong>, <strong>Polygons</strong>, <strong>Circles</strong>, <strong>Polylines</strong>, <strong>Fusion tables</strong>, and <strong>styled maps</strong></li>
+                <li>Works in all major browsers</li>
                 <li>Released under the MIT license</li>
             </ul>
             <div class="row">
                 <div class="four columns center">
+                    <h2>Installation [v@VERSION]</h2>
                     <div class="panel">
-                        <h2>Download v@VERSION</h2>
                         <div class="row">
                             <div class="two columns mobile-one">
-                                <a class="success button" href="dist/maplace.js" target="_blank">maplace.js</a>
+                                <h5>npm</h5>
+                                <input type="text" value="npm install maplace-js" readonly="">
                             </div>
                             <div class="two columns mobile-one">
-                                <a class="success button right" href="dist/maplace.min.js" target="_blank">maplace.min.js</a>
+                                <h5>Bower</h5>
+                                <input type="text" value="bower install maplace-js" readonly="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h5>Or download and import one of these files into your project:</h5>
+                        <div class="row">
+                            <div class="two columns mobile-one">
+                                <a class="success button" href="dist/maplace.js" target="_blank">maplace.js (uncompressed)</a>
+                            </div>
+                            <div class="two columns mobile-one">
+                                <a class="success button right" href="dist/maplace.min.js" target="_blank">maplace.min.js (minified)</a>
                             </div>
                         </div>
                     </div>
@@ -722,7 +735,7 @@ $('#load_bigdata').click(function(e) {
                         <div class="four columns mobile-two">
 
 <h2>Requirements</h2>
-<p>Download the latest version of Maplace.js and include the Google Maps API v3 along with jQuery.</p>
+<p>To use Maplace.js, you need to include jQuery, the Google API v3, and the plugin file.</p>
 <pre class="prettyprint">
 &lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7"&gt;
 &lt;/script&gt;
