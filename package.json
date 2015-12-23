@@ -13,7 +13,7 @@
       "dist",
       "src",
       "Gruntfile.js",
-      "package.json"
+      "package.json",
       "bower.json",
       "README.md",
       "LICENSE-MIT"
