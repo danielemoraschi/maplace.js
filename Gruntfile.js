@@ -29,8 +29,18 @@ module.exports = function (grunt) {
         'string-replace': {
             version: {
                 files: {
-                    'dist/maplace.js': ['src/maplace.js'],
-                    './index.html': ['index.tpl'],
+                    'dist/maplace.js': ['src/maplace.js']
+                },
+                options: {
+                    replacements: [{
+                        pattern: /@VERSION/g,
+                        replacement: '<%= pkg.version %>'
+                    }]
+                }
+            },
+            versionIndex: {
+                files: {
+                    './index.html': ['index.tpl']
                 },
                 options: {
                     replacements: [{
@@ -61,9 +71,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Tasks.
-    grunt.registerTask('build', ['string-replace', 'uglify']);
-    grunt.registerTask('travis', [
-        'jshint',
-        'build'
-    ]);
+    grunt.registerTask('build', ['jshint', 'string-replace:version', 'uglify']);
+    grunt.registerTask('web', ['build', 'string-replace:versionIndex']);
+    grunt.registerTask('test', ['build']);
 };
