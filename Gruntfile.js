@@ -52,14 +52,22 @@ module.exports = function (grunt) {
         },
         'watch': {
             scripts: {
-                files: ['**/*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
-                    'stylesheets/*.css'],
+                files: ['**/*.js', 'src/*.js'],
                 tasks: ['build'],
                 options: {
                     spawn: false,
                     debounceDelay: 250
                 },
             },
+            web: {
+                files: ['**/*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
+                    'stylesheets/*.css'],
+                tasks: ['web'],
+                options: {
+                    spawn: false,
+                    debounceDelay: 250
+                },
+            }
         },
         pkg: grunt.file.readJSON('package.json')
     });
