@@ -1828,7 +1828,7 @@ maplace.Load({
         </div>
     </div>
 
-    <script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.13"></script>
+    <script src="https://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.22"></script>
     <script src="node_modules/jquery/dist/jquery.min.js?v=@VERSION"></script>
     <script src="javascripts/libs.min.js?v=@VERSION"></script>
 
