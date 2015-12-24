@@ -729,16 +729,24 @@ $('#load_bigdata').click(function(e) {
 <h2>Requirements</h2>
 <p>To use Maplace.js, you need to include jQuery, the Google API v3, and the plugin file.</p>
 <pre class="prettyprint">
-&lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7"&gt;
+&lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.22&key=YOUR_API_KEY"&gt;
 &lt;/script&gt;
 &lt;script src="http://code.jquery.com/jquery-2.1.4.min.js"&gt;&lt;/script&gt;
 &lt;script src="maplace.min.js"&gt;&lt;/script&gt;
 </pre>
+<br/>
+<h3>About the API_KEY for Google Maps API</h3>
+<p>
+    All JavaScript API applications require authentication using an API key (or a client ID for Google Maps API for Work customers). Including a key when loading the API allows you to monitor your application's API usage in the Google Developers Console, enables per-key instead of per-IP-address quota limits, and ensures that Google can contact you about your application if necessary.
+</p>
+<p>
+    <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank" title="Google Maps JavaScript API developers website">For more info please go to Google Maps JavaScript API developers website</a>
+</p>
 
 <h2>Html</h2>
 <p>Just place a DIV in your page and give it a unique ID or class, "gmap" by default, but you can change it in the options.</p>
 <pre class="prettyprint">
-&lt;div id="gmap"&gt;&lt;/div&gt;
+&lt;div id="gmap" style="with:300px;height:250px;"&gt;&lt;/div&gt;
 </pre>
 
 <p>If you want the menu outside of the map you need to include another DIV with a unique ID or class, "controls" by default.</p>
@@ -880,7 +888,7 @@ new Maplace({
                                         <td>google.maps.ControlPosition.RIGHT_TOP</td>
                                         <td>
                                             Controls position on the right, below top-right elements of the map.<br/>
-                                            As defined by <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/controls#ControlPositioning">Google</a>
+                                            As defined by <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/controls#ControlPositioning" title="Google Maps API Control Positioning">Google</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -968,7 +976,7 @@ new Maplace({
 </pre>
                                         </td>
                                         <td>
-                                            Map options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank">Google</a>.<br/>
+                                            Map options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank" title="Google Maps API Options">Google</a>.<br/>
                                             The property <strong>center</strong> will be ignored. Check at the Install page to see how to center the map with only one location
                                         </td>
                                     </tr>
@@ -981,7 +989,7 @@ new Maplace({
 </pre>
                                         </td>
                                         <td>
-                                            Style options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank">Google</a>
+                                            Style options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank" title="Google Maps API styles">Google</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -999,7 +1007,7 @@ new Maplace({
 </pre>
                                         </td>
                                         <td>
-                                            Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank">Google</a>.<br/>
+                                            Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank" title="Google Maps API Polyline Options">Google</a>.<br/>
                                             Used when in Polyline/Polygon/Directions/Fusion/Circle Map type.
                                         </td>
                                     </tr>
@@ -1020,7 +1028,7 @@ new Maplace({
 </pre>
                                         </td>
                                         <td>
-                                            Direction options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#DirectionsRequest" target="_blank">Google</a>
+                                            Direction options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#DirectionsRequest" target="_blank" title="Google Maps API Directions Request">Google</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1036,7 +1044,7 @@ new Maplace({
                                         <td>Object</td>
                                         <td>{}</td>
                                         <td>
-                                            Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank">Google</a>
+                                            Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank" title="Google Maps API FusionTables Layer Options">Google</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1050,7 +1058,7 @@ new Maplace({
 </pre>
                                         </td>
                                         <td>
-                                            Default circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank">Google</a>.<br/>
+                                            Default circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank" title="Google Maps API CircleOptions">Google</a>.<br/>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1073,7 +1081,7 @@ listeners: {
     }
 }
 </pre>
-Docs: <a href="https://developers.google.com/maps/documentation/javascript/events#UIEvents" target="_blank">Google maps Events</a>
+Docs: <a href="https://developers.google.com/maps/documentation/javascript/events#UIEvents" target="_blank" title="Google Maps API Events">Google maps Events</a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1363,7 +1371,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                         <td>animation</td>
                                         <td>Object</td>
                                         <td>
-                                            Animation options as defined by <a href="https://developers.google.com/maps/documentation/javascript/examples/marker-animations" target="_blank">Google</a>.<br/>
+                                            Animation options as defined by <a href="https://developers.google.com/maps/documentation/javascript/examples/marker-animations" target="_blank" title="Google Maps API Marker Animations">Google</a>.<br/>
                                         </td>
                                     </tr>
                                     <tr>
@@ -1379,7 +1387,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                         <td>stroke_options</td>
                                         <td>Object</td>
                                         <td>
-                                            Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank">Google</a>.<br/>
+                                            Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank" title="Google Maps API CircleOptions">Google</a>.<br/>
                                             Defines the style of the <strong>circle</strong> specific for each location.
                                         </td>
                                     </tr>
@@ -1388,7 +1396,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                         <td>Object</td>
                                         <td>
                                             Available in type: <strong>circle</strong><br/>
-                                            Circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank">Google</a>.<br/>
+                                            Circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank" title="Google Maps API CircleOptions">Google</a>.<br/>
                                             Defines the options of the circle specific for each location.
                                         </td>
                                     </tr>
@@ -1400,7 +1408,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                                     <tr>
                                         <td></td>
                                         <td></td>
-                                        <td>For other options please refer to <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" target="_blank">Google page</a></td>
+                                        <td>For other options please refer to <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" target="_blank" title="Google Maps API MarkerOptions">Google page</a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1409,300 +1417,7 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                         <h2 class="four columns mobile-two">Locations used in the examples</h2>
                         <div class="four columns mobile-two">
 <pre class="prettyprint points">
-var LocsA = [
-    {
-        lat: 45.9,
-        lon: 10.9,
-        title: 'Title A1',
-        html: '&lt;h3&gt;Content A1&lt;/h3&gt;',
-        icon: 'http://maps.google.com/mapfiles/markerA.png',
-        animation: google.maps.Animation.DROP
-    },
-    {
-        lat: 44.8,
-        lon: 1.7,
-        title: 'Title B1',
-        html: '&lt;h3&gt;Content B1&lt;/h3&gt;',
-        icon: 'http://maps.google.com/mapfiles/markerB.png',
-        show_infowindow: false
-    },
-    {
-        lat: 51.5,
-        lon: -1.1,
-        title: 'Title C1',
-        html: [
-            '&lt;h3&gt;Content C1&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 8,
-        icon: 'http://maps.google.com/mapfiles/markerC.png'
-    }
-];
-
-var LocsAv2 = [
-    {
-        lat: 45.9,
-        lon: 10.9,
-        title: 'Zone A1',
-        html: '&lt;h3&gt;Content A1&lt;/h3&gt;',
-        type : 'circle',
-        circle_options: {
-            radius: 200000
-        },
-        draggable: true
-    },
-    {
-        lat: 44.8,
-        lon: 1.7,
-        title: 'Draggable',
-        html: '&lt;h3&gt;Content B1&lt;/h3&gt;',
-        show_infowindow: false,
-        visible: true,
-        draggable: true
-    },
-    {
-        lat: 51.5,
-        lon: -1.1,
-        title: 'Title C1',
-        html: [
-            '&lt;h3&gt;Content C1&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 8,
-        visible: true
-    }
-];
-
-
-var LocsB = [
-    {
-        lat: 52.1,
-        lon: 11.3,
-        title: 'Title A2',
-        html: [
-            '&lt;h3&gt;Content A2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 8
-    },
-    {
-        lat: 51.2,
-        lon: 22.2,
-        title: 'Title B2',
-        html: [
-            '&lt;h3&gt;Content B2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 8
-    },
-    {
-        lat: 49.4,
-        lon: 35.9,
-        title: 'Title C2',
-        html: [
-            '&lt;h3&gt;Content C2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 4
-    },
-    {
-        lat: 47.8,
-        lon: 15.6,
-        title: 'Title D2',
-        html: [
-            '&lt;h3&gt;Content D2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 6
-    }
-];
-
-
-var LocsBv2 = [
-    {
-        lat: 52.1,
-        lon: 11.3,
-        title: 'Title A2',
-        html: [
-            '&lt;h3&gt;Content A2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 8
-    },
-    {
-        lat: 51.2,
-        lon: 22.2,
-        title: 'Title B2',
-        html: [
-            '&lt;h3&gt;Content B2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 8,
-        type : 'circle',
-        circle_options: {
-            radius: 100000
-        }
-    },
-    {
-        lat: 49.4,
-        lon: 35.9,
-        title: 'Title C2',
-        html: [
-            '&lt;h3&gt;Content C2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 4
-    },
-    {
-        lat: 47.8,
-        lon: 15.6,
-        title: 'Title D2',
-        html: [
-            '&lt;h3&gt;Content D2&lt;/h3&gt;',
-            '&lt;p&gt;Lorem Ipsum..&lt;/p&gt;'
-        ].join(''),
-        zoom: 6
-    }
-];
-
-
-var LocsAB = LocsA.concat(LocsB);
-
-
-var LocsC = [
-    {
-        lat: 45.4654,
-        lon: 9.1866,
-        title: 'Milan, Italy',
-        type : 'circle',
-        circle_options: {
-            radius: 1000
-        },
-        visible: false
-    },
-    {
-        lat: 47.36854,
-        lon: 8.53910,
-        title: 'Zurich, Switzerland'
-    },
-    {
-        lat: 48.892,
-        lon: 2.359,
-        title: 'Paris, France'
-    },
-    {
-        lat: 48.13654,
-        lon: 11.57706,
-        title: 'Munich, Germany'
-    }
-];
-
-var LocsD = [
-    {
-        lat: 45.4654,
-        lon: 9.1866,
-        title: 'Milan, Italy',
-        html: '&lt;h3&gt;Milan, Italy&lt;/h3&gt;'
-    },
-    {
-        lat: 47.36854,
-        lon: 8.53910,
-        title: 'Zurich, Switzerland',
-        html: '&lt;h3&gt;Zurich, Switzerland&lt;/h3&gt;',
-        visible: false
-    },
-    {
-        lat: 48.892,
-        lon: 2.359,
-        title: 'Paris, France',
-        html: '&lt;h3&gt;Paris, France&lt;/h3&gt;',
-        stopover: true
-    },
-    {
-        lat: 48.13654,
-        lon: 11.57706,
-        title: 'Munich, Germany',
-        html: '&lt;h3&gt;Munich, Germany&lt;/h3&gt;'
-    }
-];
-
-var Circles = [
-    {
-        lat: 51.51386,
-        lon: -0.09559,
-        title: 'Draggable marker',
-        circle_options: {
-            radius: 160
-        },
-        stroke_options: {
-            strokeColor: '#aaaa00',
-            fillColor: '#eeee00'
-        },
-        draggable: true
-    },
-    {
-        lat: 51.51420,
-        lon: -0.09303,
-        title: 'Draggable circle',
-        circle_options: {
-            radius: 50
-        },
-        stroke_options: {
-            strokeColor: '#aa0000',
-            fillColor: '#ee0000'
-        },
-        visible: false,
-        draggable: true
-    },
-    {
-        lat: 51.51498,
-        lon: -0.09097,
-        circle_options: {
-            radius: 80
-        },
-        visible: false,
-        draggable: true
-    },
-    {
-        lat: 51.51328,
-        lon: -0.09021,
-        circle_options: {
-            radius: 160,
-            editable: true
-        },
-        title: 'Editable circle',
-        html: 'Change my size',
-        visible: false,
-        draggable: true
-    },
-    {
-        lat: 51.51211,
-        lon: -0.09050,
-        circle_options: {
-            radius: 130
-        },
-        stroke_options: {
-            strokeColor: '#00aa00',
-            fillColor: '#00aa00'
-        },
-        visible: false
-    },
-    {
-        lat: 51.51226,
-        lon: -0.09435,
-        circle_options: {
-            radius: 100
-        },
-        draggable: true
-    },
-    {
-        lat: 51.513,
-        lon: -0.08410,
-        type: 'marker',
-        title: 'Simple marker',
-        html: 'I\'m a simple marker.'
-    }
-];
+    @LOCATIONS
 </pre>
                         </div>
                     </section>
@@ -1782,36 +1497,45 @@ maplace.Load({
                     <section class="row">
                         <div class="four columns mobile-one">
                             <h3>v0.2.0</h3>
-                            <ul class="normal-list">
-                                <li>Updated to jQuery ~2.1</li>
-                                <li>Source directory for the build moved from "src" to "dist"</li>
-                                <li>Use Grunt tasks to generate distribution artifact</li>
-                                <li>Changed default border color for in-map menu panel to #ccc</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>Updated to jQuery ~2.1</li>
+                                    <li>Source directory for the build moved from "src" to "dist"</li>
+                                    <li>Use Grunt tasks to generate distribution artifacts</li>
+                                    <li>Changed default border color for in-map menu panel to match with Google Maps new UI</li>
+                                    <li>Updated package.json and bower.js</li>
+                                </ul>
+                            </p>
 
                             <h3>v0.1.3</h3>
-                            <ul class="normal-list">
-                                <li>Added circles support allowing mixed markers/circles</li>
-                                <li>Removed 'hide_marker' option for consistency with "visible"</li>
-                                <li>Added support to set the initial center position and zoom of the Map</li>
-                                <li>Improved editable polyline and polygon when visible markers</li>
-                                <li>Added drag events between markers, circles, polyline and polygon</li>
-                                <li>Return "this" for public functions to allow method chaining</li>
-                                <li>Renamed property 'commons' to 'shared' now overridden by location specific options</li>
-                                <li>Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling</li>
-                                <li>Changed debug strategy</li>
-                                <li>General fixes and enhancements</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>Added circles support allowing mixed markers/circles</li>
+                                    <li>Removed 'hide_marker' option for consistency with "visible"</li>
+                                    <li>Added support to set the initial center position and zoom of the Map</li>
+                                    <li>Improved editable polyline and polygon when visible markers</li>
+                                    <li>Added drag events between markers, circles, polyline and polygon</li>
+                                    <li>Return "this" for public functions to allow method chaining</li>
+                                    <li>Renamed property 'commons' to 'shared' now overridden by location specific options</li>
+                                    <li>Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling</li>
+                                    <li>Changed debug strategy</li>
+                                    <li>General fixes and enhancements</li>
+                                </ul>
+                            </p>
 
                             <h3>v0.1.1</h3>
-                            <ul class="normal-list">
-                                <li>General fixes and enhancements</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>General fixes and enhancements</li>
+                                </ul>
+                            </p>
 
                             <h3>v0.1.0</h3>
-                            <ul class="normal-list">
-                                <li>Initial release</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>Initial release</li>
+                                </ul>
+                            </p>
                         </div>
                     </section>
                 </li>
@@ -1835,6 +1559,7 @@ maplace.Load({
     <script src="dist/maplace.min.js?v=@VERSION"></script>
 
     <script src="data/points.js?v=@VERSION"></script>
+    <script src="data/4k.js?v=@VERSION"></script>
     <script src="data/styles.js?v=@VERSION"></script>
     <script src="javascripts/app.js?v=@VERSION"></script>
 </body>

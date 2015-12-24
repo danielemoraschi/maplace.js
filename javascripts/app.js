@@ -191,9 +191,10 @@
     //Circles Example
     var circles = new Maplace({
       locations: Circles,
+      controls_type: 'list',
       map_div: '#gmap-circles',
       start: 4,
-      view_all_text: 'Points of interest',
+      view_all: false,
       type: 'circle',
       shared: {
         zoom: 16,

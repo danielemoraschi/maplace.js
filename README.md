@@ -19,7 +19,7 @@ new Maplace({
 ### HTML
 ```html
 <div id="controls"></div>
-<div id="gmap"></div>
+<div id="gmap" style="with:300px;height:250px;"></div>
 ```
 
 ### Locations Array
@@ -533,8 +533,9 @@ Maplace.js is released under an MIT License.
 **v0.2.0**
 - Updated to jQuery ~2.1
 - Source directory for the build moved from "src" to "dist"
-- Use Grunt tasks to generate distribution artifact
-- Changed default border color for in-map menu panel to #ccc
+- Use Grunt tasks to generate distribution artifacts
+- Changed default border color for in-map menu panel to match with Google Maps new UI
+- Updated package.json and bower.js
 
 **v0.1.3**
 - Added circles support allowing mixed markers/circles
