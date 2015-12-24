@@ -59,6 +59,13 @@ module.exports = function (grunt) {
                                 "var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);",
                             "})();"
                         ].join(' ')
+                    },{
+                        pattern: /@LOCATIONS/g,
+                        replacement: function () {
+                            return grunt.file.read('data/points.js')
+                                .replace(new RegExp('<', 'g'), '&lt;')
+                                .replace(new RegExp('>', 'g'), '&gt;');
+                        }
                     }]
                 }
             },
