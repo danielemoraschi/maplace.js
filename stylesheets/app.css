@@ -26,7 +26,7 @@ ul, ol, dl {
 }
 
 .gmap {
-    height: 300px;
+    height: 350px;
     width: 100%;
     padding: 3px;
     border: 5px solid #ddd;
@@ -173,8 +173,8 @@ select {
 }
 
 #controls .ullist {
-    margin: 0px; 
-    padding: 0px; 
+    margin: 0px;
+    padding: 0px;
     list-style-type: none;
 }
 
@@ -196,7 +196,7 @@ select {
 
 @media only screen and (max-width: 767px) {
 
-    h2 { 
+    h2 {
         font-size: 24px;
     }
 
@@ -278,5 +278,3 @@ select {
     color: #B82200 !important;
     background-color: #eee !important;
 }
-
-
