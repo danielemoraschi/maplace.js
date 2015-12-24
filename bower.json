@@ -5,7 +5,7 @@
     "DanieleMoraschi<daniele.moraschi@gmail.com>"
   ],
   "license": "MIT",
-  "main": "dist/maplace.js",
+  "main": "dist/maplace.min.js",
   "homepage": "https://github.com/danielemoraschi/maplace.js",
   "dependencies": {
     "jquery": "~2.1"
