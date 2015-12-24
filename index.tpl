@@ -729,16 +729,24 @@ $('#load_bigdata').click(function(e) {
 <h2>Requirements</h2>
 <p>To use Maplace.js, you need to include jQuery, the Google API v3, and the plugin file.</p>
 <pre class="prettyprint">
-&lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.7"&gt;
+&lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.22&key=YOUR_API_KEY"&gt;
 &lt;/script&gt;
 &lt;script src="http://code.jquery.com/jquery-2.1.4.min.js"&gt;&lt;/script&gt;
 &lt;script src="maplace.min.js"&gt;&lt;/script&gt;
 </pre>
+<br/>
+<h3>About the API_KEY for Google Maps API</h3>
+<p>
+    All JavaScript API applications require authentication using an API key (or a client ID for Google Maps API for Work customers). Including a key when loading the API allows you to monitor your application's API usage in the Google Developers Console, enables per-key instead of per-IP-address quota limits, and ensures that Google can contact you about your application if necessary.
+</p>
+<p>
+    <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank" title="Google Maps JavaScript API developers website">For more info please go to Google Maps JavaScript API developers website</a>
+</p>
 
 <h2>Html</h2>
 <p>Just place a DIV in your page and give it a unique ID or class, "gmap" by default, but you can change it in the options.</p>
 <pre class="prettyprint">
-&lt;div id="gmap"&gt;&lt;/div&gt;
+&lt;div id="gmap" style="with:300px;height:250px;"&gt;&lt;/div&gt;
 </pre>
 
 <p>If you want the menu outside of the map you need to include another DIV with a unique ID or class, "controls" by default.</p>
@@ -1782,36 +1790,44 @@ maplace.Load({
                     <section class="row">
                         <div class="four columns mobile-one">
                             <h3>v0.2.0</h3>
-                            <ul class="normal-list">
-                                <li>Updated to jQuery ~2.1</li>
-                                <li>Source directory for the build moved from "src" to "dist"</li>
-                                <li>Use Grunt tasks to generate distribution artifact</li>
-                                <li>Changed default border color for in-map menu panel to #ccc</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>Updated to jQuery ~2.1</li>
+                                    <li>Source directory for the build moved from "src" to "dist"</li>
+                                    <li>Use Grunt tasks to generate distribution artifact</li>
+                                    <li>Changed default border color for in-map menu panel to #ccc</li>
+                                </ul>
+                            </p>
 
                             <h3>v0.1.3</h3>
-                            <ul class="normal-list">
-                                <li>Added circles support allowing mixed markers/circles</li>
-                                <li>Removed 'hide_marker' option for consistency with "visible"</li>
-                                <li>Added support to set the initial center position and zoom of the Map</li>
-                                <li>Improved editable polyline and polygon when visible markers</li>
-                                <li>Added drag events between markers, circles, polyline and polygon</li>
-                                <li>Return "this" for public functions to allow method chaining</li>
-                                <li>Renamed property 'commons' to 'shared' now overridden by location specific options</li>
-                                <li>Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling</li>
-                                <li>Changed debug strategy</li>
-                                <li>General fixes and enhancements</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>Added circles support allowing mixed markers/circles</li>
+                                    <li>Removed 'hide_marker' option for consistency with "visible"</li>
+                                    <li>Added support to set the initial center position and zoom of the Map</li>
+                                    <li>Improved editable polyline and polygon when visible markers</li>
+                                    <li>Added drag events between markers, circles, polyline and polygon</li>
+                                    <li>Return "this" for public functions to allow method chaining</li>
+                                    <li>Renamed property 'commons' to 'shared' now overridden by location specific options</li>
+                                    <li>Added external reference to <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a> website for Google Map styling</li>
+                                    <li>Changed debug strategy</li>
+                                    <li>General fixes and enhancements</li>
+                                </ul>
+                            </p>
 
                             <h3>v0.1.1</h3>
-                            <ul class="normal-list">
-                                <li>General fixes and enhancements</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>General fixes and enhancements</li>
+                                </ul>
+                            </p>
 
                             <h3>v0.1.0</h3>
-                            <ul class="normal-list">
-                                <li>Initial release</li>
-                            </ul>
+                            <p>
+                                <ul class="normal-list">
+                                    <li>Initial release</li>
+                                </ul>
+                            </p>
                         </div>
                     </section>
                 </li>
