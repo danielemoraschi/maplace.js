@@ -1794,8 +1794,9 @@ maplace.Load({
                                 <ul class="normal-list">
                                     <li>Updated to jQuery ~2.1</li>
                                     <li>Source directory for the build moved from "src" to "dist"</li>
-                                    <li>Use Grunt tasks to generate distribution artifact</li>
-                                    <li>Changed default border color for in-map menu panel to #ccc</li>
+                                    <li>Use Grunt tasks to generate distribution artifacts</li>
+                                    <li>Changed default border color for in-map menu panel to match with Google Maps new UI</li>
+                                    <li>Updated package.json and bower.js</li>
                                 </ul>
                             </p>
 
