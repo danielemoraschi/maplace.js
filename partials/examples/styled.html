@@ -1,0 +1,54 @@
+<section id="styled" class="row">
+    <h2 class="two columns mobile-one">Styled
+        <p>More Google Maps styles on the website:
+            <a target="_blank" href="http://snazzymaps.com/">Snazzy Maps</a>
+        </p>
+    </h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example12">Example</a></dd>
+            <dd><a href="#code12">Code</a></dd>
+        </dl>
+    </div>
+    <div style="margin-top:20px" class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example12Tab">
+                <div class="gmap" id="gmap-12"></div>
+            </li>
+            <li class="code" id="code12Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    map_div: '#gmap-styled',
+    locations: LocsAB,
+    start: 1,
+    styles: styles,
+    map_options: {
+        zoom: 5
+    }
+    styles: {
+        'Night': [{
+            featureType: 'all',
+            stylers: [
+                { invert_lightness: 'true' }
+            ]
+        }],
+        'Greyscale': [{
+            featureType: 'all',
+            stylers: [
+                { saturation: -100 },
+                { gamma: 0.50 }
+            ]
+        }]
+    }
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-styled"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

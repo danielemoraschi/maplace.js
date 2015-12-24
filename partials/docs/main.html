@@ -1,0 +1,511 @@
+<section class="row">
+    <h2 class="four columns mobile-two">Options</h2>
+    <div class="four columns mobile-two">
+        <table class="small twelve" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>map_div</td>
+                    <td>string</td>
+                    <td>#gmap</td>
+                    <td>
+                        Where you want to show the Map
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_div</td>
+                    <td>string</td>
+                    <td>#controls</td>
+                    <td>
+                        Where you want to show the menu.<br/>
+                        <strong>generate_controls</strong> must be <strong><em>true</em></strong><br/>
+                        <strong>controls_on_map</strong> must be <strong><em>false</em></strong><br/>
+                        At least more than one location on map
+                    </td>
+                </tr>
+                <tr>
+                    <td>generate_controls</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                        If <strong><em>false</em></strong>, the menu will not generated
+                    </td>
+                </tr>
+                <tr>
+                    <td>force_generate_controls</td>
+                    <td>boolean</td>
+                    <td>false</td>
+                    <td>
+                        Force to generate menu also with one location
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_type</td>
+                    <td>string</td>
+                    <td>dropdown</td>
+                    <td>
+                        To set the menu type choose between: <strong>dropdown</strong> | <strong>list</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_on_map</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                        If <strong><em>false</em></strong>, the menu will be generated into the element defined by the property <strong>controls_div</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_title</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>
+                        Add a title/header text to the menu
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_cssclass</td>
+                    <td>string</td>
+                    <td></td>
+                    <td>
+                        Add a custom class to the menu element
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_applycss</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                        If <strong><em>false</em></strong>, default styles to the menu will not be applied
+                    </td>
+                </tr>
+                <tr>
+                    <td>controls_position</td>
+                    <td>object</td>
+                    <td>google.maps.ControlPosition.RIGHT_TOP</td>
+                    <td>
+                        Controls position on the right, below top-right elements of the map.<br/>
+                        As defined by <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/controls#ControlPositioning" title="Google Maps API Control Positioning">Google</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>string</td>
+                    <td>marker</td>
+                    <td>
+                        To set the Map type choose between: <strong>marker</strong> | <strong>circle</strong> | <strong>polyline</strong> | <strong>polygon</strong> | <strong>directions</strong> | <strong>fusion</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>view_all</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                        If <strong><em>false</em></strong> the link "view all" will not be created
+                    </td>
+                </tr>
+                <tr>
+                    <td>view_all_text</td>
+                    <td>string</td>
+                    <td>View All</td>
+                    <td>
+                        Set a custom text for the link "view all"
+                    </td>
+                </tr>
+                <tr>
+                    <td>start</td>
+                    <td>integer</td>
+                    <td>0</td>
+                    <td>
+                        Set the first location to show, <strong><em>0</em></strong> stands for "view all"
+                    </td>
+                </tr>
+                <tr>
+                    <td>locations</td>
+                    <td>Array &lt;locations&gt;</td>
+                    <td>[]</td>
+                    <td>
+                        List of locations being marked on the map.<br/>Check the location docs page for more details
+                    </td>
+                </tr>
+                <tr>
+                    <td>shared</td>
+                    <td>object</td>
+                    <td>{}</td>
+                    <td>
+                        Overwrite every location with a set of common properties
+                    </td>
+                </tr>
+                <tr>
+                    <td>show_markers</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                        If <strong><em>false</em></strong>, markers will not be visible on the map
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>infowindow_type</td>
+                    <td>string</td>
+                    <td>bubble</td>
+                    <td>
+                        Only <strong>bubble</strong> is supported
+                    </td>
+                </tr>
+                <tr>
+                    <td>visualRefresh</td>
+                    <td>boolean</td>
+                    <td>true</td>
+                    <td>
+                        Enable/disable the new google maps look and feel
+                    </td>
+                </tr>
+                <tr>
+                    <td>map_options</td>
+                    <td>Object</td>
+                    <td>
+<pre class="prettyprint">
+{
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    zoom: 1
+}
+</pre>
+                    </td>
+                    <td>
+                        Map options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" target="_blank" title="Google Maps API Options">Google</a>.<br/>
+                        The property <strong>center</strong> will be ignored. Check at the Install page to see how to center the map with only one location
+                    </td>
+                </tr>
+                <tr>
+                    <td>styles</td>
+                    <td>Object</td>
+                    <td>
+<pre class="prettyprint">
+{}
+</pre>
+                    </td>
+                    <td>
+                        Style options as defined by <a href="https://developers.google.com/maps/documentation/javascript/styling#stylers" target="_blank" title="Google Maps API styles">Google</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>stroke_options</td>
+                    <td>Object</td>
+                    <td>
+<pre class="prettyprint">
+{
+    strokeColor: '#0000FF',
+    strokeOpacity: 0.8,
+    strokeWeight: 2,
+    fillColor: '#0000FF',
+    fillOpacity: 0.4
+}
+</pre>
+                    </td>
+                    <td>
+                        Stroke options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#PolylineOptions" target="_blank" title="Google Maps API Polyline Options">Google</a>.<br/>
+                        Used when in Polyline/Polygon/Directions/Fusion/Circle Map type.
+                    </td>
+                </tr>
+                <tr>
+                    <td>directions_options</td>
+                    <td>Object</td>
+                    <td>
+<pre class="prettyprint">
+{
+    travelMode: google.maps.TravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.METRIC,
+    optimizeWaypoints: false,
+    provideRouteAlternatives: false,
+    avoidHighways: false,
+    avoidTolls: false
+}
+</pre>
+                    </td>
+                    <td>
+                        Direction options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#DirectionsRequest" target="_blank" title="Google Maps API Directions Request">Google</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>directions_panel</td>
+                    <td>string</td>
+                    <td>null</td>
+                    <td>
+                        ID or class of the div in which to display the directions steps.
+                    </td>
+                </tr>
+                <tr>
+                    <td>fusion_options</td>
+                    <td>Object</td>
+                    <td>{}</td>
+                    <td>
+                        Fusion tables options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#FusionTablesLayerOptions" target="_blank" title="Google Maps API FusionTables Layer Options">Google</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>circle_options</td>
+                    <td>Object</td>
+                    <td>
+<pre class="prettyprint">
+{
+    radius: 100
+}
+</pre>
+                    </td>
+                    <td>
+                        Default circle options as defined by <a href="https://developers.google.com/maps/documentation/javascript/reference#CircleOptions" target="_blank" title="Google Maps API CircleOptions">Google</a>.<br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>draggable</td>
+                    <td>boolean</td>
+                    <td>false</td>
+                    <td>
+                        If <strong><em>true</em></strong>, allow the users to drag and modify the <strong>route</strong>, the <strong>polyline</strong> or the <strong>polygon</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>listeners</td>
+                    <td>Object</td>
+                    <td>{}</td>
+                    <td>Example:<br/>
+<pre class="prettyprint">
+listeners: {
+    click: function(map, event) {
+        map.setOptions({scrollwheel: true});
+    }
+}
+</pre>
+Docs: <a href="https://developers.google.com/maps/documentation/javascript/events#UIEvents" target="_blank" title="Google Maps API Events">Google maps Events</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Methods</h2>
+        <table class="small twelve" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Function</th>
+                    <th>Params</th>
+                    <th>Return</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AddControl</td>
+                    <td>string &lt;<strong>name</strong>&gt;, function</td>
+                    <td></td>
+                    <td>Add you own menu type to the map. Check at the Menu Docs page for more details.</td>
+                </tr>
+                <tr>
+                    <td>CloseInfoWindow</td>
+                    <td></td>
+                    <td></td>
+                    <td>Close the current infowindow</td>
+                </tr>
+                <tr>
+                    <td>ShowOnMenu</td>
+                    <td>integer &lt;<strong>index</strong>&gt;</td>
+                    <td>boolean</td>
+                    <td>Checks if a location has to be shown on menu</td>
+                </tr>
+                <tr>
+                    <td>ViewOnMap</td>
+                    <td>integer &lt;<strong>index</strong>&gt;</td>
+                    <td></td>
+                    <td>Triggers to show a location on map</td>
+                </tr>
+                <tr>
+                    <td>SetLocations</td>
+                    <td>array &lt;<strong>locations</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
+                    <td></td>
+                    <td>Replace the current locations</td>
+                </tr>
+                <tr>
+                    <td>AddLocations</td>
+                    <td>array &lt;<strong>locations</strong>&gt; | object &lt;<strong>location</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
+                    <td></td>
+                    <td>Adds one or many locations</td>
+                </tr>
+                <tr>
+                    <td>AddLocation</td>
+                    <td>object &lt;<strong>location</strong>&gt;, integer &lt;<strong>index</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
+                    <td></td>
+                    <td>Adds one location at the specific index</td>
+                </tr>
+                <tr>
+                    <td>RemoveLocations</td>
+                    <td>array &lt;<strong>indexes</strong>&gt; | integer &lt;<strong>index</strong>&gt;, boolean &lt;<strong>reload</strong>&gt;</td>
+                    <td></td>
+                    <td>Delete one or many locations</td>
+                </tr>
+                <tr>
+                    <td>Load</td>
+                    <td>null | object &lt;<strong>options</strong>&gt;</td>
+                    <td></td>
+                    <td>Loads or updates the current configuration and constructs the map</td>
+                </tr>
+                <tr>
+                    <td>Loaded</td>
+                    <td></td>
+                    <td></td>
+                    <td>Checks if a Load() was already been called<br/></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <h2>Events</h2>
+        <table class="small twelve" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>beforeViewAll</td>
+                    <td>function</td>
+                    <td></td>
+                    <td>
+                        Fires before showing all the locations
+                    </td>
+                </tr>
+                <tr>
+                    <td>afterViewAll</td>
+                    <td>function</td>
+                    <td></td>
+                    <td>
+                        Fires after showing all the locations
+                    </td>
+                </tr>
+                <tr>
+                    <td>beforeShow</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        Fires before showing the current triggered location
+                    </td>
+                </tr>
+                <tr>
+                    <td>afterShow</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        Fires after showing the current triggered location
+                    </td>
+                </tr>
+                <tr>
+                    <td>afterCreateMarker</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        Fires after a marker creation
+                    </td>
+                </tr>
+                <tr>
+                    <td>beforeCloseInfowindow</td>
+                    <td>function</td>
+                    <td>(index, location){}</td>
+                    <td>
+                        Fires before closing the infowindow
+                    </td>
+                </tr>
+                <tr>
+                    <td>afterCloseInfowindow</td>
+                    <td>function</td>
+                    <td>(index, location){}</td>
+                    <td>
+                        Function called after closing the infowindow
+                    </td>
+                </tr>
+                <tr>
+                    <td>beforeOpenInfowindow</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        Fires before opening the infowindow
+                    </td>
+                </tr>
+                <tr>
+                    <td>afterOpenInfowindow</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        Fires after opening the infowindow
+                    </td>
+                </tr>
+                <tr>
+                    <td>afterRoute</td>
+                    <td>function</td>
+                    <td>(distance, status, result){}</td>
+                    <td>
+                        Fires after the route calcoule
+                    </td>
+                </tr>
+                <tr>
+                    <td>onPolylineClick</td>
+                    <td>function</td>
+                    <td>(obj) {}</td>
+                    <td>
+                        Fires when click on polylines
+                    </td>
+                </tr>
+                <tr>
+                    <td>circleRadiusChanged</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        This event is fired when the circle's radius is changed.
+                    </td>
+                </tr>
+                <tr>
+                    <td>circleCenterChanged</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        This event is fired when the circle's center is changed.
+                    </td>
+                </tr>
+                <tr>
+                    <td>drag</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        This event is fired while a marker is dragged.
+                    </td>
+                </tr>
+                <tr>
+                    <td>dragEnd</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        This event is fired when the drag event ends.
+                    </td>
+                </tr>
+                <tr>
+                    <td>dragStart</td>
+                    <td>function</td>
+                    <td>(index, location, marker){}</td>
+                    <td>
+                        This event is fired when the drag event starts.
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</section>

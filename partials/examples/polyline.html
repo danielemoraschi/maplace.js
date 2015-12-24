@@ -1,0 +1,43 @@
+<section id="polyline" class="row">
+    <h2 class="three columns mobile-one">Path / Polyline + mixed circles</h2>
+    <div class="one columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example5">Example</a></dd>
+            <dd><a href="#code5">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example5Tab">
+                <div class="row">
+                    <div class="one columns">
+                        <div class="gmap_controls" id="controls-6"></div>
+                    </div>
+                    <div class="three columns">
+                        <div class="gmap" id="gmap-6"></div>
+                    </div>
+                </div>
+            </li>
+            <li class="code" id="code5Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: LocsAv2,
+    map_div: '#gmap-polyline',
+    controls_div: '#controls-polyline',
+    controls_type: 'list',
+    controls_on_map: false,
+    view_all_text: 'Start',
+    type: 'polyline'
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="controls-polyline"&gt;&lt;/div&gt;
+&lt;div id="gmap-polyline"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

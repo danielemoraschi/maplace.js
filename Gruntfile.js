@@ -27,7 +27,7 @@ module.exports = function (grunt) {
             }
         },
         'string-replace': {
-            version: {
+            'script': {
                 files: {
                     'dist/maplace.js': ['src/maplace.js']
                 },
@@ -38,7 +38,7 @@ module.exports = function (grunt) {
                     }]
                 }
             },
-            versionIndex: {
+            'web': {
                 files: {
                     './index.html': ['index.tpl']
                 },
@@ -60,6 +60,11 @@ module.exports = function (grunt) {
                             "})();"
                         ].join(' ')
                     },{
+                        pattern: /<!-- @import (.*?) -->/ig,
+                        replacement: function (match, p1) {
+                            return grunt.file.read(p1);
+                        }
+                    },{
                         pattern: /@LOCATIONS/g,
                         replacement: function () {
                             return grunt.file.read('data/points.js')
@@ -69,7 +74,7 @@ module.exports = function (grunt) {
                     }]
                 }
             },
-            versionIndexDev: {
+            'web-dev': {
                 files: {
                     './index.html': ['index.tpl']
                 },
@@ -77,23 +82,20 @@ module.exports = function (grunt) {
                     replacements: [{
                         pattern: /@VERSION/g,
                         replacement: '<%= pkg.version %>'
+                    },{
+                        pattern: /<!-- @import (.*?) -->/ig,
+                        replacement: function (match, p1) {
+                            return grunt.file.read(p1);
+                        }
                     }]
                 }
             }
         },
         'watch': {
-            scripts: {
-                files: ['**/*.js', 'src/*.js'],
-                tasks: ['build'],
-                options: {
-                    spawn: false,
-                    debounceDelay: 250
-                },
-            },
-            web: {
-                files: ['**/*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
-                    'stylesheets/*.css'],
-                tasks: ['web-dev'],
+            all: {
+                files: ['./*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
+                    'stylesheets/*.css', 'partials/**/*.html'],
+                tasks: ['all-dev'],
                 options: {
                     spawn: false,
                     debounceDelay: 250
@@ -110,8 +112,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Tasks.
-    grunt.registerTask('build', ['jshint', 'string-replace:version', 'uglify']);
-    grunt.registerTask('web', ['build', 'string-replace:versionIndex']);
-    grunt.registerTask('web-dev', ['build', 'string-replace:versionIndexDev']);
+    grunt.registerTask('default', ['all']);
+    grunt.registerTask('build', ['jshint', 'string-replace:script', 'uglify']);
+    grunt.registerTask('all', ['build', 'string-replace:web']);
+    grunt.registerTask('all-dev', ['build', 'string-replace:web-dev']);
     grunt.registerTask('test', ['build']);
 };

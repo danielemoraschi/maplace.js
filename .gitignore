@@ -4,4 +4,4 @@ nbproject
 node_modules
 bower_components
 index.html
-dist
+/dist

@@ -1,0 +1,50 @@
+<section id="dtabs" class="row">
+    <h2 class="two columns mobile-one">Tabs</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example4">Example</a></dd>
+            <dd><a href="#code4">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns gtabs mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example4Tab">
+                <div class="row">
+                    <div class="four columns">
+                        <div class="gmap_controls tabs" id="controls-5"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="four columns">
+                        <div id="info" class="tab-content"></div>
+                    </div>
+                </div>
+                <div class="gmap" id="gmap-5"></div>
+            </li>
+            <li class="code" id="code4Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: LocsB,
+    map_div: '#gmap-tabs',
+    controls_div: '#controls-tabs',
+    controls_type: 'list',
+    controls_on_map: false,
+    show_infowindow: false,
+    start: 1,
+    afterShow: function(index, location, marker) {
+        $('#info').html(location.html);
+    }
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="controls-tabs"&gt;&lt;/div&gt;
+&lt;div id="info"&gt;&lt;/div&gt;
+&lt;div id="gmap-tabs"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

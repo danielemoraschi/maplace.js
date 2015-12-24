@@ -1,0 +1,79 @@
+<section id="dmixed" class="row">
+    <h2 class="two columns mobile-one">Mixed / Ajax</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example8">Example</a></dd>
+            <dd><a href="#code8">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example8Tab">
+                <div class="row">
+                    <div class="four columns">
+                            <dl id="mixed" class="tabs">
+                                    <dd><a href="javascript:void(0)" data-load="0" id="g0" title="Group A">Group A</a></dd>
+                                    <dd><a href="javascript:void(0)" data-load="1" id="g1" title="Group B">Group B</a></dd>
+                                    <dd><a href="javascript:void(0)" data-load="2" id="g2" title="Group C">Group C</a></dd>
+                                    <dd><a href="javascript:void(0)" data-load="3" id="g3" title="Group D">Group D</a></dd>
+                                    <li><a href="javascript:void(0)" data-load="4" id="g4" title="Group E">Group E</a></li>
+                            </dl>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="four columns">
+                        <div class="gmap_controls" id="controls-9"></div>
+                    </div>
+                </div>
+                <div class="gmap" id="gmap-9"></div>
+            </li>
+            <li class="code" id="code8Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+var maplace = new Maplace({
+    map_div: '#gmap-mixed',
+    controls_div: '#controls-mixed',
+    controls_type: 'list',
+    controls_on_map: false
+});
+
+$('#tabs a').click(function(e) {
+    e.preventDefault();
+    var index = $(this).attr('data-load');
+    showGroup(index);
+});
+
+function showGroup(index) {
+    var el = $('#g'+index);
+    $('#tabs li').removeClass('active');
+    $(el).parent().addClass('active');
+    $.getJSON('data/ajax.php', { type: index }, function(data) {
+        //loads data into the map
+        maplace.Load({
+            locations: data.locations,
+            view_all_text: data.title,
+            type: data.type,
+            force_generate_controls: true
+        });
+    });
+}
+
+showGroup(0);
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;ul id=&quot;tabs&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="0" id="g0" title=&quot;Group A&quot;&gt;Group A&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="1" id="g1" title=&quot;Group B&quot;&gt;Group B&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="2" id="g2" title=&quot;Group C&quot;&gt;Group C&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="3" id="g3" title=&quot;Group D&quot;&gt;Group D&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; data-load="4" id="g4" title=&quot;Group E&quot;&gt;Group E&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id="controls-mixed"&gt;&lt;/div&gt;
+&lt;div id="gmap-mixed"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>
