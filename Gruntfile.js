@@ -14,7 +14,7 @@ module.exports = function (grunt) {
                     jQuery: true
                 },
             },
-            src: ['Gruntfile.js', 'src/*.js', 'javascripts/app.js']
+            src: ['Gruntfile.js', 'src/*.js', 'website/javascripts/app.js']
         },
         'uglify': {
             my_target: {
@@ -24,6 +24,16 @@ module.exports = function (grunt) {
             },
             options: {
                 preserveComments: /(?:^!|@(?:license|preserve))/
+            }
+        },
+        'copy': {
+            webfiles: {
+                expand: true,
+                flatten: true,
+                cwd: 'website',
+                dest: '',
+                src: ['favicon.ico', 'humans.txt', 'robots.txt'],
+                filter: 'isFile'
             }
         },
         'string-replace': {
@@ -40,7 +50,7 @@ module.exports = function (grunt) {
             },
             'web': {
                 files: {
-                    './index.html': ['partials/index.html']
+                    './index.html': ['website/index.html']
                 },
                 options: {
                     replacements: [{
@@ -62,12 +72,12 @@ module.exports = function (grunt) {
                     },{
                         pattern: /<!-- @import (.*?) -->/ig,
                         replacement: function (match, p1) {
-                            return grunt.file.read(p1);
+                            return grunt.file.read('website/' + p1);
                         }
                     },{
                         pattern: /@LOCATIONS/g,
                         replacement: function () {
-                            return grunt.file.read('data/points.js')
+                            return grunt.file.read('website/data/points.js')
                                 .replace(new RegExp('<', 'g'), '&lt;')
                                 .replace(new RegExp('>', 'g'), '&gt;');
                         }
@@ -76,7 +86,7 @@ module.exports = function (grunt) {
             },
             'web-dev': {
                 files: {
-                    './index.html': ['partials/index.html']
+                    './index.html': ['website/index.html']
                 },
                 options: {
                     replacements: [{
@@ -85,7 +95,7 @@ module.exports = function (grunt) {
                     },{
                         pattern: /<!-- @import (.*?) -->/ig,
                         replacement: function (match, p1) {
-                            return grunt.file.read(p1);
+                            return grunt.file.read('website/' + p1);
                         }
                     }]
                 }
@@ -93,8 +103,8 @@ module.exports = function (grunt) {
         },
         'watch': {
             all: {
-                files: ['./*.js', 'src/*.js', 'partials/index.html', 'javascripts/*.js',
-                    'stylesheets/*.css', 'partials/**/*.html'],
+                files: ['./*.js', 'src/*.js', 'website/index.html', 'website/javascripts/*.js',
+                    'website/stylesheets/*.css', 'website/partials/**/*.html'],
                 tasks: ['all-dev'],
                 options: {
                     spawn: false,
@@ -107,6 +117,7 @@ module.exports = function (grunt) {
 
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -114,7 +125,7 @@ module.exports = function (grunt) {
     // Tasks.
     grunt.registerTask('default', ['all']);
     grunt.registerTask('build', ['jshint', 'string-replace:script', 'uglify']);
-    grunt.registerTask('all', ['build', 'string-replace:web']);
-    grunt.registerTask('all-dev', ['build', 'string-replace:web-dev']);
+    grunt.registerTask('all', ['build', 'string-replace:web', 'copy']);
+    grunt.registerTask('all-dev', ['build', 'string-replace:web-dev', 'copy']);
     grunt.registerTask('test', ['build']);
 };

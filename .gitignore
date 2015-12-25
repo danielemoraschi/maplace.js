@@ -3,5 +3,8 @@ nbproject
 .idea
 node_modules
 bower_components
-/index.html
 /dist
+/index.html
+/favicon.ico
+/humans.txt
+/robots.txt
