@@ -6,7 +6,7 @@
 * For all details and documentation:
 * http://maplacejs.com
 *
-* @version  0.2.4
+* @version  0.2.5
 * @preserve
 */
 
@@ -142,7 +142,7 @@
     * @constructor
     */
     function Maplace (args) {
-        this.VERSION = '0.2.4';
+        this.VERSION = '0.2.5';
         this.loaded = false;
         this.markers = [];
         this.circles = [];
