@@ -132,7 +132,7 @@
       var el = $('#g'+index);
       $('#mixed li').removeClass('active');
       $(el).parent().addClass('active');
-      $.getJSON('data/ajax.php', { type: index }, function(data) {
+      $.getJSON('website/data/ajax.php', { type: index }, function(data) {
         mixed.Load({
           locations: data.locations,
           view_all_text: data.title,
