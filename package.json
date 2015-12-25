@@ -1,6 +1,6 @@
 {
   "name": "maplace-js",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Google Maps jQuery plugin and markers helper",
   "homepage": "https://github.com/danielemoraschi/maplace.js",
   "main": "dist/maplace.min.js",
@@ -10,11 +10,11 @@
     "test": "grunt test -v"
   },
   "files": [
-      "dist",
-      "src",
-      "package.json",
-      "README.md",
-      "LICENSE-MIT"
+    "dist",
+    "src",
+    "package.json",
+    "README.md",
+    "LICENSE-MIT"
   ],
   "repository": {
     "type": "git",
@@ -46,6 +46,7 @@
     "grunt-string-replace": "~1.2.1",
     "grunt-contrib-uglify": "~0.11.0",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-jshint": "~0.11.3"
+    "grunt-contrib-jshint": "~0.11.3",
+    "grunt-contrib-copy": "~0.8.2"
   }
 }

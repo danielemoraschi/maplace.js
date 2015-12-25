@@ -14,7 +14,7 @@ module.exports = function (grunt) {
                     jQuery: true
                 },
             },
-            src: ['Gruntfile.js', 'src/*.js', 'javascripts/app.js']
+            src: ['Gruntfile.js', 'src/*.js', 'website/javascripts/app.js']
         },
         'uglify': {
             my_target: {
@@ -26,8 +26,18 @@ module.exports = function (grunt) {
                 preserveComments: /(?:^!|@(?:license|preserve))/
             }
         },
+        'copy': {
+            webfiles: {
+                expand: true,
+                flatten: true,
+                cwd: 'website',
+                dest: '',
+                src: ['favicon.ico', 'humans.txt', 'robots.txt'],
+                filter: 'isFile'
+            }
+        },
         'string-replace': {
-            version: {
+            'script': {
                 files: {
                     'dist/maplace.js': ['src/maplace.js']
                 },
@@ -38,9 +48,9 @@ module.exports = function (grunt) {
                     }]
                 }
             },
-            versionIndex: {
+            'web': {
                 files: {
-                    './index.html': ['index.tpl']
+                    './index.html': ['website/index.html']
                 },
                 options: {
                     replacements: [{
@@ -60,40 +70,42 @@ module.exports = function (grunt) {
                             "})();"
                         ].join(' ')
                     },{
+                        pattern: /<!-- @import (.*?) -->/ig,
+                        replacement: function (match, p1) {
+                            return grunt.file.read('website/' + p1);
+                        }
+                    },{
                         pattern: /@LOCATIONS/g,
                         replacement: function () {
-                            return grunt.file.read('data/points.js')
+                            return grunt.file.read('website/data/points.js')
                                 .replace(new RegExp('<', 'g'), '&lt;')
                                 .replace(new RegExp('>', 'g'), '&gt;');
                         }
                     }]
                 }
             },
-            versionIndexDev: {
+            'web-dev': {
                 files: {
-                    './index.html': ['index.tpl']
+                    './index.html': ['website/index.html']
                 },
                 options: {
                     replacements: [{
                         pattern: /@VERSION/g,
                         replacement: '<%= pkg.version %>'
+                    },{
+                        pattern: /<!-- @import (.*?) -->/ig,
+                        replacement: function (match, p1) {
+                            return grunt.file.read('website/' + p1);
+                        }
                     }]
                 }
             }
         },
         'watch': {
-            scripts: {
-                files: ['**/*.js', 'src/*.js'],
-                tasks: ['build'],
-                options: {
-                    spawn: false,
-                    debounceDelay: 250
-                },
-            },
-            web: {
-                files: ['**/*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
-                    'stylesheets/*.css'],
-                tasks: ['web-dev'],
+            all: {
+                files: ['./*.js', 'src/*.js', 'website/index.html', 'website/javascripts/*.js',
+                    'website/stylesheets/*.css', 'website/partials/**/*.html'],
+                tasks: ['all-dev'],
                 options: {
                     spawn: false,
                     debounceDelay: 250
@@ -105,13 +117,15 @@ module.exports = function (grunt) {
 
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Tasks.
-    grunt.registerTask('build', ['jshint', 'string-replace:version', 'uglify']);
-    grunt.registerTask('web', ['build', 'string-replace:versionIndex']);
-    grunt.registerTask('web-dev', ['build', 'string-replace:versionIndexDev']);
+    grunt.registerTask('default', ['all']);
+    grunt.registerTask('build', ['jshint', 'string-replace:script', 'uglify']);
+    grunt.registerTask('all', ['build', 'string-replace:web', 'copy']);
+    grunt.registerTask('all-dev', ['build', 'string-replace:web-dev', 'copy']);
     grunt.registerTask('test', ['build']);
 };

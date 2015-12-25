@@ -1,0 +1,46 @@
+<section id="circles" class="row">
+    <h2 class="three columns mobile-one">Circles <strong id="radiusInfo"></strong></h2>
+    <div class="one columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#exampleCircles">Example</a></dd>
+            <dd><a href="#codeCircles">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="exampleCirclesTab">
+                <div class="row">
+                    <div class="four columns">
+                        <div class="gmap" id="gmap-circles"></div>
+                    </div>
+                </div>
+            </li>
+            <li class="code" id="codeCirclesTab">
+                <h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: Circles,
+    map_div: '#gmap-circles',
+    start: 4,
+    view_all_text: 'Points of interest',
+    type: 'circle',
+    shared: {
+        zoom: 16,
+        html: '%index'
+    },
+    circleRadiusChanged: function(index, point, marker) {
+        $('#radiusInfo').text(
+            ' - point #' + (index+1) + ' size: ' + parseInt(marker.getRadius()) + 'mt.'
+        );
+    }
+}).Load();
+</pre>
+                <h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-circles"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

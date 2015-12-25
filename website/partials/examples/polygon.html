@@ -1,0 +1,35 @@
+<section id="polygon" class="row">
+    <h2 class="two columns mobile-one">Polygon</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example6">Example</a></dd>
+            <dd><a href="#code6">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example6Tab">
+                <div class="gmap" id="gmap-7"></div>
+            </li>
+            <li class="code" id="code6Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: LocsA,
+    map_div: '#gmap-polygon',
+    controls_div: '#controls-polygon',
+    controls_type: 'list',
+    show_markers: false,
+    type: 'polygon',
+    draggable: true
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-polygon"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

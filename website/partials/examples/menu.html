@@ -1,0 +1,42 @@
+<section id="menu" class="row">
+    <h2 class="two columns mobile-one">Menu</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example3">Example</a></dd>
+            <dd><a href="#code3">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns menu mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example3Tab">
+                <div class="row">
+                    <div class="four columns">
+                        <div class="gmap_controls" id="controls"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="four columns">
+                        <div class="gmap" id="gmap-4"></div>
+                    </div>
+                </div>
+            </li>
+            <li class="code" id="code3Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: LocsAB,
+    map_div: '#gmap-menu',
+    controls_type: 'list',
+    controls_on_map: false
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="controls"&gt;&lt;/div&gt;
+&lt;div id="gmap-menu"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

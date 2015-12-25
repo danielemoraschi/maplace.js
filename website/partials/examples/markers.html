@@ -1,0 +1,42 @@
+<section id="markers" class="row">
+    <h2 class="two columns mobile-one">Markers</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example2">Example</a></dd>
+            <dd><a href="#code2">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example2Tab">
+                <div class="gmap" id="gmap-2"></div>
+                <div class="gmap" id="gmap-3"></div>
+            </li>
+            <li class="code" id="code2Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+//dropdown example
+new Maplace({
+    locations: LocsA,
+    map_div: '#gmap-dropdown',
+    controls_title: 'Choose a location:'
+}).Load();
+
+//ul list example
+new Maplace({
+    locations: LocsB,
+    map_div: '#gmap-list',
+    controls_type: 'list',
+    controls_title: 'Choose a location:'
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-dropdown"&gt;&lt;/div&gt;
+&lt;div id="gmap-list"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

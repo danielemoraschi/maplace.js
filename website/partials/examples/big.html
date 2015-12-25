@@ -1,0 +1,49 @@
+<section class="row last">
+    <h2 class="two columns mobile-one">Big Data</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example9">Example</a></dd>
+            <dd><a href="#code9">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example9Tab">
+                <div style="height:auto;text-align:center" class="panel" id="panel">
+                    <a style="width:auto" class="success button" id="load_bigdata" href="#">load 4k locations</a>
+                </div>
+                <div class="gmap" id="gmap-10" style="display:none"></div>
+            </li>
+            <li class="code" id="code9Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+var bigdata = new Maplace({
+    map_div: '#gmap-big',
+    show_infowindows: false,
+    locations: big4k,
+    shared: {
+        zoom: 8,
+        html: '%index'
+    }
+});
+
+$('#load_bigdata').click(function(e) {
+    e.preventDefault();
+    $('#panel').fadeOut('fast', function() {
+        $('#gmap-big').fadeIn();
+        bigdata.Load();
+    });
+});
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="panel"&gt;
+&lt;a class="button" id="load_bigdata" href="#"&gt;load 4k points&lt;/a&gt;
+&lt;/div&gt;
+&lt;div id="gmap-big" style="display:none"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

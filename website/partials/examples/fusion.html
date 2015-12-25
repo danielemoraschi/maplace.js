@@ -1,0 +1,44 @@
+<section id="fusion" class="row">
+    <h2 class="two columns mobile-one">Fusion Tables</h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example10">Example</a></dd>
+            <dd><a href="#code10">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example10Tab">
+                <div class="gmap" id="gmap-11"></div>
+            </li>
+            <li class="code" id="code10Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    map_div: '#gmap-fusion',
+    type: 'fusion',
+    map_options: {
+        zoom: 2,
+        set_center: [31.1, -39.4]
+    },
+    fusion_options: {
+        query: {
+            from: '423292',
+            select: 'location'
+        },
+        heatmap: {
+            enabled: true
+        },
+        suppressInfoWindows: true
+    }
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;div id="gmap-fusion"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>

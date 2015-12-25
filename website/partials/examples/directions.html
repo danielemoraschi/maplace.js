@@ -1,0 +1,52 @@
+<section id="directions" class="row">
+    <h2 class="two columns mobile-one">Route: <strong id='km'></strong></h2>
+    <div class="two columns mobile-one">
+        <dl class="right tabs pill small">
+            <dd class="active"><a href="#example7">Example</a></dd>
+            <dd><a href="#route7">Route</a></dd>
+            <dd><a href="#code7">Code</a></dd>
+        </dl>
+    </div>
+    <div class="four columns mobile-two">
+        <ul class="tabs-content">
+            <li class="active" id="example7Tab">
+                <div class="row">
+                    <div class="four columns">
+                        <div class="gmap" id="gmap-8"></div>
+                    </div>
+                </div>
+            </li>
+            <li id="route7Tab">
+                <div class="row">
+                    <div class="four columns">
+                        <div id="route"></div>
+                    </div>
+                </div>
+            </li>
+            <li class="code" id="code7Tab">
+<h3>JS</h3>
+<pre class="prettyprint">
+new Maplace({
+    locations: LocsD,
+    map_div: '#gmap-route',
+    generate_controls: false,
+    show_markers: false,
+    type: 'directions',
+    draggable: true,
+    directions_panel: '#route',
+    afterRoute: function(distance) {
+        $('#km').text(': '+(distance/1000)+'km');
+    }
+}).Load();
+</pre>
+<h3>Html</h3>
+<pre class="prettyprint">
+&lt;h2&gt;Route &lt;strong id="km"&gt;&lt;/strong&gt;&lt;/h2&gt;
+&lt;div id="gmap-route"&gt;&lt;/div&gt;
+&lt;div id="route"&gt;&lt;/div&gt;
+</pre>
+            </li>
+        </ul>
+    </div>
+    <div class="four columns mobile-two"><div class="line"></div></div>
+</section>
