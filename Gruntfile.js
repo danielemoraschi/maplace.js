@@ -40,7 +40,7 @@ module.exports = function (grunt) {
             },
             'web': {
                 files: {
-                    './index.html': ['index.tpl']
+                    './index.html': ['partials/index.html']
                 },
                 options: {
                     replacements: [{
@@ -76,7 +76,7 @@ module.exports = function (grunt) {
             },
             'web-dev': {
                 files: {
-                    './index.html': ['index.tpl']
+                    './index.html': ['partials/index.html']
                 },
                 options: {
                     replacements: [{
@@ -93,7 +93,7 @@ module.exports = function (grunt) {
         },
         'watch': {
             all: {
-                files: ['./*.js', 'src/*.js', 'index.tpl', 'javascripts/*.js',
+                files: ['./*.js', 'src/*.js', 'partials/index.html', 'javascripts/*.js',
                     'stylesheets/*.css', 'partials/**/*.html'],
                 tasks: ['all-dev'],
                 options: {

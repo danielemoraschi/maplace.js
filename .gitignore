@@ -3,5 +3,5 @@ nbproject
 .idea
 node_modules
 bower_components
-index.html
+/index.html
 /dist
