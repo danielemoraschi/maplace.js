@@ -10,7 +10,7 @@
 * @preserve
 */
 
-;(function (root, factory) {
+;(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
@@ -19,7 +19,7 @@
         root.Maplace = factory(root.jQuery);
     }
 
-} (this, function ($) {
+}(this, function($) {
     'use strict';
 
     var html_dropdown,
@@ -27,11 +27,11 @@
 
     //dropdown menu type
     html_dropdown = {
-        activateCurrent: function (index) {
+        activateCurrent: function(index) {
             this.html_element.find('select').val(index);
         },
 
-        getHtml: function () {
+        getHtml: function() {
             var self = this,
                 html = '',
                 title,
@@ -51,7 +51,7 @@
                 }
                 html += '</select>';
 
-                html = $(html).bind('change', function () {
+                html = $(html).bind('change', function() {
                     self.ViewOnMap(this.value);
                 });
             }
@@ -74,7 +74,7 @@
 
     //ul list menu type
     html_ullist = {
-        html_a: function (i, hash, ttl) {
+        html_a: function(i, hash, ttl) {
             var self = this,
                 index = hash || (i + 1),
                 title = ttl || this.o.locations[i].title,
@@ -88,7 +88,7 @@
                 textDecoration: 'none'
             } : {});
 
-            el_a.on('click', function (e) {
+            el_a.on('click', function(e) {
                 e.preventDefault();
                 var i = $(this).attr('data-load');
                 self.ViewOnMap(i);
@@ -97,13 +97,13 @@
             return el_a;
         },
 
-        activateCurrent: function (index) {
+        activateCurrent: function(index) {
             this.html_element.find('li').removeClass('active');
             this.html_element.find('#ullist_a_' + index).parent().addClass('active');
         },
 
-        getHtml: function () {
-            var html = $("<ul class='ullist controls " + this.o.controls_cssclass + "'></ul>").css(this.o.controls_applycss ? {
+        getHtml: function() {
+            var html = $('<ul class=\'ullist controls ' + this.o.controls_cssclass + '\'></ul>').css(this.o.controls_applycss ? {
                 margin: 0,
                 padding: 0,
                 listStyleType: 'none'
@@ -141,7 +141,7 @@
     * @class Maplace
     * @constructor
     */
-    function Maplace (args) {
+    function Maplace(args) {
         this.VERSION = '@VERSION';
         this.loaded = false;
         this.markers = [];
@@ -217,27 +217,27 @@
             listeners: {},
 
             //events
-            beforeViewAll: function () {},
-            afterViewAll: function () {},
-            beforeShow: function (index, location, marker) {},
-            afterShow: function (index, location, marker) {},
-            afterCreateMarker: function (index, location, marker) {},
+            beforeViewAll: function() {},
+            afterViewAll: function() {},
+            beforeShow: function(index, location, marker) {},
+            afterShow: function(index, location, marker) {},
+            afterCreateMarker: function(index, location, marker) {},
 
-            beforeCloseInfowindow: function (index, location) {},
-            afterCloseInfowindow: function (index, location) {},
-            beforeOpenInfowindow: function (index, location, marker) {},
-            afterOpenInfowindow: function (index, location, marker) {},
+            beforeCloseInfowindow: function(index, location) {},
+            afterCloseInfowindow: function(index, location) {},
+            beforeOpenInfowindow: function(index, location, marker) {},
+            afterOpenInfowindow: function(index, location, marker) {},
 
-            afterRoute: function (distance, status, result) {},
-            onPolylineClick: function (obj) {},
-            onPolygonClick: function (obj) {},
+            afterRoute: function(distance, status, result) {},
+            onPolylineClick: function(obj) {},
+            onPolygonClick: function(obj) {},
 
-            circleRadiusChanged: function (index, circle, marker) {},
-            circleCenterChanged: function (index, circle, marker) {},
+            circleRadiusChanged: function(index, circle, marker) {},
+            circleCenterChanged: function(index, circle, marker) {},
 
-            drag: function (index, location, marker) {},
-            dragEnd: function (index, location, marker) {},
-            dragStart: function (index, location, marker) {}
+            drag: function(index, location, marker) {},
+            dragEnd: function(index, location, marker) {},
+            dragStart: function(index, location, marker) {}
         };
 
         //default menu types
@@ -257,7 +257,7 @@
     Maplace.prototype.controls = {};
 
     //initialize google map object
-    Maplace.prototype.create_objMap = function () {
+    Maplace.prototype.create_objMap = function() {
         var self = this,
             count = 0,
             i;
@@ -314,7 +314,7 @@
     };
 
     //adds markers to the map
-    Maplace.prototype.add_markers_to_objMap = function () {
+    Maplace.prototype.add_markers_to_objMap = function() {
         var a,
             point,
             type = this.o.type || 'marker';
@@ -334,7 +334,7 @@
     };
 
     //create the main object point
-    Maplace.prototype.create_objPoint = function (index) {
+    Maplace.prototype.create_objPoint = function(index) {
         var point = $.extend({}, this.o.locations[index]),
             visibility = point.visible === undefined ? undefined : point.visible;
 
@@ -361,7 +361,7 @@
     };
 
     //create the main object circle
-    Maplace.prototype.create_objCircle = function (point) {
+    Maplace.prototype.create_objCircle = function(point) {
         var def_stroke_opz,
             def_circle_opz,
             circle;
@@ -384,10 +384,10 @@
     };
 
     //create the main object point
-    Maplace.prototype.add_markerEv = function (index, point, marker) {
+    Maplace.prototype.add_markerEv = function(index, point, marker) {
         var self = this;
 
-        google.maps.event.addListener(marker, 'click', function (ev) {
+        google.maps.event.addListener(marker, 'click', function(ev) {
             self.o.beforeShow(index, point, marker);
 
             //show infowindow?
@@ -418,10 +418,10 @@
     };
 
     //add events to circles objs
-    Maplace.prototype.add_circleEv = function (index, circle, marker) {
+    Maplace.prototype.add_circleEv = function(index, circle, marker) {
         var self = this;
 
-        google.maps.event.addListener(marker, 'click', function () {
+        google.maps.event.addListener(marker, 'click', function() {
             self.ViewOnMap(index + 1);
         });
 
@@ -439,10 +439,10 @@
     };
 
     //add drag events
-    Maplace.prototype.add_dragEv = function (index, obj, marker) {
+    Maplace.prototype.add_dragEv = function(index, obj, marker) {
         var self = this;
 
-        google.maps.event.addListener(marker, 'drag', function (ev) {
+        google.maps.event.addListener(marker, 'drag', function(ev) {
             var pos,
                 extraType;
 
@@ -472,9 +472,9 @@
                     arr = [],
                     i = 0;
 
-                for(; i < pathArray.length; ++i) {
-                    arr[i] = (index === i)
-                        ? new google.maps.LatLng(pos.lat(), pos.lng())
+                for (; i < pathArray.length; ++i) {
+                    arr[i] = (index === i) ?
+                        new google.maps.LatLng(pos.lat(), pos.lng())
                         : new google.maps.LatLng(pathArray[i].lat(), pathArray[i].lng());
                 }
 
@@ -505,7 +505,7 @@
     };
 
     //add events to poly objs
-    Maplace.prototype.add_polyEv = function (typeName) {
+    Maplace.prototype.add_polyEv = function(typeName) {
         var self = this;
 
         google.maps.event.addListener(this[typeName].getPath(), 'set_at', function(index, obj) {
@@ -523,7 +523,7 @@
     Maplace.prototype.create = {
 
         //single marker
-        marker: function (index, point, marker) {
+        marker: function(index, point, marker) {
             var self = this,
                 circle;
 
@@ -561,7 +561,7 @@
 
 
         //circle mode
-        circle: function () {
+        circle: function() {
             var self = this,
                 a,
                 point,
@@ -593,7 +593,7 @@
 
 
         //polyline mode
-        polyline: function () {
+        polyline: function() {
             var self = this,
                 a,
                 point,
@@ -613,8 +613,8 @@
                 stroke.path.push(point.position);
             }
 
-            this.Polyline
-                ? this.Polyline.setOptions(stroke)
+            this.Polyline ?
+                this.Polyline.setOptions(stroke)
                 : this.Polyline = new google.maps.Polyline(stroke);
 
             this.add_polyEv('Polyline');
@@ -622,7 +622,7 @@
 
 
         //polygon mode
-        polygon: function () {
+        polygon: function() {
             var self = this,
                 a,
                 point,
@@ -642,11 +642,11 @@
                 stroke.path.push(point.position);
             }
 
-            this.Polygon
-                ? this.Polygon.setOptions(stroke)
+            this.Polygon ?
+                this.Polygon.setOptions(stroke)
                 : this.Polygon = new google.maps.Polygon(stroke);
 
-            google.maps.event.addListener(this.Polygon, 'click', function (obj) {
+            google.maps.event.addListener(this.Polygon, 'click', function(obj) {
                 self.o.onPolygonClick(obj);
             });
 
@@ -655,18 +655,18 @@
 
 
         //fusion tables
-        fusion: function () {
+        fusion: function() {
             this.o.fusion_options.styles = [this.o.stroke_options];
             this.o.fusion_options.map = this.oMap;
 
-            this.Fusion
-                ? this.Fusion.setOptions(this.o.fusion_options)
+            this.Fusion ?
+                this.Fusion.setOptions(this.o.fusion_options)
                 : this.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
         },
 
 
         //directions mode
-        directions: function () {
+        directions: function() {
             var self = this,
                 a,
                 point,
@@ -705,9 +705,9 @@
             this.o.directions_options.waypoints = waypoints;
 
             this.directionsService || (this.directionsService = new google.maps.DirectionsService());
-            this.directionsDisplay
-                ? this.directionsDisplay.setOptions({ draggable: this.o.draggable })
-                : this.directionsDisplay = new google.maps.DirectionsRenderer({ draggable: this.o.draggable });
+            this.directionsDisplay ?
+                this.directionsDisplay.setOptions({draggable: this.o.draggable})
+                : this.directionsDisplay = new google.maps.DirectionsRenderer({draggable: this.o.draggable});
 
             this.directionsDisplay.setMap(this.oMap);
 
@@ -718,13 +718,13 @@
             }
 
             if (this.o.draggable) {
-                google.maps.event.addListener(this.directionsDisplay, 'directions_changed', function () {
+                google.maps.event.addListener(this.directionsDisplay, 'directions_changed', function() {
                     distance = self.compute_distance(self.directionsDisplay.directions);
                     self.o.afterRoute(distance);
                 });
             }
 
-            this.directionsService.route(this.o.directions_options, function (result, status) {
+            this.directionsService.route(this.o.directions_options, function(result, status) {
                 //directions found
                 if (status === google.maps.DirectionsStatus.OK) {
                     distance = self.compute_distance(result);
@@ -736,7 +736,7 @@
     };
 
     //route distance
-    Maplace.prototype.compute_distance = function (result) {
+    Maplace.prototype.compute_distance = function(result) {
         var total = 0,
             i,
             myroute = result.routes[0],
@@ -752,7 +752,7 @@
     //wrapper for the infowindow types
     Maplace.prototype.type_to_open = {
         //google default infowindow
-        bubble: function (location) {
+        bubble: function(location) {
             this.infowindow = new google.maps.InfoWindow({
                 content: location.html || ''
             });
@@ -760,7 +760,7 @@
     };
 
     //open the infowindow
-    Maplace.prototype.open_infowindow = function (index, marker, ev) {
+    Maplace.prototype.open_infowindow = function(index, marker, ev) {
         //close if any open
         this.CloseInfoWindow();
         var point = this.o.locations[index],
@@ -776,7 +776,7 @@
     };
 
     //gets the html for the menu
-    Maplace.prototype.get_html_controls = function () {
+    Maplace.prototype.get_html_controls = function() {
         if (this.controls[this.o.controls_type] && this.controls[this.o.controls_type].getHtml) {
             this.current_control = this.controls[this.o.controls_type];
 
@@ -786,7 +786,7 @@
     };
 
     //creates the controls menu
-    Maplace.prototype.generate_controls = function () {
+    Maplace.prototype.generate_controls = function() {
         //append menu on the div container
         if (!this.o.controls_on_map) {
             this.controls_wrapper.empty();
@@ -797,7 +797,7 @@
         //else
         //controls in map
         var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>')
-            .css(this.o.controls_applycss ? { margin: '5px' } : {}),
+            .css(this.o.controls_applycss ? {margin: '5px'} : {}),
 
             inner = $(this.get_html_controls()).css(this.o.controls_applycss ? {
                 background: '#fff',
@@ -817,7 +817,7 @@
     };
 
     //resets obj map, markers, bounds, listeners, controllers
-    Maplace.prototype.init_map = function () {
+    Maplace.prototype.init_map = function() {
         var self = this;
 
         this.Polyline && this.Polyline.setMap(null);
@@ -848,7 +848,7 @@
         this.circles = [];
 
         if (this.o.controls_on_map && this.oMap.controls) {
-            this.oMap.controls[this.o.controls_position].forEach(function (element, index) {
+            this.oMap.controls[this.o.controls_position].forEach(function(element, index) {
                 try {
                     self.oMap.controls[this.o.controls_position].removeAt(index);
                 } catch (err) {
@@ -861,7 +861,7 @@
     };
 
     //perform the first view of the map
-    Maplace.prototype.perform_load = function () {
+    Maplace.prototype.perform_load = function() {
         //one location
         if (this.ln === 1) {
             if (this.o.map_options.set_center) {
@@ -906,7 +906,7 @@
         }
     };
 
-    Maplace.prototype.debug = function (code, msg) {
+    Maplace.prototype.debug = function(code, msg) {
         this.o.debug && console.log(code, msg);
         return this;
     };
@@ -917,7 +917,7 @@
 
 
     //adds a custom menu to the class
-    Maplace.prototype.AddControl = function (name, func) {
+    Maplace.prototype.AddControl = function(name, func) {
         if (!name || !func) {
             self.debug('AddControl', 'Missing "name" and "func" callback.');
             return false;
@@ -927,7 +927,7 @@
     };
 
     //close the infowindow
-    Maplace.prototype.CloseInfoWindow = function () {
+    Maplace.prototype.CloseInfoWindow = function() {
         if (this.infowindow && (this.current_index || this.current_index === 0)) {
             this.o.beforeCloseInfowindow(this.current_index, this.o.locations[this.current_index]);
             this.infowindow.close();
@@ -938,7 +938,7 @@
     };
 
     //checks if a location has to be in menu
-    Maplace.prototype.ShowOnMenu = function (index) {
+    Maplace.prototype.ShowOnMenu = function(index) {
         if (index === this.view_all_key && this.o.view_all && this.ln > 1) {
             return true;
         }
@@ -955,7 +955,7 @@
     };
 
     //triggers to show a location in map
-    Maplace.prototype.ViewOnMap = function (index) {
+    Maplace.prototype.ViewOnMap = function(index) {
         //view all
         if (index === this.view_all_key) {
             this.o.beforeViewAll();
@@ -982,18 +982,18 @@
     };
 
     //replace current locations
-    Maplace.prototype.SetLocations = function (locs, reload) {
+    Maplace.prototype.SetLocations = function(locs, reload) {
         this.o.locations = locs;
         reload && this.Load();
         return this;
     };
 
     //adds one or more locations to the end of the array
-    Maplace.prototype.AddLocations = function (locs, reload) {
+    Maplace.prototype.AddLocations = function(locs, reload) {
         var self = this;
 
         if ($.isArray(locs)) {
-            $.each(locs, function (index, value) {
+            $.each(locs, function(index, value) {
                 self.o.locations.push(value);
             });
         }
@@ -1007,7 +1007,7 @@
     };
 
     //adds a location at the specific index
-    Maplace.prototype.AddLocation = function (location, index, reload) {
+    Maplace.prototype.AddLocation = function(location, index, reload) {
         var self = this;
 
         if ($.isPlainObject(location)) {
@@ -1019,14 +1019,14 @@
     };
 
     //remove one or more locations
-    Maplace.prototype.RemoveLocations = function (locs, reload) {
+    Maplace.prototype.RemoveLocations = function(locs, reload) {
         var self = this,
             k = 0;
 
         if ($.isArray(locs)) {
-            $.each(locs, function (index, value) {
+            $.each(locs, function(index, value) {
                 if ((value - k) < self.ln) {
-                    self.o.locations.splice(value-k, 1);
+                    self.o.locations.splice(value - k, 1);
                 }
                 k++;
             });
@@ -1041,12 +1041,12 @@
     };
 
     //check if already initialized with a Load()
-    Maplace.prototype.Loaded = function () {
+    Maplace.prototype.Loaded = function() {
         return this.loaded;
     };
 
     //loads the options
-    Maplace.prototype._init = function () {
+    Maplace.prototype._init = function() {
         //store the locations length
         this.ln = this.o.locations.length;
 
@@ -1067,7 +1067,7 @@
     };
 
     //creates the map and menu
-    Maplace.prototype.Load = function (args) {
+    Maplace.prototype.Load = function(args) {
         $.extend(true, this.o, args);
         args && args.locations && (this.o.locations = args.locations);
         this._init();
@@ -1092,12 +1092,12 @@
 
         //first call
         if (!this.loaded) {
-            google.maps.event.addListenerOnce(this.oMap, 'idle', function () {
+            google.maps.event.addListenerOnce(this.oMap, 'idle', function() {
                 self.perform_load();
             });
 
             //adapt the div size on resize
-            google.maps.event.addListener(this.oMap, 'resize', function () {
+            google.maps.event.addListener(this.oMap, 'resize', function() {
                 self.canvas_map.css({
                     width: self.map_div.width(),
                     height: self.map_div.height()
@@ -1105,19 +1105,16 @@
             });
 
             //add custom listeners
-            var i, callback = function (event, listener, map) {
+            var i, callback = function(event, listener, map) {
                 listener(map, event);
             };
 
             for (i in this.o.listeners) {
-                var map = this.oMap,
-                    myListener = this.o.listeners[i];
-
                 if (this.o.listeners.hasOwnProperty(i)) {
                     google.maps.event.addListener(
                         this.oMap,
                         i,
-                        callback(event, myListener, map)
+                        callback(event, this.o.listeners[i], this.oMap)
                     );
                 }
             }
