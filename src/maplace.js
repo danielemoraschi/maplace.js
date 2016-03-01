@@ -1092,12 +1092,12 @@
 
         //first call
         if (!this.loaded) {
-            google.maps.event.addListenerOnce(this.oMap, 'idle', function() {
+            this.oMap.addListenerOnce('idle', function() {
                 self.perform_load();
             });
 
             //adapt the div size on resize
-            google.maps.event.addListener(this.oMap, 'resize', function() {
+            this.oMap.addListener('resize', function() {
                 self.canvas_map.css({
                     width: self.map_div.width(),
                     height: self.map_div.height()
@@ -1105,19 +1105,12 @@
             });
 
             //add custom listeners
-            var i, callback = function(event, listener, map) {
-                listener(map, event);
-            };
-
-            for (i in this.o.listeners) {
+            for (var i in this.o.listeners) {
                 if (this.o.listeners.hasOwnProperty(i)) {
-                    google.maps.event.addListener(
-                        this.oMap,
-                        i,
-                        callback(event, this.o.listeners[i], this.oMap)
-                    );
+                    this.oMap.addListener(i, this.o.listeners[i]);
                 }
             }
+
         //all other calls
         } else {
             this.perform_load();
