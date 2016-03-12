@@ -29,13 +29,18 @@
     }
 
     //Just the map
-    var simple = new Maplace().Load();
+    var simple = new Maplace();
 
     //Simple Example, dropdown on map
     var dropdown = new Maplace({
       map_div: '#gmap-2',
       controls_title: 'Choose a location:',
-      locations: LocsA
+      locations: LocsA,
+      listeners: {
+          click: function(map, event) {
+              alert('That was a click!');
+          }
+      }
     });
 
     //Simple Example, menu on map

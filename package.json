@@ -1,6 +1,6 @@
 {
   "name": "maplace-js",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "description": "Google Maps jQuery plugin and markers helper",
   "homepage": "https://github.com/danielemoraschi/maplace.js",
   "main": "dist/maplace.min.js",
@@ -47,6 +47,7 @@
     "grunt-contrib-uglify": "~0.11.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-contrib-jshint": "~0.11.3",
-    "grunt-contrib-copy": "~0.8.2"
+    "grunt-contrib-copy": "~0.8.2",
+    "grunt-jscs": "~2.5.0"
   }
 }

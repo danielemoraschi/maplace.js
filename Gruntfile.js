@@ -26,6 +26,12 @@ module.exports = function (grunt) {
                 preserveComments: /(?:^!|@(?:license|preserve))/
             }
         },
+        'jscs': {
+			main: 'src/*.js',
+            options: {
+                config: '.jscsrc'
+            }
+		},
         'copy': {
             webfiles: {
                 expand: true,
@@ -121,6 +127,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-jscs');
 
     // Tasks.
     grunt.registerTask('default', ['all']);
