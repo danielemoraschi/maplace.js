@@ -19,9 +19,9 @@
     <meta property="fb:admins" content="1508317783">
     <meta property="fb:app_id" content="431057636976449">
 
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600|Oxygen:700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="website/stylesheets/libs.min.css?v=0.2.5">
-    <link rel="stylesheet" href="website/stylesheets/app.css?v=0.2.5">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600|Oxygen:700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="website/stylesheets/libs.min.css?v=0.2.7">
+    <link rel="stylesheet" href="website/stylesheets/app.css?v=0.2.7">
 
     <script type="text/javascript">
         var _gaq = _gaq || []; _gaq.push(['_setAccount', 'UA-3593281-30']); _gaq.push(['_trackPageview']); _gaq.push(['_trackPageLoadTime']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();
@@ -75,7 +75,7 @@
             </noscript>
             <p>
                 Maplace.js helps you to embed <strong>Google Maps</strong> into your website, quickly <strong>create markers</strong> and controls menu for the <strong>locations on map</strong>.<br/>
-                It requires <a href="http://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> so you need to have both in your page.
+                It requires <a href="https://jquery.com/" target="_blank">jQuery</a> and <a href="https://developers.google.com/maps/documentation/javascript/libraries" target="_blank">Google Maps API v3</a> so you need to have both in your page.
             </p>
             <h2>Features</h2>
             <ul>
@@ -88,7 +88,7 @@
             </ul>
             <div class="row">
                 <div class="four columns center">
-                    <h2>Installation [v0.2.5]</h2>
+                    <h2>Installation [v0.2.7]</h2>
                     <div class="panel">
                         <div class="row">
                             <div class="two columns mobile-one">
@@ -120,9 +120,9 @@
             <dl class="tabs">
                 <dd class="active "><a href="#Examples">Examples</a></dd>
                 <dd><a href="#Setup">Setup</a></dd>
-                <dd><a href="#Docs">Docs</a></dd>
+                <dd><a href="#Docs">Documentation</a></dd>
                 <dd><a href="#Locationsdocs">Locations Docs</a></dd>
-                <dd><a href="#Menudocs">Menu Docs</a></dd>
+                <dd><a href="#Menudocs">Adding new menu types</a></dd>
                 <dd style="float:right"><a href="#changelog">Change log</a></dd>
             </dl>
 
@@ -182,7 +182,12 @@ maplace.Load();
 new Maplace({
     locations: LocsA,
     map_div: '#gmap-dropdown',
-    controls_title: 'Choose a location:'
+    controls_title: 'Choose a location:',
+    listeners: {
+        click: function(map, event) {
+            alert('That was a click!');
+        }
+    }
 }).Load();
 
 //ul list example
@@ -717,9 +722,9 @@ $('#load_bigdata').click(function(e) {
 <h2>Requirements</h2>
 <p>To use Maplace.js, you need to include jQuery, the Google API v3, and the plugin file.</p>
 <pre class="prettyprint">
-&lt;script src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.22&key=YOUR_API_KEY"&gt;
+&lt;script src="https://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.22&key=YOUR_API_KEY"&gt;
 &lt;/script&gt;
-&lt;script src="http://code.jquery.com/jquery-2.1.4.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://code.jquery.com/jquery-2.1.4.min.js"&gt;&lt;/script&gt;
 &lt;script src="maplace.min.js"&gt;&lt;/script&gt;
 </pre>
 <br/>
@@ -1775,6 +1780,14 @@ maplace.Load({
                 <li id="changelogTab">
                     <section class="row">
     <div class="four columns mobile-one">
+        <h3>v0.2.7</h3>
+        <p>
+            <ul class="normal-list">
+                <li>Fixed <a href="https://github.com/danielemoraschi/maplace.js/issues/132">#132</a></li>
+                <li>Fixed <a href="https://github.com/danielemoraschi/maplace.js/issues/127">#127</a></li>
+            </ul>
+        </p>
+
         <h3>v0.2.0</h3>
         <p>
             <ul class="normal-list">
@@ -1833,14 +1846,14 @@ maplace.Load({
     </div>
 
     <script src="https://maps.google.com/maps/api/js?sensor=false&amp;libraries=geometry&amp;v=3.22"></script>
-    <script src="node_modules/jquery/dist/jquery.min.js?v=0.2.5"></script>
-    <script src="website/javascripts/libs.min.js?v=0.2.5"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js?v=0.2.7"></script>
+    <script src="website/javascripts/libs.min.js?v=0.2.7"></script>
 
-    <script src="dist/maplace.min.js?v=0.2.5"></script>
+    <script src="dist/maplace.min.js?v=0.2.7"></script>
 
-    <script src="website/data/points.js?v=0.2.5"></script>
-    <script src="website/data/4k.js?v=0.2.5"></script>
-    <script src="website/data/styles.js?v=0.2.5"></script>
-    <script src="website/javascripts/app.js?v=0.2.5"></script>
+    <script src="website/data/points.js?v=0.2.7"></script>
+    <script src="website/data/4k.js?v=0.2.7"></script>
+    <script src="website/data/styles.js?v=0.2.7"></script>
+    <script src="website/javascripts/app.js?v=0.2.7"></script>
 </body>
 </html>
