@@ -530,6 +530,10 @@ Maplace.js is released under an MIT License.
 
 ## Changelog
 
+**v0.2.7**
+- Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/132">#132</a>
+- Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/127">#127</a>
+
 **v0.2.0**
 - Updated to jQuery ~2.1
 - Source directory for the build moved from "src" to "dist"

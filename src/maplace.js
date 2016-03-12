@@ -1092,22 +1092,14 @@
 
         //first call
         if (!this.loaded) {
-            this.oMap.addListenerOnce('idle', function() {
+            google.maps.event.addListenerOnce(this.oMap, 'idle', function() {
                 self.perform_load();
-            });
-
-            //adapt the div size on resize
-            this.oMap.addListener('resize', function() {
-                self.canvas_map.css({
-                    width: self.map_div.width(),
-                    height: self.map_div.height()
-                });
             });
 
             //add custom listeners
             for (var i in this.o.listeners) {
                 if (this.o.listeners.hasOwnProperty(i)) {
-                    this.oMap.addListener(i, this.o.listeners[i]);
+                    google.maps.event.addListener(this.oMap, i, this.o.listeners[i]);
                 }
             }
 
