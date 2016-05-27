@@ -766,6 +766,7 @@
 
     //open the infowindow
     Maplace.prototype.open_infowindow = function(index, marker, ev) {
+        this.CloseInfoWindow();
         var point = this.o.locations[index],
             type = this.o.infowindow_type;
 
@@ -865,6 +866,7 @@
 
     //perform the first view of the map
     Maplace.prototype.perform_load = function() {
+        this.CloseInfoWindow();
         //one location
         if (this.ln === 1) {
             if (this.o.map_options.set_center) {
