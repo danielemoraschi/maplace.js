@@ -753,16 +753,18 @@
     Maplace.prototype.type_to_open = {
         //google default infowindow
         bubble: function(location) {
+            var self = this;
             this.infowindow = new google.maps.InfoWindow({
                 content: location.html || ''
+            });
+            google.maps.event.addListener(this.infowindow, 'closeclick', function(){
+                self.CloseInfoWindow();
             });
         }
     };
 
     //open the infowindow
     Maplace.prototype.open_infowindow = function(index, marker, ev) {
-        //close if any open
-        this.CloseInfoWindow();
         var point = this.o.locations[index],
             type = this.o.infowindow_type;
 
@@ -964,7 +966,6 @@
                 this.current_control.activateCurrent.apply(this, [index]);
             }
             this.oMap.fitBounds(this.oBounds);
-            this.CloseInfoWindow();
             this.o.afterViewAll();
 
         //specific location
