@@ -388,6 +388,7 @@
         var self = this;
 
         google.maps.event.addListener(marker, 'click', function(ev) {
+            self.CloseInfoWindow();
             self.o.beforeShow(index, point, marker);
 
             //show infowindow?
