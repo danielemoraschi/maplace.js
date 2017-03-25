@@ -137,7 +137,7 @@
       var el = $('#g'+index);
       $('#mixed li').removeClass('active');
       $(el).parent().addClass('active');
-      $.getJSON('website/data/ajax.php', { type: index }, function(data) {
+      $.getJSON('http://maplacejs.com/website/data/ajax.php', { type: index }, function(data) {
         mixed.Load({
           locations: data.locations,
           view_all_text: data.title,
