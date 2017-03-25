@@ -813,6 +813,7 @@
         cntr.append(inner);
 
         //attach controls
+        this.oMap.controls[this.o.controls_position].clear();
         this.oMap.controls[this.o.controls_position].push(cntr.get(0));
     };
 
