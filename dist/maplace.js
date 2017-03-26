@@ -6,7 +6,7 @@
 * For all details and documentation:
 * http://maplacejs.com
 *
-* @version  0.2.7
+* @version  0.2.8
 * @preserve
 */
 
@@ -142,7 +142,7 @@
     * @constructor
     */
     function Maplace(args) {
-        this.VERSION = '0.2.7';
+        this.VERSION = '0.2.8';
         this.loaded = false;
         this.markers = [];
         this.circles = [];
@@ -753,9 +753,11 @@
     Maplace.prototype.type_to_open = {
         //google default infowindow
         bubble: function(location) {
-            this.infowindow = new google.maps.InfoWindow({
-                content: location.html || ''
-            });
+            var infoWindow = { content: location.html || '' };
+            if (location.infoWindowMaxWidth) {
+                infoWindow.maxWidth = location.infoWindowMaxWidth;
+            }
+            this.infowindow = new google.maps.InfoWindow(infoWindow);
         }
     };
 
@@ -813,6 +815,7 @@
         cntr.append(inner);
 
         //attach controls
+        this.oMap.controls[this.o.controls_position].clear();
         this.oMap.controls[this.o.controls_position].push(cntr.get(0));
     };
 
