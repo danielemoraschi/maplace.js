@@ -530,6 +530,10 @@ Maplace.js is released under an MIT License.
 
 ## Changelog
 
+**v0.2.8**
+- Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/161">#161</a>
+- Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/160">#160</a>
+
 **v0.2.7**
 - Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/132">#132</a>
 - Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/127">#127</a>

@@ -753,9 +753,11 @@
     Maplace.prototype.type_to_open = {
         //google default infowindow
         bubble: function(location) {
-            this.infowindow = new google.maps.InfoWindow({
-                content: location.html || ''
-            });
+            var infoWindow = { content: location.html || '' };
+            if (location.infoWindowMaxWidth) {
+                infoWindow.maxWidth = location.infoWindowMaxWidth;
+            }
+            this.infowindow = new google.maps.InfoWindow(infoWindow);
         }
     };
 
@@ -813,6 +815,7 @@
         cntr.append(inner);
 
         //attach controls
+        this.oMap.controls[this.o.controls_position].clear();
         this.oMap.controls[this.o.controls_position].push(cntr.get(0));
     };
 
