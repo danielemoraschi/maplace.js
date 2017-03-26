@@ -530,6 +530,10 @@ Maplace.js is released under an MIT License.
 
 ## Changelog
 
+**v0.2.9**
+- Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/137">#137</a>
+- All event functions are now scoped to the current Maplace instance object
+
 **v0.2.8**
 - Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/161">#161</a>
 - Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/160">#160</a>
