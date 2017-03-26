@@ -525,12 +525,9 @@
 
         //single marker
         marker: function(index, point, marker) {
-            var self = this,
-                circle;
-
             //allow mix circles with markers
             if (point.type === 'circle' && !marker) {
-                circle = this.create_objCircle(point);
+                var circle = this.create_objCircle(point);
 
                 if (!point.visible) {
                     circle.draggable = point.draggable;
@@ -555,7 +552,7 @@
             //store the new marker
             this.markers[index] = marker;
 
-            this.o.afterCreateMarker.call(self, index, point, marker);
+            this.o.afterCreateMarker.call(this, index, point, marker);
 
             return marker;
         },
