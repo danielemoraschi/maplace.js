@@ -520,13 +520,13 @@
 
     //trigger events to poly objs
     Maplace.prototype.trigger_polyEv = function(typeName, index, obj) {
-        var item = self[typeName].getPath().getAt(index),
+        var item = this[typeName].getPath().getAt(index),
             newPos = new google.maps.LatLng(item.lat(), item.lng());
 
-        self.markers[index] && self.markers[index].setPosition(newPos);
-        self.circles[index] && self.circles[index].setCenter(newPos);
+        this.markers[index] && this.markers[index].setPosition(newPos);
+        this.circles[index] && this.circles[index].setCenter(newPos);
 
-        self.o['on' + typeName + 'Changed'](index, obj, self[typeName].getPath().getArray());
+        this.o['on' + typeName + 'Changed'](index, obj, this[typeName].getPath().getArray());
     };
 
     //wrapper for the map types
