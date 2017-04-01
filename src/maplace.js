@@ -726,8 +726,9 @@
 
             if (this.o.draggable) {
                 google.maps.event.addListener(this.directionsDisplay, 'directions_changed', function() {
+                    var result = self.directionsDisplay.getDirections();
                     distance = self.compute_distance(self.directionsDisplay.directions);
-                    self.o.afterRoute.call(self, distance);
+                    self.o.afterRoute.call(self, distance, result.status, result);
                 });
             }
 
