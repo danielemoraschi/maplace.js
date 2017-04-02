@@ -530,6 +530,10 @@ Maplace.js is released under an MIT License.
 
 ## Changelog
 
+**v0.2.10**
+- Fixed `afterRoute` not passing status or location with draggable <a href="https://github.com/danielemoraschi/maplace.js/issues/147">#147</a> and <a href="https://github.com/danielemoraschi/maplace.js/issues/139">#139</a>
+- Added listener for 'insert_at' polygon events <a href="https://github.com/danielemoraschi/maplace.js/issues/164">#164</a>
+
 **v0.2.9**
 - Fixed <a target="_blank" href="https://github.com/danielemoraschi/maplace.js/issues/137">#137</a>
 - All event functions are now scoped to the current Maplace instance object

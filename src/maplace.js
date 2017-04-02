@@ -510,14 +510,23 @@
         var self = this;
 
         google.maps.event.addListener(this[typeName].getPath(), 'set_at', function(index, obj) {
-            var item = self[typeName].getPath().getAt(index),
-                newPos = new google.maps.LatLng(item.lat(), item.lng());
-
-            self.markers[index] && self.markers[index].setPosition(newPos);
-            self.circles[index] && self.circles[index].setCenter(newPos);
-
-            self.o['on' + typeName + 'Changed'](index, obj, self[typeName].getPath().getArray());
+            self.trigger_polyEv(typeName, index, obj);
         });
+
+        google.maps.event.addListener(this[typeName].getPath(), 'insert_at', function(index, obj) {
+            self.trigger_polyEv(typeName, index, obj);
+        });
+    };
+
+    //trigger events to poly objs
+    Maplace.prototype.trigger_polyEv = function(typeName, index, obj) {
+        var item = this[typeName].getPath().getAt(index),
+            newPos = new google.maps.LatLng(item.lat(), item.lng());
+
+        this.markers[index] && this.markers[index].setPosition(newPos);
+        this.circles[index] && this.circles[index].setCenter(newPos);
+
+        this.o['on' + typeName + 'Changed'](index, obj, this[typeName].getPath().getArray());
     };
 
     //wrapper for the map types
@@ -717,8 +726,9 @@
 
             if (this.o.draggable) {
                 google.maps.event.addListener(this.directionsDisplay, 'directions_changed', function() {
+                    var result = self.directionsDisplay.getDirections();
                     distance = self.compute_distance(self.directionsDisplay.directions);
-                    self.o.afterRoute.call(self, distance);
+                    self.o.afterRoute.call(self, distance, result.status, result);
                 });
             }
 
