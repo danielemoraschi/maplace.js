@@ -504,8 +504,28 @@ Docs: <a href="https://developers.google.com/maps/documentation/javascript/event
                         This event is fired when the drag event starts.
                     </td>
                 </tr>
-
             </tbody>
         </table>
+
+        <h2>Other</h2>
+        <table class="small twelve" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Solution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Manually trigger the 'resize' event on the object map</td>
+                    <td>
+<pre class="prettyprint">
+google.maps.event.trigger(maplaceObj.oMap, 'resize');
+</pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 </section>
