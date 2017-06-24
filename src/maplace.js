@@ -14,39 +14,39 @@
     if (typeof define === 'function' && define.amd) {
         define(['jquery'], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('jquery'));
+        module.exports = factory(require('jquery'), require('google'));
     } else {
-        root.Maplace = factory(root.jQuery);
+        root.Maplace = factory(root.jQuery, root.google);
     }
 
-}(this, function($) {
+}(this, function($, google) {
     'use strict';
 
-    var html_dropdown,
-        html_ullist;
-
     //dropdown menu type
-    html_dropdown = {
+    var html_dropdown = {
         activateCurrent: function(index) {
             this.html_element.find('select').val(index);
         },
 
         getHtml: function() {
-            var self = this,
-                html = '',
-                title,
-                a;
+            var self = this;
+            var html = '';
+            var title, a;
 
             if (this.ln > 1) {
-                html += '<select class="dropdown controls ' + this.o.controls_cssclass + '">';
+                html += '<select class="dropdown controls '
+                    + this.o.controls_cssclass + '">';
 
                 if (this.ShowOnMenu(this.view_all_key)) {
-                    html += '<option value="' + this.view_all_key + '">' + this.o.view_all_text + '</option>';
+                    html += '<option value="' + this.view_all_key + '">'
+                        + this.o.view_all_text + '</option>';
                 }
 
                 for (a = 0; a < this.ln; a += 1) {
                     if (this.ShowOnMenu(a)) {
-                        html += '<option value="' + (a + 1) + '">' + (this.o.locations[a].title || ('#' + (a + 1))) + '</option>';
+                        html += '<option value="' + (a + 1) + '">'
+                            + (this.o.locations[a].title || ('#' + (a + 1)))
+                            + '</option>';
                     }
                 }
                 html += '</select>';
@@ -58,14 +58,17 @@
 
             title = this.o.controls_title;
             if (this.o.controls_title) {
-                title = $('<div class="controls_title"></div>').css(this.o.controls_applycss ? {
-                    fontWeight: 'bold',
-                    fontSize: this.o.controls_on_map ? '12px' : 'inherit',
-                    padding: '3px 10px 5px 0'
-                } : {}).append(this.o.controls_title);
+                title = $('<div class="controls_title"></div>').css(
+                    this.o.controls_applycss ? {
+                        fontWeight: 'bold',
+                        fontSize: this.o.controls_on_map ? '12px' : 'inherit',
+                        padding: '3px 10px 5px 0'
+                    } : {})
+                .append(this.o.controls_title);
             }
 
-            this.html_element = $('<div class="wrap_controls"></div>').append(title).append(html);
+            this.html_element = $('<div class="wrap_controls"></div>')
+                .append(title).append(html);
 
             return this.html_element;
         }
@@ -73,12 +76,16 @@
 
 
     //ul list menu type
-    html_ullist = {
+    var html_ullist = {
         html_a: function(i, hash, ttl) {
-            var self = this,
-                index = hash || (i + 1),
-                title = ttl || this.o.locations[i].title,
-                el_a = $('<a data-load="' + index + '" id="ullist_a_' + index + '" href="#' + index + '" title="' + title + '"><span>' + (title || ('#' + (i + 1))) + '</span></a>');
+            var self = this;
+            var index = hash || (i + 1);
+            var title = ttl || this.o.locations[i].title;
+            var el_a = $(
+                    '<a data-load="' + index + '" id="ullist_a_'
+                    + index + '" href="#' + index + '" title="' + title
+                    + '"><span>' + (title || ('#' + (i + 1))) + '</span></a>'
+                );
 
             el_a.css(this.o.controls_applycss ? {
                 color: '#666',
@@ -103,33 +110,43 @@
         },
 
         getHtml: function() {
-            var html = $('<ul class=\'ullist controls ' + this.o.controls_cssclass + '\'></ul>').css(this.o.controls_applycss ? {
-                margin: 0,
-                padding: 0,
-                listStyleType: 'none'
-            } : {}),
-                title, a;
+            var title, a;
+            var html = $('<ul class=\'ullist controls ' + this.o.controls_cssclass + '\'></ul>')
+                .css(this.o.controls_applycss ? {
+                    margin: 0,
+                    padding: 0,
+                    listStyleType: 'none'
+                } : {});
 
             if (this.ShowOnMenu(this.view_all_key)) {
-                html.append($('<li></li>').append(html_ullist.html_a.call(this, false, this.view_all_key, this.o.view_all_text)));
+                html.append($('<li></li>').append(html_ullist.html_a.call(
+                    this,
+                    false,
+                    this.view_all_key, this.o.view_all_text)
+                ));
             }
 
             for (a = 0; a < this.ln; a++) {
                 if (this.ShowOnMenu(a)) {
-                    html.append($('<li></li>').append(html_ullist.html_a.call(this, a)));
+                    html.append($('<li></li>').append(
+                        html_ullist.html_a.call(this, a)
+                    ));
                 }
             }
 
             title = this.o.controls_title;
             if (this.o.controls_title) {
-                title = $('<div class="controls_title"></div>').css(this.o.controls_applycss ? {
-                    fontWeight: 'bold',
-                    padding: '3px 10px 5px 0',
-                    fontSize: this.o.controls_on_map ? '12px' : 'inherit'
-                } : {}).append(this.o.controls_title);
+                title = $('<div class="controls_title"></div>').css(
+                    this.o.controls_applycss ? {
+                        fontWeight: 'bold',
+                        padding: '3px 10px 5px 0',
+                        fontSize: this.o.controls_on_map ? '12px' : 'inherit'
+                    } : {})
+                .append(this.o.controls_title);
             }
 
-            this.html_element = $('<div class="wrap_controls"></div>').append(title).append(html);
+            this.html_element = $('<div class="wrap_controls"></div>')
+                .append(title).append(html);
 
             return this.html_element;
         }
@@ -152,7 +169,6 @@
         this.infowindow = null;
         this.maxZIndex = 0;
         this.ln = 0;
-        this.oMap = false;
         this.oBounds = null;
         this.map_div = null;
         this.canvas_map = null;
@@ -258,9 +274,9 @@
 
     //initialize google map object
     Maplace.prototype.create_objMap = function() {
-        var self = this,
-            count = 0,
-            i;
+        var self = this;
+        var count = 0;
+        var i;
 
         //if styled
         for (i in this.o.styles) {
@@ -271,7 +287,9 @@
                     };
                 }
                 count++;
-                this.o.map_options.mapTypeControlOptions.mapTypeIds.push('map_style_' + count);
+                this.o.map_options.mapTypeControlOptions.mapTypeIds.push(
+                    'map_style_' + count
+                );
             }
         }
 
@@ -289,10 +307,16 @@
                     height: '100%'
                 }).appendTo(this.map_div);
 
-                this.oMap = new google.maps.Map(this.canvas_map.get(0), this.o.map_options);
+                this.oMap = new google.maps.Map(
+                    this.canvas_map.get(0),
+                    this.o.map_options
+                );
 
             } catch (err) {
-                this.debug('create_objMap::' + this.map_div.selector, err.toString());
+                this.debug(
+                    'create_objMap::' + this.map_div.selector,
+                    err.toString()
+                );
             }
 
         //else loads the new optionsl
@@ -305,9 +329,12 @@
         for (i in this.o.styles) {
             if (this.o.styles.hasOwnProperty(i)) {
                 count++;
-                this.oMap.mapTypes.set('map_style_' + count, new google.maps.StyledMapType(this.o.styles[i], {
-                    name: i
-                }));
+                this.oMap.mapTypes.set(
+                    'map_style_' + count,
+                    new google.maps.StyledMapType(this.o.styles[i], {
+                        name: i
+                    })
+                );
                 this.oMap.setMapTypeId('map_style_' + count);
             }
         }
@@ -315,9 +342,8 @@
 
     //adds markers to the map
     Maplace.prototype.add_markers_to_objMap = function() {
-        var a,
-            point,
-            type = this.o.type || 'marker';
+        var a, point;
+        var type = this.o.type || 'marker';
 
         //switch how to display the locations
         switch (type) {
@@ -335,8 +361,8 @@
 
     //create the main object point
     Maplace.prototype.create_objPoint = function(index) {
-        var point = $.extend({}, this.o.locations[index]),
-            visibility = point.visible === undefined ? undefined : point.visible;
+        var point = $.extend({}, this.o.locations[index]);
+        var visibility = point.visible === undefined ? undefined : point.visible;
 
         !point.type && (point.type = this.o.type);
 
@@ -362,9 +388,7 @@
 
     //create the main object circle
     Maplace.prototype.create_objCircle = function(point) {
-        var def_stroke_opz,
-            def_circle_opz,
-            circle;
+        var def_stroke_opz, def_circle_opz, circle;
 
         circle = $.extend({}, point);
         def_stroke_opz = $.extend({}, this.o.stroke_options);
@@ -392,24 +416,24 @@
             self.o.beforeShow.call(self, index, point, marker);
 
             //show infowindow?
-            if (self.o.show_infowindows && (point.show_infowindow === false ? false : true)) {
+            if (self.o.show_infowindows && (point.show_infowindow !== false)) {
                 self.open_infowindow(index, marker, ev);
             }
 
             //pan and zoom the map
-            if (self.o.pan_on_click && (point.pan_on_click === false ? false : true)) {
+            if (self.o.pan_on_click && (point.pan_on_click !== false)) {
                 self.oMap.panTo(point.position);
                 point.zoom && self.oMap.setZoom(point.zoom);
             }
 
             //activate related menu link
-            if (self.current_control && self.o.generate_controls && self.current_control.activateCurrent) {
+            if (self.current_control && self.o.generate_controls
+                && self.current_control.activateCurrent) {
                 self.current_control.activateCurrent.call(self, index + 1);
             }
 
             //update current location index
             self.current_index = index;
-
             self.o.afterShow.call(self, index, point, marker);
         });
 
@@ -444,8 +468,7 @@
         var self = this;
 
         google.maps.event.addListener(marker, 'drag', function(ev) {
-            var pos,
-                extraType;
+            var pos, extraType;
 
             if (marker.getPosition) {
                 pos = marker.getPosition();
@@ -520,8 +543,8 @@
 
     //trigger events to poly objs
     Maplace.prototype.trigger_polyEv = function(typeName, index, obj) {
-        var item = this[typeName].getPath().getAt(index),
-            newPos = new google.maps.LatLng(item.lat(), item.lng());
+        var item = this[typeName].getPath().getAt(index);
+        var newPos = new google.maps.LatLng(item.lat(), item.lng());
 
         this.markers[index] && this.markers[index].setPosition(newPos);
         this.circles[index] && this.circles[index].setCenter(newPos);
@@ -531,7 +554,6 @@
 
     //wrapper for the map types
     Maplace.prototype.create = {
-
         //single marker
         marker: function(index, point, marker) {
             //allow mix circles with markers
@@ -569,11 +591,7 @@
 
         //circle mode
         circle: function() {
-            var self = this,
-                a,
-                point,
-                circle,
-                marker;
+            var a, point, circle, marker;
 
             for (a = 0; a < this.ln; a++) {
                 point = this.create_objPoint(a);
@@ -601,10 +619,8 @@
 
         //polyline mode
         polyline: function() {
-            var self = this,
-                a,
-                point,
-                stroke = $.extend({}, this.o.stroke_options);
+            var a, point;
+            var stroke = $.extend({}, this.o.stroke_options);
 
             stroke.path = [];
             stroke.draggable = this.o.draggable;
@@ -620,9 +636,13 @@
                 stroke.path.push(point.position);
             }
 
-            this.Polyline ?
-                this.Polyline.setOptions(stroke)
+            this.Polyline
+                ? this.Polyline.setOptions(stroke)
                 : this.Polyline = new google.maps.Polyline(stroke);
+
+            google.maps.event.addListener(this.Polyline, 'click', function(obj) {
+                self.o.onPolylineClick.call(self, obj);
+            });
 
             this.add_polyEv('Polyline');
         },
@@ -630,10 +650,9 @@
 
         //polygon mode
         polygon: function() {
-            var self = this,
-                a,
-                point,
-                stroke = $.extend({}, this.o.stroke_options);
+            var a, point;
+            var self = this;
+            var stroke = $.extend({}, this.o.stroke_options);
 
             stroke.path = [];
             stroke.draggable = this.o.draggable;
@@ -649,8 +668,8 @@
                 stroke.path.push(point.position);
             }
 
-            this.Polygon ?
-                this.Polygon.setOptions(stroke)
+            this.Polygon
+                ? this.Polygon.setOptions(stroke)
                 : this.Polygon = new google.maps.Polygon(stroke);
 
             google.maps.event.addListener(this.Polygon, 'click', function(obj) {
@@ -674,14 +693,10 @@
 
         //directions mode
         directions: function() {
-            var self = this,
-                a,
-                point,
-                stopover,
-                origin,
-                destination,
-                waypoints = [],
-                distance = 0;
+            var a, point, stopover, origin, destination;
+            var self = this;
+            var waypoints = [];
+            var distance = 0;
 
             //create the waypoints and location marker
             for (a = 0; a < this.ln; a++) {
@@ -697,7 +712,7 @@
 
                 //waypoints in the middle
                 } else {
-                    stopover = this.o.locations[a].stopover === true ? true : false;
+                    stopover = this.o.locations[a].stopover === true;
                     waypoints.push({
                         location: point.position,
                         stopover: stopover
@@ -745,10 +760,10 @@
 
     //route distance
     Maplace.prototype.compute_distance = function(result) {
-        var total = 0,
-            i,
-            myroute = result.routes[0],
-            rlen = myroute.legs.length;
+        var i;
+        var total = 0;
+        var myroute = result.routes[0];
+        var rlen = myroute.legs.length;
 
         for (i = 0; i < rlen; i++) {
             total += myroute.legs[i].distance.value;
@@ -761,11 +776,13 @@
     Maplace.prototype.type_to_open = {
         //google default infowindow
         bubble: function(location) {
-            var self = this,
-                infoWindow = { content: location.html || '' };
+            var self = this;
+            var infoWindow = { content: location.html || '' };
+
             if (location.infoWindowMaxWidth) {
                 infoWindow.maxWidth = location.infoWindowMaxWidth;
             }
+
             this.infowindow = new google.maps.InfoWindow(infoWindow);
             google.maps.event.addListener(this.infowindow, 'closeclick', function(){
                 self.CloseInfoWindow();
@@ -775,8 +792,8 @@
 
     //open the infowindow
     Maplace.prototype.open_infowindow = function(index, marker, ev) {
-        var point = this.o.locations[index],
-            type = this.o.infowindow_type;
+        var point = this.o.locations[index];
+        var type = this.o.infowindow_type;
 
         //show if content and valid infowindow type provided
         if (point.html && this.type_to_open[type]) {
@@ -832,7 +849,6 @@
     //resets obj map, markers, bounds, listeners, controllers
     Maplace.prototype.init_map = function() {
         var self = this;
-
         this.Polyline && this.Polyline.setMap(null);
         this.Polygon && this.Polygon.setMap(null);
         this.Fusion && this.Fusion.setMap(null);
@@ -863,7 +879,7 @@
         if (this.o.controls_on_map && this.oMap.controls) {
             this.oMap.controls[this.o.controls_position].forEach(function(element, index) {
                 try {
-                    self.oMap.controls[this.o.controls_position].removeAt(index);
+                    self.oMap.controls[self.o.controls_position].removeAt(index);
                 } catch (err) {
                     self.debug('init_map::removeAt', err.stack);
                 }
@@ -944,10 +960,19 @@
     //close the infowindow
     Maplace.prototype.CloseInfoWindow = function() {
         if (this.infowindow && (this.current_index || this.current_index === 0)) {
-            this.o.beforeCloseInfowindow.call(this, this.current_index, this.o.locations[this.current_index]);
+            this.o.beforeCloseInfowindow.call(
+                this, this.current_index,
+                this.o.locations[this.current_index]
+            );
+
             this.infowindow.close();
             this.infowindow = null;
-            this.o.afterCloseInfowindow.call(this, this.current_index, this.o.locations[this.current_index]);
+
+            this.o.afterCloseInfowindow.call(
+                this,
+                this.current_index,
+                this.o.locations[this.current_index]
+            );
         }
         return this;
     };
@@ -960,10 +985,7 @@
 
         index = parseInt(index, 10);
         if (typeof (index - 0) === 'number' && index >= 0 && index < this.ln) {
-            var on_menu = this.o.locations[index].on_menu === false ? false : true;
-            if (on_menu) {
-                return true;
-            }
+            return this.o.locations[index].on_menu !== false;
         }
 
         return false;
@@ -1024,8 +1046,6 @@
 
     //adds a location at the specific index
     Maplace.prototype.AddLocation = function(location, index, reload) {
-        var self = this;
-
         if ($.isPlainObject(location)) {
             this.o.locations.splice(index, 0, location);
         }
@@ -1036,8 +1056,8 @@
 
     //remove one or more locations
     Maplace.prototype.RemoveLocations = function(locs, reload) {
-        var self = this,
-            k = 0;
+        var self = this;
+        var k = 0;
 
         if ($.isArray(locs)) {
             $.each(locs, function(index, value) {
@@ -1086,6 +1106,7 @@
     Maplace.prototype.Load = function(args) {
         $.extend(true, this.o, args);
         args && args.locations && (this.o.locations = args.locations);
+
         this._init();
 
         //reset/init google map objects
