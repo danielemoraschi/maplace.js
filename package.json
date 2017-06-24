@@ -39,7 +39,7 @@
     "url": "https://github.com/danielemoraschi/maplace.js/issues"
   },
   "dependencies": {
-    "jquery": "~2.1"
+    "jquery": "~3.2"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
