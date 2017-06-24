@@ -11,8 +11,9 @@ module.exports = function (grunt) {
                 laxbreak: true,
                 '-W030': false,
                 globals: {
-                    jQuery: true
-                },
+                    jQuery: true,
+                    google: true
+                }
             },
             src: ['Gruntfile.js', 'src/*.js', 'website/javascripts/app.js']
         },
@@ -27,11 +28,11 @@ module.exports = function (grunt) {
             }
         },
         'jscs': {
-			main: 'src/*.js',
+			      main: 'src/*.js',
             options: {
                 config: '.jscsrc'
             }
-		},
+		    },
         'copy': {
             webfiles: {
                 expand: true,
@@ -51,6 +52,9 @@ module.exports = function (grunt) {
                     replacements: [{
                         pattern: /@VERSION/g,
                         replacement: '<%= pkg.version %>'
+                    },{
+                      pattern: /@YEAR/g,
+                      replacement: (new Date()).getFullYear()
                     }]
                 }
             },
@@ -62,6 +66,9 @@ module.exports = function (grunt) {
                     replacements: [{
                         pattern: /@VERSION/g,
                         replacement: '<%= pkg.version %>'
+                    },{
+                      pattern: /@YEAR/g,
+                      replacement: (new Date()).getFullYear()
                     },{
                         pattern: /\/\/@GA/g,
                         replacement: [
@@ -99,6 +106,9 @@ module.exports = function (grunt) {
                         pattern: /@VERSION/g,
                         replacement: '<%= pkg.version %>'
                     },{
+                      pattern: /@YEAR/g,
+                      replacement: (new Date()).getFullYear()
+                    },{
                         pattern: /<!-- @import (.*?) -->/ig,
                         replacement: function (match, p1) {
                             return grunt.file.read('website/' + p1);
@@ -115,7 +125,7 @@ module.exports = function (grunt) {
                 options: {
                     spawn: false,
                     debounceDelay: 250
-                },
+                }
             }
         },
         pkg: grunt.file.readJSON('package.json')

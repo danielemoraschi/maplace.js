@@ -1,28 +1,32 @@
 /**
 * Maplace.js
 *
-* Copyright (c) 2013 Daniele Moraschi
+* Copyright (c) @YEAR Daniele Moraschi
 * Licensed under the MIT license
 * For all details and documentation:
-* http://maplacejs.com
+* https://maplacejs.com
 *
 * @version  @VERSION
 * @preserve
 */
 
-;(function(root, factory) {
+;(function(root, MaplaceFactory) {
+
     if (typeof define === 'function' && define.amd) {
-        define(['jquery'], factory);
+        // AMD
+        define('MaplaceFactory', ['jquery', 'google'], MaplaceFactory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('jquery'), require('google'));
+        // Node, CommonJS-like
+        module.exports = MaplaceFactory;
     } else {
-        root.Maplace = factory(root.jQuery, root.google);
+        // Browser globals (root is window)
+        root.Maplace = MaplaceFactory(root.jQuery, root.google);
     }
 
-}(this, function($, google) {
+}(window || this, function($, google) {
     'use strict';
 
-    //dropdown menu type
+    // Dropdown menu type
     var html_dropdown = {
         activateCurrent: function(index) {
             this.html_element.find('select').val(index);
@@ -75,7 +79,7 @@
     };
 
 
-    //ul list menu type
+    // List ul/li menu type
     var html_ullist = {
         html_a: function(i, hash, ttl) {
             var self = this;
