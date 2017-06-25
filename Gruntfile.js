@@ -109,6 +109,9 @@ module.exports = function (grunt) {
                       pattern: /@YEAR/g,
                       replacement: (new Date()).getFullYear()
                     },{
+                      pattern: /maplace.min.js/g,
+                        replacement: 'maplace.js'
+                    },{
                         pattern: /<!-- @import (.*?) -->/ig,
                         replacement: function (match, p1) {
                             return grunt.file.read('website/' + p1);
