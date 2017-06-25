@@ -37,16 +37,16 @@
             var html = '';
             var title, a;
 
-            if (this.ln > 1) {
+            if (this.scope.calculatedLength > 1) {
                 html += '<select class="dropdown controls '
                     + this.o.controls_cssclass + '">';
 
-                if (this.ShowOnMenu(this.view_all_key)) {
-                    html += '<option value="' + this.view_all_key + '">'
+                if (this.ShowOnMenu(this.scope.view_all_key)) {
+                    html += '<option value="' + this.scope.view_all_key + '">'
                         + this.o.view_all_text + '</option>';
                 }
 
-                for (a = 0; a < this.ln; a += 1) {
+                for (a = 0; a < this.scope.calculatedLength; a += 1) {
                     if (this.ShowOnMenu(a)) {
                         html += '<option value="' + (a + 1) + '">'
                             + (this.o.locations[a].title || ('#' + (a + 1)))
@@ -122,15 +122,15 @@
                     listStyleType: 'none'
                 } : {});
 
-            if (this.ShowOnMenu(this.view_all_key)) {
+            if (this.ShowOnMenu(this.scope.view_all_key)) {
                 html.append($('<li></li>').append(html_ullist.html_a.call(
                     this,
                     false,
-                    this.view_all_key, this.o.view_all_text)
+                    this.scope.view_all_key, this.o.view_all_text)
                 ));
             }
 
-            for (a = 0; a < this.ln; a++) {
+            for (a = 0; a < this.scope.calculatedLength; a++) {
                 if (this.ShowOnMenu(a)) {
                     html.append($('<li></li>').append(
                         html_ullist.html_a.call(this, a)
@@ -160,32 +160,36 @@
     /**
     * Create a new instance
     * @class Maplace
+    * @param args
     * @constructor
     */
     function Maplace(args) {
         this.VERSION = '@VERSION';
-        this.loaded = false;
-        this.markers = [];
-        this.circles = [];
-        this.oMap = false;
-        this.view_all_key = 'all';
 
-        this.infowindow = null;
-        this.maxZIndex = 0;
-        this.ln = 0;
-        this.oBounds = null;
-        this.map_div = null;
-        this.canvas_map = null;
-        this.controls_wrapper = null;
-        this.current_control = null;
-        this.current_index = null;
-        this.Polyline = null;
-        this.Polygon = null;
-        this.Fusion = null;
-        this.directionsService = null;
-        this.directionsDisplay = null;
+        this.scope = {
+            freeze_zoom: false,
+            view_all_key: 'all',
+            loaded: false,
+            oMap: false,
+            markers: [],
+            circles: [],
+            infoWindow: null,
+            maxZIndex: 0,
+            calculatedLength: 0,
+            oBounds: null,
+            map_div: null,
+            canvas_map: null,
+            controls_wrapper: null,
+            current_control: null,
+            current_index: null,
+            Polyline: null,
+            Polygon: null,
+            Fusion: null,
+            directionsService: null,
+            directionsDisplay: null
+        };
 
-        //default options
+        // Default options
         this.o = {
             debug: false,
             map_div: '#gmap',
@@ -231,12 +235,12 @@
             directions_panel: null,
             draggable: false,
             editable: false,
-            show_infowindows: true,
+            show_infoWindows: true,
             show_markers: true,
-            infowindow_type: 'bubble',
+            infoWindow_type: 'bubble',
             listeners: {},
 
-            //events
+            // Events
             beforeViewAll: function() {},
             afterViewAll: function() {},
             beforeShow: function(index, location, marker) {},
@@ -260,29 +264,29 @@
             dragStart: function(index, location, marker) {}
         };
 
-        //default menu types
+        // Default menu types
         this.AddControl('dropdown', html_dropdown);
         this.AddControl('list', html_ullist);
 
         if (args && args.type === 'directions') {
             !args.show_markers && (args.show_markers = false);
-            !args.show_infowindows && (args.show_infowindows = false);
+            !args.show_infoWindows && (args.show_infoWindows = false);
         }
 
-        //init
+        // Init
         $.extend(true, this.o, args);
     }
 
-    //where to store the menu types
+    // Where to store the menu types
     Maplace.prototype.controls = {};
 
-    //initialize google map object
+    // Initialize google map object
     Maplace.prototype.create_objMap = function() {
         var self = this;
         var count = 0;
         var i;
 
-        //if styled
+        // Check styles
         for (i in this.o.styles) {
             if (this.o.styles.hasOwnProperty(i)) {
                 if (count === 0) {
@@ -297,62 +301,62 @@
             }
         }
 
-        //if init
-        if (!this.loaded) {
+        // If init
+        if (! this.scope.loaded) {
             try {
-                this.map_div.css({
+                this.scope.map_div.css({
                     position: 'relative',
                     overflow: 'hidden'
                 });
 
-                //create the container div into map_div
-                this.canvas_map = $('<div>').addClass('canvas_map').css({
+                // Create the container div into map_div
+                this.scope.canvas_map = $('<div>').addClass('canvas_map').css({
                     width: '100%',
                     height: '100%'
-                }).appendTo(this.map_div);
+                }).appendTo(this.scope.map_div);
 
-                this.oMap = new google.maps.Map(
-                    this.canvas_map.get(0),
+                this.scope.oMap = new google.maps.Map(
+                    this.scope.canvas_map.get(0),
                     this.o.map_options
                 );
 
             } catch (err) {
                 this.debug(
-                    'create_objMap::' + this.map_div.selector,
+                    'create_objMap::' + this.scope.map_div.selector,
                     err.toString()
                 );
             }
 
-        //else loads the new optionsl
+        // Else loads the new optionsl
         } else {
-            self.oMap.setOptions(this.o.map_options);
+            self.scope.oMap.setOptions(this.o.map_options);
         }
 
-        //if styled
+        // Apply styles
         count = 0;
         for (i in this.o.styles) {
             if (this.o.styles.hasOwnProperty(i)) {
                 count++;
-                this.oMap.mapTypes.set(
+                this.scope.oMap.mapTypes.set(
                     'map_style_' + count,
                     new google.maps.StyledMapType(this.o.styles[i], {
                         name: i
                     })
                 );
-                this.oMap.setMapTypeId('map_style_' + count);
+                this.scope.oMap.setMapTypeId('map_style_' + count);
             }
         }
     };
 
-    //adds markers to the map
+    // Add markers to the map
     Maplace.prototype.add_markers_to_objMap = function() {
         var a, point;
         var type = this.o.type || 'marker';
 
-        //switch how to display the locations
+        // Switch how to display the locations
         switch (type) {
             case 'marker':
-                for (a = 0; a < this.ln; a++) {
+                for (a = 0; a < this.scope.calculatedLength; a++) {
                     point = this.create_objPoint(a);
                     this.create.marker.call(this, a, point);
                 }
@@ -363,20 +367,20 @@
         }
     };
 
-    //create the main object point
+    // Create the main object point
     Maplace.prototype.create_objPoint = function(index) {
         var point = $.extend({}, this.o.locations[index]);
         var visibility = point.visible === undefined ? undefined : point.visible;
 
         !point.type && (point.type = this.o.type);
 
-        //set obj map
-        point.map = this.oMap;
+        // Set obj map
+        point.map = this.scope.oMap;
         point.position = new google.maps.LatLng(point.lat, point.lon);
         point.zIndex = point.zIndex === undefined ? 10000 : (point.zIndex + 100);
         point.visible = visibility === undefined  ? this.o.show_markers : visibility;
 
-        this.o.maxZIndex = point.zIndex > this.maxZIndex ? point.zIndex : this.maxZIndex;
+        this.o.maxZIndex = point.zIndex > this.scope.maxZIndex ? point.zIndex : this.scope.maxZIndex;
 
         if (point.image) {
             point.icon = new google.maps.MarkerImage(
@@ -390,7 +394,7 @@
         return point;
     };
 
-    //create the main object circle
+    // Create the main object circle
     Maplace.prototype.create_objCircle = function(point) {
         var def_stroke_opz, def_circle_opz, circle;
 
@@ -411,7 +415,7 @@
         return circle;
     };
 
-    //create the main object point
+    // Create the main object point
     Maplace.prototype.add_markerEv = function(index, point, marker) {
         var self = this;
 
@@ -419,25 +423,25 @@
             self.CloseInfoWindow();
             self.o.beforeShow.call(self, index, point, marker);
 
-            //show infowindow?
-            if (self.o.show_infowindows && (point.show_infowindow !== false)) {
-                self.open_infowindow(index, marker, ev);
+            // Show infoWindow?
+            if (self.o.show_infoWindows && (point.show_infoWindow !== false)) {
+                self.open_infoWindow(index, marker, ev);
             }
 
-            //pan and zoom the map
+            // Pan and zoom the map
             if (self.o.pan_on_click && (point.pan_on_click !== false)) {
-                self.oMap.panTo(point.position);
-                point.zoom && self.oMap.setZoom(point.zoom);
+                self.scope.oMap.panTo(point.position);
+                point.zoom && self.scope.oMap.setZoom(point.zoom);
             }
 
-            //activate related menu link
-            if (self.current_control && self.o.generate_controls
-                && self.current_control.activateCurrent) {
-                self.current_control.activateCurrent.call(self, index + 1);
+            // Activate related menu link
+            if (self.scope.current_control && self.o.generate_controls
+                && self.scope.current_control.activateCurrent) {
+              self.scope.current_control.activateCurrent.call(self, index + 1);
             }
 
-            //update current location index
-            self.current_index = index;
+            // Update current location index
+            self.scope.current_index = index;
             self.o.afterShow.call(self, index, point, marker);
         });
 
@@ -446,7 +450,7 @@
         }
     };
 
-    //add events to circles objs
+    // Add events to circles objs
     Maplace.prototype.add_circleEv = function(index, circle, marker) {
         var self = this;
 
@@ -467,7 +471,7 @@
         }
     };
 
-    //add drag events
+    // Add drag events
     Maplace.prototype.add_dragEv = function(index, obj, marker) {
         var self = this;
 
@@ -482,35 +486,33 @@
                 return;
             }
 
-            //update circle position
-            if (self.circles[index]) {
-                self.circles[index].setCenter(pos);
+            // Update circle position
+            if (self.scope.circles[index]) {
+              self.scope.circles[index].setCenter(pos);
             }
 
-            //update polygon or polyline if defined
-            if (self.Polyline) {
+            // Update polygon or polyline if defined
+            if (self.scope.Polyline) {
                 extraType = 'Polyline';
-            } else if (self.Polygon) {
+            } else if (self.scope.Polygon) {
                 extraType = 'Polygon';
             }
 
             if (extraType) {
-                var path = self[extraType].getPath(),
-                    pathArray = path.getArray(),
-                    arr = [],
-                    i = 0;
+                var path = self.scope[extraType].getPath();
+                var pathArray = path.getArray();
 
-                for (; i < pathArray.length; ++i) {
-                    arr[i] = (index === i) ?
-                        new google.maps.LatLng(pos.lat(), pos.lng())
-                        : new google.maps.LatLng(pathArray[i].lat(), pathArray[i].lng());
-                }
+                var arr = pathArray.map(function(path, i) {
+                    return (index === i)
+                        ? new google.maps.LatLng(pos.lat(), pos.lng())
+                        : new google.maps.LatLng(path.lat(), path.lng());
+                });
 
-                self[extraType].setPath(new google.maps.MVCArray(arr));
+                self.scope[extraType].setPath(new google.maps.MVCArray(arr));
                 self.add_polyEv(extraType);
             }
 
-            //fire drag event
+            // Fire drag event
             self.o.drag.call(self, index, obj, marker);
         });
 
@@ -523,44 +525,44 @@
         });
 
         google.maps.event.addListener(marker, 'center_changed', function() {
-            //update marker position
-            if (self.markers[index] && marker.getCenter) {
-                self.markers[index].setPosition(marker.getCenter());
+            // Update marker position
+            if (self.scope.markers[index] && marker.getCenter) {
+                self.scope.markers[index].setPosition(marker.getCenter());
             }
 
             self.o.drag.call(self, index, obj, marker);
         });
     };
 
-    //add events to poly objs
+    // Add events to poly objs
     Maplace.prototype.add_polyEv = function(typeName) {
         var self = this;
 
-        google.maps.event.addListener(this[typeName].getPath(), 'set_at', function(index, obj) {
+        google.maps.event.addListener(this.scope[typeName].getPath(), 'set_at', function(index, obj) {
             self.trigger_polyEv(typeName, index, obj);
         });
 
-        google.maps.event.addListener(this[typeName].getPath(), 'insert_at', function(index, obj) {
+        google.maps.event.addListener(this.scope[typeName].getPath(), 'insert_at', function(index, obj) {
             self.trigger_polyEv(typeName, index, obj);
         });
     };
 
-    //trigger events to poly objs
+    // Trigger events to poly objs
     Maplace.prototype.trigger_polyEv = function(typeName, index, obj) {
-        var item = this[typeName].getPath().getAt(index);
+        var item = this.scope[typeName].getPath().getAt(index);
         var newPos = new google.maps.LatLng(item.lat(), item.lng());
 
-        this.markers[index] && this.markers[index].setPosition(newPos);
-        this.circles[index] && this.circles[index].setCenter(newPos);
+        this.scope.markers[index] && this.scope.markers[index].setPosition(newPos);
+        this.scope.circles[index] && this.scope.circles[index].setCenter(newPos);
 
-        this.o['on' + typeName + 'Changed'](index, obj, this[typeName].getPath().getArray());
+        this.o['on' + typeName + 'Changed'](index, obj, this.scope[typeName].getPath().getArray());
     };
 
-    //wrapper for the map types
+    // Wrapper for the map types
     Maplace.prototype.create = {
-        //single marker
+        // Single marker
         marker: function(index, point, marker) {
-            //allow mix circles with markers
+            // Allow mix circles with markers
             if (point.type === 'circle' && !marker) {
                 var circle = this.create_objCircle(point);
 
@@ -571,21 +573,21 @@
                 marker = new google.maps.Circle(circle);
                 this.add_circleEv(index, circle, marker);
 
-                //store the new circle
-                this.circles[index] = marker;
+                // Store the new circle
+                this.scope.circles[index] = marker;
             }
 
             point.type = 'marker';
 
-            //create the marker and add click event
+            // Create the marker and add click event
             marker = new google.maps.Marker(point);
             this.add_markerEv(index, point, marker);
 
-            //extends bounds with this location
-            this.oBounds.extend(point.position);
+            // Extends bounds with this location
+            this.scope.oBounds.extend(point.position);
 
-            //store the new marker
-            this.markers[index] = marker;
+            // Store the new marker
+            this.scope.markers[index] = marker;
 
             this.o.afterCreateMarker.call(this, index, point, marker);
 
@@ -593,35 +595,34 @@
         },
 
 
-        //circle mode
+        // Circle mode
         circle: function() {
-            var a, point, circle, marker;
-
-            for (a = 0; a < this.ln; a++) {
-                point = this.create_objPoint(a);
-
-                //allow mix markers with circles
+            var self = this;
+            this.o.locations.forEach(function(location, i) {
+                var marker = null;
+                var point = self.create_objPoint(i);
+                // Allow mixing markers with circles
                 if (point.type === 'circle') {
-                    circle = this.create_objCircle(point);
-
-                    if (!point.visible) {
+                    var circle = self.create_objCircle(point);
+                    // If the marker is not visible
+                    // then pass the draggable setting down to the circle
+                    if (! point.visible) {
                         circle.draggable = point.draggable;
                     }
-
+                    // Create the circle object and attached the events
                     marker = new google.maps.Circle(circle);
-                    this.add_circleEv(a, circle, marker);
-
-                    //store the new circle
-                    this.circles[a] = marker;
+                    self.add_circleEv(i, circle, marker);
+                    // Store the new circle
+                    self.scope.circles[i] = marker;
                 }
-
+                // Create the marker
                 point.type = 'marker';
-                this.create.marker.call(this, a, point, marker);
-            }
+                self.create.marker.call(self, i, point, marker);
+            });
         },
 
 
-        //polyline mode
+        // Polyline mode
         polyline: function() {
             var a, point;
             var stroke = $.extend({}, this.o.stroke_options);
@@ -629,22 +630,22 @@
             stroke.path = [];
             stroke.draggable = this.o.draggable;
             stroke.editable = this.o.editable;
-            stroke.map = this.oMap;
+            stroke.map = this.scope.oMap;
             stroke.zIndex = this.o.maxZIndex + 100;
 
-            //create the path and location marker
-            for (a = 0; a < this.ln; a++) {
+            // Create the path and location marker
+            for (a = 0; a < this.scope.calculatedLength; a++) {
                 point = this.create_objPoint(a);
                 this.create.marker.call(this, a, point);
 
                 stroke.path.push(point.position);
             }
 
-            this.Polyline
-                ? this.Polyline.setOptions(stroke)
-                : this.Polyline = new google.maps.Polyline(stroke);
+            this.scope.Polyline
+                ? this.scope.Polyline.setOptions(stroke)
+                : this.scope.Polyline = new google.maps.Polyline(stroke);
 
-            google.maps.event.addListener(this.Polyline, 'click', function(obj) {
+            google.maps.event.addListener(this.scope.Polyline, 'click', function(obj) {
                 self.o.onPolylineClick.call(self, obj);
             });
 
@@ -652,7 +653,7 @@
         },
 
 
-        //polygon mode
+        // Polygon mode
         polygon: function() {
             var a, point;
             var self = this;
@@ -661,22 +662,22 @@
             stroke.path = [];
             stroke.draggable = this.o.draggable;
             stroke.editable = this.o.editable;
-            stroke.map = this.oMap;
+            stroke.map = this.scope.oMap;
             stroke.zIndex = this.o.maxZIndex + 100;
 
-            //create the path and location marker
-            for (a = 0; a < this.ln; a++) {
+            // Create the path and location marker
+            for (a = 0; a < this.scope.calculatedLength; a++) {
                 point = this.create_objPoint(a);
                 this.create.marker.call(this, a, point);
 
                 stroke.path.push(point.position);
             }
 
-            this.Polygon
-                ? this.Polygon.setOptions(stroke)
-                : this.Polygon = new google.maps.Polygon(stroke);
+            this.scope.Polygon
+                ? this.scope.Polygon.setOptions(stroke)
+                : this.scope.Polygon = new google.maps.Polygon(stroke);
 
-            google.maps.event.addListener(this.Polygon, 'click', function(obj) {
+            google.maps.event.addListener(this.scope.Polygon, 'click', function(obj) {
                 self.o.onPolygonClick.call(self, obj);
             });
 
@@ -684,37 +685,37 @@
         },
 
 
-        //fusion tables
+        // Fusion tables
         fusion: function() {
             this.o.fusion_options.styles = [this.o.stroke_options];
-            this.o.fusion_options.map = this.oMap;
+            this.o.fusion_options.map = this.scope.oMap;
 
-            this.Fusion ?
-                this.Fusion.setOptions(this.o.fusion_options)
-                : this.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
+            this.scope.Fusion ?
+                this.scope.Fusion.setOptions(this.o.fusion_options)
+                : this.scope.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
         },
 
 
-        //directions mode
+        // Directions mode
         directions: function() {
             var a, point, stopover, origin, destination;
             var self = this;
             var waypoints = [];
             var distance = 0;
 
-            //create the waypoints and location marker
-            for (a = 0; a < this.ln; a++) {
+            // Create the waypoints and location marker
+            for (a = 0; a < this.scope.calculatedLength; a++) {
                 point = this.create_objPoint(a);
 
-                //first location start point
+                // First location start point
                 if (a === 0) {
                     origin = point.position;
 
-                //last location end point
-                } else if (a === (this.ln - 1)) {
+                // Last location end point
+                } else if (a === (this.scope.calculatedLength - 1)) {
                     destination = point.position;
 
-                //waypoints in the middle
+                // Waypoints in the middle
                 } else {
                     stopover = this.o.locations[a].stopover === true;
                     waypoints.push({
@@ -730,39 +731,39 @@
             this.o.directions_options.destination = destination;
             this.o.directions_options.waypoints = waypoints;
 
-            this.directionsService || (this.directionsService = new google.maps.DirectionsService());
-            this.directionsDisplay ?
-                this.directionsDisplay.setOptions({draggable: this.o.draggable})
-                : this.directionsDisplay = new google.maps.DirectionsRenderer({draggable: this.o.draggable});
+            this.scope.directionsService || (this.scope.directionsService = new google.maps.DirectionsService());
+            this.scope.directionsDisplay ?
+                this.scope.directionsDisplay.setOptions({draggable: this.o.draggable})
+                : this.scope.directionsDisplay = new google.maps.DirectionsRenderer({draggable: this.o.draggable});
 
-            this.directionsDisplay.setMap(this.oMap);
+            this.scope.directionsDisplay.setMap(this.scope.oMap);
 
-            //show the directions panel
+            // Show the directions panel
             if (this.o.directions_panel) {
                 this.o.directions_panel = $(this.o.directions_panel);
-                this.directionsDisplay.setPanel(this.o.directions_panel.get(0));
+                this.scope.directionsDisplay.setPanel(this.o.directions_panel.get(0));
             }
 
             if (this.o.draggable) {
-                google.maps.event.addListener(this.directionsDisplay, 'directions_changed', function() {
-                    var result = self.directionsDisplay.getDirections();
-                    distance = self.compute_distance(self.directionsDisplay.directions);
+                google.maps.event.addListener(this.scope.directionsDisplay, 'directions_changed', function() {
+                    var result = self.scope.directionsDisplay.getDirections();
+                    distance = self.compute_distance(self.scope.directionsDisplay.directions);
                     self.o.afterRoute.call(self, distance, result.status, result);
                 });
             }
 
-            this.directionsService.route(this.o.directions_options, function(result, status) {
-                //directions found
+            this.scope.directionsService.route(this.o.directions_options, function(result, status) {
+                // Directions found
                 if (status === google.maps.DirectionsStatus.OK) {
                     distance = self.compute_distance(result);
-                    self.directionsDisplay.setDirections(result);
+                    self.scope.directionsDisplay.setDirections(result);
                 }
                 self.o.afterRoute.call(self, distance, status, result);
             });
         }
     };
 
-    //route distance
+    // Route distance
     Maplace.prototype.compute_distance = function(result) {
         var i;
         var total = 0;
@@ -776,9 +777,9 @@
         return total;
     };
 
-    //wrapper for the infowindow types
+    // Wrapper for the infoWindow types
     Maplace.prototype.type_to_open = {
-        //google default infowindow
+        // Google default infoWindow
         bubble: function(location) {
             var self = this;
             var infoWindow = { content: location.html || '' };
@@ -787,48 +788,47 @@
                 infoWindow.maxWidth = location.infoWindowMaxWidth;
             }
 
-            this.infowindow = new google.maps.InfoWindow(infoWindow);
-            google.maps.event.addListener(this.infowindow, 'closeclick', function(){
+            this.scope.infoWindow = new google.maps.InfoWindow(infoWindow);
+            google.maps.event.addListener(this.scope.infoWindow, 'closeclick', function(){
                 self.CloseInfoWindow();
             });
         }
     };
 
-    //open the infowindow
-    Maplace.prototype.open_infowindow = function(index, marker, ev) {
+    // Open the infoWindow
+    Maplace.prototype.open_infoWindow = function(index, marker, ev) {
         var point = this.o.locations[index];
-        var type = this.o.infowindow_type;
+        var type = this.o.infoWindow_type;
 
-        //show if content and valid infowindow type provided
+        // Show if content and valid infoWindow type provided
         if (point.html && this.type_to_open[type]) {
             this.o.beforeOpenInfowindow.call(this, index, point, marker);
             this.type_to_open[type].call(this, point);
-            this.infowindow.open(this.oMap, marker);
+            this.scope.infoWindow.open(this.scope.oMap, marker);
             this.o.afterOpenInfowindow.call(this, index, point, marker);
         }
     };
 
-    //gets the html for the menu
+    // Get the html for the menu
     Maplace.prototype.get_html_controls = function() {
         if (this.controls[this.o.controls_type] && this.controls[this.o.controls_type].getHtml) {
-            this.current_control = this.controls[this.o.controls_type];
+            this.scope.current_control = this.controls[this.o.controls_type];
 
-            return this.current_control.getHtml.apply(this);
+            return this.scope.current_control.getHtml.apply(this);
         }
         return '';
     };
 
-    //creates the controls menu
+    // Create the controls menu
     Maplace.prototype.generate_controls = function() {
-        //append menu on the div container
+        // Append menu on the div container
         if (!this.o.controls_on_map) {
-            this.controls_wrapper.empty();
-            this.controls_wrapper.append(this.get_html_controls());
+            this.scope.controls_wrapper.empty();
+            this.scope.controls_wrapper.append(this.get_html_controls());
             return;
         }
 
-        //else
-        //controls in map
+        // Else add controls in map
         var cntr = $('<div class="on_gmap ' + this.o.controls_type + ' gmap_controls"></div>')
             .css(this.o.controls_applycss ? {margin: '5px'} : {}),
 
@@ -837,7 +837,7 @@
                 padding: '5px',
                 border: '1px solid #eee',
                 boxShadow: 'rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px',
-                maxHeight: this.map_div.find('.canvas_map').outerHeight() - 80,
+                maxHeight: this.scope.map_div.find('.canvas_map').outerHeight() - 80,
                 minWidth: 100,
                 overflowY: 'auto',
                 overflowX: 'hidden'
@@ -845,99 +845,99 @@
 
         cntr.append(inner);
 
-        //attach controls
-        this.oMap.controls[this.o.controls_position].clear();
-        this.oMap.controls[this.o.controls_position].push(cntr.get(0));
+        // Attach controls
+        this.scope.oMap.controls[this.o.controls_position].clear();
+        this.scope.oMap.controls[this.o.controls_position].push(cntr.get(0));
     };
 
-    //resets obj map, markers, bounds, listeners, controllers
+    // Reset obj map, markers, bounds, listeners, controllers
     Maplace.prototype.init_map = function() {
         var self = this;
-        this.Polyline && this.Polyline.setMap(null);
-        this.Polygon && this.Polygon.setMap(null);
-        this.Fusion && this.Fusion.setMap(null);
-        this.directionsDisplay && this.directionsDisplay.setMap(null);
+        this.scope.Polyline && this.scope.Polyline.setMap(null);
+        this.scope.Polygon && this.scope.Polygon.setMap(null);
+        this.scope.Fusion && this.scope.Fusion.setMap(null);
+        this.scope.directionsDisplay && this.scope.directionsDisplay.setMap(null);
 
-        for (var i = this.markers.length - 1; i >= 0; i -= 1) {
+        for (var i = this.scope.markers.length - 1; i >= 0; i -= 1) {
             try {
-                this.markers[i] && this.markers[i].setMap(null);
+                this.scope.markers[i] && this.scope.markers[i].setMap(null);
             } catch (err) {
                 self.debug('init_map::markers::setMap', err.stack);
             }
         }
 
-        this.markers.length = 0;
-        this.markers = [];
+        this.scope.markers.length = 0;
+        this.scope.markers = [];
 
-        for (var e = this.circles.length - 1; e >= 0; e -= 1) {
+        for (var e = this.scope.circles.length - 1; e >= 0; e -= 1) {
             try {
-                this.circles[e] && this.circles[e].setMap(null);
+                this.scope.circles[e] && this.scope.circles[e].setMap(null);
             } catch (err) {
                 self.debug('init_map::circles::setMap', err.stack);
             }
         }
 
-        this.circles.length = 0;
-        this.circles = [];
+        this.scope.circles.length = 0;
+        this.scope.circles = [];
 
-        if (this.o.controls_on_map && this.oMap.controls) {
-            this.oMap.controls[this.o.controls_position].forEach(function(element, index) {
+        if (this.o.controls_on_map && this.scope.oMap.controls) {
+            this.scope.oMap.controls[this.o.controls_position].forEach(function(element, index) {
                 try {
-                    self.oMap.controls[self.o.controls_position].removeAt(index);
+                    self.scope.oMap.controls[self.o.controls_position].removeAt(index);
                 } catch (err) {
                     self.debug('init_map::removeAt', err.stack);
                 }
             });
         }
 
-        this.oBounds = new google.maps.LatLngBounds();
+        this.scope.oBounds = new google.maps.LatLngBounds();
     };
 
-    //perform the first view of the map
+    // Perform the first view of the map
     Maplace.prototype.perform_load = function() {
         this.CloseInfoWindow();
 
-        //one location
-        if (this.ln === 1) {
+        // One location
+        if (this.scope.calculatedLength === 1) {
             if (this.o.map_options.set_center) {
-                this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                this.scope.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
 
             } else {
-                this.oMap.fitBounds(this.oBounds);
+                this.scope.oMap.fitBounds(this.scope.oBounds);
                 this.ViewOnMap(1);
             }
 
-            this.o.map_options.zoom && this.oMap.setZoom(this.o.map_options.zoom);
+            this.o.map_options.zoom && this.scope.oMap.setZoom(this.o.map_options.zoom);
 
-        //no locations
-        } else if (this.ln === 0) {
+        // No locations
+        } else if (this.scope.calculatedLength === 0) {
             if (this.o.map_options.set_center) {
-                this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                this.scope.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
 
             } else {
-                this.oMap.fitBounds(this.oBounds);
+                this.scope.oMap.fitBounds(this.scope.oBounds);
             }
 
-            this.oMap.setZoom(this.o.map_options.zoom || 1);
+            this.scope.oMap.setZoom(this.o.map_options.zoom || 1);
 
-        //n+ locations
+        // n+ locations
         } else {
-            this.oMap.fitBounds(this.oBounds);
+            this.scope.oMap.fitBounds(this.scope.oBounds);
 
-            //check the start option
-            if (typeof (this.o.start - 0) === 'number' && this.o.start > 0 && this.o.start <= this.ln) {
+            // Check the start option
+            if (typeof (this.o.start - 0) === 'number' && this.o.start > 0 && this.o.start <= this.scope.calculatedLength) {
                 this.ViewOnMap(this.o.start);
 
-            //check if set_center exists
+            // Check if set_center exists
             } else if (this.o.map_options.set_center) {
-                this.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
+                this.scope.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
 
             //view all
             } else {
-                this.ViewOnMap(this.view_all_key);
+                this.ViewOnMap(this.scope.view_all_key);
             }
 
-            this.o.map_options.zoom && this.oMap.setZoom(this.o.map_options.zoom);
+            this.o.map_options.zoom && this.scope.oMap.setZoom(this.o.map_options.zoom);
         }
     };
 
@@ -951,7 +951,7 @@
     /////////////////////////////////////////////////////////////////////////
 
 
-    //adds a custom menu to the class
+    // Add a custom menu to the class
     Maplace.prototype.AddControl = function(name, func) {
         if (!name || !func) {
             self.debug('AddControl', 'Missing "name" and "func" callback.');
@@ -961,60 +961,62 @@
         return this;
     };
 
-    //close the infowindow
+    // Close the infoWindow
     Maplace.prototype.CloseInfoWindow = function() {
-        if (this.infowindow && (this.current_index || this.current_index === 0)) {
+        if (this.scope.infoWindow && (this.scope.current_index || this.scope.current_index === 0)) {
             this.o.beforeCloseInfowindow.call(
-                this, this.current_index,
-                this.o.locations[this.current_index]
+                this,
+                this.scope.current_index,
+                this.o.locations[this.scope.current_index]
             );
 
-            this.infowindow.close();
-            this.infowindow = null;
+            this.scope.infoWindow.close();
+            this.scope.infoWindow = null;
 
             this.o.afterCloseInfowindow.call(
                 this,
-                this.current_index,
-                this.o.locations[this.current_index]
+                this.scope.current_index,
+                this.o.locations[this.scope.current_index]
             );
         }
         return this;
     };
 
-    //checks if a location has to be in menu
+    // Check if a location has to be in menu
     Maplace.prototype.ShowOnMenu = function(index) {
-        if (index === this.view_all_key && this.o.view_all && this.ln > 1) {
+        if (index === this.scope.view_all_key && this.o.view_all && this.scope.calculatedLength > 1) {
             return true;
         }
 
         index = parseInt(index, 10);
-        if (typeof (index - 0) === 'number' && index >= 0 && index < this.ln) {
+        if (typeof (index - 0) === 'number' && index >= 0 && index < this.scope.calculatedLength) {
             return this.o.locations[index].on_menu !== false;
         }
 
         return false;
     };
 
-    //triggers to show a location in map
+    // Trigger to show a location in the map
     Maplace.prototype.ViewOnMap = function(index) {
-        //view all
-        if (index === this.view_all_key) {
+        // View all
+        if (index === this.scope.view_all_key) {
             this.o.beforeViewAll.call(this);
 
-            this.current_index = index;
-            if (this.o.locations.length > 0 && this.o.generate_controls && this.current_control && this.current_control.activateCurrent) {
-                this.current_control.activateCurrent.apply(this, [index]);
+            this.scope.current_index = index;
+            if (this.o.locations.length > 0 && this.o.generate_controls
+              && this.scope.current_control && this.scope.current_control.activateCurrent) {
+                this.scope.current_control.activateCurrent.apply(this, [index]);
             }
-            this.oMap.fitBounds(this.oBounds);
+            this.scope.oMap.fitBounds(this.scope.oBounds);
 
             this.o.afterViewAll.call(this);
 
-        //specific location
+        // Specific location
         } else {
             index = parseInt(index, 10);
-            if (typeof (index - 0) === 'number' && index > 0 && index <= this.ln) {
+            if (typeof (index - 0) === 'number' && index > 0 && index <= this.scope.calculatedLength) {
                 try {
-                    google.maps.event.trigger(this.markers[index - 1], 'click');
+                    google.maps.event.trigger(this.scope.markers[index - 1], 'click');
                 } catch (err) {
                     this.debug('ViewOnMap::trigger', err.stack);
                 }
@@ -1023,14 +1025,14 @@
         return this;
     };
 
-    //replace current locations
+    // Replace current locations
     Maplace.prototype.SetLocations = function(locs, reload) {
         this.o.locations = locs;
         reload && this.Load();
         return this;
     };
 
-    //adds one or more locations to the end of the array
+    // Add one or more locations to the end of the array
     Maplace.prototype.AddLocations = function(locs, reload) {
         var self = this;
 
@@ -1048,7 +1050,7 @@
         return this;
     };
 
-    //adds a location at the specific index
+    // Add a location at the specific index
     Maplace.prototype.AddLocation = function(location, index, reload) {
         if ($.isPlainObject(location)) {
             this.o.locations.splice(index, 0, location);
@@ -1058,20 +1060,20 @@
         return this;
     };
 
-    //remove one or more locations
+    // Remove one or more locations
     Maplace.prototype.RemoveLocations = function(locs, reload) {
         var self = this;
         var k = 0;
 
         if ($.isArray(locs)) {
             $.each(locs, function(index, value) {
-                if ((value - k) < self.ln) {
+                if ((value - k) < self.scope.calculatedLength) {
                     self.o.locations.splice(value - k, 1);
                 }
                 k++;
             });
         } else {
-            if (locs < this.ln) {
+            if (locs < this.scope.calculatedLength) {
                 this.o.locations.splice(locs, 1);
             }
         }
@@ -1080,18 +1082,36 @@
         return this;
     };
 
-    //check if already initialized with a Load()
+    // Check if already initialized with a Load()
     Maplace.prototype.Loaded = function() {
-        return this.loaded;
+        return this.scope.loaded;
     };
 
-    //loads the options
-    Maplace.prototype._init = function() {
-        //store the locations length
-        this.ln = this.o.locations.length;
+    /**
+     * @TODO
+     */
+    // Freeze current zoom across multiple Load actions,
+    // Including AddLocation, RemoveLocations, AddLocations, SetLocations
+    Maplace.prototype.FreezeZoom = function() {
+        this.scope.freeze_zoom = true;
+    };
 
-        //update all locations with shared
-        for (var i = 0; i < this.ln; i++) {
+    /**
+     * @TODO
+     */
+    // Un-freeze current zoom across multiple Load actions,
+    // Including AddLocation, RemoveLocations, AddLocations, SetLocations
+    Maplace.prototype.UnFreezeZoom = function() {
+        this.scope.freeze_zoom = false;
+    };
+
+    // Loads the options
+    Maplace.prototype._init = function() {
+        // Store the locations length
+        this.scope.calculatedLength = this.o.locations.length;
+
+        // Update all locations with shared
+        for (var i = 0; i < this.scope.calculatedLength; i++) {
             var common = $.extend({}, this.o.shared);
             this.o.locations[i] = $.extend(common, this.o.locations[i]);
             if (this.o.locations[i].html) {
@@ -1100,29 +1120,29 @@
             }
         }
 
-        //store dom references
-        this.map_div = $(this.o.map_div);
-        this.controls_wrapper = $(this.o.controls_div);
+        // Store dom references
+        this.scope.map_div = $(this.o.map_div);
+        this.scope.controls_wrapper = $(this.o.controls_div);
         return this;
     };
 
-    //creates the map and menu
+    // Create the map and menu
     Maplace.prototype.Load = function(args) {
         $.extend(true, this.o, args);
         args && args.locations && (this.o.locations = args.locations);
 
         this._init();
 
-        //reset/init google map objects
+        // Reset/Init google map objects
         this.o.visualRefresh === false ? (google.maps.visualRefresh = false) : (google.maps.visualRefresh = true);
         this.init_map();
         this.create_objMap();
 
-        //add markers
+        // Add markers
         this.add_markers_to_objMap();
 
-        //generate controls
-        if ((this.ln > 1 && this.o.generate_controls) || this.o.force_generate_controls)  {
+        // Generate controls
+        if ((this.scope.calculatedLength > 1 && this.o.generate_controls) || this.o.force_generate_controls)  {
             this.o.generate_controls = true;
             this.generate_controls();
         } else {
@@ -1131,25 +1151,25 @@
 
         var self = this;
 
-        //first call
-        if (!this.loaded) {
-            google.maps.event.addListenerOnce(this.oMap, 'idle', function() {
+        // First call !!!
+        if (!this.scope.loaded) {
+            google.maps.event.addListenerOnce(this.scope.oMap, 'idle', function() {
                 self.perform_load();
             });
 
-            //add custom listeners
+            // Add custom listeners
             for (var i in this.o.listeners) {
                 if (this.o.listeners.hasOwnProperty(i)) {
-                    google.maps.event.addListener(this.oMap, i, this.o.listeners[i]);
+                    google.maps.event.addListener(this.scope.oMap, i, this.o.listeners[i]);
                 }
             }
 
-        //all other calls
+        // Any other call
         } else {
             this.perform_load();
         }
 
-        this.loaded = true;
+        this.scope.loaded = true;
 
         return this;
     };
