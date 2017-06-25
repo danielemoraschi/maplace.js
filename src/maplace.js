@@ -11,7 +11,6 @@
 */
 
 ;(function(root, MaplaceFactory) {
-
     if (typeof define === 'function' && define.amd) {
         // AMD
         define('MaplaceFactory', ['jquery', 'google'], MaplaceFactory);
@@ -417,33 +416,31 @@
 
     // Create the main object point
     Maplace.prototype.add_markerEv = function(index, point, marker) {
-        var self = this;
-
         google.maps.event.addListener(marker, 'click', function(ev) {
-            self.CloseInfoWindow();
-            self.o.beforeShow.call(self, index, point, marker);
+            this.CloseInfoWindow();
+            this.o.beforeShow.call(this, index, point, marker);
 
             // Show infoWindow?
-            if (self.o.show_infoWindows && (point.show_infoWindow !== false)) {
-                self.open_infoWindow(index, marker, ev);
+            if (this.o.show_infoWindows && (point.show_infoWindow !== false)) {
+                this.open_infoWindow(index, marker, ev);
             }
 
             // Pan and zoom the map
-            if (self.o.pan_on_click && (point.pan_on_click !== false)) {
-                self.scope.oMap.panTo(point.position);
-                point.zoom && self.scope.oMap.setZoom(point.zoom);
+            if (this.o.pan_on_click && (point.pan_on_click !== false)) {
+                this.scope.oMap.panTo(point.position);
+                point.zoom && this.scope.oMap.setZoom(point.zoom);
             }
 
             // Activate related menu link
-            if (self.scope.current_control && self.o.generate_controls
-                && self.scope.current_control.activateCurrent) {
-              self.scope.current_control.activateCurrent.call(self, index + 1);
+            if (this.scope.current_control && this.o.generate_controls
+                && this.scope.current_control.activateCurrent) {
+                this.scope.current_control.activateCurrent.call(this, index + 1);
             }
 
             // Update current location index
-            self.scope.current_index = index;
-            self.o.afterShow.call(self, index, point, marker);
-        });
+            this.scope.current_index = index;
+            this.o.afterShow.call(this, index, point, marker);
+        }.bind(this));
 
         if (point.draggable) {
             this.add_dragEv(index, point, marker);
@@ -558,52 +555,58 @@
         this.o['on' + typeName + 'Changed'](index, obj, this.scope[typeName].getPath().getArray());
     };
 
+    /**
+     *
+     * @param location
+     * @param index
+     */
+    Maplace.prototype.createMarkerAndGetLocation = function(location, index) {
+        var point = this.create_objPoint(index);
+        this.create.marker.call(this, index, point);
+        return point.position;
+    };
+
     // Wrapper for the map types
     Maplace.prototype.create = {
+
         // Single marker
         marker: function(index, point, marker) {
-            // Allow mix circles with markers
-            if (point.type === 'circle' && !marker) {
+            // Allow mixing markers with circles
+            if (point.type === 'circle' && ! marker) {
                 var circle = this.create_objCircle(point);
-
-                if (!point.visible) {
+                // If the marker is not visible
+                // then pass the draggable setting down to the circle
+                if (! point.visible) {
                     circle.draggable = point.draggable;
                 }
-
+                // Create the circle object and attached the events
                 marker = new google.maps.Circle(circle);
                 this.add_circleEv(index, circle, marker);
-
                 // Store the new circle
                 this.scope.circles[index] = marker;
             }
 
+            // Create the marker and add events
             point.type = 'marker';
-
-            // Create the marker and add click event
             marker = new google.maps.Marker(point);
             this.add_markerEv(index, point, marker);
-
             // Extends bounds with this location
             this.scope.oBounds.extend(point.position);
-
             // Store the new marker
             this.scope.markers[index] = marker;
-
+            // Trigger custom event
             this.o.afterCreateMarker.call(this, index, point, marker);
-
             return marker;
         },
 
-
         // Circle mode
         circle: function() {
-            var self = this;
             this.o.locations.forEach(function(location, i) {
                 var marker = null;
-                var point = self.create_objPoint(i);
+                var point = this.create_objPoint(i);
                 // Allow mixing markers with circles
                 if (point.type === 'circle') {
-                    var circle = self.create_objCircle(point);
+                    var circle = this.create_objCircle(point);
                     // If the marker is not visible
                     // then pass the draggable setting down to the circle
                     if (! point.visible) {
@@ -611,43 +614,40 @@
                     }
                     // Create the circle object and attached the events
                     marker = new google.maps.Circle(circle);
-                    self.add_circleEv(i, circle, marker);
+                    this.add_circleEv(i, circle, marker);
                     // Store the new circle
-                    self.scope.circles[i] = marker;
+                    this.scope.circles[i] = marker;
                 }
                 // Create the marker
                 point.type = 'marker';
-                self.create.marker.call(self, i, point, marker);
-            });
+                this.create.marker.call(this, i, point, marker);
+            }.bind(this));
         },
 
 
         // Polyline mode
         polyline: function() {
-            var a, point;
             var stroke = $.extend({}, this.o.stroke_options);
 
-            stroke.path = [];
             stroke.draggable = this.o.draggable;
             stroke.editable = this.o.editable;
             stroke.map = this.scope.oMap;
             stroke.zIndex = this.o.maxZIndex + 100;
 
             // Create the path and location marker
-            for (a = 0; a < this.scope.calculatedLength; a++) {
-                point = this.create_objPoint(a);
-                this.create.marker.call(this, a, point);
-
-                stroke.path.push(point.position);
-            }
+            stroke.path = this.o.locations.map(
+                this.createMarkerAndGetLocation.bind(this)
+            );
 
             this.scope.Polyline
                 ? this.scope.Polyline.setOptions(stroke)
                 : this.scope.Polyline = new google.maps.Polyline(stroke);
 
-            google.maps.event.addListener(this.scope.Polyline, 'click', function(obj) {
-                self.o.onPolylineClick.call(self, obj);
-            });
+            google.maps.event.addListener(
+                this.scope.Polyline,
+                'click',
+                this.o.onPolylineClick.bind(this)
+            );
 
             this.add_polyEv('Polyline');
         },
@@ -659,27 +659,25 @@
             var self = this;
             var stroke = $.extend({}, this.o.stroke_options);
 
-            stroke.path = [];
             stroke.draggable = this.o.draggable;
             stroke.editable = this.o.editable;
             stroke.map = this.scope.oMap;
             stroke.zIndex = this.o.maxZIndex + 100;
 
             // Create the path and location marker
-            for (a = 0; a < this.scope.calculatedLength; a++) {
-                point = this.create_objPoint(a);
-                this.create.marker.call(this, a, point);
-
-                stroke.path.push(point.position);
-            }
+            stroke.path = this.o.locations.map(
+                this.createMarkerAndGetLocation.bind(this)
+            );
 
             this.scope.Polygon
                 ? this.scope.Polygon.setOptions(stroke)
                 : this.scope.Polygon = new google.maps.Polygon(stroke);
 
-            google.maps.event.addListener(this.scope.Polygon, 'click', function(obj) {
-                self.o.onPolygonClick.call(self, obj);
-            });
+            google.maps.event.addListener(
+                this.scope.Polygon,
+                'click',
+                this.o.onPolygonClick.bind(this)
+            );
 
             this.add_polyEv('Polygon');
         },
@@ -690,41 +688,39 @@
             this.o.fusion_options.styles = [this.o.stroke_options];
             this.o.fusion_options.map = this.scope.oMap;
 
-            this.scope.Fusion ?
-                this.scope.Fusion.setOptions(this.o.fusion_options)
-                : this.scope.Fusion = new google.maps.FusionTablesLayer(this.o.fusion_options);
+            this.scope.Fusion
+                ? this.scope.Fusion.setOptions(this.o.fusion_options)
+                : this.scope.Fusion = new google.maps.FusionTablesLayer(
+                    this.o.fusion_options
+                );
         },
 
 
         // Directions mode
         directions: function() {
-            var a, point, stopover, origin, destination;
-            var self = this;
+            var a, pointLocation, stopover, origin, destination;
             var waypoints = [];
             var distance = 0;
 
             // Create the waypoints and location marker
             for (a = 0; a < this.scope.calculatedLength; a++) {
-                point = this.create_objPoint(a);
+                pointLocation =
+                    this.createMarkerAndGetLocation(this.o.locations[a], a);
 
                 // First location start point
                 if (a === 0) {
-                    origin = point.position;
-
+                    origin = pointLocation;
                 // Last location end point
                 } else if (a === (this.scope.calculatedLength - 1)) {
-                    destination = point.position;
-
+                    destination = pointLocation;
                 // Waypoints in the middle
                 } else {
                     stopover = this.o.locations[a].stopover === true;
                     waypoints.push({
-                        location: point.position,
+                        location: pointLocation,
                         stopover: stopover
                     });
                 }
-
-                this.create.marker.call(this, a, point);
             }
 
             this.o.directions_options.origin = origin;
@@ -746,20 +742,20 @@
 
             if (this.o.draggable) {
                 google.maps.event.addListener(this.scope.directionsDisplay, 'directions_changed', function() {
-                    var result = self.scope.directionsDisplay.getDirections();
-                    distance = self.compute_distance(self.scope.directionsDisplay.directions);
-                    self.o.afterRoute.call(self, distance, result.status, result);
-                });
+                    var result = this.scope.directionsDisplay.getDirections();
+                    distance = this.compute_distance(this.scope.directionsDisplay.directions);
+                    this.o.afterRoute.call(this, distance, result.status, result);
+                }.bind(this));
             }
 
             this.scope.directionsService.route(this.o.directions_options, function(result, status) {
                 // Directions found
                 if (status === google.maps.DirectionsStatus.OK) {
-                    distance = self.compute_distance(result);
-                    self.scope.directionsDisplay.setDirections(result);
+                    distance = this.compute_distance(result);
+                    this.scope.directionsDisplay.setDirections(result);
                 }
-                self.o.afterRoute.call(self, distance, status, result);
-            });
+                this.o.afterRoute.call(this, distance, status, result);
+            }.bind(this));
         }
     };
 
@@ -781,17 +777,17 @@
     Maplace.prototype.type_to_open = {
         // Google default infoWindow
         bubble: function(location) {
-            var self = this;
             var infoWindow = { content: location.html || '' };
-
             if (location.infoWindowMaxWidth) {
                 infoWindow.maxWidth = location.infoWindowMaxWidth;
             }
 
             this.scope.infoWindow = new google.maps.InfoWindow(infoWindow);
-            google.maps.event.addListener(this.scope.infoWindow, 'closeclick', function(){
-                self.CloseInfoWindow();
-            });
+            google.maps.event.addListener(
+                this.scope.infoWindow,
+                'closeclick',
+                this.CloseInfoWindow.bind(this)
+            );
         }
     };
 
@@ -813,7 +809,6 @@
     Maplace.prototype.get_html_controls = function() {
         if (this.controls[this.o.controls_type] && this.controls[this.o.controls_type].getHtml) {
             this.scope.current_control = this.controls[this.o.controls_type];
-
             return this.scope.current_control.getHtml.apply(this);
         }
         return '';
@@ -852,45 +847,41 @@
 
     // Reset obj map, markers, bounds, listeners, controllers
     Maplace.prototype.init_map = function() {
-        var self = this;
+        this.scope.oBounds = new google.maps.LatLngBounds();
         this.scope.Polyline && this.scope.Polyline.setMap(null);
         this.scope.Polygon && this.scope.Polygon.setMap(null);
         this.scope.Fusion && this.scope.Fusion.setMap(null);
         this.scope.directionsDisplay && this.scope.directionsDisplay.setMap(null);
 
-        for (var i = this.scope.markers.length - 1; i >= 0; i -= 1) {
+        this.scope.markers.forEach(function(marker) {
             try {
-                this.scope.markers[i] && this.scope.markers[i].setMap(null);
+                marker.setMap(null);
             } catch (err) {
-                self.debug('init_map::markers::setMap', err.stack);
+                this.debug('init_map::markers::setMap', err.stack);
             }
-        }
-
+        }.bind(this));
         this.scope.markers.length = 0;
         this.scope.markers = [];
 
-        for (var e = this.scope.circles.length - 1; e >= 0; e -= 1) {
+        this.scope.circles.forEach(function(circle) {
             try {
-                this.scope.circles[e] && this.scope.circles[e].setMap(null);
+                circle.setMap(null);
             } catch (err) {
-                self.debug('init_map::circles::setMap', err.stack);
+                this.debug('init_map::circles::setMap', err.stack);
             }
-        }
-
+        }.bind(this));
         this.scope.circles.length = 0;
         this.scope.circles = [];
 
         if (this.o.controls_on_map && this.scope.oMap.controls) {
             this.scope.oMap.controls[this.o.controls_position].forEach(function(element, index) {
                 try {
-                    self.scope.oMap.controls[self.o.controls_position].removeAt(index);
+                    this.scope.oMap.controls[this.o.controls_position].removeAt(index);
                 } catch (err) {
-                    self.debug('init_map::removeAt', err.stack);
+                    this.debug('init_map::removeAt', err.stack);
                 }
-            });
+            }.bind(this));
         }
-
-        this.scope.oBounds = new google.maps.LatLngBounds();
     };
 
     // Perform the first view of the map
@@ -900,8 +891,12 @@
         // One location
         if (this.scope.calculatedLength === 1) {
             if (this.o.map_options.set_center) {
-                this.scope.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
-
+                this.scope.oMap.setCenter(
+                    new google.maps.LatLng(
+                        this.o.map_options.set_center[0],
+                        this.o.map_options.set_center[1]
+                    )
+                );
             } else {
                 this.scope.oMap.fitBounds(this.scope.oBounds);
                 this.ViewOnMap(1);
@@ -912,8 +907,12 @@
         // No locations
         } else if (this.scope.calculatedLength === 0) {
             if (this.o.map_options.set_center) {
-                this.scope.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
-
+                this.scope.oMap.setCenter(
+                    new google.maps.LatLng(
+                        this.o.map_options.set_center[0],
+                        this.o.map_options.set_center[1]
+                    )
+                );
             } else {
                 this.scope.oMap.fitBounds(this.scope.oBounds);
             }
@@ -927,11 +926,14 @@
             // Check the start option
             if (typeof (this.o.start - 0) === 'number' && this.o.start > 0 && this.o.start <= this.scope.calculatedLength) {
                 this.ViewOnMap(this.o.start);
-
             // Check if set_center exists
             } else if (this.o.map_options.set_center) {
-                this.scope.oMap.setCenter(new google.maps.LatLng(this.o.map_options.set_center[0], this.o.map_options.set_center[1]));
-
+                this.scope.oMap.setCenter(
+                    new google.maps.LatLng(
+                        this.o.map_options.set_center[0],
+                        this.o.map_options.set_center[1]
+                    )
+                );
             //view all
             } else {
                 this.ViewOnMap(this.scope.view_all_key);
@@ -1003,8 +1005,10 @@
             this.o.beforeViewAll.call(this);
 
             this.scope.current_index = index;
-            if (this.o.locations.length > 0 && this.o.generate_controls
-              && this.scope.current_control && this.scope.current_control.activateCurrent) {
+            if (this.o.locations.length > 0
+                && this.o.generate_controls
+                && this.scope.current_control
+                && this.scope.current_control.activateCurrent) {
                 this.scope.current_control.activateCurrent.apply(this, [index]);
             }
             this.scope.oMap.fitBounds(this.scope.oBounds);
@@ -1033,17 +1037,17 @@
     };
 
     // Add one or more locations to the end of the array
-    Maplace.prototype.AddLocations = function(locs, reload) {
+    Maplace.prototype.AddLocations = function(locations, reload) {
         var self = this;
 
-        if ($.isArray(locs)) {
-            $.each(locs, function(index, value) {
-                self.o.locations.push(value);
+        if ($.isArray(locations)) {
+            locations.forEach(function(location) {
+                self.o.locations.push(location);
             });
         }
 
-        if ($.isPlainObject(locs)) {
-            this.o.locations.push(locs);
+        if ($.isPlainObject(locations)) {
+            this.o.locations.push(locations);
         }
 
         reload && this.Load();
@@ -1061,20 +1065,18 @@
     };
 
     // Remove one or more locations
-    Maplace.prototype.RemoveLocations = function(locs, reload) {
-        var self = this;
-        var k = 0;
-
-        if ($.isArray(locs)) {
-            $.each(locs, function(index, value) {
-                if ((value - k) < self.scope.calculatedLength) {
-                    self.o.locations.splice(value - k, 1);
+    Maplace.prototype.RemoveLocations = function(locationsIndex, reload) {
+        if ($.isArray(locationsIndex)) {
+            var k = 0;
+            locationsIndex.forEach(function(locationIndex) {
+                if ((locationIndex - k) < this.scope.calculatedLength) {
+                    this.o.locations.splice(locationIndex - k, 1);
                 }
                 k++;
-            });
+            }.bind(this));
         } else {
-            if (locs < this.scope.calculatedLength) {
-                this.o.locations.splice(locs, 1);
+            if (locationsIndex < this.scope.calculatedLength) {
+                this.o.locations.splice(locationsIndex, 1);
             }
         }
 
@@ -1149,13 +1151,13 @@
             this.o.generate_controls = false;
         }
 
-        var self = this;
-
         // First call !!!
         if (!this.scope.loaded) {
-            google.maps.event.addListenerOnce(this.scope.oMap, 'idle', function() {
-                self.perform_load();
-            });
+            google.maps.event.addListenerOnce(
+                this.scope.oMap,
+                'idle',
+                this.perform_load.bind(this)
+            );
 
             // Add custom listeners
             for (var i in this.o.listeners) {
@@ -1170,7 +1172,6 @@
         }
 
         this.scope.loaded = true;
-
         return this;
     };
 
