@@ -1,4 +1,4 @@
-# Maplace.js [![Build Status](https://travis-ci.org/danielemoraschi/maplace.js.svg)](https://travis-ci.org/danielemoraschi/maplace.js)
+# Maplace.js [![Build Status](https://travis-ci.org/danielemoraschi/maplace.js.svg)](https://travis-ci.org/danielemoraschi/maplace.js) - currently unmaintained
 Helps you to embed Google Maps into your website, quickly create markers and controls menu for the locations on map.
 
 ## Demo
