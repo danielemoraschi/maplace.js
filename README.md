@@ -19,7 +19,7 @@ new Maplace({
 ### HTML
 ```html
 <div id="controls"></div>
-<div id="gmap" style="with:300px;height:250px;"></div>
+<div id="gmap" style="width:300px;height:250px;"></div>
 ```
 
 ### Locations Array
