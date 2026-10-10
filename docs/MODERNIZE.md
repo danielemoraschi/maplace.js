@@ -24,7 +24,7 @@ Critical path: 0 → A0 + F2–F4 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 
 - Old API reference: README tables (options, methods, events). Issue refs like #154 are github.com/danielemoraschi/maplace.js.
 - Default branch is `master` (rename in R3). maplacejs.com: GoDaddy, expires 2027-02-25, DNS on Cloudflare.
 
-## Conventions (borrowed from danielemoraschi/wavelace, a private repo; the rules are restated here so access isn't needed)
+## Conventions
 - Tooling stays simple: plain npm, few deps, no framework where a script will do.
 - CHANGELOG.md: one dated line (`- YYYY-MM-DD Added/Fixed/Changed …`) per change a reader would notice, at the top, in the same commit; a closed issue as `#N` at the line end. A test reads git history and fails if a commit that closes an issue has no line (keywords and baseline in P4). The site renders it at `/changelog`.
 - Releases: manual GitHub Actions dispatch with a version; refused unless above every released version (P2); pre-releases only to dist-tag `next`; workflow tags `v<version>` and publishes via npm trusted publishing (GitHub OIDC, no `NPM_TOKEN`; needs npm ≥ 11.5.1, i.e. current Node LTS; provenance is automatic). Checkout uses `fetch-depth: 0` (the CHANGELOG test reads history). The first release (1.0.0) is manual (R2); P2 takes over after R3, since dispatch and schedules only run from the default branch.
@@ -39,10 +39,10 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 |--------|---------|
 | pnpm, Turborepo | user prefers plain npm; no benefit at one package + one site |
 | `@maplace/*` scoped split | core is useless without an adapter (two installs for anything); per-package versions are overhead for one maintainer; npm org needed |
-| tsup/tsdown, Vite lib mode, Rollup | esbuild + tsc is two well-known tools and a short script (wavelace-style) |
+| tsup/tsdown, Vite lib mode, Rollup | esbuild + tsc is two well-known tools and a short script |
 | ESLint + Prettier | two tools and more config; Biome does both |
 | `node --test` | would need hand-rolled DOM mocks, coverage and browser mode; Vitest has them |
-| Changesets, semantic-release | wavelace-style manual dispatch + hand-written changelog preferred |
+| Changesets, semantic-release | manual dispatch + hand-written changelog preferred |
 | Hand-rolled site build, Vite MPA, Starlight/VitePress | Astro gives MDX docs + islands (React examples later) with one dependency |
 | Own Worker analytics, Plausible, GA | user chose Cloudflare Web Analytics: zero code, cookieless (listed on the privacy page; allowed before consent since it sets no cookie) |
 | Per-map consent, banner-only | per-map is too much friction on an examples site; banner-only doesn't gate Google's cookies |
@@ -150,9 +150,9 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | T2 | Adapter + views in Vitest browser mode | do | fake adapter (in-memory implementation of the adapter contract that records calls; no DOM map, no provider) = required PR gate; real Maps on push to `next` until R3, nightly after it (schedules only run from the default branch; fork PRs get no secrets): API key as secret, referrer-restricted and quota-capped; `DEMO_MAP_ID`; Maps JS pinned (`v=quarterly` or a numbered version) |
 | T3 | Type tests | do | `expectTypeOf` on public API (A3) |
 | T4 | Package checks | do | publint + attw in CI |
-| T5 | Docs examples executed | do | fake adapter on PRs; real Maps on push to `next` until R3, nightly after; docs can't drift (as wavelace) |
+| T5 | Docs examples executed | do | fake adapter on PRs; real Maps on push to `next` until R3, nightly after; docs can't drift |
 | T6 | E2E on site examples | do | Playwright, consent flow included; on push to `next` until R3, nightly after |
-| T7 | A fix lands with a test shown failing first | do | convention, as wavelace |
+| T7 | A fix lands with a test shown failing first | do | convention |
 | T8 | Coverage gate | do | threshold from RFC (A3) |
 | T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one |
 | T10 | Import boundaries check | do | Biome restricted imports or CI grep: no `google.maps` outside `maplace/google` (later same for maplibre); views import only the store, never an adapter; adapters never import views |
@@ -161,9 +161,9 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | # | Item | Status | Note |
 |---|------|--------|------|
 | P1 | Builds | do | per-subpath ESM + .d.ts; two IIFEs per D18, each with its own size budget; `exports` map without `react` until 1.x, `sideEffects` array per C6, `files` |
-| P2 | Release workflow (wavelace-style) | do | manual dispatch with version; refuse not-above-last (compares only tags ≥ `v1.0.0`; legacy `v0.1.x`/`0.2.x` tags ignored); pre-release only to dist-tag `next`; tag `v<version>`; publish via npm trusted publishing (OIDC, set up in R2) with provenance; built during the private phase, first used after R3 |
+| P2 | Release workflow | do | manual dispatch with version; refuse not-above-last (compares only tags ≥ `v1.0.0`; legacy `v0.1.x`/`0.2.x` tags ignored); pre-release only to dist-tag `next`; tag `v<version>`; publish via npm trusted publishing (OIDC, set up in R2) with provenance; built during the private phase, first used after R3 |
 | P3 | Size budget per subpath | do | size-limit in CI; numbers from RFC (A3) |
-| P4 | CHANGELOG.md convention (wavelace-style) | do | one dated line per reader-visible change, same commit, `#N` for closed issue; test refuses a closing commit not listed, checking only commits after the one that creates CHANGELOG.md (baseline); "closes" = GitHub closing keyword (`close[sd]?`, `fix(es\|ed)?`, `resolve[sd]?` + `#N`); seed with 0.x history |
+| P4 | CHANGELOG.md convention | do | one dated line per reader-visible change, same commit, `#N` for closed issue; test refuses a closing commit not listed, checking only commits after the one that creates CHANGELOG.md (baseline); "closes" = GitHub closing keyword (`close[sd]?`, `fix(es\|ed)?`, `resolve[sd]?` + `#N`); seed with 0.x history |
 | P5 | Release notes from CHANGELOG lines since last tag | do | GitHub release body from P2 |
 | P6 | README rewrite | do | leads with the CDN `<maplace-map>` 5-liner; then vanilla; CDN via jsDelivr/unpkg, version-pinned URLs with SRI hashes; load exactly one IIFE (plain or cluster) per page (V3) |
 | P7 | MIGRATION.md 0.2 → 1.0 | do | from A4 |
