@@ -2,11 +2,11 @@
 
 Single source of truth for the 1.0 rewrite. Read this first; it is written to be enough on its own. Lives in `docs/` with the RFC and future decisions/specs.
 
-Now: decisions done (D1–D22). Next: A0 (read-only triage of old issues) and F2–F4 on `next` (minimal tooling, so A2/A3 type-check), then A1 → A2 ⇄ A3 (iterate together) → A4 → A6 + A7 → A5.
+Now: decisions done (D1–D22). Next: F2–F4 on `next` (minimal tooling, so A2/A3 type-check), then A1 → A2 ⇄ A3 (iterate together) → A4 → A6 + A7 → A5.
 Status: do | wip | done | later (after 1.0) | wont (never)
 Target: maplace as if written from scratch in 2026. Headless core + adapter contract, Google adapter first, MapLibre next, views for HTML/vanilla (1.0) and React (usage designed now in the RFC, shipped in 1.x).
 1.0 = core + Google adapter + `<maplace-map>` (CDN/HTML drop-in first). `maplace/react` is not in the 1.0 `exports` map (no semver promise); it arrives in 1.x.
-Critical path: 0 → A0 + F2–F4 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7 (P1–P7) → 8 (on preview) → 9 (go-public gate, 1.0.0). Tests (6) run alongside 3–5, never after.
+Critical path: 0 → F2–F4 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7 (P1–P7) → 8 (on preview) → 9 (go-public gate, 1.0.0). Tests (6) run alongside 3–5, never after.
 
 ## How to work this file
 - Private phase: all work lives on the long-lived branch `next` (pushed to origin; short-lived branches fast-forward into it). Nothing public before §9: `master`/`main` untouched, no npm publish, no production site, no README notice, no issue activity. A branch being visible on GitHub is fine.
@@ -52,6 +52,8 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | Merging `develop`, its `this.scope` refactor | moot after the rewrite |
 | Public beta, README "rewrite in progress" notice, early npm placeholder | nothing public until stable (user); beta testing is private (R0) |
 | React in 1.0 | 0.2's audience was script-tag users; `<maplace-map>` already works in React 19; React adds JSX content later |
+| Several routes per map, route alternatives | D22 keeps one route per map (A0: #78, #177) |
+| Built-in traffic/bicycling/KML layers, distance matrix, drawing, print | add them to the user's own map (G1) or use Google APIs directly; beyond a location/route manager (A0). Places is not rejected: N12 |
 | Providers other than Google/MapLibre, Vue/Svelte wrappers, 0.2 compat shim | scope; the element covers other frameworks; MIGRATION.md covers 0.2 |
 
 ## 0. Decisions
@@ -75,7 +77,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | D16 | One typed event system | done | `on(event, fn)` returning unsubscribe; includes `error`; no before/after callback pairs, no callback options |
 | D17 | Bindings designed with the core | done | React + Web Component usage written in the RFC first; element ships in 1.0, React in 1.x |
 | D18 | One package, subpath exports | done | `maplace` (core + adapter contract), `maplace/google`, `maplace/element` (defines `<maplace-map>` once + provider registry), `maplace/element/google` (registers the Google provider, defining the element if needed; `provider` attribute picks one, defaulting to the only registered; ambiguity is misuse), `maplace/react` (1.x), later `maplace/maplibre`; one version, one tag `v<version>`; react, markerclusterer, maplibre-gl as optional peers. CDN: two IIFEs of `element` + `element/google`, `maplace-element.iife.js` and `maplace-element-cluster.iife.js` (markerclusterer bundled; no runtime fetch from other origins) |
-| D19 | 1.0 scope | done | core + Google adapter + element. Post-1.0: React (1.x), long lists (V2), playground, MapLibre adapter |
+| D19 | 1.0 scope | done | core + Google adapter + element. Post-1.0: React (1.x), long lists (V2), playground, MapLibre adapter. Confirmed by A0: jsDelivr serves 0.2 ~839k times/yr vs ~1.9k npm installs |
 | D20 | Content model | done | `title` (text): list label + marker accessible title. `content`: info window, string (rendered as text) \| Node \| `(loc) => Node`. `icon`: optional custom marker element, URL string \| Node \| `(loc) => Node` (0.2's field name; avoids `{type: 'marker', marker: …}`; A3 glossary confirms). `html`: opt-in, passed through a user-supplied `sanitize` hook (docs show DOMPurify); `html` without `sanitize` throws (misuse). Element supports `<template>` per location: trusted author markup, skips `sanitize`; `html` set through `locations` still needs the hook. 0.2 data needs conversion (A4, MIGRATION.md) |
 | D21 | MapLibre-ready from day one (very likely after 1.0) | done | adding it = new adapter, no rewrite. No provider types outside the adapter (own `LatLng`, bounds, padding, payloads; content = DOM Node, which both accept). Neutral options top-level (center, zoom, fit padding); provider options under `google: {…}` / `maplibre: {…}`. Adapter contract in core: mount, apply diff, viewport, fit, events, destroy, `mountControl(node, position)` with neutral positions (`top-left`, `top-right`, `bottom-left`, `bottom-right`, …), `capabilities`. Capabilities for what differs: route (Google only), clustering (markerclusterer vs MapLibre GeoJSON clustering), circle (native vs polygon), editable shapes (native vs plugin/none). Unsupported capability or location type is misuse. Check timing: before attach the headless store skips capability checks (other misuse, e.g. duplicate ids or bad args, still throws); `attach()` validates current state against capabilities and throws; after attach, store calls validate synchronously and throw; applying a diff never throws (runtime failures → `error`); in the element, misuse → error state + `error`. Load/consent states neutral |
 | D22 | Route API | done | store state, neutral data: `route: { stops: [id, …], travelMode }`; stops are ordinary selectable locations (0.2 used locations as waypoints); adapters with the `route` capability draw it; the store emits a typed `route` event (legs, distance, duration); adapter without it → misuse (timing per D21). Edge rules (A3 to confirm): ≥ 2 stops, ≤ 25 intermediates (Routes limit); `route` with unknown ids throws; removing a stop's location drops it from `stops` (route cleared below 2); recompute only when `stops`, their positions or `travelMode` change, and for drags only on drag end (Routes calls cost money); clearing the route emits `route` with `undefined` so views update; provider failure (no route) → `error`; `route` event payload uses core neutral types (D21) |
@@ -83,10 +85,10 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 ## 1. API RFC
 | # | Item | Status | Note |
 |---|------|--------|------|
-| A0 | Triage old GitHub issues/PRs, read-only | do | feeds A4 (what users asked for, what broke); no comments or closing until R5 |
+| A0 | Triage old GitHub issues/PRs, read-only | done | `docs/rfc-1.0.md` Appendix A: 198 items in 27 themes, usage signals, new requirements, C7 candidates, R5 actions for the 42 open items |
 | A1 | Positioning doc | do | the 5-line promise, target users, explicit non-goals, comparison with `<gmp-map>` (Google's web components), `@vis.gl/react-google-maps`, Places UI Kit (Google's ready-made place widgets) |
 | A2 | Use cases as code first | do | iterate with A3. 10 scenarios × HTML (`<maplace-map>`), vanilla JS, React: simple, markers, circles, menu, tabs (= list + details panel driven by select event), polyline, polygon, route (D22), mixed (= markers + circles, plus locations loaded async from JSON), big (= 4k points + clustering; targets set in A3). Snippets must type-check against A3 |
-| A3 | Public API as `.d.ts` | do | core store (`subscribe`/`getSnapshot`, `setLocations`, `select`, `fitAll`, `destroy`), `Location` (id-keyed union), event map incl. `error` and `route`, load states, adapter contract + capabilities + `mountControl`, route (D22), location fields (D20), capability check timing (D21), who calls `mountControl` (the composition layer: element and bindings; never store or views), view contract (how a view reads the store and requests selection); numbers: size budget per subpath, coverage threshold; type tests from day one. Also: glossary (location, selection, viewport, adapter, view, capability; verbs for methods, `is`/`has` for booleans, no near-duplicates — 0.2 had `show_infowindow` vs `show_infowindows`, `commons` vs `shared`); error policy (misuse such as bad args or duplicate id throws; runtime/provider failures emit `error`; never `null` to signal failure, no swallowed errors — 0.2 L866; absence is `undefined`, e.g. nothing selected; in `<maplace-map>`/`<maplace-location>` there is no caller to catch a throw, so misuse there also sets the error load state and fires `error` on the element); API shape (≤2 positional args, then an options object; one way to do each thing) |
+| A3 | Public API as `.d.ts` | do | core store (`subscribe`/`getSnapshot`, `setLocations`, `select`, `fitAll`, `destroy`), `Location` (id-keyed union), event map incl. `error` and `route`, load states, adapter contract + capabilities + `mountControl`, route (D22), location fields (D20), capability check timing (D21), who calls `mountControl` (the composition layer: element and bindings; never store or views), view contract (how a view reads the store and requests selection); numbers: size budget per subpath, coverage threshold; type tests from day one. Also: glossary (location, selection, viewport, adapter, view, capability; verbs for methods, `is`/`has` for booleans, no near-duplicates — 0.2 had `show_infowindow` vs `show_infowindows`, `commons` vs `shared`); error policy (misuse such as bad args or duplicate id throws; runtime/provider failures emit `error`; never `null` to signal failure, no swallowed errors — 0.2 L866; absence is `undefined`, e.g. nothing selected; in `<maplace-map>`/`<maplace-location>` there is no caller to catch a throw, so misuse there also sets the error load state and fires `error` on the element); API shape (≤2 positional args, then an options object; one way to do each thing). From A0 (Appendix A), decide: location groups/tags + visibility filter (list renders headings); drag/edit writes geometry back to the store + typed change event; never write inline styles on the host element; info window max width and pixel offset; open trigger click or hover; selected state available to `icon`; info-window-mounted event; viewport-changed event |
 | A4 | 0.2 → 1.0 inventory | do | every option/method/event from README + develop → keep / changed / dropped. Model changes spelled out: polyline/polygon/route vertices are no longer list entries; `lon` → `lng`; `id` required (index → id); `html` → `content` or `html` + `sanitize` (D20); develop-only items (D11). MIGRATION.md shows a few-line `map()` conversion. Feeds MIGRATION.md |
 | A5 | Review and freeze RFC | do | `docs/rfc-1.0.md`, self-contained and public (must not depend on this file); changes after freeze go through it |
 | A6 | MapLibre spike (before A5) | do | throwaway: markers, polyline, select, fit against the draft contract; any provider leak into core fixed in the RFC |
@@ -117,7 +119,8 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | C4 | Typed events | do | select, hover, drag, edit, route, error; unsubscribe fn; AbortSignal support |
 | C5 | Lifecycle | do | `destroy()`, AbortSignal, many instances, nothing global, SSR-safe import |
 | C6 | Tree-shakable | do | each subpath and location type independently importable; `sideEffects` is an array listing the element entries (they define a custom element on import; `false` would let bundlers drop `import 'maplace/element/google'`), everything else side-effect-free |
-| C7 | 0.2 bug scenarios as tests | do | anchored to tag `0.2.10` (permalinks): shared controls (L257), maxZIndex (L349), edit callbacks (L529), control removal (L866), AddControl (L937), onPolylineClick, route with draggable stops (#147, #139); each becomes a regression test the design makes impossible |
+| C7 | 0.2 bug scenarios as tests | do | anchored to tag `0.2.10` (permalinks): shared controls (L257), maxZIndex (L349), edit callbacks (L529), control removal (L866), AddControl (L937), onPolylineClick, route with draggable stops (#147, #139), plus the A0 candidates in `docs/rfc-1.0.md` Appendix A; each becomes a regression test the design makes impossible |
+| C8 | Input validation | do | lat/lng numeric and in range, required fields, container found, icon type; per the A3 error policy, naming location id and field; never a silent grey map (A0: #63, #125, #145, #149, #175) |
 
 ## 4. Google adapter (first implementation of the contract, `maplace/google`)
 | # | Item | Status | Note |
@@ -131,6 +134,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | G7 | Clustering capability | do | ESM: lazy-imports `@googlemaps/markerclusterer` (optional peer); CDN: bundled in the cluster IIFE (D18); "big" is the benchmark |
 | G8 | On-map controls | do | adapter implements `mountControl(node, position)` (maps neutral positions to `ControlPosition`); views never touch the map (T10) |
 | G9 | Load + error states | do | missing/invalid key or mapId, quota, library load failure → `error` event + state |
+| G10 | Container resize/visibility | do | ResizeObserver on the container; re-apply viewport intent when a hidden or resized map becomes visible (A0: #1, #79, #83, #136, #154, #173) |
 
 ## 5. Views and bindings (parallel to 4)
 | # | Item | Status | Note |
@@ -195,7 +199,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | R2 | Settle npm name, publish 1.0.0 | do | first publish is manual (OIDC can't do a first publish); claims `maplace`; if taken, rename package + docs to `maplace-js` on `next` first; then enable npm trusted publishing for P2 |
 | R3 | `master` → `main`, fast-forward to `next`, tag `v1.0.0` | do | rename on GitHub (redirects); `next` grew from master's head 28b39bd so it's a fast-forward; schedules and P2 start working; `Fixes #N` commits now close their issues |
 | R4 | Production deploy + maplacejs.com | do | custom domain on Cloudflare; offsite cron active |
-| R5 | Public repo cleanup | do | triage/close remaining issues and PRs (some already closed by R3); prune `0.1.2`, `0.1.3`, `0.2.0`, `0.2-stable`, `develop` (tags stay); delete `website` branch |
+| R5 | Public repo cleanup | do | act on the open-item list in `docs/rfc-1.0.md` Appendix A (some already closed by R3); prune `0.1.2`, `0.1.3`, `0.2.0`, `0.2-stable`, `develop` (tags stay); delete `website` branch |
 | R6 | `npm deprecate maplace-js` → "moved to maplace" | do | only if R2 claimed `maplace` |
 
 ## Post-1.0
@@ -210,3 +214,6 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | N7 | Geocoded address locations | later | adapter capability |
 | N8 | 0.2 options compat shim | wont | MIGRATION.md is enough |
 | N9 | Vue/Svelte wrappers | wont | Web Component covers them |
+| N10 | GeoJSON FeatureCollection → locations helper | later | A0: #103, #188 |
+| N11 | "My location" control / route from user position | later | A0: #169 |
+| N12 | Places integration | later | search box / autocomplete that adds locations, place details as `content`, "save a place"; adapter capability (Google Places now; MapLibre would need another geocoder); A0: #41, #98, #152, #165 |
