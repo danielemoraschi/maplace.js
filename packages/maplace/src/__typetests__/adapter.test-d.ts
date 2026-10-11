@@ -1,5 +1,5 @@
 // Compile-time checks of the adapter contract: each @ts-expect-error must stay an error.
-import type { AdapterHost, Drawable } from "maplace";
+import type { Adapter, AdapterHost, Drawable } from "maplace";
 
 declare const host: AdapterHost;
 declare const drawable: Drawable;
@@ -14,3 +14,15 @@ host.reportChange({ id: "a", type: "marker", lat: 1, lng: 2 });
 drawable.data;
 // @ts-expect-error content arrives resolved, as a builder
 drawable.content;
+
+declare const adapter: Adapter;
+// Drawing is awaitable, so tests and `whenReady` know when a diff is on screen.
+const drawn: Promise<void> = adapter.apply({ added: [], updated: [], removed: [] });
+adapter.setView({
+  kind: "bounds",
+  bounds: { south: -20, west: 170, north: 0, east: -170 },
+  padding: 40,
+});
+// @ts-expect-error adapters never see fit-all; the store resolves it to bounds
+adapter.setView({ kind: "fit-all", padding: 40 });
+void drawn;

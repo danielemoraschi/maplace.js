@@ -24,7 +24,8 @@ export interface Drawable {
   readonly renderContent: (() => Node) | undefined;
   /**
    * Builds the marker for a state; call it again only when the state changes. Undefined: the
-   * provider's default marker, which an adapter may draw without DOM (e.g. a GPU layer).
+   * provider's default marker, which may be drawn without DOM (then no data attributes and no
+   * marker focus; the list view is the keyboard path).
    */
   readonly renderIcon: ((state: LocationState) => Node) | undefined;
 }

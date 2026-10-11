@@ -49,4 +49,4 @@ export type {
 } from "./store";
 export { createMaplace } from "./store";
 export type { LineStyle, ShapeStyle } from "./style";
-export type { Bounds, View, Viewport } from "./viewport";
+export type { Bounds, ResolvedView, View, Viewport } from "./viewport";

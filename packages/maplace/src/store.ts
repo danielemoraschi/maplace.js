@@ -82,7 +82,7 @@ export interface Maplace<Data = unknown> {
    * Throws if already attached or if the current state needs a missing capability.
    */
   attach(adapter: Adapter, container: HTMLElement): () => void;
-  /** Resolves when the map is ready; rejects with the load error. */
+  /** Resolves once the provider loaded and the first locations are drawn; rejects on load error. */
   whenReady(): Promise<void>;
   destroy(): void;
 }

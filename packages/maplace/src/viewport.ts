@@ -14,18 +14,21 @@ export interface Bounds {
 /** The visible area, as the provider reports it. */
 export interface Viewport {
   readonly center: LatLng;
-  /**
-   * Web convention (Google's): the world is 256 px wide at zoom 0. Providers with 512 px tiles
-   * (MapLibre) convert, so the same number means the same scale everywhere.
-   */
+  /** Google's scale: the world is 256 px wide at zoom 0; adapters convert (MapLibre: −1). */
   readonly zoom: number;
   readonly bounds: Bounds;
 }
 
-/** What the map should show; adapters turn intents into camera moves. Zooms as in `Viewport`. */
+/** What the map should show. Zooms as in `Viewport`. */
 export type View =
-  /** The smallest box around all locations, crossing the antimeridian when that is shorter. */
   | { readonly kind: "fit-all"; readonly padding: number }
+  | { readonly kind: "bounds"; readonly bounds: Bounds; readonly padding: number }
   | { readonly kind: "center"; readonly center: LatLng; readonly zoom: number }
   /** Bring one location into view, as `select` does; `zoom` undefined keeps the zoom. */
   | { readonly kind: "location"; readonly id: string; readonly zoom: number | undefined };
+
+/**
+ * What adapters receive: the store resolves `fit-all` to `bounds` in one pass, taking the
+ * narrower of the boxes with and without crossing the antimeridian.
+ */
+export type ResolvedView = Exclude<View, { readonly kind: "fit-all" }>;

@@ -3,7 +3,7 @@ import type { MaplaceError } from "./errors";
 import type { Geometry } from "./geometry";
 import type { ResolvedPopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
-import type { View, Viewport } from "./viewport";
+import type { ResolvedView, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
 export type Capability = "route" | "cluster" | "circle" | "edit";
@@ -28,12 +28,13 @@ export interface PresentationState {
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */
 export interface AdapterHost {
-  /** A click on a location, or `undefined` for a click on the map or closing the popup. */
+  /** A click on a location, or `undefined` for a click on the map. */
   reportSelect(id: string | undefined): void;
   reportHover(id: string | undefined): void;
   /** A drag or edit moved or reshaped a location; `geometry.type` is the location's own. */
   reportChange(id: string, geometry: Geometry): void;
   reportPopupOpen(id: string, element: HTMLElement): void;
+  /** Closing the selected location's popup is a deselect; the store does that, not the adapter. */
   reportPopupClose(id: string): void;
   reportViewport(viewport: Viewport): void;
   reportRoute(result: RouteResult | undefined): void;
@@ -62,10 +63,14 @@ export interface Adapter {
   readonly routeStopLimit?: number | undefined;
   /** Loads the provider and draws into the container. */
   mount(context: MountContext): Promise<void>;
-  apply(diff: LocationDiff): void;
+  /**
+   * Resolves once the diff is drawn; `whenReady` waits for the first one. Large diffs are drawn
+   * in chunks so input is never blocked for long (aim: no task over 200 ms).
+   */
+  apply(diff: LocationDiff): Promise<void>;
   present(state: PresentationState): void;
   /** Moves the camera; `select` sends a `location` view unless `pan: false`. */
-  setView(view: View): void;
+  setView(view: ResolvedView): void;
   setRoute(route: Route | undefined): void;
   /** Places a view on the map; returns a function that removes it. */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;
