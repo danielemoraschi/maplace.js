@@ -2,8 +2,8 @@
 
 Work in progress. This document is self-contained: every decision states its own reason.
 
-- A1 Positioning: written
-- A2 Use cases, A3 API, A4 0.2 → 1.0 inventory: to come
+- A1 Positioning, A2 Use cases, A3 API: written (A3 is a draft until the RFC is frozen)
+- A4 0.2 → 1.0 inventory: to come
 - Appendix A: 0.2 issue triage
 
 ## A1. Positioning
@@ -12,7 +12,7 @@ A list of your locations becomes a map with a synced list, in about five lines. 
 
 ### The five-line promise
 
-Illustrative only: attribute names are settled in A3.
+Attribute names as drafted in A3.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
@@ -91,6 +91,104 @@ React binding; MapLibre adapter; Places integration (search box that adds locati
 - The five-line snippet runs from a blank HTML file with only an API key.
 - A typical 0.2 page migrates by following MIGRATION.md in under 30 minutes.
 - None of the "pick it when" cases above is something maplace does half-way.
+
+## A2. Use cases
+
+Ten scenarios, each written three ways against the A3 draft: an HTML page using `<maplace-map>`, vanilla TypeScript, and React (1.x draft). They live in [`packages/maplace/examples/`](../packages/maplace/examples/); the TypeScript and React versions type-check against the API in CI, and the HTML versions will run in the end-to-end tests. Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
+
+| Scenario | Shows | 0.2 equivalent | 0.2 issues it answers |
+|---|---|---|---|
+| [simple](../packages/maplace/examples/simple/) | One marker, nothing else | simple | #52, #55, #65 (single location) |
+| [markers](../packages/maplace/examples/markers/) | Markers, popup content from a `<template>` or string, custom icon, list | markers | #37, #60, #101, #192 (icons) |
+| [circles](../packages/maplace/examples/circles/) | Circles with radius in metres | circles | #13, #130 |
+| [menu](../packages/maplace/examples/menu/) | Native `<select>` on the map, groups, filter | menu (dropdown) | #15, #40, #117 (groups) |
+| [tabs](../packages/maplace/examples/tabs/) | List outside the map, details panel driven by the `select` event | tabs | #5, #84, #122 |
+| [polyline](../packages/maplace/examples/polyline/) | One polyline location, inline JSON data | polyline | #178 |
+| [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `change` event | polygon | #64, #164 |
+| [route](../packages/maplace/examples/route/) | One route through ordered stops, distance from the `route` event | directions | #121, #147 |
+| [mixed](../packages/maplace/examples/mixed/) | Markers and circles together, data fetched by the page | mixed (ajax) | #43, #134, #179, #193 |
+| [big](../packages/maplace/examples/big/) | 4,000 points with clustering | big | #3, #54, #174, #182 |
+
+What the scenarios settled:
+
+- **Data in the element** comes from `<maplace-location>` children, an inline `<script type="application/json">` child, or the `locations` property. The element never fetches; pages load data with `fetch` and assign it.
+- **Shapes are single locations.** In 0.2 a polyline or polygon turned every location into a vertex and listed the vertices. In 1.0 a polyline is one location with a `path`; mark points of interest along it as separate markers if they belong in the list.
+- **The list is the element's own view.** `list` puts a list beside the map, `list="select"` a native select, and `list-position` places it on or outside the map.
+
+## A3. API (draft)
+
+The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarations, with compile-time tests in `src/__typetests__/`. This section explains them; the files are the reference.
+
+### Glossary
+
+| Term | Meaning |
+|---|---|
+| location | One item of your data: a marker, circle, polyline or polygon, with a unique `id` |
+| selection | The one location currently chosen (`selectedId`), shared by map and list |
+| hover | The location under the pointer or keyboard focus (`hoveredId`) |
+| view | What you asked the map to show: fit all, a centre and zoom, or one location |
+| viewport | What the map actually shows, as reported by the provider |
+| popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup) |
+| route | One path through your own locations, in order |
+| filter | The groups currently shown |
+| adapter | The bridge to a map provider (Google now, MapLibre next) |
+| view (component) | A UI that renders the state and asks the store for changes, e.g. the list |
+| capability | A feature an adapter may or may not support: route, cluster, circle, edit |
+
+### Shape
+
+- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach`, `ready`, `destroy`. The snapshot is immutable and replaced on every change.
+- **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible`.
+- **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
+- **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
+- **Adapter contract**: `mount`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `setRoute`, `mountControl`, `destroy`, and a set of `capabilities`. Adapters report back only through an `AdapterHost`; they never read or write the store.
+- **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
+- **Views**: `createListView(maplace, { as, groupHeadings, render })` returns `{ element, destroy }`.
+- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` with attributes `provider`, `list`, `list-position`, `cluster`, `hold` plus provider attributes (`api-key`, `map-id`, `version`, `language`, `region`, `nonce`), properties `locations`, `route`, `maplace`, method `release()`, and DOM events `maplace-select`, `maplace-change`, … `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
+- **React (1.x draft)**: `<MaplaceProvider locations>`, `<MaplaceMap adapter>`, `<LocationList>`, `useMaplace()`, `useSelection()`.
+
+### Rules the API follows
+
+- Verbs for methods, nouns for types, one word per concept (see the glossary); no aliases and no two ways to do the same thing.
+- At most two positional arguments, then an options object; never a boolean flag (`select(id, { pan: false })`, not `select(id, false)`).
+- Absence is `undefined`, never `null`.
+- Each function does one thing: `attach` connects and throws on misuse, `ready` waits for loading.
+- Views know only the store, adapters know only their host, and only the element (or your code) wires them together.
+
+### Errors
+
+- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
+- **Runtime failures are events**, never throws: provider load or auth failure, route not found. `loadState` becomes `error` and `ready()` rejects.
+- **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. Applying changes to the map never throws.
+- **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
+
+### Decisions from the 0.2 issues
+
+| Need (issues) | Decision |
+|---|---|
+| Categories and filters (#15, #36, #40, #44, #85, #87, #117, #143) | `group` on a location, `setFilter(groups)` on the store; the list shows group headings |
+| Saving dragged or edited shapes (#48, #49, #64, #107, #155, #164, #178) | The store writes the new geometry back and fires `change`; pages save from the event |
+| Map container sizing and styles (#23, #184) | The element never sets inline styles on itself; default styles use `:where()` so pages override them; the page sets the height |
+| Popup width and offset (#86, #160, #198) | `popup: { maxWidth, offset }` |
+| Open on hover (#197) | `popup: { openOn: 'hover' }`; default `click` |
+| Different icon when selected (#192) | An `icon` function receives `{ selected, hovered }` |
+| Act on popup content once shown (#171) | `popupOpen` fires after the content is in the DOM, with the element |
+| React to zoom and pan (#195) | `viewport` event after each move ends |
+| Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |
+| Silent grey map on bad input (#63, #125, #145, #149, #175) | Validation per the error rules above |
+
+### Numbers
+
+Checked in CI from the first build:
+
+| | Budget (gzip) |
+|---|---|
+| Core (`maplace`) | ≤ 4 kB |
+| Google adapter (`maplace/google`) | ≤ 8 kB |
+| Element CDN build (core + Google + list view + element) | ≤ 15 kB |
+| Element CDN build with clustering | ≤ 25 kB |
+
+Test coverage: core ≥ 95% of lines, whole package ≥ 85%.
 
 ## Appendix A: 0.2 issue triage
 

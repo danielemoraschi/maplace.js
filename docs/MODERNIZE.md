@@ -2,7 +2,7 @@
 
 Single source of truth for the 1.0 rewrite. Read this first; it is written to be enough on its own. Lives in `docs/` with the RFC and future decisions/specs.
 
-Now: decisions done (D1–D22). Next: A2 ⇄ A3 (iterate together) → A4 → A6 + A7 → A5.
+Now: decisions done (D1–D22). Next: A4 → A6 + A7 → A5.
 Status: do | wip | done | later (after 1.0) | wont (never)
 Target: maplace as if written from scratch in 2026. Headless core + adapter contract, Google adapter first, MapLibre next, views for HTML/vanilla (1.0) and React (usage designed now in the RFC, shipped in 1.x).
 1.0 = core + Google adapter + `<maplace-map>` (CDN/HTML drop-in first). `maplace/react` is not in the 1.0 `exports` map (no semver promise); it arrives in 1.x.
@@ -87,8 +87,8 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 |---|------|--------|------|
 | A0 | Triage old GitHub issues/PRs, read-only | done | `docs/rfc-1.0.md` Appendix A: 198 items in 27 themes, usage signals, new requirements, C7 candidates, R5 actions for the 42 open items |
 | A1 | Positioning doc | done | RFC §A1: one-liner, five-line promise, audience, principles, non-goals with reasons, comparison (`<gmp-map>`, vis.gl, `<gmpx-store-locator>` as closest neighbour, Places UI Kit, Leaflet/MapLibre), success criteria |
-| A2 | Use cases as code first | do | iterate with A3. 10 scenarios × HTML (`<maplace-map>`), vanilla JS, React: simple, markers, circles, menu, tabs (= list + details panel driven by select event), polyline, polygon, route (D22), mixed (= markers + circles, plus locations loaded async from JSON), big (= 4k points + clustering; targets set in A3). Snippets must type-check against A3 |
-| A3 | Public API as `.d.ts` | do | core store (`subscribe`/`getSnapshot`, `setLocations`, `select`, `fitAll`, `destroy`), `Location` (id-keyed union), event map incl. `error` and `route`, load states, adapter contract + capabilities + `mountControl`, route (D22), location fields (D20), capability check timing (D21), who calls `mountControl` (the composition layer: element and bindings; never store or views), view contract (how a view reads the store and requests selection); numbers: size budget per subpath, coverage threshold; type tests from day one. Also: glossary (location, selection, viewport, adapter, view, capability; verbs for methods, `is`/`has` for booleans, no near-duplicates — 0.2 had `show_infowindow` vs `show_infowindows`, `commons` vs `shared`); error policy (misuse such as bad args or duplicate id throws; runtime/provider failures emit `error`; never `null` to signal failure, no swallowed errors — 0.2 L866; absence is `undefined`, e.g. nothing selected; in `<maplace-map>`/`<maplace-location>` there is no caller to catch a throw, so misuse there also sets the error load state and fires `error` on the element); API shape (≤2 positional args, then an options object; one way to do each thing). From A0 (Appendix A), decide: location groups/tags + visibility filter (list renders headings); drag/edit writes geometry back to the store + typed change event; never write inline styles on the host element; info window max width and pixel offset; open trigger click or hover; selected state available to `icon`; info-window-mounted event; viewport-changed event |
+| A2 | Use cases as code first | done | RFC §A2; `packages/maplace/examples/<scenario>/{page.html,vanilla.ts,react.tsx}` for simple, markers, circles, menu, tabs, polyline, polygon, route, mixed, big; TS/React type-check in `npm run typecheck`, HTML runs in T5/T6 |
+| A3 | Public API as types | done | RFC §A3 (draft until A5): glossary, shape, rules, errors and check timing, decisions on the A0 notes, size budgets and coverage numbers. Types in `packages/maplace/src/` (`declare` only), compile-time tests in `src/__typetests__/`; React draft in `src/react/`, not exported |
 | A4 | 0.2 → 1.0 inventory | do | every option/method/event from README + develop → keep / changed / dropped. Model changes spelled out: polyline/polygon/route vertices are no longer list entries; `lon` → `lng`; `id` required (index → id); `html` → `content` or `html` + `sanitize` (D20); develop-only items (D11). MIGRATION.md shows a few-line `map()` conversion. Feeds MIGRATION.md |
 | A5 | Review and freeze RFC | do | `docs/rfc-1.0.md`, self-contained and public (must not depend on this file; at freeze, replace the plan row IDs in Appendix A with RFC section references); changes after freeze go through it |
 | A6 | MapLibre spike (before A5) | do | throwaway: markers, polyline, select, fit against the draft contract; any provider leak into core fixed in the RFC |
@@ -115,7 +115,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 |---|------|--------|------|
 | C1 | Store | do | locations, selection, viewport intent; `subscribe`/`getSnapshot` (works with `useSyncExternalStore`); immutable snapshots |
 | C2 | Id-keyed locations + diffing | do | `setLocations(next)` yields added/updated/removed; adapters apply only the diff |
-| C3 | Location types | do | marker, circle, polyline, polygon as a discriminated union; fields per D20; route is store state (D22), not a location type |
+| C3 | Location types | do | marker, circle, polyline, polygon as a discriminated union (`path` for lines and polygon outer ring, `holes?`); fields per D20; `group` + `setFilter`; route is store state (D22), not a location type |
 | C4 | Typed events | do | select, hover, drag, edit, route, error; unsubscribe fn; AbortSignal support |
 | C5 | Lifecycle | do | `destroy()`, AbortSignal, many instances, nothing global, SSR-safe import |
 | C6 | Tree-shakable | do | each subpath and location type independently importable; `sideEffects` is an array listing the element entries (they define a custom element on import; `false` would let bundlers drop `import 'maplace/element/google'`), everything else side-effect-free |
@@ -127,8 +127,8 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 |---|------|--------|------|
 | G1 | Attach to a map | do | `importLibrary` for maps/marker/routes on demand; accepts an existing `google.maps.Map` or creates one from `google: {…}` options |
 | G2 | Markers | do | AdvancedMarkerElement; content per D20; `gmpClickable`, keyboard focus, titles |
-| G3 | Shapes | do | circle, polyline, polygon; draggable/editable reported as typed events |
-| G4 | Info window | do | content per D20; XSS-safe by default |
+| G3 | Shapes | do | circle, polyline, polygon; drags and edits write geometry back to the store, then `change` fires (RFC §A3) |
+| G4 | Popup | do | neutral term "popup" (Google InfoWindow); content per D20; `popup: { maxWidth, offset, openOn }`; `popupOpen` after content is in the DOM; XSS-safe by default |
 | G5 | Fit all / pan / zoom | do | from store viewport intent |
 | G6 | Route capability | do | D8 + D22 |
 | G7 | Clustering capability | do | ESM: lazy-imports `@googlemaps/markerclusterer` (optional peer); CDN: bundled in the cluster IIFE (D18); "big" is the benchmark |
@@ -139,7 +139,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 ## 5. Views and bindings (parallel to 4)
 | # | Item | Status | Note |
 |---|------|--------|------|
-| V1 | List + select views (vanilla) | do | accessible (listbox/aria-selected, keyboard, native `<select>`); synced to store selection; render function override |
+| V1 | List + select views (vanilla) | do | `createListView(maplace, { as, groupHeadings, render })`; accessible (listbox/aria-selected, keyboard, native `<select>`); group headings; synced to store selection and hover |
 | V2 | Long lists | later | virtualise or paginate (D19) |
 | V3 | `<maplace-map>` Web Component | do | attributes + `locations` property + child `<maplace-location>` + `<template>` content; loading attributes per D5; DOM events; works in React 19 as-is; `provider` attribute (D18); `<maplace-location location-id="…">` (not HTML `id`, which must be unique per document); a second maplace copy on one page fails loudly at import with an error naming both (intended for every case: IIFE + ESM, both CDN IIFEs, two npm versions via a pinned dependency); detected via `customElements.get('maplace-map')` returning a constructor from another copy, no global flag; never silently keeps the first (separate copies can't share a provider registry; no second global); CDN IIFEs per D18 |
 | V4 | React: provider + components | later | 1.x: `<Maplace locations>` with `<Map/>`, `<LocationList/>`, `<Marker>` children; hooks via `useSyncExternalStore` |

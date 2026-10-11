@@ -16,9 +16,14 @@ export declare function defineProvider(name: string, factory: ProviderFactory): 
  * `<maplace-map>`: a map plus an optional list, from child `<maplace-location>` elements,
  * an inline `<script type="application/json">` child, or the `locations` property.
  *
- * Attributes: `provider`, `list` (`list` | `select`; absent = no list), `list-position`
- * (`top-left` | `top-right` | `bottom-left` | `bottom-right` | `outside`), `hold` (stay idle,
- * no provider request, until `release()`), plus provider attributes such as `api-key`.
+ * Attributes:
+ * - `provider`: registered provider name; defaults to the only one registered.
+ * - `list`: present = list view; `list="select"` = native select; absent = no list.
+ * - `list-position`: `top-left` | `top-right` | `bottom-left` | `bottom-right` | `outside`.
+ * - `cluster`: cluster markers (a CDN page needs the cluster build).
+ * - `hold`: stay idle, with no provider request, until `release()`.
+ * - provider attributes, such as `api-key` and `map-id` for Google.
+ *
  * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent.
  */
 export interface MaplaceMapElement extends HTMLElement {
