@@ -1,6 +1,6 @@
 import type { MaplaceError } from "./errors";
 import type { Location } from "./location";
-import type { PopupOptions } from "./popup";
+import type { ResolvedPopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
 import type { View, Viewport } from "./viewport";
 
@@ -24,7 +24,7 @@ export interface PresentationState {
   /** Ids hidden by the group filter or `visible: false`. */
   readonly hiddenIds: ReadonlySet<string>;
   readonly cluster: boolean;
-  readonly popup: PopupOptions;
+  readonly popup: ResolvedPopupOptions;
 }
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */

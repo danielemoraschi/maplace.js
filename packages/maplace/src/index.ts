@@ -29,7 +29,7 @@ export type {
   PolygonLocation,
   PolylineLocation,
 } from "./location";
-export type { PopupOptions } from "./popup";
+export type { PopupOptions, ResolvedPopupOptions } from "./popup";
 export type { Route, RouteLeg, RouteResult, TravelMode } from "./route";
 export type {
   FitOptions,
