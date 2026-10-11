@@ -15,6 +15,8 @@ accept({ id: "a", lat: 1, lon: 2 });
 accept({ id: "c", type: "circle", center: { lat: 1, lng: 2 } });
 // @ts-expect-error a polyline has a path, not lat/lng
 accept({ id: "l", type: "polyline", lat: 1, lng: 2 });
+// @ts-expect-error one word for dragging and reshaping: `editable`
+accept({ id: "a", lat: 1, lng: 2, draggable: true });
 // @ts-expect-error a polyline has no fill
 accept({ id: "l", type: "polyline", path: [], style: { fill: "red" } });
 

@@ -1,4 +1,4 @@
-import type { CircleGeometry, MarkerGeometry, PolygonGeometry, PolylineGeometry } from "./geometry";
+import type { CircleGeometry, LatLng, PolygonGeometry, PolylineGeometry } from "./geometry";
 import type { LineStyle, ShapeStyle } from "./style";
 
 /**
@@ -7,8 +7,8 @@ import type { LineStyle, ShapeStyle } from "./style";
  */
 export type Content<Data = unknown> = string | Node | Bivariant<[location: Location<Data>]>;
 
-/** State passed to an `icon` function so the selected marker can look different. */
-export interface IconState {
+/** Selection and hover of one location, passed to `icon` and list `render` functions. */
+export interface LocationState {
   readonly selected: boolean;
   readonly hovered: boolean;
 }
@@ -21,7 +21,7 @@ export interface IconState {
 export type Icon<Data = unknown> =
   | string
   | Node
-  | Bivariant<[location: MarkerLocation<Data>, state: IconState]>;
+  | Bivariant<[location: MarkerLocation<Data>, state: LocationState]>;
 
 /**
  * A function checked like a method, so a typed `Location<Data>` still fits where a plain
@@ -43,31 +43,27 @@ interface LocationBase<Data> {
   readonly group?: string | undefined;
   /** Hidden locations stay in the data but are not drawn or listed. Default true. */
   readonly visible?: boolean | undefined;
+  /** Lets the user drag a marker or reshape a shape; needs the `edit` capability. */
+  readonly editable?: boolean | undefined;
   /** Your own fields, passed back to content, icon and render functions. */
   readonly data?: Data | undefined;
 }
 
-export interface MarkerLocation<Data = unknown>
-  extends LocationBase<Data>,
-    Omit<MarkerGeometry, "type"> {
+export interface MarkerLocation<Data = unknown> extends LocationBase<Data>, LatLng {
   /** Optional: a location without `type` is a marker. */
   readonly type?: "marker" | undefined;
   readonly icon?: Icon<Data> | undefined;
-  readonly draggable?: boolean | undefined;
 }
 
 export interface CircleLocation<Data = unknown> extends LocationBase<Data>, CircleGeometry {
-  readonly editable?: boolean | undefined;
   readonly style?: ShapeStyle | undefined;
 }
 
 export interface PolylineLocation<Data = unknown> extends LocationBase<Data>, PolylineGeometry {
-  readonly editable?: boolean | undefined;
   readonly style?: LineStyle | undefined;
 }
 
 export interface PolygonLocation<Data = unknown> extends LocationBase<Data>, PolygonGeometry {
-  readonly editable?: boolean | undefined;
   readonly style?: ShapeStyle | undefined;
 }
 

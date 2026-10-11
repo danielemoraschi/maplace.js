@@ -18,14 +18,12 @@ export interface LocationDiff {
   readonly removed: readonly string[];
 }
 
-/** Drawing state that is not geometry. Unchanged fields keep their reference between calls. */
+/** Selection, hover and visibility. Unchanged fields keep their reference between calls. */
 export interface PresentationState {
   readonly selectedId: string | undefined;
   readonly hoveredId: string | undefined;
   /** Ids hidden by the group filter or `visible: false`. */
   readonly hiddenIds: ReadonlySet<string>;
-  readonly cluster: boolean;
-  readonly popup: ResolvedPopupOptions;
 }
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */
@@ -48,6 +46,9 @@ export interface MountContext {
   readonly host: AdapterHost;
   /** Aborting cancels loading. */
   readonly signal: AbortSignal;
+  /** Fixed for the life of the map, unlike `PresentationState`. */
+  readonly cluster: boolean;
+  readonly popup: ResolvedPopupOptions;
 }
 
 /**
@@ -62,9 +63,8 @@ export interface Adapter {
   mount(context: MountContext): Promise<void>;
   apply(diff: LocationDiff): void;
   present(state: PresentationState): void;
+  /** Moves the camera; `select` sends a `location` view unless `pan: false`. */
   setView(view: View): void;
-  /** Brings a location into view, at `zoom` when given; called for `select` unless `pan: false`. */
-  reveal(id: string, zoom?: number): void;
   setRoute(route: Route | undefined): void;
   /** Places a view on the map; returns a function that removes it. */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;

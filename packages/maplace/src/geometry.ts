@@ -4,10 +4,8 @@ export interface LatLng {
   readonly lng: number;
 }
 
-export interface MarkerGeometry {
+export interface MarkerGeometry extends LatLng {
   readonly type: "marker";
-  readonly lat: number;
-  readonly lng: number;
 }
 
 export interface CircleGeometry {

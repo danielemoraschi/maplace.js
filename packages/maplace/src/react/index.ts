@@ -42,8 +42,7 @@ export interface MaplaceMapProps {
 /** Attaches on mount and detaches on unmount, so StrictMode and adapter swaps just work. */
 export declare function MaplaceMap(props: MaplaceMapProps): ReactNode;
 
-export interface LocationListProps<Data = unknown>
-  extends Pick<ListViewOptions<Data>, "as" | "groupHeadings" | "fitAllLabel"> {
+export interface LocationListProps<Data = unknown> extends Omit<ListViewOptions<Data>, "render"> {
   readonly children?: ((entry: ListEntry<Data>) => ReactNode) | undefined;
 }
 

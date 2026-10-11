@@ -1,12 +1,10 @@
 /** Misuse: thrown synchronously by the call that caused it. */
 export type MisuseCode =
-  | "invalid-location"
-  | "invalid-option"
+  | "invalid-input"
   | "duplicate-id"
   | "unknown-id"
   | "unsupported-capability"
   | "missing-sanitizer"
-  | "invalid-route"
   | "already-attached"
   | "destroyed";
 
