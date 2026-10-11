@@ -1,6 +1,96 @@
 # maplace 1.0 RFC
 
-Work in progress. Sections A1–A4 (positioning, use cases, API, 0.2 inventory) are written here as the plan in `docs/MODERNIZE.md` progresses; this file must stay self-contained.
+Work in progress. This document is self-contained: every decision states its own reason.
+
+- A1 Positioning: written
+- A2 Use cases, A3 API, A4 0.2 → 1.0 inventory: to come
+- Appendix A: 0.2 issue triage
+
+## A1. Positioning
+
+A list of your locations becomes a map with a synced list, in about five lines. Google Maps today, MapLibre next.
+
+### The five-line promise
+
+Illustrative only: attribute names are settled in A3.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
+  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
+</maplace-map>
+```
+
+A map with two markers, a list beside it, and selection kept in sync: click a marker and the list highlights it; pick it in the list and the map pans and opens it.
+
+### Who it is for
+
+1. **Pages with a list of places**: offices, venues, events, trips, stores, built with a `<script>` tag on a CMS or static site. This is the audience 0.2 still serves: about 839k jsDelivr hits a year against about 1.9k npm installs (Appendix A).
+2. **Developers in any framework** who want a small headless store (locations keyed by id, selection, viewport) and a map adapter, without adopting a map toolkit.
+3. **React users**, through a binding in 1.x. Until then `<maplace-map>` works in React 19 as a custom element.
+
+### What it does
+
+- Takes your data as HTML children, JSON or JS objects, each location with a stable `id`.
+- Shows it as a map plus a list or menu, with selection, hover and viewport kept in sync both ways.
+- Location types: markers, circles, polylines, polygons; one route through your own locations.
+- Clustering for large lists.
+- Accessible list controls (keyboard, ARIA, native `<select>`).
+- Typed events for selection, edits, routes and errors.
+- Consent-friendly loading: the map stays idle, with no request to the map provider, until the page releases it.
+- Many maps per page, no globals, no framework required.
+
+### Principles
+
+- **Your data, not a provider's.** maplace renders the locations you own; provider services are optional extras.
+- **Provider behind an adapter.** No provider types leak into the core or the public API, so MapLibre is a new adapter, not a rewrite.
+- **Nothing global.** Every map is independent; the only shared thing is the provider's own script.
+- **Safe by default.** Strings render as text; HTML needs an explicit sanitizer.
+- **Accessible.** The list is the accessible way into the map, not an afterthought.
+- **Small.** Each feature (route, clustering, element) is its own import; you pay only for what you use.
+- **Loud errors.** Bad input or a missing key reports what is wrong and where, never a silent grey map.
+
+### Non-goals for 1.0
+
+| Not this | Why |
+|---|---|
+| A GIS or layer toolkit (KML, traffic, heatmaps, data layers) | Add them to the underlying map object, which maplace exposes; they don't serve "list of places ↔ map". |
+| Drawing tools | An editor is a different product; shapes can be draggable and editable, not drawn from scratch. |
+| Geocoding addresses | Needs a provider service and quotas; locations come with coordinates in 1.0. |
+| A store-locator product (distance matrix, opening hours, booking) | Store locators are one use case; those features are app logic or a dedicated component (see below). |
+| Route alternatives or several routes per map | One route through your own locations covers the 0.2 use; more turns maplace into a routing UI. |
+| Other provider services (places search, distance, elevation) | Not in 1.0; Places integration is a likely later addition. |
+| A React map toolkit | Excellent ones exist (see below); maplace's job is the data list and selection, in any framework. |
+| Legacy browsers | Evergreen browsers only (ES2020). |
+| 0.2 API compatibility | The 0.2 API was index-based and jQuery-shaped; MIGRATION.md shows a short data conversion instead. |
+
+### How it compares
+
+| | What it is | Framework | Provider | Your data as list + map, selection synced | Pick it when |
+|---|---|---|---|---|---|
+| **maplace** | Data list → map + list, headless core + adapters | None (element, JS); React later | Google; MapLibre next | Yes, the core job | You have a list of places and want map and list in sync with little code |
+| `<gmp-map>` / `<gmp-advanced-marker>` | Google's HTML map and marker elements | None | Google | No: map and markers only, no list, selection or update diffing | You only need a map with a few fixed markers |
+| `@vis.gl/react-google-maps` | React components for the Maps JS API (map, markers, shapes, 3D) | React | Google | No: building blocks, you write list and selection | You're in React and want full control of a Google map |
+| `<gmpx-store-locator>` (Extended Component Library) | Ready-made store locator for your listings | None (element), React wrapper | Google | Partly: list + map of your listings, fixed store-locator UX, markers only | You want a classic "find the nearest store" page with Google place details |
+| Places UI Kit (`gmp-place-search`, `gmp-place-details`) | Google's place search and details elements | None | Google | No: shows Google's place data, not yours | You want Google's place information; complementary to maplace |
+| Leaflet / MapLibre directly | Map rendering libraries | None | Any tiles | No: map only | You need a custom map and will build everything around it |
+
+### Why a 1.0
+
+- 0.2 depends on APIs Google removed or deprecated: Fusion Tables (shut down), the old `Marker` and `MarkerImage`, and the legacy Directions service.
+- It needs jQuery and was built with tooling that no longer runs.
+- It is still loaded hundreds of thousands of times a year from CDNs, so a working, safe successor is worth having.
+
+### Later, not 1.0
+
+React binding; MapLibre adapter; Places integration (search box that adds locations, place details as content); GeoJSON import; long-list rendering.
+
+### How we'll know it worked
+
+- The five-line snippet runs from a blank HTML file with only an API key.
+- A typical 0.2 page migrates by following MIGRATION.md in under 30 minutes.
+- None of the "pick it when" cases above is something maplace does half-way.
 
 ## Appendix A: 0.2 issue triage
 
