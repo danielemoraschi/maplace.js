@@ -1,6 +1,5 @@
-/** Why something failed. Misuse codes are thrown; runtime codes arrive as `error` events. */
-export type ErrorCode =
-  // misuse: thrown synchronously by the call that caused it
+/** Misuse: thrown synchronously by the call that caused it. */
+export type MisuseCode =
   | "invalid-location"
   | "duplicate-id"
   | "unknown-id"
@@ -8,11 +7,12 @@ export type ErrorCode =
   | "missing-sanitizer"
   | "invalid-route"
   | "already-attached"
-  | "destroyed"
-  // runtime: emitted as `error`, never thrown
-  | "provider-load-failed"
-  | "provider-auth-failed"
-  | "route-failed";
+  | "destroyed";
+
+/** Runtime failure: emitted as an `error` event, never thrown. */
+export type RuntimeCode = "provider-load-failed" | "provider-auth-failed" | "route-failed";
+
+export type ErrorCode = MisuseCode | RuntimeCode;
 
 export interface MaplaceErrorDetails {
   /** The location the error is about, when there is one. */

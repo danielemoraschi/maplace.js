@@ -1,15 +1,18 @@
 import type { LatLng } from "./location";
 
+/** A rectangle on the map, in degrees. */
+export interface Bounds {
+  readonly south: number;
+  readonly west: number;
+  readonly north: number;
+  readonly east: number;
+}
+
 /** The visible area, as the provider reports it. */
 export interface Viewport {
   readonly center: LatLng;
   readonly zoom: number;
-  readonly bounds: {
-    readonly south: number;
-    readonly west: number;
-    readonly north: number;
-    readonly east: number;
-  };
+  readonly bounds: Bounds;
 }
 
 /** What the map should show; adapters turn intents into camera moves. */

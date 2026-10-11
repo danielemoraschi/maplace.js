@@ -7,7 +7,7 @@ export type {
   MountContext,
   PresentationState,
 } from "./adapter";
-export type { ErrorCode, MaplaceErrorDetails } from "./errors";
+export type { ErrorCode, MaplaceErrorDetails, MisuseCode, RuntimeCode } from "./errors";
 export { MaplaceError } from "./errors";
 export type {
   Listener,
@@ -40,4 +40,4 @@ export type {
   Snapshot,
 } from "./store";
 export { createMaplace } from "./store";
-export type { View, Viewport } from "./viewport";
+export type { Bounds, View, Viewport } from "./viewport";
