@@ -10,9 +10,9 @@ interface Legacy {
   readonly zoom?: number;
 }
 
-type Extras = { readonly zoom: number | undefined };
+type LegacyData = { readonly zoom: number | undefined };
 
-function toLocation(legacy: Legacy, index: number): MarkerLocation<Extras> {
+function toLocation(legacy: Legacy, index: number): MarkerLocation<LegacyData> {
   const { lat, lon, title, html, icon, zoom } = legacy;
   return { id: String(index + 1), lat, lng: lon, title, html, icon, data: { zoom } };
 }
