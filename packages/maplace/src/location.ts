@@ -1,3 +1,5 @@
+import type { LineStyle, ShapeStyle } from "./style";
+
 /** A point on the map, in degrees. */
 export interface LatLng {
   readonly lat: number;
@@ -8,7 +10,7 @@ export interface LatLng {
  * What a popup or list entry shows. A string is always rendered as text, never parsed as HTML;
  * pass a Node (or a function returning one) for rich content, or set `html` with a sanitizer.
  */
-export type Content = string | Node | ((location: Location) => Node);
+export type Content<Data = unknown> = string | Node | Bivariant<(location: Location<Data>) => Node>;
 
 /** State passed to an `icon` function so the selected marker can look different. */
 export interface IconState {
@@ -21,51 +23,69 @@ export interface IconState {
  * re-run only for markers whose state changed; every marker also carries `data-selected` and
  * `data-hovered` attributes, so CSS alone can style the states.
  */
-export type Icon = string | Node | ((location: MarkerLocation, state: IconState) => Node);
+export type Icon<Data = unknown> =
+  | string
+  | Node
+  | Bivariant<(location: MarkerLocation<Data>, state: IconState) => Node>;
 
-interface LocationBase {
+/**
+ * A function type checked like a method, so `Location<Data>` stays assignable to `Location`
+ * and adapters need no generics. Safe: maplace only calls these with their own location.
+ */
+type Bivariant<Fn extends (...args: never[]) => Node> = { fn(...args: Parameters<Fn>): Node }["fn"];
+
+interface LocationBase<Data> {
   /** Stable identity: updates, selection and routes refer to locations by id. Must be unique. */
   readonly id: string;
   /** Plain text: list label and accessible name on the map. */
-  readonly title?: string;
+  readonly title?: string | undefined;
   /** Popup content. */
-  readonly content?: Content;
+  readonly content?: Content<Data> | undefined;
   /** Untrusted HTML for the popup; rendered only through the `sanitize` option. */
-  readonly html?: string;
+  readonly html?: string | undefined;
   /** Grouping key for list headings and `setFilter`. */
-  readonly group?: string;
+  readonly group?: string | undefined;
   /** Hidden locations stay in the data but are not drawn or listed. Default true. */
-  readonly visible?: boolean;
+  readonly visible?: boolean | undefined;
+  /** Your own fields, passed back to content, icon and render functions. */
+  readonly data?: Data | undefined;
 }
 
-export interface MarkerLocation extends LocationBase {
-  readonly type?: "marker";
+export interface MarkerLocation<Data = unknown> extends LocationBase<Data> {
+  readonly type?: "marker" | undefined;
   readonly lat: number;
   readonly lng: number;
-  readonly icon?: Icon;
-  readonly draggable?: boolean;
+  readonly icon?: Icon<Data> | undefined;
+  readonly draggable?: boolean | undefined;
 }
 
-export interface CircleLocation extends LocationBase {
+export interface CircleLocation<Data = unknown> extends LocationBase<Data> {
   readonly type: "circle";
   readonly center: LatLng;
   /** Radius in metres. */
   readonly radius: number;
-  readonly editable?: boolean;
+  readonly editable?: boolean | undefined;
+  readonly style?: ShapeStyle | undefined;
 }
 
-export interface PolylineLocation extends LocationBase {
+export interface PolylineLocation<Data = unknown> extends LocationBase<Data> {
   readonly type: "polyline";
   readonly path: readonly LatLng[];
-  readonly editable?: boolean;
+  readonly editable?: boolean | undefined;
+  readonly style?: LineStyle | undefined;
 }
 
-export interface PolygonLocation extends LocationBase {
+export interface PolygonLocation<Data = unknown> extends LocationBase<Data> {
   readonly type: "polygon";
   /** Outer ring. */
   readonly path: readonly LatLng[];
-  readonly holes?: readonly (readonly LatLng[])[];
-  readonly editable?: boolean;
+  readonly holes?: readonly (readonly LatLng[])[] | undefined;
+  readonly editable?: boolean | undefined;
+  readonly style?: ShapeStyle | undefined;
 }
 
-export type Location = MarkerLocation | CircleLocation | PolylineLocation | PolygonLocation;
+export type Location<Data = unknown> =
+  | MarkerLocation<Data>
+  | CircleLocation<Data>
+  | PolylineLocation<Data>
+  | PolygonLocation<Data>;

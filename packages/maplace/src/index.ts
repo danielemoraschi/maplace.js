@@ -6,6 +6,7 @@ export type {
   LocationDiff,
   MountContext,
   PresentationState,
+  RevealOptions,
 } from "./adapter";
 export type { ErrorCode, MaplaceErrorDetails, MisuseCode, RuntimeCode } from "./errors";
 export { MaplaceError } from "./errors";
@@ -40,4 +41,5 @@ export type {
   Snapshot,
 } from "./store";
 export { createMaplace } from "./store";
+export type { LineStyle, ShapeStyle } from "./style";
 export type { Bounds, View, Viewport } from "./viewport";

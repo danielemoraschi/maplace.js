@@ -4,13 +4,13 @@ import type { RouteResult } from "./route";
 import type { Viewport } from "./viewport";
 
 /** Payloads of every event `on()` can listen to. */
-export interface MaplaceEvents {
+export interface MaplaceEvents<Data = unknown> {
   /** Selection changed, from the map, a view or `select()`. `id` is undefined when cleared. */
   readonly select: { readonly id: string | undefined };
   /** Pointer or focus moved onto (or off) a location. */
   readonly hover: { readonly id: string | undefined };
   /** A drag or edit changed a location's geometry; the store already holds the new value. */
-  readonly change: { readonly location: Location; readonly previous: Location };
+  readonly change: { readonly location: Location<Data>; readonly previous: Location<Data> };
   /** A popup opened and its content is in the DOM. */
   readonly popupOpen: { readonly id: string; readonly element: HTMLElement };
   readonly popupClose: { readonly id: string };
@@ -24,11 +24,13 @@ export interface MaplaceEvents {
 
 export type MaplaceEventName = keyof MaplaceEvents;
 
-export type Listener<K extends MaplaceEventName> = (event: MaplaceEvents[K]) => void;
+export type Listener<K extends MaplaceEventName, Data = unknown> = (
+  event: MaplaceEvents<Data>[K],
+) => void;
 
 export interface ListenOptions {
   /** Aborting removes the listener. */
-  readonly signal?: AbortSignal;
+  readonly signal?: AbortSignal | undefined;
 }
 
 /** Removes the listener it was returned for. */

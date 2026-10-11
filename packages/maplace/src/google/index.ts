@@ -5,11 +5,11 @@ import type { Adapter } from "../adapter";
 export interface GoogleAdapterOptions {
   /** Required for Advanced Markers; `DEMO_MAP_ID` works for development. Styling lives in Cloud Console. */
   readonly mapId: string;
-  readonly colorScheme?: "light" | "dark" | "follow-system";
+  readonly colorScheme?: "light" | "dark" | "follow-system" | undefined;
   /** Draw on an existing map instead of creating one. */
-  readonly map?: google.maps.Map;
+  readonly map?: google.maps.Map | undefined;
   /** Extra options for a map maplace creates; ignored when `map` is given. */
-  readonly mapOptions?: Omit<google.maps.MapOptions, "mapId" | "colorScheme">;
+  readonly mapOptions?: Omit<google.maps.MapOptions, "mapId" | "colorScheme"> | undefined;
 }
 
 /**

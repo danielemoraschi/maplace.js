@@ -2,6 +2,7 @@ import type { MaplaceError } from "./errors";
 import type { Location } from "./location";
 import type { ResolvedPopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
+import type { ShapeStyle } from "./style";
 import type { View, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
@@ -25,6 +26,8 @@ export interface PresentationState {
   readonly hiddenIds: ReadonlySet<string>;
   readonly cluster: boolean;
   readonly popup: ResolvedPopupOptions;
+  /** Default shape style; a location's own `style` overrides it. */
+  readonly style: ShapeStyle | undefined;
 }
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */
@@ -38,6 +41,11 @@ export interface AdapterHost {
   reportRoute(result: RouteResult | undefined): void;
   /** Runtime failures only; misuse is thrown by the store before it reaches the adapter. */
   reportError(error: MaplaceError): void;
+}
+
+export interface RevealOptions {
+  /** Zoom level to use while bringing the location into view. */
+  readonly zoom?: number | undefined;
 }
 
 /** Everything `mount` needs, as one object. */
@@ -62,7 +70,7 @@ export interface Adapter {
   present(state: PresentationState): void;
   setView(view: View): void;
   /** Brings a location into view; the store calls it for `select(id)` unless `pan: false`. */
-  reveal(id: string): void;
+  reveal(id: string, options?: RevealOptions): void;
   setRoute(route: Route | undefined): void;
   /** Places a view on the map; returns a function that removes it. */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;

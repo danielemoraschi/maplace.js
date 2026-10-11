@@ -7,7 +7,7 @@ const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 export function Menu({ locations }: { locations: readonly Location[] }) {
   return (
     <MaplaceProvider locations={locations}>
-      <LocationList as="select" />
+      <LocationList as="select" fitAllLabel="All cities" />
       <MaplaceMap createAdapter={createAdapter} />
     </MaplaceProvider>
   );

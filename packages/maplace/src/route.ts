@@ -1,4 +1,5 @@
 import type { LatLng } from "./location";
+import type { LineStyle } from "./style";
 
 export type TravelMode = "driving" | "walking" | "bicycling" | "transit";
 
@@ -6,7 +7,8 @@ export type TravelMode = "driving" | "walking" | "bicycling" | "transit";
 export interface Route {
   /** Location ids, at least 2; the adapter sets the maximum (`Adapter.routeStopLimit`). */
   readonly stops: readonly string[];
-  readonly travelMode?: TravelMode;
+  readonly travelMode?: TravelMode | undefined;
+  readonly style?: LineStyle | undefined;
 }
 
 export interface RouteLeg {

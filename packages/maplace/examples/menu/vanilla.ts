@@ -10,7 +10,7 @@ const maplace = createMaplace({
   ],
 });
 maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
-byId("menu").append(createListView(maplace, { as: "select" }).element);
+byId("menu").append(createListView(maplace, { as: "select", fitAllLabel: "All cities" }).element);
 byId("north-only").addEventListener("change", (event) => {
   const checked = (event.target as HTMLInputElement).checked;
   maplace.setFilter(checked ? ["North"] : undefined);

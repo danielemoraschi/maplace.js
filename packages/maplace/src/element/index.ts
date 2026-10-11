@@ -24,6 +24,8 @@ export declare function defineProvider(name: string, factory: ProviderFactory): 
  * - `provider`: registered provider name; defaults to the only one registered.
  * - `list`: present = list view; `list="select"` = native select; absent = no list.
  * - `list-position`: a `ListPosition`.
+ * - `fit-all-label`: label of a first list entry that fits all locations.
+ * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build).
  * - `hold`: stay idle, with no provider request, until `release()`.
  * - provider attributes, such as `api-key` and `map-id` for Google.
