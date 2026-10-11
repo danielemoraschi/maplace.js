@@ -26,6 +26,8 @@ export interface MaplaceProviderProps<Data = unknown>
     MaplaceControlledProps,
     MaplaceEventProps<Data> {
   readonly locations: readonly Location<Data>[];
+  /** Initial selection when `selectedId` is not controlled (0.2's `start`). */
+  readonly defaultSelectedId?: string | undefined;
   readonly children?: ReactNode | undefined;
 }
 
@@ -47,5 +49,5 @@ export interface LocationListProps<Data = unknown>
 
 export declare function LocationList<Data>(props: LocationListProps<Data>): ReactNode;
 
-/** The store of the nearest `<MaplaceProvider>`; `Data` is not checked, it must match the provider's. */
+/** The store of the nearest `<MaplaceProvider>`. `Data` is not checked: match the provider's. */
 export declare function useMaplace<Data = unknown>(): Maplace<Data>;

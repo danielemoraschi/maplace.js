@@ -16,8 +16,14 @@ export interface Drawable {
   readonly style: ShapeStyle | undefined;
   /** Markers may be dragged, shapes reshaped. */
   readonly editable: boolean;
-  /** Builds the popup content; undefined when the location has none. */
+  /**
+   * Builds the popup content; undefined when the location has none. When `content` is a Node it
+   * returns that same Node, so content shown in two places at once must be a function.
+   */
   readonly renderContent: (() => Node) | undefined;
-  /** Builds the marker for a state; undefined for the provider's default marker. */
+  /**
+   * Builds the marker for a state; call it again only when the state changes. Undefined: use
+   * the provider's default marker.
+   */
   readonly renderIcon: ((state: IconState) => Node) | undefined;
 }

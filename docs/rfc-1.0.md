@@ -133,6 +133,8 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
+| geometry | Where a location is: a point, a circle, a path or a polygon; what a drag or edit changes |
+| drawable | A location as an adapter receives it, resolved by the store: geometry, title, style, and builders for content and icon |
 | style | How a shape or route line is drawn: a stroke, and for circles and polygons a fill |
 | data | Your own fields on a location, typed through `createMaplace<Data>()` and handed back to content, icon and render functions |
 

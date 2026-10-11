@@ -32,7 +32,7 @@ export interface PresentationState {
 export interface AdapterHost {
   reportSelect(id: string | undefined): void;
   reportHover(id: string | undefined): void;
-  /** A drag or edit moved or reshaped a location; the store writes it back. */
+  /** A drag or edit moved or reshaped a location; `geometry.type` is the location's own. */
   reportChange(id: string, geometry: Geometry): void;
   reportPopupOpen(id: string, element: HTMLElement): void;
   reportPopupClose(id: string): void;
