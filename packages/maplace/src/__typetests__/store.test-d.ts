@@ -24,6 +24,7 @@ snapshot.selectedId = "b";
 declare const adapter: Adapter;
 const detach: () => void = maplace.attach(adapter, document.body);
 detach();
+maplace.fitBounds({ south: 35, west: 6, north: 47, east: 19 }, { padding: 20 });
 // @ts-expect-error setView needs a zoom with the centre
 maplace.setView({ lat: 1, lng: 2 });
 

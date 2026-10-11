@@ -5,7 +5,7 @@ import type { Location } from "./location";
 import type { PopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
 import type { ShapeStyle } from "./style";
-import type { View, Viewport } from "./viewport";
+import type { Bounds, View, Viewport } from "./viewport";
 
 /** `idle` until attached (or while held for consent), then `loading`, then `ready` or `error`. */
 export type LoadState = "idle" | "loading" | "ready" | "error";
@@ -66,10 +66,16 @@ export interface Maplace<Data = unknown> {
    * when its object changes, so reuse unchanged objects. Throws on invalid input.
    */
   setLocations(locations: readonly Location<Data>[]): void;
-  /** Selects a location, or clears the selection (closing its popup) with `undefined`. */
+  /**
+   * Selects a location, or clears the selection (closing its popup) with `undefined`. Selecting a
+   * hidden location (filtered out or `visible: false`) throws.
+   */
   select(id: string | undefined, options?: SelectOptions): void;
+  /** Shows only these groups; hiding the selected location deselects it. */
   setFilter(groups: readonly string[] | undefined): void;
   fitAll(options?: FitOptions): void;
+  /** Shows a box; throws when south is above north or a coordinate is out of range. */
+  fitBounds(bounds: Bounds, options?: FitOptions): void;
   setView(center: LatLng, zoom: number): void;
   setRoute(route: Route | undefined): void;
   on<K extends MaplaceEventName>(

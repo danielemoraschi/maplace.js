@@ -41,7 +41,7 @@ interface LocationBase<Data> {
   readonly html?: string | undefined;
   /** Grouping key for list headings and `setFilter`. */
   readonly group?: string | undefined;
-  /** Hidden locations stay in the data but are not drawn or listed. Default true. */
+  /** Hidden locations stay in the data but are not drawn, listed or selected. Default true. */
   readonly visible?: boolean | undefined;
   /** Lets the user drag a marker or reshape a shape; needs the `edit` capability. */
   readonly editable?: boolean | undefined;

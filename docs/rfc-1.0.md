@@ -129,7 +129,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | viewport | What the map actually shows, as reported by the provider; zoom and bounds mean the same on every provider (see `Viewport`, `Bounds`) |
 | popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup); it follows the selection, or the hover with `openOn: 'hover'` |
 | route | One path through your own locations, in order |
-| filter | The groups currently shown |
+| filter | The groups currently shown; hiding the selected location deselects it |
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
@@ -140,7 +140,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 
 ### Shape
 
-- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`.
+- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `fitBounds`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`.
 - **Initial state**: options take `locations`, `selectedId`, a default shape `style`, `popup`, `cluster` and `view`. The first view is the given `view`, else the selected location, else all locations fitted. Later, `select(id, { zoom })` pans and zooms; `{ pan: false }` leaves the map where it is. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible` and `data`; shapes take a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
@@ -161,7 +161,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 
 ### Errors
 
-- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, a fill on a polyline, a `bounds` view with south above north or coordinates out of range, `zoom` with `pan: false`, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
+- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, a fill on a polyline, a box with south above north or coordinates out of range, selecting a hidden location, `zoom` with `pan: false`, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
 - **Runtime failures are events**, never throws: provider load or auth failure, route not found. `loadState` becomes `error` and `whenReady()` rejects.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
