@@ -5,7 +5,9 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "skipLibCheck": true
   },
   "include": ["packages/*/src", "packages/*/examples"]
 }
