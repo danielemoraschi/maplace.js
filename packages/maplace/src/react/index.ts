@@ -1,21 +1,27 @@
 /**
- * Draft of the 1.x React binding: types only, not in `exports`, kept here so the React
- * use cases type-check against the same core API.
+ * Draft of the 1.x React binding: types only. Exported under the development-only
+ * `maplace:source` condition so examples import `maplace/react` as users will.
  */
 import type { ReactNode } from "react";
 import type { Adapter } from "../adapter";
-import type { MaplaceEvents } from "../events";
+import type { MaplaceEventName, MaplaceEvents } from "../events";
 import type { Location } from "../location";
-import type { Maplace, MaplaceOptions, Route } from "../store";
-import type { ListEntry } from "../view";
+import type { Maplace, MaplaceOptions, Snapshot } from "../store";
+import type { ListEntry, ListViewOptions } from "../view";
 
-export interface MaplaceProviderProps extends Omit<MaplaceOptions, "locations"> {
+/** `onSelect`, `onChange`, … for every event, derived so none is left out. */
+export type MaplaceEventProps = {
+  readonly [K in MaplaceEventName as `on${Capitalize<K>}`]?: (event: MaplaceEvents[K]) => void;
+};
+
+/** State a React app may control; the rest stays inside the store. */
+export type MaplaceControlledProps = Partial<Pick<Snapshot, "selectedId" | "filter" | "route">>;
+
+export interface MaplaceProviderProps
+  extends Omit<MaplaceOptions, "locations">,
+    MaplaceControlledProps,
+    MaplaceEventProps {
   readonly locations: readonly Location[];
-  readonly route?: Route;
-  readonly selectedId?: string;
-  readonly onSelect?: (event: MaplaceEvents["select"]) => void;
-  readonly onChange?: (event: MaplaceEvents["change"]) => void;
-  readonly onError?: (event: MaplaceEvents["error"]) => void;
   readonly children?: ReactNode;
 }
 
@@ -26,10 +32,10 @@ export interface MaplaceMapProps {
   readonly className?: string;
 }
 
+/** Attaches on mount and detaches on unmount, so StrictMode and adapter swaps just work. */
 export declare function MaplaceMap(props: MaplaceMapProps): ReactNode;
 
-export interface LocationListProps {
-  readonly as?: "list" | "select";
+export interface LocationListProps extends Pick<ListViewOptions, "as" | "groupHeadings"> {
   readonly children?: (entry: ListEntry) => ReactNode;
 }
 
@@ -37,5 +43,3 @@ export declare function LocationList(props: LocationListProps): ReactNode;
 
 /** The store of the nearest `<MaplaceProvider>`. */
 export declare function useMaplace(): Maplace;
-
-export declare function useSelection(): string | undefined;

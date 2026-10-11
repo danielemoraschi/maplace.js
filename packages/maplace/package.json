@@ -29,6 +29,9 @@
       "types": "./dist/element/google.d.ts",
       "default": "./dist/element/google.js"
     },
+    "./react": {
+      "maplace:source": "./src/react/index.ts"
+    },
     "./package.json": "./package.json"
   }
 }

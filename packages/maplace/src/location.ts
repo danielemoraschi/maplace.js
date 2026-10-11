@@ -16,7 +16,11 @@ export interface IconState {
   readonly hovered: boolean;
 }
 
-/** A custom marker: an image URL, an element, or a function building one per state. */
+/**
+ * A custom marker: an image URL, an element, or a function building one per state. Functions
+ * re-run only for markers whose state changed; every marker also carries `data-selected` and
+ * `data-hovered` attributes, so CSS alone can style the states.
+ */
 export type Icon = string | Node | ((location: MarkerLocation, state: IconState) => Node);
 
 interface LocationBase {
@@ -65,5 +69,3 @@ export interface PolygonLocation extends LocationBase {
 }
 
 export type Location = MarkerLocation | CircleLocation | PolylineLocation | PolygonLocation;
-
-export type LocationType = NonNullable<Location["type"]>;

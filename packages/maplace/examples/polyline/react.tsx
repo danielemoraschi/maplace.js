@@ -1,13 +1,13 @@
-// Draft: becomes `maplace/react` in 1.x.
-import type { LatLng } from "maplace";
+import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { MaplaceMap, MaplaceProvider } from "../../src/react/index";
+import { MaplaceMap, MaplaceProvider } from "maplace/react";
 
 const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
-export function Polyline({ path }: { path: readonly LatLng[] }) {
+/** `trail` is a polyline location, e.g. `{ id, type: "polyline", title, path }`. */
+export function Polyline({ trail }: { trail: readonly Location[] }) {
   return (
-    <MaplaceProvider locations={[{ id: "trail", type: "polyline", title: "Coast trail", path }]}>
+    <MaplaceProvider locations={trail}>
       <MaplaceMap adapter={adapter} />
     </MaplaceProvider>
   );

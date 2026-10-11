@@ -1,7 +1,10 @@
-import type { Adapter } from "../adapter";
+import type { Adapter, ControlPosition } from "../adapter";
 import type { MaplaceEvents } from "../events";
 import type { Location } from "../location";
 import type { Maplace, Route } from "../store";
+
+/** Where the element puts its list: on the map, or outside it in the page. */
+export type ListPosition = ControlPosition | "outside";
 
 /** Builds an adapter from the element's own attributes (e.g. `api-key`, `map-id`). */
 export type ProviderFactory = (element: MaplaceMapElement) => Adapter;
@@ -19,7 +22,7 @@ export declare function defineProvider(name: string, factory: ProviderFactory): 
  * Attributes:
  * - `provider`: registered provider name; defaults to the only one registered.
  * - `list`: present = list view; `list="select"` = native select; absent = no list.
- * - `list-position`: `top-left` | `top-right` | `bottom-left` | `bottom-right` | `outside`.
+ * - `list-position`: a `ListPosition`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build).
  * - `hold`: stay idle, with no provider request, until `release()`.
  * - provider attributes, such as `api-key` and `map-id` for Google.

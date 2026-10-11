@@ -1,11 +1,9 @@
-import type { Location } from "./location";
+import type { IconState, Location } from "./location";
 import type { Maplace } from "./store";
 
 /** One entry of a list view, as passed to a custom `render`. */
-export interface ListEntry {
+export interface ListEntry extends IconState {
   readonly location: Location;
-  readonly selected: boolean;
-  readonly hovered: boolean;
 }
 
 export interface ListViewOptions {
@@ -17,10 +15,10 @@ export interface ListViewOptions {
   readonly render?: (entry: ListEntry) => Node;
 }
 
-/** A view renders store state and asks the store for changes; it never talks to an adapter. */
-export interface View {
+/** A list view renders store state and asks the store for changes; it never talks to an adapter. */
+export interface ListView {
   readonly element: HTMLElement;
   destroy(): void;
 }
 
-export declare function createListView(maplace: Maplace, options?: ListViewOptions): View;
+export declare function createListView(maplace: Maplace, options?: ListViewOptions): ListView;

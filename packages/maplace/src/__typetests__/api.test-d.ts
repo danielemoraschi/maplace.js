@@ -31,3 +31,9 @@ maplace.on("selected", () => {});
 const snapshot = maplace.getSnapshot();
 // @ts-expect-error snapshots are read-only
 snapshot.selectedId = "b";
+
+declare const adapter: Parameters<Maplace["attach"]>[0];
+const detach: () => void = maplace.attach(adapter, document.body);
+detach();
+// @ts-expect-error a view is fit-all or centre + zoom; selecting pans to a location
+maplace.setView({ lat: 1, lng: 2 });

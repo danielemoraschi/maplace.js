@@ -126,33 +126,33 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | location | One item of your data: a marker, circle, polyline or polygon, with a unique `id` |
 | selection | The one location currently chosen (`selectedId`), shared by map and list |
 | hover | The location under the pointer or keyboard focus (`hoveredId`) |
-| view | What you asked the map to show: fit all, a centre and zoom, or one location |
+| view | What you asked the map to show: fit all, or a centre and zoom (selecting a location pans to it) |
 | viewport | What the map actually shows, as reported by the provider |
 | popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup) |
 | route | One path through your own locations, in order |
 | filter | The groups currently shown |
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
-| view (component) | A UI that renders the state and asks the store for changes, e.g. the list |
+| list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
 
 ### Shape
 
-- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach`, `ready`, `destroy`. The snapshot is immutable and replaced on every change.
+- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `ready`, `destroy`. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible`.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
-- **Adapter contract**: `mount`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `setRoute`, `mountControl`, `destroy`, and a set of `capabilities`. Adapters report back only through an `AdapterHost`; they never read or write the store.
+- **Adapter contract**: `mount`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost`; they never read or write the store.
 - **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
-- **Views**: `createListView(maplace, { as, groupHeadings, render })` returns `{ element, destroy }`.
-- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` with attributes `provider`, `list`, `list-position`, `cluster`, `hold` plus provider attributes (`api-key`, `map-id`, `version`, `language`, `region`, `nonce`), properties `locations`, `route`, `maplace`, method `release()`, and DOM events `maplace-select`, `maplace-change`, … `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
-- **React (1.x draft)**: `<MaplaceProvider locations>`, `<MaplaceMap adapter>`, `<LocationList>`, `useMaplace()`, `useSelection()`.
+- **Views**: `createListView(maplace, { as, groupHeadings, render })` returns a `ListView`: `{ element, destroy }`.
+- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
+- **React (1.x draft)**: `<MaplaceProvider locations>` with `on<Event>` props derived from the event map and optional controlled `selectedId`, `filter`, `route`; `<MaplaceMap adapter>` (attaches on mount, detaches on unmount); `<LocationList>`; `useMaplace()`.
 
 ### Rules the API follows
 
 - Verbs for methods, nouns for types, one word per concept (see the glossary); no aliases and no two ways to do the same thing.
 - At most two positional arguments, then an options object; never a boolean flag (`select(id, { pan: false })`, not `select(id, false)`).
 - Absence is `undefined`, never `null`.
-- Each function does one thing: `attach` connects and throws on misuse, `ready` waits for loading.
+- Each function does one thing: `attach` connects (and throws on misuse), its returned `detach` disconnects, `ready` waits for loading.
 - Views know only the store, adapters know only their host, and only the element (or your code) wires them together.
 
 ### Errors
@@ -171,7 +171,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | Map container sizing and styles (#23, #184) | The element never sets inline styles on itself; default styles use `:where()` so pages override them; the page sets the height |
 | Popup width and offset (#86, #160, #198) | `popup: { maxWidth, offset }` |
 | Open on hover (#197) | `popup: { openOn: 'hover' }`; default `click` |
-| Different icon when selected (#192) | An `icon` function receives `{ selected, hovered }` |
+| Different icon when selected (#192) | Markers carry `data-selected` / `data-hovered` for CSS; an `icon` function receives `{ selected, hovered }` and re-runs only when they change |
 | Act on popup content once shown (#171) | `popupOpen` fires after the content is in the DOM, with the element |
 | React to zoom and pan (#195) | `viewport` event after each move ends |
 | Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |

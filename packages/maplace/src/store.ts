@@ -15,16 +15,15 @@ export interface Viewport {
 }
 
 /** What the map should show; adapters turn intents into camera moves. */
-export type ViewportIntent =
+export type View =
   | { readonly kind: "fit-all"; readonly padding: number }
-  | { readonly kind: "view"; readonly center: LatLng; readonly zoom: number }
-  | { readonly kind: "location"; readonly id: string };
+  | { readonly kind: "view"; readonly center: LatLng; readonly zoom: number };
 
 export type TravelMode = "driving" | "walking" | "bicycling" | "transit";
 
 /** One route through your own locations, in order. Needs the `route` capability. */
 export interface Route {
-  /** Location ids: at least 2, at most 27 (origin, 25 intermediates, destination). */
+  /** Location ids, at least 2; the adapter sets the maximum (`Adapter.routeStopLimit`). */
   readonly stops: readonly string[];
   readonly travelMode?: TravelMode;
 }
@@ -63,10 +62,13 @@ export interface MaplaceOptions {
   /** Cluster markers; needs the `cluster` capability. */
   readonly cluster?: boolean;
   /** Initial view. Default: fit all locations with 40px padding. */
-  readonly view?: ViewportIntent;
+  readonly view?: View;
 }
 
-/** Immutable state; a new object on every change, so it can be compared by reference. */
+/**
+ * Immutable state: a new object on every change, while unchanged parts (e.g. `locations`) keep
+ * their reference, so subscribers can compare slices cheaply.
+ */
 export interface Snapshot {
   readonly locations: readonly Location[];
   readonly selectedId: string | undefined;
@@ -74,7 +76,7 @@ export interface Snapshot {
   /** Visible groups; undefined shows every group. */
   readonly filter: readonly string[] | undefined;
   /** Last requested view. */
-  readonly view: ViewportIntent;
+  readonly view: View;
   /** Last reported visible area; undefined until the map is ready. */
   readonly viewport: Viewport | undefined;
   readonly route: Route | undefined;
@@ -96,7 +98,10 @@ export interface FitOptions {
 export interface Maplace {
   subscribe(onChange: () => void): Unsubscribe;
   getSnapshot(): Snapshot;
-  /** Replaces all locations; only the differences reach the map. Throws on invalid input. */
+  /**
+   * Replaces all locations; only the differences reach the map. A location counts as updated
+   * when its object changes, so reuse unchanged objects. Throws on invalid input.
+   */
   setLocations(locations: readonly Location[]): void;
   select(id: string | undefined, options?: SelectOptions): void;
   setFilter(groups: readonly string[] | undefined): void;
@@ -108,8 +113,11 @@ export interface Maplace {
     listener: Listener<K>,
     options?: ListenOptions,
   ): Unsubscribe;
-  /** Connects a provider and starts loading. Throws if the current state needs a missing capability. */
-  attach(adapter: Adapter, container: HTMLElement): void;
+  /**
+   * Connects a provider and starts loading; returns `detach`, which returns the store to `idle`.
+   * Throws if already attached or if the current state needs a missing capability.
+   */
+  attach(adapter: Adapter, container: HTMLElement): () => void;
   /** Resolves when the map is ready; rejects with the load error. */
   ready(): Promise<void>;
   destroy(): void;

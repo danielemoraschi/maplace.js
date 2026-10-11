@@ -1,6 +1,6 @@
 import type { MaplaceError } from "./errors";
 import type { Location } from "./location";
-import type { PopupOptions, Route, RouteResult, Viewport, ViewportIntent } from "./store";
+import type { PopupOptions, Route, RouteResult, Snapshot, View, Viewport } from "./store";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
 export type Capability = "route" | "cluster" | "circle" | "edit";
@@ -15,10 +15,8 @@ export interface LocationDiff {
   readonly removed: readonly string[];
 }
 
-/** Drawing state that is not geometry. */
-export interface PresentationState {
-  readonly selectedId: string | undefined;
-  readonly hoveredId: string | undefined;
+/** Drawing state that is not geometry. Unchanged fields keep their reference between calls. */
+export interface PresentationState extends Pick<Snapshot, "selectedId" | "hoveredId"> {
   /** Ids hidden by the group filter or `visible: false`. */
   readonly hiddenIds: ReadonlySet<string>;
   readonly cluster: boolean;
@@ -33,7 +31,7 @@ export interface AdapterHost {
   popupOpen(id: string, element: HTMLElement): void;
   popupClose(id: string): void;
   viewport(viewport: Viewport): void;
-  routeResult(result: RouteResult | undefined): void;
+  route(result: RouteResult | undefined): void;
   /** Runtime failures only; misuse is thrown by the store before it reaches the adapter. */
   error(error: MaplaceError): void;
 }
@@ -41,11 +39,13 @@ export interface AdapterHost {
 /** A map provider. Google ships with maplace; others implement this contract. */
 export interface Adapter {
   readonly capabilities: ReadonlySet<Capability>;
+  /** Most stops a route may have; checked by the store like a capability. */
+  readonly routeStopLimit?: number;
   /** Loads the provider and draws into `container`. Aborting cancels loading. */
   mount(container: HTMLElement, host: AdapterHost, signal: AbortSignal): Promise<void>;
   apply(diff: LocationDiff): void;
   present(state: PresentationState): void;
-  setView(view: ViewportIntent): void;
+  setView(view: View): void;
   setRoute(route: Route | undefined): void;
   /** Places a view on the map; returns a function that removes it. */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;

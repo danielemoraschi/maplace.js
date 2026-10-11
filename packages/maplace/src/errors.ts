@@ -5,7 +5,6 @@ export type ErrorCode =
   | "duplicate-id"
   | "unknown-id"
   | "unsupported-capability"
-  | "unsupported-location-type"
   | "missing-sanitizer"
   | "invalid-route"
   | "already-attached"
@@ -13,8 +12,7 @@ export type ErrorCode =
   // runtime: emitted as `error`, never thrown
   | "provider-load-failed"
   | "provider-auth-failed"
-  | "route-failed"
-  | "container-not-found";
+  | "route-failed";
 
 export interface MaplaceErrorDetails {
   /** The location the error is about, when there is one. */

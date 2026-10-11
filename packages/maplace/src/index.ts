@@ -22,7 +22,6 @@ export type {
   IconState,
   LatLng,
   Location,
-  LocationType,
   MarkerLocation,
   PolygonLocation,
   PolylineLocation,
@@ -39,9 +38,9 @@ export type {
   SelectOptions,
   Snapshot,
   TravelMode,
+  View,
   Viewport,
-  ViewportIntent,
 } from "./store";
 export { createMaplace } from "./store";
-export type { ListEntry, ListViewOptions, View } from "./view";
+export type { ListEntry, ListView, ListViewOptions } from "./view";
 export { createListView } from "./view";

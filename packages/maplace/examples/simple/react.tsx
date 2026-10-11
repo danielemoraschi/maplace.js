@@ -1,12 +1,13 @@
-// Draft: becomes `maplace/react` in 1.x.
+import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { MaplaceMap, MaplaceProvider } from "../../src/react/index";
+import { MaplaceMap, MaplaceProvider } from "maplace/react";
 
 const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
+const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
 
 export function Simple() {
   return (
-    <MaplaceProvider locations={[{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }]}>
+    <MaplaceProvider locations={rome}>
       <MaplaceMap adapter={adapter} />
     </MaplaceProvider>
   );
