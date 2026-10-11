@@ -35,5 +35,5 @@ snapshot.selectedId = "b";
 declare const adapter: Parameters<Maplace["attach"]>[0];
 const detach: () => void = maplace.attach(adapter, document.body);
 detach();
-// @ts-expect-error a view is fit-all or centre + zoom; selecting pans to a location
+// @ts-expect-error setView needs a zoom with the centre
 maplace.setView({ lat: 1, lng: 2 });

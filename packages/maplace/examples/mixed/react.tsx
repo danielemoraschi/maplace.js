@@ -3,7 +3,7 @@ import { createGoogleAdapter } from "maplace/google";
 import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 import { useEffect, useState } from "react";
 
-const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
+const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
 export function Mixed() {
   const [locations, setLocations] = useState<readonly Location[]>([]);
@@ -14,7 +14,7 @@ export function Mixed() {
   }, []);
   return (
     <MaplaceProvider locations={locations}>
-      <MaplaceMap adapter={adapter} />
+      <MaplaceMap createAdapter={createAdapter} />
       <LocationList />
     </MaplaceProvider>
   );

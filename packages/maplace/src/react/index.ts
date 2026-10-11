@@ -28,7 +28,8 @@ export interface MaplaceProviderProps
 export declare function MaplaceProvider(props: MaplaceProviderProps): ReactNode;
 
 export interface MaplaceMapProps {
-  readonly adapter: Adapter;
+  /** Called once per mount; an adapter instance drives one map. */
+  readonly createAdapter: () => Adapter;
   readonly className?: string;
 }
 

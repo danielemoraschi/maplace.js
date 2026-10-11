@@ -17,7 +17,7 @@ export interface Viewport {
 /** What the map should show; adapters turn intents into camera moves. */
 export type View =
   | { readonly kind: "fit-all"; readonly padding: number }
-  | { readonly kind: "view"; readonly center: LatLng; readonly zoom: number };
+  | { readonly kind: "center"; readonly center: LatLng; readonly zoom: number };
 
 export type TravelMode = "driving" | "walking" | "bicycling" | "transit";
 

@@ -36,7 +36,10 @@ export interface AdapterHost {
   error(error: MaplaceError): void;
 }
 
-/** A map provider. Google ships with maplace; others implement this contract. */
+/**
+ * A map provider. Google ships with maplace; others implement this contract. One instance
+ * drives one map: create a new adapter for every `attach`.
+ */
 export interface Adapter {
   readonly capabilities: ReadonlySet<Capability>;
   /** Most stops a route may have; checked by the store like a capability. */
@@ -46,6 +49,8 @@ export interface Adapter {
   apply(diff: LocationDiff): void;
   present(state: PresentationState): void;
   setView(view: View): void;
+  /** Brings a location into view; the store calls it for `select(id)` unless `pan: false`. */
+  reveal(id: string): void;
   setRoute(route: Route | undefined): void;
   /** Places a view on the map; returns a function that removes it. */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;
