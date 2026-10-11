@@ -1,4 +1,4 @@
-import type { LatLng } from "./location";
+import type { LatLng } from "./geometry";
 import type { LineStyle } from "./style";
 
 export type TravelMode = "driving" | "walking" | "bicycling" | "transit";

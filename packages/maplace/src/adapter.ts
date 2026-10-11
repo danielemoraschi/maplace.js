@@ -1,8 +1,8 @@
+import type { Drawable } from "./drawable";
 import type { MaplaceError } from "./errors";
-import type { Location } from "./location";
+import type { Geometry } from "./geometry";
 import type { ResolvedPopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
-import type { ShapeStyle } from "./style";
 import type { View, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
@@ -13,8 +13,8 @@ export type ControlPosition = "top-left" | "top-right" | "bottom-left" | "bottom
 
 /** What changed since the last `apply`; adapters touch only these locations. */
 export interface LocationDiff {
-  readonly added: readonly Location[];
-  readonly updated: readonly Location[];
+  readonly added: readonly Drawable[];
+  readonly updated: readonly Drawable[];
   readonly removed: readonly string[];
 }
 
@@ -26,26 +26,20 @@ export interface PresentationState {
   readonly hiddenIds: ReadonlySet<string>;
   readonly cluster: boolean;
   readonly popup: ResolvedPopupOptions;
-  /** Default shape style; a location's own `style` overrides it. */
-  readonly style: ShapeStyle | undefined;
 }
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */
 export interface AdapterHost {
   reportSelect(id: string | undefined): void;
   reportHover(id: string | undefined): void;
-  reportChange(location: Location): void;
+  /** A drag or edit moved or reshaped a location; the store writes it back. */
+  reportChange(id: string, geometry: Geometry): void;
   reportPopupOpen(id: string, element: HTMLElement): void;
   reportPopupClose(id: string): void;
   reportViewport(viewport: Viewport): void;
   reportRoute(result: RouteResult | undefined): void;
   /** Runtime failures only; misuse is thrown by the store before it reaches the adapter. */
   reportError(error: MaplaceError): void;
-}
-
-export interface RevealOptions {
-  /** Zoom level to use while bringing the location into view. */
-  readonly zoom?: number | undefined;
 }
 
 /** Everything `mount` needs, as one object. */
@@ -63,14 +57,14 @@ export interface MountContext {
 export interface Adapter {
   readonly capabilities: ReadonlySet<Capability>;
   /** Most stops a route may have; checked by the store like a capability. */
-  readonly routeStopLimit?: number;
+  readonly routeStopLimit?: number | undefined;
   /** Loads the provider and draws into the container. */
   mount(context: MountContext): Promise<void>;
   apply(diff: LocationDiff): void;
   present(state: PresentationState): void;
   setView(view: View): void;
-  /** Brings a location into view; the store calls it for `select(id)` unless `pan: false`. */
-  reveal(id: string, options?: RevealOptions): void;
+  /** Brings a location into view, at `zoom` when given; called for `select` unless `pan: false`. */
+  reveal(id: string, zoom?: number): void;
   setRoute(route: Route | undefined): void;
   /** Places a view on the map; returns a function that removes it. */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;

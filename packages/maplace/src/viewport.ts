@@ -1,4 +1,4 @@
-import type { LatLng } from "./location";
+import type { LatLng } from "./geometry";
 
 /** A rectangle on the map, in degrees. */
 export interface Bounds {

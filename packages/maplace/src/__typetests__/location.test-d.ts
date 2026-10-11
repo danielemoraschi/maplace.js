@@ -33,5 +33,5 @@ const priced: Location<{ price: number }> = {
 };
 // @ts-expect-error `data` has the declared shape
 acceptPriced({ id: "b", lat: 1, lng: 2, data: { price: "3" } });
-// A typed location is still a Location, so adapters and helpers need no generics.
+// A typed location still fits where a plain Location is expected (element, helpers).
 accept(priced);

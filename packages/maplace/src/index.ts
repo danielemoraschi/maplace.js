@@ -6,8 +6,8 @@ export type {
   LocationDiff,
   MountContext,
   PresentationState,
-  RevealOptions,
 } from "./adapter";
+export type { Drawable } from "./drawable";
 export type { ErrorCode, MaplaceErrorDetails, MisuseCode, RuntimeCode } from "./errors";
 export { MaplaceError } from "./errors";
 export type {
@@ -17,6 +17,14 @@ export type {
   MaplaceEvents,
   Unsubscribe,
 } from "./events";
+export type {
+  CircleGeometry,
+  Geometry,
+  LatLng,
+  MarkerGeometry,
+  PolygonGeometry,
+  PolylineGeometry,
+} from "./geometry";
 export type { ListEntry, ListView, ListViewOptions } from "./list-view";
 export { createListView } from "./list-view";
 export type {
@@ -24,7 +32,6 @@ export type {
   Content,
   Icon,
   IconState,
-  LatLng,
   Location,
   MarkerLocation,
   PolygonLocation,

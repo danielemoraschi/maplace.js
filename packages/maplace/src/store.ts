@@ -1,6 +1,7 @@
 import type { Adapter } from "./adapter";
 import type { Listener, ListenOptions, MaplaceEventName, Unsubscribe } from "./events";
-import type { LatLng, Location } from "./location";
+import type { LatLng } from "./geometry";
+import type { Location } from "./location";
 import type { PopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
 import type { ShapeStyle } from "./style";
@@ -86,6 +87,4 @@ export interface Maplace<Data = unknown> {
   destroy(): void;
 }
 
-export declare function createMaplace<Data = unknown>(
-  options?: MaplaceOptions<Data>,
-): Maplace<Data>;
+export declare function createMaplace<Data>(options?: MaplaceOptions<Data>): Maplace<Data>;

@@ -17,9 +17,9 @@ export type ErrorCode = MisuseCode | RuntimeCode;
 
 export interface MaplaceErrorDetails {
   /** The location the error is about, when there is one. */
-  readonly locationId?: string;
+  readonly locationId?: string | undefined;
   /** The offending field, e.g. `lat` or `radius`. */
-  readonly field?: string;
+  readonly field?: string | undefined;
   readonly cause?: unknown;
 }
 

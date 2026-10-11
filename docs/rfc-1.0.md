@@ -133,7 +133,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
-| style | How a shape or route line is drawn: `stroke`, `strokeOpacity`, `strokeWidth`, and for circles and polygons `fill`, `fillOpacity` |
+| style | How a shape or route line is drawn: a stroke, and for circles and polygons a fill |
 | data | Your own fields on a location, typed through `createMaplace<Data>()` and handed back to content, icon and render functions |
 
 ### Shape
@@ -142,7 +142,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible` and `data`; shapes take a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
-- **Adapter contract**: `mount({ container, host, signal })`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `reveal` (bring a selected location into view), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange`, …); they never read or write the store. One adapter instance drives one map.
+- **Adapter contract**: `mount({ container, host, signal })`, `apply` (a diff of added, updated and removed locations, each resolved by the store into a `Drawable`: geometry, title, merged style, `editable`, and builders for the popup content and the icon; adapters never see `data`, user callbacks or the sanitizer), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `reveal` (bring a selected location into view, optionally at a zoom), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange` with the new geometry, …); they never read or write the store. One adapter instance drives one map.
 - **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
 - **Views**: `createListView(maplace, { as, groupHeadings, fitAllLabel, render })` (`fitAllLabel` adds a first entry that clears the selection and fits all) returns a `ListView`: `{ element, destroy }`.
 - **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
@@ -177,9 +177,9 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | React to zoom and pan (#195) | `viewport` event after each move ends |
 | Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |
 | Silent grey map on bad input (#63, #125, #145, #149, #175) | Validation per the error rules above |
-| Explicit centre overridden by fit (#18, #46) | Initial view precedence: `view`, then `selectedId`, then fit all |
+| Explicit centre overridden by fit (#18, #46) | An explicit `view` wins over `selectedId` and fit (see Shape) |
 | Marker stacking order (#60) | The selected or hovered location stacks on top, otherwise data order; no `zIndex` field |
-| Shape colours (stroke and circle options in 0.2) | Neutral `style` per shape and a default `style` option, mapped by each adapter |
+| Shape colours (stroke and circle options in 0.2) | Neutral `style` per shape and a default `style` option; the store merges them, adapters map the result |
 
 ### Numbers
 

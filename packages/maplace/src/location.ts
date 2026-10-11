@@ -1,16 +1,11 @@
+import type { CircleGeometry, MarkerGeometry, PolygonGeometry, PolylineGeometry } from "./geometry";
 import type { LineStyle, ShapeStyle } from "./style";
-
-/** A point on the map, in degrees. */
-export interface LatLng {
-  readonly lat: number;
-  readonly lng: number;
-}
 
 /**
  * What a popup or list entry shows. A string is always rendered as text, never parsed as HTML;
  * pass a Node (or a function returning one) for rich content, or set `html` with a sanitizer.
  */
-export type Content<Data = unknown> = string | Node | Bivariant<(location: Location<Data>) => Node>;
+export type Content<Data = unknown> = string | Node | Bivariant<[location: Location<Data>]>;
 
 /** State passed to an `icon` function so the selected marker can look different. */
 export interface IconState {
@@ -26,13 +21,14 @@ export interface IconState {
 export type Icon<Data = unknown> =
   | string
   | Node
-  | Bivariant<(location: MarkerLocation<Data>, state: IconState) => Node>;
+  | Bivariant<[location: MarkerLocation<Data>, state: IconState]>;
 
 /**
- * A function type checked like a method, so `Location<Data>` stays assignable to `Location`
- * and adapters need no generics. Safe: maplace only calls these with their own location.
+ * A function checked like a method, so a typed `Location<Data>` still fits where a plain
+ * `Location` is expected (the element's `locations`, your helpers). Only the store calls these,
+ * each with the location it belongs to.
  */
-type Bivariant<Fn extends (...args: never[]) => Node> = { fn(...args: Parameters<Fn>): Node }["fn"];
+type Bivariant<Args extends unknown[]> = { fn(...args: Args): Node }["fn"];
 
 interface LocationBase<Data> {
   /** Stable identity: updates, selection and routes refer to locations by id. Must be unique. */
@@ -51,35 +47,26 @@ interface LocationBase<Data> {
   readonly data?: Data | undefined;
 }
 
-export interface MarkerLocation<Data = unknown> extends LocationBase<Data> {
+export interface MarkerLocation<Data = unknown>
+  extends LocationBase<Data>,
+    Omit<MarkerGeometry, "type"> {
+  /** Optional: a location without `type` is a marker. */
   readonly type?: "marker" | undefined;
-  readonly lat: number;
-  readonly lng: number;
   readonly icon?: Icon<Data> | undefined;
   readonly draggable?: boolean | undefined;
 }
 
-export interface CircleLocation<Data = unknown> extends LocationBase<Data> {
-  readonly type: "circle";
-  readonly center: LatLng;
-  /** Radius in metres. */
-  readonly radius: number;
+export interface CircleLocation<Data = unknown> extends LocationBase<Data>, CircleGeometry {
   readonly editable?: boolean | undefined;
   readonly style?: ShapeStyle | undefined;
 }
 
-export interface PolylineLocation<Data = unknown> extends LocationBase<Data> {
-  readonly type: "polyline";
-  readonly path: readonly LatLng[];
+export interface PolylineLocation<Data = unknown> extends LocationBase<Data>, PolylineGeometry {
   readonly editable?: boolean | undefined;
   readonly style?: LineStyle | undefined;
 }
 
-export interface PolygonLocation<Data = unknown> extends LocationBase<Data> {
-  readonly type: "polygon";
-  /** Outer ring. */
-  readonly path: readonly LatLng[];
-  readonly holes?: readonly (readonly LatLng[])[] | undefined;
+export interface PolygonLocation<Data = unknown> extends LocationBase<Data>, PolygonGeometry {
   readonly editable?: boolean | undefined;
   readonly style?: ShapeStyle | undefined;
 }
