@@ -2,8 +2,7 @@
 
 Work in progress. This document is self-contained: every decision states its own reason.
 
-- A1 Positioning, A2 Use cases, A3 API: written (A3 is a draft until the RFC is frozen)
-- A4 0.2 → 1.0 inventory: to come
+- A1 Positioning, A2 Use cases, A3 API, A4 Migrating from 0.2: written (A3 is a draft until the RFC is frozen)
 - Appendix A: 0.2 issue triage
 
 ## A1. Positioning
@@ -101,7 +100,7 @@ Ten scenarios, each written three ways against the A3 draft: an HTML page using 
 | [simple](../packages/maplace/examples/simple/) | One marker, nothing else | simple | #52, #55, #65 (single location) |
 | [markers](../packages/maplace/examples/markers/) | Markers, popup content from a `<template>` or string, custom icon, list | markers | #37, #60, #101, #192 (icons) |
 | [circles](../packages/maplace/examples/circles/) | Circles with radius in metres | circles | #13, #130 |
-| [menu](../packages/maplace/examples/menu/) | Native `<select>` on the map, groups, filter | menu (dropdown) | #15, #40, #117 (groups) |
+| [menu](../packages/maplace/examples/menu/) | Native `<select>` on the map, groups, filter, a "fit all" entry | menu (dropdown) | #15, #40, #117 (groups) |
 | [tabs](../packages/maplace/examples/tabs/) | List outside the map, details panel driven by the `select` event | tabs | #5, #84, #122 |
 | [polyline](../packages/maplace/examples/polyline/) | One polyline location, inline JSON data | polyline | #178 |
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `change` event | polygon | #64, #164 |
@@ -128,22 +127,24 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | hover | The location under the pointer or keyboard focus (`hoveredId`) |
 | view | What you asked the map to show: fit all, or a centre and zoom (selecting a location pans to it) |
 | viewport | What the map actually shows, as reported by the provider |
-| popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup) |
+| popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup); it follows the selection, or the hover with `openOn: 'hover'` |
 | route | One path through your own locations, in order |
 | filter | The groups currently shown |
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
+| style | How a shape or route line is drawn: `stroke`, `strokeOpacity`, `strokeWidth`, and for circles and polygons `fill`, `fillOpacity` |
+| data | Your own fields on a location, typed through `createMaplace<Data>()` and handed back to content, icon and render functions |
 
 ### Shape
 
-- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
-- **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible`.
+- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`. Options add an initial `selectedId` and a default shape `style`; the initial view is the given `view`, else the selected location, else all locations fitted. `select(id, { zoom })` pans and zooms; `{ pan: false }` leaves the map where it is. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
+- **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible` and `data`; shapes take a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
 - **Adapter contract**: `mount({ container, host, signal })`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `reveal` (bring a selected location into view), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange`, …); they never read or write the store. One adapter instance drives one map.
 - **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
-- **Views**: `createListView(maplace, { as, groupHeadings, render })` returns a `ListView`: `{ element, destroy }`.
+- **Views**: `createListView(maplace, { as, groupHeadings, fitAllLabel, render })` (`fitAllLabel` adds a first entry that clears the selection and fits all) returns a `ListView`: `{ element, destroy }`.
 - **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
 - **React (1.x draft)**: `<MaplaceProvider locations>` with `on<Event>` props derived from the event map and optional controlled `selectedId`, `filter`, `route`; `<MaplaceMap createAdapter>` (a fresh adapter per mount; attaches on mount, detaches on unmount); `<LocationList>`; `useMaplace()`.
 
@@ -157,7 +158,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 
 ### Errors
 
-- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
+- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, a fill on a polyline, `zoom` with `pan: false`, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
 - **Runtime failures are events**, never throws: provider load or auth failure, route not found. `loadState` becomes `error` and `whenReady()` rejects.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
@@ -176,6 +177,9 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | React to zoom and pan (#195) | `viewport` event after each move ends |
 | Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |
 | Silent grey map on bad input (#63, #125, #145, #149, #175) | Validation per the error rules above |
+| Explicit centre overridden by fit (#18, #46) | Initial view precedence: `view`, then `selectedId`, then fit all |
+| Marker stacking order (#60) | The selected or hovered location stacks on top, otherwise data order; no `zIndex` field |
+| Shape colours (stroke and circle options in 0.2) | Neutral `style` per shape and a default `style` option, mapped by each adapter |
 
 ### Numbers
 
@@ -189,6 +193,112 @@ Checked in CI from the first build:
 | Element CDN build with clustering | ≤ 25 kB |
 
 Test coverage: core ≥ 95% of lines, whole package ≥ 85%.
+
+## A4. Migrating from 0.2
+
+Everything a 0.2 page could touch, from the source and README of tag `0.2.10` and the old docs site, and what 1.0 does with it. "Dropped" always names the replacement or the reason. [`examples/migrate/from-0.2.ts`](../packages/maplace/examples/migrate/from-0.2.ts) converts 0.2 locations in a few lines and type-checks in CI.
+
+### Options
+
+| 0.2 option | 1.0 |
+|---|---|
+| `map_div` | the container passed to `attach`, or `<maplace-map>` itself |
+| `controls_div`, `controls_on_map`, `controls_position` | element `list-position` (a corner, or `outside`); in code, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
+| `generate_controls`, `force_generate_controls` | a list exists only when asked for, at any number of locations |
+| `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'`, element `list="select"` / `list` |
+| `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win |
+| `controls_title` | dropped: a heading in your page |
+| `type` (one per map) | `type` per location, so one map mixes markers and shapes |
+| `type: 'directions'` | `setRoute({ stops })` through your own locations |
+| `type: 'fusion'`, `fusion_options` | dropped: Google shut down Fusion Tables in 2019 |
+| `view_all`, `view_all_text` | `fitAllLabel` (element `fit-all-label`); no entry unless set |
+| `start` | `selectedId` (element `selected-id`) |
+| `locations` | kept; every location needs an `id` |
+| `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
+| `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
+| `show_infowindows`, `infowindow_type` | leave `content` out; there is only one kind of popup |
+| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`; centre and zoom through `view` |
+| `styles` | map ID and Cloud styling: Google ignores JSON styles on maps with a map ID, which advanced markers need |
+| `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
+| `directions_options.travelMode` | `route.travelMode` |
+| `directions_options.avoidHighways`, `avoidTolls` | not in 1.0; route modifiers may come later |
+| `directions_options.unitSystem` | dropped: results are metres and seconds, format them as you like |
+| `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
+| `directions_panel` | dropped: render legs from the `route` event |
+| `draggable`, `editable` (map-wide) | per location; dragging the route itself is gone |
+| `listeners` | pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
+| `pan_on_click` | `select(id, { pan: false })` from code; the map always pans to a clicked location |
+| `debug` | the `error` event and `MaplaceError`; nothing is logged or silent |
+| `visualRefresh` | dropped: Google removed the flag |
+
+### Location fields
+
+| 0.2 field | 1.0 |
+|---|---|
+| (array index) | `id`, required and unique |
+| `lat` | kept |
+| `lon` | `lng`, no alias |
+| `title` | kept; plain text, also the marker's accessible name |
+| `html` | `content` (text, a DOM node or a function), or `html` with a `sanitize` option |
+| `%index`, `%title` in `html` | a `content` function |
+| `infoWindowMaxWidth` | `popup.maxWidth`, for all popups |
+| `icon` | kept: an image URL, a DOM node or a function of the selected/hovered state |
+| `image`, `image_w`, `image_h` | an `icon` node, e.g. a sized `<img>` |
+| `zoom` | `select(id, { zoom })`; keep the number in `data` |
+| `show_infowindow` | leave `content` out |
+| `visible` | kept, default `true` (0.2's docs said `false`, its code did `true`) |
+| `animation` | dropped: animate the `icon` node with CSS |
+| `stopover` | dropped: every route stop ends a leg |
+| `stroke_options`, `circle_options` | `style`; the circle's `radius` |
+| `type` | kept: `marker`, `circle`, `polyline`, `polygon`; a polyline or polygon is one location with a `path` |
+| `zIndex` | dropped: the selected or hovered location stacks on top, otherwise data order |
+| `on_menu` | dropped: build your own list from `subscribe` for a partial menu |
+| `pan_on_click` | dropped per location |
+| `draggable` | kept for markers; shapes use `editable` |
+| any other field, including Google marker options | your fields go in `data`; Google options belong on your own map |
+
+### Methods
+
+| 0.2 method | 1.0 |
+|---|---|
+| `new Maplace(options).Load()` | `createMaplace(options)` then `attach(adapter, container)`, or `<maplace-map>` |
+| `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
+| `Load(true)` (rebuild) | `detach()` then `attach()` |
+| `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |
+| `ViewOnMap(index)` | `select(id)` |
+| `ViewOnMap('all')` | `select(undefined)` and `fitAll()` |
+| `CloseInfoWindow()` | `select(undefined)`: the popup follows the selection |
+| `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
+| `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
+| `ShowOnMenu(index)` | dropped |
+| `AddControl(name, menu)` | `createListView({ render })`, or your own view from `subscribe` and `getSnapshot` |
+| internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
+
+### Events
+
+| 0.2 callback | 1.0 event |
+|---|---|
+| `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | dropped: one event per change, after it happened |
+| `afterShow` | `select` |
+| `afterViewAll` | `select` with `id` undefined, then `viewport` |
+| `afterCreateMarker` | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
+| `afterOpenInfowindow`, `afterCloseInfowindow` | `popupOpen` (content is in the DOM), `popupClose` |
+| `afterRoute` | `route`, with legs, distance and duration |
+| `onPolylineClick`, `onPolygonClick` | `select`: shapes are locations |
+| `circleRadiusChanged`, `circleCenterChanged`, `dragEnd` | `change`, with the location and its `previous` value |
+| `drag`, `dragStart` | dropped |
+
+### Behaviour that changes
+
+- Locations are identified by `id`, not by their 1-based position.
+- Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
+- An explicit centre and zoom is no longer overridden by fitting the locations.
+- Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
+- No jQuery, no `Maplace` global, and Google Maps no longer has to load first: ES modules or one CDN script, and maps load through `importLibrary` when needed.
+- The menu's inline styles are replaced by a stylesheet you can override.
+- Maps in hidden or resized containers redraw on their own.
+
+Never released (the unmerged `develop` branch): `onPolylineClick` is `select`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions.gestureHandling`.
 
 ## Appendix A: 0.2 issue triage
 

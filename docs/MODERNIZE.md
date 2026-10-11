@@ -2,7 +2,7 @@
 
 Single source of truth for the 1.0 rewrite. Read this first; it is written to be enough on its own. Lives in `docs/` with the RFC and future decisions/specs.
 
-Now: decisions done (D1–D22). Next: A4 → A6 + A7 → A5.
+Now: A0–A4 done. Next: A6 + A7 → A5.
 Status: do | wip | done | later (after 1.0) | wont (never)
 Target: maplace as if written from scratch in 2026. Headless core + adapter contract, Google adapter first, MapLibre next, views for HTML/vanilla (1.0) and React (usage designed now in the RFC, shipped in 1.x).
 1.0 = core + Google adapter + `<maplace-map>` (CDN/HTML drop-in first). `maplace/react` is not in the 1.0 `exports` map (no semver promise); it arrives in 1.x.
@@ -89,7 +89,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | A1 | Positioning doc | done | RFC §A1: one-liner, five-line promise, audience, principles, non-goals with reasons, comparison (`<gmp-map>`, vis.gl, `<gmpx-store-locator>` as closest neighbour, Places UI Kit, Leaflet/MapLibre), success criteria |
 | A2 | Use cases as code first | done | RFC §A2; `packages/maplace/examples/<scenario>/{page.html,vanilla.ts,react.tsx}` for simple, markers, circles, menu, tabs, polyline, polygon, route, mixed, big; TS/React type-check in `npm run typecheck`, HTML runs in T5/T6 |
 | A3 | Public API as types | done | RFC §A3 (draft until A5): glossary, shape, rules, errors and check timing, decisions on the A0 notes, size budgets and coverage numbers. Types in `packages/maplace/src/` (`declare` only), compile-time tests in `src/__typetests__/`; React draft in `src/react/`, not exported |
-| A4 | 0.2 → 1.0 inventory | do | every option/method/event from README + develop → keep / changed / dropped. Model changes spelled out: polyline/polygon/route vertices are no longer list entries; `lon` → `lng`; `id` required (index → id); `html` → `content` or `html` + `sanitize` (D20); develop-only items (D11). MIGRATION.md shows a few-line `map()` conversion. Feeds MIGRATION.md |
+| A4 | 0.2 → 1.0 inventory | done | RFC §A4: every option, location field, method and event of 0.2 (source, README, old docs site, `develop`) mapped to 1.0, plus behaviour changes; `examples/migrate/from-0.2.ts` converts locations (type-checked). Gaps it found, decided by the user and added to A3: shape `style`, typed `data` (`createMaplace<Data>`), `select(id, { zoom })`, `fitAllLabel`, initial `selectedId`; optional inputs accept explicit `undefined` |
 | A5 | Review and freeze RFC | do | `docs/rfc-1.0.md`, self-contained and public (must not depend on this file; at freeze, replace the plan row IDs in Appendix A with RFC section references); changes after freeze go through it |
 | A6 | MapLibre spike (before A5) | do | throwaway: markers, polyline, select, fit against the draft contract; any provider leak into core fixed in the RFC |
 | A7 | "big" performance spike (before A5) | do | data: `git show 0.2.10:website/data/4k.js`; 4k AdvancedMarkerElements with and without clustering; if too slow, decide the fallback in the RFC; main risk to D6 |
@@ -119,7 +119,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | C4 | Typed events | do | select, hover, drag, edit, route, error; unsubscribe fn; AbortSignal support |
 | C5 | Lifecycle | do | `destroy()`, AbortSignal, many instances, nothing global, SSR-safe import |
 | C6 | Tree-shakable | do | each subpath and location type independently importable; `sideEffects` is an array listing the element entries (they define a custom element on import; `false` would let bundlers drop `import 'maplace/element/google'`), everything else side-effect-free |
-| C7 | 0.2 bug scenarios as tests | do | anchored to tag `0.2.10` (permalinks): shared controls (L257), maxZIndex (L349), edit callbacks (L529), control removal (L866), AddControl (L937), onPolylineClick, route with draggable stops (#147, #139), plus the A0 candidates in `docs/rfc-1.0.md` Appendix A; each becomes a regression test the design makes impossible |
+| C7 | 0.2 bug scenarios as tests | do | anchored to tag `0.2.10` (permalinks): shared controls (L257), maxZIndex (L349; 1.0: selected marker stacks on top), edit callbacks (L529), control removal (L866), AddControl (L937), onPolylineClick, route with draggable stops (#147, #139), plus the A0 candidates in `docs/rfc-1.0.md` Appendix A; each becomes a regression test the design makes impossible |
 | C8 | Input validation | do | lat/lng numeric and in range, required fields, container found, icon type; per the A3 error policy, naming location id and field; never a silent grey map (A0: #63, #125, #145, #149, #175) |
 
 ## 4. Google adapter (first implementation of the contract, `maplace/google`)
@@ -170,7 +170,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | P4 | CHANGELOG.md convention | do | one dated line per reader-visible change, same commit, `#N` for closed issue; test refuses a closing commit not listed, checking only commits after the one that creates CHANGELOG.md (baseline); "closes" = GitHub closing keyword (`close[sd]?`, `fix(es\|ed)?`, `resolve[sd]?` + `#N`); seed with 0.x history |
 | P5 | Release notes from CHANGELOG lines since last tag | do | GitHub release body from P2 |
 | P6 | README rewrite | do | leads with the CDN `<maplace-map>` 5-liner; then vanilla; CDN via jsDelivr/unpkg, version-pinned URLs with SRI hashes; load exactly one IIFE (plain or cluster) per page (V3) |
-| P7 | MIGRATION.md 0.2 → 1.0 | do | from A4 |
+| P7 | MIGRATION.md 0.2 → 1.0 | do | from RFC §A4 + `examples/migrate/` |
 | P8 | Public 1.0.0-beta | wont | beta is private: test page installs `github:danielemoraschi/maplace.js#next` or an `npm pack` tarball (R0) |
 | P9 | (moved to R2) | done | |
 
@@ -217,3 +217,4 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | N10 | GeoJSON FeatureCollection → locations helper | later | A0: #103, #188 |
 | N11 | "My location" control / route from user position | later | A0: #169 |
 | N12 | Places integration | later | search box / autocomplete that adds locations, place details as `content`, "save a place"; adapter capability (Google Places now; MapLibre would need another geocoder); A0: #41, #98, #152, #165 |
+| N13 | Route modifiers | later | avoid tolls, highways, ferries (0.2 `directions_options`); A4 |
