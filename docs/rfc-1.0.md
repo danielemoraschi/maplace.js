@@ -137,11 +137,11 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 
 ### Shape
 
-- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `ready`, `destroy`. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
+- **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible`.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
-- **Adapter contract**: `mount`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `reveal` (bring a selected location into view), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost`; they never read or write the store. One adapter instance drives one map.
+- **Adapter contract**: `mount({ container, host, signal })`, `apply` (a diff of added, updated and removed locations), `present` (selection, hover, hidden ids, cluster, popup options), `setView`, `reveal` (bring a selected location into view), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange`, …); they never read or write the store. One adapter instance drives one map.
 - **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
 - **Views**: `createListView(maplace, { as, groupHeadings, render })` returns a `ListView`: `{ element, destroy }`.
 - **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
@@ -152,13 +152,13 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 - Verbs for methods, nouns for types, one word per concept (see the glossary); no aliases and no two ways to do the same thing.
 - At most two positional arguments, then an options object; never a boolean flag (`select(id, { pan: false })`, not `select(id, false)`).
 - Absence is `undefined`, never `null`.
-- Each function does one thing: `attach` connects (and throws on misuse), its returned `detach` disconnects, `ready` waits for loading.
+- Each function does one thing: `attach` connects (and throws on misuse), its returned `detach` disconnects, `whenReady` waits for loading.
 - Views know only the store, adapters know only their host, and only the element (or your code) wires them together.
 
 ### Errors
 
 - **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
-- **Runtime failures are events**, never throws: provider load or auth failure, route not found. `loadState` becomes `error` and `ready()` rejects.
+- **Runtime failures are events**, never throws: provider load or auth failure, route not found. `loadState` becomes `error` and `whenReady()` rejects.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
 

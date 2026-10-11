@@ -25,15 +25,23 @@ export interface PresentationState extends Pick<Snapshot, "selectedId" | "hovere
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */
 export interface AdapterHost {
-  select(id: string | undefined): void;
-  hover(id: string | undefined): void;
-  change(location: Location): void;
-  popupOpen(id: string, element: HTMLElement): void;
-  popupClose(id: string): void;
-  viewport(viewport: Viewport): void;
-  route(result: RouteResult | undefined): void;
+  reportSelect(id: string | undefined): void;
+  reportHover(id: string | undefined): void;
+  reportChange(location: Location): void;
+  reportPopupOpen(id: string, element: HTMLElement): void;
+  reportPopupClose(id: string): void;
+  reportViewport(viewport: Viewport): void;
+  reportRoute(result: RouteResult | undefined): void;
   /** Runtime failures only; misuse is thrown by the store before it reaches the adapter. */
-  error(error: MaplaceError): void;
+  reportError(error: MaplaceError): void;
+}
+
+/** Everything `mount` needs, as one object. */
+export interface MountContext {
+  readonly container: HTMLElement;
+  readonly host: AdapterHost;
+  /** Aborting cancels loading. */
+  readonly signal: AbortSignal;
 }
 
 /**
@@ -44,8 +52,8 @@ export interface Adapter {
   readonly capabilities: ReadonlySet<Capability>;
   /** Most stops a route may have; checked by the store like a capability. */
   readonly routeStopLimit?: number;
-  /** Loads the provider and draws into `container`. Aborting cancels loading. */
-  mount(container: HTMLElement, host: AdapterHost, signal: AbortSignal): Promise<void>;
+  /** Loads the provider and draws into the container. */
+  mount(context: MountContext): Promise<void>;
   apply(diff: LocationDiff): void;
   present(state: PresentationState): void;
   setView(view: View): void;

@@ -119,7 +119,7 @@ export interface Maplace {
    */
   attach(adapter: Adapter, container: HTMLElement): () => void;
   /** Resolves when the map is ready; rejects with the load error. */
-  ready(): Promise<void>;
+  whenReady(): Promise<void>;
   destroy(): void;
 }
 

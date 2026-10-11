@@ -4,6 +4,7 @@ export type {
   Capability,
   ControlPosition,
   LocationDiff,
+  MountContext,
   PresentationState,
 } from "./adapter";
 export type { ErrorCode, MaplaceErrorDetails } from "./errors";
