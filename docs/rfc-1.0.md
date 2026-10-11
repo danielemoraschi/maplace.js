@@ -126,7 +126,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | selection | The one location currently chosen (`selectedId`), shared by map and list |
 | hover | The location under the pointer or keyboard focus (`hoveredId`) |
 | view | What you asked the map to show: fit all, a centre and zoom, or one location (what selecting asks for) |
-| viewport | What the map actually shows, as reported by the provider |
+| viewport | What the map actually shows, as reported by the provider. Zoom uses the web convention (256 px world at zoom 0) on every provider; bounds stay within ±180°, west > east crossing the antimeridian |
 | popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup); it follows the selection, or the hover with `openOn: 'hover'` |
 | route | One path through your own locations, in order |
 | filter | The groups currently shown |
@@ -145,7 +145,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible` and `data`; shapes take a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
-- **Adapter contract**: `mount({ container, host, signal, cluster, popup })`, `apply` (a diff of added, updated and removed locations, each resolved into a `Drawable`, see the glossary), `present` (selection, hover, hidden ids), `setView` (fit all, a centre and zoom, or one location, which is how selecting pans), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange` with the new geometry, …); they never read or write the store. One adapter instance drives one map.
+- **Adapter contract**: `mount({ container, host, signal, cluster, popup })`, `apply` (a diff of added, updated and removed locations, each resolved into a `Drawable`, see the glossary), `present` (selection, hover, hidden ids; closing a popup is reported as a deselect), `setView` (fit all, a centre and zoom, or one location, which is how selecting pans), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange` with the new geometry, …); they never read or write the store. One adapter instance drives one map.
 - **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
 - **Views**: `createListView(maplace, { as, groupHeadings, fitAllLabel, render })` (`fitAllLabel` adds a first entry that clears the selection and fits all) returns a `ListView`: `{ element, destroy }`.
 - **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
@@ -178,6 +178,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | Different icon when selected (#192) | Markers carry `data-selected` / `data-hovered` for CSS; an `icon` function receives `{ selected, hovered }` and re-runs only when they change |
 | Act on popup content once shown (#171) | `popupOpen` fires after the content is in the DOM, with the element |
 | React to zoom and pan (#195) | `viewport` event after each move ends |
+| Large data sets (#3, #54, #95, #174, #182) | One DOM element per marker stays smooth up to about 1,000 markers on both providers; above that use `cluster` (Google), and the MapLibre adapter draws default markers in a GPU layer. Measured, see Performance |
 | Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |
 | Silent grey map on bad input (#63, #125, #145, #149, #175) | Validation per the error rules above |
 | Explicit centre overridden by fit (#18, #46) | An explicit `view` wins over `selectedId` and fit (see Shape) |
@@ -196,6 +197,23 @@ Checked in CI from the first build:
 | Element CDN build with clustering | ≤ 25 kB |
 
 Test coverage: core ≥ 95% of lines, whole package ≥ 85%.
+
+### Performance
+
+Measured on 2026-10-11 with the 0.2 "big" data set (4,000 points, repeated for 8,000): a fast laptop (10 cores, Chrome 152), a 1280×800 map, median of three runs after a warm-up. The bar for "smooth": loaded and idle within 1.5 s, no task over 200 ms, panning and zooming at 45 fps or more, selection within 50 ms. Real users have slower machines, so a result must pass with room to spare.
+
+| Markers | Google, one element each | Google, clustered | MapLibre, one element each | MapLibre, GPU layer |
+|---|---|---|---|---|
+| 1,000 | 60 fps, longest task 70 ms | 60 fps, 61 ms | 59 fps, 72 ms | 60 fps, none |
+| 2,000 | 41 fps, 453 ms | | | |
+| 4,000 | 14 fps, 825 ms | 60 fps, 210 ms once at load | 15 fps, 291 ms | 60 fps, none |
+| 8,000 | page unresponsive for minutes | 60 fps, 395 ms once at load | 7 fps, 1,147 ms | 60 fps, none |
+
+Decisions:
+
+- Advanced markers (one DOM element each) stay the only Google marker; they are smooth up to about 1,000 markers. Above that, docs, the element and the "big" example use `cluster`. Selecting took 20 ms or less in every setup except thousands of DOM markers on MapLibre (60 ms at 4,000): drawing is the limit, not selection.
+- Clustering adds markers in chunks so no task at load exceeds the bar (the one-off clustering task reached 395 ms at 8,000).
+- Adapters may draw default markers (no `icon`) without DOM; the MapLibre adapter uses a GPU layer, which stayed at 60 fps with 8,000. Custom icons are DOM on every provider.
 
 ## A4. Migrating from 0.2
 

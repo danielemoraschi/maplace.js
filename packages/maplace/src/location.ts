@@ -15,8 +15,8 @@ export interface LocationState {
 
 /**
  * A custom marker: an image URL, an element, or a function building one per state. Functions
- * re-run only for markers whose state changed; every marker also carries `data-selected` and
- * `data-hovered` attributes, so CSS alone can style the states.
+ * re-run only for markers whose state changed. Every DOM marker carries `data-selected` and
+ * `data-hovered` (`"true"`/`"false"` from creation), so CSS alone can style the states.
  */
 export type Icon<Data = unknown> =
   | string

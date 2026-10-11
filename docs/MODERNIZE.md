@@ -2,7 +2,7 @@
 
 Single source of truth for the 1.0 rewrite. Read this first; it is written to be enough on its own. Lives in `docs/` with the RFC and future decisions/specs.
 
-Now: A0–A4 done. Next: A6 + A7 → A5.
+Now: A0–A4, A6, A7 done. Next: A5 (freeze the RFC).
 Status: do | wip | done | later (after 1.0) | wont (never)
 Target: maplace as if written from scratch in 2026. Headless core + adapter contract, Google adapter first, MapLibre next, views for HTML/vanilla (1.0) and React (usage designed now in the RFC, shipped in 1.x).
 1.0 = core + Google adapter + `<maplace-map>` (CDN/HTML drop-in first). `maplace/react` is not in the 1.0 `exports` map (no semver promise); it arrives in 1.x.
@@ -12,7 +12,7 @@ Critical path: 0 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7 (P1–P7) �
 - Private phase: all work lives on the long-lived branch `next` (pushed to origin; short-lived branches fast-forward into it). Nothing public before §9: `master`/`main` untouched, no npm publish, no production site, no README notice, no issue activity. A branch being visible on GitHub is fine.
 - Update a row's status in the same commit/session as the work. New rows take the next free number in their section; never renumber.
 - Until A5: decisions live here. After A5 freezes `docs/rfc-1.0.md`: API decisions live in the RFC; this file keeps status and links only.
-- Outputs: A1–A4 are sections of `docs/rfc-1.0.md`; A2 snippets live in `packages/maplace/examples/` (outside `src/`, not in `files`, so never published) and the A3 `.d.ts` in `packages/maplace/src/` (F3 precedes the RFC) so both type-check; React snippets type-check against a type-only draft of `maplace/react` that stays out of `exports`; the RFC links to them. A6 spike on branch `spike/maplibre`, deleted after A5.
+- Outputs: A1–A4 are sections of `docs/rfc-1.0.md`; A2 snippets live in `packages/maplace/examples/` (outside `src/`, not in `files`, so never published) and the A3 `.d.ts` in `packages/maplace/src/` (F3 precedes the RFC) so both type-check; React snippets type-check against a type-only draft of `maplace/react` that stays out of `exports`; the RFC links to them. A6/A7 spikes on branch `spike/a6-a7` (code, bench, raw results in `spikes/results/`), deleted after A5.
 - Branching, commits and the review chain: see `CLAUDE.md`.
 - Old code: removed from `next` in F2; read it with `git show 0.2.10:<path>`; `legacy/0.2` (R1) keeps it forever.
 
@@ -91,8 +91,8 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | A3 | Public API as types | done | RFC §A3 (draft until A5): glossary, shape, rules, errors and check timing, decisions on the A0 notes, size budgets and coverage numbers. Types in `packages/maplace/src/` (`declare` only), compile-time tests in `src/__typetests__/`; React draft in `src/react/`, not exported |
 | A4 | 0.2 → 1.0 inventory | done | RFC §A4: every option, location field, method and event of 0.2 (source, README, old docs site, `develop`) mapped to 1.0, plus behaviour changes; `examples/migrate/from-0.2.ts` converts locations (type-checked). Gaps it found, decided by the user and added to A3: shape `style`, typed `data` (`createMaplace<Data>`), `select(id, { zoom })`, `fitAllLabel`, initial `selectedId`; optional inputs accept explicit `undefined`. Review chain moved resolution into the store: adapters get `Drawable`s (geometry, merged style, content/icon builders, no `data` or sanitizer) and report `Geometry` back; one `editable`, `invalid-input`, a `location` view instead of `reveal` |
 | A5 | Review and freeze RFC | do | `docs/rfc-1.0.md`, self-contained and public (must not depend on this file; at freeze, replace the plan row IDs in Appendix A with RFC section references); changes after freeze go through it |
-| A6 | MapLibre spike (before A5) | do | throwaway: markers, polyline, select, fit against the draft contract; any provider leak into core fixed in the RFC |
-| A7 | "big" performance spike (before A5) | do | data: `git show 0.2.10:website/data/4k.js`; 4k AdvancedMarkerElements with and without clustering; if too slow, decide the fallback in the RFC; main risk to D6 |
+| A6 | MapLibre spike (before A5) | done | contract held for markers, polyline, select, popup, fit, viewport, controls. Leaks fixed in A3 types/RFC: zoom convention (MapLibre zoom = web zoom − 1, measured), antimeridian (fit-all and `Bounds`), closing the popup = deselect, `data-selected` from creation, default markers may be non-DOM |
+| A7 | "big" performance spike (before A5) | done | RFC §A3 Performance: one DOM marker each is smooth to ~1k on Google and MapLibre (Google 2k: 41 fps, 4k: 14 fps, 8k: unresponsive); clustered 4k/8k at 60 fps; MapLibre GPU layer 8k at 60 fps. D6 stands; `cluster` above ~1k |
 
 ## 2. Foundation
 | # | Item | Status | Note |
@@ -126,12 +126,12 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | # | Item | Status | Note |
 |---|------|--------|------|
 | G1 | Attach to a map | do | `importLibrary` for maps/marker/routes on demand; accepts an existing `google.maps.Map` or creates one from `google: {…}` options |
-| G2 | Markers | do | AdvancedMarkerElement; content per D20; `gmpClickable`, keyboard focus, titles |
+| G2 | Markers | do | AdvancedMarkerElement; content per D20; `gmpClickable`, keyboard focus, titles; `data-selected`/`data-hovered` set at creation; smooth to ~1k unclustered (A7) |
 | G3 | Shapes | do | circle, polyline, polygon; drags and edits write geometry back to the store, then `change` fires (RFC §A3) |
-| G4 | Popup | do | neutral term "popup" (Google InfoWindow); content per D20; `popup: { maxWidth, offset, openOn }`; `popupOpen` after content is in the DOM; XSS-safe by default |
-| G5 | Fit all / pan / zoom | do | from store viewport intent |
+| G4 | Popup | do | neutral term "popup" (Google InfoWindow); content per D20; `popup: { maxWidth, offset, openOn }`; `popupOpen` after content is in the DOM; closing it is reported as a deselect (A6); XSS-safe by default |
+| G5 | Fit all / pan / zoom | do | from store viewport intent; fit-all crosses the antimeridian when shorter; viewport bounds within ±180° (A6) |
 | G6 | Route capability | do | D8 + D22 |
-| G7 | Clustering capability | do | ESM: lazy-imports `@googlemaps/markerclusterer` (optional peer); CDN: bundled in the cluster IIFE (D18); "big" is the benchmark |
+| G7 | Clustering capability | do | ESM: lazy-imports `@googlemaps/markerclusterer` (optional peer); CDN: bundled in the cluster IIFE (D18); "big" is the benchmark; add markers in chunks so no load task exceeds 200 ms (A7: one-off 395 ms at 8k); docs recommend `cluster` above ~1k |
 | G8 | On-map controls | do | adapter implements `mountControl(node, position)` (maps neutral positions to `ControlPosition`); views never touch the map (T10) |
 | G9 | Load + error states | do | missing/invalid key or mapId, quota, library load failure → `error` event + state |
 | G10 | Container resize/visibility | do | ResizeObserver on the container; re-apply viewport intent when a hidden or resized map becomes visible (A0: #1, #79, #83, #136, #154, #173) |
@@ -158,7 +158,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | T6 | E2E on site examples | do | Playwright, consent flow included; on push to `next` until R3, nightly after |
 | T7 | A fix lands with a test shown failing first | do | convention |
 | T8 | Coverage gate | do | threshold from RFC (A3) |
-| T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one |
+| T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one. Needs a "drawn" signal (the A6/A7 spike added `whenIdle`); decide whether it joins the contract |
 | T10 | Import boundaries check | do | Biome restricted imports or CI grep: no `google.maps` outside `maplace/google` (later same for maplibre); views import only the store, never an adapter; adapters never import views; the store is a sink: only views, bindings, the element and `index.ts` import `./store`, while data modules (location, route, viewport, popup) are leaves |
 
 ## 7. Package and release
@@ -207,7 +207,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 |---|------|--------|------|
 | N1 | React binding release (V4–V6) | later | 1.x |
 | N2 | Long lists (V2) | later | virtualise or paginate; "big" benchmark |
-| N3 | `maplace/maplibre` adapter | later | very likely; ready per D21, contract proven by A6 + T9 |
+| N3 | `maplace/maplibre` adapter | later | very likely; ready per D21, contract proven by A6 + T9. Spike lessons: serve maplibre-gl unbundled or set its worker URL; zoom − 1; default markers in a GPU circle/symbol layer, DOM only for custom icons; GeoJSON cluster source for `cluster`; circle = polygon approximation |
 | N4 | Live playground | later | editable examples (StackBlitz or in-page) |
 | N5 | (moved to R6) | done | |
 | N6 | TypeDoc API reference | later | the RFC + examples matter more |

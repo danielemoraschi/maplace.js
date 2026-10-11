@@ -23,8 +23,8 @@ export interface Drawable {
    */
   readonly renderContent: (() => Node) | undefined;
   /**
-   * Builds the marker for a state; call it again only when the state changes. Undefined: use
-   * the provider's default marker.
+   * Builds the marker for a state; call it again only when the state changes. Undefined: the
+   * provider's default marker, which an adapter may draw without DOM (e.g. a GPU layer).
    */
   readonly renderIcon: ((state: LocationState) => Node) | undefined;
 }

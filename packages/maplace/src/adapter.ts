@@ -28,6 +28,7 @@ export interface PresentationState {
 
 /** The only way an adapter reports back. Adapters never read or write the store directly. */
 export interface AdapterHost {
+  /** A click on a location, or `undefined` for a click on the map or closing the popup. */
   reportSelect(id: string | undefined): void;
   reportHover(id: string | undefined): void;
   /** A drag or edit moved or reshaped a location; `geometry.type` is the location's own. */
