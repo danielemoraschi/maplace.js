@@ -2,11 +2,11 @@
 
 Single source of truth for the 1.0 rewrite. Read this first; it is written to be enough on its own. Lives in `docs/` with the RFC and future decisions/specs.
 
-Now: decisions done (D1–D22). Next: F2–F4 on `next` (minimal tooling, so A2/A3 type-check), then A1 → A2 ⇄ A3 (iterate together) → A4 → A6 + A7 → A5.
+Now: decisions done (D1–D22). Next: A1 → A2 ⇄ A3 (iterate together) → A4 → A6 + A7 → A5.
 Status: do | wip | done | later (after 1.0) | wont (never)
 Target: maplace as if written from scratch in 2026. Headless core + adapter contract, Google adapter first, MapLibre next, views for HTML/vanilla (1.0) and React (usage designed now in the RFC, shipped in 1.x).
 1.0 = core + Google adapter + `<maplace-map>` (CDN/HTML drop-in first). `maplace/react` is not in the 1.0 `exports` map (no semver promise); it arrives in 1.x.
-Critical path: 0 → F2–F4 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7 (P1–P7) → 8 (on preview) → 9 (go-public gate, 1.0.0). Tests (6) run alongside 3–5, never after.
+Critical path: 0 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7 (P1–P7) → 8 (on preview) → 9 (go-public gate, 1.0.0). Tests (6) run alongside 3–5, never after.
 
 ## How to work this file
 - Private phase: all work lives on the long-lived branch `next` (pushed to origin; short-lived branches fast-forward into it). Nothing public before §9: `master`/`main` untouched, no npm publish, no production site, no README notice, no issue activity. A branch being visible on GitHub is fine.
@@ -14,9 +14,9 @@ Critical path: 0 → F2–F4 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7
 - Until A5: decisions live here. After A5 freezes `docs/rfc-1.0.md`: API decisions live in the RFC; this file keeps status and links only.
 - Outputs: A1–A4 are sections of `docs/rfc-1.0.md`; A2 snippets live in `packages/maplace/examples/` (outside `src/`, not in `files`, so never published) and the A3 `.d.ts` in `packages/maplace/src/` (F3 precedes the RFC) so both type-check; React snippets type-check against a type-only draft of `maplace/react` that stays out of `exports`; the RFC links to them. A6 spike on branch `spike/maplibre`, deleted after A5.
 - Branching, commits and the review chain: see `CLAUDE.md`.
-- Old code: `src/maplace.js` and `website/` stay until F2/F3 replace them; `legacy/0.2` keeps them forever.
+- Old code: removed from `next` in F2; read it with `git show 0.2.10:<path>`; `legacy/0.2` (R1) keeps it forever.
 
-## Where things are (as of 0.2.10, 2017)
+## Where 0.2 things are (tag `0.2.10`; removed from `next` in F2)
 - `src/maplace.js`: the whole library (1,133 lines, jQuery, UMD). Grunt builds `dist/` (gitignored). Line refs `L…` below mean this file at tag `0.2.10`.
 - Website: remote branch `origin/website` (static HTML via Grunt partials, Foundation 3, jQuery 1.9); sources in `website/` on master; demo init in `website/javascripts/app.js`.
 - Tags mix styles: `v0.1.x` and `0.2.x` (no `v`). The `0.2.10` release commit (d51ada2) is not on master; master only adds a README commit after it.
@@ -67,7 +67,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | D6 | Google markers = AdvancedMarkerElement only | done | mapId required (`DEMO_MAP_ID`, Google's public demo constant, for dev/tests) |
 | D7 | Google styling = mapId + Cloud Console only | done | `styles` dropped (JSON styles ignored with mapId, docs-verified); `colorScheme` via `google` options |
 | D8 | Google routing = Routes JS `Route.computeRoutes` | done | beta 2025-08-21 (3.62.1), weekly channel 2025-10-23 (3.62.11d), so safe floor is 3.63 (3.62.1 was beta-only); current quarterly 3.65 has it (versions page, 2026-10-03); `createPolylines` + stop markers; `directions_panel` dropped; route API per D22 |
-| D9 | Tooling = esbuild + tsc, Biome, Vitest, GH Actions | done | esbuild bundles ESM + IIFE, tsc emits .d.ts; Biome lint+format; Vitest unit + browser mode (T2) |
+| D9 | Tooling = esbuild + tsc, Biome, Vitest, GH Actions | done | esbuild bundles ESM + IIFE, tsc emits .d.ts; Biome lint+format; Vitest unit + browser mode (T2). TS 7 `.d.ts` emit checked 2026-10-11 (generics, overloads, private fields, unions: correct); re-check with attw in P1, TS 6 for emit only if it regresses |
 | D10 | Site = Astro + MDX, static, on Cloudflare Workers static assets | done | maplacejs.com: GoDaddy (expires 2027-02-25), NS already Cloudflare → attach custom domain |
 | D11 | `origin/develop` = mine, then delete | done | onPolylineClick + #154 trigger docs; `this.scope` refactor and FreezeZoom/UnFreezeZoom TODO stubs → drop; all recorded in A4; delete in R5 |
 | D12 | Analytics = Cloudflare Web Analytics; consent = site-wide one-time for Google Maps | done | maps behind placeholder + 'Load Google Maps', remembered in localStorage, revocable from footer |
@@ -92,7 +92,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | A4 | 0.2 → 1.0 inventory | do | every option/method/event from README + develop → keep / changed / dropped. Model changes spelled out: polyline/polygon/route vertices are no longer list entries; `lon` → `lng`; `id` required (index → id); `html` → `content` or `html` + `sanitize` (D20); develop-only items (D11). MIGRATION.md shows a few-line `map()` conversion. Feeds MIGRATION.md |
 | A5 | Review and freeze RFC | do | `docs/rfc-1.0.md`, self-contained and public (must not depend on this file); changes after freeze go through it |
 | A6 | MapLibre spike (before A5) | do | throwaway: markers, polyline, select, fit against the draft contract; any provider leak into core fixed in the RFC |
-| A7 | "big" performance spike (before A5) | do | 4k AdvancedMarkerElements with and without clustering; if too slow, decide the fallback in the RFC; main risk to D6 |
+| A7 | "big" performance spike (before A5) | do | data: `git show 0.2.10:website/data/4k.js`; 4k AdvancedMarkerElements with and without clustering; if too slow, decide the fallback in the RFC; main risk to D6 |
 
 ## 2. Foundation
 | # | Item | Status | Note |
@@ -103,9 +103,9 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | F1c | (moved to R3) | done | |
 | F1d | "1.0 rewrite in progress" notice on README | wont | nothing public until the gate (user) |
 | F1e | (moved to A0) | done | |
-| F2 | Remove Grunt, Bower, Travis, jscs, jshint | do | Gruntfile.js, bower.json, .travis.yml, .jscsrc |
-| F3 | npm workspaces, `.nvmrc` (LTS), `engines`, `.editorconfig` | do | packages/maplace (subpaths per D18), apps/site |
-| F4 | tsconfig strict + Biome | do | cognitive-complexity rule on; file-size guideline goes in CLAUDE.md (F6) |
+| F2 | Remove Grunt, Bower, Travis, jscs, jshint, `src/`, `website/` | done | 0.2 recoverable from tag `0.2.10` (`git show 0.2.10:src/maplace.js`) and the `website` branch; README stays until P6 |
+| F3 | npm workspaces, `.nvmrc`, `devEngines`, `.editorconfig` | done | see `package.json`, `packages/maplace/package.json`. `private: true` until R2, so npm refuses to publish. `exports` already name the `dist` paths, plus a package-scoped `maplace:source` condition → `src` for development: every tool that resolves `maplace` from source must set it (tsconfig `customConditions` done; Vitest/Vite `resolve.conditions` in T1, esbuild `conditions` in P1, Astro via Vite in W1). `apps/*` workspace glob arrives with W1 |
+| F4 | tsconfig strict + Biome | done | see `tsconfig.json`, `biome.json`, `.editorconfig`. TS 7 defaults cover strict, Bundler resolution and `types: []`, so the config only adds what the defaults don't; Biome takes formatting from `.editorconfig` and ignores from `.gitignore`. Scripts: `npm run typecheck`, `npm run check`, `npm run fix`. File-size guideline goes in CLAUDE.md (F6) |
 | F5 | CI: lint, typecheck, unit, fake-adapter tests, build, publint, attw, size budget, import boundaries (T10) | do | gates from first commit, not added later |
 | F6 | Grow `CLAUDE.md` | do | minimal one exists (agent workflow + pointer here); once the new layout exists add commands, layout, file-size guideline, and move this file's header into it; the header then shrinks to a pointer |
 | F7 | Renew maplacejs.com | do | expires 2027-02-25 (GoDaddy); consider transferring to Cloudflare Registrar |
@@ -164,7 +164,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 ## 7. Package and release
 | # | Item | Status | Note |
 |---|------|--------|------|
-| P1 | Builds | do | per-subpath ESM + .d.ts; two IIFEs per D18, each with its own size budget; `exports` map without `react` until 1.x, `sideEffects` array per C6, `files` |
+| P1 | Builds | do | per-subpath ESM + .d.ts (TS 7 emit, see D9) into the `dist` paths `exports` already names; add `sideEffects` listing the element `dist` entries (C6); split tsconfig per package only if emit needs it; two IIFEs per D18, each with its own size budget; `exports` map without `react` until 1.x, `files` |
 | P2 | Release workflow | do | manual dispatch with version; refuse not-above-last (compares only tags ≥ `v1.0.0`; legacy `v0.1.x`/`0.2.x` tags ignored); pre-release only to dist-tag `next`; tag `v<version>`; publish via npm trusted publishing (OIDC, set up in R2) with provenance; built during the private phase, first used after R3 |
 | P3 | Size budget per subpath | do | size-limit in CI; numbers from RFC (A3) |
 | P4 | CHANGELOG.md convention | do | one dated line per reader-visible change, same commit, `#N` for closed issue; test refuses a closing commit not listed, checking only commits after the one that creates CHANGELOG.md (baseline); "closes" = GitHub closing keyword (`close[sd]?`, `fix(es\|ed)?`, `resolve[sd]?` + `#N`); seed with 0.x history |
@@ -178,7 +178,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | # | Item | Status | Note |
 |---|------|--------|------|
 | W1 | apps/site (Astro + MDX) | do | docs from the RFC, not from old partials |
-| W2 | Examples | do | HTML + vanilla per A2 scenario for 1.0; React examples in 1.x; route replaces directions, styled becomes cloud-styled mapId |
+| W2 | Examples | do | 0.2 sample data from `git show 0.2.10:website/data/points.js` (and `4k.js`); HTML + vanilla per A2 scenario for 1.0; React examples in 1.x; route replaces directions, styled becomes cloud-styled mapId |
 | W3 | Fusion example | wont | API dead |
 | W4 | `ajax.php` → static JSON | do | |
 | W5 | (moved to N4, playground) | done | |

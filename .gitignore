@@ -1,10 +1,7 @@
-nbproject
+node_modules
+dist
+coverage
+*.tgz
 .DS_Store
 .idea
-node_modules
-bower_components
-/dist
-/index.html
-/favicon.ico
-/humans.txt
-/robots.txt
+.claude/settings.local.json

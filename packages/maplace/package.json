@@ -1,0 +1,34 @@
+{
+  "name": "maplace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A list of locations becomes a map plus a synced list, in a few lines.",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "maplace:source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./google": {
+      "maplace:source": "./src/google/index.ts",
+      "types": "./dist/google/index.d.ts",
+      "default": "./dist/google/index.js"
+    },
+    "./element": {
+      "maplace:source": "./src/element/index.ts",
+      "types": "./dist/element/index.d.ts",
+      "default": "./dist/element/index.js"
+    },
+    "./element/google": {
+      "maplace:source": "./src/element/google.ts",
+      "types": "./dist/element/google.d.ts",
+      "default": "./dist/element/google.js"
+    },
+    "./package.json": "./package.json"
+  }
+}
