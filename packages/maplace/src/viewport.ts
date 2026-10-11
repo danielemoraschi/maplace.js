@@ -28,7 +28,8 @@ export type View =
   | { readonly kind: "location"; readonly id: string; readonly zoom: number | undefined };
 
 /**
- * What adapters receive: the store resolves `fit-all` to `bounds` in one pass, taking the
- * narrower of the boxes with and without crossing the antimeridian.
+ * What adapters receive: the store resolves `fit-all` to `bounds` around the visible locations
+ * in one pass, taking the narrower box with or without crossing the antimeridian. With nothing
+ * visible it sends no view and the camera stays.
  */
 export type ResolvedView = Exclude<View, { readonly kind: "fit-all" }>;

@@ -17,7 +17,7 @@ drawable.content;
 
 declare const adapter: Adapter;
 // Drawing is awaitable, so tests and `whenReady` know when a diff is on screen.
-const drawn: Promise<void> = adapter.apply({ added: [], updated: [], removed: [] });
+adapter.apply({ added: [], updated: [], removed: [] }) satisfies Promise<void>;
 adapter.setView({
   kind: "bounds",
   bounds: { south: -20, west: 170, north: 0, east: -170 },
@@ -25,4 +25,3 @@ adapter.setView({
 });
 // @ts-expect-error adapters never see fit-all; the store resolves it to bounds
 adapter.setView({ kind: "fit-all", padding: 40 });
-void drawn;

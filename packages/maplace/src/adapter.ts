@@ -34,7 +34,7 @@ export interface AdapterHost {
   /** A drag or edit moved or reshaped a location; `geometry.type` is the location's own. */
   reportChange(id: string, geometry: Geometry): void;
   reportPopupOpen(id: string, element: HTMLElement): void;
-  /** Closing the selected location's popup is a deselect; the store does that, not the adapter. */
+  /** With `openOn: 'click'`, the store deselects when the selected location's popup closes. */
   reportPopupClose(id: string): void;
   reportViewport(viewport: Viewport): void;
   reportRoute(result: RouteResult | undefined): void;
@@ -64,8 +64,10 @@ export interface Adapter {
   /** Loads the provider and draws into the container. */
   mount(context: MountContext): Promise<void>;
   /**
-   * Resolves once the diff is drawn; `whenReady` waits for the first one. Large diffs are drawn
-   * in chunks so input is never blocked for long (aim: no task over 200 ms).
+   * Resolves once the diff is drawn and never rejects (failures go to `reportError`); `whenReady`
+   * waits for the first one. Large diffs are drawn in chunks so input is never blocked for long
+   * (aim: no task over 200 ms). The store does not wait between calls: an adapter applies diffs
+   * in order, and `present`/`setView` may already name ids from a diff still being drawn.
    */
   apply(diff: LocationDiff): Promise<void>;
   present(state: PresentationState): void;
