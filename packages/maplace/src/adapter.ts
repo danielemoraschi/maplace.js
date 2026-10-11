@@ -1,6 +1,8 @@
 import type { MaplaceError } from "./errors";
 import type { Location } from "./location";
-import type { PopupOptions, Route, RouteResult, Snapshot, View, Viewport } from "./store";
+import type { Route, RouteResult } from "./route";
+import type { PopupOptions, Snapshot } from "./store";
+import type { View, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
 export type Capability = "route" | "cluster" | "circle" | "edit";

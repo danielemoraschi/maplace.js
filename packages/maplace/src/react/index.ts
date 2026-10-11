@@ -5,9 +5,9 @@
 import type { ReactNode } from "react";
 import type { Adapter } from "../adapter";
 import type { MaplaceEventName, MaplaceEvents } from "../events";
+import type { ListEntry, ListViewOptions } from "../list-view";
 import type { Location } from "../location";
 import type { Maplace, MaplaceOptions, Snapshot } from "../store";
-import type { ListEntry, ListViewOptions } from "../view";
 
 /** `onSelect`, `onChange`, … for every event, derived so none is left out. */
 export type MaplaceEventProps = {

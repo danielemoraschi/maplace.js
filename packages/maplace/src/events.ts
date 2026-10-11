@@ -1,6 +1,7 @@
 import type { MaplaceError } from "./errors";
 import type { Location } from "./location";
-import type { RouteResult, Viewport } from "./store";
+import type { RouteResult } from "./route";
+import type { Viewport } from "./viewport";
 
 /** Payloads of every event `on()` can listen to. */
 export interface MaplaceEvents {

@@ -1,47 +1,8 @@
 import type { Adapter } from "./adapter";
 import type { Listener, ListenOptions, MaplaceEventName, Unsubscribe } from "./events";
 import type { LatLng, Location } from "./location";
-
-/** The visible area, as the provider reports it. */
-export interface Viewport {
-  readonly center: LatLng;
-  readonly zoom: number;
-  readonly bounds: {
-    readonly south: number;
-    readonly west: number;
-    readonly north: number;
-    readonly east: number;
-  };
-}
-
-/** What the map should show; adapters turn intents into camera moves. */
-export type View =
-  | { readonly kind: "fit-all"; readonly padding: number }
-  | { readonly kind: "center"; readonly center: LatLng; readonly zoom: number };
-
-export type TravelMode = "driving" | "walking" | "bicycling" | "transit";
-
-/** One route through your own locations, in order. Needs the `route` capability. */
-export interface Route {
-  /** Location ids, at least 2; the adapter sets the maximum (`Adapter.routeStopLimit`). */
-  readonly stops: readonly string[];
-  readonly travelMode?: TravelMode;
-}
-
-export interface RouteLeg {
-  readonly from: string;
-  readonly to: string;
-  readonly distanceMeters: number;
-  readonly durationSeconds: number;
-}
-
-/** A computed route, in neutral units; never a provider object. */
-export interface RouteResult {
-  readonly legs: readonly RouteLeg[];
-  readonly distanceMeters: number;
-  readonly durationSeconds: number;
-  readonly path: readonly LatLng[];
-}
+import type { Route, RouteResult } from "./route";
+import type { View, Viewport } from "./viewport";
 
 /** `idle` until attached (or while held for consent), then `loading`, then `ready` or `error`. */
 export type LoadState = "idle" | "loading" | "ready" | "error";

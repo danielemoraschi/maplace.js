@@ -16,6 +16,8 @@ export type {
   MaplaceEvents,
   Unsubscribe,
 } from "./events";
+export type { ListEntry, ListView, ListViewOptions } from "./list-view";
+export { createListView } from "./list-view";
 export type {
   CircleLocation,
   Content,
@@ -27,21 +29,15 @@ export type {
   PolygonLocation,
   PolylineLocation,
 } from "./location";
+export type { Route, RouteLeg, RouteResult, TravelMode } from "./route";
 export type {
   FitOptions,
   LoadState,
   Maplace,
   MaplaceOptions,
   PopupOptions,
-  Route,
-  RouteLeg,
-  RouteResult,
   SelectOptions,
   Snapshot,
-  TravelMode,
-  View,
-  Viewport,
 } from "./store";
 export { createMaplace } from "./store";
-export type { ListEntry, ListView, ListViewOptions } from "./view";
-export { createListView } from "./view";
+export type { View, Viewport } from "./viewport";

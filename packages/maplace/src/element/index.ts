@@ -1,7 +1,8 @@
 import type { Adapter, ControlPosition } from "../adapter";
 import type { MaplaceEvents } from "../events";
 import type { Location } from "../location";
-import type { Maplace, Route } from "../store";
+import type { Route } from "../route";
+import type { Maplace } from "../store";
 
 /** Where the element puts its list: on the map, or outside it in the page. */
 export type ListPosition = ControlPosition | "outside";
