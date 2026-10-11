@@ -1,7 +1,7 @@
 import type { MaplaceError } from "./errors";
 import type { Location } from "./location";
+import type { PopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
-import type { PopupOptions, Snapshot } from "./store";
 import type { View, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
@@ -18,7 +18,9 @@ export interface LocationDiff {
 }
 
 /** Drawing state that is not geometry. Unchanged fields keep their reference between calls. */
-export interface PresentationState extends Pick<Snapshot, "selectedId" | "hoveredId"> {
+export interface PresentationState {
+  readonly selectedId: string | undefined;
+  readonly hoveredId: string | undefined;
   /** Ids hidden by the group filter or `visible: false`. */
   readonly hiddenIds: ReadonlySet<string>;
   readonly cluster: boolean;

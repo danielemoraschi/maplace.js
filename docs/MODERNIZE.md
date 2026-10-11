@@ -159,7 +159,7 @@ Sources for D5–D8: developers.google.com/maps/documentation/javascript/ `advan
 | T7 | A fix lands with a test shown failing first | do | convention |
 | T8 | Coverage gate | do | threshold from RFC (A3) |
 | T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one |
-| T10 | Import boundaries check | do | Biome restricted imports or CI grep: no `google.maps` outside `maplace/google` (later same for maplibre); views import only the store, never an adapter; adapters never import views |
+| T10 | Import boundaries check | do | Biome restricted imports or CI grep: no `google.maps` outside `maplace/google` (later same for maplibre); views import only the store, never an adapter; adapters never import views; the store is a sink: only views, bindings, the element and `index.ts` import `./store`, while data modules (location, route, viewport, popup) are leaves |
 
 ## 7. Package and release
 | # | Item | Status | Note |

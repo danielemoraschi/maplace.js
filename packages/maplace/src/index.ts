@@ -29,13 +29,13 @@ export type {
   PolygonLocation,
   PolylineLocation,
 } from "./location";
+export type { PopupOptions } from "./popup";
 export type { Route, RouteLeg, RouteResult, TravelMode } from "./route";
 export type {
   FitOptions,
   LoadState,
   Maplace,
   MaplaceOptions,
-  PopupOptions,
   SelectOptions,
   Snapshot,
 } from "./store";

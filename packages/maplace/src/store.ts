@@ -1,19 +1,12 @@
 import type { Adapter } from "./adapter";
 import type { Listener, ListenOptions, MaplaceEventName, Unsubscribe } from "./events";
 import type { LatLng, Location } from "./location";
+import type { PopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
 import type { View, Viewport } from "./viewport";
 
 /** `idle` until attached (or while held for consent), then `loading`, then `ready` or `error`. */
 export type LoadState = "idle" | "loading" | "ready" | "error";
-
-export interface PopupOptions {
-  readonly maxWidth?: number;
-  /** Pixel offset from the anchor, `[x, y]`. */
-  readonly offset?: readonly [number, number];
-  /** Default `click`. */
-  readonly openOn?: "click" | "hover";
-}
 
 export interface MaplaceOptions {
   readonly locations?: readonly Location[];
