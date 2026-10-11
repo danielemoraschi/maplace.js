@@ -14,7 +14,7 @@ export interface Bounds {
 /** The visible area, as the provider reports it. */
 export interface Viewport {
   readonly center: LatLng;
-  /** Google's scale: the world is 256 px wide at zoom 0; adapters convert (MapLibre: −1). */
+  /** The world is 256 px wide at zoom 0; adapters for 512 px tile providers subtract 1. */
   readonly zoom: number;
   readonly bounds: Bounds;
 }
@@ -22,13 +22,13 @@ export interface Viewport {
 /** What the map should show. Zooms as in `Viewport`. */
 export type View =
   | { readonly kind: "fit-all"; readonly padding: number }
-  | { readonly kind: "bounds"; readonly bounds: Bounds; readonly padding: number }
+  | { readonly kind: "fit-bounds"; readonly bounds: Bounds; readonly padding: number }
   | { readonly kind: "center"; readonly center: LatLng; readonly zoom: number }
   /** Bring one location into view, as `select` does; `zoom` undefined keeps the zoom. */
   | { readonly kind: "location"; readonly id: string; readonly zoom: number | undefined };
 
 /**
- * What adapters receive: the store resolves `fit-all` to `bounds` around the visible locations
+ * What adapters receive: the store resolves `fit-all` to `fit-bounds` around the visible locations
  * in one pass, taking the narrower box with or without crossing the antimeridian. With nothing
  * visible it sends no view and the camera stays.
  */
