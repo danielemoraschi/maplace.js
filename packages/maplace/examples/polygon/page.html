@@ -1,0 +1,12 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- An editable area; edits are written back and announced. -->
+<maplace-map id="map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID">
+  <script type="application/json">
+    [{ "id": "park", "type": "polygon", "title": "Park", "editable": true,
+       "path": [{ "lat": 41.91, "lng": 12.48 }, { "lat": 41.92, "lng": 12.49 }, { "lat": 41.90, "lng": 12.50 }] }]
+  </script>
+</maplace-map>
+<script>
+  document.getElementById('map').addEventListener('maplace-change', (event) => save(event.detail.location));
+</script>

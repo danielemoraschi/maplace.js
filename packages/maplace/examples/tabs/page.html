@@ -1,0 +1,13 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- The list sits outside the map; the details panel follows the selection. -->
+<maplace-map id="map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list="list" list-position="outside">
+  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
+</maplace-map>
+<aside id="details"></aside>
+<script>
+  document.getElementById('map').addEventListener('maplace-select', (event) => {
+    document.getElementById('details').textContent = event.detail.id ?? '';
+  });
+</script>

@@ -1,0 +1,13 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- One route through your own locations, in order. -->
+<maplace-map id="map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list="list">
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
+  <maplace-location location-id="bologna" lat="44.4949" lng="11.3426" title="Bologna"></maplace-location>
+  <maplace-location location-id="florence" lat="43.7696" lng="11.2558" title="Florence"></maplace-location>
+</maplace-map>
+<script>
+  const map = document.getElementById('map');
+  map.route = { stops: ['milan', 'bologna', 'florence'], travelMode: 'driving' };
+  map.addEventListener('maplace-route', (event) => console.log(event.detail.result?.distanceMeters));
+</script>
