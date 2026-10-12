@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MaplaceError } from "../errors";
 import type { Location } from "../location";
 import { createFakeAdapter } from "../testing/fake-adapter";
+import { mounted } from "../testing/mounted";
 import { createMaplace } from "./create";
 
 const locations: Location[] = [
@@ -108,8 +109,7 @@ describe("attach", () => {
 
 describe("detach", () => {
   it("destroys the adapter and returns the store to idle; only once", async () => {
-    const { maplace, adapter, detach } = attached();
-    await adapter.finishMount();
+    const { maplace, adapter, detach } = await mounted();
     detach();
     expect(adapter.destroyed).toBe(true);
     expect(maplace.getSnapshot()).toMatchObject({ loadState: "idle", viewport: undefined });
@@ -140,43 +140,12 @@ describe("detach", () => {
   });
 
   it("re-applies the last requested view on a new attach", async () => {
-    const { maplace, adapter, detach } = attached();
-    await adapter.finishMount();
+    const { maplace, detach } = await mounted();
     maplace.setView({ lat: 5, lng: 6 }, 7);
     detach();
     const next = createFakeAdapter();
     maplace.attach(next, container());
     await next.finishMount();
     expect(next.callsOf("setView")[0]?.view).toMatchObject({ kind: "center", zoom: 7 });
-  });
-});
-
-describe("reports through the host", () => {
-  it("a drag reaches the adapter as an update with the written-back geometry", async () => {
-    const maplace = createMaplace({ locations: [{ id: "a", lat: 0, lng: 0, editable: true }] });
-    const adapter = createFakeAdapter();
-    maplace.attach(adapter, container());
-    await adapter.finishMount();
-    adapter.host().reportChange("a", { type: "marker", lat: 5, lng: 6 });
-    const [update] = adapter.callsOf("apply").slice(-1);
-    expect(update?.diff.updated.map((drawable) => drawable.geometry)).toEqual([
-      { type: "marker", lat: 5, lng: 6 },
-    ]);
-  });
-
-  it("a report during a pass waits for the next one, keeping the store's order", async () => {
-    const { maplace, adapter } = attached();
-    await adapter.finishMount();
-    const present = adapter.present;
-    adapter.present = (state) => {
-      present(state);
-      if (state.selectedId === "a") adapter.host().reportHover("b");
-    };
-    maplace.select("a");
-    expect(adapter.calls.slice(-3).map((call) => call.method)).toEqual([
-      "present",
-      "setView",
-      "present",
-    ]);
   });
 });

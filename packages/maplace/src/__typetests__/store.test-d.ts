@@ -1,5 +1,15 @@
 // Compile-time checks of the store API: each @ts-expect-error must stay an error.
-import type { Adapter, Maplace, MaplaceEvents } from "maplace";
+import type {
+  Adapter,
+  Location,
+  Maplace,
+  MaplaceEvents,
+  RouteResult,
+  Snapshot,
+  Viewport,
+} from "maplace";
+import { createMaplace } from "maplace";
+import { expectTypeOf } from "vitest";
 
 declare const maplace: Maplace;
 
@@ -32,3 +42,25 @@ maplace.setView({ lat: 1, lng: 2 });
 declare const priced: Maplace<{ price: number }>;
 priced.attach(adapter, document.body);
 priced.on("change", ({ location }) => location.data?.price.toFixed(2));
+
+// The data type comes from the locations given; events and the snapshot carry it.
+const shop = createMaplace({ locations: [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }] });
+expectTypeOf(shop.getSnapshot().locations).toEqualTypeOf<readonly Location<{ price: number }>[]>();
+shop.on("change", ({ location, previous }) => {
+  expectTypeOf(location).toEqualTypeOf<Location<{ price: number }>>();
+  expectTypeOf(previous).toEqualTypeOf<Location<{ price: number }>>();
+});
+shop.on("viewport", ({ viewport }) => expectTypeOf(viewport).toEqualTypeOf<Viewport>());
+shop.on("route", ({ result }) => expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>());
+// @ts-expect-error a viewport has no `center.lon`; coordinates are lat/lng
+shop.on("viewport", ({ viewport }) => viewport.center.lon);
+
+// Loading: whenReady is awaitable, attach returns detach.
+expectTypeOf(shop.whenReady()).toEqualTypeOf<Promise<void>>();
+expectTypeOf(shop.attach).returns.toEqualTypeOf<() => void>();
+// @ts-expect-error attach needs a container for the map
+shop.attach(adapter);
+
+declare const current: Snapshot;
+// @ts-expect-error the snapshot's viewport is the map's report, read-only
+current.viewport = undefined;

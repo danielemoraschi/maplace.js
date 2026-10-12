@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { CONTAINER } from "../testing/container";
 import { createFakeAdapter } from "../testing/fake-adapter";
 import { createMaplace } from "./create";
-
-const element = { nodeType: 1 } as HTMLElement;
 
 describe("createMaplace", () => {
   it("imports and runs without a DOM, as on a server", () => {
@@ -17,8 +16,8 @@ describe("createMaplace", () => {
     const second = createMaplace();
     const firstAdapter = createFakeAdapter();
     const secondAdapter = createFakeAdapter();
-    first.attach(firstAdapter, element);
-    second.attach(secondAdapter, element);
+    first.attach(firstAdapter, CONTAINER);
+    second.attach(secondAdapter, CONTAINER);
     await firstAdapter.finishMount();
     expect(first.getSnapshot().loadState).toBe("ready");
     expect(second.getSnapshot().loadState).toBe("loading");
@@ -30,7 +29,7 @@ describe("destroy", () => {
   it("detaches, and rejects whenReady with destroyed now and later", async () => {
     const maplace = createMaplace();
     const adapter = createFakeAdapter();
-    maplace.attach(adapter, element);
+    maplace.attach(adapter, CONTAINER);
     const ready = maplace.whenReady();
     maplace.destroy();
     expect(adapter.destroyed).toBe(true);

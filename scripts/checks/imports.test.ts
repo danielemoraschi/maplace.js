@@ -47,6 +47,14 @@ describe("problemsIn", () => {
     ]);
   });
 
+  it("keeps the fake adapter at contract level; only the scenario helper sees the store", () => {
+    expect(layerOf("testing/fake-adapter")).toBe("testing");
+    expect(layerOf("testing/mounted")).toBe("scenario");
+    const createStore = 'import { createMaplace } from "../maplace/create";';
+    expect(problemsIn("testing/fake-adapter.ts", createStore)).toHaveLength(1);
+    expect(problemsIn("testing/mounted.ts", createStore)).toEqual([]);
+  });
+
   it("reports a data module importing the store", () => {
     expect(problemsIn("route.ts", 'import type { Maplace } from "./store";')).toHaveLength(1);
   });

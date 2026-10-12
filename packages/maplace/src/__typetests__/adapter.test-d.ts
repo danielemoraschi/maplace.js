@@ -5,6 +5,14 @@ declare const host: AdapterHost;
 declare const drawable: Drawable;
 
 host.reportChange("a", { type: "marker", lat: 1, lng: 2 });
+// A click on the map, the pointer leaving, a cleared route: each reported as undefined.
+host.reportSelect(undefined);
+host.reportHover(undefined);
+host.reportRoute(undefined);
+// @ts-expect-error a popup opens with its element, once the content is in the DOM
+host.reportPopupOpen("a");
+// @ts-expect-error a viewport carries its bounds
+host.reportViewport({ center: { lat: 0, lng: 0 }, zoom: 3 });
 // @ts-expect-error a reported geometry names its type
 host.reportChange("a", { lat: 1, lng: 2 });
 // @ts-expect-error adapters report geometry, not whole locations
