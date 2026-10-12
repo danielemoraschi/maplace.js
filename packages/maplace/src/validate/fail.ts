@@ -26,9 +26,14 @@ export function item(field: Field, index: number): Field {
 
 /** Throws `<label>: <path> <problem>` as a `MaplaceError`, `invalid-input` unless told otherwise. */
 export function reject(field: Field, problem: string, code: MisuseCode = "invalid-input"): never {
+  throw misuse(field, problem, code);
+}
+
+/** The error `reject` throws, for callers that hand it on instead (a rejected promise). */
+export function misuse(field: Field, problem: string, code: MisuseCode): MaplaceError {
   const { label, locationId, path } = field;
   const message = `${label}: ${[path, problem].filter(Boolean).join(" ")}`;
-  throw new MaplaceError(code, message, { locationId, field: path === "" ? undefined : path });
+  return new MaplaceError(code, message, { locationId, field: path === "" ? undefined : path });
 }
 
 /** Throws "<path> must be <expected>, got <what it got>". */

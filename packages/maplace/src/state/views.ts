@@ -3,7 +3,10 @@ import { child, root } from "../validate/fail";
 import { checkLatLng } from "../validate/geometry";
 import { checkBounds, checkFitOptions, checkZoom } from "../validate/viewport";
 import type { Bounds, FitOptions, View } from "../viewport";
+
 import { type Change, patchOnly } from "./change";
+
+type BoundsView = Extract<View, { readonly kind: "fit-bounds" }>;
 
 /** Pixels around fitted locations or boxes unless `padding` says otherwise (RFC §3). */
 export const FIT_PADDING = 40;
@@ -42,7 +45,7 @@ export function locationView(id: string, zoom: number | undefined): View {
 }
 
 /** A box brought into view, by default with `FIT_PADDING`. */
-function boundsView(bounds: Bounds, padding = FIT_PADDING): View {
+export function boundsView(bounds: Bounds, padding = FIT_PADDING): BoundsView {
   return Object.freeze({ kind: "fit-bounds", bounds: copyBounds(bounds), padding });
 }
 

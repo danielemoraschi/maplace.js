@@ -1,4 +1,5 @@
 import type { Unsubscribe } from "../events";
+import { runSafely } from "./safely";
 
 /** A set of listeners: subscribers, or the listeners of one event. */
 export interface Listeners<T> {
@@ -34,27 +35,11 @@ export function createListeners<T>(): Listeners<T> {
       // and one removed by an earlier listener is skipped.
       const present = Array.from(entries);
       for (const entry of present) {
-        if (entries.has(entry)) callSafely(entry.listener, value);
+        if (entries.has(entry)) runSafely(() => entry.listener(value));
       }
     },
     clear() {
       for (const entry of entries) entry.remove();
     },
   };
-}
-
-function callSafely<T>(listener: (value: T) => void, value: T): void {
-  try {
-    listener(value);
-  } catch (error) {
-    rethrowLater(error);
-  }
-}
-
-// One listener's bug must not stop the others or leave the store half-notified, and it must not
-// vanish either: rethrown in a microtask, it reaches the console and `window.onerror`.
-function rethrowLater(error: unknown): void {
-  queueMicrotask(() => {
-    throw error;
-  });
 }

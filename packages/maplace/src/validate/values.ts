@@ -107,7 +107,7 @@ export function members<T extends string>(record: Readonly<Record<T, true>>): re
 }
 
 // Duck-typed rather than `instanceof Node`, so validation also runs where there is no DOM (SSR).
-function isNode(value: unknown): boolean {
+export function isNode(value: unknown): value is { readonly nodeType: unknown } {
   return typeof value === "object" && value !== null && "nodeType" in value;
 }
 

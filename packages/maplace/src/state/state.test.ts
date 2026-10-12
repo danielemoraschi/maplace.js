@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Location } from "../location";
-import { createState } from "./state";
+import { patchOnly } from "./change";
+import { createInternalState, createState } from "./state";
 
 const at = { lat: 0, lng: 0 };
 const locations: Location[] = [
@@ -171,5 +172,30 @@ describe("after destroy", () => {
     state.on("select", () => {}, { signal });
     state.destroy();
     expect(remove).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("createInternalState", () => {
+  it("commits the store's own changes without validation, even after destroy", () => {
+    const { store, commitOwn } = createInternalState({ locations });
+    const onChange = vi.fn();
+    store.subscribe(onChange);
+    commitOwn(patchOnly({ loadState: "loading" }));
+    expect(store.getSnapshot().loadState).toBe("loading");
+    expect(onChange).toHaveBeenCalledTimes(1);
+    store.destroy();
+    commitOwn(patchOnly({ loadState: "idle" }));
+    expect(store.getSnapshot().loadState).toBe("idle");
+  });
+
+  it("names the method a destroyed store was called with", () => {
+    const { store, checkNotDestroyed } = createInternalState();
+    store.destroy();
+    expect(() => checkNotDestroyed("whenReady")).toThrow(
+      expect.objectContaining({
+        code: "destroyed",
+        message: "whenReady: this maplace was destroyed",
+      }),
+    );
   });
 });

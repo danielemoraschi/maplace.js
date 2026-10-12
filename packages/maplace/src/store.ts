@@ -2,7 +2,6 @@ import type { Adapter } from "./adapter";
 import type { Listener, ListenOptions, MaplaceEventName, Unsubscribe } from "./events";
 import type { LatLng } from "./geometry";
 import type { Location } from "./location";
-import type { MaplaceOptions } from "./options";
 import type { Route, RouteResult } from "./route";
 import type { Bounds, FitOptions, SelectOptions, View, Viewport } from "./viewport";
 
@@ -67,7 +66,11 @@ export interface Maplace<Data = unknown> {
    * Throws if already attached or if the current state needs a missing capability.
    */
   attach(adapter: Adapter, container: HTMLElement): () => void;
-  /** Resolves once the provider loaded and the first locations are drawn; rejects on load error. */
+  /**
+   * Resolves once the provider loaded and the first locations are drawn; rejects on load error.
+   * Called before `attach`, or across `detach`, it waits for the next load; after `destroy` it
+   * rejects with `destroyed`.
+   */
   whenReady(): Promise<void>;
   /**
    * Detaches and drops every listener. Afterwards, calls that change state or add a listener
@@ -75,5 +78,3 @@ export interface Maplace<Data = unknown> {
    */
   destroy(): void;
 }
-
-export declare function createMaplace<Data>(options?: MaplaceOptions<Data>): Maplace<Data>;

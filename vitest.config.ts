@@ -8,7 +8,7 @@ export default defineConfig({
       reporter: ["text-summary", "lcovonly"],
       include: ["packages/maplace/src/**", "scripts/**"],
       // Keep in step with sonar.coverage.exclusions.
-      exclude: ["**/__typetests__/**", "**/*.test.ts", "scripts/check.ts"],
+      exclude: ["**/__typetests__/**", "**/*.test.ts", "**/src/testing/**", "scripts/check.ts"],
     },
   },
 });

@@ -1,10 +1,6 @@
 import type { Location } from "../location";
-import type { Snapshot } from "../store";
 import { describeValue, type Field, reject } from "../validate/fail";
-import { isShown, locationById } from "./lookup";
-
-/** What decides whether an id can be selected. */
-export type Scope = Pick<Snapshot<unknown>, "locations" | "filter">;
+import { isShown, locationById, type Scope } from "./lookup";
 
 /** Throws `unknown-id` unless `id` names a location; returns it. */
 export function checkKnownId<Data>(

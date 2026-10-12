@@ -30,7 +30,7 @@ export type View =
 /**
  * What adapters receive: the store resolves `fit-all` to `fit-bounds` around the visible locations
  * in one pass, taking the narrower box with or without crossing the antimeridian. With nothing
- * visible it sends no view and the camera stays.
+ * visible it sends no view and the camera stays, until locations are shown: then it fits them.
  */
 export type ResolvedView = Exclude<View, { readonly kind: "fit-all" }>;
 

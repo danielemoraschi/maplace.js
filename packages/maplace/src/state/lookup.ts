@@ -1,4 +1,8 @@
 import type { Location } from "../location";
+import type { Snapshot } from "../store";
+
+/** What decides whether a location is shown: the locations and the filter. */
+export type Scope = Pick<Snapshot<unknown>, "locations" | "filter">;
 
 // Snapshot location lists are frozen (`frozenList`), so an index built once per list stays right.
 const INDEXES = new WeakMap<readonly Location[], ReadonlyMap<string, Location>>();
