@@ -108,6 +108,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | F6 | Grow `CLAUDE.md` | done | `CLAUDE.md`; this file's "How to work" points to it |
 | F7 | Renew maplacejs.com | do | expires 2027-02-25 (GoDaddy); consider transferring to Cloudflare Registrar |
 | F8 | Dependabot for Action SHAs and npm | do | GitHub reads its config only from the default branch: lands with R3 |
+| F9 | SonarQube analysis | done | `sonar-project.properties`; a report-only scan step in CI on `next` only (Community Build analyses one branch; its main branch is named `next`); `npm run sonar` locally. At R3 the SonarQube main branch and the step's branch move to `main` |
 
 ## 3. Core (headless)
 | # | Item | Status | Note |
@@ -156,7 +157,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | T5 | Docs examples executed | do | fake adapter on PRs; real Maps on push to `next` until R3, nightly after; docs can't drift |
 | T6 | E2E on site examples | do | Playwright, consent flow included; on push to `next` until R3, nightly after |
 | T7 | A fix lands with a test shown failing first | do | convention |
-| T8 | Coverage gate | do | threshold from RFC (A3) |
+| T8 | Coverage gate | do | threshold from RFC (A3); the v8 coverage report exists (F9), the thresholds are this row |
 | T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one. Waits on `apply`; checks a known zoom gives a known bounds span and a fit across ±180° gives west > east |
 | T10 | Import boundaries check | done | `scripts/checks/imports.ts` (the `LAYERS` table) plus Biome `noRestrictedGlobals` for `google.maps` outside `src/google/`. A MapLibre adapter adds its own layer and fence |
 | T11 | RFC ↔ types check | done | `scripts/checks/rfc.ts` compares the RFC with `src/__typetests__/api-lists.ts`, whose `.test-d.ts` ties each list to its type |

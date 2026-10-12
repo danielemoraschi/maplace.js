@@ -10,10 +10,11 @@ Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm ci`: install.
 - `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers and RFC ↔ types.
 - `npm run typecheck`: source, examples, type tests, then `scripts/`.
-- `npm test`: Vitest.
+- `npm test`: Vitest, with a coverage report (`coverage/lcov.info`).
 - `npm run fix`: Biome's safe fixes and formatting.
+- `npm run sonar`: SonarQube scan (scope in `sonar-project.properties`, host and token from `.env.local`); it lands on the same main branch as CI's, so use it to check before a push.
 
-CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every push. A tracker row that adds a gate adds its CI step in the same commit.
+CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every push. A tracker row that adds a gate adds its CI step in the same commit. On `next` it also sends the analysis to SonarQube, report-only.
 
 ## Layout
 - `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/`, and `react/`, a type-only 1.x draft that stays out of the published `exports`.

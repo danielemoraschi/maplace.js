@@ -15,13 +15,16 @@
     "typecheck": "tsc && tsc -p scripts",
     "check": "biome check && node scripts/check.ts",
     "fix": "biome check --write",
-    "test": "vitest run"
+    "test": "vitest run --coverage",
+    "sonar": "node --env-file-if-exists=.env.local node_modules/.bin/sonar-scanner-npm"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
+    "@sonar/scan": "^5.0.1",
     "@types/google.maps": "^3.66.6",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
+    "@vitest/coverage-v8": "^5.0.4",
     "typescript": "^7.0.2",
     "vitest": "^5.0.4"
   }
