@@ -7,16 +7,16 @@ const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
 export function Route({ locations }: { locations: readonly Location[] }) {
   const [km, setKm] = useState<number>();
-  const route = { stops: locations.map((location) => location.id), travelMode: "driving" } as const;
+  const stops = locations.map((location) => location.id);
   return (
     <MaplaceProvider
       locations={locations}
-      route={route}
+      route={{ stops, travelMode: "driving" }}
       onRoute={({ result }) => setKm(result && Math.round(result.distanceMeters / 1000))}
     >
       <MaplaceMap createAdapter={createAdapter} />
       <LocationList />
-      <p>{km === undefined ? "" : `${km} km`}</p>
+      {km !== undefined && <p>{km} km</p>}
     </MaplaceProvider>
   );
 }

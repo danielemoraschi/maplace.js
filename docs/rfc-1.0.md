@@ -45,11 +45,11 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 ### Principles
 
 - **Your data, not a provider's.** maplace renders the locations you own; provider services are optional extras.
-- **Provider behind an adapter.** No provider types leak into the core or the public API, so MapLibre is a new adapter, not a rewrite.
+- **Provider behind an adapter.** No provider types leak into the core or the public API, so MapLibre is a new adapter, not a rewrite (§3 Loading).
 - **Nothing global.** Every map is independent; the only shared thing is the provider's own script.
 - **Safe by default.** Strings render as text; HTML needs an explicit sanitizer.
 - **Accessible.** The list is the accessible way into the map, not an afterthought.
-- **Small.** Separate entries (`maplace`, `maplace/google`, `maplace/element`, `maplace/element/google`; React in 1.x), and clustering loads only when used; you pay only for what you use.
+- **Small.** Separate entries, and clustering loads only when used (§3 Loading); you pay only for what you use.
 - **Loud errors.** Bad input or a missing key reports what is wrong and where, never a silent grey map.
 
 ### Non-goals for 1.0
@@ -63,7 +63,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 | Route alternatives or several routes per map | One route through your own locations covers the 0.2 use; more turns maplace into a routing UI. |
 | Other provider services (places search, distance, elevation) | Not in 1.0; Places integration is a likely later addition. |
 | A React map toolkit | Excellent ones exist (see below); maplace's job is the data list and selection, in any framework. |
-| Legacy browsers | Evergreen browsers only (ES2020): no transpiling for old browsers keeps the builds small. |
+| Legacy browsers | Evergreen browsers only (§3 Loading). |
 | 0.2 API compatibility | The 0.2 API was index-based and jQuery-shaped; §4 (and the MIGRATION.md written from it) shows a short data conversion instead. |
 
 ### How it compares
@@ -118,7 +118,7 @@ What the scenarios settled:
 
 ## 3. API
 
-The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarations, with compile-time tests in `src/__typetests__/`. This section explains them; the files are the reference.
+This section explains the declarations in [`packages/maplace/src/`](../packages/maplace/src/) and their compile-time tests in `src/__typetests__/`.
 
 ### Glossary
 
@@ -130,7 +130,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | view | What you asked the map to show: fit all, a box, a centre and zoom, or one location (what selecting asks for) |
 | bounds | A box on the map: south, west, north, east; west greater than east crosses the antimeridian |
 | viewport | What the map actually shows, as reported by the provider; zoom and bounds mean the same on every provider (see `Viewport`, `Bounds`) |
-| popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup); it follows the selection, or the hover with `openOn: 'hover'` |
+| popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup). It follows the selection (or the hover with `openOn: 'hover'`); with `openOn: 'click'`, closing it deselects |
 | route | One path through your own locations, in order |
 | filter | The groups currently shown; hiding the selected location deselects it |
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
@@ -150,19 +150,20 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. Ids are yours (maplace never generates them) and coordinates are `lat`/`lng`, as Google and MapLibre name them. All take `id`, `title`, `content`, `html`, `group`, `visible`, `editable` and `data`; markers take an `icon`, shapes a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`result` undefined when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
-- **Adapter contract**: `mount({ container, host, signal, cluster, popup })`, `apply` (a diff: added and updated locations as `Drawable`s, removed ones as ids; resolves once drawn), `present` (selection, hover, hidden ids), `setView` (a `ResolvedView`: a box, a centre and zoom, or one location; the store resolves fit-all to a box once, antimeridian included), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost`: `reportSelect`, `reportHover`, `reportChange` (the new geometry), `reportPopupOpen`, `reportPopupClose` (with `openOn: 'click'` the store deselects when the selected location's popup closes), `reportViewport`, `reportRoute`, `reportError`; they never read or write the store. One adapter instance drives one map.
-- **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`: provider options belong to the adapter, never to the store; `mapOptions` excludes centre and zoom, which only `view` sets. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
+- **Adapter contract**: `mount({ container, host, signal, cluster, popup })`, `apply` (a diff: added and updated locations as `Drawable`s, removed ones as ids; resolves once drawn), `present` (selection, hover, hidden ids), `setView` (a `ResolvedView`: a box, a centre and zoom, or one location; the store resolves fit-all to a box once, antimeridian included), `setRoute`, `mountControl`, `destroy`, `capabilities` and an optional `routeStopLimit`. One adapter instance drives one map.
+- **Adapter host**: adapters report back only through it, and never read or write the store: `reportSelect`, `reportHover`, `reportChange` (the new geometry), `reportPopupOpen`, `reportPopupClose`, `reportViewport`, `reportRoute`, `reportError`.
+- **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`, the only entry that knows `google.maps` (loading in §3 Loading). Provider options belong to the adapter, never to the store; `mapOptions` excludes centre and zoom, which only `view` sets.
 - **Views**: `createListView(maplace, { as, groupHeadings, fitAllLabel, render })` (`fitAllLabel` adds a first entry that clears the selection and fits all) returns a `ListView`: `{ element, destroy }`.
-- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional `<template>` child: author markup, trusted, so it skips `sanitize` (`html` set through `locations` still needs it). `defineProvider(name, factory)` registers a provider; `release()` starts an element held with `hold`.
+- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional `<template>` child: author markup, trusted, so it skips `sanitize` (`html` set through `locations` still needs it). `defineProvider(name, factory)` registers a provider; `release()` starts an element held with `hold`. Defining the elements is idempotent; a second, different copy of maplace on the page logs an error and leaves the first in place.
 - **React (1.x draft)**: `<MaplaceProvider locations>` with `on<Event>` props derived from the event map, optional controlled `selectedId`, `filter`, `route`, and `defaultSelectedId` for an uncontrolled start; other options are read once, on mount; `<MaplaceMap createAdapter>` (a fresh adapter per mount; attaches on mount, detaches on unmount); `<LocationList>`; `useMaplace()`.
 
 ### Loading, providers and packaging
 
-- **One package, separate entries**: `maplace` (store, list view, adapter contract), `maplace/google`, `maplace/element`, `maplace/element/google`; `maplace/react` in 1.x and `maplace/maplibre` later. One version for all. `@googlemaps/markerclusterer`, `react` and `maplibre-gl` are optional peers. The CDN gets two scripts, `maplace-element.iife.js` and `maplace-element-cluster.iife.js` (clustering bundled, nothing fetched from other origins at runtime). Evergreen browsers, ES2020.
+- **One package, separate entries**: `maplace` (store, list view, adapter contract), `maplace/google`, `maplace/element`, `maplace/element/google`; `maplace/react` in 1.x and `maplace/maplibre` later. One version for all. `@googlemaps/markerclusterer`, `react` and `maplibre-gl` are optional peers. The CDN gets two scripts, `maplace-element.iife.js` and `maplace-element-cluster.iife.js` (clustering bundled, nothing fetched from other origins at runtime). Evergreen browsers only (ES2020): no transpiling for old browsers keeps the builds small.
 - **Loading Google Maps**: nothing reads `google` at import time; the adapter calls the global `google.maps.importLibrary`, which works with Google's bootstrap snippet and with js-api-loader, so there is no loader dependency. Only the element's Google provider adds the bootstrap itself, from `api-key`, `version`, `language`, `region` and `nonce` (for CSP): one shared script per page however many maps, never added while the element is held. A second element with a different `api-key`, `version`, `language` or `region` is misuse. Without `google.maps.importLibrary` (an old or missing Maps JS) loading fails with `provider-load-failed`.
 - **Google markers and styling**: advanced markers only, the legacy `Marker` being deprecated, so a map ID is required (`DEMO_MAP_ID`, Google's public demo ID, for development). Styling is the map ID's Cloud styling plus `colorScheme`; JSON `styles` are not offered because Google ignores them on maps with a map ID.
-- **Routes**: Google's Routes library (`Route.computeRoutes`), which replaces the legacy Directions service; it needs Maps JS 3.63 or later. A route is at least two stops, all ids of your own locations, at most the adapter's `routeStopLimit` (27 on Google); stops stay ordinary, selectable locations. Removing a stop's location drops it from the route, which clears below two stops. Routes are recomputed only when stops, their positions or the travel mode change, after a drag only when it ends, because each computation is billed. A Maps version without the Routes library fails with `route-failed` when a route is set.
-- **Ready for MapLibre**: no provider type appears outside the provider's entry; the store speaks its own `LatLng`, `Bounds`, zoom scale and DOM-node content, and what differs between providers is a capability (route, cluster, circle, edit). A MapLibre adapter is new code behind the same contract, not a change to it.
+- **Routes**: Google's Routes library; it needs Maps JS 3.63 or later, else `route-failed`. Stops: 2 to `routeStopLimit` of your own locations (27 on Google), each still an ordinary, selectable location; removing a stop's location drops it, and below two stops the route clears. A route is computed at most once per task, and only when stops, their positions or the travel mode change (after a drag, only when it ends), because each computation is billed; `setRoute` with an equal route changes nothing and keeps the old reference.
+- **Ready for MapLibre**: no provider type appears outside the provider's entry; the store speaks its own `LatLng`, `Bounds`, zoom scale and DOM-node content, and what differs between providers is a capability. A MapLibre adapter is new code behind the same contract, not a change to it.
 
 ### Rules the API follows
 
@@ -174,7 +175,17 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 
 ### Errors
 
-- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`. Codes: `invalid-input` (`lon` instead of `lng`, a circle without a radius, a fill on a polyline, a box with south above north or coordinates out of range, `zoom` with `pan: false`, a route with fewer than two stops or more than the adapter allows, selecting a hidden location, conflicting element bootstrap attributes, an unknown or ambiguous element `provider`), `duplicate-id`, `unknown-id` (ids not in the store: `select`, `selectedId`, route stops), `missing-sanitizer` (`html` without `sanitize`), `unsupported-capability`, `already-attached` (a store attached twice, or an adapter instance reused), `already-defined` (a second copy of maplace defining the elements), `destroyed` (any call after `destroy`).
+- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`:
+
+  | Code | When |
+  |---|---|
+  | `invalid-input` | Bad data or arguments: `lon` instead of `lng`, a fill on a polyline, a box with south above north, `zoom` with `pan: false`, selecting a hidden location, route stops outside the rules, element setup per §3 Loading, an unknown or ambiguous element `provider` |
+  | `duplicate-id` | Two locations with one id |
+  | `unknown-id` | An id not in the store (`select`, `selectedId`, route stops) |
+  | `missing-sanitizer` | `html` without `sanitize` |
+  | `unsupported-capability` | A feature the adapter lacks |
+  | `already-attached` | A store attached twice, or an adapter instance reused |
+  | `destroyed` | Any call after `destroy` |
 - **Runtime failures are events**, never throws: `provider-load-failed`, `provider-auth-failed`, `route-failed`. For the first two, `loadState` becomes `error` and `whenReady()` rejects.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. The adapter's `routeStopLimit` is checked the same way. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
@@ -254,7 +265,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
 | `show_infowindows`, `infowindow_type` | leave `content` out; there is only one kind of popup |
 | `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`; centre and zoom through `view` |
-| `styles` | map ID and Cloud styling: Google ignores JSON styles on maps with a map ID, which advanced markers need |
+| `styles` | map ID and Cloud styling (§3 Loading) |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
 | `directions_options.avoidHighways`, `avoidTolls` | not in 1.0; route modifiers may come later |
@@ -366,8 +377,6 @@ Demand = items + reactions + comments.
 | Hidden or resized container rendering | 1, 79, 83, 136, 154, 173 | 26 (6+0+20) | adapters watch the container (§3 Decisions) |
 | Groups, categories, filters, layer toggles | 15, 36, 40, 44, 85, 87, 117, 143 | 26 (8+0+18) | `group` and `setFilter`, list group headings (§3 Decisions) |
 | Packaging, distribution, jQuery dependency | 26, 30, 50, 71, 82, 104, 112, 113, 116, 118, 119, 162, 185 | 23 (13+0+10) | one package, ES modules and CDN scripts, no jQuery (§3 Loading) |
-| Places and location search (search box, place details, save a place) | 41, 98, 152, 165 | 12 (4+0+8) | later: Places integration (§1) |
-| Other Google services (print, drawing, point-in-circle, distance matrix, off-road paths) | 93, 146, 151, 159, 180 | 10 (5+0+5) | out of scope: app logic or other Google APIs (§1 Non-goals) |
 | Route result data, events, waypoint limits | 121, 129, 139, 142, 147, 176 | 19 (6+0+13) | `route` event with legs; stop limit from the adapter (§3 Loading) |
 | Events and callbacks API | 32, 53, 80, 110, 111, 127, 137, 141, 194, 195 | 19 (10+0+9) | one typed event system (§3 Shape) |
 | Docs, website, examples | 17, 34, 134, 140, 157, 181, 189, 196 | 18 (8+2+8) | new site with runnable examples (§2) |
@@ -377,8 +386,10 @@ Demand = items + reactions + comments.
 | Mixed location types on one map | 10, 43, 90, 158, 179, 193 | 13 (6+0+7) | `type` per location (§3 Shape) |
 | Geocoding and address input | 8, 24, 126, 131, 170 | 13 (5+0+8) | later: locations from addresses (§1) |
 | Setup errors and input validation | 63, 125, 145, 175 | 13 (4+0+9) | misuse throws with code, id and field (§3 Errors) |
+| Places and location search (search box, place details, save a place) | 41, 98, 152, 165 | 12 (4+0+8) | later: Places integration (§1) |
 | Editable/draggable geometry sync | 48, 49, 64, 107, 155, 164, 178 | 11 (7+0+4) | `editable`, written back, `change` event (§3 Decisions) |
 | Circles and shape styling | 13, 76, 130 | 11 (3+0+8) | circles by radius, `style` (§3 Shape) |
+| Other Google services (print, drawing, point-in-circle, distance matrix, off-road paths) | 93, 146, 151, 159, 180 | 10 (5+0+5) | out of scope: app logic or other Google APIs (§1 Non-goals) |
 | Host element CSS and sizing | 23, 184 | 9 (2+0+7) | no inline styles on the element (§3 Decisions) |
 | Multiple maps and instance access | 89, 123, 124, 186 | 9 (4+1+4) | no globals, one store per map (§1 Principles) |
 | Clustering and dense markers | 3, 54, 190 | 8 (3+0+5) | `cluster` (§3 Performance) |
