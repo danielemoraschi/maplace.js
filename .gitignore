@@ -5,3 +5,4 @@ coverage
 .DS_Store
 .idea
 .claude/settings.local.json
+.env.local
