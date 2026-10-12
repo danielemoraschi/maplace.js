@@ -7,7 +7,8 @@ import type { Adapter } from "../adapter";
 import type { Listener, MaplaceEventName } from "../events";
 import type { ListEntry, ListViewOptions } from "../list-view";
 import type { Location } from "../location";
-import type { Maplace, MaplaceOptions, Snapshot } from "../store";
+import type { MaplaceOptions } from "../options";
+import type { Maplace, Snapshot } from "../store";
 
 /** `onSelect`, `onChange`, … for every event, derived so none is left out. */
 export type MaplaceEventProps<Data = unknown> = {

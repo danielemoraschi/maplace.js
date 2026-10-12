@@ -22,9 +22,19 @@ export interface MaplaceErrorDetails {
 }
 
 /** The only error type maplace throws or emits. The message names the location and field. */
-export declare class MaplaceError extends Error {
-  constructor(code: ErrorCode, message: string, details?: MaplaceErrorDetails);
+export class MaplaceError extends Error {
   readonly code: ErrorCode;
   readonly locationId: string | undefined;
   readonly field: string | undefined;
+  /** Set only when given, as with a native error's `cause`. */
+  declare readonly cause: unknown;
+
+  constructor(code: ErrorCode, message: string, details: MaplaceErrorDetails = {}) {
+    super(message);
+    this.name = "MaplaceError";
+    this.code = code;
+    this.locationId = details.locationId;
+    this.field = details.field;
+    if (details.cause !== undefined) this.cause = details.cause;
+  }
 }

@@ -37,16 +37,17 @@ export type {
   PolygonLocation,
   PolylineLocation,
 } from "./location";
+export type { MaplaceOptions } from "./options";
 export type { PopupOptions, ResolvedPopupOptions } from "./popup";
 export type { Route, RouteLeg, RouteResult, TravelMode } from "./route";
-export type {
-  FitOptions,
-  LoadState,
-  Maplace,
-  MaplaceOptions,
-  SelectOptions,
-  Snapshot,
-} from "./store";
+export type { LoadState, Maplace, Snapshot } from "./store";
 export { createMaplace } from "./store";
 export type { LineStyle, ShapeStyle } from "./style";
-export type { Bounds, ResolvedView, View, Viewport } from "./viewport";
+export type {
+  Bounds,
+  FitOptions,
+  ResolvedView,
+  SelectOptions,
+  View,
+  Viewport,
+} from "./viewport";

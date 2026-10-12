@@ -13,7 +13,10 @@ interface LayerRule {
 
 /** The layers of src. `google.maps` itself is fenced by Biome (`noRestrictedGlobals`). */
 const LAYERS = {
-  data: { files: /^(geometry|style|location|route|viewport|popup|drawable|errors|events)$/ },
+  data: {
+    files: /^(geometry|style|location|options|route|viewport|popup|drawable|errors|events)$/,
+  },
+  validation: { files: /^validate\//, imports: ["data"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
   view: { files: /^list-view$/, imports: ["data", "store"] },
@@ -35,9 +38,9 @@ const RULES: Readonly<Record<Layer, LayerRule>> = LAYERS;
 // The quoted specifier after `from`, `import` or `import(`: every static and dynamic form.
 const IMPORT_SPECIFIER = /\b(?:from|import)\s*(?:\(\s*)?["']([^"']+)["']/g;
 
-/** Imports that cross a layer boundary or reach for a package the layer may not use (T10). */
+/** Imports that cross a layer boundary or reach for a package the layer may not use (T10); tests may import anything. */
 export function check(): string[] {
-  return globSync("**/*.{ts,tsx}", { cwd: SRC, exclude: ["__typetests__/**"] })
+  return globSync("**/*.{ts,tsx}", { cwd: SRC, exclude: ["__typetests__/**", "**/*.test.ts"] })
     .flatMap((file) => problemsIn(file, readFileSync(SRC + file, "utf8")))
     .map((problem) => SRC + problem);
 }

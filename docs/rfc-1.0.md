@@ -180,7 +180,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 
   | Code | When |
   |---|---|
-  | `invalid-input` | Bad data or arguments: `lon` instead of `lng`, a circle without a radius, coordinates out of range, a fill on a polyline, a box with south above north, `zoom` with `pan: false`, selecting a hidden location, fewer than two or more than `routeStopLimit` route stops, element setup per §3 Loading, an unknown or ambiguous element `provider` |
+  | `invalid-input` | Bad data or arguments: `lon` instead of `lng`, a circle without a radius, coordinates out of range (or given as strings), a polyline under 2 points or a polygon or hole under 3, a fill on a polyline, an unknown field (0.2 names get their 1.0 replacement; your own fields go in `data`), both `content` and `html`, a box with south above north, `zoom` with `pan: false`, selecting a hidden location, fewer than two or more than `routeStopLimit` route stops, element setup per §3 Loading, an unknown or ambiguous element `provider` |
   | `duplicate-id` | Two locations with one id |
   | `unknown-id` | An id not in the store (`select`, `selectedId`, a route stop); checked before the stop count |
   | `missing-sanitizer` | `html` without `sanitize` |

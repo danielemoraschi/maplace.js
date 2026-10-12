@@ -33,3 +33,13 @@ export type View =
  * visible it sends no view and the camera stays.
  */
 export type ResolvedView = Exclude<View, { readonly kind: "fit-all" }>;
+
+/** Selecting pans to the location by default; `zoom` sets the zoom while panning. */
+export type SelectOptions =
+  | { readonly pan?: true | undefined; readonly zoom?: number | undefined }
+  | { readonly pan: false };
+
+export interface FitOptions {
+  /** Padding in pixels. Default 40. */
+  readonly padding?: number | undefined;
+}

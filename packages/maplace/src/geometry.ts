@@ -1,4 +1,4 @@
-/** A point on the map, in degrees. */
+/** A point on the map, in degrees: lat -90 to 90, lng -180 to 180. */
 export interface LatLng {
   readonly lat: number;
   readonly lng: number;
@@ -17,13 +17,15 @@ export interface CircleGeometry {
 
 export interface PolylineGeometry {
   readonly type: "polyline";
+  /** At least 2 points. */
   readonly path: readonly LatLng[];
 }
 
 export interface PolygonGeometry {
   readonly type: "polygon";
-  /** Outer ring. */
+  /** Outer ring, at least 3 points. */
   readonly path: readonly LatLng[];
+  /** Inner rings, at least 3 points each. */
   readonly holes?: readonly (readonly LatLng[])[] | undefined;
 }
 

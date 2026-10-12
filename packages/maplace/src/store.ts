@@ -2,31 +2,12 @@ import type { Adapter } from "./adapter";
 import type { Listener, ListenOptions, MaplaceEventName, Unsubscribe } from "./events";
 import type { LatLng } from "./geometry";
 import type { Location } from "./location";
-import type { PopupOptions } from "./popup";
+import type { MaplaceOptions } from "./options";
 import type { Route, RouteResult } from "./route";
-import type { ShapeStyle } from "./style";
-import type { Bounds, View, Viewport } from "./viewport";
+import type { Bounds, FitOptions, SelectOptions, View, Viewport } from "./viewport";
 
 /** `idle` until attached (or while held for consent), then `loading`, then `ready` or `error`. */
 export type LoadState = "idle" | "loading" | "ready" | "error";
-
-/**
- * The initial view is `view` when given, else the `selectedId` location, else all locations
- * fitted with 40px padding.
- */
-export interface MaplaceOptions<Data = unknown> {
-  readonly locations?: readonly Location<Data>[] | undefined;
-  /** Initially selected location; an unknown id throws. */
-  readonly selectedId?: string | undefined;
-  /** Required before any location uses `html`; return safe HTML. */
-  readonly sanitize?: ((html: string) => string) | undefined;
-  readonly popup?: PopupOptions | undefined;
-  /** Default style of circles, polylines and polygons; a location's `style` overrides it. */
-  readonly style?: ShapeStyle | undefined;
-  /** Cluster markers; needs the `cluster` capability. */
-  readonly cluster?: boolean | undefined;
-  readonly view?: View | undefined;
-}
 
 /**
  * Immutable state: a new object on every change, while unchanged parts (e.g. `locations`) keep
@@ -45,16 +26,6 @@ export interface Snapshot<Data = unknown> {
   readonly route: Route | undefined;
   readonly routeResult: RouteResult | undefined;
   readonly loadState: LoadState;
-}
-
-/** Selecting pans to the location by default; `zoom` sets the zoom while panning. */
-export type SelectOptions =
-  | { readonly pan?: true | undefined; readonly zoom?: number | undefined }
-  | { readonly pan: false };
-
-export interface FitOptions {
-  /** Padding in pixels. Default 40. */
-  readonly padding?: number | undefined;
 }
 
 /** A headless map state: locations, selection, filter, view and route. */

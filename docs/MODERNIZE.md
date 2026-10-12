@@ -103,7 +103,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | F1e | (moved to A0) | done | |
 | F2 | Remove Grunt, Bower, Travis, jscs, jshint, `src/`, `website/` | done | 0.2 recoverable from tag `0.2.10` (`git show 0.2.10:src/maplace.js`) and the `website` branch; README stays until P6 |
 | F3 | npm workspaces, `.nvmrc`, `devEngines`, `.editorconfig` | done | see `package.json`, `packages/maplace/package.json`. `private: true` until R2, so npm refuses to publish. `exports` already name the `dist` paths, plus a package-scoped `maplace:source` condition → `src` for development: every tool that resolves `maplace` from source must set it (tsconfig `customConditions` done; Vitest/Vite `resolve.conditions` in T1, esbuild `conditions` in P1, Astro via Vite in W1). `apps/*` workspace glob arrives with W1 |
-| F4 | tsconfig strict + Biome | done | see `tsconfig.json`, `biome.json`, `.editorconfig`. TS 7 defaults cover strict, Bundler resolution and `types: []`, so the config only adds what the defaults don't; Biome takes formatting from `.editorconfig` and ignores from `.gitignore`. Scripts: `npm run typecheck`, `npm run check`, `npm run fix`. File-size guideline goes in CLAUDE.md (F6) |
+| F4 | tsconfig strict + Biome | done | see `tsconfig.json`, `biome.json`, `.editorconfig`. TS 7 defaults cover strict, Bundler resolution and `types: []`, so the config only adds what the defaults don't, plus an explicit `strict` so tools on older TypeScript (SonarQube's analyser) read the same rules; Biome takes formatting from `.editorconfig` and ignores from `.gitignore`. Scripts: `npm run typecheck`, `npm run check`, `npm run fix`. File-size guideline goes in CLAUDE.md (F6) |
 | F5 | CI: lint, typecheck, unit, fake-adapter tests, build, publint, attw, size budget, import boundaries (T10) | done | `.github/workflows/ci.yml` runs the gates in `CLAUDE.md` Commands on every push (fork PRs too); Actions pinned by SHA. Gates that need code arrive with their row, which adds its CI step: T1/T2/T5 tests, P1 build, T4 publint + attw + consumer fixture, P3 size-limit, T2 real-Maps job |
 | F6 | Grow `CLAUDE.md` | done | `CLAUDE.md`; this file's "How to work" points to it |
 | F7 | Renew maplacejs.com | do | expires 2027-02-25 (GoDaddy); consider transferring to Cloudflare Registrar |
@@ -115,12 +115,12 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 |---|------|--------|------|
 | C1 | Store | do | locations, selection, viewport intent; `subscribe`/`getSnapshot` (works with `useSyncExternalStore`); immutable snapshots |
 | C2 | Id-keyed locations + diffing | do | `setLocations(next)` yields added/updated/removed; adapters apply only the diff |
-| C3 | Location types | do | marker, circle, polyline, polygon as a discriminated union (`path` for lines and polygon outer ring, `holes?`); fields per D20; `group` + `setFilter`; route is store state (D22), not a location type |
+| C3 | Location types | do | marker, circle, polyline, polygon as a discriminated union (`path` for lines and polygon outer ring, `holes?`); fields per D20; `group` + `setFilter`; route is store state (D22), not a location type. Runtime validation of the union done with C8; `setFilter` comes with the store |
 | C4 | Typed events | do | select, hover, drag, edit, route, error; unsubscribe fn; AbortSignal support |
 | C5 | Lifecycle | do | `destroy()`, AbortSignal, many instances, nothing global, SSR-safe import |
 | C6 | Tree-shakable | do | each subpath and location type independently importable; `sideEffects` is an array listing the element entries (they define a custom element on import; `false` would let bundlers drop `import 'maplace/element/google'`), everything else side-effect-free |
 | C7 | 0.2 bug scenarios as tests | do | anchored to tag `0.2.10` (permalinks): shared controls (L257), maxZIndex (L349; 1.0: selected marker stacks on top), edit callbacks (L529), control removal (L866), AddControl (L937), onPolylineClick, route with draggable stops (#147, #139), plus the A0 candidates in `docs/rfc-1.0.md` Appendix A; each becomes a regression test the design makes impossible |
-| C8 | Input validation | do | lat/lng numeric and in range, required fields, container found, icon type; per the A3 error policy, naming location id and field; never a silent grey map (A0: #63, #125, #145, #149, #175) |
+| C8 | Input validation | wip | lat/lng numeric and in range, required fields, container found, icon type; per the A3 error policy, naming location id and field; never a silent grey map (A0: #63, #125, #145, #149, #175). Done: `MaplaceError`, `src/validate/` (locations, method arguments, options; unknown fields throw with 0.2 hints from RFC §4; polyline ≥ 2 points, polygon and holes ≥ 3). Left: the container check with `attach` (branch 4); id existence, hidden selection and route stop counts in the store (branch 3) |
 
 ## 4. Google adapter (first implementation of the contract, `maplace/google`)
 | # | Item | Status | Note |
@@ -150,7 +150,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 ## 6. Tests (alongside 3–5)
 | # | Item | Status | Note |
 |---|------|--------|------|
-| T1 | Core unit tests | do | pure logic, no DOM, no provider mocks; Vitest is installed (F5, root `vitest.config.ts` runs `scripts/` tests): add the package project with `resolve.conditions` incl. `maplace:source` |
+| T1 | Core unit tests | do | pure logic, no DOM, no provider mocks; Vitest runs `scripts/` and `packages/maplace/src/**/*.test.ts` (relative imports); add `resolve.conditions` incl. `maplace:source` when a test first imports by package name |
 | T2 | Adapter + views in Vitest browser mode | do | fake adapter (in-memory implementation of the adapter contract that records calls; no DOM map, no provider) = required PR gate; real Maps on push to `next` until R3, nightly after it (schedules only run from the default branch; fork PRs get no secrets): API key as secret, referrer-restricted and quota-capped; `DEMO_MAP_ID`; Maps JS pinned (`v=quarterly` or a numbered version) |
 | T3 | Type tests | do | `expectTypeOf` on public API (A3) |
 | T4 | Package checks | do | publint + attw in CI; plus a strict consumer fixture type-checking the built `dist` `.d.ts` without `skipLibCheck` (the repo needs it only for `@types/google.maps` vs `exactOptionalPropertyTypes`) |

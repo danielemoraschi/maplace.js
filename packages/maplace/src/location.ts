@@ -37,7 +37,7 @@ interface LocationBase<Data> {
   readonly title?: string | undefined;
   /** Popup content. */
   readonly content?: Content<Data> | undefined;
-  /** Untrusted HTML for the popup; rendered only through the `sanitize` option. */
+  /** Untrusted HTML for the popup, instead of `content`; rendered only through the `sanitize` option. */
   readonly html?: string | undefined;
   /** Grouping key for list headings and `setFilter`. */
   readonly group?: string | undefined;
@@ -45,7 +45,7 @@ interface LocationBase<Data> {
   readonly visible?: boolean | undefined;
   /** Lets the user drag a marker or reshape a shape; needs the `edit` capability. */
   readonly editable?: boolean | undefined;
-  /** Your own fields, passed back to content, icon and render functions. */
+  /** Your own fields, passed back to content, icon and render functions. Any other field throws. */
   readonly data?: Data | undefined;
 }
 
