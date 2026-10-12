@@ -2,21 +2,17 @@
 
 Single source of truth for the 1.0 rewrite. Read this first; it is written to be enough on its own. Lives in `docs/` with the RFC and future decisions/specs.
 
-Now: API RFC frozen (A0–A7). Next: F5–F6, then C1–C8 with T1–T3.
+Now: API RFC frozen (A0–A7); CI and CLAUDE.md in place (F5–F6). Next: C1–C8 with T1–T3.
 Status: do | wip | done | later (after 1.0) | wont (never)
 Target: maplace as if written from scratch in 2026. Headless core + adapter contract, Google adapter first, MapLibre next, views for HTML/vanilla (1.0) and React (usage designed now in the RFC, shipped in 1.x).
 1.0 = core + Google adapter + `<maplace-map>` (CDN/HTML drop-in first). `maplace/react` is not in the 1.0 `exports` map (no semver promise); it arrives in 1.x.
 Critical path: 0 → 1 (API RFC) → F5–F6 → 3 → 4 ∥ 5 → 7 (P1–P7) → 8 (on preview) → 9 (go-public gate, 1.0.0). Tests (6) run alongside 3–5, never after.
 
 ## How to work this file
-- Private phase: all work lives on the long-lived branch `next` (pushed to origin; short-lived branches fast-forward into it). Nothing public before §9: `master`/`main` untouched, no npm publish, no production site, no README notice, no issue activity. A branch being visible on GitHub is fine.
-- Update a row's status in the same commit/session as the work. New rows take the next free number in their section; never renumber.
-- API decisions live in `docs/rfc-1.0.md` (frozen 2026-10-12): an API change edits the RFC in the same commit as the types. This file keeps status and links; its decision rows are history.
-- Outputs: A1–A4 are RFC §1–§4; A2 snippets live in `packages/maplace/examples/` (outside `src/`, not in `files`, so never published) and the A3 `.d.ts` in `packages/maplace/src/` (F3 precedes the RFC) so both type-check; React snippets type-check against a type-only draft of `maplace/react` that stays out of `exports`; the RFC links to them. A6/A7 spike code and bench were on branch `spike/a6-a7`, deleted after the freeze; their results are in RFC §3 Performance.
-- Branching, commits and the review chain: see `CLAUDE.md`.
-- Old code: removed from `next` in F2; read it with `git show 0.2.10:<path>`; `legacy/0.2` (R1) keeps it forever.
+- Update a row's status in the same commit as the work. New rows take the next free number in their section; never renumber.
+- Working rules (private phase, branching, review chain, commands, layout, API changes): `CLAUDE.md`. API decisions: `docs/rfc-1.0.md`; this file keeps status and links, and its decision rows are history.
 
-## Where 0.2 things are (tag `0.2.10`; removed from `next` in F2)
+## Where 0.2 things are (tag `0.2.10`; removed from `next` in F2; `legacy/0.2` keeps it after R1)
 - `src/maplace.js`: the whole library (1,133 lines, jQuery, UMD). Grunt builds `dist/` (gitignored). Line refs `L…` below mean this file at tag `0.2.10`.
 - Website: remote branch `origin/website` (static HTML via Grunt partials, Foundation 3, jQuery 1.9); sources in `website/` on master; demo init in `website/javascripts/app.js`.
 - Tags mix styles: `v0.1.x` and `0.2.x` (no `v`). The `0.2.10` release commit (d51ada2) is not on master; master only adds a README commit after it.
@@ -93,7 +89,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | A3 | Public API as types | done | RFC §3: glossary, shape, rules, errors and check timing, decisions on the A0 notes, size budgets and coverage numbers. Types in `packages/maplace/src/` (`declare` only), compile-time tests in `src/__typetests__/`; React draft in `src/react/`, not exported |
 | A4 | 0.2 → 1.0 inventory | done | RFC §4: every option, location field, method and event of 0.2 (source, README, old docs site, `develop`) mapped to 1.0, plus behaviour changes; `examples/migrate/from-0.2.ts` converts locations (type-checked). Gaps it found, decided by the user and added to A3: shape `style`, typed `data` (`createMaplace<Data>`), `select(id, { zoom })`, `fitAllLabel`, initial `selectedId`; optional inputs accept explicit `undefined`. Review chain moved resolution into the store: adapters get `Drawable`s (geometry, merged style, content/icon builders, no `data` or sanitizer) and report `Geometry` back; one `editable`, `invalid-input`, a `location` view instead of `reveal` |
 | A5 | Review and freeze RFC | done | frozen 2026-10-12: consistent with the types (audit), self-contained (no plan IDs; loading, packaging, Routes and MapLibre-readiness decisions added to §3), sections numbered §1–§4; changes after freeze edit the RFC with the types |
-| A6 | MapLibre spike (before A5) | done | contract held for markers, polyline, select, popup, fit, viewport, controls. Leaks fixed in A3 types/RFC: zoom convention (measured), antimeridian (store resolves fit-all to bounds), store deselects on the selected popup closing, `data-*` while true and DOM-only, default markers may be non-DOM, `apply` resolves once drawn |
+| A6 | MapLibre spike (before A5) | done | contract held for markers, polyline, select, popup, fit, viewport, controls. Leaks fixed in A3 types/RFC: zoom convention (measured), antimeridian (store resolves fit-all to bounds), store deselects on the selected popup closing, `data-*` while true and DOM-only, default markers may be non-DOM, `apply` resolves once drawn. Spike code and bench were on branch `spike/a6-a7`, deleted after the freeze |
 | A7 | "big" performance spike (before A5) | done | RFC §3 Performance. D6 stands; `cluster` above ~1k |
 
 ## 2. Foundation
@@ -109,7 +105,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | F3 | npm workspaces, `.nvmrc`, `devEngines`, `.editorconfig` | done | see `package.json`, `packages/maplace/package.json`. `private: true` until R2, so npm refuses to publish. `exports` already name the `dist` paths, plus a package-scoped `maplace:source` condition → `src` for development: every tool that resolves `maplace` from source must set it (tsconfig `customConditions` done; Vitest/Vite `resolve.conditions` in T1, esbuild `conditions` in P1, Astro via Vite in W1). `apps/*` workspace glob arrives with W1 |
 | F4 | tsconfig strict + Biome | done | see `tsconfig.json`, `biome.json`, `.editorconfig`. TS 7 defaults cover strict, Bundler resolution and `types: []`, so the config only adds what the defaults don't; Biome takes formatting from `.editorconfig` and ignores from `.gitignore`. Scripts: `npm run typecheck`, `npm run check`, `npm run fix`. File-size guideline goes in CLAUDE.md (F6) |
 | F5 | CI: lint, typecheck, unit, fake-adapter tests, build, publint, attw, size budget, import boundaries (T10) | done | `.github/workflows/ci.yml` runs the gates in `CLAUDE.md` Commands on every push (fork PRs too); Actions pinned by SHA. Gates that need code arrive with their row, which adds its CI step: T1/T2/T5 tests, P1 build, T4 publint + attw + consumer fixture, P3 size-limit, T2 real-Maps job |
-| F6 | Grow `CLAUDE.md` | do | minimal one exists (agent workflow + pointer here); once the new layout exists add commands, layout, file-size guideline, and move this file's header into it; the header then shrinks to a pointer |
+| F6 | Grow `CLAUDE.md` | done | `CLAUDE.md`; this file's "How to work" points to it |
 | F7 | Renew maplacejs.com | do | expires 2027-02-25 (GoDaddy); consider transferring to Cloudflare Registrar |
 | F8 | Dependabot for Action SHAs and npm | do | GitHub reads its config only from the default branch: lands with R3 |
 
