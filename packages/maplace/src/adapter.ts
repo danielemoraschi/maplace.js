@@ -11,7 +11,11 @@ export type Capability = "route" | "cluster" | "circle" | "edit";
 /** Where an on-map control sits, in provider-neutral terms. */
 export type ControlPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-/** What changed since the last `apply`; adapters touch only these locations. */
+/**
+ * What changed since the last `apply`; adapters touch only these locations. Apply `removed`
+ * first: a location whose `type` changed is in `removed` and in `added`, never in `updated`. An
+ * updated location has at least one `Drawable` field with a new reference.
+ */
 export interface LocationDiff {
   readonly added: readonly Drawable[];
   readonly updated: readonly Drawable[];

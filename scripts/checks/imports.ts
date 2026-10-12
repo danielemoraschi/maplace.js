@@ -17,6 +17,7 @@ const LAYERS = {
     files: /^(geometry|style|location|options|route|viewport|popup|drawable|errors|events)$/,
   },
   validation: { files: /^validate\//, imports: ["data"] },
+  diff: { files: /^diff\//, imports: ["data", "contract"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
   view: { files: /^list-view$/, imports: ["data", "store"] },

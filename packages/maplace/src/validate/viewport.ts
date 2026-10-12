@@ -1,21 +1,17 @@
 import type { Bounds, FitOptions, SelectOptions, View } from "../viewport";
-import { child, type Field, mustBe, reject } from "./fail";
+import { child, type Field, reject } from "./fail";
 import { checkLatLng, LATITUDE, LONGITUDE } from "./geometry";
 import { type Assert, recordOf } from "./record";
 import {
-  arrayOf,
   type Check,
   checkBoolean,
   checkNonEmptyString,
   checkNumber,
   checkObject,
   checkOneOf,
-  members,
   NON_NEGATIVE,
   numberIn,
-  oneOf,
   optional,
-  POSITIVE,
 } from "./values";
 
 type ViewOf<K extends View["kind"]> = Extract<View, { readonly kind: K }>;

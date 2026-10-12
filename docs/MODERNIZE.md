@@ -114,7 +114,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | # | Item | Status | Note |
 |---|------|--------|------|
 | C1 | Store | do | locations, selection, viewport intent; `subscribe`/`getSnapshot` (works with `useSyncExternalStore`); immutable snapshots |
-| C2 | Id-keyed locations + diffing | do | `setLocations(next)` yields added/updated/removed; adapters apply only the diff |
+| C2 | Id-keyed locations + diffing | wip | `setLocations(next)` yields added/updated/removed; adapters apply only the diff. Done: `src/diff/` (diff by id; drawables keep each unchanged field's reference; rebuilt-but-equal locations are not updates; a type change is removed + added). Left: the store keeps the drawn state (branch 3) and sends diffs to `apply` (branch 4) |
 | C3 | Location types | do | marker, circle, polyline, polygon as a discriminated union (`path` for lines and polygon outer ring, `holes?`); fields per D20; `group` + `setFilter`; route is store state (D22), not a location type. Runtime validation of the union done with C8; `setFilter` comes with the store |
 | C4 | Typed events | do | select, hover, drag, edit, route, error; unsubscribe fn; AbortSignal support |
 | C5 | Lifecycle | do | `destroy()`, AbortSignal, many instances, nothing global, SSR-safe import |
@@ -150,7 +150,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 ## 6. Tests (alongside 3–5)
 | # | Item | Status | Note |
 |---|------|--------|------|
-| T1 | Core unit tests | do | pure logic, no DOM, no provider mocks; Vitest runs `scripts/` and `packages/maplace/src/**/*.test.ts` (relative imports); add `resolve.conditions` incl. `maplace:source` when a test first imports by package name |
+| T1 | Core unit tests | do | pure logic, no DOM, no provider mocks (only the drawable renderer tests opt into happy-dom, per file); Vitest runs `scripts/` and `packages/maplace/src/**/*.test.ts` (relative imports); add `resolve.conditions` incl. `maplace:source` when a test first imports by package name |
 | T2 | Adapter + views in Vitest browser mode | do | fake adapter (in-memory implementation of the adapter contract that records calls; no DOM map, no provider) = required PR gate; real Maps on push to `next` until R3, nightly after it (schedules only run from the default branch; fork PRs get no secrets): API key as secret, referrer-restricted and quota-capped; `DEMO_MAP_ID`; Maps JS pinned (`v=quarterly` or a numbered version) |
 | T3 | Type tests | do | `expectTypeOf` on public API (A3) |
 | T4 | Package checks | do | publint + attw in CI; plus a strict consumer fixture type-checking the built `dist` `.d.ts` without `skipLibCheck` (the repo needs it only for `@types/google.maps` vs `exactOptionalPropertyTypes`) |
@@ -158,7 +158,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | T6 | E2E on site examples | do | Playwright, consent flow included; on push to `next` until R3, nightly after |
 | T7 | A fix lands with a test shown failing first | do | convention |
 | T8 | Coverage gate | do | threshold from RFC (A3); the v8 coverage report exists (F9), the thresholds are this row |
-| T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one. Waits on `apply`; checks a known zoom gives a known bounds span and a fit across ±180° gives west > east |
+| T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one. Waits on `apply`; checks a known zoom gives a known bounds span and a fit across ±180° gives west > east; an update carrying the geometry a drag already shows (the store's write-back) is a no-op, not a jump; an exception from a user `content`/`icon` function reaches `reportError` |
 | T10 | Import boundaries check | done | `scripts/checks/imports.ts` (the `LAYERS` table) plus Biome `noRestrictedGlobals` for `google.maps` outside `src/google/`. A MapLibre adapter adds its own layer and fence |
 | T11 | RFC ↔ types check | done | `scripts/checks/rfc.ts` compares the RFC with `src/__typetests__/api-lists.ts`, whose `.test-d.ts` ties each list to its type |
 

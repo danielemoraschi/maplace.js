@@ -19,13 +19,16 @@ export interface Drawable {
   /**
    * Builds the popup content (sanitizing `html` on first call); undefined when there is none.
    * When `content` is a Node it returns that same Node, so content shown in two places at once
-   * must be a function.
+   * must be a function. A function `content` gets a new builder with every new location object.
    */
   readonly renderContent: (() => Node) | undefined;
   /**
-   * Builds the marker for a state; call it again only when the state changes. Undefined: the
-   * provider's default marker, which may be drawn without DOM (then no data attributes and no
-   * marker focus; the list view is the keyboard path).
+   * Builds the marker for a state; call it again only when the state changes. An Element comes
+   * back with `data-selected` and `data-hovered` set for that state. A Node `icon` is returned
+   * as that same Node, so one Node can't mark two locations; a function `icon` gets a new
+   * builder with every new location object. Undefined: the provider's default marker, which may
+   * be drawn without DOM (then no data attributes and no marker focus; the list view is the
+   * keyboard path).
    */
   readonly renderIcon: ((state: LocationState) => Node) | undefined;
 }
