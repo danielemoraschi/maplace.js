@@ -162,7 +162,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | T8 | Coverage gate | do | threshold from RFC (A3) |
 | T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one. Waits on `apply`; checks a known zoom gives a known bounds span and a fit across ±180° gives west > east |
 | T10 | Import boundaries check | do | Biome restricted imports or CI grep: no `google.maps` outside `maplace/google` (later same for maplibre); views import only the store, never an adapter; adapters never import views; the store is a sink: only views, bindings, the element and `index.ts` import `./store`, while data modules (location, route, viewport, popup) are leaves |
-| T11 | RFC ↔ types check | do | script in `npm run check` (and CI, F5): the codes, events and capabilities listed in RFC §3 equal the `MisuseCode`/`RuntimeCode`, `MaplaceEvents` and `Capability` unions, both ways; guards the freeze rule |
+| T11 | RFC ↔ types check | do | script in `npm run check` (and CI, F5): the codes (§3 Errors), events (§3 Shape) and capabilities (§3 glossary) listed in the RFC equal the `MisuseCode`/`RuntimeCode`, `MaplaceEvents` and `Capability` unions, both ways; guards the freeze rule |
 
 ## 7. Package and release
 | # | Item | Status | Note |
