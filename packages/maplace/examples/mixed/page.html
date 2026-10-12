@@ -2,8 +2,7 @@
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- Markers and circles together, data loaded by the page. -->
 <maplace-map id="map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list></maplace-map>
-<script>
-  fetch('/locations.json')
-    .then((response) => response.json())
-    .then((locations) => { document.getElementById('map').locations = locations; });
+<script type="module">
+  const response = await fetch('/locations.json');
+  document.getElementById('map').locations = await response.json();
 </script>

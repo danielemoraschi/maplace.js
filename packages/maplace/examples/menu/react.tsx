@@ -4,7 +4,7 @@ import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
-export function Menu({ locations }: { locations: readonly Location[] }) {
+export function Menu({ locations }: { readonly locations: readonly Location[] }) {
   return (
     <MaplaceProvider locations={locations}>
       <LocationList as="select" fitAllLabel="All cities" />

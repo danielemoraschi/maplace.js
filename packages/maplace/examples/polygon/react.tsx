@@ -5,8 +5,8 @@ import { MaplaceMap, MaplaceProvider } from "maplace/react";
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
 export function Polygon(props: {
-  locations: readonly Location[];
-  onSave: (location: Location) => void;
+  readonly locations: readonly Location[];
+  readonly onSave: (location: Location) => void;
 }) {
   return (
     <MaplaceProvider

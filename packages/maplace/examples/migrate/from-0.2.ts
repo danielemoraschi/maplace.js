@@ -20,7 +20,8 @@ function toLocation(legacy: Legacy, index: number): MarkerLocation<LegacyData> {
 declare const old: readonly Legacy[];
 declare const sanitize: (html: string) => string; // e.g. DOMPurify.sanitize
 
-const maplace = createMaplace({ locations: old.map(toLocation), sanitize });
+const locations = old.map((legacy, index) => toLocation(legacy, index));
+const maplace = createMaplace({ locations, sanitize });
 // 0.2's `ViewOnMap(1)` with the location's own zoom:
 const [first] = maplace.getSnapshot().locations;
 if (first) maplace.select(first.id, { zoom: first.data?.zoom });

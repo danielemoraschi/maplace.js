@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
-export function Tabs({ locations }: { locations: readonly Location[] }) {
+export function Tabs({ locations }: { readonly locations: readonly Location[] }) {
   const [selectedId, setSelectedId] = useState<string | undefined>();
   return (
     <MaplaceProvider locations={locations} onSelect={({ id }) => setSelectedId(id)}>

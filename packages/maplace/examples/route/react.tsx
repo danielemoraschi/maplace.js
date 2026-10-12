@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
-export function Route({ locations }: { locations: readonly Location[] }) {
+export function Route({ locations }: { readonly locations: readonly Location[] }) {
   const [distanceKm, setDistanceKm] = useState<number>();
   const stops = locations.map((location) => location.id);
   return (

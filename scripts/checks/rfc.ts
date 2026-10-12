@@ -22,7 +22,7 @@ const PLACES: Readonly<
 // A backticked name, e.g. `select`.
 const BACKTICKED = /`([^`]+)`/g;
 // A first table cell holding one backticked code, e.g. | `invalid-input` |.
-const CODE_ROW = /^\s*\| `([a-z-]+)` \|/gm;
+const CODE_ROW = /^[ \t]*\| `([a-z-]+)` \|/gm;
 
 /** Drift between the frozen RFC and the declarations (T11). */
 export function check(): string[] {
@@ -73,7 +73,7 @@ function lineStarting(text: string, prefix: string): string {
 
 /** The backticked names a line lists: outside parentheses, before its first sentence ends. */
 function namesListed(line: string): string[] {
-  const listing = line.replace(/\([^)]*\)/g, "").split(". ")[0] ?? "";
+  const listing = line.replaceAll(/\([^()]*\)/g, "").split(". ")[0] ?? "";
   return captures(listing, BACKTICKED);
 }
 

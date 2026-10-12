@@ -33,7 +33,7 @@ type Layer = keyof typeof LAYERS;
 const RULES: Readonly<Record<Layer, LayerRule>> = LAYERS;
 
 // The quoted specifier after `from`, `import` or `import(`: every static and dynamic form.
-const IMPORT_SPECIFIER = /\b(?:from|import)\s*\(?\s*["']([^"']+)["']/g;
+const IMPORT_SPECIFIER = /\b(?:from|import)\s*(?:\(\s*)?["']([^"']+)["']/g;
 
 /** Imports that cross a layer boundary or reach for a package the layer may not use (T10). */
 export function check(): string[] {

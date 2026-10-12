@@ -6,3 +6,4 @@ coverage
 .idea
 .claude/settings.local.json
 .env.local
+.scannerwork
