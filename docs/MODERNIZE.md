@@ -108,9 +108,10 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | F2 | Remove Grunt, Bower, Travis, jscs, jshint, `src/`, `website/` | done | 0.2 recoverable from tag `0.2.10` (`git show 0.2.10:src/maplace.js`) and the `website` branch; README stays until P6 |
 | F3 | npm workspaces, `.nvmrc`, `devEngines`, `.editorconfig` | done | see `package.json`, `packages/maplace/package.json`. `private: true` until R2, so npm refuses to publish. `exports` already name the `dist` paths, plus a package-scoped `maplace:source` condition → `src` for development: every tool that resolves `maplace` from source must set it (tsconfig `customConditions` done; Vitest/Vite `resolve.conditions` in T1, esbuild `conditions` in P1, Astro via Vite in W1). `apps/*` workspace glob arrives with W1 |
 | F4 | tsconfig strict + Biome | done | see `tsconfig.json`, `biome.json`, `.editorconfig`. TS 7 defaults cover strict, Bundler resolution and `types: []`, so the config only adds what the defaults don't; Biome takes formatting from `.editorconfig` and ignores from `.gitignore`. Scripts: `npm run typecheck`, `npm run check`, `npm run fix`. File-size guideline goes in CLAUDE.md (F6) |
-| F5 | CI: lint, typecheck, unit, fake-adapter tests, build, publint, attw, size budget, import boundaries (T10) | do | gates from first commit, not added later |
+| F5 | CI: lint, typecheck, unit, fake-adapter tests, build, publint, attw, size budget, import boundaries (T10) | done | `.github/workflows/ci.yml` runs the gates in `CLAUDE.md` Commands on every push (fork PRs too); Actions pinned by SHA. Gates that need code arrive with their row, which adds its CI step: T1/T2/T5 tests, P1 build, T4 publint + attw + consumer fixture, P3 size-limit, T2 real-Maps job |
 | F6 | Grow `CLAUDE.md` | do | minimal one exists (agent workflow + pointer here); once the new layout exists add commands, layout, file-size guideline, and move this file's header into it; the header then shrinks to a pointer |
 | F7 | Renew maplacejs.com | do | expires 2027-02-25 (GoDaddy); consider transferring to Cloudflare Registrar |
+| F8 | Dependabot for Action SHAs and npm | do | GitHub reads its config only from the default branch: lands with R3 |
 
 ## 3. Core (headless)
 | # | Item | Status | Note |
@@ -152,7 +153,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 ## 6. Tests (alongside 3–5)
 | # | Item | Status | Note |
 |---|------|--------|------|
-| T1 | Core unit tests | do | pure logic, no DOM, no provider mocks |
+| T1 | Core unit tests | do | pure logic, no DOM, no provider mocks; Vitest is installed (F5, root `vitest.config.ts` runs `scripts/` tests): add the package project with `resolve.conditions` incl. `maplace:source` |
 | T2 | Adapter + views in Vitest browser mode | do | fake adapter (in-memory implementation of the adapter contract that records calls; no DOM map, no provider) = required PR gate; real Maps on push to `next` until R3, nightly after it (schedules only run from the default branch; fork PRs get no secrets): API key as secret, referrer-restricted and quota-capped; `DEMO_MAP_ID`; Maps JS pinned (`v=quarterly` or a numbered version) |
 | T3 | Type tests | do | `expectTypeOf` on public API (A3) |
 | T4 | Package checks | do | publint + attw in CI; plus a strict consumer fixture type-checking the built `dist` `.d.ts` without `skipLibCheck` (the repo needs it only for `@types/google.maps` vs `exactOptionalPropertyTypes`) |
@@ -161,8 +162,8 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | T7 | A fix lands with a test shown failing first | do | convention |
 | T8 | Coverage gate | do | threshold from RFC (A3) |
 | T9 | Adapter conformance suite | do | one shared contract test set run against fake, Google, later MapLibre adapters; fake adapter keeps the contract honest from day one. Waits on `apply`; checks a known zoom gives a known bounds span and a fit across ±180° gives west > east |
-| T10 | Import boundaries check | do | Biome restricted imports or CI grep: no `google.maps` outside `maplace/google` (later same for maplibre); views import only the store, never an adapter; adapters never import views; the store is a sink: only views, bindings, the element and `index.ts` import `./store`, while data modules (location, route, viewport, popup) are leaves |
-| T11 | RFC ↔ types check | do | script in `npm run check` (and CI, F5): the codes (§3 Errors), events (§3 Shape) and capabilities (§3 glossary) listed in the RFC equal the `MisuseCode`/`RuntimeCode`, `MaplaceEvents` and `Capability` unions, both ways; guards the freeze rule |
+| T10 | Import boundaries check | done | `scripts/checks/imports.ts` (the `LAYERS` table) plus Biome `noRestrictedGlobals` for `google.maps` outside `src/google/`. A MapLibre adapter adds its own layer and fence |
+| T11 | RFC ↔ types check | done | `scripts/checks/rfc.ts` compares the RFC with `src/__typetests__/api-lists.ts`, whose `.test-d.ts` ties each list to its type |
 
 ## 7. Package and release
 | # | Item | Status | Note |

@@ -13,7 +13,34 @@
     "rules": {
       "complexity": {
         "noExcessiveCognitiveComplexity": "error"
+      },
+      "style": {
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 300
+          }
+        }
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["packages/maplace/src/**", "!packages/maplace/src/google/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "google": "Only maplace/google (src/google/) may use google.maps."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
