@@ -1,17 +1,19 @@
 # maplace 1.0 RFC
 
-Work in progress. This document is self-contained: every decision states its own reason.
+Status: frozen on 2026-10-12 for 1.0. Every decision states its own reason; the types in [`packages/maplace/src/`](../packages/maplace/src/) are the reference. After the freeze, an API change edits this document in the same commit as the types; git history is the record.
 
-- A1 Positioning, A2 Use cases, A3 API, A4 Migrating from 0.2: written (A3 is a draft until the RFC is frozen)
-- Appendix A: 0.2 issue triage
+1. Positioning
+2. Use cases
+3. API: glossary, shape, loading and packaging, rules, errors, decisions from the 0.2 issues, numbers, performance
+4. Migrating from 0.2
 
-## A1. Positioning
+Appendix A: 0.2 issue triage
+
+## 1. Positioning
 
 A list of your locations becomes a map with a synced list, in about five lines. Google Maps today, MapLibre next.
 
 ### The five-line promise
-
-Attribute names as drafted in A3.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
@@ -32,7 +34,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 ### What it does
 
 - Takes your data as HTML children, JSON or JS objects, each location with a stable `id`.
-- Shows it as a map plus a list or menu, with selection, hover and viewport kept in sync both ways.
+- Shows it as a map plus a list or a native select, with selection, hover and viewport kept in sync both ways.
 - Location types: markers, circles, polylines, polygons; one route through your own locations.
 - Clustering for large lists.
 - Accessible list controls (keyboard, ARIA, native `<select>`).
@@ -91,9 +93,9 @@ React binding; MapLibre adapter; Places integration (search box that adds locati
 - A typical 0.2 page migrates by following MIGRATION.md in under 30 minutes.
 - None of the "pick it when" cases above is something maplace does half-way.
 
-## A2. Use cases
+## 2. Use cases
 
-Ten scenarios, each written three ways against the A3 draft: an HTML page using `<maplace-map>`, vanilla TypeScript, and React (1.x draft). They live in [`packages/maplace/examples/`](../packages/maplace/examples/); the TypeScript and React versions type-check against the API in CI, and the HTML versions will run in the end-to-end tests. Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
+Ten scenarios, each written three ways against the API: an HTML page using `<maplace-map>`, vanilla TypeScript, and React (1.x draft). They live in [`packages/maplace/examples/`](../packages/maplace/examples/); the TypeScript and React versions type-check against the API in CI, and the HTML versions will run in the end-to-end tests. Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
 
 | Scenario | Shows | 0.2 equivalent | 0.2 issues it answers |
 |---|---|---|---|
@@ -106,7 +108,7 @@ Ten scenarios, each written three ways against the A3 draft: an HTML page using 
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `change` event | polygon | #64, #164 |
 | [route](../packages/maplace/examples/route/) | One route through ordered stops, distance from the `route` event | directions | #121, #147 |
 | [mixed](../packages/maplace/examples/mixed/) | Markers and circles together, data fetched by the page | mixed (ajax) | #43, #134, #179, #193 |
-| [big](../packages/maplace/examples/big/) | 4,000 points with clustering | big | #3, #54, #174, #182 |
+| [big](../packages/maplace/examples/big/) | 4,000 locations with clustering | big | #3, #54, #174, #182 |
 
 What the scenarios settled:
 
@@ -114,7 +116,7 @@ What the scenarios settled:
 - **Shapes are single locations.** In 0.2 a polyline or polygon turned every location into a vertex and listed the vertices. In 1.0 a polyline is one location with a `path`; mark points of interest along it as separate markers if they belong in the list.
 - **The list is the element's own view.** `list` puts a list beside the map, `list="select"` a native select, and `list-position` places it on or outside the map.
 
-## A3. API (draft)
+## 3. API
 
 The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarations, with compile-time tests in `src/__typetests__/`. This section explains them; the files are the reference.
 
@@ -126,6 +128,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | selection | The one location currently chosen (`selectedId`), shared by map and list |
 | hover | The location under the pointer or keyboard focus (`hoveredId`) |
 | view | What you asked the map to show: fit all, a box, a centre and zoom, or one location (what selecting asks for) |
+| bounds | A box on the map: south, west, north, east; west greater than east crosses the antimeridian |
 | viewport | What the map actually shows, as reported by the provider; zoom and bounds mean the same on every provider (see `Viewport`, `Bounds`) |
 | popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup); it follows the selection, or the hover with `openOn: 'hover'` |
 | route | One path through your own locations, in order |
@@ -210,7 +213,7 @@ Test coverage: core ≥ 95% of lines, whole package ≥ 85%.
 
 ### Performance
 
-Measured on 2026-10-11 with the 0.2 "big" data set (4,000 points, repeated for 8,000): 10-core laptop, Chrome 152, 1280×800 map, median of three runs after a warm-up. "Smooth" means idle within 1.5 s, no task over 200 ms, at least 45 fps while panning and zooming, selection within 50 ms, with margin for slower machines. Cells are fps / longest task.
+Measured on 2026-10-11 with the 0.2 "big" data set (4,000 locations, repeated for 8,000): 10-core laptop, Chrome 152, 1280×800 map, median of three runs after a warm-up. "Smooth" means idle within 1.5 s, no task over 200 ms, at least 45 fps while panning and zooming, selection within 50 ms, with margin for slower machines. Cells are fps / longest task.
 
 | Markers | Google, one element each | Google, clustered | MapLibre, one element each | MapLibre, GPU layer |
 |---|---|---|---|---|
@@ -227,7 +230,7 @@ Decisions:
 - Default markers (no `icon`) may be drawn without DOM; the MapLibre adapter uses a GPU layer. Custom icons are DOM on every provider.
 - Adapters draw large diffs in chunks so no task exceeds 200 ms. The one exception allowed: if clustering can't be split, its single clustering pass at load (210 ms at 4,000, 395 ms at 8,000) is accepted; this is measured when clustering is built.
 
-## A4. Migrating from 0.2
+## 4. Migrating from 0.2
 
 Everything a 0.2 page could touch, from the source and README of tag `0.2.10` and the old docs site, and what 1.0 does with it. "Dropped" always names the replacement or the reason. [`examples/migrate/from-0.2.ts`](../packages/maplace/examples/migrate/from-0.2.ts) converts 0.2 locations in a few lines and type-checks in CI.
 
@@ -284,7 +287,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 | `stopover` | dropped: every route stop ends a leg |
 | `stroke_options`, `circle_options` | `style`; the circle's `radius` |
 | `type` | kept: `marker`, `circle`, `polyline`, `polygon`; a polyline or polygon is one location with a `path` |
-| `zIndex` | dropped: stacking order is fixed (A3, decisions from the 0.2 issues) |
+| `zIndex` | dropped: stacking order is fixed (§3, decisions from the 0.2 issues) |
 | `on_menu` | dropped: build your own list from `subscribe` for a partial menu |
 | `pan_on_click` | dropped per location |
 | `draggable` | `editable`: one word for dragging markers and reshaping shapes |
@@ -328,7 +331,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
 - No jQuery and no `Maplace` global: ES modules or one CDN script. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap); in code, the page loads it and the adapter imports what it needs.
 - The menu's inline styles are replaced by a stylesheet you can override.
-- Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in A3, decisions from the 0.2 issues.
+- Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in §3, decisions from the 0.2 issues.
 
 Never released (the unmerged `develop` branch): `onPolylineClick` is `select`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions.gestureHandling`.
 

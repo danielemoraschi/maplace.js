@@ -1,7 +1,7 @@
 import type { LatLng } from "./geometry";
 
 /**
- * A rectangle on the map, in degrees. Longitudes stay within -180..180; `west` greater than
+ * A box on the map, in degrees. Longitudes stay within -180..180; `west` greater than
  * `east` means the rectangle crosses the antimeridian.
  */
 export interface Bounds {
