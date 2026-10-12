@@ -37,7 +37,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 - Clustering for large lists.
 - Accessible list controls (keyboard, ARIA, native `<select>`).
 - Typed events for selection, edits, routes and errors.
-- Consent-friendly loading: the map stays idle, with no request to the map provider, until the page releases it.
+- Consent-friendly loading: with `hold`, the element stays idle, with no request to the map provider, until the page calls `release()`.
 - Many maps per page, no globals, no framework required.
 
 ### Principles
@@ -47,7 +47,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 - **Nothing global.** Every map is independent; the only shared thing is the provider's own script.
 - **Safe by default.** Strings render as text; HTML needs an explicit sanitizer.
 - **Accessible.** The list is the accessible way into the map, not an afterthought.
-- **Small.** Each feature (route, clustering, element) is its own import; you pay only for what you use.
+- **Small.** Separate entries (`maplace`, `maplace/google`, `maplace/element`, `maplace/element/google`; React in 1.x), and clustering loads only when used; you pay only for what you use.
 - **Loud errors.** Bad input or a missing key reports what is wrong and where, never a silent grey map.
 
 ### Non-goals for 1.0
@@ -83,7 +83,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 
 ### Later, not 1.0
 
-React binding; MapLibre adapter; Places integration (search box that adds locations, place details as content); GeoJSON import; long-list rendering.
+React binding; MapLibre adapter; Places integration (search box that adds locations, place details as content); locations from addresses (geocoding); GeoJSON import; a "my location" control; route options (avoid tolls, highways, ferries); long-list rendering.
 
 ### How we'll know it worked
 
@@ -100,7 +100,7 @@ Ten scenarios, each written three ways against the A3 draft: an HTML page using 
 | [simple](../packages/maplace/examples/simple/) | One marker, nothing else | simple | #52, #55, #65 (single location) |
 | [markers](../packages/maplace/examples/markers/) | Markers, popup content from a `<template>` or string, custom icon, list | markers | #37, #60, #101, #192 (icons) |
 | [circles](../packages/maplace/examples/circles/) | Circles with radius in metres | circles | #13, #130 |
-| [menu](../packages/maplace/examples/menu/) | Native `<select>` on the map, groups, filter, a "fit all" entry | menu (dropdown) | #15, #40, #117 (groups) |
+| [menu](../packages/maplace/examples/menu/) | Native `<select>` (on the map; beside it in React), groups, a "fit all" entry; group filter in the vanilla version | menu (dropdown) | #15, #40, #117 (groups) |
 | [tabs](../packages/maplace/examples/tabs/) | List outside the map, details panel driven by the `select` event | tabs | #5, #84, #122 |
 | [polyline](../packages/maplace/examples/polyline/) | One polyline location, inline JSON data | polyline | #178 |
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `change` event | polygon | #64, #164 |
@@ -134,22 +134,32 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
 | geometry | Where a location is: a point, a circle, a path or a polygon; what a drag or edit changes |
-| drawable | A location as an adapter receives it, resolved by the store: geometry, title, style, and builders for content and icon |
+| drawable | A location as an adapter receives it, resolved by the store: geometry, title, style, `editable`, and builders for content and icon |
 | style | How a shape or route line is drawn: a stroke, and for circles and polygons a fill |
+| location state | Whether a location is selected and hovered (`LocationState`), passed to `icon` and list `render` functions |
+| load state | `idle`, `loading`, `ready` or `error`: where the map is in loading its provider (`loadState`) |
 | data | Your own fields on a location, typed through `createMaplace<Data>()` and handed back to content, icon and render functions |
 
 ### Shape
 
 - **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `fitBounds`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`.
-- **Initial state**: options take `locations`, `selectedId`, a default shape `style`, `popup`, `cluster` and `view`. The first view is the given `view`, else the selected location, else all locations fitted. Later, `select(id, { zoom })` pans and zooms; `{ pan: false }` leaves the map where it is. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
-- **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible` and `data`; shapes take a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
+- **Initial state**: options take `locations`, `selectedId`, `sanitize`, a default shape `style`, `popup`, `cluster` and `view`. The first view is the given `view`, else the selected location, else all locations fitted. Later, `select(id, { zoom })` pans and zooms; `{ pan: false }` leaves the map where it is. The snapshot is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
+- **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. All take `id`, `title`, `content`, `html`, `group`, `visible`, `editable` and `data`; markers take an `icon`, shapes a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
-- **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`undefined` when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
-- **Adapter contract**: `mount({ container, host, signal, cluster, popup })`, `apply` (a diff of added, updated and removed locations, each resolved into a `Drawable`, see the glossary; resolves once drawn), `present` (selection, hover, hidden ids), `setView` (fit a box, a centre and zoom, or one location; the store resolves fit-all to a box once, antimeridian included), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost` (`reportSelect`, `reportChange` with the new geometry, `reportPopupClose`, which the store turns into a deselect for the selected location, …); they never read or write the store. One adapter instance drives one map.
+- **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`result` undefined when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
+- **Adapter contract**: `mount({ container, host, signal, cluster, popup })`, `apply` (a diff: added and updated locations as `Drawable`s, removed ones as ids; resolves once drawn), `present` (selection, hover, hidden ids), `setView` (a `ResolvedView`: a box, a centre and zoom, or one location; the store resolves fit-all to a box once, antimeridian included), `setRoute`, `mountControl`, `destroy`, a set of `capabilities` and an optional `routeStopLimit`. Provider limits live in the adapter, not the core. Adapters report back only through an `AdapterHost`: `reportSelect`, `reportHover`, `reportChange` (the new geometry), `reportPopupOpen`, `reportPopupClose` (with `openOn: 'click'` the store deselects when the selected location's popup closes), `reportViewport`, `reportRoute`, `reportError`; they never read or write the store. One adapter instance drives one map.
 - **Google (`maplace/google`)**: `createGoogleAdapter({ mapId, colorScheme?, map?, mapOptions? })`. The only entry that knows `google.maps`. Maps JS must be loaded (Google's bootstrap or js-api-loader); the adapter calls `google.maps.importLibrary`.
 - **Views**: `createListView(maplace, { as, groupHeadings, fitAllLabel, render })` (`fitAllLabel` adds a first entry that clears the selection and fits all) returns a `ListView`: `{ element, destroy }`.
-- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child.
-- **React (1.x draft)**: `<MaplaceProvider locations>` with `on<Event>` props derived from the event map and optional controlled `selectedId`, `filter`, `route`; `<MaplaceMap createAdapter>` (a fresh adapter per mount; attaches on mount, detaches on unmount); `<LocationList>`; `useMaplace()`.
+- **Element (`maplace/element`, `maplace/element/google`)**: `<maplace-map>` and `<maplace-location>`; attributes, properties and `maplace-*` DOM events are listed in [`src/element/`](../packages/maplace/src/element/). `<maplace-location>` takes `location-id` (not `id`, which must be unique per page) and an optional trusted `<template>` child. `defineProvider(name, factory)` registers a provider; `release()` starts an element held with `hold`.
+- **React (1.x draft)**: `<MaplaceProvider locations>` with `on<Event>` props derived from the event map, optional controlled `selectedId`, `filter`, `route`, and `defaultSelectedId` for an uncontrolled start; other options are read once, on mount; `<MaplaceMap createAdapter>` (a fresh adapter per mount; attaches on mount, detaches on unmount); `<LocationList>`; `useMaplace()`.
+
+### Loading, providers and packaging
+
+- **One package, separate entries**: `maplace` (store, list view, adapter contract), `maplace/google`, `maplace/element`, `maplace/element/google`; `maplace/react` in 1.x and `maplace/maplibre` later. One version for all. `@googlemaps/markerclusterer`, `react` and `maplibre-gl` are optional peers. The CDN gets two scripts, `maplace-element.iife.js` and `maplace-element-cluster.iife.js` (clustering bundled, nothing fetched from other origins at runtime). Evergreen browsers, ES2020.
+- **Loading Google Maps**: nothing reads `google` at import time; the adapter calls the global `google.maps.importLibrary`, which works with Google's bootstrap snippet and with js-api-loader, so there is no loader dependency. Only the element's Google provider adds the bootstrap itself, from `api-key`, `version`, `language`, `region` and `nonce` (for CSP): one shared script per page however many maps, and conflicting values are misuse.
+- **Google markers and styling**: advanced markers only, the legacy `Marker` being deprecated, so a map ID is required (`DEMO_MAP_ID`, Google's public demo ID, for development). Styling is the map ID's Cloud styling plus `colorScheme`; JSON `styles` are not offered because Google ignores them on maps with a map ID.
+- **Routes**: Google's Routes library (`Route.computeRoutes`), which replaces the legacy Directions service; it needs Maps JS 3.63 or later. A route is at least two stops, all ids of your own locations, at most the adapter's `routeStopLimit`; stops stay ordinary, selectable locations.
+- **Ready for MapLibre**: no provider type appears outside the provider's entry; the store speaks its own `LatLng`, `Bounds`, zoom scale and DOM-node content, and what differs between providers is a capability (route, cluster, circle, edit). A MapLibre adapter is new code behind the same contract, not a change to it.
 
 ### Rules the API follows
 
@@ -161,8 +171,8 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 
 ### Errors
 
-- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`: duplicate or missing ids, `lon` instead of `lng`, a circle without a radius, a fill on a polyline, a box with south above north or coordinates out of range, selecting a hidden location, `zoom` with `pan: false`, `html` without `sanitize`, unknown stop ids, a feature the adapter lacks.
-- **Runtime failures are events**, never throws: provider load or auth failure, route not found. `loadState` becomes `error` and `whenReady()` rejects.
+- **Misuse throws** a `MaplaceError` from the call that caused it, with a `code`, the `locationId` and the `field`. Codes: `invalid-input` (`lon` instead of `lng`, a circle without a radius, a fill on a polyline, a box with south above north or coordinates out of range, `zoom` with `pan: false`, a route with fewer than two stops or more than the adapter allows, selecting a hidden location, conflicting element bootstrap attributes), `duplicate-id`, `unknown-id` (missing ids, unknown stops), `missing-sanitizer` (`html` without `sanitize`), `unsupported-capability`, `already-attached`, `destroyed` (any call after `destroy`).
+- **Runtime failures are events**, never throws: `provider-load-failed`, `provider-auth-failed`, `route-failed`. For the first two, `loadState` becomes `error` and `whenReady()` rejects.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
 
@@ -175,7 +185,7 @@ The types are in [`packages/maplace/src/`](../packages/maplace/src/) as declarat
 | Map container sizing and styles (#23, #184) | The element never sets inline styles on itself; default styles use `:where()` so pages override them; the page sets the height |
 | Popup width and offset (#86, #160, #198) | `popup: { maxWidth, offset }` |
 | Open on hover (#197) | `popup: { openOn: 'hover' }`; default `click` |
-| Different icon when selected (#192) | Markers carry `data-selected` / `data-hovered` for CSS; an `icon` function receives `{ selected, hovered }` and re-runs only when they change |
+| Different icon when selected (#192) | DOM markers carry `data-selected` / `data-hovered` while in that state, for CSS; an `icon` function receives `(location, LocationState)` and re-runs only when the state changes |
 | Act on popup content once shown (#171) | `popupOpen` fires after the content is in the DOM, with the element |
 | React to zoom and pan (#195) | `viewport` event after each move ends |
 | Large data sets (#3, #54, #95, #174, #182) | See Performance below |
@@ -215,7 +225,7 @@ Decisions:
 
 - Google keeps advanced markers only. Above about 1,000 markers, pages set `cluster`, and the docs and the "big" example show it.
 - Default markers (no `icon`) may be drawn without DOM; the MapLibre adapter uses a GPU layer. Custom icons are DOM on every provider.
-- Whether chunked adding removes the one-off clustering task is measured when clustering is built; otherwise that single task at load is accepted.
+- Adapters draw large diffs in chunks so no task exceeds 200 ms. The one exception allowed: if clustering can't be split, its single clustering pass at load (210 ms at 4,000, 395 ms at 8,000) is accepted; this is measured when clustering is built.
 
 ## A4. Migrating from 0.2
 
@@ -235,7 +245,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 | `type: 'directions'` | `setRoute({ stops })` through your own locations |
 | `type: 'fusion'`, `fusion_options` | dropped: Google shut down Fusion Tables in 2019 |
 | `view_all`, `view_all_text` | `fitAllLabel` (element `fit-all-label`); no entry unless set |
-| `start` | `selectedId` (element `selected-id`) |
+| `start` | `selectedId` (element `selected-id`, React `defaultSelectedId`) |
 | `locations` | kept; every location needs an `id` |
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
@@ -286,7 +296,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 |---|---|
 | `new Maplace(options).Load()` | `createMaplace(options)` then `attach(adapter, container)`, or `<maplace-map>` |
 | `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
-| `Load(true)` (rebuild) | `detach()` then `attach()` |
+| `Load(true)` (rebuild) | `detach()`, then `attach()` with a new adapter |
 | `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |
 | `ViewOnMap(index)` | `select(id)` |
 | `ViewOnMap('all')` | `select(undefined)` and `fitAll()` |
@@ -294,7 +304,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 | `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
 | `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
 | `ShowOnMenu(index)` | dropped |
-| `AddControl(name, menu)` | `createListView({ render })`, or your own view from `subscribe` and `getSnapshot` |
+| `AddControl(name, menu)` | `createListView(maplace, { render })`, or your own view from `subscribe` and `getSnapshot` |
 | internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
 
 ### Events
@@ -316,7 +326,7 @@ Everything a 0.2 page could touch, from the source and README of tag `0.2.10` an
 - Locations are identified by `id`, not by their 1-based position.
 - Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
-- No jQuery, no `Maplace` global, and Google Maps no longer has to load first: ES modules or one CDN script, and maps load through `importLibrary` when needed.
+- No jQuery and no `Maplace` global: ES modules or one CDN script. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap); in code, the page loads it and the adapter imports what it needs.
 - The menu's inline styles are replaced by a stylesheet you can override.
 - Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in A3, decisions from the 0.2 issues.
 
@@ -335,7 +345,7 @@ Source: all 178 issues and 20 PRs of the 0.2 repo (2013–2022), read on 2026-10
 | jsDelivr hits for npm `maplace-js`, last year | 838,621 |
 | Open issues + PRs | 39 + 3 |
 
-CDN traffic is about 400× npm installs: 0.2 is still served to pages via `<script>`, which supports the CDN/HTML-first 1.0 (D19).
+CDN traffic is about 400× npm installs: 0.2 is still served to pages via `<script>`, which supports the CDN/HTML-first 1.0 (§1).
 
 ### Themes
 
@@ -343,60 +353,63 @@ Demand = items + reactions + comments.
 
 | Theme | Items | Demand | 1.0 answer |
 |---|---|---|---|
-| Dynamic location updates (add/remove/set/move) | 9, 56, 72, 94, 114, 138, 149, 153, 161, 168 | 44 (10+0+34) | covered by C1, C2 |
-| Viewport intent: center, zoom, fit, pan | 16, 18, 27, 33, 46, 57, 88, 96, 109, 156, 172, 187, 191 | 37 (13+0+24) | covered by G5, C1 |
-| Info window behaviour and options | 11, 19, 20, 25, 59, 67, 86, 133, 160, 171, 197, 198 | 35 (12+0+23) | covered by G4, D20 |
-| Marker icons, size, labels, CSS, z-order | 37, 60, 69, 73, 74, 77, 91, 99, 101, 105, 106, 148, 150, 163, 192 | 31 (15+0+16) | covered by D6, G2, D20 |
-| Route options and rendering | 6, 31, 51, 70, 92, 120, 135, 144, 169, 177 | 30 (10+0+20) | covered by D22, D8, G6 |
-| Maps API loading, key, language | 21, 22, 45, 66, 100, 102, 128, 132, 183 | 28 (9+0+19) | covered by D5, V7, G9 |
-| Native map options and escape hatch | 2, 4, 7, 29, 58, 62, 97, 166 | 27 (8+0+19) | covered by G1, D7 |
-| Hidden or resized container rendering | 1, 79, 83, 136, 154, 173 | 26 (6+0+20) | new requirement → G10 |
-| Groups, categories, filters, layer toggles | 15, 36, 40, 44, 85, 87, 117, 143 | 26 (8+0+18) | new requirement: group/tag on a location plus a visibility filter in the store, honoured by list view and map |
-| Packaging, distribution, jQuery dependency | 26, 30, 50, 71, 82, 104, 112, 113, 116, 118, 119, 162, 185 | 23 (13+0+10) | covered by D2, D18, P1, P2, R2 |
-| Places and location search (search box, place details, save a place) | 41, 98, 152, 165 | 12 (4+0+8) | post-1.0: Places integration (N12) |
-| Other Google services (print, drawing, point-in-circle, distance matrix, off-road paths) | 93, 146, 151, 159, 180 | 10 (5+0+5) | out of scope: app logic or other Google APIs, beyond a location/route manager |
-| Route result data, events, waypoint limits | 121, 129, 139, 142, 147, 176 | 19 (6+0+13) | covered by D22, C4, D8 |
-| Events and callbacks API | 32, 53, 80, 110, 111, 127, 137, 141, 194, 195 | 19 (10+0+9) | covered by C4, D16 |
-| Docs, website, examples | 17, 34, 134, 140, 157, 181, 189, 196 | 18 (8+2+8) | covered by W1, W2, W4, P6, F7 |
-| Overlay layers (KML, traffic, bicycling, Data/GeoJSON) | 28, 38, 61, 68, 81, 103, 188 | 16 (7+0+9) | out of scope: native layers go on the user's own map object (G1) |
-| Single location renders blank map | 52, 55, 65 | 15 (3+0+12) | covered by G5, C7 |
-| List view and programmatic select | 5, 75, 84, 115, 122 | 14 (5+0+9) | covered by V1, D20 |
-| Mixed location types on one map | 10, 43, 90, 158, 179, 193 | 13 (6+0+7) | covered by C3 |
-| Geocoding and address input | 8, 24, 126, 131, 170 | 13 (5+0+8) | out of scope: geocoding is post-1.0 (N7) |
-| Setup errors and input validation | 63, 125, 145, 175 | 13 (4+0+9) | new requirement → C8 |
-| Editable/draggable geometry sync | 48, 49, 64, 107, 155, 164, 178 | 11 (7+0+4) | new requirement: drag/edit of markers and shapes writes geometry back to the store and emits a typed change event |
-| Circles and shape styling | 13, 76, 130 | 11 (3+0+8) | covered by C3, G3 |
-| Host element CSS and sizing | 23, 184 | 9 (2+0+7) | new requirement: never mutate host element styles; document required size |
-| Multiple maps and instance access | 89, 123, 124, 186 | 9 (4+1+4) | covered by C5, V3 |
-| Clustering and dense markers | 3, 54, 190 | 8 (3+0+5) | covered by G7 |
-| Large datasets | 95, 174, 182 | 7 (3+0+4) | covered by A7, G7 |
-| Multiple routes on one map | 78 | 3 (1+0+2) | out of scope: D22 fixes a single route per map |
+| Dynamic location updates (add/remove/set/move) | 9, 56, 72, 94, 114, 138, 149, 153, 161, 168 | 44 (10+0+34) | `setLocations` diffed by id (§3 Shape) |
+| Viewport intent: center, zoom, fit, pan | 16, 18, 27, 33, 46, 57, 88, 96, 109, 156, 172, 187, 191 | 37 (13+0+24) | views and the initial-view order (§3 Shape) |
+| Info window behaviour and options | 11, 19, 20, 25, 59, 67, 86, 133, 160, 171, 197, 198 | 35 (12+0+23) | popup options and events, content model (§3 Shape, Decisions) |
+| Marker icons, size, labels, CSS, z-order | 37, 60, 69, 73, 74, 77, 91, 99, 101, 105, 106, 148, 150, 163, 192 | 31 (15+0+16) | `icon` as URL, node or function; advanced markers (§3 Shape, Loading) |
+| Route options and rendering | 6, 31, 51, 70, 92, 120, 135, 144, 169, 177 | 30 (10+0+20) | one route through your locations, Routes library (§3 Loading) |
+| Maps API loading, key, language | 21, 22, 45, 66, 100, 102, 128, 132, 183 | 28 (9+0+19) | `importLibrary`, element bootstrap attributes, `hold` (§3 Loading) |
+| Native map options and escape hatch | 2, 4, 7, 29, 58, 62, 97, 166 | 27 (8+0+19) | `mapOptions` or your own map; Cloud styling (§3 Shape, Loading) |
+| Hidden or resized container rendering | 1, 79, 83, 136, 154, 173 | 26 (6+0+20) | adapters watch the container (§3 Decisions) |
+| Groups, categories, filters, layer toggles | 15, 36, 40, 44, 85, 87, 117, 143 | 26 (8+0+18) | `group` and `setFilter`, list group headings (§3 Decisions) |
+| Packaging, distribution, jQuery dependency | 26, 30, 50, 71, 82, 104, 112, 113, 116, 118, 119, 162, 185 | 23 (13+0+10) | one package, ES modules and CDN scripts, no jQuery (§3 Loading) |
+| Places and location search (search box, place details, save a place) | 41, 98, 152, 165 | 12 (4+0+8) | later: Places integration (§1) |
+| Other Google services (print, drawing, point-in-circle, distance matrix, off-road paths) | 93, 146, 151, 159, 180 | 10 (5+0+5) | out of scope: app logic or other Google APIs (§1 Non-goals) |
+| Route result data, events, waypoint limits | 121, 129, 139, 142, 147, 176 | 19 (6+0+13) | `route` event with legs; stop limit from the adapter (§3 Loading) |
+| Events and callbacks API | 32, 53, 80, 110, 111, 127, 137, 141, 194, 195 | 19 (10+0+9) | one typed event system (§3 Shape) |
+| Docs, website, examples | 17, 34, 134, 140, 157, 181, 189, 196 | 18 (8+2+8) | new site with runnable examples (§2) |
+| Overlay layers (KML, traffic, bicycling, Data/GeoJSON) | 28, 38, 61, 68, 81, 103, 188 | 16 (7+0+9) | out of scope: add them to your own map (§1 Non-goals) |
+| Single location renders blank map | 52, 55, 65 | 15 (3+0+12) | the initial-view order; kept as a regression test |
+| List view and programmatic select | 5, 75, 84, 115, 122 | 14 (5+0+9) | list view and `select` (§3 Shape) |
+| Mixed location types on one map | 10, 43, 90, 158, 179, 193 | 13 (6+0+7) | `type` per location (§3 Shape) |
+| Geocoding and address input | 8, 24, 126, 131, 170 | 13 (5+0+8) | later: locations from addresses (§1) |
+| Setup errors and input validation | 63, 125, 145, 175 | 13 (4+0+9) | misuse throws with code, id and field (§3 Errors) |
+| Editable/draggable geometry sync | 48, 49, 64, 107, 155, 164, 178 | 11 (7+0+4) | `editable`, written back, `change` event (§3 Decisions) |
+| Circles and shape styling | 13, 76, 130 | 11 (3+0+8) | circles by radius, `style` (§3 Shape) |
+| Host element CSS and sizing | 23, 184 | 9 (2+0+7) | no inline styles on the element (§3 Decisions) |
+| Multiple maps and instance access | 89, 123, 124, 186 | 9 (4+1+4) | no globals, one store per map (§1 Principles) |
+| Clustering and dense markers | 3, 54, 190 | 8 (3+0+5) | `cluster` (§3 Performance) |
+| Large datasets | 95, 174, 182 | 7 (3+0+4) | measured limits and decisions (§3 Performance) |
+| Multiple routes on one map | 78 | 3 (1+0+2) | out of scope: one route per map (§1 Non-goals) |
 
 ### Noise
 
 12, 14, 35, 39, 42, 47, 108, 167
+
 ### New requirements
 
-| Requirement | Items | Placement |
-|---|---|---|
-| Observe container size/visibility (ResizeObserver) and re-apply the viewport intent when a hidden or resized map becomes visible | 1, 79, 83, 136, 154, 173 | 1.0 row G10 |
-| Validate config and locations (numeric lat/lng, element found, icon) per the A3 error policy, naming location id and field; never a silent grey map | 63, 125, 145, 149, 175 | 1.0 row C8 |
-| Location `group`/tags plus a visibility filter in the store; list view can render group headings | 15, 36, 40, 44, 85, 87, 117, 143 | A3 note |
-| Draggable/editable markers and shapes write geometry back to the store and emit a typed change event (decide if editing is in 1.0) | 48, 49, 64, 107, 155, 164, 178 | A3 note |
-| Never write inline styles on the host element; document the required size | 23, 184 | A3 note |
-| Info window options: max width, pixel offset | 86, 160, 198 | A3 note |
-| Info window open trigger click or hover (or a hover event plus `open(id)` recipe) | 197 | A3 note |
-| Selected state available to marker content, so the selected icon can differ | 192 | A3 note |
-| Info window open event fires after its content is in the DOM | 171 | A3 note |
-| Viewport-changed event (zoom/center) | 195 | A3 note |
-| GeoJSON FeatureCollection to locations helper | 103, 188 | post-1.0 |
-| "My location" control / route from user position | 169 | post-1.0 |
-| Several routes on one map, route alternatives | 78, 177 | rejected: D22 fixes a single route |
-| Built-in traffic/bicycling/KML layers | 38, 61, 68, 81 | rejected: add to the user's own map (G1) |
-| Places: search box / autocomplete feeding locations, place details as content, save a place | 41, 98, 152, 165 | post-1.0 (N12) |
-| Point-in-circle, distance matrix, drawing, print | 146, 151, 159, 93 | rejected: app logic or other Google APIs |
+All are answered in 1.0 unless marked.
 
-### Regression-test candidates (C7)
+| Requirement | Items | Where |
+|---|---|---|
+| Observe container size and visibility; re-apply the view when a hidden or resized map becomes visible | 1, 79, 83, 136, 154, 173 | §3 Decisions |
+| Validate data and setup, naming location id and field; never a silent grey map | 63, 125, 145, 149, 175 | §3 Errors |
+| `group` on a location plus a filter in the store; list group headings | 15, 36, 40, 44, 85, 87, 117, 143 | §3 Decisions |
+| Editable markers and shapes write geometry back and emit a typed `change` | 48, 49, 64, 107, 155, 164, 178 | §3 Decisions |
+| Never write inline styles on the host element; document the required size | 23, 184 | §3 Decisions |
+| Popup options: max width, pixel offset | 86, 160, 198 | §3 Decisions |
+| Popup opens on click or hover (`openOn`) | 197 | §3 Decisions |
+| Selected state available to marker content | 192 | §3 Decisions |
+| Popup open event fires after its content is in the DOM | 171 | §3 Decisions |
+| Viewport-changed event | 195 | §3 Decisions |
+| GeoJSON FeatureCollection to locations helper | 103, 188 | later (§1) |
+| "My location" control, route from the user's position | 169 | later (§1) |
+| Several routes on one map, route alternatives | 78, 177 | rejected: one route per map (§1 Non-goals) |
+| Built-in traffic, bicycling and KML layers | 38, 61, 68, 81 | rejected: add them to your own map (§1 Non-goals) |
+| Places: search box feeding locations, place details as content, save a place | 41, 98, 152, 165 | later (§1) |
+| Point-in-circle, distance matrix, drawing, print | 146, 151, 159, 93 | rejected: app logic or other Google APIs (§1 Non-goals) |
+
+### Regression-test candidates
 
 - 9: swapping location sets via `Load()` throws RangeError (stack overflow).
 - 18, 46: explicit center/zoom overridden by fit-to-locations.
@@ -416,49 +429,49 @@ Demand = items + reactions + comments.
 - 183: TypeError on pages without a map element (jQuery 3).
 - 186: second instance on the same page does not render.
 
-### Open items: R5 action
+### Open items: action at release
 
 | # | Kind | Action | Why |
 |---|---|---|---|
-| 10 | issue | fixed by 1.0 | Per-location types mix on one map (C3) |
-| 21 | issue | fixed by 1.0 | language/region attributes (D5) |
-| 38 | pr | out of scope | Layers go on user's own map (G1). Carry: nothing |
-| 43 | issue | fixed by 1.0 | Polygons and markers mix (C3) |
-| 45 | issue | fixed by 1.0 | importLibrary, element idle until needed (D5, V7) |
-| 54 | pr | fixed by 1.0 | Clustering capability (G7). Carry: test clusters resync on remove/replace and list select |
-| 61 | issue | out of scope | Traffic layer on user's own map (G1) |
-| 68 | issue | out of scope | KML layer on user's own map (G1) |
-| 78 | issue | out of scope | Single route per map (D22) |
-| 79 | issue | fixed by 1.0 | Re-apply viewport when container is shown or resized (G10) |
-| 101 | issue | fixed by 1.0 | HTML marker content holds labels (D6, D20) |
-| 103 | issue | out of scope | Data layers not a 1.0 feature |
+| 10 | issue | fixed by 1.0 | Location types mix on one map (§3 Shape) |
+| 21 | issue | fixed by 1.0 | `language`/`region` attributes (§3 Loading) |
+| 38 | pr | out of scope | Layers go on your own map (§1 Non-goals). Carry: nothing |
+| 43 | issue | fixed by 1.0 | Polygons and markers mix (§3 Shape) |
+| 45 | issue | fixed by 1.0 | `importLibrary`; the element stays idle until needed (§3 Loading) |
+| 54 | pr | fixed by 1.0 | `cluster` (§3 Performance). Carry: test that clusters update on remove/replace and list select |
+| 61 | issue | out of scope | Traffic layer on your own map (§1 Non-goals) |
+| 68 | issue | out of scope | KML layer on your own map (§1 Non-goals) |
+| 78 | issue | out of scope | One route per map (§1 Non-goals) |
+| 79 | issue | fixed by 1.0 | View re-applied when the container is shown or resized (§3 Decisions) |
+| 101 | issue | fixed by 1.0 | Marker content is a DOM node, so it can hold labels (§3 Shape) |
+| 103 | issue | out of scope | Data layers are not a 1.0 feature |
 | 108 | issue | out of scope | Framework integration question, no product signal |
-| 109 | issue | fixed by 1.0 | Viewport intent controls centering (G5) |
-| 117 | issue | still relevant | Groups/filter decided in A3 |
-| 130 | issue | fixed by 1.0 | Update circle radius via store (C2) |
-| 134 | issue | fixed by 1.0 | Static standalone examples (W2, W4) |
-| 136 | issue | fixed by 1.0 | Re-fit on resize (G10) |
-| 144 | issue | fixed by 1.0 | Route stops render as our own markers (D22) |
-| 154 | issue | fixed by 1.0 | Resize handling (G10) |
-| 170 | issue | out of scope | Geocoding post-1.0 (N7) |
-| 171 | issue | still relevant | Info-window mounted event decided in A3 |
-| 172 | issue | fixed by 1.0 | Id diffing keeps viewport on updates (C2, G5) |
-| 174 | issue | out of scope | Address data needs geocoding (N7) |
-| 177 | issue | out of scope | Single route, no alternatives (D22) |
-| 178 | issue | fixed by 1.0 | Code replaced; keep as C7 test |
-| 179 | issue | fixed by 1.0 | Polylines and markers mix (C3) |
+| 109 | issue | fixed by 1.0 | Views control centring (§3 Shape) |
+| 117 | issue | fixed by 1.0 | `group` and `setFilter` (§3 Decisions) |
+| 130 | issue | fixed by 1.0 | Circle radius updated through the store (§3 Shape) |
+| 134 | issue | fixed by 1.0 | Standalone examples (§2) |
+| 136 | issue | fixed by 1.0 | Re-fit on resize (§3 Decisions) |
+| 144 | issue | fixed by 1.0 | Route stops are your own locations (§3 Loading) |
+| 154 | issue | fixed by 1.0 | Resize handling (§3 Decisions) |
+| 170 | issue | out of scope | Geocoding later (§1) |
+| 171 | issue | fixed by 1.0 | `popupOpen` after content is in the DOM (§3 Decisions) |
+| 172 | issue | fixed by 1.0 | Diffing by id keeps the viewport on updates (§3 Shape) |
+| 174 | issue | out of scope | Address data needs geocoding, later (§1) |
+| 177 | issue | out of scope | One route, no alternatives (§1 Non-goals) |
+| 178 | issue | fixed by 1.0 | Code replaced; kept as a regression test |
+| 179 | issue | fixed by 1.0 | Polylines and markers mix (§3 Shape) |
 | 180 | issue | out of scope | Off-road routing is a provider limitation |
-| 181 | pr | out of scope | README rewritten (P6). Carry: nothing |
-| 182 | issue | fixed by 1.0 | Self-contained examples (W2) |
-| 183 | issue | fixed by 1.0 | No jQuery, no globals, element-scoped (C5) |
+| 181 | pr | out of scope | README rewritten for 1.0. Carry: nothing |
+| 182 | issue | fixed by 1.0 | Standalone examples (§2) |
+| 183 | issue | fixed by 1.0 | No jQuery, no globals, element-scoped (§1 Principles) |
 | 185 | issue | fixed by 1.0 | jQuery dependency removed |
-| 186 | issue | fixed by 1.0 | Many instances per page (C5); C7 test |
-| 188 | issue | out of scope | GeoJSON helper post-1.0 |
-| 189 | issue | fixed by 1.0 | Domain renewal (F7) |
-| 190 | issue | fixed by 1.0 | Clustering and fit all (G7, G5) |
-| 192 | issue | still relevant | Selected state for icons decided in A3 |
-| 193 | issue | fixed by 1.0 | Multiple types per map (C3) |
-| 194 | issue | fixed by 1.0 | Typed click/select events (C4) |
-| 195 | issue | still relevant | Viewport-changed event decided in A3 |
-| 197 | issue | still relevant | Hover-open trigger decided in A3 |
-| 198 | issue | still relevant | Info-window offset decided in A3 |
+| 186 | issue | fixed by 1.0 | Many maps per page (§1 Principles); kept as a regression test |
+| 188 | issue | out of scope | GeoJSON helper later (§1) |
+| 189 | issue | fixed by 1.0 | Domain renewed for the new site |
+| 190 | issue | fixed by 1.0 | Clustering and fit all (§3 Shape, Performance) |
+| 192 | issue | fixed by 1.0 | Selected state for icons (§3 Decisions) |
+| 193 | issue | fixed by 1.0 | Several types per map (§3 Shape) |
+| 194 | issue | fixed by 1.0 | Typed `select` events (§3 Shape) |
+| 195 | issue | fixed by 1.0 | `viewport` event (§3 Decisions) |
+| 197 | issue | fixed by 1.0 | `openOn: 'hover'` (§3 Decisions) |
+| 198 | issue | fixed by 1.0 | Popup `offset` (§3 Decisions) |
