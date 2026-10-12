@@ -4,9 +4,9 @@ import type { MaplaceOptions } from "../options";
 import type { Snapshot } from "../store";
 import { validateLocations } from "../validate/locations";
 import { andThen, type Change, NO_CHANGE, patchOnly } from "./change";
+import { clearHidden } from "./hidden";
 import { frozenList, isHeld } from "./lookup";
 import { pruneRoute } from "./route";
-import { clearHidden } from "./selection";
 
 /**
  * Replaces the locations. Locations that are gone or now hidden lose the selection and hover,

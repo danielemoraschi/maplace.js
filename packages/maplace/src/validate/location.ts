@@ -89,6 +89,15 @@ export function validateLocation(
   checkPopupContent(value, field, context.sanitize);
 }
 
+/**
+ * The fields of a value already known to be a location, by its type's own checks; popup content
+ * aside. For locations the store changes itself, such as a geometry the map wrote back.
+ */
+export function checkLocationFields(location: Location): void {
+  const checkRecord: Check = RECORD_BY_TYPE[location.type ?? "marker"];
+  checkRecord(location, locationRoot(location.id));
+}
+
 export function locationRoot(id: string): Field {
   return root(`location ${JSON.stringify(id)}`, id);
 }

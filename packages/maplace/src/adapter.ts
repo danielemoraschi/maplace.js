@@ -30,7 +30,13 @@ export interface PresentationState {
   readonly hiddenIds: ReadonlySet<string>;
 }
 
-/** The only way an adapter reports back. Adapters never read or write the store directly. */
+/**
+ * The only way an adapter reports back. Adapters never read or write the store directly. A report
+ * about a location the store no longer shows, or a route result for other stops, is a race with
+ * what the adapter is still drawing and is ignored. A report the store can't take (a write-back
+ * for a location that isn't `editable` or of another type, a viewport no map shows) changes
+ * nothing and is rethrown in a microtask; no report ever throws back into the adapter.
+ */
 export interface AdapterHost {
   /** A click on a location, or `undefined` for a click on the map. */
   reportSelect(id: string | undefined): void;

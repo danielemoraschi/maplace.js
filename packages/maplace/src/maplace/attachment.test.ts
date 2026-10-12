@@ -150,3 +150,33 @@ describe("detach", () => {
     expect(next.callsOf("setView")[0]?.view).toMatchObject({ kind: "center", zoom: 7 });
   });
 });
+
+describe("reports through the host", () => {
+  it("a drag reaches the adapter as an update with the written-back geometry", async () => {
+    const maplace = createMaplace({ locations: [{ id: "a", lat: 0, lng: 0, editable: true }] });
+    const adapter = createFakeAdapter();
+    maplace.attach(adapter, container());
+    await adapter.finishMount();
+    adapter.host().reportChange("a", { type: "marker", lat: 5, lng: 6 });
+    const [update] = adapter.callsOf("apply").slice(-1);
+    expect(update?.diff.updated.map((drawable) => drawable.geometry)).toEqual([
+      { type: "marker", lat: 5, lng: 6 },
+    ]);
+  });
+
+  it("a report during a pass waits for the next one, keeping the store's order", async () => {
+    const { maplace, adapter } = attached();
+    await adapter.finishMount();
+    const present = adapter.present;
+    adapter.present = (state) => {
+      present(state);
+      if (state.selectedId === "a") adapter.host().reportHover("b");
+    };
+    maplace.select("a");
+    expect(adapter.calls.slice(-3).map((call) => call.method)).toEqual([
+      "present",
+      "setView",
+      "present",
+    ]);
+  });
+});

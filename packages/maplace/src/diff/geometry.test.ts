@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { geometryOf } from "./geometry";
+import type { Location } from "../location";
+import { geometryOf, withGeometry } from "./geometry";
 
 describe("geometryOf", () => {
   it("reads a location without type as a marker", () => {
@@ -38,5 +39,36 @@ describe("geometryOf", () => {
       "path",
       "holes",
     ]);
+  });
+});
+
+describe("withGeometry", () => {
+  it("replaces a marker's position, keeping its own fields and leaving type unset", () => {
+    const pin: Location = { id: "a", lat: 1, lng: 2, title: "A" };
+    expect(withGeometry(pin, { type: "marker", lat: 3, lng: 4 })).toEqual({
+      id: "a",
+      lat: 3,
+      lng: 4,
+      title: "A",
+    });
+  });
+
+  it("gives back what geometryOf reads, with points copied and frozen", () => {
+    const polygon: Location = {
+      id: "p",
+      type: "polygon",
+      path: [{ lat: 0, lng: 0 }],
+      holes: [[{ lat: 1, lng: 1 }]],
+    };
+    const path = [{ lat: 5, lng: 5 }];
+    const moved = withGeometry(polygon, { type: "polygon", path, holes: undefined });
+    expect(geometryOf(moved)).toEqual({ type: "polygon", path, holes: undefined });
+    expect(moved.type === "polygon" && moved.path).not.toBe(path);
+    expect(moved.type === "polygon" && Object.isFrozen(moved.path[0])).toBe(true);
+    const line: Location = { id: "l", type: "polyline", path: [] };
+    expect(geometryOf(withGeometry(line, { type: "polyline", path }))).toEqual({
+      type: "polyline",
+      path,
+    });
   });
 });

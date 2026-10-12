@@ -36,7 +36,9 @@ export function createCore<Data>(initial: Snapshot<Data>): Core<Data> {
   let delivering = false;
 
   function commitAfter(check: (candidate: Snapshot<Data>) => void, change: Change<Data>): void {
-    if (changesAnything(snapshot, change.patch)) {
+    const changed = changesAnything(snapshot, change.patch);
+    if (!changed && change.events.length === 0) return;
+    if (changed) {
       const candidate = withPatch(snapshot, change.patch);
       check(candidate);
       snapshot = candidate;

@@ -38,6 +38,16 @@ describe("createCore", () => {
     expect(core.getSnapshot().loadState).toBe("loading");
   });
 
+  it("does nothing at all for a change with no effect and no events", () => {
+    const afterCommit = vi.fn();
+    const core = coreWith({ afterCommit });
+    const onChange = vi.fn();
+    core.subscribers.add(onChange);
+    core.commitOwn(patchOnly({ selectedId: undefined }));
+    expect(afterCommit).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it("runs afterCommit before subscribers and listeners hear of the change", () => {
     const order: string[] = [];
     const core = coreWith({

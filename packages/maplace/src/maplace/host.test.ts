@@ -1,30 +1,53 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { AdapterHost } from "../adapter";
 import { MaplaceError } from "../errors";
 import { createHost } from "./host";
 
-const failure = new MaplaceError("route-failed", "no route");
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+function recordingReports(): AdapterHost {
+  return {
+    reportSelect: vi.fn(),
+    reportHover: vi.fn(),
+    reportChange: vi.fn(),
+    reportPopupOpen: vi.fn(),
+    reportPopupClose: vi.fn(),
+    reportViewport: vi.fn(),
+    reportRoute: vi.fn(),
+    reportError: vi.fn(),
+  };
+}
 
 describe("createHost", () => {
-  it("passes errors on while attached, and drops them once detached", () => {
+  it("passes every report on while attached, and none once detached", () => {
     const controller = new AbortController();
-    const reportError = vi.fn();
-    const host = createHost(controller.signal, reportError);
-    host.reportError(failure);
+    const reports = recordingReports();
+    const host = createHost(controller.signal, reports);
+    host.reportSelect("a");
+    host.reportError(new MaplaceError("route-failed", "no route"));
     controller.abort();
-    host.reportError(failure);
-    expect(reportError).toHaveBeenCalledTimes(1);
+    host.reportSelect("b");
+    host.reportHover("b");
+    expect(reports.reportSelect).toHaveBeenCalledTimes(1);
+    expect(reports.reportSelect).toHaveBeenCalledWith("a");
+    expect(reports.reportError).toHaveBeenCalledTimes(1);
+    expect(reports.reportHover).not.toHaveBeenCalled();
   });
 
-  it("takes the other reports without effect until they are wired", () => {
-    const host = createHost(new AbortController().signal, vi.fn());
-    expect(() => {
-      host.reportSelect("a");
-      host.reportHover(undefined);
-      host.reportViewport({
-        center: { lat: 0, lng: 0 },
-        zoom: 1,
-        bounds: { south: 0, west: 0, north: 0, east: 0 },
-      });
-    }).not.toThrow();
+  it("rethrows a failing report in a microtask instead of into the adapter", () => {
+    const queued: (() => void)[] = [];
+    vi.stubGlobal("queueMicrotask", (task: () => void) => queued.push(task));
+    const bug = new Error("bad report");
+    const reports = {
+      ...recordingReports(),
+      reportChange: () => {
+        throw bug;
+      },
+    };
+    const host = createHost(new AbortController().signal, reports);
+    expect(() => host.reportChange("a", { type: "marker", lat: 0, lng: 0 })).not.toThrow();
+    expect(() => queued[0]?.()).toThrow(bug);
   });
 });

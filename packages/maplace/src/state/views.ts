@@ -1,3 +1,4 @@
+import { frozenBounds, frozenPoint } from "../diff/frozen";
 import type { LatLng } from "../geometry";
 import { child, root } from "../validate/fail";
 import { checkLatLng } from "../validate/geometry";
@@ -46,11 +47,11 @@ export function locationView(id: string, zoom: number | undefined): View {
 
 /** A box brought into view, by default with `FIT_PADDING`. */
 export function boundsView(bounds: Bounds, padding = FIT_PADDING): BoundsView {
-  return Object.freeze({ kind: "fit-bounds", bounds: copyBounds(bounds), padding });
+  return Object.freeze({ kind: "fit-bounds", bounds: frozenBounds(bounds), padding });
 }
 
 function centerView(center: LatLng, zoom: number): View {
-  return Object.freeze({ kind: "center", center: copyLatLng(center), zoom });
+  return Object.freeze({ kind: "center", center: frozenPoint(center), zoom });
 }
 
 /** `options.view` as the store keeps it. */
@@ -65,12 +66,4 @@ export function copyView(view: View): View {
     case "location":
       return locationView(view.id, view.zoom);
   }
-}
-
-function copyBounds({ south, west, north, east }: Bounds): Bounds {
-  return Object.freeze({ south, west, north, east });
-}
-
-function copyLatLng({ lat, lng }: LatLng): LatLng {
-  return Object.freeze({ lat, lng });
 }

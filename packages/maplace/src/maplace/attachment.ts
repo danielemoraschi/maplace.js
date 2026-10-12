@@ -9,6 +9,7 @@ import { createHost } from "./host";
 import { createLoadStates } from "./load";
 import { resolvePopup } from "./popup";
 import type { Readiness } from "./ready";
+import { createReports } from "./reports";
 import { type AdapterSync, createAdapterSync } from "./sync";
 
 /** What `attach` works with: the store's state, its readiness and its options. */
@@ -40,6 +41,7 @@ export function createAttacher<Data>({
   const { getSnapshot } = state.store;
   const draw = { sanitize: options?.sanitize, style: options?.style };
   const popup = resolvePopup(options);
+  const reports = createReports({ state, loadStates, openOn: popup.openOn });
   const cluster = options?.cluster ?? false;
   let current: Connection | undefined;
 
@@ -63,7 +65,7 @@ export function createAttacher<Data>({
       controller: { signal },
       sync,
     } = connection;
-    const host = createHost(signal, loadStates.reportError);
+    const host = createHost(signal, reports);
     try {
       // Awaited inside the try, so a mount that throws instead of rejecting fails the load too.
       await adapter.mount({ container, host, signal, cluster, popup });

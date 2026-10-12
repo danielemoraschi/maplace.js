@@ -187,15 +187,4 @@ describe("createInternalState", () => {
     commitOwn(patchOnly({ loadState: "idle" }));
     expect(store.getSnapshot().loadState).toBe("idle");
   });
-
-  it("names the method a destroyed store was called with", () => {
-    const { store, checkNotDestroyed } = createInternalState();
-    store.destroy();
-    expect(() => checkNotDestroyed("whenReady")).toThrow(
-      expect.objectContaining({
-        code: "destroyed",
-        message: "whenReady: this maplace was destroyed",
-      }),
-    );
-  });
 });

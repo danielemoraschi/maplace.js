@@ -28,6 +28,20 @@ export function frozenList<Data>(locations: readonly Location<Data>[]): readonly
   return Object.freeze([...locations]);
 }
 
+/** Known and shown: an id a map report, or a selection, may name. */
+function isSelectable(scope: Scope, id: string): boolean {
+  const location = locationById(scope.locations, id);
+  return location !== undefined && isShown(location, scope.filter);
+}
+
+/**
+ * An id that is set but names no shown location. In a report from the map, it is a race with a
+ * diff still being drawn.
+ */
+export function isHiddenId(scope: Scope, id: string | undefined): boolean {
+  return id !== undefined && !isSelectable(scope, id);
+}
+
 /** Drawn, listed and selectable: not `visible: false`, and with a filter, in one of its groups. */
 export function isShown(location: Location, filter: readonly string[] | undefined): boolean {
   if (location.visible === false) return false;
