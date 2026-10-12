@@ -57,4 +57,17 @@ describe("validateLocations", () => {
     const sanitize = (html: string) => html;
     expect(() => validateLocations(list, { caller: "setLocations", sanitize })).not.toThrow();
   });
+
+  it("checks only the ids of locations it is told are known", () => {
+    const known = { id: "k", lat: 999, lng: 0 };
+    const context = {
+      caller: "setLocations",
+      sanitize: undefined,
+      isKnown: (value: unknown) => value === known,
+    };
+    expect(() => validateLocations([known], context)).not.toThrow();
+    expect(() => validateLocations([known, known], context)).toThrow(
+      expect.objectContaining({ code: "duplicate-id" }),
+    );
+  });
 });

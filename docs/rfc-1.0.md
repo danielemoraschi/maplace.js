@@ -132,7 +132,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 | viewport | What the map actually shows, as reported by the provider; zoom and bounds mean the same on every provider (see `Viewport`, `Bounds`) |
 | popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup). It follows the selection (or the hover with `openOn: 'hover'`); with `openOn: 'click'`, closing it deselects |
 | route | One path through your own locations, in order |
-| filter | The groups currently shown; hiding the selected location deselects it |
+| filter | The groups currently shown; locations without a group hide while a filter is set, and hiding the selected location deselects it |
 | adapter | The bridge to a map provider (Google now, MapLibre next) |
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
@@ -146,7 +146,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 ### Shape
 
 - **Core (`maplace`)**: `createMaplace(options?)` returns a headless store: `subscribe`/`getSnapshot` (works with React's `useSyncExternalStore`), `setLocations`, `select`, `setFilter`, `fitAll`, `fitBounds`, `setView`, `setRoute`, `on`, `attach` (returns `detach`), `whenReady`, `destroy`.
-- **Initial state**: options take `locations`, `selectedId`, `sanitize`, a default shape `style`, `popup`, `cluster` and `view`. The first view is the given `view`, else the selected location, else all locations fitted. Fit padding defaults to 40 px. Later, `select(id, { zoom })` pans and zooms; `{ pan: false }` leaves the map where it is. The snapshot (`locations`, `selectedId`, `hoveredId`, `filter`, `view`, `viewport`, `route`, `routeResult`, `loadState`) is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes.
+- **Initial state**: options take `locations`, `selectedId`, `sanitize`, a default shape `style`, `popup`, `cluster` and `view`. The first view is the given `view`, else the selected location, else all locations fitted. Fit padding defaults to 40 px. Later, `select(id, { zoom })` pans and zooms; `{ pan: false }` leaves the map where it is. The snapshot (`locations`, `selectedId`, `hoveredId`, `filter`, `view`, `viewport`, `route`, `routeResult`, `loadState`) is immutable and replaced on every change; unchanged parts keep their reference, and a location counts as updated when its object changes (objects reused from the last call are not validated again).
 - **Locations** are a union on `type`: markers (the default) take `lat`/`lng`, circles `center` + `radius` in metres, polylines `path`, polygons `path` + optional `holes`. Ids are yours (maplace never generates them) and coordinates are `lat`/`lng`, as Google and MapLibre name them. All take `id`, `title`, `content`, `html`, `group`, `visible`, `editable` and `data`; markers take an `icon`, shapes a `style` (polylines have no fill). Optional fields accept an explicit `undefined`, so mapping data across stays simple.
 - **Content** is a string (always rendered as text), a DOM node, or a function returning one. `html` is accepted only with a `sanitize` option.
 - **Events**: `select`, `hover`, `change` (after a drag or edit, already written back to the store), `popupOpen` (content is in the DOM), `popupClose`, `viewport` (after a move ends), `route` (`result` undefined when cleared), `error`. `on()` returns an unsubscribe function and accepts an `AbortSignal`.
@@ -186,7 +186,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
   | `missing-sanitizer` | `html` without `sanitize` |
   | `unsupported-capability` | A feature the adapter lacks |
   | `already-attached` | A store attached twice, or an adapter instance reused |
-  | `destroyed` | Any call after `destroy` |
+  | `destroyed` | A call after `destroy` that changes state or adds a listener; `getSnapshot`, a second `destroy` and unsubscribe functions stay safe |
 - **Runtime failures are events**, never throws: `provider-load-failed`, `provider-auth-failed`, `route-failed`. For the first two, `loadState` becomes `error` and `whenReady()` rejects.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. The adapter's `routeStopLimit` is checked the same way. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.

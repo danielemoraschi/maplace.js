@@ -18,6 +18,7 @@ const LAYERS = {
   },
   validation: { files: /^validate\//, imports: ["data"] },
   diff: { files: /^diff\//, imports: ["data", "contract"] },
+  state: { files: /^state\//, imports: ["data", "store", "validation", "diff"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
   view: { files: /^list-view$/, imports: ["data", "store"] },

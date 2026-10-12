@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { keepIfSame, sameFields, sameValueSource } from "./same";
+import { keepIfSame, sameFields, sameItems, sameOptional, sameValueSource } from "./same";
 
 describe("sameFields", () => {
   it("compares own fields with ===", () => {
@@ -44,5 +44,32 @@ describe("sameValueSource", () => {
     const render = () => 1;
     expect(sameValueSource("/a.svg", "/b.svg")).toBe(false);
     expect(sameValueSource(render, render)).toBe(false);
+  });
+});
+
+describe("sameItems", () => {
+  it("holds for the same items in the same order", () => {
+    const a = { id: "a" };
+    expect(sameItems([a, "b"], [a, "b"])).toBe(true);
+    expect(sameItems([], [])).toBe(true);
+  });
+
+  it("fails for another order, length or object", () => {
+    expect(sameItems(["a", "b"], ["b", "a"])).toBe(false);
+    expect(sameItems(["a"], ["a", "b"])).toBe(false);
+    expect(sameItems([{ id: "a" }], [{ id: "a" }])).toBe(false);
+  });
+});
+
+describe("sameOptional", () => {
+  it("holds when both are absent, or both present and the same", () => {
+    expect(sameOptional(undefined, undefined, sameItems)).toBe(true);
+    expect(sameOptional(["a"], ["a"], sameItems)).toBe(true);
+  });
+
+  it("fails when only one is present, or they differ", () => {
+    expect(sameOptional(["a"], undefined, sameItems)).toBe(false);
+    expect(sameOptional(undefined, [], sameItems)).toBe(false);
+    expect(sameOptional(["a"], ["b"], sameItems)).toBe(false);
   });
 });

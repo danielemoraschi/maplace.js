@@ -6,6 +6,20 @@ export function sameFields(a: object, b: object): boolean {
   return fieldsFoundIn(a, b) && fieldsFoundIn(b, a);
 }
 
+/** The same items, `===`, in the same order. */
+export function sameItems(a: readonly unknown[], b: readonly unknown[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/** Both absent, or both present and `same`: optional values compared under one rule. */
+export function sameOptional<T>(
+  a: T | undefined,
+  b: T | undefined,
+  same: (a: T, b: T) => boolean,
+): boolean {
+  return a === undefined || b === undefined ? a === b : same(a, b);
+}
+
 /** `previous` when `next` has the same fields, so unchanged values keep their reference. */
 export function keepIfSame<T extends object | undefined>(previous: T | undefined, next: T): T {
   return previous !== undefined && next !== undefined && sameFields(previous, next)

@@ -6,6 +6,8 @@ import { locationRoot, validateLocation } from "./location";
 export interface LocationsContext {
   readonly caller: string;
   readonly sanitize: unknown;
+  /** Locations validated before (the store's own): only their ids are checked again, for duplicates. */
+  readonly isKnown?: ((value: unknown) => boolean) | undefined;
 }
 
 /** Throws on the first bad location, in list order; ids must be unique across the list. */
@@ -18,7 +20,9 @@ export function validateLocations(
   }
   const firstIndexById = new Map<string, number>();
   for (const [index, location] of value.entries()) {
-    validateLocation(location, { index, sanitize: context.sanitize });
+    if (context.isKnown?.(location) !== true) {
+      validateLocation(location, { index, sanitize: context.sanitize });
+    }
     checkUnique(location.id, index, firstIndexById);
   }
 }

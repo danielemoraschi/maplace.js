@@ -30,11 +30,16 @@ export interface Snapshot<Data = unknown> {
 
 /** A headless map state: locations, selection, filter, view and route. */
 export interface Maplace<Data = unknown> {
+  /**
+   * Calls `onChange` after every change, once per call. A subscriber or listener that throws
+   * doesn't stop the others; its error is rethrown in a microtask.
+   */
   subscribe(onChange: () => void): Unsubscribe;
   getSnapshot(): Snapshot<Data>;
   /**
    * Replaces all locations; only the differences reach the map. A location counts as updated
-   * when its object changes, so reuse unchanged objects. Throws on invalid input.
+   * when its object changes, so reuse unchanged objects; reused objects are not validated again.
+   * Throws on invalid input.
    */
   setLocations(locations: readonly Location<Data>[]): void;
   /**
@@ -42,7 +47,10 @@ export interface Maplace<Data = unknown> {
    * hidden location (filtered out or `visible: false`) throws.
    */
   select(id: string | undefined, options?: SelectOptions): void;
-  /** Shows only these groups; hiding the selected location deselects it. */
+  /**
+   * Shows only these groups; locations without a group hide while a filter is set. Hiding the
+   * selected location deselects it.
+   */
   setFilter(groups: readonly string[] | undefined): void;
   fitAll(options?: FitOptions): void;
   /** Shows a box; throws when south is above north or a coordinate is out of range. */
@@ -61,6 +69,10 @@ export interface Maplace<Data = unknown> {
   attach(adapter: Adapter, container: HTMLElement): () => void;
   /** Resolves once the provider loaded and the first locations are drawn; rejects on load error. */
   whenReady(): Promise<void>;
+  /**
+   * Detaches and drops every listener. Afterwards, calls that change state or add a listener
+   * throw `destroyed`; `getSnapshot`, a second `destroy` and unsubscribe functions stay safe.
+   */
   destroy(): void;
 }
 
