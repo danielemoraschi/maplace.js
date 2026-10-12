@@ -6,6 +6,7 @@ export type MisuseCode =
   | "unsupported-capability"
   | "missing-sanitizer"
   | "already-attached"
+  | "already-defined"
   | "destroyed";
 
 /** Runtime failure: emitted as an `error` event, never thrown. */

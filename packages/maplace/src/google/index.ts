@@ -9,7 +9,9 @@ export interface GoogleAdapterOptions {
   /** Draw on an existing map instead of creating one. */
   readonly map?: google.maps.Map | undefined;
   /** Extra options for a map maplace creates; ignored when `map` is given. */
-  readonly mapOptions?: Omit<google.maps.MapOptions, "mapId" | "colorScheme"> | undefined;
+  readonly mapOptions?:
+    | Omit<google.maps.MapOptions, "mapId" | "colorScheme" | "center" | "zoom">
+    | undefined;
 }
 
 /**

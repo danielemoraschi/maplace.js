@@ -12,7 +12,7 @@ export type ProviderFactory = (element: MaplaceMapElement) => Adapter;
 
 /**
  * Registers a provider under a name for `<maplace-map provider="…">`.
- * Also defines the elements if needed; a second maplace copy on the page fails loudly.
+ * Also defines the elements if needed; a second maplace copy on the page throws `already-defined`.
  */
 export declare function defineProvider(name: string, factory: ProviderFactory): void;
 
