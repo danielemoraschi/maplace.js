@@ -1,3 +1,4 @@
+import { activeElementAround, isFocused } from "./active-element";
 import type { Roving } from "./roving";
 
 /** Where focus was before a re-render, if the list held it. */
@@ -7,7 +8,7 @@ export interface HeldFocus {
 }
 
 export function heldFocus(list: HTMLElement, order: readonly HTMLElement[]): HeldFocus | undefined {
-  const active = list.ownerDocument.activeElement;
+  const active = activeElementAround(list);
   if (!(active instanceof HTMLElement) || !list.contains(active)) return undefined;
   return { element: active, index: order.indexOf(active) };
 }
@@ -27,7 +28,7 @@ export function keepFocus(roving: Roving, { held, order }: KeptFocus): void {
   const target = held.element.isConnected
     ? held.element
     : order[Math.min(held.index, order.length - 1)];
-  if (!target || target.ownerDocument.activeElement === target) return;
+  if (!target || isFocused(target)) return;
   roving.stopAt(target);
   roving.refocus(target);
 }

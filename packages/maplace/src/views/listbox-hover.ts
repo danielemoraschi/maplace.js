@@ -1,4 +1,4 @@
-import { activeElementAround } from "./active-element";
+import { isFocused } from "./active-element";
 import type { HoverCommand } from "./hover-intent";
 import type { ListboxEventContext } from "./listbox-context";
 
@@ -48,7 +48,7 @@ function leftTheList(context: ListboxEventContext, event: FocusEvent): boolean {
 /** On a window blur the option stays the active element; a real focus move has changed it. */
 function windowBlurred(event: FocusEvent): boolean {
   const target = event.target;
-  return target instanceof Element && target === activeElementAround(target);
+  return target instanceof Element && isFocused(target);
 }
 
 /** The browser's own "focus from the keyboard"; where it can't tell, assume the keyboard. */

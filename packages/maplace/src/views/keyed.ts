@@ -28,15 +28,20 @@ function childHoldingFocus(container: Element): Element | undefined {
 type MovingContainer = Element & { moveBefore?: (node: Node, child: Node | null) => void };
 
 function place(container: MovingContainer, element: Element, before: Element | null): void {
-  if (
-    container.moveBefore &&
-    element.isConnected &&
-    element.ownerDocument === container.ownerDocument
-  ) {
+  if (container.moveBefore && bothOnOnePage(element, container)) {
     container.moveBefore(element, before);
   } else if (before) {
     before.before(element);
   } else {
     container.append(element);
   }
+}
+
+/** `moveBefore` moves only between nodes on the same page: never into a detached container. */
+function bothOnOnePage(element: Element, container: Element): boolean {
+  return (
+    element.isConnected &&
+    container.isConnected &&
+    element.ownerDocument === container.ownerDocument
+  );
 }

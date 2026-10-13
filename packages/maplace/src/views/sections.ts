@@ -51,10 +51,19 @@ export function createSections<Data, E extends Element>(
     return option;
   }
 
+  /**
+   * A group made for this render, placed in the list at once: its members then move in within
+   * the page, keeping focus and state where the browser can (`moveBefore`); the order comes after.
+   */
+  function newGroup(heading: string): MadeGroup {
+    const group = makers.group(heading);
+    container.append(group.element);
+    return group;
+  }
+
   /** One section's options, at the top or in their group, recorded in this render's pass. */
   function renderSection(pass: Pass<E>, { heading, locations }: ListSection<Data>): void {
-    const group =
-      heading === undefined ? undefined : (groups.get(heading) ?? makers.group(heading));
+    const group = heading === undefined ? undefined : (groups.get(heading) ?? newGroup(heading));
     const members: Element[] = group ? [...group.head] : pass.top;
     for (const location of locations) {
       const option = optionFor(location);

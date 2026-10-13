@@ -39,8 +39,8 @@ export function optionsIn(element: Element): HTMLElement[] {
   return Array.from(element.querySelectorAll<HTMLElement>('[role="option"]'));
 }
 
-/** A container in the document with `count` focusable, untabbable options. */
-export function focusableList(count: number) {
+/** A container in `parent` with `count` focusable, untabbable options. */
+export function focusableList(count: number, parent: ParentNode = document.body) {
   const container = document.createElement("div");
   const options = Array.from({ length: count }, () => {
     const option = document.createElement("div");
@@ -48,7 +48,7 @@ export function focusableList(count: number) {
     container.append(option);
     return option;
   });
-  document.body.append(container);
+  parent.append(container);
   return { container, options };
 }
 

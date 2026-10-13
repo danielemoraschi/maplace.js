@@ -2,6 +2,7 @@
 /// <reference types="@vitest/browser-playwright" />
 import { describe, expect, it, onTestFinished } from "vitest";
 import { cdp, page, userEvent } from "vitest/browser";
+import { shadowRootOnPage } from "../testing/container";
 import { placedListbox, titled } from "../testing/lists";
 
 const locations = titled("a", "b");
@@ -63,14 +64,13 @@ describe("listbox hover in a browser: only the keyboard's focus hovers", () => {
     expect(calls).toEqual(["hover:a", "hover:b", "unhover:b"]);
   });
 
-  it("keeps the hover when the window loses focus, with the list inside a shadow root", async () => {
+  it("keeps the hover when the window loses focus, with the list in a shadow root", async () => {
     const { calls, view } = placedListbox(locations);
-    const host = document.createElement("div");
-    host.attachShadow({ mode: "open" }).append(view.element);
-    document.body.replaceChildren(host);
+    const root = shadowRootOnPage();
+    root.append(view.element);
     await userEvent.keyboard("{Tab}{ArrowDown}");
     // Headless Chromium can't blur its window: this is the focusout a window blur sends.
-    const focused = host.shadowRoot?.activeElement;
+    const focused = root.activeElement;
     expect(focused?.textContent).toBe("A");
     focused?.dispatchEvent(new FocusEvent("focusout", { bubbles: true, composed: true }));
     expect(calls).toEqual(["hover:a"]);

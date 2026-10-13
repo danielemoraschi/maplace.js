@@ -11,3 +11,10 @@ export function sizedContainer(): HTMLElement {
   document.body.append(container);
   return container;
 }
+
+/** An open shadow root on a page cleared for it, as a page's own component would hold a list. */
+export function shadowRootOnPage(): ShadowRoot {
+  const host = document.createElement("div");
+  document.body.replaceChildren(host);
+  return host.attachShadow({ mode: "open" });
+}
