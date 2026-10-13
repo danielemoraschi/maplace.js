@@ -62,7 +62,10 @@ type Layer = keyof typeof LAYERS;
 const RULES: Readonly<Record<Layer, LayerRule>> = LAYERS;
 
 // The quoted specifier after `from`, `import` or `import(`: every static and dynamic form.
-const IMPORT_SPECIFIER = /\b(?:from|import)\s*(?:\(\s*)?["']([^"']+)["']/g;
+// The keyword counts only on its own, not after a quote, a dot or part of a name: a string like
+// "from" or a call like loader.import("x") isn't read as an import. Text that reads like one (an
+// example in a comment, a message with ` from "x"`) still counts: it fails loudly, never silently.
+const IMPORT_SPECIFIER = /(?<![\w$.'"`])(?:from|import)\s*(?:\(\s*)?["']([^"']+)["']/g;
 
 /** Imports that cross a layer boundary or reach for a package the layer may not use (T10); tests may import anything. */
 export function check(): string[] {

@@ -24,8 +24,19 @@ describe("importsOf", () => {
       'export { B } from "./b";',
       'import "./c";',
       'const d = await import("./d");',
+      'import {\n  e,\n} from "./e";',
+      'export * from "./f";',
     ].join("\n");
-    expect(importsOf(source)).toEqual(["./a", "./b", "./c", "./d"]);
+    expect(importsOf(source)).toEqual(["./a", "./b", "./c", "./d", "./e", "./f"]);
+  });
+
+  it("ignores the words from and import inside strings and property names", () => {
+    const source = [
+      'markerDrawable("from"), markerDrawable("to");',
+      "const s = 'import'; loader.import(\"x\");",
+      'const t = `import`; $from "y"; reimport("z");',
+    ].join("\n");
+    expect(importsOf(source)).toEqual([]);
   });
 });
 
