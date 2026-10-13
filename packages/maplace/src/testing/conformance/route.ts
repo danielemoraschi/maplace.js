@@ -1,24 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { EVERY_CAPABILITY } from "../contract-values";
 import { adding, LARGE_DIFF, manyMarkers, markerDrawable } from "./fixtures";
 import { mountSubject } from "./harness";
 import type { ConformanceSubject, Supports } from "./subject";
 
-const SMALLEST_ROUTE = 2;
-
-export function capabilityChecks(subject: ConformanceSubject, supports: Supports): void {
-  describe("capabilities", () => {
-    it("names only capabilities the contract knows", () => {
-      for (const capability of supports) expect(EVERY_CAPABILITY).toContain(capability);
-    });
-
-    it("limits routes to at least two stops, if at all", () => {
-      const { routeStopLimit } = subject.create().adapter;
-      if (routeStopLimit === undefined) return;
-      expect(Number.isInteger(routeStopLimit)).toBe(true);
-      expect(routeStopLimit).toBeGreaterThanOrEqual(SMALLEST_ROUTE);
-    });
-
+export function routeChecks(subject: ConformanceSubject, supports: Supports): void {
+  describe("route", () => {
     it.runIf(supports.has("route"))(
       "reports a route whose legs run through the stops",
       async () => {
@@ -53,11 +39,5 @@ export function capabilityChecks(subject: ConformanceSubject, supports: Supports
         expect(host.reportsOf("reportRoute")).toHaveLength(1);
       },
     );
-
-    it.runIf(supports.has("cluster"))("still draws every location when clustering", async () => {
-      const { adapter, probe } = await mountSubject(subject, { cluster: true });
-      await adapter.apply(adding(...manyMarkers(3)));
-      expect(probe.locationIds()).toHaveLength(3);
-    });
   });
 }

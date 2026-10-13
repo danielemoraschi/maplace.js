@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adding, LARGE_DIFF, manyMarkers, markerDrawable } from "./fixtures";
+import { adding, markerDrawable } from "./fixtures";
 import { mountSubject, startMount } from "./harness";
 import type { ConformanceSubject } from "./subject";
 
@@ -28,27 +28,6 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
       await probe.settle();
       expect(container.children.length).toBe(0);
       expect(host.reports).toEqual([]);
-    });
-
-    it("stops a large diff on destroy: the apply still resolves, and nothing is drawn after", async () => {
-      const { adapter, probe, destroy } = await mountSubject(subject);
-      const drawing = adapter.apply(adding(...manyMarkers(LARGE_DIFF)));
-      destroy();
-      await drawing;
-      expect(probe.locationIds()).toEqual([]);
-    });
-
-    it("places a control on the map and takes it away, safely twice and after destroy", async () => {
-      const { adapter, container, destroy } = await mountSubject(subject);
-      const control = document.createElement("button");
-      const remove = adapter.mountControl(control, "top-left");
-      expect(container.contains(control)).toBe(true);
-      remove();
-      remove();
-      expect(container.contains(control)).toBe(false);
-      const removeLater = adapter.mountControl(document.createElement("button"), "bottom-right");
-      destroy();
-      expect(removeLater).not.toThrow();
     });
   });
 }

@@ -21,17 +21,20 @@ export function drawingChecks(subject: ConformanceSubject, supports: Supports): 
   describe("drawing", () => {
     it("resolves apply once its locations are drawn", async () => {
       const { adapter, probe } = await mountSubject(subject);
-      await adapter.apply(adding(markerDrawable("a", { lat: 1, lng: 2 }), circleDrawable("b")));
+      await adapter.apply(adding(markerDrawable("a", { lat: 1, lng: 2 }), markerDrawable("b")));
       expect([...probe.locationIds()].sort((a, b) => a.localeCompare(b))).toEqual(["a", "b"]);
       expect(probe.location("a")?.geometry).toEqual({ type: "marker", lat: 1, lng: 2 });
     });
 
-    it("applies removals first: an id removed and added again takes its new type", async () => {
-      const { adapter, probe } = await mountSubject(subject);
-      await adapter.apply(adding(markerDrawable("a")));
-      await adapter.apply({ added: [circleDrawable("a")], updated: [], removed: ["a"] });
-      expect(probe.location("a")?.geometry.type).toBe("circle");
-    });
+    it.runIf(supports.has("circle"))(
+      "applies removals first: an id removed and added again takes its new type",
+      async () => {
+        const { adapter, probe } = await mountSubject(subject);
+        await adapter.apply(adding(markerDrawable("a")));
+        await adapter.apply({ added: [circleDrawable("a")], updated: [], removed: ["a"] });
+        expect(probe.location("a")?.geometry.type).toBe("circle");
+      },
+    );
 
     it("moves and retitles a location on update", async () => {
       const { adapter, probe } = await mountSubject(subject);
@@ -83,6 +86,14 @@ export function drawingChecks(subject: ConformanceSubject, supports: Supports): 
       }, 0);
       await drawing;
       expect(yielded).toBe(true);
+    });
+
+    it("stops a large diff on destroy: the apply still resolves, and nothing is drawn after", async () => {
+      const { adapter, probe, destroy } = await mountSubject(subject);
+      const drawing = adapter.apply(adding(...manyMarkers(LARGE_DIFF)));
+      destroy();
+      await drawing;
+      expect(probe.locationIds()).toEqual([]);
     });
   });
 }
