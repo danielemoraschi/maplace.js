@@ -1,11 +1,9 @@
 import { type Field, mustBe } from "./fail";
-import { isNode } from "./values";
-
-const ELEMENT_NODE = 1;
+import { isElement } from "./values";
 
 /** `attach`'s container: duck-typed, so an element from another realm (an iframe) passes. */
 export function checkContainer(value: unknown, field: Field): asserts value is HTMLElement {
-  if (!isNode(value) || value.nodeType !== ELEMENT_NODE) mustBe(field, "an HTMLElement", value);
+  if (!isElement(value)) mustBe(field, "an HTMLElement", value);
 }
 
 /**

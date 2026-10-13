@@ -1,0 +1,46 @@
+/**
+ * The Maps JS the tests run against: numbered, so runs repeat. Google retires a numbered version
+ * about a year after its release; the version check in `maps-loader.browser.test.ts` then fails.
+ */
+export const MAPS_JS_VERSION = "3.66";
+
+const LOADED_CALLBACK = "__maplaceTestMapsLoaded";
+
+let loading: Promise<void> | undefined;
+let authFailed = false;
+
+/** Loads Maps JS once per page with the tests' key, as a page would with Google's script. */
+export function loadMapsForTests(key: string): Promise<void> {
+  loading ??= injectMapsScript(key);
+  return loading;
+}
+
+/** Whether Google refused the key (`gm_authFailure`), which leaves maps loading but blank. */
+export function keyRefused(): boolean {
+  return authFailed;
+}
+
+function injectMapsScript(key: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    Object.assign(globalThis, {
+      [LOADED_CALLBACK]: resolve,
+      gm_authFailure: () => {
+        authFailed = true;
+      },
+    });
+    const script = document.createElement("script");
+    script.src = mapsScriptUrl(key);
+    script.onerror = () => reject(new Error("Maps JS failed to load"));
+    document.head.append(script);
+  });
+}
+
+function mapsScriptUrl(key: string): string {
+  const query = new URLSearchParams({
+    key,
+    v: MAPS_JS_VERSION,
+    loading: "async",
+    callback: LOADED_CALLBACK,
+  });
+  return `https://maps.googleapis.com/maps/api/js?${query}`;
+}

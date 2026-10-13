@@ -52,10 +52,17 @@ const LAYERS = {
   element: { files: /^element\/index$/, imports: ["data", "contract", "store", "view"] },
   wiring: { files: /^element\/google$/, imports: ["data", "contract", "element", "google"] },
   react: { files: /^react\//, imports: ["data", "contract", "store", "view"], packages: ["react"] },
+  // Shares the store's option checks, so its misuse reads the same.
   google: {
-    files: /^google\//,
-    imports: ["data", "contract"],
+    files: /^google\/(?!testing\/)/,
+    imports: ["data", "contract", "validation"],
     packages: ["@googlemaps/markerclusterer"],
+  },
+  // The Google adapter's test support: its probe and the Maps JS loader for tests.
+  "google-testing": {
+    files: /^google\/testing\//,
+    imports: ["data", "contract", "testing", "conformance", "google"],
+    packages: ["vitest"],
   },
 } satisfies Record<string, LayerRule>;
 

@@ -47,6 +47,22 @@ describe("checkAttachable", () => {
     ).toThrow("attach: container must be an HTMLElement, got null");
   });
 
+  it("refuses a container that doesn't hold the map an adapter draws on, before using it", () => {
+    const adapter = Object.assign(createFakeAdapter(), { pageMapElement: container });
+    const elsewhere = { nodeType: 1, contains: () => false } as unknown as HTMLElement;
+    expect(() => checkAttachable({ adapter, container: elsewhere }, free)).toThrow(
+      expect.objectContaining({
+        code: "invalid-input",
+        field: "container",
+        message: expect.stringContaining("must be the element of the page's map"),
+      }),
+    );
+    const holder = { nodeType: 1, contains: (node: unknown) => node === container };
+    expect(() =>
+      checkAttachable({ adapter, container: holder as unknown as HTMLElement }, free),
+    ).not.toThrow();
+  });
+
   it("refuses clustering, or locations, the adapter can't draw", () => {
     const noCapabilities = () => createFakeAdapter({ capabilities: [] });
     expect(attachWith({ cluster: true }, noCapabilities())).toThrow(

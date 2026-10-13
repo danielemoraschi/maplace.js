@@ -29,7 +29,15 @@ jobs:
       - run: npm run check
       - run: npm run typecheck
       - run: npx --no playwright install --with-deps --only-shell chromium
+      # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed.
+      # Without the key the Maps tests would only skip, so a missing secret fails instead.
+      - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+        env:
+          VITE_MAPS_KEY: ${{ secrets.MAPS_KEY }}
+        run: test -n "$VITE_MAPS_KEY" || { echo "::error::the MAPS_KEY secret is not set"; exit 1; }
       - run: npm test
+        env:
+          VITE_MAPS_KEY: ${{ github.ref == 'refs/heads/next' && !github.event.repository.fork && secrets.MAPS_KEY || '' }}
       - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:

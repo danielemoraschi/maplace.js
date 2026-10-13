@@ -95,6 +95,14 @@ describe("problemsIn", () => {
     ).toHaveLength(1);
   });
 
+  it("keeps the Google adapter apart from its test support, on the store's checks", () => {
+    expect(layerOf("google/options")).toBe("google");
+    expect(layerOf("google/testing/probe")).toBe("google-testing");
+    expect(problemsIn("google/options.ts", 'import "../validate/values";')).toEqual([]);
+    expect(problemsIn("google/mount.ts", 'import "./testing/probe";')).toHaveLength(1);
+    expect(problemsIn("google/testing/probe.ts", 'import "../map-state";')).toEqual([]);
+  });
+
   it("reports a data module importing the store", () => {
     expect(problemsIn("route.ts", 'import type { Maplace } from "./store";')).toHaveLength(1);
   });

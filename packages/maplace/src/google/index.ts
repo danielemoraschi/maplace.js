@@ -1,21 +1,15 @@
-/// <reference types="google.maps" />
 import type { Adapter } from "../adapter";
+import { assembleGoogleAdapter } from "./assemble";
+import { createMapState } from "./map-state";
+import { checkGoogleOptions, type GoogleAdapterOptions } from "./options";
 
-/** Google Maps adapter options. Only this entry knows about `google.maps`. */
-export interface GoogleAdapterOptions {
-  /** Required for Advanced Markers; `DEMO_MAP_ID` works for development. Styling lives in Cloud Console. */
-  readonly mapId: string;
-  readonly colorScheme?: "light" | "dark" | "follow-system" | undefined;
-  /** Draw on an existing map instead of creating one. */
-  readonly map?: google.maps.Map | undefined;
-  /** Extra options for a map maplace creates; ignored when `map` is given. */
-  readonly mapOptions?:
-    | Omit<google.maps.MapOptions, "mapId" | "colorScheme" | "center" | "zoom">
-    | undefined;
-}
+export type { GoogleAdapterOptions } from "./options";
 
 /**
- * Capabilities: route, cluster (loads `@googlemaps/markerclusterer` on demand), circle, edit.
- * Expects Maps JS to be loaded (bootstrap or js-api-loader); calls `google.maps.importLibrary`.
+ * A map provider on Google Maps. Expects the page to have loaded Maps JS (Google's bootstrap or
+ * js-api-loader): it imports the libraries it needs through `google.maps.importLibrary`.
  */
-export declare function createGoogleAdapter(options: GoogleAdapterOptions): Adapter;
+export function createGoogleAdapter(options: GoogleAdapterOptions): Adapter {
+  checkGoogleOptions(options);
+  return assembleGoogleAdapter(options, createMapState());
+}

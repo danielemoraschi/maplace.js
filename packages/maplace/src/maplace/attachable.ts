@@ -40,6 +40,10 @@ export function checkAttachable(
     reject(child(ATTACH, "adapter"), problem, "already-attached");
   }
   checkContainer(container, child(ATTACH, "container"));
+  if (adapter.pageMapElement && !container.contains(adapter.pageMapElement)) {
+    const problem = "must be the element of the page's map the adapter draws on, or hold it";
+    reject(child(ATTACH, "container"), problem);
+  }
   if (cluster) checkCluster(adapter, child(child(ATTACH, "options"), "cluster"));
   const checkSupport = createSupportCheck(adapter);
   checkSupport(snapshot, "attach");

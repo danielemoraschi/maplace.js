@@ -116,6 +116,13 @@ export function isNode(value: unknown): value is { readonly nodeType: unknown } 
   return typeof value === "object" && value !== null && "nodeType" in value;
 }
 
+const ELEMENT_NODE = 1;
+
+/** An element, duck-typed like `isNode`, so one from another realm (an iframe) passes too. */
+export function isElement(value: unknown): value is HTMLElement {
+  return isNode(value) && value.nodeType === ELEMENT_NODE;
+}
+
 function describeRange({ min, max, above }: NumberRange): string {
   if (min !== undefined && max !== undefined) return `a number from ${min} to ${max}`;
   if (min !== undefined) return `a number of at least ${min}`;

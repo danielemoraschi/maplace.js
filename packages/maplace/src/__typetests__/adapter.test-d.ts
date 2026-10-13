@@ -41,3 +41,8 @@ adapter.setView({
 });
 // @ts-expect-error adapters never see fit-all; the store resolves it to fit-bounds
 adapter.setView({ kind: "fit-all", padding: 40 });
+
+// An adapter on a map the page made names that map's element, for `attach` to check.
+adapter.pageMapElement satisfies HTMLElement | undefined;
+// @ts-expect-error the store reads the page map's element, never sets it
+adapter.pageMapElement = document.createElement("div");

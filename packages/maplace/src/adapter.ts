@@ -71,6 +71,11 @@ export interface Adapter {
   readonly capabilities: ReadonlySet<Capability>;
   /** Most stops a route may have; checked by the store like a capability. */
   readonly routeStopLimit?: number | undefined;
+  /**
+   * The element of a map the page made, when the adapter draws on one: `attach`'s container must
+   * be it or hold it.
+   */
+  readonly pageMapElement?: HTMLElement | undefined;
   /** Loads the provider and draws into the container. */
   mount(context: MountContext): Promise<void>;
   /**
