@@ -1,3 +1,4 @@
+import { activeElementAround } from "./active-element";
 import type { HoverCommand } from "./hover-intent";
 import type { ListboxEventContext } from "./listbox-context";
 
@@ -35,8 +36,19 @@ export function onFocusIn(context: ListboxEventContext, event: FocusEvent): void
 
 /** Moving between options is one focusin, not a blur and a focus: only leaving the list blurs. */
 export function onFocusOut(context: ListboxEventContext, event: FocusEvent): void {
-  if (context.roving.isRefocusing() || context.optionAt(event.relatedTarget)) return;
-  apply(context, context.intent.blurred());
+  if (leftTheList(context, event)) apply(context, context.intent.blurred());
+}
+
+/** Not the view's own refocus, not a move to another option, not the window losing focus. */
+function leftTheList(context: ListboxEventContext, event: FocusEvent): boolean {
+  if (context.roving.isRefocusing() || context.optionAt(event.relatedTarget)) return false;
+  return !windowBlurred(event);
+}
+
+/** On a window blur the option stays the active element; a real focus move has changed it. */
+function windowBlurred(event: FocusEvent): boolean {
+  const target = event.target;
+  return target instanceof Element && target === activeElementAround(target);
 }
 
 /** The browser's own "focus from the keyboard"; where it can't tell, assume the keyboard. */

@@ -1,5 +1,6 @@
 import type { Location } from "../location";
 import type { ListActions } from "../views/actions";
+import { createListbox } from "../views/listbox";
 import { type ListRules, type ListStructure, listStructureOf } from "../views/model";
 
 /** A `ListActions` that only records, for variant tests that need no store. */
@@ -14,6 +15,18 @@ export function recordingActions(): ListActions & { readonly calls: string[] } {
     hover: record("hover"),
     unhover: record("unhover"),
   };
+}
+
+/** Locations at one point, titled by their upper-cased ids: `titled("a")` lists as "A". */
+export function titled(...ids: string[]): Location[] {
+  return ids.map((id) => ({ id, title: id.toUpperCase(), lat: 0, lng: 0 }));
+}
+
+/** Dispatches a keydown on `target` and returns it, to read `defaultPrevented`. */
+export function keydown(target: Element, key: string, init?: KeyboardEventInit): KeyboardEvent {
+  const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...init });
+  target.dispatchEvent(event);
+  return event;
 }
 
 /** The structure a list shows for these locations, all shown. */
@@ -37,4 +50,17 @@ export function focusableList(count: number) {
   });
   document.body.append(container);
   return { container, options };
+}
+
+/** A listbox named "Places" with an "All" entry, on the page, recording what it asks of a store. */
+export function placedListbox(
+  locations: readonly Location[],
+  { render, groupHeadings = false }: { render?: () => Node; groupHeadings?: boolean } = {},
+) {
+  const actions = recordingActions();
+  const view = createListbox(actions, { label: "Places", fitAllLabel: "All", render });
+  document.body.replaceChildren(view.element);
+  view.renderStructure(structureOf(locations, { groupHeadings }));
+  view.renderState({ selectedId: undefined, hoveredId: undefined });
+  return { view, calls: actions.calls, options: optionsIn(view.element) };
 }

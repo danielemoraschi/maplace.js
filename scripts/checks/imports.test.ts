@@ -65,9 +65,11 @@ describe("problemsIn", () => {
     expect(layerOf("testing/fake-adapter")).toBe("fake");
     expect(layerOf("testing/fake/drawing")).toBe("fake");
     expect(layerOf("testing/mounted")).toBe("scenario");
+    expect(layerOf("testing/listed")).toBe("scenario");
     const createStore = 'import { createMaplace } from "../maplace/create";';
     expect(problemsIn("testing/fake-adapter.ts", createStore)).toHaveLength(1);
     expect(problemsIn("testing/mounted.ts", createStore)).toEqual([]);
+    expect(problemsIn("testing/fake/probe.ts", 'import "../listed";')).toHaveLength(1);
   });
 
   it("keeps the conformance suite and the fake apart, both ways", () => {

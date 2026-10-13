@@ -28,7 +28,7 @@ const LAYERS = {
   // Test support at contract level (the probe's types, the recorder); only the scenario helper
   // sees the composed store.
   testing: {
-    files: /^testing\/(?!(mounted|lists|fake-adapter)$|fake\/|conformance\/)/,
+    files: /^testing\/(?!(mounted|listed|lists|fake-adapter)$|fake\/|conformance\/)/,
     imports: ["data", "contract"],
   },
   // The fake adapter: an in-memory map, at contract level like any adapter.
@@ -39,9 +39,11 @@ const LAYERS = {
     imports: ["data", "contract", "testing"],
     packages: ["vitest"],
   },
+  // Ready stores on the fake, and a list view beside one (which cleans up after its test).
   scenario: {
-    files: /^testing\/mounted$/,
-    imports: ["data", "contract", "maplace", "testing", "fake"],
+    files: /^testing\/(mounted|listed)$/,
+    imports: ["data", "contract", "maplace", "testing", "fake", "view"],
+    packages: ["vitest"],
   },
   // Test support for the list views: plain data and the view's own types.
   "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },

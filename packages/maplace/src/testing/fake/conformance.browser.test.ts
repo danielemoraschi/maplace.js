@@ -1,4 +1,3 @@
-// @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { describeConformance } from "../conformance/describe-conformance";
 import { adding, markerDrawable, presented, withContent } from "../conformance/fixtures";

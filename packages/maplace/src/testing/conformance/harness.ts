@@ -1,6 +1,7 @@
 import type { Adapter, Capability } from "../../adapter";
 import type { ResolvedPopupOptions } from "../../popup";
-import { MAP_SIZE, type MapProbe } from "../map-probe";
+import { sizedContainer } from "../container";
+import type { MapProbe } from "../map-probe";
 import { createRecordingHost, type RecordingHost } from "./recording-host";
 import type { ConformanceSubject } from "./subject";
 
@@ -76,12 +77,4 @@ function destroyOnce(adapter: Adapter): () => void {
     if (!destroyed) adapter.destroy();
     destroyed = true;
   };
-}
-
-function sizedContainer(): HTMLElement {
-  const container = document.createElement("div");
-  container.style.width = `${MAP_SIZE.width}px`;
-  container.style.height = `${MAP_SIZE.height}px`;
-  document.body.append(container);
-  return container;
 }

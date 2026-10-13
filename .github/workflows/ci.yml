@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run typecheck
+      - run: npx --no playwright install --with-deps --only-shell chromium
       - run: npm test
       - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

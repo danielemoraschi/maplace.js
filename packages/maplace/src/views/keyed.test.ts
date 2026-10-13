@@ -23,6 +23,18 @@ describe("reconcile", () => {
     expect(b.isConnected).toBe(false);
   });
 
+  it("never moves the element holding focus, so a reorder can't blur it", () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const [a, b, c] = elements("a", "b", "c") as [HTMLElement, HTMLElement, HTMLElement];
+    reconcile(container, [a, b, c]);
+    c.tabIndex = -1;
+    c.focus();
+    reconcile(container, [c, b, a]);
+    expect(idsIn(container)).toEqual(["c", "b", "a"]);
+    expect(document.activeElement).toBe(c);
+  });
+
   it("moves an element from another container", () => {
     const from = document.createElement("div");
     const to = document.createElement("div");

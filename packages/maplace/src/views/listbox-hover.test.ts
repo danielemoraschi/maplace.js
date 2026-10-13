@@ -1,29 +1,12 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { Location } from "../location";
-import { optionsIn, recordingActions, structureOf } from "../testing/lists";
-import { createListbox } from "./listbox";
+import { keydown, placedListbox, titled } from "../testing/lists";
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const locations: Location[] = ["a", "b", "c"].map((id) => ({ id, lat: 0, lng: 0 }));
-
-function mounted(render?: () => Node) {
-  const actions = recordingActions();
-  const view = createListbox(actions, { label: "Places", fitAllLabel: "All", render });
-  document.body.replaceChildren(view.element);
-  view.renderStructure(structureOf(locations, { groupHeadings: false }));
-  view.renderState({ selectedId: undefined, hoveredId: undefined });
-  return { calls: actions.calls, options: optionsIn(view.element) };
-}
-
-const key = (target: Element, name: string) => {
-  const event = new KeyboardEvent("keydown", { key: name, bubbles: true, cancelable: true });
-  target.dispatchEvent(event);
-  return event;
-};
+const locations = titled("a", "b", "c");
 
 const pointer = (
   target: Element,
@@ -34,7 +17,7 @@ const pointer = (
 
 describe("listbox hover", () => {
   it("hovers under a mouse, not under touch, and clears when the pointer leaves", () => {
-    const { calls, options } = mounted();
+    const { calls, options } = placedListbox(locations);
     pointer(options[1] as Element, "pointerover", "touch");
     expect(calls).toEqual([]);
     pointer(options[1] as Element, "pointerover");
@@ -45,14 +28,23 @@ describe("listbox hover", () => {
   });
 
   it("arrowing between options is one hover per move, never a clear", () => {
-    const { calls, options } = mounted();
+    const { calls, options } = placedListbox(locations);
     options[1]?.focus();
-    key(options[1] as Element, "ArrowDown");
+    keydown(options[1] as Element, "ArrowDown");
     expect(calls).toEqual(["hover:a", "hover:b"]);
   });
 
+  it("keeps the hover when the window loses focus: the option stays the active element", () => {
+    const { calls, options } = placedListbox(locations);
+    const option = options[1] as HTMLElement;
+    option.focus();
+    option.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: null }));
+    expect(document.activeElement).toBe(option);
+    expect(calls).toEqual(["hover:a"]);
+  });
+
   it("doesn't hover for focus a click or tap gave, only for keyboard focus", () => {
-    const { calls, options } = mounted();
+    const { calls, options } = placedListbox(locations);
     const matches = Element.prototype.matches;
     vi.spyOn(Element.prototype, "matches").mockImplementation(function (this: Element, selector) {
       return selector === ":focus-visible" ? false : matches.call(this, selector);

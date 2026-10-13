@@ -1,29 +1,18 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createListView } from "./list-view";
-import type { Location } from "./location";
 import { createMaplace } from "./maplace/create";
-import { optionsIn } from "./testing/lists";
-import { mounted } from "./testing/mounted";
+import { listed } from "./testing/listed";
+import { optionsIn, titled } from "./testing/lists";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const locations: Location[] = ["a", "b", "c"].map((id) => ({
-  id,
-  lat: 0,
-  lng: 0,
-  title: id.toUpperCase(),
-}));
+const locations = titled("a", "b", "c");
 const options = optionsIn;
 
-async function listOnMap(popup?: { openOn: "hover" }) {
-  const map = await mounted({ locations, ...(popup && { popup }) });
-  const list = createListView(map.maplace);
-  document.body.replaceChildren(list.element);
-  return { ...map, list };
-}
+const listOnMap = (popup?: { openOn: "hover" }) => listed({ locations, ...(popup && { popup }) });
 
 describe("createListView, end to end through the fake adapter", () => {
   it("a click in the list selects and pans the map", async () => {
