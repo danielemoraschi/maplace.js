@@ -40,6 +40,11 @@ export function checkNonEmptyString(value: unknown, field: Field): asserts value
   if (typeof value !== "string" || value === "") mustBe(field, "a non-empty string", value);
 }
 
+/** Text a reader sees, such as a label: not empty, not only spaces. */
+export function checkNonBlankString(value: unknown, field: Field): asserts value is string {
+  if (typeof value !== "string" || value.trim() === "") mustBe(field, "a non-blank string", value);
+}
+
 export function checkBoolean(value: unknown, field: Field): asserts value is boolean {
   if (typeof value !== "boolean") mustBe(field, "a boolean", value);
 }

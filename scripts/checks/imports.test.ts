@@ -1,5 +1,8 @@
+import { globSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { importsOf, layerOf, problemsIn } from "./imports.ts";
+
+const SRC = "packages/maplace/src/";
 
 describe("layerOf", () => {
   it("places each source file in its layer", () => {
@@ -43,7 +46,7 @@ describe("problemsIn", () => {
 
   it("reports a view importing an adapter", () => {
     expect(problemsIn("list-view.ts", 'import "./google/index";')).toEqual([
-      "list-view.ts: imports ./google/index (google); view may import data, store",
+      "list-view.ts: imports ./google/index (google); view may import data, store, state, validation",
     ]);
   });
 
@@ -53,6 +56,18 @@ describe("problemsIn", () => {
     const createStore = 'import { createMaplace } from "../maplace/create";';
     expect(problemsIn("testing/fake-adapter.ts", createStore)).toHaveLength(1);
     expect(problemsIn("testing/mounted.ts", createStore)).toEqual([]);
+  });
+
+  it("keeps views to the store's public API and pure state lookups", () => {
+    expect(layerOf("views/listbox")).toBe("view");
+    expect(layerOf("list-view")).toBe("view");
+    expect(layerOf("list-views")).toBeUndefined();
+    expect(
+      problemsIn("views/listbox.ts", 'import { attach } from "../maplace/attachment";'),
+    ).toHaveLength(1);
+    expect(
+      problemsIn("views/model.ts", 'import { diffLocations } from "../diff/locations";'),
+    ).toHaveLength(1);
   });
 
   it("reports a data module importing the store", () => {
@@ -75,5 +90,19 @@ describe("problemsIn", () => {
     expect(problemsIn("store.ts", 'import { produce } from "immer";')).toEqual([
       "store.ts: imports package immer; store may use none",
     ]);
+  });
+});
+
+describe("views and the state layer", () => {
+  it("take only the pure lookups and the safety net from state", () => {
+    const allowed = new Set(["lookup", "safely"]);
+    const files = globSync("{list-view.ts,views/*.ts}", { cwd: SRC, exclude: ["**/*.test.ts"] });
+    const reached = files.flatMap((file) =>
+      importsOf(readFileSync(SRC + file, "utf8"))
+        .filter((specifier) => specifier.includes("state/"))
+        .map((specifier) => `${file} → ${specifier}`),
+    );
+    expect(reached.length).toBeGreaterThan(0);
+    expect(reached.filter((line) => !allowed.has(line.split("state/")[1] ?? ""))).toEqual([]);
   });
 });

@@ -1,6 +1,6 @@
 import type { Snapshot } from "../store";
 import { andThen, type Change, NO_CHANGE } from "./change";
-import { hover } from "./hover";
+import { hoverReported } from "./hover";
 import { isHiddenId } from "./lookup";
 import { deselect } from "./selection";
 
@@ -17,5 +17,5 @@ function deselectHidden<Data>(snapshot: Snapshot<Data>): Change<Data> {
 }
 
 function unhoverHidden<Data>(snapshot: Snapshot<Data>): Change<Data> {
-  return isHiddenId(snapshot, snapshot.hoveredId) ? hover(snapshot, undefined) : NO_CHANGE;
+  return isHiddenId(snapshot, snapshot.hoveredId) ? hoverReported(snapshot, undefined) : NO_CHANGE;
 }

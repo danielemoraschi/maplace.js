@@ -26,9 +26,11 @@ const LAYERS = {
     imports: ["data", "contract", "store", "state", "diff", "validation"],
   },
   // The fake adapter stays at contract level; only the scenario helper sees the composed store.
-  testing: { files: /^testing\/(?!mounted$)/, imports: ["data", "contract"] },
+  testing: { files: /^testing\/(?!(mounted|lists)$)/, imports: ["data", "contract"] },
   scenario: { files: /^testing\/mounted$/, imports: ["data", "contract", "maplace", "testing"] },
-  view: { files: /^list-view$/, imports: ["data", "store"] },
+  // Test support for the list views: plain data and the view's own types.
+  "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },
+  view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
   entry: { files: /^index$/, imports: ["data", "contract", "store", "view", "maplace"] },
   element: { files: /^element\/index$/, imports: ["data", "contract", "store", "view"] },
   wiring: { files: /^element\/google$/, imports: ["data", "contract", "element", "google"] },

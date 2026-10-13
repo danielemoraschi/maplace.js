@@ -110,6 +110,8 @@ describe("createState", () => {
     expect(state.getSnapshot().view.kind).toBe("fit-all");
     state.setRoute({ stops: ["a", "b"] });
     expect(state.getSnapshot().route?.stops).toEqual(["a", "b"]);
+    state.hover("a");
+    expect(state.getSnapshot().hoveredId).toBe("a");
   });
 
   it("keeps instances apart", () => {

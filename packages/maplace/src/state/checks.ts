@@ -1,5 +1,6 @@
 import type { Location } from "../location";
-import { describeValue, type Field, reject } from "../validate/fail";
+import { child, describeValue, type Field, reject, root } from "../validate/fail";
+import { checkNonEmptyString } from "../validate/values";
 import { isShown, locationById, type Scope } from "./lookup";
 
 /** Throws `unknown-id` unless `id` names a location; returns it. */
@@ -22,4 +23,14 @@ export function checkSelectable(scope: Scope, id: string, field: Field): void {
     const problem = "names a hidden location (visible: false, or outside the filter)";
     reject(field, `${problem}, got ${describeValue(id)}`);
   }
+}
+
+/** The id a public call names (`select`, `hover`): a non-empty string for a shown location. */
+export function checkSelectableId(
+  scope: Scope,
+  { method, id }: { readonly method: "select" | "hover"; readonly id: string },
+): void {
+  const field = child(root(method, typeof id === "string" ? id : undefined), "id");
+  checkNonEmptyString(id, field);
+  checkSelectable(scope, id, field);
 }

@@ -47,6 +47,11 @@ export interface Maplace<Data = unknown> {
    */
   select(id: string | undefined, options?: SelectOptions): void;
   /**
+   * Marks the location under the pointer or keyboard focus, or none with `undefined`; fires
+   * `hover` when it changes. Unknown or hidden ids throw, as for `select`.
+   */
+  hover(id: string | undefined): void;
+  /**
    * Shows only these groups; locations without a group hide while a filter is set. Hiding the
    * selected location deselects it.
    */

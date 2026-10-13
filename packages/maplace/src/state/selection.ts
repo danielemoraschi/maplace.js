@@ -1,10 +1,9 @@
 import type { Snapshot } from "../store";
-import { child, type Field, root } from "../validate/fail";
-import { checkNonEmptyString } from "../validate/values";
+import { child, root } from "../validate/fail";
 import { checkSelectOptions } from "../validate/viewport";
 import type { SelectOptions } from "../viewport";
 import { type Change, NO_CHANGE } from "./change";
-import { checkSelectable } from "./checks";
+import { checkSelectableId } from "./checks";
 import { locationView } from "./views";
 
 const OPTIONS = child(root("select"), "options");
@@ -22,9 +21,7 @@ export function select<Data>(
     checkSelectOptions(options, OPTIONS);
     return deselectIfSelected(snapshot);
   }
-  const field = idField(id);
-  checkNonEmptyString(id, field);
-  checkSelectable(snapshot, id, field);
+  checkSelectableId(snapshot, { method: "select", id });
   checkSelectOptions(options, OPTIONS);
   return selectShown(snapshot, id, options);
 }
@@ -55,8 +52,4 @@ export function deselect<Data>(): Change<Data> {
     patch: { selectedId: undefined },
     events: [{ name: "select", payload: { id: undefined } }],
   };
-}
-
-function idField(id: unknown): Field {
-  return child(root("select", typeof id === "string" ? id : undefined), "id");
 }

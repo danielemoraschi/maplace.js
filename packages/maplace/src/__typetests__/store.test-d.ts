@@ -23,6 +23,12 @@ maplace.select("a", true);
 // @ts-expect-error zoom needs panning
 maplace.select("a", { pan: false, zoom: 3 });
 
+maplace.hover("a");
+maplace.hover(undefined);
+// @ts-expect-error absence is undefined, never null
+maplace.hover(null);
+expectTypeOf<Maplace>().toHaveProperty("hover");
+
 maplace.on("select", (event: MaplaceEvents["select"]) => event.id);
 // @ts-expect-error unknown event names don't compile
 maplace.on("selected", () => {});

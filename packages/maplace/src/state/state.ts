@@ -6,6 +6,7 @@ import type { Change } from "./change";
 import { type CommitHooks, createCore } from "./core";
 import { destroyedError } from "./destroyed";
 import { setFilter } from "./filter";
+import { hover } from "./hover";
 import { initialSnapshot } from "./initial";
 import { setLocations } from "./locations";
 import { setRoute } from "./route";
@@ -60,6 +61,7 @@ export function createInternalState<Data = unknown>(
     setLocations: (locations) =>
       run("setLocations", () => setLocations(getSnapshot(), locations, context)),
     select: (id, selectOptions) => run("select", () => select(getSnapshot(), id, selectOptions)),
+    hover: (id) => run("hover", () => hover(getSnapshot(), id)),
     setFilter: (groups) => run("setFilter", () => setFilter(getSnapshot(), groups)),
     fitAll: (fitOptions) => run("fitAll", () => fitAll(fitOptions)),
     fitBounds: (bounds, fitOptions) => run("fitBounds", () => fitBounds(bounds, fitOptions)),
