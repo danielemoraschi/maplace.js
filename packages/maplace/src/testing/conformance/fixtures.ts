@@ -1,0 +1,74 @@
+import type { LocationDiff, PresentationState } from "../../adapter";
+import type { Drawable } from "../../drawable";
+import type { LatLng } from "../../geometry";
+import type { LocationState } from "../../location";
+import { NOTHING_PRESENTED } from "../contract-values";
+
+/** The number of locations a large diff has (RFC Numbers). */
+export const LARGE_DIFF = 4000;
+
+export const ORIGIN: LatLng = { lat: 0, lng: 0 };
+
+/** A marker as the store would hand it over: no title, style, content or icon unless given. */
+export function markerDrawable(id: string, at = ORIGIN, overrides?: Partial<Drawable>): Drawable {
+  return { ...plainDrawable(id), geometry: { type: "marker", ...at }, ...overrides };
+}
+
+export function circleDrawable(id: string, overrides?: Partial<Drawable>): Drawable {
+  return {
+    ...plainDrawable(id),
+    geometry: { type: "circle", center: ORIGIN, radius: 1000 },
+    ...overrides,
+  };
+}
+
+/** `drawable` with popup content: a new text node each time, as a content function builds. */
+export function withContent(drawable: Drawable, text: string): Drawable {
+  return { ...drawable, renderContent: () => document.createTextNode(text) };
+}
+
+/** `count` markers spread over the world, ids `m0`, `m1`, … */
+export function manyMarkers(count: number): Drawable[] {
+  return Array.from({ length: count }, (_, index) =>
+    markerDrawable(`m${index}`, { lat: (index % 170) - 85, lng: (index % 360) - 180 }),
+  );
+}
+
+export function adding(...drawables: Drawable[]): LocationDiff {
+  return { added: drawables, updated: [], removed: [] };
+}
+
+export function updating(...drawables: Drawable[]): LocationDiff {
+  return { added: [], updated: drawables, removed: [] };
+}
+
+export function removing(...ids: string[]): LocationDiff {
+  return { added: [], updated: [], removed: ids };
+}
+
+/** A presentation: nothing selected, hovered or hidden unless given. */
+export function presented(state: Partial<PresentationState>): PresentationState {
+  return { ...NOTHING_PRESENTED, ...state };
+}
+
+/** A `renderIcon` that records each state it is asked for and builds one marker node. */
+export function iconRecorder() {
+  const states: LocationState[] = [];
+  const node = document.createElement("span");
+  const renderIcon = (state: LocationState): Node => {
+    states.push(state);
+    return node;
+  };
+  return { states, node, renderIcon };
+}
+
+function plainDrawable(id: string): Omit<Drawable, "geometry"> {
+  return {
+    id,
+    title: undefined,
+    style: undefined,
+    editable: false,
+    renderContent: undefined,
+    renderIcon: undefined,
+  };
+}

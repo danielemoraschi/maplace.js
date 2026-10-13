@@ -1,15 +1,33 @@
 import { MaplaceError } from "../errors";
 import type { Location } from "../location";
 import type { MaplaceOptions } from "../options";
+import { type Guard, guardedRenderer } from "../validate/guarded";
 import { sameValueSource } from "./same";
 
 type Sanitize = MaplaceOptions["sanitize"];
+type ContentRenderer = () => Node | undefined;
+
+/** The store's sanitizer, and where a failure of the page's code goes. */
+export interface ContentContext extends Pick<Guard, "report"> {
+  readonly sanitize: Sanitize;
+}
 
 /**
  * Builds a location's popup content: a string as text, a Node as itself, a function's result.
  * `html` is sanitized on the first call, so nothing touches the DOM until a popup opens (SSR).
+ * A function or sanitizer that fails is reported and builds nothing: no popup opens.
  */
-export function contentRenderer(location: Location, sanitize: Sanitize): (() => Node) | undefined {
+export function contentRenderer(
+  location: Location,
+  { sanitize, report }: ContentContext,
+): ContentRenderer | undefined {
+  const build = builderOf(location, sanitize);
+  if (build === undefined) return undefined;
+  const field = location.html === undefined ? "content" : "html";
+  return guardedRenderer<void>(build, { locationId: location.id, field, report });
+}
+
+function builderOf(location: Location, sanitize: Sanitize): (() => unknown) | undefined {
   const { content, html } = location;
   if (html !== undefined) return htmlRenderer(location.id, html, sanitize);
   if (content === undefined) return undefined;

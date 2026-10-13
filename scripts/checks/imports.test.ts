@@ -51,11 +51,23 @@ describe("problemsIn", () => {
   });
 
   it("keeps the fake adapter at contract level; only the scenario helper sees the store", () => {
-    expect(layerOf("testing/fake-adapter")).toBe("testing");
+    expect(layerOf("testing/fake-adapter")).toBe("fake");
+    expect(layerOf("testing/fake/drawing")).toBe("fake");
     expect(layerOf("testing/mounted")).toBe("scenario");
     const createStore = 'import { createMaplace } from "../maplace/create";';
     expect(problemsIn("testing/fake-adapter.ts", createStore)).toHaveLength(1);
     expect(problemsIn("testing/mounted.ts", createStore)).toEqual([]);
+  });
+
+  it("keeps the conformance suite and the fake apart, both ways", () => {
+    expect(layerOf("testing/conformance/drawing")).toBe("conformance");
+    expect(layerOf("testing/map-probe")).toBe("testing");
+    expect(problemsIn("testing/conformance/harness.ts", 'import "../fake-adapter";')).toHaveLength(
+      1,
+    );
+    expect(problemsIn("testing/conformance/harness.ts", 'import "../fake/probe";')).toHaveLength(1);
+    expect(problemsIn("testing/fake/probe.ts", 'import "../conformance/subject";')).toHaveLength(1);
+    expect(problemsIn("testing/conformance/harness.ts", 'import "../map-probe";')).toEqual([]);
   });
 
   it("keeps views to the store's public API and pure state lookups", () => {

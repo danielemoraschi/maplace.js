@@ -137,7 +137,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
 | geometry | Where a location is: a point, a circle, a path or a polygon; what a drag or edit changes |
-| drawable | A location as an adapter receives it, resolved by the store: geometry, title, style, `editable`, and builders for content and icon |
+| drawable | A location as an adapter receives it, resolved by the store: geometry, title, style, `editable`, and builders for content and icon (a builder whose page code failed returns nothing: the default marker, no popup) |
 | style | How a shape or route line is drawn: a stroke, and for circles and polygons a fill |
 | location state | Whether a location is selected and hovered (`LocationState`), passed to `icon` and list `render` functions |
 | load state | `idle`, `loading`, `ready` or `error`: where the map is in loading its provider (`loadState`) |
@@ -188,6 +188,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
   | `already-attached` | A store attached twice, or an adapter instance reused |
   | `destroyed` | A call after `destroy` that changes state or adds a listener; `getSnapshot`, a second `destroy` and unsubscribe functions stay safe |
 - **Runtime failures are events**, never throws: `provider-load-failed`, `provider-auth-failed`, `route-failed`. For the first two, `loadState` becomes `error` and `whenReady()` rejects.
+- **Your own code failing while the map draws**: an `icon` or `content` function, or `sanitize`, that throws or returns something other than a Node is an `invalid-input` error event naming the location and field, with what was thrown as `cause`, once until that `icon`, `content` or `html` changes. The map stays ready and draws the default marker, or opens no popup. The store catches it, so every adapter behaves alike.
 - **When capabilities are checked**: before `attach` the store skips capability checks (other misuse still throws); `attach` checks the current state against the adapter and throws; afterwards each call checks before changing anything. The adapter's `routeStopLimit` is checked the same way. Applying changes to the map never throws.
 - **In the element**, where no caller can catch a throw, misuse sets the error state and dispatches `maplace-error`. Nothing fails silently.
 

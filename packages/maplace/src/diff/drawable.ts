@@ -1,15 +1,17 @@
 import type { Drawable } from "../drawable";
 import type { Location } from "../location";
 import type { MaplaceOptions } from "../options";
-import { contentRenderer, sameContentSource } from "./content";
+import { type ContentContext, contentRenderer, sameContentSource } from "./content";
 import { geometryOf } from "./geometry";
 import { iconRenderer, sameIconSource } from "./icon";
 import { keepIfSame } from "./same";
 import { styleOf } from "./style";
 
-/** The store options drawables depend on; fixed for the life of a store. */
-export interface DrawContext {
-  readonly sanitize: MaplaceOptions["sanitize"];
+/**
+ * What drawables depend on besides the location: the store's options, and where the page's own
+ * code reports failing while an adapter draws. Fixed for one attachment.
+ */
+export interface DrawContext extends ContentContext {
   readonly style: MaplaceOptions["style"];
 }
 
@@ -35,7 +37,7 @@ export function toDrawable(
     style: keepIfSame(previous?.drawable.style, styleOf(location, context.style)),
     editable: location.editable ?? false,
     renderContent: contentRendererOf(location, previous, context),
-    renderIcon: iconRendererOf(location, previous),
+    renderIcon: iconRendererOf(location, previous, context),
   };
   return keepIfSame(previous?.drawable, drawable);
 }
@@ -47,14 +49,15 @@ function contentRendererOf(
 ): Drawable["renderContent"] {
   return previous !== undefined && sameContentSource(previous.location, location)
     ? previous.drawable.renderContent
-    : contentRenderer(location, context.sanitize);
+    : contentRenderer(location, context);
 }
 
 function iconRendererOf(
   location: Location,
   previous: DrawnLocation | undefined,
+  context: DrawContext,
 ): Drawable["renderIcon"] {
   return previous !== undefined && sameIconSource(previous.location, location)
     ? previous.drawable.renderIcon
-    : iconRenderer(location);
+    : iconRenderer(location, context);
 }

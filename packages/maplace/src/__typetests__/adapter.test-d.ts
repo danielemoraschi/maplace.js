@@ -23,6 +23,14 @@ drawable.data;
 // @ts-expect-error content arrives resolved, as a builder
 drawable.content;
 
+// A page's icon or content that failed builds nothing: draw the default marker, open no popup.
+declare const renderIcon: NonNullable<Drawable["renderIcon"]>;
+declare const renderContent: NonNullable<Drawable["renderContent"]>;
+// @ts-expect-error an icon builder may return undefined
+renderIcon({ selected: false, hovered: false }) satisfies Node;
+// @ts-expect-error a content builder may return undefined
+renderContent() satisfies Node;
+
 declare const adapter: Adapter;
 // Drawing is awaitable, so tests and `whenReady` know when a diff is on screen.
 adapter.apply({ added: [], updated: [], removed: [] }) satisfies Promise<void>;

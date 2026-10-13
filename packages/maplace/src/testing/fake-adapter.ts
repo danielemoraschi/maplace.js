@@ -1,106 +1,84 @@
-import type {
-  Adapter,
-  AdapterHost,
-  Capability,
-  LocationDiff,
-  MountContext,
-  PresentationState,
-} from "../adapter";
-import type { Route } from "../route";
-import type { ResolvedView } from "../viewport";
+import type { MountContext } from "../adapter";
+import { EVERY_CAPABILITY } from "./contract-values";
+import { createCamera } from "./fake/camera";
+import { createControl } from "./fake/control";
+import { createDrawing } from "./fake/drawing";
+import { createMapState } from "./fake/map-state";
+import { type MountedMap, mountMap } from "./fake/mounted-map";
+import { createProbe } from "./fake/probe";
+import { createRouting } from "./fake/route";
+import type { FakeAdapter, FakeAdapterOptions, FakeCall } from "./fake/types";
+import { MAP_SIZE } from "./map-probe";
+import { createRecorder } from "./recorder";
 
-const EVERY_CAPABILITY: readonly Capability[] = ["route", "cluster", "circle", "edit"];
-
-export interface FakeAdapterOptions {
-  /** Default: every capability. */
-  readonly capabilities?: readonly Capability[];
-  readonly routeStopLimit?: number;
-  /** Hold each `apply` until `finishApplies()`; by default it resolves at once. */
-  readonly holdApplies?: boolean;
-}
-
-/** One call the store made, in order. */
-export type FakeCall =
-  | { readonly method: "apply"; readonly diff: LocationDiff }
-  | { readonly method: "present"; readonly state: PresentationState }
-  | { readonly method: "setView"; readonly view: ResolvedView }
-  | { readonly method: "setRoute"; readonly route: Route | undefined };
+export type { FakeAdapter, FakeAdapterOptions, FakeCall } from "./fake/types";
 
 /**
- * An in-memory adapter that records what the store asks of it. Mounting waits for the test
- * (`finishMount`, `failMount`), so tests see every load state.
+ * An in-memory map behind the adapter contract, composed from `fake/`: it records the store's
+ * calls, draws into a map state its probe reads, and passes the conformance suite.
  */
-export interface FakeAdapter extends Adapter {
-  readonly calls: readonly FakeCall[];
-  readonly mounted: MountContext | undefined;
-  readonly destroyed: boolean;
-  /** The host from `mount`; throws before it. */
-  host(): AdapterHost;
-  finishMount(): Promise<void>;
-  failMount(error: unknown): Promise<void>;
-  finishApplies(): Promise<void>;
-  /** The calls of one method, as their arguments. */
-  callsOf<M extends FakeCall["method"]>(method: M): Extract<FakeCall, { method: M }>[];
-}
-
 export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter {
-  const calls: FakeCall[] = [];
-  const heldApplies: (() => void)[] = [];
-  let finishMount: () => void = () => {};
-  let failMount: (error: unknown) => void = () => {};
-  const mounting = new Promise<void>((resolve, reject) => {
-    finishMount = resolve;
-    failMount = reject;
-  });
-  let mounted: MountContext | undefined;
+  const recorder = createRecorder<FakeCall>();
+  const control = createControl();
+  const map = createMapState();
+  const camera = createCamera(MAP_SIZE);
+  const routing = createRouting();
+  let context: MountContext | undefined;
+  let mountedMap: MountedMap | undefined;
   let destroyed = false;
+  const drawing = createDrawing(map, () => destroyed);
+  const live = () => (destroyed ? undefined : mountedMap?.live());
+  const probe = createProbe({ map, live, camera, routing });
 
   return {
     capabilities: new Set(options.capabilities ?? EVERY_CAPABILITY),
     routeStopLimit: options.routeStopLimit,
-    calls,
+    calls: recorder.entries,
     get mounted() {
-      return mounted;
+      return context;
     },
     get destroyed() {
       return destroyed;
     },
-    mount(context) {
-      mounted = context;
-      return mounting;
+    mount(mountContext) {
+      context = mountContext;
+      mountedMap = mountMap(mountContext, map);
+      return control.mounting;
     },
     apply(diff) {
-      calls.push({ method: "apply", diff });
-      if (!options.holdApplies) return Promise.resolve();
-      return new Promise((resolve) => heldApplies.push(resolve));
+      recorder.record({ method: "apply", diff });
+      const drawn = drawing.apply(diff);
+      return options.holdApplies ? Promise.all([drawn, control.held()]).then(() => {}) : drawn;
     },
-    present: (state) => calls.push({ method: "present", state }),
-    setView: (view) => calls.push({ method: "setView", view }),
-    setRoute: (route) => calls.push({ method: "setRoute", route }),
-    mountControl: () => () => {},
+    present(state) {
+      recorder.record({ method: "present", state });
+      drawing.present(state);
+    },
+    setView(view) {
+      recorder.record({ method: "setView", view });
+      camera.show(view);
+    },
+    setRoute(route) {
+      recorder.record({ method: "setRoute", route });
+      routing.set(route);
+    },
+    mountControl(node) {
+      mountedMap?.layer?.append(node);
+      return () => node.remove?.();
+    },
     destroy() {
       destroyed = true;
+      map.entries.clear();
+      mountedMap?.layer?.remove();
     },
     host() {
-      if (mounted === undefined) throw new Error("not mounted yet");
-      return mounted.host;
+      if (context === undefined) throw new Error("not mounted yet");
+      return context.host;
     },
-    finishMount: () => settle(finishMount),
-    failMount: (error) => settle(() => failMount(error)),
-    finishApplies: () =>
-      settle(() => {
-        for (const resolve of heldApplies.splice(0)) resolve();
-      }),
-    callsOf<M extends FakeCall["method"]>(method: M) {
-      return calls.filter(
-        (call): call is Extract<FakeCall, { method: M }> => call.method === method,
-      );
-    },
+    finishMount: control.finishMount,
+    failMount: control.failMount,
+    finishApplies: control.finishApplies,
+    callsOf: recorder.entriesOf,
+    probe: () => probe,
   };
-}
-
-/** Runs `action`, then lets the promise callbacks it triggered run. */
-async function settle(action: () => void): Promise<void> {
-  action();
-  await new Promise((resolve) => setTimeout(resolve, 0));
 }

@@ -4,16 +4,19 @@ import type { Location } from "../location";
 import { contentRenderer, sameContentSource } from "./content";
 
 const at = { lat: 0, lng: 0 };
+const NO_REPORT = () => {};
 
 function render(location: Location, sanitize?: (html: string) => string): Node {
-  const renderContent = contentRenderer(location, sanitize);
-  if (renderContent === undefined) throw new Error("expected content");
-  return renderContent();
+  const node = contentRenderer(location, { sanitize, report: NO_REPORT })?.();
+  if (node === undefined) throw new Error("expected content");
+  return node;
 }
 
 describe("contentRenderer", () => {
   it("is undefined without content or html", () => {
-    expect(contentRenderer({ id: "a", ...at, title: "A" }, undefined)).toBeUndefined();
+    expect(
+      contentRenderer({ id: "a", ...at, title: "A" }, { sanitize: undefined, report: NO_REPORT }),
+    ).toBeUndefined();
   });
 
   it("renders a string as text, never as HTML", () => {
@@ -30,8 +33,8 @@ describe("contentRenderer", () => {
   it("calls a function with the location on each render", () => {
     const content = vi.fn((location: Location) => document.createTextNode(location.id));
     const location: Location = { id: "a", ...at, content };
-    const renderContent = contentRenderer(location, undefined);
-    expect(renderContent?.().textContent).toBe("a");
+    const renderContent = contentRenderer(location, { sanitize: undefined, report: NO_REPORT });
+    expect(renderContent?.()?.textContent).toBe("a");
     renderContent?.();
     expect(content).toHaveBeenCalledTimes(2);
     expect(content).toHaveBeenCalledWith(location);
@@ -41,7 +44,7 @@ describe("contentRenderer", () => {
     const sanitize = vi.fn((html: string) => html.replace(/<script.*<\/script>/, ""));
     const renderContent = contentRenderer(
       { id: "a", ...at, html: "<b>hi</b><script>x()</script>" },
-      sanitize,
+      { sanitize, report: NO_REPORT },
     );
     expect(sanitize).not.toHaveBeenCalled();
     const first = renderContent?.();
@@ -54,9 +57,39 @@ describe("contentRenderer", () => {
   });
 });
 
+describe("content that fails", () => {
+  it("shows no content and reports a throwing content function", () => {
+    const report = vi.fn();
+    const renderContent = contentRenderer(
+      { id: "a", ...at, content: () => "<b>not a node</b>" as unknown as Node },
+      { sanitize: undefined, report },
+    );
+    expect(renderContent?.()).toBeUndefined();
+    expect(report).toHaveBeenCalledWith(expect.objectContaining({ field: "content" }));
+  });
+
+  it("reports a sanitizer that throws, under html", () => {
+    const report = vi.fn();
+    const sanitize = () => {
+      throw new Error("sanitizer bug");
+    };
+    const renderContent = contentRenderer(
+      { id: "a", ...at, html: "<b>x</b>" },
+      { sanitize, report },
+    );
+    expect(renderContent?.()).toBeUndefined();
+    expect(report).toHaveBeenCalledWith(expect.objectContaining({ field: "html" }));
+  });
+});
+
 describe("contentRenderer without a sanitizer", () => {
   it("refuses html, even past validation", () => {
-    expect(() => contentRenderer({ id: "a", ...at, html: "<b>x</b>" }, undefined)).toThrow(
+    expect(() =>
+      contentRenderer(
+        { id: "a", ...at, html: "<b>x</b>" },
+        { sanitize: undefined, report: NO_REPORT },
+      ),
+    ).toThrow(
       expect.objectContaining({ code: "missing-sanitizer", locationId: "a", field: "html" }),
     );
   });

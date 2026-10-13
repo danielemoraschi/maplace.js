@@ -1,4 +1,4 @@
-import type { Adapter } from "../adapter";
+import type { Adapter, AdapterHost } from "../adapter";
 import type { MaplaceOptions } from "../options";
 import type { CommitHooks } from "../state/core";
 import { runSafely } from "../state/safely";
@@ -28,6 +28,7 @@ export interface Attacher<Data> extends CommitHooks<Data> {
 interface Connection {
   readonly adapter: Adapter;
   readonly controller: AbortController;
+  readonly host: AdapterHost;
   readonly checkSupport: SupportCheck;
   readonly sync: AdapterSync;
 }
@@ -39,7 +40,7 @@ export function createAttacher<Data>({
 }: AttachContext<Data>): Attacher<Data> {
   const loadStates = createLoadStates(state, readiness);
   const { getSnapshot } = state.store;
-  const draw = { sanitize: options?.sanitize, style: options?.style };
+  const drawOptions = { sanitize: options?.sanitize, style: options?.style };
   const popup = resolvePopup(options);
   const reports = createReports({ state, loadStates, openOn: popup.openOn });
   const cluster = options?.cluster ?? false;
@@ -50,8 +51,13 @@ export function createAttacher<Data>({
     const store = { attached: current !== undefined, cluster, snapshot: getSnapshot() };
     const checkSupport = checkAttachable({ adapter, container }, store);
     markUsed(adapter);
+    const controller = new AbortController();
+    const host = createHost(controller.signal, reports);
+    // The page's icon and content code runs while the adapter draws: its failures report as the
+    // adapter's would, and are ignored once detached.
+    const draw = { ...drawOptions, report: host.reportError };
     const sync = createAdapterSync({ adapter, getSnapshot, draw });
-    const connection = { adapter, controller: new AbortController(), checkSupport, sync };
+    const connection = { adapter, controller, host, checkSupport, sync };
     current = connection;
     loadStates.loading();
     void mount(connection, container);
@@ -63,9 +69,9 @@ export function createAttacher<Data>({
     const {
       adapter,
       controller: { signal },
+      host,
       sync,
     } = connection;
-    const host = createHost(signal, reports);
     try {
       // Awaited inside the try, so a mount that throws instead of rejecting fails the load too.
       await adapter.mount({ container, host, signal, cluster, popup });

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { type DrawContext, type DrawnLocation, toDrawable } from "./drawable";
 
-const CONTEXT: DrawContext = { sanitize: undefined, style: { stroke: "blue" } };
+const CONTEXT: DrawContext = { sanitize: undefined, style: { stroke: "blue" }, report: () => {} };
 const path = [
   { lat: 0, lng: 0 },
   { lat: 1, lng: 1 },

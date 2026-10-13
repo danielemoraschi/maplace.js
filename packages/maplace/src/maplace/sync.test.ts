@@ -7,7 +7,7 @@ import { createAdapterSync } from "./sync";
 
 const a: Location = { id: "a", lat: 0, lng: 0 };
 const b: Location = { id: "b", lat: 1, lng: 1 };
-const draw = { sanitize: undefined, style: undefined };
+const draw = { sanitize: undefined, style: undefined, report: () => {} };
 
 function setup(locations: Location[] = [a, b]) {
   let snapshot: Snapshot = initialSnapshot({ locations });

@@ -1,4 +1,4 @@
-import { MaplaceError, type MisuseCode } from "../errors";
+import { MaplaceError, type MaplaceErrorDetails, type MisuseCode } from "../errors";
 
 /**
  * A place in the input: the label that starts each message (`location "a"`, `setView`), the
@@ -31,9 +31,15 @@ export function reject(field: Field, problem: string, code: MisuseCode = "invali
 
 /** The error `reject` throws, for callers that hand it on instead (a rejected promise). */
 export function misuse(field: Field, problem: string, code: MisuseCode): MaplaceError {
-  const { label, locationId, path } = field;
-  const message = `${label}: ${[path, problem].filter(Boolean).join(" ")}`;
-  return new MaplaceError(code, message, { locationId, field: path === "" ? undefined : path });
+  return new MaplaceError(code, messageOf(field, problem), detailsOf(field));
+}
+
+/** `invalid-input` for page code that failed while maplace ran it; `cause` is what it threw. */
+export function pageCodeFailed(field: Field, problem: string, cause?: unknown): MaplaceError {
+  return new MaplaceError("invalid-input", messageOf(field, problem), {
+    ...detailsOf(field),
+    cause,
+  });
 }
 
 /** Throws "<path> must be <expected>, got <what it got>". */
@@ -53,6 +59,14 @@ export function describeValue(value: unknown): string {
     default:
       return String(value);
   }
+}
+
+function messageOf({ label, path }: Field, problem: string): string {
+  return `${label}: ${[path, problem].filter(Boolean).join(" ")}`;
+}
+
+function detailsOf({ locationId, path }: Field): MaplaceErrorDetails {
+  return { locationId, field: path === "" ? undefined : path };
 }
 
 function describeObject(value: object | null): string {

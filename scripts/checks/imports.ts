@@ -17,7 +17,7 @@ const LAYERS = {
     files: /^(geometry|style|location|options|route|viewport|popup|drawable|errors|events)$/,
   },
   validation: { files: /^validate\//, imports: ["data"] },
-  diff: { files: /^diff\//, imports: ["data", "contract"] },
+  diff: { files: /^diff\//, imports: ["data", "contract", "validation"] },
   state: { files: /^state\//, imports: ["data", "store", "validation", "diff"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
@@ -25,9 +25,24 @@ const LAYERS = {
     files: /^maplace\//,
     imports: ["data", "contract", "store", "state", "diff", "validation"],
   },
-  // The fake adapter stays at contract level; only the scenario helper sees the composed store.
-  testing: { files: /^testing\/(?!(mounted|lists)$)/, imports: ["data", "contract"] },
-  scenario: { files: /^testing\/mounted$/, imports: ["data", "contract", "maplace", "testing"] },
+  // Test support at contract level (the probe's types, the recorder); only the scenario helper
+  // sees the composed store.
+  testing: {
+    files: /^testing\/(?!(mounted|lists|fake-adapter)$|fake\/|conformance\/)/,
+    imports: ["data", "contract"],
+  },
+  // The fake adapter: an in-memory map, at contract level like any adapter.
+  fake: { files: /^testing\/(fake-adapter$|fake\/)/, imports: ["data", "contract", "testing"] },
+  // The conformance suite (T9) never sees the fake, so no check can lean on one adapter's code.
+  conformance: {
+    files: /^testing\/conformance\//,
+    imports: ["data", "contract", "testing"],
+    packages: ["vitest"],
+  },
+  scenario: {
+    files: /^testing\/mounted$/,
+    imports: ["data", "contract", "maplace", "testing", "fake"],
+  },
   // Test support for the list views: plain data and the view's own types.
   "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },
   view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
