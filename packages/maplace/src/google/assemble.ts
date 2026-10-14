@@ -5,6 +5,7 @@ import { createControls } from "./controls";
 import { createDrawing } from "./drawing";
 import { INERT_METHODS } from "./inert";
 import { mapClicks } from "./map-clicks";
+import { mapInitialised } from "./map-initialised";
 import { mapSourceFor } from "./map-source";
 import type { GoogleMapState } from "./map-state";
 import { createMapLifecycle } from "./mount";
@@ -42,6 +43,7 @@ export function assembleGoogleAdapter(
     source: mapSourceFor(options),
     state,
     parts,
+    verdict: mapInitialised,
     keyRefusal: pageAuthHook(),
   });
   const afterDrawing = () => {

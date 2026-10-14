@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { mapIdVerdict, VERDICT_WAIT_MS } from "./map-id-verdict";
+import { mapInitialised, VERDICT_WAIT_MS } from "./map-initialised";
 import { wait } from "./testing/map-waits";
 import { sizeable } from "./testing/sized-element";
 import type { StubMap } from "./testing/stub-libraries";
@@ -26,7 +26,7 @@ function pageMap({ hidden = false, drawnShowingMarkers }: PageMapState = {}) {
   if (drawnShowingMarkers === undefined) map.renderingType = "UNINITIALIZED";
   else map.capabilities = { isAdvancedMarkersAvailable: drawnShowingMarkers };
   let settled = false;
-  const verdict = mapIdVerdict(opened.mounted).then(() => {
+  const verdict = mapInitialised(opened.mounted).then(() => {
     settled = true;
   });
   const errors = () => opened.host.reportsOf("reportError");
@@ -36,7 +36,7 @@ function pageMap({ hidden = false, drawnShowingMarkers }: PageMapState = {}) {
 /** Lets settled promises run their callbacks. */
 const flush = () => wait(0);
 
-describe("mapIdVerdict", () => {
+describe("mapInitialised", () => {
   it("settles with nothing to report on a map that can show markers", async () => {
     const { map, verdict, errors } = pageMap();
     map.initialise({ isAdvancedMarkersAvailable: true });

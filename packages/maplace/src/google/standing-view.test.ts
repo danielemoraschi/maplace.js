@@ -14,80 +14,62 @@ const FIT: ResolvedView = {
 function standingOn() {
   const map = new StubMap(document.createElement("div"));
   const view = createStandingView(map as unknown as google.maps.Map);
-  return { map, view };
+  return { map, view, userInput: (type?: string) => map.userInput(type) };
 }
 
 describe("the standing view", () => {
-  it("is the view shown last, through the move that shows it", () => {
+  it("is the view shown last, through any move with no input, however late Google makes it", async () => {
     const { map, view } = standingOn();
     expect(view.standing()).toBeUndefined();
     view.shown(FIT);
+    // A move Google held back lands frames later, after any window maplace could wait.
+    await frames(3);
     map.trigger("center_changed");
     map.trigger("zoom_changed");
-    map.trigger("idle");
     expect(view.standing()).toBe(FIT);
   });
 
-  it("stands down when the map moves after that move, as the user moves it", () => {
-    const { map, view } = standingOn();
-    view.shown(FIT);
-    map.trigger("center_changed");
-    map.trigger("idle");
-    map.trigger("zoom_changed");
-    expect(view.standing()).toBeUndefined();
-    view.shown(FIT);
-    expect(view.standing()).toBe(FIT);
-  });
+  it.each(["pointerdown", "wheel", "keydown"])(
+    "stands down when the map moves after the user's %s on it",
+    (input) => {
+      const { map, view, userInput } = standingOn();
+      view.shown(FIT);
+      userInput(input);
+      map.trigger("zoom_changed");
+      expect(view.standing()).toBeUndefined();
+    },
+  );
 
   it("keeps standing when only the bounds change, as when the map is resized", () => {
-    const { map, view } = standingOn();
+    const { map, view, userInput } = standingOn();
     view.shown(FIT);
-    map.trigger("idle");
+    userInput("pointerdown");
     map.trigger("bounds_changed");
-    map.trigger("idle");
     expect(view.standing()).toBe(FIT);
   });
 
-  it("stands down when the user drags during the move", () => {
+  it("stands down when the user drags", () => {
     const { map, view } = standingOn();
     view.shown(FIT);
-    map.trigger("center_changed");
     map.trigger("dragstart");
     expect(view.standing()).toBeUndefined();
   });
 
-  it("ends a move to where the camera is, which no idle follows, after two frames", async () => {
-    const { map, view } = standingOn();
-    view.shown(FIT);
-    await frames(3);
-    map.trigger("center_changed");
-    expect(view.standing()).toBeUndefined();
-  });
-
-  it("stands down for a zoom the user makes while maplace's move is still settling", () => {
-    const { map, view } = standingOn();
-    view.shown(FIT);
-    map.trigger("center_changed");
-    map.getDiv().dispatchEvent(new WheelEvent("wheel"));
-    map.trigger("zoom_changed");
-    expect(view.standing()).toBeUndefined();
-  });
-
   it("keeps standing a view shown after the user's input, as a click on a marker selects", () => {
-    const { map, view } = standingOn();
-    map.getDiv().dispatchEvent(new Event("pointerdown"));
+    const { map, view, userInput } = standingOn();
+    userInput("pointerdown");
     view.shown(FIT);
     map.trigger("center_changed");
     expect(view.standing()).toBe(FIT);
   });
 
   it("stops listening when stopped", () => {
-    const { map, view } = standingOn();
+    const { map, view, userInput } = standingOn();
     view.shown(FIT);
-    map.trigger("idle");
     view.stop();
-    map.getDiv().dispatchEvent(new Event("keydown"));
+    userInput("keydown");
     map.trigger("center_changed");
+    map.trigger("dragstart");
     expect(view.standing()).toBe(FIT);
   });
 });

@@ -4,7 +4,7 @@ import type { AuthHook } from "./auth-hook";
 import { type GoogleLibraries, loadLibraries } from "./libraries";
 import type { MapInUse, MapSource } from "./map-source";
 import type { GoogleMapState } from "./map-state";
-import { type MapPart, mountMap, type OpenMap } from "./mounted-map";
+import { type MapPart, type MapVerdict, mountMap, type OpenMap } from "./mounted-map";
 import { keyRefusedError } from "./page-auth";
 
 export interface MapLifecycleParts {
@@ -12,13 +12,15 @@ export interface MapLifecycleParts {
   readonly state: GoogleMapState;
   /** What each tracker row adds to the open map, opened in this order. */
   readonly parts: readonly MapPart[];
+  /** What Google must answer, once the parts are open, before the mount resolves. */
+  readonly verdict: MapVerdict;
   /** Google refusing the page's key, which disables every map on the page. */
   readonly keyRefusal: AuthHook;
 }
 
 /**
  * Loads the libraries, then opens the map in the container unless the load was cancelled or the
- * adapter destroyed meanwhile, and opens each part on it, then waits for the source's verdict;
+ * adapter destroyed meanwhile, and opens each part on it, then waits for Google's verdict;
  * destroying closes it once. Measured on Maps JS 3.66: once Google refuses the key, its maps stop
  * working (`addListener` gives nothing, markers throw), so no map opens after a refusal, and an
  * open one is abandoned at it, left on the page with Google's message until destroyed.
@@ -27,6 +29,7 @@ export function createMapLifecycle({
   source,
   state,
   parts,
+  verdict,
   keyRefusal,
 }: MapLifecycleParts): Pick<Adapter, "mount" | "destroy"> {
   let open: OpenMap | undefined;
@@ -58,7 +61,7 @@ export function createMapLifecycle({
       state.mounted = mounted;
       mounted.onDestroy(keyRefusal.listen(keyRefused));
       for (const part of parts) part.open(mounted);
-      await source.verdict?.(mounted);
+      await verdict(mounted);
     },
     destroy() {
       destroyed = true;

@@ -59,11 +59,18 @@ export function page() {
   return { keyRefusal: createAuthHook(window), refuseKey: () => window.gm_authFailure?.() };
 }
 
-/** A map lifecycle on its own map state, with no parts or refusal unless given. */
+/** Google's verdict on a map it has already initialised: nothing to wait for. */
+const INITIALISED = () => Promise.resolve();
+
+/** A map lifecycle on its own map state, with no parts, wait or refusal unless given. */
 export function lifecycle(
   source: MapSource,
-  { parts = [], keyRefusal = page().keyRefusal }: Partial<MapLifecycleParts> = {},
+  {
+    parts = [],
+    verdict = INITIALISED,
+    keyRefusal = page().keyRefusal,
+  }: Partial<MapLifecycleParts> = {},
 ) {
   const state = createMapState();
-  return { state, ...createMapLifecycle({ source, state, parts, keyRefusal }) };
+  return { state, ...createMapLifecycle({ source, state, parts, verdict, keyRefusal }) };
 }

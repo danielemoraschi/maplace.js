@@ -14,11 +14,13 @@ const NO_MAP_ID =
   "(DEMO_MAP_ID for development)";
 
 /**
- * Whether the page's own map can show markers: Google refuses Advanced Markers on a map made
- * without a map ID. Settles once Google has said, at once for a hidden map, or after
+ * Waits for Google to initialise the map, then reports it if it can't show markers. Until then,
+ * measured on Maps JS 3.66, Google holds camera moves back and gives a click on a shape to the
+ * map. A map made without a map ID (only the page's own can be) gets no Advanced Markers.
+ * Settles once Google has said, at once for a hidden map (initialised only once shown), or after
  * `VERDICT_WAIT_MS`; a verdict that comes later is still reported, while the map is open.
  */
-export const mapIdVerdict: MapVerdict = (mounted) => {
+export const mapInitialised: MapVerdict = (mounted) => {
   const available = advancedMarkersAvailable(mounted);
   if (available === undefined) return new Promise((settle) => awaitVerdict(mounted, settle));
   if (!available) reportNoMapId(mounted);
@@ -31,14 +33,14 @@ function awaitVerdict(mounted: MountedMap, settle: () => void): void {
     stop();
     if (advancedMarkersAvailable(mounted) === false) reportNoMapId(mounted);
   });
-  const wait = setTimeout(settle, VERDICT_WAIT_MS);
+  const wait = hasSize(sizeOf(map.getDiv())) ? setTimeout(settle, VERDICT_WAIT_MS) : undefined;
   function stop(): void {
     listener.remove();
     clearTimeout(wait);
     settle();
   }
   mounted.onDestroy(stop);
-  if (!hasSize(sizeOf(map.getDiv()))) settle();
+  if (wait === undefined) settle();
 }
 
 /**

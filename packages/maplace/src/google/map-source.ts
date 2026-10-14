@@ -1,7 +1,5 @@
 /// <reference types="google.maps" />
 import type { GoogleLibraries } from "./libraries";
-import { mapIdVerdict } from "./map-id-verdict";
-import type { MapVerdict } from "./mounted-map";
 import { GOOGLE_COLOR_SCHEMES, type GoogleAdapterOptions } from "./options";
 
 /** A map in use, and how to give it back. */
@@ -13,8 +11,6 @@ export interface MapInUse {
 /** Where the map comes from: opened in the container once the libraries are loaded. */
 export interface MapSource {
   open(container: HTMLElement, libraries: GoogleLibraries): MapInUse;
-  /** What Google must answer about a map from this source before it counts as open. */
-  readonly verdict?: MapVerdict;
 }
 
 export function mapSourceFor(options: GoogleAdapterOptions): MapSource {
@@ -72,10 +68,7 @@ export function elementFilling(container: HTMLElement): HTMLElement {
   return element;
 }
 
-/**
- * The page's own map: drawn on as it is, and given back as the page made it. Only it can lack a
- * map ID (`mapId` is required for a map maplace creates).
- */
+/** The page's own map: drawn on as it is, and given back as the page made it. */
 function pageMapSource(map: google.maps.Map): MapSource {
-  return { open: () => ({ map, release() {} }), verdict: mapIdVerdict };
+  return { open: () => ({ map, release() {} }) };
 }

@@ -79,6 +79,19 @@ describeWithMaps("Google maps in hidden or resized containers", () => {
     });
   }
 
+  it("brings the store's view back on a resize after the page's code moved its own map", async () => {
+    const container = sizedContainer();
+    const map = pageMapIn(container);
+    const maplace = createMaplace({ locations: [ROME, LISBON] });
+    await onGoogle(maplace, { map, container });
+    await fitted(maplace);
+    const fittedZoom = map.getZoom() ?? 0;
+    map.moveCamera({ center: { lat: -30, lng: 120 }, zoom: fittedZoom + 2 });
+    container.style.width = `${container.offsetWidth / 2}px`;
+    await expect.poll(() => map.getZoom(), { timeout: TILES_TIMEOUT_MS }).toBeLessThan(fittedZoom);
+    expect(boxContains(map.getBounds()?.toJSON() ?? BOTH, BOTH)).toBe(true);
+  });
+
   it("keeps the view the user dragged to when the container is resized", async () => {
     const container = sizedContainer();
     const map = pageMapIn(container);

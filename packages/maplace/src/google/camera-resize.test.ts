@@ -28,7 +28,6 @@ describe("the Google camera on a hidden or resized map", () => {
   it("shows the standing view again on each resize", async () => {
     const { map, camera, resize } = opened();
     camera.setView(FIT);
-    map.trigger("idle");
     await resize(256);
     await resize(512);
     expect(map.fitBounds).toHaveBeenCalledTimes(3);
@@ -37,7 +36,7 @@ describe("the Google camera on a hidden or resized map", () => {
   it("keeps what the user chose on a resize after they moved the map", async () => {
     const { map, camera, resize } = opened();
     camera.setView(FIT);
-    map.trigger("idle");
+    map.userInput();
     map.trigger("center_changed");
     await resize(256);
     expect(map.fitBounds).toHaveBeenCalledOnce();
@@ -54,7 +53,6 @@ describe("the Google camera on a hidden or resized map", () => {
   it("stops watching the map on destroy", async () => {
     const { map, camera, resize, destroy } = opened();
     camera.setView(FIT);
-    map.trigger("idle");
     destroy();
     expect(latestResizeObserver().observed).toBe(false);
     await resize(256);

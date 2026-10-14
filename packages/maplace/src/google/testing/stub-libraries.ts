@@ -47,10 +47,14 @@ export class StubMap extends StubMVCObject {
     return this.capabilities;
   }
 
+  /** The user's input on the map: a press by default, or another input's type. */
+  userInput(type = "pointerdown"): void {
+    this.element.dispatchEvent(new Event(type));
+  }
+
   /** Google initialising the map, and with it saying what it can show. */
   initialise(capabilities: google.maps.MapCapabilities): void {
     this.capabilities = capabilities;
-    this.trigger("mapcapabilities_changed");
     this.renderingType = "RASTER";
     this.trigger("renderingtype_changed");
   }

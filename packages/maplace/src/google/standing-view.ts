@@ -1,10 +1,9 @@
 /// <reference types="google.maps" />
 import type { ResolvedView } from "../viewport";
-import { frames } from "./frames";
 
 /** The view the map was last moved to, while nothing else has moved it. */
 export interface StandingView {
-  /** The camera is being moved to `view`: it stands through that move. */
+  /** The camera is being moved to `view`: it stands from now on. */
   shown(view: ResolvedView): void;
   /** Undefined once the user moved the map: a resize then keeps what they chose. */
   standing(): ResolvedView | undefined;
@@ -15,27 +14,22 @@ export interface StandingView {
 const USER_INPUT = ["pointerdown", "wheel", "keydown"] as const;
 
 /**
- * Tells the store's moves from everyone else's on `map`. A move of the centre or zoom outside one
- * of maplace's is the user's (a drag, the wheel, the keyboard, the zoom buttons) or a popup's
- * autopan after it, which chose that view too; a resize changes only the bounds. Measured on
- * Maps JS 3.66: a move ends at its `idle`, except one to where the camera is, which fires
- * nothing at all, so a move that changed nothing in two frames has ended. A move can take half a
- * second to settle (tiles): a change after the user's input on the map (pointer, wheel, keys)
- * is theirs even then, unless maplace moved after that input, as a click on a marker selects.
+ * Tells the user's moves from everything else: a move counts as the user's only after their
+ * input on the map (or a drag), until the store shows a view. Google moves the camera without
+ * input too, and late: measured on Maps JS 3.66, a fit sent before Google has initialised the map
+ * is applied some frames after the call (about 24 ms here, longer on CI), so no time window can
+ * tell it from a user's move. A view shown after the user's input stands (a click on a marker
+ * selects it); a page's own code moving its map isn't the user's move either.
  */
 export function createStandingView(map: google.maps.Map): StandingView {
   let view: ResolvedView | undefined;
-  /** One of maplace's moves in progress, and whether the camera has changed during it. */
-  let move: { changed: boolean } | undefined;
   let userActed = false;
   const standDown = () => {
     view = undefined;
-    move = undefined;
   };
-  const changed = () => {
-    if (move) move.changed = true;
+  const moved = () => {
+    if (userActed) standDown();
   };
-  const moved = () => (move && !userActed ? changed() : standDown());
   const acted = () => {
     userActed = true;
   };
@@ -43,9 +37,7 @@ export function createStandingView(map: google.maps.Map): StandingView {
   const listeners = [
     map.addListener("center_changed", moved),
     map.addListener("zoom_changed", moved),
-    map.addListener("bounds_changed", changed),
     map.addListener("dragstart", standDown),
-    map.addListener("idle", () => (move = undefined)),
   ];
   for (const input of USER_INPUT)
     element.addEventListener(input, acted, { capture: true, passive: true });
@@ -54,11 +46,6 @@ export function createStandingView(map: google.maps.Map): StandingView {
     shown(next) {
       view = next;
       userActed = false;
-      const current = { changed: false };
-      move = current;
-      void frames(2).then(() => {
-        if (move === current && !current.changed) move = undefined;
-      });
     },
     standing: () => view,
     stop() {

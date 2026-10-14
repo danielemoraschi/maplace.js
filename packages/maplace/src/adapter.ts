@@ -93,7 +93,9 @@ export interface Adapter {
   /**
    * Moves the camera; `select` sends a `location` view unless `pan: false`. A view waits while the
    * container has no size (a closed tab or dialog), which reports no viewport either; once it has
-   * one, and after each resize, the last view is shown again unless the user moved the map since.
+   * one, and after each resize, the last view is shown again unless the user moved the map since
+   * (a move after their input on it, until a view is shown again; one with no input doesn't count,
+   * a page's code moving its own map for one).
    */
   setView(view: ResolvedView): void;
   setRoute(route: Route | undefined): void;

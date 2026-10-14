@@ -84,7 +84,7 @@ describe("createMapLifecycle", () => {
     const { part, openedOn } = recordingPart();
     let give: () => void = () => {};
     const verdict: MapVerdict = () => new Promise((resolve) => (give = resolve));
-    const { mount } = lifecycle({ ...source, verdict }, { parts: [part] });
+    const { mount } = lifecycle(source, { parts: [part], verdict });
     let mounted = false;
     finish();
     const mounting = mount(mountContext()).then(() => (mounted = true));
@@ -98,7 +98,7 @@ describe("createMapLifecycle", () => {
   it("resolves when destroyed while waiting for a verdict, the map closed", async () => {
     const { source, counts, finish } = heldMaps();
     const verdict: MapVerdict = (mounted) => new Promise((resolve) => mounted.onDestroy(resolve));
-    const { state, mount, destroy } = lifecycle({ ...source, verdict });
+    const { state, mount, destroy } = lifecycle(source, { verdict });
     finish();
     const mounting = mount(mountContext());
     await vi.waitFor(() => expect(state.mounted).toBeDefined());

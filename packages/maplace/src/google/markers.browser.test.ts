@@ -3,6 +3,7 @@ import { commands, userEvent } from "vitest/browser";
 import { adding, markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
+import { frames } from "./frames";
 import type { GoogleMapState } from "./map-state";
 import { mountedGoogle, pageMapIn, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -40,6 +41,10 @@ describeWithMaps("Google markers under real input", () => {
     await adapter.apply(adding(markerDrawable("a")));
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
+    // Google dispatches the click after the input, not during it.
+    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["a"]]);
+    // A second report, the map's, would come in the same dispatch.
+    await frames(2);
     expect(host.reportsOf("reportSelect")).toEqual([["a"]]);
     // The click focuses the marker too, but only keyboard focus hovers it.
     await userEvent.unhover(marker);
