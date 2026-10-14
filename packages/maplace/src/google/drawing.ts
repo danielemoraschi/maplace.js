@@ -58,8 +58,9 @@ export function createDrawing(state: GoogleMapState, placers: Placers): Drawing 
   }
 
   function removeAll(): void {
-    for (const placed of state.placed.values()) placed.remove();
+    const all = [...state.placed.values()];
     state.placed.clear();
+    for (const placed of all) placed.remove();
   }
 
   function reportFailure(cause: unknown): void {

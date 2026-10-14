@@ -21,10 +21,29 @@ export interface MapPart {
   open(mounted: MountedMap): void;
 }
 
+/**
+ * What Google must answer before the map counts as open: it reports a failure itself, and settles
+ * by the time the map closes.
+ */
+export type MapVerdict = (mounted: MountedMap) => Promise<void>;
+
 export interface OpenedMap {
   readonly inUse: MapInUse;
   readonly libraries: GoogleLibraries;
   readonly context: MountContext;
+}
+
+/** The map in use as parts see it, and how to close it. */
+export interface OpenMap {
+  readonly mounted: MountedMap;
+  /** Gives the map back, then runs the parts' teardowns, once. */
+  close(): void;
+  /**
+   * Lets go of a map Google disabled (it refused the key): the parts' teardowns run, each letting
+   * go of the map, and their failures to take off what Google no longer serves are left. The map
+   * stays, with Google's own message on it, until closed.
+   */
+  abandon(): void;
 }
 
 /**
@@ -32,26 +51,41 @@ export interface OpenedMap {
  * teardowns, last added first. A map maplace created is off the page by then, where Google takes
  * markers off it for free (on the page, each costs more the more markers it holds).
  */
-export function mountMap({ inUse, libraries, context }: OpenedMap): {
-  readonly mounted: MountedMap;
-  close(): void;
-} {
+export function mountMap({ inUse, libraries, context }: OpenedMap): OpenMap {
   const teardowns: (() => void)[] = [];
-  let closed = false;
+  let released = false;
+  let tornDown = false;
   const mounted: MountedMap = {
     map: inUse.map,
     libraries,
     popup: context.popup,
-    live: () => (closed || context.signal.aborted ? undefined : context.host),
+    live: () => (tornDown || context.signal.aborted ? undefined : context.host),
     onDestroy: (teardown) => teardowns.push(teardown),
   };
+
+  function tearDown(run: (teardown: () => void) => void): void {
+    if (tornDown) return;
+    tornDown = true;
+    for (const teardown of teardowns.splice(0).reverse()) run(teardown);
+  }
+
   return {
     mounted,
     close() {
-      if (closed) return;
-      closed = true;
-      inUse.release();
-      for (const teardown of teardowns.splice(0).reverse()) teardown();
+      if (!released) {
+        released = true;
+        inUse.release();
+      }
+      tearDown((teardown) => teardown());
     },
+    abandon: () => tearDown(ignoringFailure),
   };
+}
+
+function ignoringFailure(teardown: () => void): void {
+  try {
+    teardown();
+  } catch {
+    // Google disabled the map: what it held went with it.
+  }
 }

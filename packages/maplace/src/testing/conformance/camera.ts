@@ -116,11 +116,15 @@ export function cameraChecks(subject: ConformanceSubject): void {
 
     it("reports the viewport once a move settles, and not again without one", async () => {
       const mounted = await mountSubject(subject);
+      // Settled first: once the map opens, it reports the view it opens at, once.
+      await mounted.probe.settle();
+      const before = mounted.host.reportsOf("reportViewport").length;
+      expect(before).toBe(1);
       mounted.adapter.setView({ kind: "center", center: { lat: 0, lng: 0 }, zoom: 3 });
-      expect(mounted.host.reportsOf("reportViewport")).toEqual([]);
+      expect(mounted.host.reportsOf("reportViewport")).toHaveLength(before);
       await mounted.probe.settle();
       await mounted.probe.settle();
-      expect(mounted.host.reportsOf("reportViewport")).toHaveLength(1);
+      expect(mounted.host.reportsOf("reportViewport")).toHaveLength(before + 1);
     });
   });
 }

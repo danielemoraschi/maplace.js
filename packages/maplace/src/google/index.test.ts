@@ -31,6 +31,16 @@ describe("maplace/google", () => {
     expect(errors.mock.calls[0]?.[0].error).toMatchObject({ code: "provider-load-failed" });
   });
 
+  it("fails the load when Maps JS can't load a library, keeping Google's error", async () => {
+    const blocked = new Error("The Google Maps JavaScript API could not load.");
+    vi.stubGlobal("google", { maps: { importLibrary: () => Promise.reject(blocked) } });
+    const maplace = createMaplace();
+    const ready = maplace.whenReady();
+    maplace.attach(entry.createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), CONTAINER);
+    await expect(ready).rejects.toMatchObject({ code: "provider-load-failed", cause: blocked });
+    expect(maplace.getSnapshot().loadState).toBe("error");
+  });
+
   it("names the page's map element, for attach to check the container holds it", () => {
     const map = { getDiv: () => CONTAINER } as unknown as google.maps.Map;
     expect(entry.createGoogleAdapter({ mapId: "id", map }).pageMapElement).toBe(CONTAINER);

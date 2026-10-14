@@ -6,7 +6,12 @@ import { mountMap } from "../mounted-map";
 import { createPlacingSite } from "../placing-site";
 import { StubMap, stubLibraries } from "./stub-libraries";
 
-const CLICK_POPUPS: ResolvedPopupOptions = { maxWidth: undefined, offset: [0, 0], openOn: "click" };
+/** Popups that open on a click, as the store resolves them by default. */
+export const CLICK_POPUPS: ResolvedPopupOptions = {
+  maxWidth: undefined,
+  offset: [0, 0],
+  openOn: "click",
+};
 
 /**
  * A mounted map of stubs on happy-dom, as placing and drawing see it: its state, the host it

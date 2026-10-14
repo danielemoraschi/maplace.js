@@ -77,6 +77,12 @@ describe("checkGoogleOptions", () => {
     )(),
   );
 
+  it("takes a page's map Google disabled (no element), whose load then fails as refused", () => {
+    expect(() =>
+      checkGoogleOptions({ mapId: "id", map: { getDiv: () => undefined } }),
+    ).not.toThrow();
+  });
+
   it.each([
     ["mapOptions", { disableDefaultUI: true }],
     ["colorScheme", "dark"],

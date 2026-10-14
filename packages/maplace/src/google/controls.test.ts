@@ -18,7 +18,7 @@ function controlsOnStubs() {
     close();
     controls.release();
   };
-  return { map, controls, corner, open: () => controls.part.open(mounted), destroy };
+  return { map, controls, corner, open: () => controls.part.open(mounted), close, destroy };
 }
 
 const button = () => document.createElement("button");
@@ -100,5 +100,14 @@ describe("the Google adapter's controls", () => {
     mount(controls, "top-left");
     destroy();
     expect(corner("TOP_LEFT")).toEqual([pages]);
+  });
+
+  it("takes its controls off when the map closes, as when Google refuses the key", () => {
+    const { controls, corner, open, close } = controlsOnStubs();
+    open();
+    mount(controls, "top-left");
+    close();
+    mount(controls, "top-left");
+    expect(corner("TOP_LEFT")).toEqual([]);
   });
 });

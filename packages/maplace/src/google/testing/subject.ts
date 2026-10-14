@@ -52,7 +52,13 @@ export const PAGE_MAP_SUBJECT: ConformanceSubject = {
   create: (container) => googleParts({ ...TEST_OPTIONS, map: pageMapIn(container) }),
 };
 
-/** A map the page made in `container`, as a page would before attaching. */
-export function pageMapIn(container: HTMLElement): google.maps.Map {
-  return new google.maps.Map(elementFilling(container), createdMapOptions(TEST_OPTIONS));
+/** A map the page made in `container`, as a page would before attaching; `options` override. */
+export function pageMapIn(
+  container: HTMLElement,
+  options: google.maps.MapOptions = {},
+): google.maps.Map {
+  return new google.maps.Map(elementFilling(container), {
+    ...createdMapOptions(TEST_OPTIONS),
+    ...options,
+  });
 }

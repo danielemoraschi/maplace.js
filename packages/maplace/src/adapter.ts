@@ -76,7 +76,11 @@ export interface Adapter {
    * be it or hold it.
    */
   readonly pageMapElement?: HTMLElement | undefined;
-  /** Loads the provider and draws into the container. */
+  /**
+   * Loads the provider and draws into the container; resolves once the provider has said what it
+   * can say at load (Google: whether the page's map can show markers). A failure the provider
+   * reports later goes to `reportError`.
+   */
   mount(context: MountContext): Promise<void>;
   /**
    * Resolves once the diff is drawn and never rejects (failures go to `reportError`); `whenReady`

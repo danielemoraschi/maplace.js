@@ -1,74 +1,37 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { MountContext } from "../adapter";
-import { CONTAINER } from "../testing/container";
-import type { GoogleLibraries } from "./libraries";
-import type { MapInUse, MapSource } from "./map-source";
-import { createMapState } from "./map-state";
-import { createMapLifecycle } from "./mount";
-import type { MapPart, MountedMap } from "./mounted-map";
-import { stubMapsJs } from "./testing/stub-libraries";
+import type { MapVerdict } from "./mounted-map";
+import {
+  HELD_MAP,
+  heldMaps,
+  lifecycle,
+  mountContext,
+  recordingPart,
+} from "./testing/stub-lifecycle";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const map = {} as google.maps.Map;
-
-/** Maps JS whose libraries the test finishes loading, and a source counting opens and releases. */
-function heldMaps() {
-  let finish: () => void = () => {};
-  const loaded = new Promise<void>((resolve) => {
-    finish = resolve;
-  });
-  const libraries = stubMapsJs(loaded);
-  const counts = { opened: 0, released: 0 };
-  const opening: { libraries?: GoogleLibraries } = {};
-  const source: MapSource = {
-    open(_container, given): MapInUse {
-      counts.opened += 1;
-      opening.libraries = given;
-      return { map, release: () => (counts.released += 1) };
-    },
-  };
-  return { source, counts, finish, libraries, opening };
-}
-
-function mountContext(controller = new AbortController()) {
-  return { container: CONTAINER, signal: controller.signal } as MountContext;
-}
-
-/** A part that records the maps it was opened on. */
-function recordingPart() {
-  const openedOn: MountedMap[] = [];
-  const part: MapPart = { open: (mounted) => openedOn.push(mounted) };
-  return { part, openedOn };
-}
-
-function lifecycle(source: MapSource, parts: readonly MapPart[] = []) {
-  const state = createMapState();
-  return { state, ...createMapLifecycle({ source, state, parts }) };
-}
-
 describe("createMapLifecycle", () => {
   it("opens the map once the libraries are loaded, then opens each part on it", async () => {
     const { source, counts, finish, libraries, opening } = heldMaps();
     const { part, openedOn } = recordingPart();
-    const { state, mount } = lifecycle(source, [part]);
+    const { state, mount } = lifecycle(source, { parts: [part] });
     const mounting = mount(mountContext());
     await Promise.resolve();
     expect(counts.opened).toBe(0);
     finish();
     await mounting;
     expect(opening.libraries).toEqual(libraries);
-    expect(state.mounted?.map).toBe(map);
+    expect(state.mounted?.map).toBe(HELD_MAP);
     expect(openedOn).toEqual([state.mounted]);
   });
 
   it("opens nothing when the load is cancelled before it finishes", async () => {
     const { source, counts, finish } = heldMaps();
     const { part, openedOn } = recordingPart();
-    const { state, mount } = lifecycle(source, [part]);
+    const { state, mount } = lifecycle(source, { parts: [part] });
     const controller = new AbortController();
     const mounting = mount(mountContext(controller));
     controller.abort();
@@ -90,9 +53,11 @@ describe("createMapLifecycle", () => {
 
   it("closes the map once, however often it is destroyed, and forgets it first", async () => {
     const { source, counts, finish } = heldMaps();
-    const { state, mount, destroy } = lifecycle(source, [
-      { open: (mounted) => mounted.onDestroy(() => expect(state.mounted).toBeUndefined()) },
-    ]);
+    const { state, mount, destroy } = lifecycle(source, {
+      parts: [
+        { open: (mounted) => mounted.onDestroy(() => expect(state.mounted).toBeUndefined()) },
+      ],
+    });
     finish();
     await mount(mountContext());
     destroy();
@@ -112,5 +77,33 @@ describe("createMapLifecycle", () => {
       maps: { importLibrary: () => Promise.reject(new Error("blocked")) },
     });
     await expect(lifecycle(source).mount(mountContext())).rejects.toThrow("blocked");
+  });
+
+  it("resolves once Google's verdicts are in, the parts open before", async () => {
+    const { source, finish } = heldMaps();
+    const { part, openedOn } = recordingPart();
+    let give: () => void = () => {};
+    const verdict: MapVerdict = () => new Promise((resolve) => (give = resolve));
+    const { mount } = lifecycle({ ...source, verdict }, { parts: [part] });
+    let mounted = false;
+    finish();
+    const mounting = mount(mountContext()).then(() => (mounted = true));
+    await vi.waitFor(() => expect(openedOn).toHaveLength(1));
+    expect(mounted).toBe(false);
+    give();
+    await mounting;
+    expect(mounted).toBe(true);
+  });
+
+  it("resolves when destroyed while waiting for a verdict, the map closed", async () => {
+    const { source, counts, finish } = heldMaps();
+    const verdict: MapVerdict = (mounted) => new Promise((resolve) => mounted.onDestroy(resolve));
+    const { state, mount, destroy } = lifecycle({ ...source, verdict });
+    finish();
+    const mounting = mount(mountContext());
+    await vi.waitFor(() => expect(state.mounted).toBeDefined());
+    destroy();
+    await mounting;
+    expect(counts.released).toBe(1);
   });
 });

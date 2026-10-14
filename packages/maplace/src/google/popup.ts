@@ -16,8 +16,9 @@ export function createPopup(state: GoogleMapState): Popup {
       open(mounted) {
         session = startPopupSession(state, mounted);
         mounted.onDestroy(() => {
-          session?.end();
+          const ending = session;
           session = undefined;
+          ending?.end();
         });
         session.sync();
       },

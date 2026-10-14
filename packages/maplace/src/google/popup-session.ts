@@ -144,9 +144,9 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
   return {
     sync,
     end() {
-      window.close();
       track(undefined);
       announced = undefined;
+      window.close();
     },
   };
 }

@@ -17,25 +17,40 @@ interface StoreSite {
 interface Attachable {
   attach(adapter: Adapter, container: HTMLElement): () => void;
   whenReady(): Promise<void>;
+  on(name: "error", listener: (payload: { error: unknown }) => void): () => void;
 }
 
 /**
- * `maplace` attached to Google in a container on the page, detached and gone after the test; the
- * adapter is given back for what a page calls on it directly (`mountControl`).
+ * `maplace` attached to Google in a container on the page, detached and gone after the test,
+ * whether its load succeeds or not: the errors it emits, and how its load ended (`"ready"`, or
+ * what `whenReady` rejected with). The adapter is given back for what a page calls on it directly
+ * (`mountControl`).
  */
-export async function onGoogle<Store extends Attachable>(
+export function attachedToGoogle<Store extends Attachable>(
   maplace: Store,
   { map, container }: StoreSite = {},
 ) {
   const holder = container ?? (map?.getDiv().parentElement as HTMLElement) ?? sizedContainer();
+  const errors: unknown[] = [];
+  maplace.on("error", ({ error }) => errors.push(error));
+  const outcome = maplace.whenReady().then(
+    () => "ready",
+    (error: unknown) => error,
+  );
   const adapter = createGoogleAdapter({ ...TEST_OPTIONS, map });
   const detach = maplace.attach(adapter, holder);
   onTestFinished(() => {
     detach();
     holder.remove();
   });
+  return { maplace, container: holder, adapter, errors, outcome };
+}
+
+/** `maplace` attached to Google as `attachedToGoogle` does, once its load is ready. */
+export async function onGoogle<Store extends Attachable>(maplace: Store, site: StoreSite = {}) {
+  const attached = attachedToGoogle(maplace, site);
   await maplace.whenReady();
-  return { maplace, container: holder, adapter };
+  return attached;
 }
 
 /** Whether a reported centre is `at`, to four decimals of a degree. */

@@ -23,6 +23,10 @@ export class StubMap extends StubMVCObject {
   /** Google's control corners, one array per `ControlPosition` value (up to 24 in Maps JS 3.66). */
   readonly controls = Array.from({ length: 25 }, () => new StubMVCArray<HTMLElement>());
   shown: StubView | undefined;
+  /** Drawn already, as a map Google has initialised; `UNINITIALIZED` until Google has said more. */
+  renderingType = "RASTER";
+  /** What Google says the map can show; it reads `true` until Google knows, as Google's does. */
+  capabilities: google.maps.MapCapabilities = { isAdvancedMarkersAvailable: true };
 
   constructor(
     readonly element: HTMLElement,
@@ -33,6 +37,22 @@ export class StubMap extends StubMVCObject {
 
   getDiv(): HTMLElement {
     return this.element;
+  }
+
+  getRenderingType(): string {
+    return this.renderingType;
+  }
+
+  getMapCapabilities(): google.maps.MapCapabilities {
+    return this.capabilities;
+  }
+
+  /** Google initialising the map, and with it saying what it can show. */
+  initialise(capabilities: google.maps.MapCapabilities): void {
+    this.capabilities = capabilities;
+    this.trigger("mapcapabilities_changed");
+    this.renderingType = "RASTER";
+    this.trigger("renderingtype_changed");
   }
 
   getCenter() {
@@ -74,6 +94,9 @@ export const STUB_CONTROL_POSITIONS = {
   BOTTOM_RIGHT: 12,
 } as const;
 
+/** Google's `RenderingType` values (Maps JS 3.66). */
+const STUB_RENDERING_TYPES = { UNINITIALIZED: "UNINITIALIZED", RASTER: "RASTER", VECTOR: "VECTOR" };
+
 /** The libraries as the adapter loads them, made of the stubs above. */
 export function stubLibraries(): GoogleLibraries {
   return {
@@ -84,6 +107,7 @@ export function stubLibraries(): GoogleLibraries {
       Polyline: StubPolyline,
       Polygon: StubPolygon,
       InfoWindow: StubInfoWindow,
+      RenderingType: STUB_RENDERING_TYPES,
     },
     marker: { AdvancedMarkerElement: StubMarker },
   } as unknown as GoogleLibraries;

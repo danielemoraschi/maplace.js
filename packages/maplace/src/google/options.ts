@@ -54,14 +54,19 @@ function checkMapOptions(value: unknown, field: Field): void {
   }
 }
 
-/** Duck-typed, so checking never reads the `google` global: a map whose element is an element. */
+/**
+ * Duck-typed, so checking never reads the `google` global: a map whose element is an element, or
+ * that has none because Google disabled it (it refused the key), which its load then reports.
+ */
 function checkPageMap(value: unknown, field: Field): void {
   if (!isPageMap(value)) mustBe(field, "a Google map (google.maps.Map)", value);
 }
 
 function isPageMap(value: unknown): boolean {
   if (typeof value !== "object" || value === null || !("getDiv" in value)) return false;
-  return typeof value.getDiv === "function" && isElement(value.getDiv());
+  if (typeof value.getDiv !== "function") return false;
+  const element: unknown = value.getDiv();
+  return element === undefined || isElement(element);
 }
 
 const checkOptionFields: Assert<GoogleAdapterOptions> = recordOf<GoogleAdapterOptions>({

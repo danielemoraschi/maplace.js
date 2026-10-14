@@ -9,6 +9,7 @@ import { mapSourceFor } from "./map-source";
 import type { GoogleMapState } from "./map-state";
 import { createMapLifecycle } from "./mount";
 import type { GoogleAdapterOptions } from "./options";
+import { pageAuthHook } from "./page-auth";
 import { PLACERS } from "./placers";
 import { createPopup } from "./popup";
 import { createPresenting } from "./presenting";
@@ -23,7 +24,9 @@ const CAPABILITIES: readonly Capability[] = ["circle", "edit"];
 /**
  * One Google adapter from its parts, drawing into `state`, which its test probe reads too. The
  * popup follows what is drawn and presented, and a view may wait for a location to be drawn, so
- * each syncs after what it follows. Viewports are reported from before the first move.
+ * each syncs after what it follows. Viewports are reported from before the first move. The page's
+ * auth hook is taken over here, before the map opens: Google checks the key as its first map
+ * opens.
  */
 export function assembleGoogleAdapter(
   options: GoogleAdapterOptions,
@@ -35,7 +38,12 @@ export function assembleGoogleAdapter(
   const camera = createCamera(state, drawing);
   const controls = createControls();
   const parts = [mapClicks, viewportReports, drawing.part, camera.part, popup.part, controls.part];
-  const lifecycle = createMapLifecycle({ source: mapSourceFor(options), state, parts });
+  const lifecycle = createMapLifecycle({
+    source: mapSourceFor(options),
+    state,
+    parts,
+    keyRefusal: pageAuthHook(),
+  });
   const afterDrawing = () => {
     camera.sync();
     popup.sync();
