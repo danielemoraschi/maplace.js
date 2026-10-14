@@ -11,7 +11,7 @@ export interface MaplaceEvents<Data = unknown> {
   readonly hover: { readonly id: string | undefined };
   /** A drag or edit changed a location's geometry; the store already holds the new value. */
   readonly change: { readonly location: Location<Data>; readonly previous: Location<Data> };
-  /** A popup opened and its content is in the DOM. */
+  /** A popup opened and its content is in the DOM; again when an open popup gets new content. */
   readonly popupOpen: { readonly id: string; readonly element: HTMLElement };
   readonly popupClose: { readonly id: string };
   /** The visible area settled after a pan or zoom. */

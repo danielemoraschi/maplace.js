@@ -1,5 +1,6 @@
 /// <reference types="google.maps" />
 import type { AdapterHost, MountContext } from "../adapter";
+import type { ResolvedPopupOptions } from "../popup";
 import type { GoogleLibraries } from "./libraries";
 import type { MapInUse } from "./map-source";
 
@@ -7,6 +8,8 @@ import type { MapInUse } from "./map-source";
 export interface MountedMap {
   readonly map: google.maps.Map;
   readonly libraries: GoogleLibraries;
+  /** How popups open and where they sit, fixed for the life of the map. */
+  readonly popup: ResolvedPopupOptions;
   /** Whom to report to; undefined once the load is cancelled or the map closed. */
   live(): AdapterHost | undefined;
   /** Runs on destroy, the last added first: each part removes here what it added. */
@@ -38,6 +41,7 @@ export function mountMap({ inUse, libraries, context }: OpenedMap): {
   const mounted: MountedMap = {
     map: inUse.map,
     libraries,
+    popup: context.popup,
     live: () => (closed || context.signal.aborted ? undefined : context.host),
     onDestroy: (teardown) => teardowns.push(teardown),
   };

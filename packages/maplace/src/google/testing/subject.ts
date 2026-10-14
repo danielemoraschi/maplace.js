@@ -1,4 +1,4 @@
-import { mountSubject } from "../../testing/conformance/harness";
+import { type MountSettings, mountSubject } from "../../testing/conformance/harness";
 import type { ConformanceSubject } from "../../testing/conformance/subject";
 import { assembleGoogleAdapter } from "../assemble";
 import { createdMapOptions, elementFilling } from "../map-source";
@@ -14,6 +14,7 @@ const BUILT = [
   "lifecycle",
   "drawing",
   "presentation",
+  "popups",
   "reports",
   "editing",
 ] as const;
@@ -25,9 +26,13 @@ export function googleParts(options = TEST_OPTIONS) {
 }
 
 /** A Google adapter mounted as the store would, taken down after the test (`unmountAll`). */
-export async function mountedGoogle(options: GoogleAdapterOptions = TEST_OPTIONS) {
+export async function mountedGoogle(
+  options: GoogleAdapterOptions = TEST_OPTIONS,
+  settings?: MountSettings,
+) {
   const parts = googleParts(options);
-  return { state: parts.state, ...(await mountSubject({ name: "google", create: () => parts })) };
+  const mounted = await mountSubject({ name: "google", create: () => parts }, settings);
+  return { state: parts.state, ...mounted };
 }
 
 /** Google on a map it creates, for the conformance suite. */

@@ -1,4 +1,5 @@
 import type { LatLng } from "../../geometry";
+import { arcSpan, wrapLongitude } from "../../longitude-arc";
 import type { Bounds } from "../../viewport";
 import type { MapSize } from "../map-probe";
 
@@ -31,27 +32,22 @@ export function boundsAround({ center, zoom }: Camera, size: MapSize): Bounds {
   return {
     south: latOf(middle + halfHeight),
     north: latOf(middle - halfHeight),
-    west: whole ? -180 : wrapped(center.lng - halfWidth),
-    east: whole ? 180 : wrapped(center.lng + halfWidth),
+    west: whole ? -180 : wrapLongitude(center.lng - halfWidth),
+    east: whole ? 180 : wrapLongitude(center.lng + halfWidth),
   };
 }
 
 /** The camera that shows all of `box`, at a whole zoom; a box with west > east crosses ±180°. */
 export function fitBox(box: Bounds, { size, padding }: Fit): Camera {
-  const span = box.west > box.east ? box.east + 360 - box.west : box.east - box.west;
+  const span = arcSpan(box);
   const top = yOf(box.north);
   const bottom = yOf(box.south);
   const across = Math.log2((size.width - 2 * padding) / ((span / 360) * TILE_SIZE));
   const down = Math.log2((size.height - 2 * padding) / ((bottom - top) * TILE_SIZE));
   return {
-    center: { lat: latOf((top + bottom) / 2), lng: wrapped(box.west + span / 2) },
+    center: { lat: latOf((top + bottom) / 2), lng: wrapLongitude(box.west + span / 2) },
     zoom: clampedZoom(Math.floor(Math.min(across, down))),
   };
-}
-
-/** A longitude brought into -180..180. */
-export function wrapped(lng: number): number {
-  return ((((lng + 180) % 360) + 360) % 360) - 180;
 }
 
 /** A latitude as a fraction of the world's height from the top, 0 to 1. */

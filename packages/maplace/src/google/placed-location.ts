@@ -1,6 +1,6 @@
 /// <reference types="google.maps" />
 import type { Drawable } from "../drawable";
-import type { Geometry } from "../geometry";
+import type { Geometry, LatLng } from "../geometry";
 import type { LocationState } from "../location";
 import type { HoverReports } from "./hover";
 import type { MountedMap } from "./mounted-map";
@@ -11,7 +11,15 @@ export interface Look {
   readonly visible: boolean;
 }
 
+/** Where a location's popup points: at a marker, which it follows, or at a point. */
+export type PopupPlace =
+  | { readonly anchor: google.maps.marker.AdvancedMarkerElement }
+  | { readonly position: LatLng };
+
 interface Placed {
+  /** The drawable it shows now. */
+  drawable(): Drawable;
+  popupPlace(): PopupPlace;
   /** Redraws only what the new drawable changed; its type is the same (the contract's rule). */
   update(drawable: Drawable): void;
   present(look: Look): void;

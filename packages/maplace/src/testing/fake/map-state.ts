@@ -1,7 +1,7 @@
 import type { PresentationState } from "../../adapter";
 import { NOTHING_PRESENTED } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
-import type { Geometry, LatLng } from "../../geometry";
+import type { Geometry } from "../../geometry";
 import { frontFirst } from "../map-probe";
 
 /** One location as the fake map shows it; its state and visibility follow `presented`. */
@@ -32,18 +32,6 @@ export function isVisible(map: MapState, id: string): boolean {
 /** A shown location, or undefined when it isn't drawn or is hidden. */
 export function shownEntry(map: MapState, id: string): MapEntry | undefined {
   return isVisible(map, id) ? map.entries.get(id) : undefined;
-}
-
-/** Where a location is pinned: a marker's point, a circle's centre, a path's first point. */
-export function anchorOf(geometry: Geometry): LatLng {
-  switch (geometry.type) {
-    case "marker":
-      return { lat: geometry.lat, lng: geometry.lng };
-    case "circle":
-      return geometry.center;
-    default:
-      return geometry.path[0] ?? { lat: 0, lng: 0 };
-  }
 }
 
 /** The shown locations, front first, by where the fake stacked them. */

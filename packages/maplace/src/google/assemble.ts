@@ -9,6 +9,7 @@ import { placeMarker } from "./marker";
 import { createMapLifecycle } from "./mount";
 import type { GoogleAdapterOptions } from "./options";
 import type { Placers } from "./placed-location";
+import { createPopup } from "./popup";
 import { createPresenting } from "./presenting";
 import { SHAPE_PLACERS } from "./shape";
 
@@ -20,19 +21,27 @@ const PLACERS: Placers = { marker: placeMarker, ...SHAPE_PLACERS };
  */
 const CAPABILITIES: readonly Capability[] = ["circle", "edit"];
 
-/** One Google adapter from its parts, drawing into `state`, which its test probe reads too. */
+/**
+ * One Google adapter from its parts, drawing into `state`, which its test probe reads too. The
+ * popup follows what is drawn and presented, so it syncs after each.
+ */
 export function assembleGoogleAdapter(
   options: GoogleAdapterOptions,
   state: GoogleMapState,
 ): Adapter {
   const drawing = createDrawing(state, PLACERS);
-  const parts = [mapClicks, drawing.part];
+  const present = createPresenting(state);
+  const popup = createPopup(state);
+  const parts = [mapClicks, drawing.part, popup.part];
   return {
     capabilities: new Set(CAPABILITIES),
     pageMapElement: options.map?.getDiv(),
     ...INERT_METHODS,
-    apply: drawing.apply,
-    present: createPresenting(state),
+    apply: (diff) => drawing.apply(diff).then(() => popup.sync()),
+    present(next) {
+      present(next);
+      popup.sync();
+    },
     ...createMapLifecycle({ source: mapSourceFor(options), state, parts }),
   };
 }

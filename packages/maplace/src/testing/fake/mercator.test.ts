@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boundsAround, fitBox, MAX_ZOOM, wrapped } from "./mercator";
+import { boundsAround, fitBox, MAX_ZOOM } from "./mercator";
 
 const size = { width: 512, height: 512 };
 
@@ -42,11 +42,5 @@ describe("fitBox", () => {
     expect(fitBox(point, { size, padding: 40 }).zoom).toBe(MAX_ZOOM);
     const world = { south: -60, west: -170, north: 60, east: 170 };
     expect(fitBox(world, { size, padding: 300 }).zoom).toBe(0);
-  });
-});
-
-describe("wrapped", () => {
-  it("brings longitudes into -180..180", () => {
-    expect([wrapped(190), wrapped(-190), wrapped(540), wrapped(20)]).toEqual([-170, 170, -180, 20]);
   });
 });

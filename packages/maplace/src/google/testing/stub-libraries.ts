@@ -2,6 +2,7 @@
 import { vi } from "vitest";
 import type { GoogleLibraries } from "../libraries";
 import { StubMVCObject } from "./stub-mvc";
+import { StubInfoWindow, StubSize } from "./stub-popups";
 import { StubCircle, StubPolygon, StubPolyline } from "./stub-shapes";
 
 /** A Google map as far as the adapter uses one: its element, its options and its listeners. */
@@ -37,7 +38,14 @@ customElements.define("stub-advanced-marker", StubMarker);
 /** The libraries as the adapter loads them, made of the stubs above. */
 export function stubLibraries(): GoogleLibraries {
   return {
-    maps: { Map: StubMap, Circle: StubCircle, Polyline: StubPolyline, Polygon: StubPolygon },
+    core: { Size: StubSize },
+    maps: {
+      Map: StubMap,
+      Circle: StubCircle,
+      Polyline: StubPolyline,
+      Polygon: StubPolygon,
+      InfoWindow: StubInfoWindow,
+    },
     marker: { AdvancedMarkerElement: StubMarker },
   } as unknown as GoogleLibraries;
 }

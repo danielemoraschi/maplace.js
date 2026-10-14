@@ -1,7 +1,10 @@
 import type { AdapterHost } from "../../adapter";
+import { createPopupChoice } from "../../adapter-kit/popup-choice";
+import { type PopupContent, popupContent, popupStep } from "../../adapter-kit/popup-content";
+import type { Drawable } from "../../drawable";
 import type { ResolvedPopupOptions } from "../../popup";
 import type { ShownPopup } from "../map-probe";
-import { type MapState, shownEntry } from "./map-state";
+import type { MapState } from "./map-state";
 
 /** Where popups open and whom they report to. */
 export interface PopupSettings {
@@ -23,22 +26,23 @@ export interface FakePopups {
   closeByUser(): void;
 }
 
-export function createPopups({ map, host, openOn, layer }: PopupSettings): FakePopups {
-  let shown: ShownPopup | undefined;
-  let dismissed: string | undefined;
+/** The open popup: which location, and its content. */
+interface OpenPopup extends ShownPopup, PopupContent {}
 
-  /** The location whose popup should show: the selected one, or the hovered one. */
-  function wish(): string | undefined {
-    const { selectedId, hoveredId } = map.presented;
-    return openOn === "click" ? selectedId : hoveredId;
+export function createPopups({ map, host, openOn, layer }: PopupSettings): FakePopups {
+  const choice = createPopupChoice(openOn);
+  let shown: OpenPopup | undefined;
+
+  /** The drawable whose popup should show, once it is drawn. */
+  function wanted(): Drawable | undefined {
+    const id = choice.wanted(map.presented);
+    return id === undefined ? undefined : map.entries.get(id)?.drawable;
   }
 
-  /** The wished-for location, unless the user closed its popup or it isn't shown. */
-  function popupToShow(): string | undefined {
-    const id = wish();
-    if (id !== dismissed) dismissed = undefined;
-    if (id === undefined || id === dismissed) return undefined;
-    return shownEntry(map, id) ? id : undefined;
+  /** `drawable`'s popup in the layer; none without content or without a DOM. */
+  function render(drawable: Drawable): OpenPopup | undefined {
+    const content = layer && popupContent(drawable, layer.ownerDocument);
+    return content && { id: drawable.id, ...content };
   }
 
   function close(): void {
@@ -48,26 +52,37 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
     shown = undefined;
   }
 
-  function open(id: string): void {
-    const content = shownEntry(map, id)?.drawable.renderContent?.();
-    if (content === undefined || layer === undefined) return;
-    const element = layer.ownerDocument.createElement("div");
-    element.append(content);
-    layer.append(element);
-    shown = { id, element };
-    host.reportPopupOpen(id, element);
+  function open(drawable: Drawable): void {
+    const popup = render(drawable);
+    if (popup === undefined) return;
+    layer?.append(popup.element);
+    shown = popup;
+    host.reportPopupOpen(popup.id, popup.element);
+  }
+
+  function refresh(current: OpenPopup, drawable: Drawable): void {
+    const popup = render(drawable);
+    if (popup === undefined) {
+      close();
+      return;
+    }
+    current.element.replaceWith(popup.element);
+    shown = popup;
+    host.reportPopupOpen(popup.id, popup.element);
   }
 
   return {
     shown: () => shown,
     settle() {
-      const next = popupToShow();
-      if (shown?.id === next) return;
+      const next = wanted();
+      const step = popupStep(shown, next);
+      if (step === "keep") return;
+      if (step === "refresh" && shown && next) return refresh(shown, next);
       close();
-      if (next !== undefined) open(next);
+      if (next) open(next);
     },
     closeByUser() {
-      dismissed = shown?.id;
+      if (shown) choice.dismiss(shown.id);
       close();
     },
   };

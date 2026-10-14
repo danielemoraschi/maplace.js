@@ -1,3 +1,4 @@
+import { arcSpan } from "../../longitude-arc";
 import type { Bounds } from "../../viewport";
 
 /**
@@ -16,8 +17,8 @@ export function lngSpanAt(zoom: number, width: number): number {
 }
 
 /** A box's width in degrees; a box with west > east crosses ±180°. */
-export function lngSpanOf({ west, east }: Bounds): number {
-  return west > east ? east + 360 - west : east - west;
+export function lngSpanOf(box: Bounds): number {
+  return arcSpan(box);
 }
 
 /** Whether `outer` holds all of `inner`, either of them possibly crossing ±180°. */

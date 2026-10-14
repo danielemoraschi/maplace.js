@@ -26,6 +26,8 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
 
   return {
     marker,
+    drawable: () => drawn,
+    popupPlace: () => ({ anchor: marker }),
     update(next) {
       if (next.geometry !== drawn.geometry) marker.position = pointOf(next);
       if (next.title !== drawn.title) marker.title = titleOf(next);

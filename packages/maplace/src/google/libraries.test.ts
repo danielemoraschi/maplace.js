@@ -24,9 +24,10 @@ describe("loadLibraries", () => {
     const importLibrary = vi.fn(async (name: string) => ({ name }));
     vi.stubGlobal("google", { maps: { importLibrary } });
     await expect(loadLibraries()).resolves.toEqual({
+      core: { name: "core" },
       maps: { name: "maps" },
       marker: { name: "marker" },
     });
-    expect(importLibrary.mock.calls).toEqual([["maps"], ["marker"]]);
+    expect(importLibrary.mock.calls).toEqual([["core"], ["maps"], ["marker"]]);
   });
 });

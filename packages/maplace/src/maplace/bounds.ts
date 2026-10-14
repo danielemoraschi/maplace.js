@@ -1,5 +1,6 @@
 import type { CircleGeometry } from "../geometry";
 import type { Location } from "../location";
+import { narrowestArc, wrapLongitude } from "../longitude-arc";
 import type { Bounds } from "../viewport";
 
 const EARTH_RADIUS_METRES = 6_371_008.8;
@@ -57,27 +58,4 @@ function includeCircle(extent: Extent, { center, radius }: CircleGeometry): void
   includePoint(extent, Math.max(south, -90), wrapLongitude(center.lng - longitudeSpan));
   includePoint(extent, Math.min(north, 90), wrapLongitude(center.lng + longitudeSpan));
   if (south <= -90 || north >= 90 || longitudeSpan >= 180) extent.everyLongitude = true;
-}
-
-/** The shortest arc holding every longitude: all of them but the widest gap between two. */
-function narrowestArc(longitudes: readonly number[]): { west: number; east: number } {
-  const sorted = Float64Array.from(longitudes).sort();
-  const first = sorted[0] ?? 0;
-  let previous = first;
-  let widestGap = 0;
-  let arc = { west: first, east: first };
-  for (const lng of sorted) {
-    if (lng - previous > widestGap) {
-      widestGap = lng - previous;
-      arc = { west: lng, east: previous };
-    }
-    previous = lng;
-  }
-  // `previous` is now the easternmost longitude. The gap across ±180 wins a tie, so the box
-  // crosses the antimeridian only when that is strictly narrower.
-  return first + 360 - previous >= widestGap ? { west: first, east: previous } : arc;
-}
-
-function wrapLongitude(lng: number): number {
-  return ((((lng + 180) % 360) + 360) % 360) - 180;
 }

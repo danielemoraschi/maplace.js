@@ -3,6 +3,7 @@ import { MaplaceError } from "../errors";
 
 /** The Maps JS libraries the adapter draws with. */
 export interface GoogleLibraries {
+  readonly core: google.maps.CoreLibrary;
   readonly maps: google.maps.MapsLibrary;
   readonly marker: google.maps.MarkerLibrary;
 }
@@ -20,11 +21,12 @@ export async function loadLibraries(): Promise<GoogleLibraries> {
         "js-api-loader) before attaching",
     );
   }
-  const [maps, marker] = await Promise.all([
+  const [core, maps, marker] = await Promise.all([
+    google.maps.importLibrary("core"),
     google.maps.importLibrary("maps"),
     google.maps.importLibrary("marker"),
   ]);
-  return { maps, marker };
+  return { core, maps, marker };
 }
 
 function canImportLibraries(): boolean {

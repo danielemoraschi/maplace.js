@@ -28,18 +28,22 @@ export function probedMapState(): { state: GoogleMapState; probe: MapProbe } {
       map = next?.map ?? map;
     },
   });
-  return { state, probe: createGoogleProbe(targets, () => map) };
+  return { state, probe: createGoogleProbe({ state, targets, map: () => map }) };
 }
 
 function targetOf(placed: PlacedLocation): ProbeTarget {
   return "marker" in placed ? markerTarget(placed.marker) : shapeTarget(placed.shape);
 }
 
+/** What the probe reads: the adapter's state, a target per location placed, and the map opened. */
+interface ProbeSources {
+  readonly state: GoogleMapState;
+  readonly targets: Map<string, ProbeTarget>;
+  readonly map: () => google.maps.Map | undefined;
+}
+
 /** A user can reach only a location on a map and not hidden; Google adds it to the page later. */
-function createGoogleProbe(
-  targets: Map<string, ProbeTarget>,
-  map: () => google.maps.Map | undefined,
-): MapProbe {
+function createGoogleProbe({ state, targets, map }: ProbeSources): MapProbe {
   let pointedAt: ProbeTarget | undefined;
   const onMap = (id: string) => {
     const target = targets.get(id);
@@ -59,7 +63,10 @@ function createGoogleProbe(
           .filter(([, target]) => target.shown())
           .map(([id, target]) => ({ id, isMarker: target.isMarker, stack: target.stack() })),
       ),
-    shownPopup: () => undefined,
+    shownPopup() {
+      const popup = state.popup;
+      return popup?.infoWindow.isOpen ? { id: popup.id, element: popup.element } : undefined;
+    },
     click: (id) => reachable(id)?.click(),
     clickMap() {
       // Google's own click handler reads the event, so it needs one.
@@ -75,7 +82,19 @@ function createGoogleProbe(
       pointedAt = undefined;
     },
     drag: (id, geometry) => reachable(id)?.drag(geometry),
-    closePopup: () => {},
-    settle: () => Promise.resolve(),
+    closePopup() {
+      // As a click on its close button: Google closes the window, then says the user did.
+      const infoWindow = state.popup?.infoWindow;
+      infoWindow?.close();
+      if (infoWindow) google.maps.event.trigger(infoWindow, "closeclick");
+    },
+    async settle() {
+      const popup = state.popup;
+      if (popup === undefined || popup.shown) return;
+      // The adapter's own listener came first, so the open is reported by the time this runs.
+      await new Promise((resolve) =>
+        google.maps.event.addListenerOnce(popup.infoWindow, "domready", resolve),
+      );
+    },
   };
 }

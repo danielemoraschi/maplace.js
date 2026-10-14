@@ -1,8 +1,9 @@
 import type { AdapterHost } from "../../adapter";
+import { anchorOf } from "../../adapter-kit/anchor";
 import type { LatLng } from "../../geometry";
 import type { MapProbe } from "../map-probe";
 import type { FakeCamera } from "./camera";
-import { anchorOf, isVisible, type MapState, shownEntry, stackOrder } from "./map-state";
+import { isVisible, type MapState, shownEntry, stackOrder } from "./map-state";
 import type { LiveMap } from "./mounted-map";
 import type { FakeRouting } from "./route";
 

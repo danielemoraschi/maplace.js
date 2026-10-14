@@ -1,7 +1,18 @@
+/// <reference types="google.maps" />
 import type { PresentationState } from "../adapter";
 import { NOTHING_PRESENTED } from "../adapter-kit/presentation-changes";
 import type { MountedMap } from "./mounted-map";
 import type { PlacedLocation } from "./placed-location";
+
+/** The popup open on the map, as the probe reads it. */
+export interface ShownGooglePopup {
+  readonly id: string;
+  /** What holds the content, given to `popupOpen`. */
+  readonly element: HTMLElement;
+  readonly infoWindow: google.maps.InfoWindow;
+  /** Its content was reported in the DOM; until then, Google's `domready` is still to come. */
+  readonly shown: boolean;
+}
 
 /** What the adapter has on the map, shared with its probe; each row adds what it draws. */
 export interface GoogleMapState {
@@ -11,8 +22,9 @@ export interface GoogleMapState {
   readonly placed: Map<string, PlacedLocation>;
   /** The store's last presentation, which locations placed later take. */
   presented: PresentationState;
+  popup: ShownGooglePopup | undefined;
 }
 
 export function createMapState(): GoogleMapState {
-  return { mounted: undefined, placed: new Map(), presented: NOTHING_PRESENTED };
+  return { mounted: undefined, placed: new Map(), presented: NOTHING_PRESENTED, popup: undefined };
 }
