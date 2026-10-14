@@ -22,8 +22,15 @@ export interface PlacedMarker extends Placed {
   readonly marker: google.maps.marker.AdvancedMarkerElement;
 }
 
-/** One location on the Google map; shapes join with G3. */
-export type PlacedLocation = PlacedMarker;
+/** What Google draws a circle, polyline or polygon with. */
+export type GoogleShape = google.maps.Circle | google.maps.Polyline | google.maps.Polygon;
+
+export interface PlacedShape extends Placed {
+  readonly shape: GoogleShape;
+}
+
+/** One location on the Google map. */
+export type PlacedLocation = PlacedMarker | PlacedShape;
 
 /** What placing needs besides the drawable: the map, the look now, and what markers share. */
 export interface PlacingSite {
@@ -34,8 +41,8 @@ export interface PlacingSite {
   nextOrder(): number;
 }
 
-/** Puts one location on the map; undefined when its type isn't drawn yet. */
-export type Placer = (drawable: Drawable, site: PlacingSite) => PlacedLocation | undefined;
+/** Puts one location on the map. */
+export type Placer = (drawable: Drawable, site: PlacingSite) => PlacedLocation;
 
 /** A placer for every geometry type, so a type left out fails to compile. */
 export type Placers = Readonly<Record<Geometry["type"], Placer>>;

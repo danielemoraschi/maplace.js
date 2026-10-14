@@ -1,5 +1,5 @@
 import { afterEach, expect, it, onTestFinished } from "vitest";
-import { userEvent } from "vitest/browser";
+import { commands, userEvent } from "vitest/browser";
 import { adding, markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
@@ -9,7 +9,10 @@ import { describeWithMaps } from "./testing/with-maps";
 
 /** The marker Google drew for `id`, once it is on the page and has a size. */
 async function drawnMarker(state: GoogleMapState, id: string): Promise<HTMLElement> {
-  const marker = () => state.placed.get(id)?.marker;
+  const marker = () => {
+    const placed = state.placed.get(id);
+    return placed && "marker" in placed ? placed.marker : undefined;
+  };
   await expect.poll(() => (marker()?.getBoundingClientRect().width ?? 0) > 0).toBe(true);
   return marker() as HTMLElement;
 }
@@ -61,6 +64,21 @@ describeWithMaps("Google markers under real input", () => {
     await userEvent.keyboard("{Enter}");
     expect(host.reportsOf("reportHover")).toEqual([["a"]]);
     expect(host.reportsOf("reportSelect")).toEqual([["a"]]);
+  });
+
+  it("selects an editable marker on a click, and reports a drag of it once, on release", async () => {
+    const { adapter, state, host } = await mountedGoogle();
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, { editable: true })));
+    const marker = await drawnMarker(state, "a");
+    await userEvent.click(marker);
+    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["a"]]);
+    const box = marker.getBoundingClientRect();
+    const grabbed = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    await commands.pressMouse([grabbed, { x: grabbed.x + 80, y: grabbed.y - 40 }]);
+    await expect.poll(() => host.reportsOf("reportChange").length).toBe(1);
+    expect(host.reportsOf("reportChange")).toEqual([
+      ["a", { type: "marker", lat: expect.any(Number), lng: expect.any(Number) }],
+    ]);
   });
 
   it("leaves the page's own map as it was on destroy: its listeners, without maplace's markers", async () => {

@@ -1,6 +1,7 @@
 import { playwright } from "@vitest/browser-playwright";
 import { configDefaults, defineConfig } from "vitest/config";
 import { MAPS_TEST_PORT } from "./packages/maplace/src/google/testing/maps-origin.ts";
+import { MOUSE_COMMANDS } from "./packages/maplace/src/google/testing/mouse-commands.ts";
 
 // What only a real browser shows: layout, scrolling, focus, trusted input, the accessibility tree.
 const BROWSER_TESTS = "packages/maplace/src/**/*.browser.test.ts";
@@ -41,6 +42,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
+            commands: MOUSE_COMMANDS,
             instances: [{ browser: "chromium", viewport: { width: 1024, height: 768 } }],
           },
         },

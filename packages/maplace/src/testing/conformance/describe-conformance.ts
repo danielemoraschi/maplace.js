@@ -4,6 +4,7 @@ import { clusterChecks } from "./cluster";
 import { controlChecks } from "./controls";
 import { declarationChecks } from "./declarations";
 import { drawingChecks } from "./drawing";
+import { editingChecks } from "./editing";
 import { capabilitiesOf, unmountAll } from "./harness";
 import { lifecycleChecks } from "./lifecycle";
 import { popupChecks } from "./popups";
@@ -40,6 +41,7 @@ const GROUPS: Readonly<Record<ConformanceGroup, CheckGroup>> = {
   popups: popupChecks,
   camera: cameraChecks,
   reports: reportChecks,
+  editing: editingChecks,
   route: routeChecks,
   cluster: clusterChecks,
   controls: controlChecks,

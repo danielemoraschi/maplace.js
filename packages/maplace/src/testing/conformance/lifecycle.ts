@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adding, markerDrawable } from "./fixtures";
+import { adding, markerDrawable, polygonDrawable } from "./fixtures";
 import { mountSubject, startMount } from "./harness";
 import type { ConformanceSubject } from "./subject";
 
@@ -33,9 +33,10 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
     it("removes what it added on destroy, and reports nothing after", async () => {
       const mounted = await mountSubject(subject);
       const { adapter, container, pageChildren, probe, host, destroy } = mounted;
-      await adapter.apply(adding(markerDrawable("a")));
+      await adapter.apply(adding(markerDrawable("a"), polygonDrawable("p")));
       destroy();
       probe.click("a");
+      probe.click("p");
       probe.clickMap();
       await probe.settle();
       expect([...container.children]).toEqual(pageChildren);

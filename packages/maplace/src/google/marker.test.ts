@@ -101,11 +101,26 @@ describe("placeMarker", () => {
     expect(host.reportsOf("reportHover")).toEqual([["a"], [undefined], ["a"], [undefined]]);
   });
 
+  it("lets the user drag it only while it is editable", () => {
+    const { placed: a } = placed(markerDrawable("a", ORIGIN, { editable: true }));
+    expect(a.marker.gmpDraggable).toBe(true);
+    a.update(markerDrawable("a"));
+    expect(a.marker.gmpDraggable).toBe(false);
+  });
+
+  it("reports where a drag left it, as Google gives the position after one", () => {
+    const { placed: a, host } = placed(markerDrawable("a", ORIGIN, { editable: true }));
+    a.marker.position = { lat: 3, lng: 4, altitude: 0 } as google.maps.LatLngAltitudeLiteral;
+    a.marker.dispatchEvent(new Event("gmp-dragend"));
+    expect(host.reportsOf("reportChange")).toEqual([["a", { type: "marker", lat: 3, lng: 4 }]]);
+  });
+
   it("reports nothing once the load is cancelled", () => {
     const { placed: a, host, controller } = placed();
     controller.abort();
     a.marker.dispatchEvent(new Event("gmp-click"));
     a.marker.dispatchEvent(new Event("pointerenter"));
+    a.marker.dispatchEvent(new Event("gmp-dragend"));
     expect(host.reports).toEqual([]);
   });
 });

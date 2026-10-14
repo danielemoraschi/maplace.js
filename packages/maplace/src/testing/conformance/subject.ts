@@ -10,6 +10,7 @@ export type ConformanceGroup =
   | "popups"
   | "camera"
   | "reports"
+  | "editing"
   | "route"
   | "cluster"
   | "controls";

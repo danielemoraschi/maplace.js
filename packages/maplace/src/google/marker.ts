@@ -9,9 +9,9 @@ import { reportMarkerInput } from "./marker-reports";
 import type { Look, PlacedMarker, PlacingSite } from "./placed-location";
 
 /**
- * One advanced marker: clickable and focusable, titled for screen readers, showing the page's
- * icon or Google's default pin, its `zIndex` the stacking rank (Google advises one on all markers
- * or none). Each change redoes only what it touches. A hidden marker stays on the map, out of
+ * One advanced marker: clickable and focusable, titled for screen readers, dragged by the user
+ * when `editable`, showing the page's icon or Google's default pin, its `zIndex` the stacking
+ * rank (Google advises one on all markers or none). Each change redoes only what it touches. A hidden marker stays on the map, out of
  * sight: Google re-indexes its clickable markers on every one taken off the map, which costs
  * about 7 ms with 1,000 on it and 130 ms with 4,000 (Maps JS 3.66), while `hidden` is free.
  */
@@ -30,6 +30,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       if (next.geometry !== drawn.geometry) marker.position = pointOf(next);
       if (next.title !== drawn.title) marker.title = titleOf(next);
       if (next.renderIcon !== drawn.renderIcon) showIcon(marker, next, look.state);
+      if (next.editable !== drawn.editable) marker.gmpDraggable = next.editable;
       drawn = next;
     },
     present(next: Look) {
@@ -55,6 +56,7 @@ function newMarker(drawable: Drawable, site: PlacingSite, zIndex: number): Place
     position: pointOf(drawable),
     title: titleOf(drawable),
     gmpClickable: true,
+    gmpDraggable: drawable.editable,
     zIndex,
   });
   reportMarkerInput(marker, drawable.id, site);

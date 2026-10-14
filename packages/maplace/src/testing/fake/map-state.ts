@@ -2,6 +2,7 @@ import type { PresentationState } from "../../adapter";
 import { NOTHING_PRESENTED } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
 import type { Geometry, LatLng } from "../../geometry";
+import { frontFirst } from "../map-probe";
 
 /** One location as the fake map shows it; its state and visibility follow `presented`. */
 export interface MapEntry {
@@ -45,10 +46,11 @@ export function anchorOf(geometry: Geometry): LatLng {
   }
 }
 
-/** The shown markers, front first, by where the fake stacked them. */
+/** The shown locations, front first, by where the fake stacked them. */
 export function stackOrder(map: MapState): string[] {
-  return [...map.entries]
-    .filter(([id, entry]) => entry.geometry.type === "marker" && isVisible(map, id))
-    .sort(([, a], [, b]) => b.stack - a.stack)
-    .map(([id]) => id);
+  return frontFirst(
+    [...map.entries]
+      .filter(([id]) => isVisible(map, id))
+      .map(([id, { geometry, stack }]) => ({ id, isMarker: geometry.type === "marker", stack })),
+  );
 }

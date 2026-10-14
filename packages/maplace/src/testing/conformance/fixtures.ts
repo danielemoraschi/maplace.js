@@ -1,7 +1,7 @@
 import type { LocationDiff, PresentationState } from "../../adapter";
 import { NOTHING_PRESENTED } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
-import type { LatLng } from "../../geometry";
+import type { Geometry, LatLng } from "../../geometry";
 import type { LocationState } from "../../location";
 
 /** The number of locations a large diff has (RFC Numbers). */
@@ -20,6 +20,38 @@ export function circleDrawable(id: string, overrides?: Partial<Drawable>): Drawa
     geometry: { type: "circle", center: ORIGIN, radius: 1000 },
     ...overrides,
   };
+}
+
+export function polylineDrawable(id: string, overrides?: Partial<Drawable>): Drawable {
+  return {
+    ...plainDrawable(id),
+    geometry: { type: "polyline", path: [ORIGIN, { lat: 1, lng: 1 }] },
+    ...overrides,
+  };
+}
+
+/** A square around the origin with a square hole. */
+export function polygonDrawable(id: string, overrides?: Partial<Drawable>): Drawable {
+  return {
+    ...plainDrawable(id),
+    geometry: { type: "polygon", path: square(2), holes: [square(1)] },
+    ...overrides,
+  };
+}
+
+/** Where a user moves one corner of `polygonDrawable`'s hole. */
+export const MOVED_HOLE_CORNER: LatLng = { lat: 0.6, lng: 0.6 };
+
+/** `polygonDrawable`'s geometry with one corner of its hole moved, as a user's edit leaves it. */
+export function holeCornerMoved(): Geometry {
+  const hole = square(1);
+  hole[2] = MOVED_HOLE_CORNER;
+  return { type: "polygon", path: square(2), holes: [hole] };
+}
+
+/** `drawable` moved or reshaped, as the store hands over a location whose geometry changed. */
+export function reshaped(drawable: Drawable, geometry: Geometry): Drawable {
+  return { ...drawable, geometry };
 }
 
 /** `drawable` with popup content: a new text node each time, as a content function builds. */
@@ -60,6 +92,17 @@ export function iconRecorder() {
     return node;
   };
   return { states, node, renderIcon };
+}
+
+/** The corners of a square centred on the origin, `size` degrees across. */
+function square(size: number): LatLng[] {
+  const half = size / 2;
+  return [
+    { lat: -half, lng: -half },
+    { lat: -half, lng: half },
+    { lat: half, lng: half },
+    { lat: half, lng: -half },
+  ];
 }
 
 function plainDrawable(id: string): Omit<Drawable, "geometry"> {

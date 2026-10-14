@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { Geometry } from "../../geometry";
 import {
   adding,
   circleDrawable,
@@ -8,15 +7,19 @@ import {
   manyMarkers,
   markerDrawable,
   ORIGIN,
+  polygonDrawable,
+  polylineDrawable,
   presented,
   removing,
+  reshaped,
   updating,
 } from "./fixtures";
 import { mountSubject } from "./harness";
 import type { ConformanceSubject, Supports } from "./subject";
 
 export function drawingChecks(subject: ConformanceSubject, supports: Supports): void {
-  const editable = supports.has("edit");
+  const shapes = [polylineDrawable("l"), polygonDrawable("p")];
+  if (supports.has("circle")) shapes.push(circleDrawable("c"));
 
   describe("drawing", () => {
     it("resolves apply once its locations are drawn", async () => {
@@ -26,15 +29,29 @@ export function drawingChecks(subject: ConformanceSubject, supports: Supports): 
       expect(probe.location("a")?.geometry).toEqual({ type: "marker", lat: 1, lng: 2 });
     });
 
-    it.runIf(supports.has("circle"))(
-      "applies removals first: an id removed and added again takes its new type",
-      async () => {
-        const { adapter, probe } = await mountSubject(subject);
-        await adapter.apply(adding(markerDrawable("a")));
-        await adapter.apply({ added: [circleDrawable("a")], updated: [], removed: ["a"] });
-        expect(probe.location("a")?.geometry.type).toBe("circle");
-      },
-    );
+    it("applies removals first: an id removed and added again takes its new type", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(adding(markerDrawable("a")));
+      await adapter.apply({ added: [polygonDrawable("a")], updated: [], removed: ["a"] });
+      expect(probe.location("a")?.geometry.type).toBe("polygon");
+    });
+
+    it("draws each shape where its geometry says, holes included", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(adding(...shapes));
+      for (const shape of shapes)
+        expect(probe.location(shape.id)?.geometry).toEqual(shape.geometry);
+    });
+
+    it("reshapes a shape on update", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(adding(polygonDrawable("p")));
+      const triangle = [ORIGIN, { lat: 1, lng: 0 }, { lat: 0, lng: 1 }];
+      await adapter.apply(
+        updating(reshaped(polygonDrawable("p"), { type: "polygon", path: triangle })),
+      );
+      expect(probe.location("p")?.geometry).toEqual({ type: "polygon", path: triangle });
+    });
 
     it("moves and retitles a location on update", async () => {
       const { adapter, probe } = await mountSubject(subject);
@@ -62,20 +79,6 @@ export function drawingChecks(subject: ConformanceSubject, supports: Supports): 
       await drawing;
       expect(icon.states.slice(-1)).toEqual([{ selected: true, hovered: false }]);
     });
-
-    it.runIf(editable)(
-      "doesn't move a location again when the store writes back where a drag left it",
-      async () => {
-        const { adapter, probe, host } = await mountSubject(subject);
-        await adapter.apply(adding(markerDrawable("a", ORIGIN, { editable: true })));
-        const dragged: Geometry = { type: "marker", lat: 5, lng: 5 };
-        probe.drag("a", dragged);
-        await adapter.apply(updating(markerDrawable("a", { lat: 5, lng: 5 }, { editable: true })));
-        await probe.settle();
-        expect(host.reportsOf("reportChange")).toEqual([["a", dragged]]);
-        expect(probe.location("a")?.geometry).toEqual(dragged);
-      },
-    );
 
     it("yields to the event loop while drawing a large diff", async () => {
       const { adapter } = await mountSubject(subject);

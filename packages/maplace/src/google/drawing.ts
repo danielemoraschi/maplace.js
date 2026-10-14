@@ -43,8 +43,7 @@ export function createDrawing(state: GoogleMapState, placers: Placers): Drawing 
       placed.update(drawable);
       return;
     }
-    const created = placers[drawable.geometry.type](drawable, on);
-    if (created) state.placed.set(drawable.id, created);
+    state.placed.set(drawable.id, placers[drawable.geometry.type](drawable, on));
   }
 
   function remove(id: string): void {

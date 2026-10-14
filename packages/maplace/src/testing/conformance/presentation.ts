@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { adding, iconRecorder, markerDrawable, ORIGIN, presented, updating } from "./fixtures";
+import {
+  adding,
+  iconRecorder,
+  markerDrawable,
+  ORIGIN,
+  polygonDrawable,
+  polylineDrawable,
+  presented,
+  updating,
+} from "./fixtures";
 import { mountSubject } from "./harness";
 import type { ConformanceSubject } from "./subject";
 
@@ -13,6 +22,15 @@ export function presentationChecks(subject: ConformanceSubject): void {
       expect(probe.location("b")?.visible).toBe(true);
       adapter.present(presented({}));
       expect(probe.location("a")?.visible).toBe(true);
+    });
+
+    it("hides a shape, and shows it again", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(adding(polygonDrawable("p")));
+      adapter.present(presented({ hiddenIds: new Set(["p"]) }));
+      expect(probe.location("p")?.visible).toBe(false);
+      adapter.present(presented({}));
+      expect(probe.location("p")?.visible).toBe(true);
     });
 
     it("draws the icon the page built, for the state already presented", async () => {
@@ -78,6 +96,15 @@ export function presentationChecks(subject: ConformanceSubject): void {
       expect(probe.stackOrder()).toEqual(["b", "a", "d", "c"]);
       adapter.present(presented({ selectedId: "a", hiddenIds: new Set(["d"]) }));
       expect(probe.stackOrder()).toEqual(["a", "c", "b"]);
+    });
+
+    it("stacks shapes by the same rule, below every marker", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      const [p, q] = [polygonDrawable("p"), polygonDrawable("q")];
+      await adapter.apply(adding(markerDrawable("a"), p, q, polylineDrawable("r")));
+      expect(probe.stackOrder()).toEqual(["a", "r", "q", "p"]);
+      adapter.present(presented({ selectedId: "p", hoveredId: "q" }));
+      expect(probe.stackOrder()).toEqual(["a", "q", "p", "r"]);
     });
   });
 }

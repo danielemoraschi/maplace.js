@@ -10,12 +10,11 @@ import {
   updating,
 } from "../testing/conformance/fixtures";
 import { createDrawing } from "./drawing";
-import { NOT_YET_PLACED } from "./inert";
 import { createMapState } from "./map-state";
 import type { PlacedLocation, Placers } from "./placed-location";
 import { stubMounted } from "./testing/stub-site";
 
-/** Placers that record what they were asked to do, as "place a", "update a", "remove a". */
+/** Placers that record what they were asked to do, as "place marker a", "update a", "remove a". */
 function recordingPlacers() {
   const log: string[] = [];
   const placeRecorded = (drawable: Drawable): PlacedLocation =>
@@ -25,13 +24,11 @@ function recordingPlacers() {
       present: () => {},
       remove: () => log.push(`remove ${drawable.id}`),
     }) as unknown as PlacedLocation;
-  const placers: Placers = {
-    ...NOT_YET_PLACED,
-    marker: (drawable) => {
-      log.push(`place ${drawable.id}`);
-      return placeRecorded(drawable);
-    },
+  const place = (drawable: Drawable) => {
+    log.push(`place ${drawable.geometry.type} ${drawable.id}`);
+    return placeRecorded(drawable);
   };
+  const placers: Placers = { marker: place, circle: place, polyline: place, polygon: place };
   return { placers, log };
 }
 
@@ -62,21 +59,21 @@ describe("createDrawing", () => {
         removed: ["a"],
       }),
     ]);
-    expect(log).toEqual(["place a", "remove a", "place b", "place a"]);
+    expect(log).toEqual(["place marker a", "remove a", "place marker b", "place marker a"]);
   });
 
   it("updates a placed location in place", async () => {
     const { drawing, log, state } = openDrawing();
     await drawing.apply(adding(markerDrawable("a")));
     await drawing.apply(updating(markerDrawable("a")));
-    expect(log).toEqual(["place a", "update a"]);
+    expect(log).toEqual(["place marker a", "update a"]);
     expect([...state.placed.keys()]).toEqual(["a"]);
   });
 
-  it("skips the types not drawn yet", async () => {
-    const { drawing, state } = openDrawing();
+  it("places each location with the placer for its type", async () => {
+    const { drawing, log } = openDrawing();
     await drawing.apply(adding(circleDrawable("c"), markerDrawable("a")));
-    expect([...state.placed.keys()]).toEqual(["a"]);
+    expect(log).toEqual(["place circle c", "place marker a"]);
   });
 
   it("removes every location on destroy, and stops a diff still being drawn", async () => {
@@ -87,7 +84,7 @@ describe("createDrawing", () => {
     expect(state.placed.size).toBe(0);
     expect(log.filter((entry) => entry.startsWith("place")).length).toBeLessThan(1000);
     await drawing.apply(adding(markerDrawable("late")));
-    expect(log).not.toContain("place late");
+    expect(log).not.toContain("place marker late");
   });
 
   it("never rejects: a failure reaches the host, and later diffs still draw", async () => {
@@ -116,7 +113,7 @@ describe("createDrawing", () => {
     const { drawing, state, log } = openDrawing();
     await drawing.apply(adding(markerDrawable("a")));
     await drawing.apply(removing("a"));
-    expect(log).toEqual(["place a", "remove a"]);
+    expect(log).toEqual(["place marker a", "remove a"]);
     expect(state.placed.size).toBe(0);
   });
 });

@@ -32,14 +32,17 @@ export interface ShownPopup {
 export interface MapProbe {
   location(id: string): LocationOnMap | undefined;
   locationIds(): readonly string[];
-  /** The shown markers, front first. */
+  /** The shown locations, front first: markers, then shapes, which every map draws below them. */
   stackOrder(): readonly string[];
   shownPopup(): ShownPopup | undefined;
   click(id: string): void;
   clickMap(): void;
   pointerOver(id: string): void;
   pointerOut(): void;
-  /** Moves or reshapes a location; a no-op where the map doesn't let it be dragged. */
+  /**
+   * Moves or reshapes a location as a user would, one handle at a time; a no-op where the map
+   * doesn't let it be edited.
+   */
   drag(id: string, geometry: Geometry): void;
   closePopup(): void;
   /**
@@ -47,4 +50,19 @@ export interface MapProbe {
    * report it. Resolves at once when nothing is pending: a real map fires no idle event then.
    */
   settle(): Promise<void>;
+}
+
+/** A shown location as `stackOrder` ranks it. */
+export interface StackedLocation {
+  readonly id: string;
+  readonly isMarker: boolean;
+  /** Higher in front, among locations of its own layer. */
+  readonly stack: number;
+}
+
+/** `stackOrder`'s rule for every map: markers above shapes, each front first by its stack. */
+export function frontFirst(locations: readonly StackedLocation[]): string[] {
+  return [...locations]
+    .sort((a, b) => Number(b.isMarker) - Number(a.isMarker) || b.stack - a.stack)
+    .map(({ id }) => id);
 }

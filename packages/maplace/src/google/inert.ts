@@ -1,5 +1,4 @@
 import type { Adapter } from "../adapter";
-import type { Placers } from "./placed-location";
 
 type NotYetDrawn = "setView" | "setRoute" | "mountControl";
 
@@ -12,13 +11,4 @@ export const INERT_METHODS: Pick<Adapter, NotYetDrawn> = {
   setView: () => {},
   setRoute: () => {},
   mountControl: () => () => {},
-};
-
-const notPlaced = () => undefined;
-
-/** The location types not drawn yet: skipped until G3 places shapes. */
-export const NOT_YET_PLACED: Pick<Placers, "circle" | "polyline" | "polygon"> = {
-  circle: notPlaced,
-  polyline: notPlaced,
-  polygon: notPlaced,
 };

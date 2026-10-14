@@ -1,31 +1,20 @@
 /// <reference types="google.maps" />
 import { vi } from "vitest";
 import type { GoogleLibraries } from "../libraries";
-
-type Handler = (event: unknown) => void;
+import { StubMVCObject } from "./stub-mvc";
+import { StubCircle, StubPolygon, StubPolyline } from "./stub-shapes";
 
 /** A Google map as far as the adapter uses one: its element, its options and its listeners. */
-export class StubMap {
-  readonly #listeners = new Map<string, Set<Handler>>();
-
+export class StubMap extends StubMVCObject {
   constructor(
     readonly element: HTMLElement,
     readonly options: google.maps.MapOptions = {},
-  ) {}
+  ) {
+    super();
+  }
 
   getDiv(): HTMLElement {
     return this.element;
-  }
-
-  addListener(name: string, handler: Handler): google.maps.MapsEventListener {
-    const handlers = this.#listeners.get(name) ?? new Set();
-    this.#listeners.set(name, handlers.add(handler));
-    return { remove: () => handlers.delete(handler) };
-  }
-
-  /** Fires `name` as Google would, with an event like Google's. */
-  trigger(name: string, event: unknown = {}): void {
-    for (const handler of this.#listeners.get(name) ?? []) handler(event);
   }
 }
 
@@ -34,6 +23,7 @@ export class StubMarker extends HTMLElement {
   position: google.maps.LatLngLiteral | null = null;
   zIndex: number | null = null;
   gmpClickable = false;
+  gmpDraggable = false;
   map: unknown = null;
 
   constructor(options: google.maps.marker.AdvancedMarkerElementOptions = {}) {
@@ -47,7 +37,7 @@ customElements.define("stub-advanced-marker", StubMarker);
 /** The libraries as the adapter loads them, made of the stubs above. */
 export function stubLibraries(): GoogleLibraries {
   return {
-    maps: { Map: StubMap },
+    maps: { Map: StubMap, Circle: StubCircle, Polyline: StubPolyline, Polygon: StubPolygon },
     marker: { AdvancedMarkerElement: StubMarker },
   } as unknown as GoogleLibraries;
 }

@@ -9,7 +9,14 @@ import { probedMapState } from "./probe";
 export const TEST_OPTIONS: GoogleAdapterOptions = { mapId: "DEMO_MAP_ID" };
 
 /** The groups Google is built for; each row adds its own, and the last drops this list. */
-const BUILT = ["declarations", "lifecycle", "drawing", "presentation", "reports"] as const;
+const BUILT = [
+  "declarations",
+  "lifecycle",
+  "drawing",
+  "presentation",
+  "reports",
+  "editing",
+] as const;
 
 /** A new Google adapter, its probe, and the map state the adapter draws into. */
 export function googleParts(options = TEST_OPTIONS) {
