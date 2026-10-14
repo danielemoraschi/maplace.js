@@ -6,6 +6,7 @@ import type {
   MountContext,
   PresentationState,
 } from "../../adapter";
+import type { MapSize } from "../../adapter-kit/web-mercator";
 import type { Route } from "../../route";
 import type { ResolvedView } from "../../viewport";
 import type { MapProbe } from "../map-probe";
@@ -16,6 +17,11 @@ export interface FakeAdapterOptions {
   readonly routeStopLimit?: number;
   /** Hold each `apply` until `finishApplies()`; by default it resolves once drawn. */
   readonly holdApplies?: boolean;
+  /**
+   * The map's size, read from its container when it settles; by default `MAP_SIZE`. The
+   * conformance suite measures the container, so a hidden or resized one is seen.
+   */
+  readonly sizeOf?: (container: HTMLElement) => MapSize;
 }
 
 /** One call the store made, in order. */

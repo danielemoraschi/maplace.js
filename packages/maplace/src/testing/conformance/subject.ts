@@ -9,6 +9,7 @@ export type ConformanceGroup =
   | "presentation"
   | "popups"
   | "camera"
+  | "container"
   | "reports"
   | "editing"
   | "route"

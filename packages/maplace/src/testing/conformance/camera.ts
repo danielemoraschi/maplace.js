@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { Viewport } from "../../viewport";
 import { MAP_SIZE } from "../map-probe";
 import {
   adding,
@@ -9,8 +8,8 @@ import {
   squareAround,
   updating,
 } from "./fixtures";
-import { boxContains, FIT_MAX_ZOOM, lngSpanAt, lngSpanOf } from "./geo";
-import { type MountedSubject, mountSubject } from "./harness";
+import { boxContains, DEGREE_DIGITS, FIT_MAX_ZOOM, lngSpanAt, lngSpanOf } from "./geo";
+import { mountSubject, reportedViewport } from "./harness";
 import type { ConformanceSubject } from "./subject";
 
 /**
@@ -18,17 +17,6 @@ import type { ConformanceSubject } from "./subject";
  * 4,000 markers on it, Google took up to 2.4 s to settle a move (its `idle` waits for tiles).
  */
 const DRAWN_AHEAD = 1000;
-
-/** Two decimals of a degree: what providers agree on after their own rounding. */
-const DEGREE_DIGITS = 2;
-
-/** The viewport the map last reported; failing the check when it reported none. */
-function reportedViewport({ host }: MountedSubject): Viewport {
-  // A copy's `pop`: `.at(-1)` is ES2022, past the ES2020 target.
-  const viewport = [...host.reportsOf("reportViewport")].pop()?.[0];
-  if (viewport === undefined) throw new Error("expected the map to report a viewport");
-  return viewport;
-}
 
 export function cameraChecks(subject: ConformanceSubject): void {
   describe("camera", () => {

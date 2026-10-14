@@ -1,5 +1,6 @@
 import type { Adapter, Capability } from "../../adapter";
 import type { ResolvedPopupOptions } from "../../popup";
+import type { Viewport } from "../../viewport";
 import { sizedContainer } from "../container";
 import type { MapProbe } from "../map-probe";
 import { createRecordingHost, type RecordingHost } from "./recording-host";
@@ -57,6 +58,14 @@ export function startMount(
   const popup = { maxWidth: undefined, offset: [0, 0] as const, openOn };
   const mounting = adapter.mount({ container, host, signal: controller.signal, cluster, popup });
   return { adapter, probe, host, container, pageChildren, controller, mounting, destroy };
+}
+
+/** The viewport the map last reported; failing the check when it reported none. */
+export function reportedViewport({ host }: MountedSubject): Viewport {
+  // A copy's `pop`: `.at(-1)` is ES2022, past the ES2020 target.
+  const viewport = [...host.reportsOf("reportViewport")].pop()?.[0];
+  if (viewport === undefined) throw new Error("expected the map to report a viewport");
+  return viewport;
 }
 
 /** Takes down every map the last check mounted; `describeConformance` runs it after each. */

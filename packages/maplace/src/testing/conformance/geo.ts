@@ -8,6 +8,8 @@ import type { Bounds } from "../../viewport";
 
 /** The world's width in pixels at zoom 0: the contract's zoom scale. */
 const WORLD_WIDTH_AT_ZOOM_0 = 256;
+/** Two decimals of a degree: what providers agree on after their own rounding. */
+export const DEGREE_DIGITS = 2;
 /** The closest a fit zooms in, from the RFC: stated here, apart from any adapter's own constant. */
 export const FIT_MAX_ZOOM = 15;
 /** Degrees two expected values may differ by: rounding, not a different answer. */

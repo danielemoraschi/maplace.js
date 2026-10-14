@@ -1,6 +1,7 @@
 import { afterEach, describe } from "vitest";
 import { cameraChecks } from "./camera";
 import { clusterChecks } from "./cluster";
+import { containerChecks } from "./container";
 import { controlChecks } from "./controls";
 import { declarationChecks } from "./declarations";
 import { drawingChecks } from "./drawing";
@@ -40,6 +41,7 @@ const GROUPS: Readonly<Record<ConformanceGroup, CheckGroup>> = {
   presentation: presentationChecks,
   popups: popupChecks,
   camera: cameraChecks,
+  container: containerChecks,
   reports: reportChecks,
   editing: editingChecks,
   route: routeChecks,

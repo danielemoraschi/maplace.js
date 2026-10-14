@@ -205,7 +205,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 | Act on popup content once shown (#171) | `popupOpen` fires after the content is in the DOM, with the element |
 | React to zoom and pan (#195) | `viewport` event after each move ends |
 | Large data sets (#3, #54, #95, #174, #182) | See Performance below |
-| Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |
+| Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size: a view sent while it has none (a closed tab or dialog) waits, and no viewport is reported, until it is shown; once shown, and after each resize, the last view is shown again unless the user moved the map since (a fit stays fitted as a side panel opens; after a drag or zoom, a resize keeps what the user chose) |
 | Silent grey map on bad input (#63, #125, #145, #149, #175) | Validation per the error rules above |
 | Explicit centre overridden by fit (#18, #46) | An explicit `view` wins over `selectedId` and fit (see Shape) |
 | Marker stacking order (#60) | The hovered location stacks on top, then the selected one, otherwise in the order they were added (a reorder alone doesn't restack); no `zIndex` field |

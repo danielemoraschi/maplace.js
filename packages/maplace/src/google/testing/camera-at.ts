@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 import type { LatLng } from "../../geometry";
-import { frames, idle } from "./map-waits";
+import { frames } from "../frames";
+import { idle } from "./map-waits";
 
 /**
  * Moves a test map's camera and waits until it is drawn there. A map just created may still be

@@ -1,64 +1,17 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { FIT_MAX_ZOOM } from "../adapter-kit/camera-move";
-import type { Drawable } from "../drawable";
 import {
   markerDrawable,
   polygonDrawable,
   reshaped,
   squareAround,
 } from "../testing/conformance/fixtures";
-import { MAP_SIZE } from "../testing/map-probe";
-import { createCamera } from "./camera";
-import { createMapState } from "./map-state";
-import { PLACERS } from "./placers";
-import type { StubMap } from "./testing/stub-libraries";
-import { stubSite } from "./testing/stub-site";
+import { cameraOnStubs, opened } from "./testing/stub-camera";
+
+afterEach(() => vi.unstubAllGlobals());
 
 const A = markerDrawable("a", { lat: 10, lng: 20 });
-
-/**
- * A camera on a stub map of `MAP_SIZE`, before the map opens (as `mount` does: the state holds
- * the map from just before its parts open until destroy); `place` draws as `apply` would.
- */
-function cameraOnStubs() {
-  const state = createMapState();
-  const { mounted, close, site } = stubSite(state);
-  state.mounted = undefined;
-  const map = mounted.map as unknown as StubMap;
-  Object.defineProperty(map.getDiv(), "clientWidth", { value: MAP_SIZE.width });
-  Object.defineProperty(map.getDiv(), "clientHeight", { value: MAP_SIZE.height });
-  /** Diffs the store has applied, and how many of them are drawn. */
-  const drawing = { applied: 0, drawn: 0 };
-  const camera = createCamera(state, {
-    applied: () => drawing.applied,
-    drawnThrough: (count) => drawing.drawn >= count,
-  });
-  return {
-    map,
-    camera,
-    drawing,
-    open() {
-      state.mounted = mounted;
-      camera.part.open(mounted);
-    },
-    destroy() {
-      state.mounted = undefined;
-      close();
-    },
-    place(drawable: Drawable) {
-      state.placed.set(drawable.id, PLACERS[drawable.geometry.type](drawable, site));
-      camera.sync();
-    },
-    update: (drawable: Drawable) => state.placed.get(drawable.id)?.update(drawable),
-  };
-}
-
-function opened() {
-  const parts = cameraOnStubs();
-  parts.open();
-  return parts;
-}
 
 describe("the Google camera", () => {
   it("jumps to a centre and zoom", () => {

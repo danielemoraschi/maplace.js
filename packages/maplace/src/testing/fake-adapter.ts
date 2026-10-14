@@ -21,7 +21,8 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
   const recorder = createRecorder<FakeCall>();
   const control = createControl();
   const map = createMapState();
-  const camera = createCamera(MAP_SIZE);
+  const sizeOf = options.sizeOf;
+  const camera = createCamera(() => (context && sizeOf ? sizeOf(context.container) : MAP_SIZE));
   const routing = createRouting();
   let context: MountContext | undefined;
   let mountedMap: MountedMap | undefined;

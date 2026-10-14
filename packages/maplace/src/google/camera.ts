@@ -1,10 +1,14 @@
 /// <reference types="google.maps" />
-import { type CameraMove, type CameraSite, cameraMove } from "../adapter-kit/camera-move";
+import { type CameraSite, cameraMove } from "../adapter-kit/camera-move";
+import { hasSize, sizeOf } from "../adapter-kit/map-size";
 import type { MapSize } from "../adapter-kit/web-mercator";
 import type { ResolvedView } from "../viewport";
+import { moveTo } from "./camera-moves";
 import type { Drawing } from "./drawing";
+import { watchMapResizes } from "./map-resizes";
 import type { GoogleMapState } from "./map-state";
-import type { MapPart } from "./mounted-map";
+import type { MapPart, MountedMap } from "./mounted-map";
+import { createStandingView, type StandingView } from "./standing-view";
 
 /** The adapter's camera: a part on the open map, `setView`, and a `sync` after each `apply`. */
 export interface Camera {
@@ -21,58 +25,62 @@ interface WaitingView {
 }
 
 /**
- * Moves the map to the store's views. A view waits until the map opens, and a `location` view
- * until the diffs sent before it are drawn (its location may be moving, or placed anew under its
- * id), never for later ones; then it moves the camera once, and a newer view replaces it.
+ * Moves the map to the store's views. A view waits until the map opens and has a size, and a
+ * `location` view until the diffs sent before it are drawn (its location may be moving, or placed
+ * anew under its id), never for later ones; then it moves the camera once, and a newer view
+ * replaces it. A resize shows the last view again, unless the user has moved the map since.
  */
 export function createCamera(
   state: GoogleMapState,
   drawing: Pick<Drawing, "applied" | "drawnThrough">,
 ): Camera {
   let waiting: WaitingView | undefined;
+  let standing: StandingView | undefined;
 
   function sync(): void {
     const map = state.mounted?.map;
     if (map === undefined || waiting === undefined) return;
-    const move = cameraMove(waiting.view, siteFor(waiting, map));
+    const size = sizeOf(map.getDiv());
+    if (!hasSize(size)) return;
+    const move = cameraMove(waiting.view, siteFor(waiting, size));
     if (move === undefined) return;
+    standing?.shown(waiting.view);
     waiting = undefined;
     moveTo(map, move);
   }
 
+  function reapplyStandingView(): void {
+    const view = standing?.standing();
+    waiting ??= view && { view, diffsBefore: drawing.applied() };
+    sync();
+  }
+
+  function open({ map, onDestroy }: MountedMap): void {
+    const view = createStandingView(map);
+    standing = view;
+    const stopWatching = watchMapResizes(map, reapplyStandingView);
+    onDestroy(() => {
+      stopWatching();
+      view.stop();
+    });
+    sync();
+  }
+
   /** The map as `waiting` sees it: no location is known until the diffs before it are drawn. */
-  function siteFor({ diffsBefore }: WaitingView, map: google.maps.Map): CameraSite {
+  function siteFor({ diffsBefore }: WaitingView, size: MapSize): CameraSite {
     const drawn = drawing.drawnThrough(diffsBefore);
     return {
       geometryOf: (id) => (drawn ? state.placed.get(id)?.drawable().geometry : undefined),
-      size: () => sizeOf(map.getDiv()),
+      size: () => size,
     };
   }
 
   return {
-    part: { open: () => sync() },
+    part: { open },
     setView(view) {
       waiting = { view, diffsBefore: drawing.applied() };
       sync();
     },
     sync,
   };
-}
-
-function sizeOf(element: HTMLElement): MapSize {
-  return { width: element.clientWidth, height: element.clientHeight };
-}
-
-function moveTo(map: google.maps.Map, move: CameraMove): void {
-  switch (move.kind) {
-    case "fit":
-      map.fitBounds(move.bounds, move.padding);
-      return;
-    case "jump":
-      map.moveCamera({ center: move.center, zoom: move.zoom });
-      return;
-    case "pan":
-      // Google glides when the pan is shorter than the map, as 0.2's selection did.
-      map.panTo(move.center);
-  }
 }

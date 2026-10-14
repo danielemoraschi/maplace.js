@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { sizeOf } from "../../adapter-kit/map-size";
 import { describeConformance } from "../conformance/describe-conformance";
 import { adding, markerDrawable, presented, withContent } from "../conformance/fixtures";
 import { createRecordingHost } from "../conformance/recording-host";
@@ -8,7 +9,7 @@ import { createFakeAdapter } from "../fake-adapter";
 const fake: ConformanceSubject = {
   name: "fake",
   create() {
-    const adapter = createFakeAdapter();
+    const adapter = createFakeAdapter({ sizeOf });
     // The suite mounts as a page would: the fake's load finishes without a test holding it.
     void adapter.finishMount();
     return { adapter, probe: adapter.probe() };

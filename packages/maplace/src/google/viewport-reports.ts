@@ -1,4 +1,6 @@
 /// <reference types="google.maps" />
+
+import { hasSize, sizeOf } from "../adapter-kit/map-size";
 import type { Viewport } from "../viewport";
 import { latLngOf } from "./lat-lng";
 import type { MapPart } from "./mounted-map";
@@ -23,11 +25,18 @@ export const viewportReports: MapPart = {
   },
 };
 
-/** What the map shows; undefined until Google has drawn it. */
+/**
+ * What the map shows; undefined until Google has drawn it, and while it has no size: a hidden
+ * map shows nothing, and Google's bounds for it have no area.
+ */
 function viewportOf(map: google.maps.Map): Viewport | undefined {
+  if (!hasSize(sizeOf(map.getDiv()))) return undefined;
   const center = map.getCenter();
   const zoom = map.getZoom();
   const bounds = map.getBounds();
   if (center === undefined || zoom === undefined || bounds === undefined) return undefined;
-  return { center: latLngOf(center), zoom, bounds: bounds.toJSON() };
+  const box = bounds.toJSON();
+  // Bounds with no area: Google hasn't laid out a map just shown yet, which shows nothing either.
+  if (box.south === box.north || box.west === box.east) return undefined;
+  return { center: latLngOf(center), zoom, bounds: box };
 }
