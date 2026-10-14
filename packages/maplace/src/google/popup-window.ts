@@ -23,7 +23,7 @@ export interface PopupWindow {
   open(view: PopupView): void;
   /** New content in the open window, where it is. */
   refresh(element: HTMLElement): void;
-  /** Keeps up with a point that moved, as a shape's centre after an edit; anchors follow by themselves. */
+  /** Keeps up with a point that moved, as a shape's centre after an edit; anchors follow. */
   follow(place: PopupPlace): void;
   close(): void;
 }
@@ -44,7 +44,7 @@ export function createPopupWindow(mounted: MountedMap, events: PopupWindowEvents
     if ("position" in place) infoWindow.setPosition(place.position);
   }
 
-  /** Only when the user acted on the map: a selection from the list or the page keeps focus there. */
+  /** Only when the user acted on the map: a selection from the list or page keeps focus there. */
   const takesFocus = () => openOn === "click" && holdsFocus(mounted.map.getDiv());
 
   return {

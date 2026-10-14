@@ -11,6 +11,7 @@ import {
 import type { MountSettings } from "../testing/conformance/harness";
 import { unmountAll } from "../testing/conformance/harness";
 import type { GoogleMapState } from "./map-state";
+import { cameraAt } from "./testing/camera-at";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -83,9 +84,7 @@ describeWithMaps("Google popups under real input", () => {
     const top = withContent(markerDrawable("t", { lat: 5, lng: 0 }), "Top");
     const { adapter, state, outside } = await drawn([top], { openOn: "hover" });
     const map = state.mounted?.map as google.maps.Map;
-    const idle = new Promise((resolve) => google.maps.event.addListenerOnce(map, "idle", resolve));
-    map.setOptions({ center: { lat: 0, lng: 0 }, zoom: 6 });
-    await idle;
+    await cameraAt(map, { center: { lat: 0, lng: 0 }, zoom: 6 });
     let moves = 0;
     map.addListener("center_changed", () => moves++);
     adapter.present(presented({ hoveredId: "t" }));
@@ -102,6 +101,18 @@ describeWithMaps("Google popups under real input", () => {
     adapter.present(presented({ selectedId: "a" }));
     const element = await openedPopup(state);
     expect([element.querySelector("b"), element.textContent]).toEqual([null, "<b>bold</b>"]);
+  });
+
+  it("keeps a popup open through its location's type change, pointing at the new shape", async () => {
+    const { adapter, state, host } = await drawn([ALPHA]);
+    adapter.present(presented({ selectedId: "a" }));
+    await openedPopup(state);
+    const polygon = { ...ALPHA, geometry: polygonDrawable("a").geometry };
+    await adapter.apply({ added: [polygon], updated: [], removed: ["a"] });
+    await expect.poll(() => host.reportsOf("reportPopupOpen").length).toBe(2);
+    expect(state.popup?.infoWindow.isOpen).toBe(true);
+    expect(state.popup?.infoWindow.getPosition()?.toJSON()).toEqual({ lat: 0, lng: 0 });
+    expect(host.reportsOf("reportPopupClose")).toEqual([]);
   });
 
   it("points a shape's popup at its centre", async () => {

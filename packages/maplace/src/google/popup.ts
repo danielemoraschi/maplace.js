@@ -8,7 +8,7 @@ export interface Popup {
   sync(): void;
 }
 
-/** Popups for the map once it opens, ended when it closes; before and after, `sync` does nothing. */
+/** Popups for the map once it opens, ended when it closes; until then and after, no-ops. */
 export function createPopup(state: GoogleMapState): Popup {
   let session: PopupSession | undefined;
   return {

@@ -1,5 +1,10 @@
 import { createPopupChoice } from "../adapter-kit/popup-choice";
-import { type PopupContent, popupContent, popupStep } from "../adapter-kit/popup-content";
+import {
+  type PopupContent,
+  type PopupStep,
+  popupContent,
+  popupStep,
+} from "../adapter-kit/popup-content";
 import type { Geometry } from "../geometry";
 import type { GoogleMapState, ShownGooglePopup } from "./map-state";
 import type { MountedMap } from "./mounted-map";
@@ -14,8 +19,9 @@ export interface PopupSession {
   end(): void;
 }
 
-/** The open popup, and the geometry it last pointed at. */
+/** The open popup, the placed location it shows, and the geometry it last pointed at. */
 interface OpenPopup extends ShownGooglePopup, PopupContent {
+  readonly placed: PlacedLocation;
   shown: boolean;
   followed: Geometry;
 }
@@ -34,12 +40,30 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
   let announced: string | undefined;
 
   function sync(): void {
+    const placed = wantedLocation();
+    const step = stepTo(placed);
+    if (open === undefined || placed === undefined || step === "replace") replace(placed);
+    else if (step === "reopen") reopen(placed);
+    else if (step === "refresh") refresh(placed);
+    else follow(open, placed);
+  }
+
+  function wantedLocation(): PlacedLocation | undefined {
     const id = choice.wanted(state.presented);
-    const placed = id === undefined ? undefined : state.placed.get(id);
+    return id === undefined ? undefined : state.placed.get(id);
+  }
+
+  /** Every map's step, and Google's own: a location placed anew under its id moves the popup. */
+  function stepTo(placed: PlacedLocation | undefined): PopupStep | "reopen" {
     const step = popupStep(open, placed?.drawable());
-    if (step === "keep" && open && placed) follow(open, placed);
-    else if (step === "refresh" && placed) refresh(placed);
-    else replace(placed);
+    return step !== "replace" && placed !== open?.placed ? "reopen" : step;
+  }
+
+  /** Placed anew under its id, as after a type change: still open, on the new one. */
+  function reopen(placed: PlacedLocation): void {
+    const next = render(placed);
+    if (next === undefined) close();
+    else show(next);
   }
 
   /** A shape's popup moves with its centre after an edit; an unchanged geometry costs nothing. */
@@ -50,21 +74,26 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
     window.follow(placed.popupPlace());
   }
 
+  /** New content where the popup is: Google reports it in the DOM again. */
   function refresh(placed: PlacedLocation): void {
     const next = render(placed);
-    if (next === undefined) {
-      close();
-      return;
+    if (next === undefined) close();
+    else {
+      track(next);
+      window.refresh(next.element);
     }
-    track(next);
-    window.refresh(next.element);
   }
 
   function replace(placed: PlacedLocation | undefined): void {
     close();
     const next = placed && render(placed);
-    if (placed === undefined || next === undefined) return;
+    if (next !== undefined) show(next);
+  }
+
+  /** Opens `next` where its location is; Google reports its content in the DOM again. */
+  function show(next: OpenPopup): void {
     track(next);
+    const { placed } = next;
     window.open({
       element: next.element,
       place: placed.popupPlace(),
@@ -108,7 +137,8 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
     const content = popupContent(drawable, document);
     if (content === undefined) return undefined;
     const { infoWindow } = window;
-    return { id: drawable.id, ...content, infoWindow, shown: false, followed: drawable.geometry };
+    const followed = drawable.geometry;
+    return { id: drawable.id, ...content, infoWindow, placed, shown: false, followed };
   }
 
   return {

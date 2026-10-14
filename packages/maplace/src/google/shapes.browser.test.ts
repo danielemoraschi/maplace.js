@@ -13,6 +13,7 @@ import {
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import type { RecordingHost } from "../testing/conformance/recording-host";
+import { cameraAt } from "./testing/camera-at";
 import { inputOn } from "./testing/map-input";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -32,9 +33,7 @@ async function drawnOnMap(...drawables: Drawable[]) {
   });
   const map = mounted.state.mounted?.map as google.maps.Map;
   await mounted.adapter.apply(adding(...drawables));
-  const idle = new Promise((resolve) => google.maps.event.addListenerOnce(map, "idle", resolve));
-  map.setOptions({ center: ORIGIN, zoom: ZOOM });
-  await idle;
+  await cameraAt(map, { center: ORIGIN, zoom: ZOOM });
   return { ...mounted, input: await inputOn(map) };
 }
 

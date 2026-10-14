@@ -25,10 +25,8 @@ function popupsOn(drawables: Drawable[], settings: Partial<ResolvedPopupOptions>
   const state = createMapState();
   const { mounted, host, close } = stubMounted(state, settings);
   const site = createPlacingSite(mounted, state);
-  for (const drawable of drawables) {
-    const place = drawable.geometry.type === "polygon" ? SHAPE_PLACERS.polygon : placeMarker;
-    state.placed.set(drawable.id, place(drawable, site));
-  }
+  for (const drawable of drawables)
+    state.placed.set(drawable.id, placerFor(drawable)(drawable, site));
   const popup = createPopup(state);
   popup.part.open(mounted);
   return {
@@ -48,10 +46,20 @@ function popupsOn(drawables: Drawable[], settings: Partial<ResolvedPopupOptions>
       state.placed.delete(id);
       popup.sync();
     },
+    /** As a diff with a type change: removed, then placed again as its new type. */
+    replace(drawable: Drawable) {
+      state.placed.get(drawable.id)?.remove();
+      state.placed.set(drawable.id, placerFor(drawable)(drawable, site));
+      popup.sync();
+    },
     window: () => state.popup?.infoWindow as unknown as StubInfoWindow | undefined,
     /** Google's `domready`, which the stub fires in a microtask. */
     settled: () => new Promise((resolve) => setTimeout(resolve, 0)),
   };
+}
+
+function placerFor(drawable: Drawable) {
+  return drawable.geometry.type === "polygon" ? SHAPE_PLACERS.polygon : placeMarker;
 }
 
 /** What the window's last `open` was given. */
@@ -180,6 +188,22 @@ describe("createPopup", () => {
     ];
     popups.update({ ...polygon, geometry: { type: "polygon", path: moved } });
     expect(setPosition).toHaveBeenCalledWith({ lat: 11, lng: 11 });
+  });
+
+  it("moves an open popup to its location placed anew, as after a type change, without closing", async () => {
+    const popups = popupsOn([ALPHA]);
+    popups.present({ selectedId: "a" });
+    await popups.settled();
+    const window = popups.window();
+    popups.replace({ ...ALPHA, geometry: polygonDrawable("a").geometry });
+    await popups.settled();
+    expect(lastOpen(window)?.anchor).toBeNull();
+    expect(window?.get("position")).toEqual({ lat: 0, lng: 0 });
+    expect(popups.host.reportsOf("reportPopupClose")).toEqual([]);
+    expect(opened(popups.host)).toEqual([
+      ["a", "Alpha"],
+      ["a", "Alpha"],
+    ]);
   });
 
   it("closes on destroy and reports nothing after", async () => {

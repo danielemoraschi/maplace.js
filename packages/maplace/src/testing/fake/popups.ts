@@ -62,13 +62,12 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
 
   function refresh(current: OpenPopup, drawable: Drawable): void {
     const popup = render(drawable);
-    if (popup === undefined) {
-      close();
-      return;
+    if (popup === undefined) close();
+    else {
+      current.element.replaceWith(popup.element);
+      shown = popup;
+      host.reportPopupOpen(popup.id, popup.element);
     }
-    current.element.replaceWith(popup.element);
-    shown = popup;
-    host.reportPopupOpen(popup.id, popup.element);
   }
 
   return {
@@ -76,10 +75,11 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
     settle() {
       const next = wanted();
       const step = popupStep(shown, next);
-      if (step === "keep") return;
-      if (step === "refresh" && shown && next) return refresh(shown, next);
-      close();
-      if (next) open(next);
+      if (step === "refresh" && shown && next) refresh(shown, next);
+      else if (step === "replace") {
+        close();
+        if (next) open(next);
+      }
     },
     closeByUser() {
       if (shown) choice.dismiss(shown.id);
