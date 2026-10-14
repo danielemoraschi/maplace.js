@@ -1,6 +1,7 @@
 import type { LocationDiff, PresentationState } from "../../adapter";
 import { inChunks } from "../../adapter-kit/chunks";
 import { changedIds, stateIn } from "../../adapter-kit/presentation-changes";
+import { createOrderCounter, stackRank } from "../../adapter-kit/stacking";
 import type { Drawable } from "../../drawable";
 import type { MapEntry, MapState } from "./map-state";
 
@@ -17,6 +18,7 @@ export interface Drawing {
 export function createDrawing(map: MapState, stopped: () => boolean): Drawing {
   // Diffs draw in the order given, each after the last, however long one takes.
   let queue = Promise.resolve();
+  const nextOrder = createOrderCounter();
 
   async function draw({ added, updated, removed }: LocationDiff): Promise<void> {
     for (const id of removed) map.entries.delete(id);
@@ -30,8 +32,10 @@ export function createDrawing(map: MapState, stopped: () => boolean): Drawing {
   }
 
   function newEntry(drawable: Drawable): MapEntry {
-    const icon = drawable.renderIcon?.(stateIn(map.presented, drawable.id));
-    return { drawable, geometry: drawable.geometry, icon };
+    const state = stateIn(map.presented, drawable.id);
+    const order = nextOrder();
+    const icon = drawable.renderIcon?.(state);
+    return { drawable, geometry: drawable.geometry, icon, order, stack: stackRank(order, state) };
   }
 
   /** A new drawable for a drawn location: only what changed is redone, as on a real map. */
@@ -52,7 +56,10 @@ export function createDrawing(map: MapState, stopped: () => boolean): Drawing {
       map.presented = next;
       for (const id of changedIds(previous, next)) {
         const entry = map.entries.get(id);
-        if (entry) entry.icon = entry.drawable.renderIcon?.(stateIn(next, id));
+        if (entry === undefined) continue;
+        const state = stateIn(next, id);
+        entry.icon = entry.drawable.renderIcon?.(state);
+        entry.stack = stackRank(entry.order, state);
       }
     },
   };

@@ -18,4 +18,23 @@ describeWithMaps("a store on Google Maps", () => {
     expect(container.children).toHaveLength(0);
     container.remove();
   });
+
+  it("shows the store's markers, titled, and takes them off when detached", async () => {
+    const locations = [
+      { id: "rome", lat: 41.9, lng: 12.5, title: "Rome" },
+      { id: "milan", lat: 45.46, lng: 9.19, title: "Milan" },
+    ];
+    const maplace = createMaplace({ locations });
+    const container = sizedContainer();
+    const detach = maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
+    await maplace.whenReady();
+    const titles = () =>
+      [...container.querySelectorAll("gmp-advanced-marker")]
+        .map((marker) => marker.getAttribute("aria-label") ?? "")
+        .sort((a, b) => a.localeCompare(b));
+    await expect.poll(titles).toEqual(["Milan", "Rome"]);
+    detach();
+    expect(titles()).toEqual([]);
+    container.remove();
+  });
 });

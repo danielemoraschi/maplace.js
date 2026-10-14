@@ -1,3 +1,5 @@
+import { loadLibraries } from "../libraries";
+
 /**
  * The Maps JS the tests run against: numbered, so runs repeat. Google retires a numbered version
  * about a year after its release; the version check in `maps-loader.browser.test.ts` then fails.
@@ -9,9 +11,14 @@ const LOADED_CALLBACK = "__maplaceTestMapsLoaded";
 let loading: Promise<void> | undefined;
 let authFailed = false;
 
-/** Loads Maps JS once per page with the tests' key, as a page would with Google's script. */
+/**
+ * Loads Maps JS once per page with the tests' key, as a page would with Google's script, and the
+ * libraries the adapter uses, so tests can build maps and markers synchronously.
+ */
 export function loadMapsForTests(key: string): Promise<void> {
-  loading ??= injectMapsScript(key);
+  loading ??= injectMapsScript(key).then(async () => {
+    await loadLibraries();
+  });
   return loading;
 }
 

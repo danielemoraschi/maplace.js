@@ -1,5 +1,5 @@
 /// <reference types="google.maps" />
-import { loadLibrary } from "./libraries";
+import type { GoogleLibraries } from "./libraries";
 import { GOOGLE_COLOR_SCHEMES, type GoogleAdapterOptions } from "./options";
 
 /** A map in use, and how to give it back. */
@@ -8,9 +8,9 @@ export interface MapInUse {
   release(): void;
 }
 
-/** Where the map comes from: loaded first, then opened in the container at once. */
+/** Where the map comes from: opened in the container once the libraries are loaded. */
 export interface MapSource {
-  load(): Promise<(container: HTMLElement) => MapInUse>;
+  open(container: HTMLElement, libraries: GoogleLibraries): MapInUse;
 }
 
 export function mapSourceFor(options: GoogleAdapterOptions): MapSource {
@@ -40,11 +40,8 @@ export function createdMapOptions({
  */
 function createdMapSource(options: GoogleAdapterOptions): MapSource {
   return {
-    async load() {
-      const { Map: GoogleMap } = await loadLibrary("maps");
-      return (container) =>
-        openIn(container, (element) => new GoogleMap(element, createdMapOptions(options)));
-    },
+    open: (container, { maps }) =>
+      openIn(container, (element) => new maps.Map(element, createdMapOptions(options))),
   };
 }
 
@@ -53,10 +50,7 @@ function openIn(
   container: HTMLElement,
   create: (element: HTMLElement) => google.maps.Map,
 ): MapInUse {
-  const element = container.ownerDocument.createElement("div");
-  element.style.width = "100%";
-  element.style.height = "100%";
-  container.append(element);
+  const element = elementFilling(container);
   try {
     return { map: create(element), release: () => element.remove() };
   } catch (error) {
@@ -65,9 +59,16 @@ function openIn(
   }
 }
 
+/** A new element filling the container, where a map goes. */
+export function elementFilling(container: HTMLElement): HTMLElement {
+  const element = container.ownerDocument.createElement("div");
+  element.style.width = "100%";
+  element.style.height = "100%";
+  container.append(element);
+  return element;
+}
+
 /** The page's own map: drawn on as it is, and given back as the page made it. */
 function pageMapSource(map: google.maps.Map): MapSource {
-  return {
-    load: async () => () => ({ map, release() {} }),
-  };
+  return { open: () => ({ map, release() {} }) };
 }

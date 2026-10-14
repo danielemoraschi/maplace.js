@@ -9,6 +9,9 @@ export interface MapEntry {
   /** Where it is shown: the drawable's geometry, or where a drag left it. */
   geometry: Geometry;
   icon: Node | undefined;
+  /** Its place in the order added, and where it stacks now (higher in front). */
+  readonly order: number;
+  stack: number;
 }
 
 /** What is on the fake map: read by drawing, popups, the camera and the probe. */
@@ -42,16 +45,10 @@ export function anchorOf(geometry: Geometry): LatLng {
   }
 }
 
-/**
- * The shown markers, front first: hovered, then selected, the rest the later added in front. A
- * `Map` keeps insertion order, and a location removed and added again goes to the end.
- */
+/** The shown markers, front first, by where the fake stacked them. */
 export function stackOrder(map: MapState): string[] {
-  const { selectedId, hoveredId } = map.presented;
-  const lifted = (id: string) => (id === hoveredId ? 2 : Number(id === selectedId));
-  const shownMarkers = [...map.entries]
+  return [...map.entries]
     .filter(([id, entry]) => entry.geometry.type === "marker" && isVisible(map, id))
-    .map(([id]) => id)
-    .reverse();
-  return shownMarkers.sort((a, b) => lifted(b) - lifted(a));
+    .sort(([, a], [, b]) => b.stack - a.stack)
+    .map(([id]) => id);
 }

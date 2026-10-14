@@ -63,8 +63,9 @@ export function startMount(
 export function unmountAll(): void {
   for (const mounted of live.splice(0)) {
     mounted.controller.abort();
-    mounted.destroy();
+    // Off the page first, as when a page leaves: a provider then takes the map down unseen.
     mounted.container.remove();
+    mounted.destroy();
   }
 }
 

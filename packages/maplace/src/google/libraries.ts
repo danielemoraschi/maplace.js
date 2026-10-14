@@ -1,13 +1,18 @@
 /// <reference types="google.maps" />
 import { MaplaceError } from "../errors";
 
-type Libraries = google.maps.ImportLibraryMap;
+/** The Maps JS libraries the adapter draws with. */
+export interface GoogleLibraries {
+  readonly maps: google.maps.MapsLibrary;
+  readonly marker: google.maps.MarkerLibrary;
+}
 
 /**
- * A Maps JS library, from the Maps JS the page loaded (Google's bootstrap or js-api-loader put
- * `importLibrary` there). Google caches each library per page, so nothing is cached here.
+ * Every library the adapter needs, together, from the Maps JS the page loaded (Google's bootstrap
+ * or js-api-loader put `importLibrary` there). Google caches each library per page, so nothing is
+ * cached here.
  */
-export async function loadLibrary<K extends keyof Libraries>(name: K): Promise<Libraries[K]> {
+export async function loadLibraries(): Promise<GoogleLibraries> {
   if (!canImportLibraries()) {
     throw new MaplaceError(
       "provider-load-failed",
@@ -15,7 +20,11 @@ export async function loadLibrary<K extends keyof Libraries>(name: K): Promise<L
         "js-api-loader) before attaching",
     );
   }
-  return google.maps.importLibrary(name);
+  const [maps, marker] = await Promise.all([
+    google.maps.importLibrary("maps"),
+    google.maps.importLibrary("marker"),
+  ]);
+  return { maps, marker };
 }
 
 function canImportLibraries(): boolean {

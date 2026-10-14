@@ -1,16 +1,9 @@
 import { afterEach, expect, it, onTestFinished } from "vitest";
-import { mountSubject, unmountAll } from "../testing/conformance/harness";
+import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { createdMapOptions } from "./map-source";
-import type { GoogleAdapterOptions } from "./options";
-import { googleParts, TEST_OPTIONS } from "./testing/subject";
+import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
-
-/** A Google adapter mounted as the store would, taken down after the test. */
-async function mountedGoogle(options: GoogleAdapterOptions = TEST_OPTIONS) {
-  const parts = googleParts(options);
-  return { state: parts.state, ...(await mountSubject({ name: "google", create: () => parts })) };
-}
 
 describeWithMaps("Google maps", () => {
   afterEach(unmountAll);
@@ -32,6 +25,6 @@ describeWithMaps("Google maps", () => {
     const second = await mountedGoogle();
     first.destroy();
     expect(first.container.children).toHaveLength(0);
-    expect(second.state.map?.getDiv().isConnected).toBe(true);
+    expect(second.state.mounted?.map.getDiv().isConnected).toBe(true);
   });
 });

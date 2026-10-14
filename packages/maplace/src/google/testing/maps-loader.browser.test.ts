@@ -1,5 +1,6 @@
 import { expect, it, onTestFinished } from "vitest";
 import { sizedContainer } from "../../testing/container";
+import { loadLibraries } from "../libraries";
 import { mapSourceFor } from "../map-source";
 import { keyRefused, MAPS_JS_VERSION } from "./maps-loader";
 import { TEST_OPTIONS } from "./subject";
@@ -12,8 +13,7 @@ describeWithMaps("Maps JS for the tests", () => {
 
   it("accepts the key: a map draws its tiles, and Google refuses nothing", async () => {
     const container = sizedContainer();
-    const open = await mapSourceFor(TEST_OPTIONS).load();
-    const { map, release } = open(container);
+    const { map, release } = mapSourceFor(TEST_OPTIONS).open(container, await loadLibraries());
     onTestFinished(() => {
       release();
       container.remove();

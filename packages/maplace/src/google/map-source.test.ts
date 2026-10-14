@@ -1,23 +1,10 @@
 // @vitest-environment happy-dom
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createdMapOptions, mapSourceFor } from "./map-source";
 import type { GoogleAdapterOptions } from "./options";
+import { type StubMap, stubLibraries } from "./testing/stub-libraries";
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
-/** Maps JS as far as a created map needs it: a `Map` that keeps what it was given. */
-function stubMaps(MapClass: new (element: HTMLElement, options: unknown) => unknown) {
-  vi.stubGlobal("google", { maps: { importLibrary: async () => ({ Map: MapClass }) } });
-}
-
-class RecordedMap {
-  constructor(
-    readonly element: HTMLElement,
-    readonly options: unknown,
-  ) {}
-}
+const libraries = stubLibraries();
 
 function containerWith(...children: HTMLElement[]) {
   const container = document.createElement("div");
@@ -50,13 +37,11 @@ describe("createdMapOptions", () => {
 });
 
 describe("a map maplace creates", () => {
-  it("opens in its own element filling the container; release removes only that", async () => {
-    stubMaps(RecordedMap);
+  it("opens in its own element filling the container; release removes only that", () => {
     const pageContent = document.createElement("p");
     const container = containerWith(pageContent);
-    const open = await mapSourceFor({ mapId: "id" }).load();
-    const { map, release } = open(container);
-    const { element, options } = map as unknown as RecordedMap;
+    const { map, release } = mapSourceFor({ mapId: "id" }).open(container, libraries);
+    const { element, options } = map as unknown as StubMap;
     expect(element.parentElement).toBe(container);
     expect([element.style.width, element.style.height]).toEqual(["100%", "100%"]);
     expect(options).toMatchObject({ mapId: "id" });
@@ -64,29 +49,30 @@ describe("a map maplace creates", () => {
     expect(Array.from(container.children)).toEqual([pageContent]);
   });
 
-  it("leaves the container as it was when Google refuses the map", async () => {
-    stubMaps(
-      class {
-        constructor() {
-          throw new Error("bad map options");
-        }
-      },
-    );
+  it("leaves the container as it was when Google refuses the map", () => {
+    const refusing = class {
+      constructor() {
+        throw new Error("bad map options");
+      }
+    };
     const container = containerWith();
-    const open = await mapSourceFor({ mapId: "id" }).load();
-    expect(() => open(container)).toThrow("bad map options");
+    const open = () =>
+      mapSourceFor({ mapId: "id" }).open(container, {
+        ...libraries,
+        maps: { ...libraries.maps, Map: refusing as never },
+      });
+    expect(open).toThrow("bad map options");
     expect(container.children).toHaveLength(0);
   });
 });
 
 describe("the page's own map", () => {
-  it("opens as the page made it, with no library loaded, and release leaves it", async () => {
+  it("opens as the page made it, and release leaves it", () => {
     const element = document.createElement("div");
     const pageMap = { getDiv: () => element } as unknown as google.maps.Map;
     const options: GoogleAdapterOptions = { mapId: "id", map: pageMap };
     const container = containerWith(element);
-    const open = await mapSourceFor(options).load();
-    const { map, release } = open(container);
+    const { map, release } = mapSourceFor(options).open(container, libraries);
     expect(map).toBe(pageMap);
     release();
     expect(element.parentElement).toBe(container);

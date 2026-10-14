@@ -208,7 +208,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 | Hidden or resized containers (#1, #79, #83, #136, #154, #173) | The adapter watches the container's size and re-applies the view when it becomes visible |
 | Silent grey map on bad input (#63, #125, #145, #149, #175) | Validation per the error rules above |
 | Explicit centre overridden by fit (#18, #46) | An explicit `view` wins over `selectedId` and fit (see Shape) |
-| Marker stacking order (#60) | The selected or hovered location stacks on top, otherwise data order; no `zIndex` field |
+| Marker stacking order (#60) | The hovered location stacks on top, then the selected one, otherwise in the order they were added (a reorder alone doesn't restack); no `zIndex` field |
 | Shape colours (stroke and circle options in 0.2) | Neutral `style` per shape and a default `style` option; the store merges them, adapters map the result |
 
 ### Numbers
