@@ -4,9 +4,10 @@ import { boxContains } from "../testing/conformance/geo";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import type { Bounds } from "../viewport";
+import { explainCameraOnFailure } from "./testing/camera-timeline";
 import { inputOn } from "./testing/map-input";
 import { wait } from "./testing/map-waits";
-import { centerOf, centredOn, FIT_TIMEOUT_MS, fitted, onGoogle } from "./testing/store-on-google";
+import { centerOf, centredOn, fitted, onGoogle, TILES_TIMEOUT_MS } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -57,17 +58,26 @@ describeWithMaps("Google maps in hidden or resized containers", () => {
     await expect.poll(hasArea, { timeout: 3000 }).toBe(true);
   });
 
-  it("keeps the locations fitted as a side panel takes half the width", async () => {
-    const maplace = createMaplace({ locations: [ROME, LISBON] });
-    const { container } = await onGoogle(maplace);
-    await fitted(maplace);
-    const fittedZoom = maplace.getSnapshot().viewport?.zoom ?? 0;
-    container.style.width = `${container.offsetWidth / 2}px`;
-    const zoom = () => maplace.getSnapshot().viewport?.zoom;
-    await expect.poll(zoom, { timeout: FIT_TIMEOUT_MS }).toBeLessThan(fittedZoom);
-    const bounds = maplace.getSnapshot().viewport?.bounds ?? BOTH;
-    expect(boxContains(bounds, BOTH)).toBe(true);
-  });
+  for (const own of [false, true]) {
+    it(`keeps the locations fitted as a side panel takes half the width${own ? ", on the page's map" : ""}`, async () => {
+      const container = sizedContainer();
+      const map = own ? pageMapIn(container) : undefined;
+      const maplace = createMaplace({ locations: [ROME, LISBON] });
+      const { googleMap } = await onGoogle(maplace, { map, container });
+      await fitted(maplace);
+      const shown = googleMap() as google.maps.Map;
+      const fittedZoom = shown.getZoom() ?? 0;
+      explainCameraOnFailure(shown);
+      container.style.width = `${container.offsetWidth / 2}px`;
+      // What G10 changes is Google's camera; the store hears of it at Google's `idle`, after tiles.
+      await expect
+        .poll(() => shown.getZoom(), { timeout: TILES_TIMEOUT_MS })
+        .toBeLessThan(fittedZoom);
+      expect(boxContains(shown.getBounds()?.toJSON() ?? BOTH, BOTH)).toBe(true);
+      const reportedAsShown = () => maplace.getSnapshot().viewport?.zoom === shown.getZoom();
+      await expect.poll(reportedAsShown, { timeout: TILES_TIMEOUT_MS }).toBe(true);
+    });
+  }
 
   it("keeps the view the user dragged to when the container is resized", async () => {
     const container = sizedContainer();
@@ -85,7 +95,7 @@ describeWithMaps("Google maps in hidden or resized containers", () => {
     container.style.width = `${container.offsetWidth / 2}px`;
     // The narrower map reports narrower bounds; a re-fit would also move the centre.
     await expect
-      .poll(() => maplace.getSnapshot().viewport, { timeout: FIT_TIMEOUT_MS })
+      .poll(() => maplace.getSnapshot().viewport, { timeout: TILES_TIMEOUT_MS })
       .not.toBe(beforeResize);
     await wait(500);
     expect(centredOn(centerOf(map), dragged)).toBe(true);

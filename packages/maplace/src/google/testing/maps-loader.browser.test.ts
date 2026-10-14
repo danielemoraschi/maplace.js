@@ -3,6 +3,7 @@ import { sizedContainer } from "../../testing/container";
 import { loadLibraries } from "../libraries";
 import { mapSourceFor } from "../map-source";
 import { keyRefused, MAPS_JS_VERSION } from "./maps-loader";
+import { TILES_TIMEOUT_MS } from "./store-on-google";
 import { TEST_OPTIONS } from "./subject";
 import { describeWithMaps } from "./with-maps";
 
@@ -22,7 +23,7 @@ describeWithMaps("Maps JS for the tests", () => {
     google.maps.event.addListenerOnce(map, "tilesloaded", () => {
       drawn = true;
     });
-    await expect.poll(() => drawn || keyRefused(), { timeout: 15_000 }).toBe(true);
+    await expect.poll(() => drawn || keyRefused(), { timeout: TILES_TIMEOUT_MS }).toBe(true);
     expect(keyRefused(), "Google refused the key (gm_authFailure)").toBe(false);
   });
 });

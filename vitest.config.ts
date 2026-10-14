@@ -35,6 +35,9 @@ export default defineConfig({
         test: {
           name: "browser",
           include: [BROWSER_TESTS],
+          // Real maps wait on Google's tiles, seconds on a busy runner: a test may poll a few
+          // times for TILES_TIMEOUT_MS (15 s) and still fail with its own message.
+          testTimeout: 60_000,
           // The origin the Maps tests' key allows. Not strict: runs without a key may use another
           // port when it's taken, and with a key a moved origin fails the origin check.
           api: { port: MAPS_TEST_PORT },
