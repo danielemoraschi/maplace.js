@@ -1,8 +1,8 @@
-import type { Snapshot } from "../store";
+import type { SelectionAndHover } from "../location-state";
 import type { ListStructure } from "./model";
 
 /** Selection and hover, as a list shows them. */
-export type ListState = Pick<Snapshot, "selectedId" | "hoveredId">;
+export type ListState = SelectionAndHover;
 
 /**
  * One way to show the list (`as`): a listbox or a native select. `renderStructure` follows the

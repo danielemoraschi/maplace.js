@@ -1,5 +1,6 @@
 import type { PresentationState } from "../adapter";
-import { changedIds, stateIn, visibilityChanges } from "../adapter-kit/presentation-changes";
+import { visibilityChanges } from "../adapter-kit/presentation-changes";
+import { changedIds, stateIn } from "../location-state";
 import type { GoogleMapState } from "./map-state";
 import type { Look } from "./placed-location";
 

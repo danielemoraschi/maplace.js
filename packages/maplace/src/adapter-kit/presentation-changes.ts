@@ -1,5 +1,4 @@
 import type { PresentationState } from "../adapter";
-import type { LocationState } from "../location";
 
 /** A presentation with nothing selected, hovered or hidden: where every map starts. */
 export const NOTHING_PRESENTED: PresentationState = {
@@ -7,23 +6,6 @@ export const NOTHING_PRESENTED: PresentationState = {
   hoveredId: undefined,
   hiddenIds: new Set(),
 };
-
-/** The state `presented` gives one location. */
-export function stateIn(presented: PresentationState, id: string): LocationState {
-  return { selected: id === presented.selectedId, hovered: id === presented.hoveredId };
-}
-
-export function sameState(a: LocationState, b: LocationState): boolean {
-  return a.selected === b.selected && a.hovered === b.hovered;
-}
-
-/** The ids whose selection or hover differs between two presentations: their icons rebuild. */
-export function changedIds(previous: PresentationState, next: PresentationState): string[] {
-  const ids = [previous.selectedId, previous.hoveredId, next.selectedId, next.hoveredId];
-  return [...new Set(ids)].filter(
-    (id): id is string => id !== undefined && !sameState(stateIn(previous, id), stateIn(next, id)),
-  );
-}
 
 /** The ids hidden or shown again; none when the hidden ids kept their reference. */
 export function visibilityChanges(previous: PresentationState, next: PresentationState): string[] {

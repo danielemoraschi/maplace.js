@@ -7,6 +7,7 @@ const SRC = "packages/maplace/src/";
 describe("layerOf", () => {
   it("places each source file in its layer", () => {
     expect(layerOf("location")).toBe("data");
+    expect(layerOf("location-state")).toBe("data");
     expect(layerOf("adapter")).toBe("contract");
     expect(layerOf("element/google")).toBe("wiring");
     expect(layerOf("google/index")).toBe("google");
@@ -109,6 +110,10 @@ describe("problemsIn", () => {
     expect(problemsIn("testing/fake/drawing.ts", 'import "../../adapter-kit/chunks";')).toEqual([]);
     expect(problemsIn("adapter-kit/chunks.ts", 'import "../google/map-state";')).toHaveLength(1);
     expect(problemsIn("adapter-kit/chunks.ts", 'import "../testing/map-probe";')).toHaveLength(1);
+  });
+
+  it("keeps the location-state helpers in data, below the contract", () => {
+    expect(problemsIn("location-state.ts", 'import "./adapter";')).toHaveLength(1);
   });
 
   it("reports a data module importing the store", () => {

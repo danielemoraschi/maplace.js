@@ -1,8 +1,8 @@
 import type { LocationDiff, PresentationState } from "../../adapter";
 import { inChunks } from "../../adapter-kit/chunks";
-import { changedIds, stateIn } from "../../adapter-kit/presentation-changes";
 import { createOrderCounter, stackRank } from "../../adapter-kit/stacking";
 import type { Drawable } from "../../drawable";
+import { changedIds, stateIn } from "../../location-state";
 import type { MapEntry, MapState } from "./map-state";
 
 /** Locations drawn between yields to the event loop. */

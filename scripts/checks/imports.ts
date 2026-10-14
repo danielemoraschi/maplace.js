@@ -13,15 +13,17 @@ interface LayerRule {
 
 /** The layers of src. `google.maps` itself is fenced by Biome (`noRestrictedGlobals`). */
 const LAYERS = {
+  // The data types, and pure helpers on them that every layer may share.
   data: {
-    files: /^(geometry|style|location|options|route|viewport|popup|drawable|errors|events)$/,
+    files:
+      /^(geometry|style|location|location-state|options|route|viewport|popup|drawable|errors|events)$/,
   },
   validation: { files: /^validate\//, imports: ["data"] },
   diff: { files: /^diff\//, imports: ["data", "contract", "validation"] },
   state: { files: /^state\//, imports: ["data", "store", "validation", "diff"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
-  // What every adapter draws with: diffs worked in chunks, what a presentation changed.
+  // What every adapter draws with: diffs worked in chunks, visibility changes, the stacking rank.
   "adapter-kit": { files: /^adapter-kit\//, imports: ["data", "contract"] },
   maplace: {
     files: /^maplace\//,
