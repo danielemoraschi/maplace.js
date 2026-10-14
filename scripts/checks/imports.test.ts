@@ -103,6 +103,14 @@ describe("problemsIn", () => {
     expect(problemsIn("google/testing/probe.ts", 'import "../map-state";')).toEqual([]);
   });
 
+  it("shares the adapter kit with every adapter, and keeps it to the contract", () => {
+    expect(layerOf("adapter-kit/chunks")).toBe("adapter-kit");
+    expect(problemsIn("google/drawing.ts", 'import "../adapter-kit/chunks";')).toEqual([]);
+    expect(problemsIn("testing/fake/drawing.ts", 'import "../../adapter-kit/chunks";')).toEqual([]);
+    expect(problemsIn("adapter-kit/chunks.ts", 'import "../google/map-state";')).toHaveLength(1);
+    expect(problemsIn("adapter-kit/chunks.ts", 'import "../testing/map-probe";')).toHaveLength(1);
+  });
+
   it("reports a data module importing the store", () => {
     expect(problemsIn("route.ts", 'import type { Maplace } from "./store";')).toHaveLength(1);
   });

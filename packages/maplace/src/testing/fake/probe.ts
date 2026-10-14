@@ -2,7 +2,7 @@ import type { AdapterHost } from "../../adapter";
 import type { LatLng } from "../../geometry";
 import type { MapProbe } from "../map-probe";
 import type { FakeCamera } from "./camera";
-import { anchorOf, isVisible, type MapState, shownEntry } from "./map-state";
+import { anchorOf, isVisible, type MapState, shownEntry, stackOrder } from "./map-state";
 import type { LiveMap } from "./mounted-map";
 import type { FakeRouting } from "./route";
 
@@ -38,6 +38,7 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
       return { geometry, visible: isVisible(map, id), icon, title: drawable.title };
     },
     locationIds: () => [...map.entries.keys()],
+    stackOrder: () => stackOrder(map),
     shownPopup: () => live()?.popups.shown(),
     click: (id) => ifShown(id, (to) => to.reportSelect(id)),
     clickMap: () => host()?.reportSelect(undefined),

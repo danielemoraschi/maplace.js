@@ -19,14 +19,27 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
       expect(host.reports).toEqual([]);
     });
 
+    it("reports nothing once its load is cancelled after it opened", async () => {
+      const { adapter, controller, probe, host } = await mountSubject(subject);
+      await adapter.apply(adding(markerDrawable("a")));
+      controller.abort();
+      probe.click("a");
+      probe.pointerOver("a");
+      probe.clickMap();
+      await probe.settle();
+      expect(host.reports).toEqual([]);
+    });
+
     it("removes what it added on destroy, and reports nothing after", async () => {
-      const { adapter, container, probe, host, destroy } = await mountSubject(subject);
+      const mounted = await mountSubject(subject);
+      const { adapter, container, pageChildren, probe, host, destroy } = mounted;
       await adapter.apply(adding(markerDrawable("a")));
       destroy();
       probe.click("a");
       probe.clickMap();
       await probe.settle();
-      expect(container.children.length).toBe(0);
+      expect([...container.children]).toEqual(pageChildren);
+      expect(probe.locationIds()).toEqual([]);
       expect(host.reports).toEqual([]);
     });
   });

@@ -20,8 +20,11 @@ export interface ConformanceSubject {
   readonly name: string;
   /** The groups this adapter is built for; all of them when omitted. */
   readonly groups?: readonly ConformanceGroup[] | undefined;
-  /** A new adapter for one check, and its probe; checks mount it in a `MAP_SIZE` container. */
-  create(): { readonly adapter: Adapter; readonly probe: MapProbe };
+  /**
+   * A new adapter for one check, and its probe. Checks mount it in `container`, of `MAP_SIZE`;
+   * a subject drawing on a page's own map puts that map there first.
+   */
+  create(container: HTMLElement): { readonly adapter: Adapter; readonly probe: MapProbe };
 }
 
 /** What a subject's adapters support, read once when the checks register. */

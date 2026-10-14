@@ -32,6 +32,8 @@ export interface ShownPopup {
 export interface MapProbe {
   location(id: string): LocationOnMap | undefined;
   locationIds(): readonly string[];
+  /** The shown markers, front first. */
+  stackOrder(): readonly string[];
   shownPopup(): ShownPopup | undefined;
   click(id: string): void;
   clickMap(): void;

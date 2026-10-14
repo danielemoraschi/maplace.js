@@ -1,7 +1,8 @@
 import type { LocationDiff, PresentationState } from "../../adapter";
+import { inChunks } from "../../adapter-kit/chunks";
+import { changedIds, stateIn } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
-import { inChunks } from "./chunks";
-import { type MapEntry, type MapState, stateIn } from "./map-state";
+import type { MapEntry, MapState } from "./map-state";
 
 /** Locations drawn between yields to the event loop. */
 const CHUNK_SIZE = 500;
@@ -55,15 +56,4 @@ export function createDrawing(map: MapState, stopped: () => boolean): Drawing {
       }
     },
   };
-}
-
-/** The ids whose selection or hover differs between two presentations: their markers rebuild. */
-function changedIds(previous: PresentationState, next: PresentationState): string[] {
-  const ids = [previous.selectedId, previous.hoveredId, next.selectedId, next.hoveredId];
-  return [...new Set(ids)].filter((id): id is string => {
-    if (id === undefined) return false;
-    const before = stateIn(previous, id);
-    const after = stateIn(next, id);
-    return before.selected !== after.selected || before.hovered !== after.hovered;
-  });
 }

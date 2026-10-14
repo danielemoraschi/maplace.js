@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EVERY_CAPABILITY } from "../contract-values";
+import { unmountedAdapter } from "./harness";
 import type { ConformanceSubject, Supports } from "./subject";
 
 const SMALLEST_ROUTE = 2;
@@ -12,7 +13,7 @@ export function declarationChecks(subject: ConformanceSubject, supports: Support
     });
 
     it("limits routes to at least two stops, if at all", () => {
-      const { routeStopLimit } = subject.create().adapter;
+      const { routeStopLimit } = unmountedAdapter(subject);
       if (routeStopLimit === undefined) return;
       expect(Number.isInteger(routeStopLimit)).toBe(true);
       expect(routeStopLimit).toBeGreaterThanOrEqual(SMALLEST_ROUTE);

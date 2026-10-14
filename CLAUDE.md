@@ -18,6 +18,7 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 
 ## Layout
 - `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/`, and `react/`, a type-only 1.x draft that stays out of the published `exports`.
+- `packages/maplace/src/adapter-kit/`: what every adapter draws with (diffs in chunks, what a presentation changed); the fake and Google share it, the core entry never imports it.
 - `packages/maplace/src/__typetests__/`: compile-time API tests (`@ts-expect-error` must stay errors) and `api-lists.ts`, the RFC's lists of codes, events and capabilities.
 - `packages/maplace/examples/`: the RFC §2 use cases as HTML, vanilla and React snippets; type-checked, never published.
 - `scripts/`: repo checks, each in `scripts/checks/` beside its test.

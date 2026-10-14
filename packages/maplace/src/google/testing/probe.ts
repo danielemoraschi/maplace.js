@@ -9,6 +9,7 @@ export function createGoogleProbe(): MapProbe {
   return {
     location: () => undefined,
     locationIds: () => [],
+    stackOrder: () => [],
     shownPopup: () => undefined,
     click: () => {},
     clickMap: () => {},

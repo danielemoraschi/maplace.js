@@ -1,8 +1,8 @@
 import type { LocationDiff, PresentationState } from "../../adapter";
+import { NOTHING_PRESENTED } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
 import type { LatLng } from "../../geometry";
 import type { LocationState } from "../../location";
-import { NOTHING_PRESENTED } from "../contract-values";
 
 /** The number of locations a large diff has (RFC Numbers). */
 export const LARGE_DIFF = 4000;

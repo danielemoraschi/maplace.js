@@ -1,8 +1,7 @@
 import type { PresentationState } from "../../adapter";
+import { NOTHING_PRESENTED } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
 import type { Geometry, LatLng } from "../../geometry";
-import type { LocationState } from "../../location";
-import { NOTHING_PRESENTED } from "../contract-values";
 
 /** One location as the fake map shows it; its state and visibility follow `presented`. */
 export interface MapEntry {
@@ -20,11 +19,6 @@ export interface MapState {
 
 export function createMapState(): MapState {
   return { entries: new Map(), presented: NOTHING_PRESENTED };
-}
-
-/** The state `presented` gives one location. */
-export function stateIn(presented: PresentationState, id: string): LocationState {
-  return { selected: id === presented.selectedId, hovered: id === presented.hoveredId };
 }
 
 export function isVisible(map: MapState, id: string): boolean {
@@ -46,4 +40,18 @@ export function anchorOf(geometry: Geometry): LatLng {
     default:
       return geometry.path[0] ?? { lat: 0, lng: 0 };
   }
+}
+
+/**
+ * The shown markers, front first: hovered, then selected, the rest the later added in front. A
+ * `Map` keeps insertion order, and a location removed and added again goes to the end.
+ */
+export function stackOrder(map: MapState): string[] {
+  const { selectedId, hoveredId } = map.presented;
+  const lifted = (id: string) => (id === hoveredId ? 2 : Number(id === selectedId));
+  const shownMarkers = [...map.entries]
+    .filter(([id, entry]) => entry.geometry.type === "marker" && isVisible(map, id))
+    .map(([id]) => id)
+    .reverse();
+  return shownMarkers.sort((a, b) => lifted(b) - lifted(a));
 }

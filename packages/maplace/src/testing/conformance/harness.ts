@@ -11,6 +11,8 @@ export interface MountedSubject {
   readonly probe: MapProbe;
   readonly host: RecordingHost;
   readonly container: HTMLElement;
+  /** What the subject put in the container before mounting: a page's own map, or nothing. */
+  readonly pageChildren: readonly Element[];
   readonly controller: AbortController;
   /** The adapter's mount, which `mountSubject` waits for. */
   readonly mounting: Promise<void>;
@@ -45,7 +47,8 @@ export function startMount(
   { cluster = false, openOn = "click" }: MountSettings = {},
 ): MountedSubject {
   const container = sizedContainer();
-  const { adapter, probe } = subject.create();
+  const { adapter, probe } = subject.create(container);
+  const pageChildren = [...container.children];
   const host = createRecordingHost();
   const controller = new AbortController();
   const destroy = destroyOnce(adapter);
@@ -53,7 +56,7 @@ export function startMount(
   live.push({ controller, container, destroy });
   const popup = { maxWidth: undefined, offset: [0, 0] as const, openOn };
   const mounting = adapter.mount({ container, host, signal: controller.signal, cluster, popup });
-  return { adapter, probe, host, container, controller, mounting, destroy };
+  return { adapter, probe, host, container, pageChildren, controller, mounting, destroy };
 }
 
 /** Takes down every map the last check mounted; `describeConformance` runs it after each. */
@@ -67,7 +70,12 @@ export function unmountAll(): void {
 
 /** What the subject's adapters support, read once when the checks are registered. */
 export function capabilitiesOf(subject: ConformanceSubject): ReadonlySet<Capability> {
-  return subject.create().adapter.capabilities;
+  return unmountedAdapter(subject).capabilities;
+}
+
+/** A new adapter that is never mounted, for what it declares: its container is never shown. */
+export function unmountedAdapter(subject: ConformanceSubject): Adapter {
+  return subject.create(document.createElement("div")).adapter;
 }
 
 /** The adapter's `destroy`, safe to call again: a check may destroy before cleanup does. */

@@ -21,6 +21,8 @@ const LAYERS = {
   state: { files: /^state\//, imports: ["data", "store", "validation", "diff"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
+  // What every adapter draws with: diffs worked in chunks, what a presentation changed.
+  "adapter-kit": { files: /^adapter-kit\//, imports: ["data", "contract"] },
   maplace: {
     files: /^maplace\//,
     imports: ["data", "contract", "store", "state", "diff", "validation"],
@@ -29,14 +31,17 @@ const LAYERS = {
   // sees the composed store.
   testing: {
     files: /^testing\/(?!(mounted|listed|lists|fake-adapter)$|fake\/|conformance\/)/,
-    imports: ["data", "contract"],
+    imports: ["data", "contract", "adapter-kit"],
   },
   // The fake adapter: an in-memory map, at contract level like any adapter.
-  fake: { files: /^testing\/(fake-adapter$|fake\/)/, imports: ["data", "contract", "testing"] },
+  fake: {
+    files: /^testing\/(fake-adapter$|fake\/)/,
+    imports: ["data", "contract", "adapter-kit", "testing"],
+  },
   // The conformance suite (T9) never sees the fake, so no check can lean on one adapter's code.
   conformance: {
     files: /^testing\/conformance\//,
-    imports: ["data", "contract", "testing"],
+    imports: ["data", "contract", "adapter-kit", "testing"],
     packages: ["vitest"],
   },
   // Ready stores on the fake, and a list view beside one (which cleans up after its test).
@@ -55,7 +60,7 @@ const LAYERS = {
   // Shares the store's option checks, so its misuse reads the same.
   google: {
     files: /^google\/(?!testing\/)/,
-    imports: ["data", "contract", "validation"],
+    imports: ["data", "contract", "adapter-kit", "validation"],
     packages: ["@googlemaps/markerclusterer"],
   },
   // The Google adapter's test support: its probe and the Maps JS loader for tests.

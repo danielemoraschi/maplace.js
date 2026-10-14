@@ -60,5 +60,24 @@ export function presentationChecks(subject: ConformanceSubject): void {
       await adapter.apply(adding(markerDrawable("a", ORIGIN, { renderIcon: () => undefined })));
       expect(probe.location("a")).toMatchObject({ visible: true, icon: undefined });
     });
+
+    it("draws its default marker again when a later icon builds nothing", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      const icon = iconRecorder();
+      await adapter.apply(adding(markerDrawable("a", ORIGIN, { renderIcon: icon.renderIcon })));
+      await adapter.apply(updating(markerDrawable("a", ORIGIN, { renderIcon: () => undefined })));
+      expect(probe.location("a")?.icon).toBeUndefined();
+    });
+
+    it("stacks the hovered location on top, then the selected one, the rest in the order added", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(adding(markerDrawable("a"), markerDrawable("b"), markerDrawable("c")));
+      await adapter.apply(adding(markerDrawable("d")));
+      expect(probe.stackOrder()).toEqual(["d", "c", "b", "a"]);
+      adapter.present(presented({ selectedId: "a", hoveredId: "b" }));
+      expect(probe.stackOrder()).toEqual(["b", "a", "d", "c"]);
+      adapter.present(presented({ selectedId: "a", hiddenIds: new Set(["d"]) }));
+      expect(probe.stackOrder()).toEqual(["a", "c", "b"]);
+    });
   });
 }
