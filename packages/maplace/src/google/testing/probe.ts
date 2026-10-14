@@ -3,6 +3,7 @@ import { frontFirst, type MapProbe } from "../../testing/map-probe";
 import { createMapState, type GoogleMapState } from "../map-state";
 import type { PlacedLocation } from "../placed-location";
 import { type CameraWatch, watchCamera } from "./camera-watch";
+import { controlsPlaced } from "./controls-placed";
 import { markerTarget } from "./marker-target";
 import type { ProbeTarget } from "./probe-target";
 import { shapeTarget } from "./shape-target";
@@ -100,6 +101,8 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
     },
     async settle() {
       await camera()?.settled();
+      const drawnOn = map();
+      if (drawnOn) await controlsPlaced(drawnOn);
       const popup = state.popup;
       if (popup === undefined || popup.shown) return;
       // The adapter's own listener came first, so the open is reported by the time this runs.

@@ -1,7 +1,7 @@
 /// <reference types="google.maps" />
 import { vi } from "vitest";
 import type { GoogleLibraries } from "../libraries";
-import { StubMVCObject } from "./stub-mvc";
+import { StubMVCArray, StubMVCObject } from "./stub-mvc";
 import { StubInfoWindow, StubSize } from "./stub-popups";
 import { StubCircle, StubPolygon, StubPolyline } from "./stub-shapes";
 
@@ -20,6 +20,8 @@ export class StubMap extends StubMVCObject {
   readonly moveCamera = vi.fn();
   readonly panTo = vi.fn();
   readonly fitBounds = vi.fn();
+  /** Google's control corners, one array per `ControlPosition` value (up to 24 in Maps JS 3.66). */
+  readonly controls = Array.from({ length: 25 }, () => new StubMVCArray<HTMLElement>());
   shown: StubView | undefined;
 
   constructor(
@@ -64,10 +66,18 @@ export class StubMarker extends HTMLElement {
 
 customElements.define("stub-advanced-marker", StubMarker);
 
+/** Google's `ControlPosition` values for the corners (Maps JS 3.66). */
+export const STUB_CONTROL_POSITIONS = {
+  TOP_LEFT: 1,
+  TOP_RIGHT: 3,
+  BOTTOM_LEFT: 10,
+  BOTTOM_RIGHT: 12,
+} as const;
+
 /** The libraries as the adapter loads them, made of the stubs above. */
 export function stubLibraries(): GoogleLibraries {
   return {
-    core: { Size: StubSize },
+    core: { Size: StubSize, ControlPosition: STUB_CONTROL_POSITIONS },
     maps: {
       Map: StubMap,
       Circle: StubCircle,

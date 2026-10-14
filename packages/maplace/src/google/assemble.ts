@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 import type { Adapter, Capability } from "../adapter";
 import { createCamera } from "./camera";
+import { createControls } from "./controls";
 import { createDrawing } from "./drawing";
 import { INERT_METHODS } from "./inert";
 import { mapClicks } from "./map-clicks";
@@ -32,7 +33,9 @@ export function assembleGoogleAdapter(
   const present = createPresenting(state);
   const popup = createPopup(state);
   const camera = createCamera(state, drawing);
-  const parts = [mapClicks, viewportReports, drawing.part, camera.part, popup.part];
+  const controls = createControls();
+  const parts = [mapClicks, viewportReports, drawing.part, camera.part, popup.part, controls.part];
+  const lifecycle = createMapLifecycle({ source: mapSourceFor(options), state, parts });
   const afterDrawing = () => {
     camera.sync();
     popup.sync();
@@ -47,6 +50,11 @@ export function assembleGoogleAdapter(
       popup.sync();
     },
     setView: camera.setView,
-    ...createMapLifecycle({ source: mapSourceFor(options), state, parts }),
+    mountControl: controls.mountControl,
+    mount: lifecycle.mount,
+    destroy() {
+      lifecycle.destroy();
+      controls.release();
+    },
   };
 }

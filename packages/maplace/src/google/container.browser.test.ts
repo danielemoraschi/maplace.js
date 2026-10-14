@@ -5,7 +5,8 @@ import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import type { Bounds } from "../viewport";
 import { inputOn } from "./testing/map-input";
-import { centerOf, centredOn, onGoogle } from "./testing/store-on-google";
+import { wait } from "./testing/map-waits";
+import { centerOf, centredOn, FIT_TIMEOUT_MS, fitted, onGoogle } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -19,15 +20,6 @@ function hiddenContainer(): HTMLElement {
   const container = sizedContainer();
   container.style.display = "none";
   return container;
-}
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/** Waits for the store's fit of both locations, not the view a map opens at (zoom 1). */
-async function fitted(maplace: { getSnapshot(): { viewport?: { zoom: number } | undefined } }) {
-  await expect
-    .poll(() => maplace.getSnapshot().viewport?.zoom ?? 0, { timeout: 5000 })
-    .toBeGreaterThan(2);
 }
 
 describeWithMaps("Google maps in hidden or resized containers", () => {
@@ -72,7 +64,7 @@ describeWithMaps("Google maps in hidden or resized containers", () => {
     const fittedZoom = maplace.getSnapshot().viewport?.zoom ?? 0;
     container.style.width = `${container.offsetWidth / 2}px`;
     const zoom = () => maplace.getSnapshot().viewport?.zoom;
-    await expect.poll(zoom, { timeout: 5000 }).toBeLessThan(fittedZoom);
+    await expect.poll(zoom, { timeout: FIT_TIMEOUT_MS }).toBeLessThan(fittedZoom);
     const bounds = maplace.getSnapshot().viewport?.bounds ?? BOTH;
     expect(boxContains(bounds, BOTH)).toBe(true);
   });
@@ -93,7 +85,7 @@ describeWithMaps("Google maps in hidden or resized containers", () => {
     container.style.width = `${container.offsetWidth / 2}px`;
     // The narrower map reports narrower bounds; a re-fit would also move the centre.
     await expect
-      .poll(() => maplace.getSnapshot().viewport, { timeout: 5000 })
+      .poll(() => maplace.getSnapshot().viewport, { timeout: FIT_TIMEOUT_MS })
       .not.toBe(beforeResize);
     await wait(500);
     expect(centredOn(centerOf(map), dragged)).toBe(true);

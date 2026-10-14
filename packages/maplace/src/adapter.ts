@@ -93,7 +93,11 @@ export interface Adapter {
    */
   setView(view: ResolvedView): void;
   setRoute(route: Route | undefined): void;
-  /** Places a view on the map; returns a function that removes it. */
+  /**
+   * Places a view on the map, in a corner, whenever it is called (before the map opens it waits);
+   * returns a function that removes it, safe twice and after destroy. Destroy takes every control
+   * off. The node is moved, never changed, and its keys, wheel and drags never move the map.
+   */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;
   destroy(): void;
 }

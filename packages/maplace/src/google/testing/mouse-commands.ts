@@ -12,6 +12,8 @@ declare module "vitest/browser" {
     /** Presses the mouse at the first point, moves through the rest, and lets go. */
     pressMouse(path: readonly ViewportPoint[]): Promise<void>;
     moveMouse(point: ViewportPoint): Promise<void>;
+    /** Turns the wheel over a point, by `deltaY` pixels (down is positive). */
+    wheelMouse(point: ViewportPoint, deltaY: number): Promise<void>;
   }
 }
 
@@ -36,6 +38,12 @@ export const MOUSE_COMMANDS = {
     const [onScreen] = await onPage(context, [point]);
     if (onScreen) await context.page.mouse.move(onScreen.x, onScreen.y, { steps: MOVE_STEPS });
   }) satisfies BrowserCommand<[ViewportPoint]>,
+  wheelMouse: (async (context, point, deltaY) => {
+    const [onScreen] = await onPage(context, [point]);
+    if (onScreen === undefined) return;
+    await context.page.mouse.move(onScreen.x, onScreen.y);
+    await context.page.mouse.wheel(0, deltaY);
+  }) satisfies BrowserCommand<[ViewportPoint, number]>,
 };
 
 type CommandContext = Parameters<BrowserCommand<[]>>[0];

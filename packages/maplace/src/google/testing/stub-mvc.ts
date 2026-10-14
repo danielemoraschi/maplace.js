@@ -32,3 +32,20 @@ export class StubMVCObject {
     for (const [key, value] of Object.entries(options)) this.set(key, value);
   }
 }
+
+/** Google's `MVCArray` as far as the adapter uses one. */
+export class StubMVCArray<Item> {
+  readonly #items: Item[] = [];
+
+  getArray(): Item[] {
+    return this.#items;
+  }
+
+  push(item: Item): number {
+    return this.#items.push(item);
+  }
+
+  removeAt(index: number): Item | undefined {
+    return this.#items.splice(index, 1)[0];
+  }
+}
