@@ -19,12 +19,18 @@ export interface Viewport {
   readonly bounds: Bounds;
 }
 
-/** What the map should show. Zooms as in `Viewport`. */
+/**
+ * What the map should show. Zooms as in `Viewport`. A fit never zooms in past 15: a box that
+ * would need more (one location, or locations metres apart) is centred at 15.
+ */
 export type View =
   | { readonly kind: "fit-all"; readonly padding: number }
   | { readonly kind: "fit-bounds"; readonly bounds: Bounds; readonly padding: number }
   | { readonly kind: "center"; readonly center: LatLng; readonly zoom: number }
-  /** Bring one location into view, as `select` does; `zoom` undefined keeps the zoom. */
+  /**
+   * Bring one location to the centre, as `select` does: a shape at the point its popup points
+   * at; `zoom` undefined keeps the zoom.
+   */
   | { readonly kind: "location"; readonly id: string; readonly zoom: number | undefined };
 
 /**

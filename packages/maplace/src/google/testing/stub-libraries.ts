@@ -5,8 +5,23 @@ import { StubMVCObject } from "./stub-mvc";
 import { StubInfoWindow, StubSize } from "./stub-popups";
 import { StubCircle, StubPolygon, StubPolyline } from "./stub-shapes";
 
-/** A Google map as far as the adapter uses one: its element, its options and its listeners. */
+/** What a drawn Google map shows, as the stub gives it back. */
+export interface StubView {
+  readonly center: google.maps.LatLngLiteral;
+  readonly zoom: number;
+  readonly bounds: google.maps.LatLngBoundsLiteral;
+}
+
+/**
+ * A Google map as far as the adapter uses one: its element, its options, its listeners, the
+ * camera moves asked of it, and what it shows (nothing until a test says, as before Google draws).
+ */
 export class StubMap extends StubMVCObject {
+  readonly moveCamera = vi.fn();
+  readonly panTo = vi.fn();
+  readonly fitBounds = vi.fn();
+  shown: StubView | undefined;
+
   constructor(
     readonly element: HTMLElement,
     readonly options: google.maps.MapOptions = {},
@@ -16,6 +31,20 @@ export class StubMap extends StubMVCObject {
 
   getDiv(): HTMLElement {
     return this.element;
+  }
+
+  getCenter() {
+    const center = this.shown?.center;
+    return center && { toJSON: () => center };
+  }
+
+  getZoom(): number | undefined {
+    return this.shown?.zoom;
+  }
+
+  getBounds() {
+    const bounds = this.shown?.bounds;
+    return bounds && { toJSON: () => bounds };
   }
 }
 

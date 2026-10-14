@@ -62,6 +62,18 @@ describe("createDrawing", () => {
     expect(log).toEqual(["place marker a", "remove a", "place marker b", "place marker a"]);
   });
 
+  it("counts the diffs applied, and says when the first so many are drawn", async () => {
+    const { drawing } = openDrawing();
+    expect([drawing.applied(), drawing.drawnThrough(0)]).toEqual([0, true]);
+    const first = drawing.apply(adding(markerDrawable("a")));
+    const second = drawing.apply(adding(markerDrawable("b")));
+    expect([drawing.applied(), drawing.drawnThrough(1)]).toEqual([2, false]);
+    await first;
+    expect([drawing.drawnThrough(1), drawing.drawnThrough(2)]).toEqual([true, false]);
+    await second;
+    expect(drawing.drawnThrough(2)).toBe(true);
+  });
+
   it("updates a placed location in place", async () => {
     const { drawing, log, state } = openDrawing();
     await drawing.apply(adding(markerDrawable("a")));

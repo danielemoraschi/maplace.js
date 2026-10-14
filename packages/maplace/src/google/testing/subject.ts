@@ -15,6 +15,7 @@ const BUILT = [
   "drawing",
   "presentation",
   "popups",
+  "camera",
   "reports",
   "editing",
 ] as const;

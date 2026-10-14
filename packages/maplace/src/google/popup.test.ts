@@ -10,10 +10,9 @@ import {
   withContent,
 } from "../testing/conformance/fixtures";
 import { createMapState } from "./map-state";
-import { placeMarker } from "./marker";
+import { PLACERS } from "./placers";
 import { createPlacingSite } from "./placing-site";
 import { createPopup } from "./popup";
-import { SHAPE_PLACERS } from "./shape";
 import type { StubInfoWindow } from "./testing/stub-popups";
 import { stubMounted } from "./testing/stub-site";
 
@@ -26,7 +25,7 @@ function popupsOn(drawables: Drawable[], settings: Partial<ResolvedPopupOptions>
   const { mounted, host, close } = stubMounted(state, settings);
   const site = createPlacingSite(mounted, state);
   for (const drawable of drawables)
-    state.placed.set(drawable.id, placerFor(drawable)(drawable, site));
+    state.placed.set(drawable.id, PLACERS[drawable.geometry.type](drawable, site));
   const popup = createPopup(state);
   popup.part.open(mounted);
   return {
@@ -49,17 +48,13 @@ function popupsOn(drawables: Drawable[], settings: Partial<ResolvedPopupOptions>
     /** As a diff with a type change: removed, then placed again as its new type. */
     replace(drawable: Drawable) {
       state.placed.get(drawable.id)?.remove();
-      state.placed.set(drawable.id, placerFor(drawable)(drawable, site));
+      state.placed.set(drawable.id, PLACERS[drawable.geometry.type](drawable, site));
       popup.sync();
     },
     window: () => state.popup?.infoWindow as unknown as StubInfoWindow | undefined,
     /** Google's `domready`, which the stub fires in a microtask. */
     settled: () => new Promise((resolve) => setTimeout(resolve, 0)),
   };
-}
-
-function placerFor(drawable: Drawable) {
-  return drawable.geometry.type === "polygon" ? SHAPE_PLACERS.polygon : placeMarker;
 }
 
 /** What the window's last `open` was given. */

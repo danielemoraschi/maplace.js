@@ -21,9 +21,10 @@ export interface ProbeSources {
  * never settle see no reports they didn't make. Before mount and after destroy, nothing reports.
  */
 export function createProbe({ map, live, camera, routing }: ProbeSources): MapProbe {
+  const geometryOf = (id: string) => map.entries.get(id)?.geometry;
   const located = (id: string): LatLng | undefined => {
-    const entry = map.entries.get(id);
-    return entry && anchorOf(entry.geometry);
+    const geometry = geometryOf(id);
+    return geometry && anchorOf(geometry);
   };
   const host = () => live()?.host;
   const ifShown = (id: string, report: (to: AdapterHost) => void) => {
@@ -55,7 +56,7 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
     async settle() {
       const liveMap = live();
       if (liveMap === undefined) return;
-      const viewport = camera.settle(located);
+      const viewport = camera.settle(geometryOf);
       if (viewport) liveMap.host.reportViewport(viewport);
       liveMap.popups.settle();
       const route = routing.settle(located);

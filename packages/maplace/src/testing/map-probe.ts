@@ -1,10 +1,5 @@
+import type { MapSize } from "../adapter-kit/web-mercator";
 import type { Geometry } from "../geometry";
-
-/** A map's size in CSS pixels. */
-export interface MapSize {
-  readonly width: number;
-  readonly height: number;
-}
 
 /** The size conformance maps are drawn at. */
 export const MAP_SIZE: MapSize = { width: 512, height: 512 };

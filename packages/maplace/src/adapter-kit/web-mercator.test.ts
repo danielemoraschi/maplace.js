@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boundsAround, fitBox, MAX_ZOOM } from "./mercator";
+import { boundsAround, fitBox, MAX_ZOOM } from "./web-mercator";
 
 const size = { width: 512, height: 512 };
 

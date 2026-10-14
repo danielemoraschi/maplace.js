@@ -2,6 +2,7 @@
 import { frontFirst, type MapProbe } from "../../testing/map-probe";
 import { createMapState, type GoogleMapState } from "../map-state";
 import type { PlacedLocation } from "../placed-location";
+import { type CameraWatch, watchCamera } from "./camera-watch";
 import { markerTarget } from "./marker-target";
 import type { ProbeTarget } from "./probe-target";
 import { shapeTarget } from "./shape-target";
@@ -15,6 +16,7 @@ export function probedMapState(): { state: GoogleMapState; probe: MapProbe } {
   const state = createMapState();
   const targets = new Map<string, ProbeTarget>();
   let map: google.maps.Map | undefined;
+  let camera: CameraWatch | undefined;
   const place = state.placed.set.bind(state.placed);
   state.placed.set = (id, placed) => {
     targets.set(id, targetOf(placed));
@@ -26,24 +28,32 @@ export function probedMapState(): { state: GoogleMapState; probe: MapProbe } {
     set(next: GoogleMapState["mounted"]) {
       mounted = next;
       map = next?.map ?? map;
+      // Watched from before the adapter's parts open, and no longer once it lets the map go.
+      camera?.stop();
+      camera = next && watchCamera(next.map);
     },
   });
-  return { state, probe: createGoogleProbe({ state, targets, map: () => map }) };
+  const sources = { state, targets, map: () => map, camera: () => camera };
+  return { state, probe: createGoogleProbe(sources) };
 }
 
 function targetOf(placed: PlacedLocation): ProbeTarget {
   return "marker" in placed ? markerTarget(placed.marker) : shapeTarget(placed.shape);
 }
 
-/** What the probe reads: the adapter's state, a target per location placed, and the map opened. */
+/**
+ * What the probe reads: the adapter's state, a target per location placed, the map opened, and
+ * its camera while the adapter has it.
+ */
 interface ProbeSources {
   readonly state: GoogleMapState;
   readonly targets: Map<string, ProbeTarget>;
   readonly map: () => google.maps.Map | undefined;
+  readonly camera: () => CameraWatch | undefined;
 }
 
 /** A user can reach only a location on a map and not hidden; Google adds it to the page later. */
-function createGoogleProbe({ state, targets, map }: ProbeSources): MapProbe {
+function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapProbe {
   let pointedAt: ProbeTarget | undefined;
   const onMap = (id: string) => {
     const target = targets.get(id);
@@ -89,6 +99,7 @@ function createGoogleProbe({ state, targets, map }: ProbeSources): MapProbe {
       if (infoWindow) google.maps.event.trigger(infoWindow, "closeclick");
     },
     async settle() {
+      await camera()?.settled();
       const popup = state.popup;
       if (popup === undefined || popup.shown) return;
       // The adapter's own listener came first, so the open is reported by the time this runs.

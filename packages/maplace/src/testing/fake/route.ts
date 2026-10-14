@@ -1,6 +1,8 @@
 import type { LatLng } from "../../geometry";
 import type { Route, RouteLeg, RouteResult, TravelMode } from "../../route";
-import type { AnchorOf } from "./camera";
+
+/** Where a stop's location is pinned, if the map has it yet. */
+export type AnchorOf = (id: string) => LatLng | undefined;
 
 /** Metres per second for each travel mode: a straight line at a steady speed. */
 const SPEED_BY_MODE: Readonly<Record<TravelMode, number>> = {

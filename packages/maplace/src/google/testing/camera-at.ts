@@ -1,5 +1,6 @@
 /// <reference types="google.maps" />
 import type { LatLng } from "../../geometry";
+import { frames, idle } from "./map-waits";
 
 /**
  * Moves a test map's camera and waits until it is drawn there. A map just created may still be
@@ -14,13 +15,10 @@ export async function cameraAt(
   while (!(await idleAt(map, camera.zoom))) {
     // An earlier view's idle: the next one comes once the camera asked for is drawn.
   }
-  for (let frame = 0; frame < 2; frame++) {
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  }
+  await frames(2);
 }
 
-function idleAt(map: google.maps.Map, zoom: number): Promise<boolean> {
-  return new Promise((resolve) =>
-    google.maps.event.addListenerOnce(map, "idle", () => resolve(map.getZoom() === zoom)),
-  );
+async function idleAt(map: google.maps.Map, zoom: number): Promise<boolean> {
+  await idle(map);
+  return map.getZoom() === zoom;
 }

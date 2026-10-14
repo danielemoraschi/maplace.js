@@ -94,15 +94,20 @@ export function iconRecorder() {
   return { states, node, renderIcon };
 }
 
-/** The corners of a square centred on the origin, `size` degrees across. */
-function square(size: number): LatLng[] {
+/** The corners of a square centred on `center`, `size` degrees across. */
+export function squareAround({ lat, lng }: LatLng, size: number): LatLng[] {
   const half = size / 2;
   return [
-    { lat: -half, lng: -half },
-    { lat: -half, lng: half },
-    { lat: half, lng: half },
-    { lat: half, lng: -half },
+    { lat: lat - half, lng: lng - half },
+    { lat: lat - half, lng: lng + half },
+    { lat: lat + half, lng: lng + half },
+    { lat: lat + half, lng: lng - half },
   ];
+}
+
+/** The corners of a square centred on the origin. */
+function square(size: number): LatLng[] {
+  return squareAround(ORIGIN, size);
 }
 
 function plainDrawable(id: string): Omit<Drawable, "geometry"> {

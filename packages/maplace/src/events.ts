@@ -14,7 +14,7 @@ export interface MaplaceEvents<Data = unknown> {
   /** A popup opened and its content is in the DOM; again when an open popup gets new content. */
   readonly popupOpen: { readonly id: string; readonly element: HTMLElement };
   readonly popupClose: { readonly id: string };
-  /** The visible area settled after a pan or zoom. */
+  /** The visible area settled after a pan or zoom, the user's too, and once the map first shows. */
   readonly viewport: { readonly viewport: Viewport };
   /** A route was computed, or cleared (`result` undefined). */
   readonly route: { readonly result: RouteResult | undefined };

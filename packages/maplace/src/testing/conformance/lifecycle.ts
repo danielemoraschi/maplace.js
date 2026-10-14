@@ -22,18 +22,21 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
     it("reports nothing once its load is cancelled after it opened", async () => {
       const { adapter, controller, probe, host } = await mountSubject(subject);
       await adapter.apply(adding(markerDrawable("a")));
+      // A real map may report the view it opens at any time before this.
+      const reportedBefore = host.reports.length;
       controller.abort();
       probe.click("a");
       probe.pointerOver("a");
       probe.clickMap();
       await probe.settle();
-      expect(host.reports).toEqual([]);
+      expect(host.reports.slice(reportedBefore)).toEqual([]);
     });
 
     it("removes what it added on destroy, and reports nothing after", async () => {
       const mounted = await mountSubject(subject);
       const { adapter, container, pageChildren, probe, host, destroy } = mounted;
       await adapter.apply(adding(markerDrawable("a"), polygonDrawable("p")));
+      const reportedBefore = host.reports.length;
       destroy();
       probe.click("a");
       probe.click("p");
@@ -41,7 +44,7 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
       await probe.settle();
       expect([...container.children]).toEqual(pageChildren);
       expect(probe.locationIds()).toEqual([]);
-      expect(host.reports).toEqual([]);
+      expect(host.reports.slice(reportedBefore)).toEqual([]);
     });
   });
 }
