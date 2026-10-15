@@ -2,6 +2,7 @@ import type { Location } from "../index";
 import type { MaplaceLocationElement } from "./index";
 import { LOCATION_ATTRIBUTES, locationFromAttributes } from "./location-attributes";
 import { locationSourceChanged } from "./source-changes";
+import { MAPLACE_VERSION } from "./version";
 
 /**
  * `<maplace-location>`: one location, from its attributes and an optional `<template>` child,
@@ -9,6 +10,7 @@ import { locationSourceChanged } from "./source-changes";
  * read from changes, so the store sees an unchanged location as unchanged.
  */
 export class MaplaceLocation extends HTMLElement implements MaplaceLocationElement {
+  static readonly maplaceVersion = MAPLACE_VERSION;
   static readonly observedAttributes = LOCATION_ATTRIBUTES;
 
   /** One observer for every location, however many: a template added or removed. */

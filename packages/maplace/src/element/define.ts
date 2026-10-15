@@ -8,17 +8,18 @@ let otherCopyReported = false;
 
 /**
  * Defines `<maplace-map>` and `<maplace-location>` once per page. When another copy of maplace
- * defined them first, its elements stay, and this copy says so: its providers are not seen.
+ * defined either first, its element stays, and this copy says so: its providers are not seen, or
+ * its maps can't read the other copy's location children.
  */
 export function defineElements(): void {
-  const defined = customElements.get("maplace-map");
-  if (defined !== undefined) {
-    if (defined !== MaplaceMap) reportOtherCopy(defined);
+  const map = customElements.get("maplace-map");
+  if (map !== undefined) {
+    if (map !== MaplaceMap) reportOtherCopy("maplace-map", map);
     return;
   }
-  if (customElements.get("maplace-location") === undefined) {
-    customElements.define("maplace-location", MaplaceLocation);
-  }
+  const location = customElements.get("maplace-location");
+  if (location === undefined) customElements.define("maplace-location", MaplaceLocation);
+  else if (location !== MaplaceLocation) reportOtherCopy("maplace-location", location);
   customElements.define("maplace-map", MaplaceMap);
 }
 
@@ -31,12 +32,12 @@ export function defineProvider(name: string, factory: ProviderFactory): void {
   defineElements();
 }
 
-function reportOtherCopy(defined: CustomElementConstructor): void {
+function reportOtherCopy(name: string, defined: CustomElementConstructor): void {
   if (otherCopyReported) return;
   otherCopyReported = true;
   const other = (defined as { maplaceVersion?: unknown }).maplaceVersion ?? "(unknown version)";
   console.error(
-    `maplace ${MAPLACE_VERSION}: <maplace-map> is already defined by maplace ${String(other)}; ` +
-      "this copy's providers are not seen. Load one copy of maplace per page.",
+    `maplace ${MAPLACE_VERSION}: <${name}> is already defined by maplace ${String(other)}. ` +
+      "Load one copy of maplace per page.",
   );
 }

@@ -105,7 +105,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #start(): void {
     if (!this.isConnected || this.#isHeld() || this.#session !== undefined) return;
     const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#list };
-    this.#session = this.#misuse.attempt("setup", () => openSession(this, parts));
+    this.#session = this.#misuse.retry("setup", () => openSession(this, parts));
     if (this.#session === undefined) this.#setupRetry.wait();
     else this.#setupRetry.stop();
   }

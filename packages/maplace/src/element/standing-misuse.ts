@@ -16,37 +16,48 @@ export type MisuseCause = "setup" | "data" | "selection" | "route" | "list" | "s
 /** The misuse standing on an element, which is in error while any does. */
 export interface StandingMisuse {
   /**
-   * Runs `change` and returns what it returns; misuse it throws stands under `cause`, and gives
-   * `undefined`. Success clears that cause.
+   * Runs a change the page asked for and returns what it returns; misuse it throws is reported
+   * and stands under `cause`, giving `undefined`. Success clears that cause.
    */
   attempt<T>(cause: MisuseCause, change: () => T): T | undefined;
-  /** Reports `error` as `maplace-error`, unless the same one already stands under `cause`. */
+  /**
+   * As `attempt`, for a change maplace tries again on its own (re-reading the children, opening
+   * the map once more): misuse it throws is reported only when it differs from what stands.
+   */
+  retry<T>(cause: MisuseCause, change: () => T): T | undefined;
+  /** Reports `error` as `maplace-error`; it stands under `cause`. */
   fail(cause: MisuseCause, error: MaplaceError): void;
   clear(cause: MisuseCause): void;
   stands(): boolean;
 }
 
 /**
- * Misuse on `element`, where no caller can catch a throw: each one dispatched as `maplace-error`,
- * and `onChange` called whenever whether any stands may have changed.
+ * Misuse on `element`, where no caller can catch a throw: dispatched as `maplace-error`, and
+ * `onChange` called whenever whether any stands may have changed.
  */
 export function createStandingMisuse(element: EventTarget, onChange: () => void): StandingMisuse {
   const standing = new Map<MisuseCause, MaplaceError>();
+
+  function run<T>(cause: MisuseCause, change: () => T, report: (error: MaplaceError) => void) {
+    try {
+      const result = change();
+      misuse.clear(cause);
+      return result;
+    } catch (error) {
+      if (!(error instanceof MaplaceError)) throw error;
+      report(error);
+      return undefined;
+    }
+  }
+
   const misuse: StandingMisuse = {
-    attempt(cause, change) {
-      try {
-        const result = change();
-        misuse.clear(cause);
-        return result;
-      } catch (error) {
-        if (!(error instanceof MaplaceError)) throw error;
-        misuse.fail(cause, error);
-        return undefined;
-      }
-    },
+    attempt: (cause, change) => run(cause, change, (error) => misuse.fail(cause, error)),
+    retry: (cause, change) =>
+      run(cause, change, (error) => {
+        // Trying again and failing the same way says nothing new.
+        if (standing.get(cause)?.message !== error.message) misuse.fail(cause, error);
+      }),
     fail(cause, error) {
-      // A retry that fails the same way says nothing new.
-      if (standing.get(cause)?.message === error.message) return;
       standing.set(cause, error);
       onChange();
       dispatchElementEvent(element, "error", { error });

@@ -40,6 +40,9 @@ function shownOn(map: google.maps.Map) {
   return { elements, clustered, alone, total };
 }
 
+/** The whole world, where `points` are. */
+const WORLD: View = { kind: "center", center: { lat: 20, lng: 0 }, zoom: 2 };
+
 /**
  * A store on Google clustering `locations`, once every shown location is on the map, in a
  * cluster or alone. Not Google's next `idle`: on a slow runner the map is idle before a test
@@ -48,11 +51,20 @@ function shownOn(map: google.maps.Map) {
 async function clusteredOnGoogle(locations: Location[], view?: View) {
   const attached = await onGoogle(createMaplace({ locations, cluster: true, view }));
   const map = attached.googleMap() as google.maps.Map;
-  const shownCount = locations.filter((location) => location.visible !== false).length;
-  await expect.poll(() => shownOn(map).total, { timeout: TILES_TIMEOUT_MS }).toBe(shownCount);
+  await allShownOn(map, locations.filter((location) => location.visible !== false).length);
+  return { ...attached, map };
+}
+
+/** Once `count` locations show on `map`, in clusters or alone. */
+async function allShownOn(map: google.maps.Map, count: number): Promise<void> {
+  await expect.poll(() => shownOn(map).total, { timeout: TILES_TIMEOUT_MS }).toBe(count);
   // The clusterer takes old cluster markers off a frame after each render.
   await frames(3);
-  return { ...attached, map };
+}
+
+/** The markers drawing location `id` on its own. */
+function drawnAlone(map: google.maps.Map, id: string): HTMLElement[] {
+  return shownOn(map).elements.filter((element) => element.title === id);
 }
 
 /** The longest tasks the browser reports while `work` runs. */
@@ -69,11 +81,20 @@ async function longestTaskDuring(work: () => Promise<void>): Promise<number> {
 
 describeWithMaps("clustering on Google", () => {
   it("clusters a large diff into far fewer markers, within the accepted task", async () => {
-    let map: google.maps.Map | undefined;
-    const longest = await longestTaskDuring(async () => {
-      ({ map } = await clusteredOnGoogle(points(LARGE_DIFF)));
+    // Timed alone, on a map that has drawn its tiles: a runner's load is no part of clustering.
+    const container = sizedContainer();
+    const map = pageMapIn(container);
+    const tilesLoaded = new Promise<void>((resolve) => {
+      google.maps.event.addListenerOnce(map, "tilesloaded", () => resolve());
     });
-    const { elements, total } = shownOn(map as google.maps.Map);
+    const store = createMaplace({ cluster: true, view: WORLD });
+    const { maplace } = await onGoogle(store, { map, container });
+    await tilesLoaded;
+    const longest = await longestTaskDuring(async () => {
+      maplace.setLocations(points(LARGE_DIFF));
+      await allShownOn(map, LARGE_DIFF);
+    });
+    const { elements, total } = shownOn(map);
     console.info(
       `clustering ${LARGE_DIFF}: ${elements.length} markers, longest task ${longest} ms`,
     );
@@ -105,11 +126,11 @@ describeWithMaps("clustering on Google", () => {
     const { maplace, map } = await clusteredOnGoogle(points(400));
     const opened: string[] = [];
     maplace.on("popupOpen", ({ id }) => opened.push(id));
-    const before = shownOn(map).elements.filter((element) => element.title === "m100");
+    expect(drawnAlone(map, "m100")).toEqual([]);
     maplace.select("m100");
     await expect.poll(() => opened).toEqual(["m100"]);
-    expect(before).toEqual([]);
-    expect(shownOn(map).elements.filter((element) => element.title === "m100")).toHaveLength(1);
+    // Google shows the marker once it re-clusters after the pan, which may follow the popup.
+    await expect.poll(() => drawnAlone(map, "m100")).toHaveLength(1);
   });
 
   it("zooms into a cluster when it is clicked", async () => {

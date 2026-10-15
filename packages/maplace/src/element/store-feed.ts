@@ -43,7 +43,10 @@ export class StoreFeed {
     this.#pendingSelection = this.#host.getAttribute("selected-id") ?? undefined;
     const { locations, route } = this.#pending;
     this.#pending = {};
-    this.#apply(() => locations ?? readLocationSource(this.#host));
+    // Given locations are checked as given, whatever they are.
+    if (this.#locationsGiven)
+      this.#apply(() => locations as readonly Location[], this.#misuse.attempt);
+    else this.#readSource();
     if (route !== undefined) this.giveRoute(route);
     // Only now: the state the store starts from is no event, as an <input value> is no change.
     forwardEvents(store, this.#host);
@@ -57,7 +60,7 @@ export class StoreFeed {
     this.#locationsGiven = true;
     this.stopWatching();
     if (this.#store === undefined) this.#pending.locations = locations;
-    else this.#apply(() => locations);
+    else this.#apply(() => locations, this.#misuse.attempt);
   }
 
   giveRoute(route: Route | undefined): void {
@@ -88,30 +91,27 @@ export class StoreFeed {
   }
 
   #readSource(): void {
-    if (!this.#locationsGiven) this.#apply(() => readLocationSource(this.#host));
+    // Read again on their own: only a new misuse of them is reported.
+    if (!this.#locationsGiven)
+      this.#apply(() => readLocationSource(this.#host), this.#misuse.retry);
   }
 
-  /** Gives the store the locations `read` returns, then the selection waiting for them. */
-  #apply(read: () => readonly Location[]): void {
-    if (this.#setLocations(read)) this.#selectPending();
-  }
-
-  #setLocations(read: () => readonly Location[]): boolean {
+  /** Gives the store the locations `read` returns, run as `run` says, then the selection waiting. */
+  #apply(read: () => readonly Location[], run: StandingMisuse["attempt"]): void {
     const store = this.#store;
-    if (store === undefined) return false;
-    return (
-      this.#misuse.attempt("data", () => {
-        store.setLocations(read());
-        return true;
-      }) === true
-    );
+    if (store === undefined) return;
+    const applied = run("data", () => {
+      store.setLocations(read());
+      return true;
+    });
+    if (applied) this.#selectPending();
   }
 
   #selectPending(): void {
     const store = this.#store;
     const id = this.#pendingSelection;
     if (store === undefined || id === undefined) return;
-    const selected = this.#misuse.attempt("selection", () => {
+    const selected = this.#misuse.retry("selection", () => {
       store.select(id);
       return true;
     });

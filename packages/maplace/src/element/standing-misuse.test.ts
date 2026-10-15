@@ -6,7 +6,7 @@ const misuse = (message = "bad") => new MaplaceError("invalid-input", message);
 
 function onTarget() {
   const target = new EventTarget();
-  const reported: unknown[] = [];
+  const reported: { error: MaplaceError }[] = [];
   target.addEventListener("maplace-error", (event) => reported.push((event as CustomEvent).detail));
   const onChange = vi.fn();
   return { standing: createStandingMisuse(target, onChange), reported, onChange };
@@ -26,6 +26,18 @@ describe("createStandingMisuse", () => {
     standing.attempt("data", () => {});
     expect(standing.stands()).toBe(false);
     expect(onChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("reports every failed attempt, but a retry only when it fails in a new way", () => {
+    const { standing, reported } = onTarget();
+    const fails = (message: string) => () => {
+      throw misuse(message);
+    };
+    standing.attempt("data", fails("bad"));
+    standing.attempt("data", fails("bad"));
+    standing.retry("data", fails("bad"));
+    standing.retry("data", fails("worse"));
+    expect(reported.map(({ error }) => error.message)).toEqual(["bad", "bad", "worse"]);
   });
 
   it("stands while any cause does", () => {

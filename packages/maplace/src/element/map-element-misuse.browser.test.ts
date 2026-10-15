@@ -21,6 +21,33 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     expect(map.loadState).toBe("loading");
   });
 
+  it("reports each bad assignment, the same one again too", async () => {
+    const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    const bad = [{ id: "a", lat: "1" } as never];
+    map.locations = bad;
+    map.locations = bad;
+    map.route = { stops: ["rome", "nowhere"] };
+    map.route = { stops: ["rome", "nowhere"] };
+    expect(errors.map(({ code }) => code)).toEqual([
+      "invalid-input",
+      "invalid-input",
+      "unknown-id",
+      "unknown-id",
+    ]);
+  });
+
+  it("reports locations set before it connected that aren't locations", async () => {
+    const map = document.createElement("maplace-map");
+    const errors = errorsOn(map);
+    map.locations = undefined as never;
+    map.innerHTML = ROME;
+    document.body.replaceChildren(map);
+    await nextTask();
+    expect(errors.map(({ code }) => code)).toEqual(["invalid-input"]);
+    expect(map.locations).toEqual([]);
+  });
+
   it("starts with bad children in error, with a store and no locations", async () => {
     const errors: unknown[] = [];
     document.addEventListener("maplace-error", (event) => errors.push(event), { once: true });
