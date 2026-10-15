@@ -8,6 +8,7 @@ import { sizedContainer } from "../testing/container";
 import { optionsIn } from "../testing/lists";
 import { controlsPlaced, laidOut } from "./testing/controls-placed";
 import { QUIET_MS, wait } from "./testing/map-waits";
+import { centreOf } from "./testing/page-input";
 import { centerOf, fitted, onGoogle } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -58,8 +59,7 @@ describeWithMaps("lists on a Google map", () => {
   it("scrolls the list under the wheel, not the map's zoom, and a drag in it leaves the map", async () => {
     const { map, list } = await listOnMap();
     const before = cameraOf(map);
-    const box = list.element.getBoundingClientRect();
-    const inside = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+    const inside = centreOf(list.element);
     await commands.wheelMouse(inside, 300);
     await commands.pressMouse([inside, { x: inside.x + 60, y: inside.y + 40 }]);
     await wait(QUIET_MS);

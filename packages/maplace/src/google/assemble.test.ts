@@ -4,12 +4,15 @@ import { createMaplace } from "../maplace/create";
 import { wait } from "./testing/map-waits";
 import { sizeable } from "./testing/sized-element";
 import { attachedToGoogle } from "./testing/store-on-google";
+import { clusterersMade } from "./testing/stub-clusterer";
 import { StubMap, stubMapsJs } from "./testing/stub-libraries";
 import { stubRoutes } from "./testing/stub-routes";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
+
+vi.mock("@googlemaps/markerclusterer", () => import("./testing/stub-clusterer"));
 
 /** Maps JS whose maps start shown and uninitialised, as Google first gives them. */
 function uninitialisedMaps(): StubMap[] {
@@ -51,5 +54,14 @@ describe("the assembled Google adapter", () => {
     await outcome;
     maplace.setRoute({ stops: ["a", "b"] });
     await vi.waitFor(() => expect(routes.computeRoutes).toHaveBeenCalledOnce());
+  });
+
+  it("clusters the markers of a store that asks for it", async () => {
+    stubMapsJs();
+    const locations = [{ id: "a", lat: 44.5, lng: 11.3 }];
+    const { adapter, outcome } = attachedToGoogle(createMaplace({ locations, cluster: true }));
+    expect(adapter.capabilities.has("cluster")).toBe(true);
+    expect(await outcome).toBe("ready");
+    await vi.waitFor(() => expect(clusterersMade[0]?.held()).toHaveLength(1));
   });
 });

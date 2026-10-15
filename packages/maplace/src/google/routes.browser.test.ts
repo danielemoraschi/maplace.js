@@ -8,6 +8,7 @@ import { TOWNS } from "../testing/conformance/fixtures";
 import { frames } from "./frames";
 import { inputOn } from "./testing/map-input";
 import { idle } from "./testing/map-waits";
+import { centreOf } from "./testing/page-input";
 import { onGoogle } from "./testing/store-on-google";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -35,8 +36,7 @@ async function routeOnGoogle() {
 async function bolognaPin(map: google.maps.Map) {
   const find = () => map.getDiv().querySelector<HTMLElement>('[aria-label="Bologna"]');
   await expect.poll(find).toBeTruthy();
-  const box = (find() as HTMLElement).getBoundingClientRect();
-  return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  return centreOf(find() as HTMLElement);
 }
 
 describeWithMaps("routes on Google", () => {

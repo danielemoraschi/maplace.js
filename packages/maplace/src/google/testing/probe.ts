@@ -20,7 +20,10 @@ export function probedMapState(): { state: GoogleMapState; probe: MapProbe } {
   let camera: CameraWatch | undefined;
   const place = state.placed.set.bind(state.placed);
   state.placed.set = (id, placed) => {
-    targets.set(id, targetOf(placed));
+    targets.set(
+      id,
+      targetOf(placed, () => state.placed.get(id) === placed),
+    );
     return place(id, placed);
   };
   let mounted = state.mounted;
@@ -38,8 +41,14 @@ export function probedMapState(): { state: GoogleMapState; probe: MapProbe } {
   return { state, probe: createGoogleProbe(sources) };
 }
 
-function targetOf(placed: PlacedLocation): ProbeTarget {
-  return "marker" in placed ? markerTarget(placed.marker) : shapeTarget(placed.shape);
+/**
+ * A marker is on the map while drawn there, or while the adapter still has it placed (in a
+ * cluster, out of sight, it isn't drawn), so one left on a map after destroy shows.
+ */
+function targetOf(placed: PlacedLocation, stillPlaced: () => boolean): ProbeTarget {
+  if (!("marker" in placed)) return shapeTarget(placed.shape);
+  const { marker } = placed;
+  return markerTarget(marker, () => stillPlaced() || marker.map != null);
 }
 
 /**

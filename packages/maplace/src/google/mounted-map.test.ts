@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AdapterHost, MountContext } from "../adapter";
 import type { GoogleLibraries } from "./libraries";
+import { directMarkers } from "./marker-layer";
 import { mountMap } from "./mounted-map";
 
 const host = {} as AdapterHost;
@@ -10,7 +11,7 @@ function opened(controller = new AbortController()) {
   const released: string[] = [];
   const context = { host, signal: controller.signal, cluster: true, popup: {} } as MountContext;
   const inUse = { map: {} as google.maps.Map, release: () => released.push("map") };
-  return { released, ...mountMap({ inUse, libraries, context }) };
+  return { released, ...mountMap({ inUse, libraries, context, markerLayer: directMarkers }) };
 }
 
 describe("mountMap", () => {

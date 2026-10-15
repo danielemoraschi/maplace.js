@@ -21,7 +21,7 @@ import { viewportReports } from "./viewport-reports";
  * What the adapter draws beyond the contract's core. Capabilities grow with the rows that draw
  * them: declaring one the adapter can't draw yet would fail silently instead of being refused.
  */
-const CAPABILITIES: readonly Capability[] = ["circle", "edit", "route"];
+const CAPABILITIES: readonly Capability[] = ["circle", "edit", "route", "cluster"];
 
 /**
  * One Google adapter from its parts, drawing into `state`, which its test probe reads too. The

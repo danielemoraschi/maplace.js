@@ -33,5 +33,8 @@
       "maplace:source": "./src/react/index.ts"
     },
     "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@googlemaps/markerclusterer": "2.6.2"
   }
 }

@@ -8,21 +8,6 @@ import { probedMapState } from "./probe";
 /** The tests' Google adapter: on Google's public demo map ID. */
 export const TEST_OPTIONS: GoogleAdapterOptions = { mapId: "DEMO_MAP_ID" };
 
-/** The groups Google is built for; each row adds its own, and the last drops this list. */
-const BUILT = [
-  "declarations",
-  "lifecycle",
-  "drawing",
-  "presentation",
-  "popups",
-  "camera",
-  "container",
-  "controls",
-  "reports",
-  "editing",
-  "route",
-] as const;
-
 /** A new Google adapter, its probe, and the map state the adapter draws into. */
 export function googleParts(options = TEST_OPTIONS) {
   const { state, probe } = probedMapState();
@@ -42,14 +27,12 @@ export async function mountedGoogle(
 /** Google on a map it creates, for the conformance suite. */
 export const GOOGLE_SUBJECT: ConformanceSubject = {
   name: "google",
-  groups: BUILT,
   create: () => googleParts(),
 };
 
 /** Google on the page's own map, made in the container first, as a page would. */
 export const PAGE_MAP_SUBJECT: ConformanceSubject = {
   name: "google on the page's map",
-  groups: BUILT,
   create: (container) => googleParts({ ...TEST_OPTIONS, map: pageMapIn(container) }),
 };
 

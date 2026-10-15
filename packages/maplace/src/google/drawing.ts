@@ -41,6 +41,8 @@ export function createDrawing(state: GoogleMapState, placers: Placers): Drawing 
       each: (drawable) => place(drawable, drawingOn),
       stopped,
     });
+    // Once per diff: clustering every marker again is one pass, however many changed.
+    if (!stopped()) drawingOn.mounted.markers.flush();
   }
 
   function place(drawable: Drawable, on: PlacingSite): void {

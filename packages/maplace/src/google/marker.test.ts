@@ -79,6 +79,34 @@ describe("placeMarker", () => {
     expect(a.marker.map).toBeNull();
   });
 
+  it("leaves where it goes to the map's marker layer, on placing and when shown or selected", () => {
+    const { site } = stubSite();
+    const place = vi.spyOn(site.mounted.markers, "place").mockImplementation(() => {});
+    const remove = vi.spyOn(site.mounted.markers, "remove").mockImplementation(() => {});
+    const a = placeMarker(markerDrawable("a"), site);
+    a.present({ ...shown, state: { selected: false, hovered: true } });
+    a.present({ ...shown, state: { selected: true, hovered: true } });
+    a.present({ ...shown, visible: false });
+    a.remove();
+    expect(place.mock.calls.map(([, look]) => [look.visible, look.state.selected])).toEqual([
+      [true, false],
+      [true, true],
+      [false, false],
+    ]);
+    expect(remove).toHaveBeenCalledWith(a.marker);
+    expect(a.marker.map).toBeNull();
+  });
+
+  it("tells the marker layer when it moves, and only then", () => {
+    const drawable = markerDrawable("a");
+    const { placed: a, site } = placed(drawable);
+    const moved = vi.spyOn(site.mounted.markers, "moved");
+    // The store keeps a geometry's reference while the location stays where it is.
+    a.update({ ...drawable, title: "Rome" });
+    a.update(markerDrawable("a", { lat: 1, lng: 2 }, { title: "Rome" }));
+    expect(moved.mock.calls).toEqual([[a.marker]]);
+  });
+
   it("reports a click, and the pointer onto it and off it", () => {
     const { placed: a, host } = placed();
     a.marker.dispatchEvent(new Event("gmp-click"));

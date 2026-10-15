@@ -3,6 +3,7 @@ import type { AdapterHost, MountContext } from "../adapter";
 import type { ResolvedPopupOptions } from "../popup";
 import type { GoogleLibraries } from "./libraries";
 import type { MapInUse } from "./map-source";
+import type { MarkerLayer, MarkerLayerFactory } from "./marker-layer";
 
 /** The open map as each part of the adapter sees it. */
 export interface MountedMap {
@@ -10,6 +11,8 @@ export interface MountedMap {
   readonly libraries: GoogleLibraries;
   /** How popups open and where they sit, fixed for the life of the map. */
   readonly popup: ResolvedPopupOptions;
+  /** Where markers go on it, fixed for the life of the map: each on it, or into clusters. */
+  readonly markers: MarkerLayer;
   /** Whom to report to; undefined once the load is cancelled or the map closed. */
   live(): AdapterHost | undefined;
   /** Runs on destroy, the last added first: each part removes here what it added. */
@@ -31,6 +34,7 @@ export interface OpenedMap {
   readonly inUse: MapInUse;
   readonly libraries: GoogleLibraries;
   readonly context: MountContext;
+  readonly markerLayer: MarkerLayerFactory;
 }
 
 /** The map in use as parts see it, and how to close it. */
@@ -51,14 +55,17 @@ export interface OpenMap {
  * teardowns, last added first. A map maplace created is off the page by then, where Google takes
  * markers off it for free (on the page, each costs more the more markers it holds).
  */
-export function mountMap({ inUse, libraries, context }: OpenedMap): OpenMap {
-  const teardowns: (() => void)[] = [];
+export function mountMap({ inUse, libraries, context, markerLayer }: OpenedMap): OpenMap {
+  const markers = markerLayer(inUse.map, libraries);
+  // The layer lets go of its markers last, once every part has removed its own.
+  const teardowns: (() => void)[] = [() => markers.release()];
   let released = false;
   let tornDown = false;
   const mounted: MountedMap = {
     map: inUse.map,
     libraries,
     popup: context.popup,
+    markers,
     live: () => (tornDown || context.signal.aborted ? undefined : context.host),
     onDestroy: (teardown) => teardowns.push(teardown),
   };

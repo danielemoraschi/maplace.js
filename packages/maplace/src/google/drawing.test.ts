@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Drawable } from "../drawable";
 import {
   adding,
@@ -60,6 +60,13 @@ describe("createDrawing", () => {
       }),
     ]);
     expect(log).toEqual(["place marker a", "remove a", "place marker b", "place marker a"]);
+  });
+
+  it("shows what the map's markers changed once per diff, however many chunks it takes", async () => {
+    const { drawing, mounted } = openDrawing();
+    const flush = vi.spyOn(mounted.markers, "flush");
+    await drawing.apply(adding(...manyMarkers(600)));
+    expect(flush).toHaveBeenCalledOnce();
   });
 
   it("counts the diffs applied, and says when the first so many are drawn", async () => {

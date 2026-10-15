@@ -2,6 +2,7 @@ import type { MountContext } from "../../adapter";
 import type { ResolvedPopupOptions } from "../../popup";
 import { createRecordingHost } from "../../testing/conformance/recording-host";
 import { createMapState, type GoogleMapState } from "../map-state";
+import { directMarkers } from "../marker-layer";
 import { mountMap } from "../mounted-map";
 import { createPlacingSite } from "../placing-site";
 import { StubMap, stubLibraries } from "./stub-libraries";
@@ -33,7 +34,12 @@ export function stubMounted(
     cluster: false,
     popup: { ...CLICK_POPUPS, ...popup },
   };
-  const { mounted, close } = mountMap({ inUse: { map, release() {} }, libraries, context });
+  const { mounted, close } = mountMap({
+    inUse: { map, release() {} },
+    libraries,
+    context,
+    markerLayer: directMarkers,
+  });
   state.mounted = mounted;
   return { state, mounted, host, controller, close };
 }

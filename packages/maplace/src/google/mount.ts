@@ -4,6 +4,7 @@ import type { AuthHook } from "./auth-hook";
 import { type GoogleLibraries, loadLibraries } from "./libraries";
 import type { MapInUse, MapSource } from "./map-source";
 import type { GoogleMapState } from "./map-state";
+import { loadMarkerLayer } from "./marker-layer";
 import { type MapPart, type MapVerdict, mountMap, type OpenMap } from "./mounted-map";
 import { keyRefusedError } from "./page-auth";
 
@@ -19,7 +20,7 @@ export interface MapLifecycleParts {
 }
 
 /**
- * Loads the libraries, then opens the map in the container unless the load was cancelled or the
+ * Loads the libraries, and the marker layer the store's `cluster` asks for, then opens the map in the container unless the load was cancelled or the
  * adapter destroyed meanwhile, and opens each part on it, then waits for Google's verdict;
  * destroying closes it once. Measured on Maps JS 3.66: once Google refuses the key, its maps stop
  * working (`addListener` gives nothing, markers throw), so no map opens after a refusal, and an
@@ -53,10 +54,13 @@ export function createMapLifecycle({
 
   return {
     async mount(context) {
-      const libraries = await loadLibraries();
+      const [libraries, markerLayer] = await Promise.all([
+        loadLibraries(),
+        loadMarkerLayer(context.cluster),
+      ]);
       if (destroyed || context.signal.aborted) return;
       const inUse = openUnlessRefused(context.container, libraries);
-      open = mountMap({ inUse, libraries, context });
+      open = mountMap({ inUse, libraries, context, markerLayer });
       const { mounted } = open;
       state.mounted = mounted;
       mounted.onDestroy(keyRefusal.listen(keyRefused));

@@ -19,5 +19,6 @@ export function createPresenting(state: GoogleMapState): (next: PresentationStat
     state.presented = next;
     const changed = new Set([...changedIds(previous, next), ...visibilityChanges(previous, next)]);
     for (const id of changed) state.placed.get(id)?.present(lookIn(next, id));
+    state.mounted?.markers.flush();
   };
 }

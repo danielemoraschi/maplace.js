@@ -5,10 +5,13 @@ import type { ProbeTarget } from "./probe-target";
 
 type Marker = PlacedMarker["marker"];
 
-/** An advanced marker as a user reaches it: its element's events, as Google dispatches them. */
-export function markerTarget(marker: Marker): ProbeTarget {
-  const onMap = () => marker.map != null;
-  const shown = () => onMap() && !marker.hidden;
+/**
+ * An advanced marker as a user reaches it: its element's events, as Google dispatches them. It is
+ * on the map while drawn there or held for it (`onMap`: in a cluster too), and shown when drawn
+ * as itself.
+ */
+export function markerTarget(marker: Marker, onMap: () => boolean): ProbeTarget {
+  const shown = () => marker.map != null && !marker.hidden;
   const dispatch = (type: string) => marker.dispatchEvent(new Event(type));
   return {
     isMarker: true,

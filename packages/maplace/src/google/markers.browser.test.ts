@@ -5,6 +5,7 @@ import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { frames } from "./frames";
 import type { GoogleMapState } from "./map-state";
+import { centreOf, tabTo } from "./testing/page-input";
 import { mountedGoogle, pageMapIn, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -16,14 +17,6 @@ async function drawnMarker(state: GoogleMapState, id: string): Promise<HTMLEleme
   };
   await expect.poll(() => (marker()?.getBoundingClientRect().width ?? 0) > 0).toBe(true);
   return marker() as HTMLElement;
-}
-
-/** Tabs through the page until `element` has keyboard focus. */
-async function tabTo(element: HTMLElement): Promise<void> {
-  for (let presses = 0; presses < 50 && document.activeElement !== element; presses++) {
-    await userEvent.keyboard("{Tab}");
-  }
-  expect(document.activeElement).toBe(element);
 }
 
 /** A map the page made, on the page, removed after the test. */
@@ -77,8 +70,7 @@ describeWithMaps("Google markers under real input", () => {
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
     await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["a"]]);
-    const box = marker.getBoundingClientRect();
-    const grabbed = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    const grabbed = centreOf(marker);
     await commands.pressMouse([grabbed, { x: grabbed.x + 80, y: grabbed.y - 40 }]);
     await expect.poll(() => host.reportsOf("reportChange").length).toBe(1);
     expect(host.reportsOf("reportChange")).toEqual([

@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { adding, LARGE_DIFF, manyMarkers, markerDrawable, TOWNS, updating } from "./fixtures";
+import {
+  adding,
+  LARGE_DIFF,
+  manyMarkers,
+  markerDrawable,
+  TOWNS,
+  townMarkers,
+  updating,
+} from "./fixtures";
 import { mountSubject } from "./harness";
 import type { ConformanceSubject, Supports } from "./subject";
 
 /** Stops `a`, `b` and `c` in towns a road joins. */
-const STOPS = [
-  markerDrawable("a", TOWNS.bologna),
-  markerDrawable("b", TOWNS.modena),
-  markerDrawable("c", TOWNS.ferrara),
-];
+const STOPS = townMarkers();
 
 /** A mounted subject with the stops drawn and the route through `stops` reported. */
 async function routedSubject(subject: ConformanceSubject, stops = ["a", "b"]) {

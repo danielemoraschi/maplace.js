@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { PresentationState } from "../adapter";
 import { NOTHING_PRESENTED } from "../adapter-kit/presentation-changes";
-import { createMapState } from "./map-state";
+import { createMapState, type GoogleMapState } from "./map-state";
 import type { Look, PlacedLocation } from "./placed-location";
 import { createPresenting, lookIn } from "./presenting";
 
@@ -34,6 +34,14 @@ describe("createPresenting", () => {
     const { looks, present } = stateWith("a", "b", "c");
     present(presented({ selectedId: "a", hiddenIds: new Set(["c"]) }));
     expect(looks.map(([id]) => id).sort((x, y) => x.localeCompare(y))).toEqual(["a", "c"]);
+  });
+
+  it("shows what the map's markers changed once per presentation", () => {
+    const { state, present } = stateWith("a", "b");
+    const flush = vi.fn();
+    state.mounted = { markers: { flush } } as unknown as GoogleMapState["mounted"];
+    present(presented({ selectedId: "a", hiddenIds: new Set(["b"]) }));
+    expect(flush).toHaveBeenCalledOnce();
   });
 
   it("keeps the presentation for locations placed later", () => {

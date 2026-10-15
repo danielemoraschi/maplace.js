@@ -16,6 +16,15 @@ export const TOWNS = {
   ferrara: { lat: 44.8381, lng: 11.6198 },
 } as const satisfies Record<string, LatLng>;
 
+/** Markers `a`, `b` and `c` in the towns: on roads, and a few pixels apart at zoom 3. */
+export function townMarkers(): Drawable[] {
+  return [
+    markerDrawable("a", TOWNS.bologna),
+    markerDrawable("b", TOWNS.modena),
+    markerDrawable("c", TOWNS.ferrara),
+  ];
+}
+
 /** A marker as the store would hand it over: no title, style, content or icon unless given. */
 export function markerDrawable(id: string, at = ORIGIN, overrides?: Partial<Drawable>): Drawable {
   return { ...plainDrawable(id), geometry: { type: "marker", ...at }, ...overrides };
