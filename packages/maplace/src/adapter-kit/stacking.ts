@@ -15,6 +15,9 @@ export function stackRank(order: number, state: LocationState): number {
   return state.selected ? ON_TOP : order;
 }
 
+/** Where a route's line stacks: below every location, whose ranks start at 1. */
+export const ROUTE_LINE_RANK = 0;
+
 /** Numbers locations in the order they are added. */
 export function createOrderCounter(): () => number {
   let added = 0;

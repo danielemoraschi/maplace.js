@@ -7,6 +7,7 @@ export type TravelMode = "driving" | "walking" | "bicycling" | "transit";
 export interface Route {
   /** Location ids, at least 2; the adapter sets the maximum (`Adapter.routeStopLimit`). */
   readonly stops: readonly string[];
+  /** Driving when left out. */
   readonly travelMode?: TravelMode | undefined;
   readonly style?: LineStyle | undefined;
 }

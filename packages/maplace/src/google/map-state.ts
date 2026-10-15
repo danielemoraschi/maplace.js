@@ -23,8 +23,16 @@ export interface GoogleMapState {
   /** The store's last presentation, which locations placed later take. */
   presented: PresentationState;
   popup: ShownGooglePopup | undefined;
+  /** Settles once the route asked for is shown, failed or dropped; undefined before any. */
+  routeSettling: Promise<void> | undefined;
 }
 
 export function createMapState(): GoogleMapState {
-  return { mounted: undefined, placed: new Map(), presented: NOTHING_PRESENTED, popup: undefined };
+  return {
+    mounted: undefined,
+    placed: new Map(),
+    presented: NOTHING_PRESENTED,
+    popup: undefined,
+    routeSettling: undefined,
+  };
 }

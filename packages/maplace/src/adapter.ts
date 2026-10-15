@@ -98,6 +98,12 @@ export interface Adapter {
    * a page's code moving its own map for one).
    */
   setView(view: ResolvedView): void;
+  /**
+   * The route to draw, sent again only when it changes. A stop moving is the adapter's to notice
+   * (its location's next diff): it computes again then, after a drag only once it ends, at most
+   * once per task. A new style alone redraws the line without computing; `undefined` clears it,
+   * reporting nothing (the store has).
+   */
   setRoute(route: Route | undefined): void;
   /**
    * Places a view on the map, in a corner, whenever it is called (before the map opens it waits);

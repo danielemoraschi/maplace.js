@@ -9,6 +9,13 @@ export const LARGE_DIFF = 4000;
 
 export const ORIGIN: LatLng = { lat: 0, lng: 0 };
 
+/** Towns a road joins, for routes: a provider finds no road between points at sea. */
+export const TOWNS = {
+  bologna: { lat: 44.4949, lng: 11.3426 },
+  modena: { lat: 44.6471, lng: 10.9252 },
+  ferrara: { lat: 44.8381, lng: 11.6198 },
+} as const satisfies Record<string, LatLng>;
+
 /** A marker as the store would hand it over: no title, style, content or icon unless given. */
 export function markerDrawable(id: string, at = ORIGIN, overrides?: Partial<Drawable>): Drawable {
   return { ...plainDrawable(id), geometry: { type: "marker", ...at }, ...overrides };

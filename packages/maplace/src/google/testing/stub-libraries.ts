@@ -117,12 +117,24 @@ export function stubLibraries(): GoogleLibraries {
   } as unknown as GoogleLibraries;
 }
 
-/** Puts a Maps JS on the page whose `importLibrary` waits for `loaded`, then gives the stubs. */
-export function stubMapsJs(loaded: Promise<void> = Promise.resolve()): GoogleLibraries {
+/** The libraries the adapter loads only when it needs them. */
+interface LaterLibraries {
+  readonly routes?: google.maps.RoutesLibrary;
+}
+
+/**
+ * Puts a Maps JS on the page whose `importLibrary` waits for `loaded`, then gives the stubs, and
+ * any of the libraries loaded later that the test gives.
+ */
+export function stubMapsJs(
+  loaded: Promise<void> = Promise.resolve(),
+  later: LaterLibraries = {},
+): GoogleLibraries {
   const libraries = stubLibraries();
-  const importLibrary = async (name: keyof GoogleLibraries) => {
+  const all: GoogleLibraries & LaterLibraries = { ...libraries, ...later };
+  const importLibrary = async (name: keyof typeof all) => {
     await loaded;
-    return libraries[name];
+    return all[name];
   };
   vi.stubGlobal("google", { maps: { importLibrary } });
   return libraries;

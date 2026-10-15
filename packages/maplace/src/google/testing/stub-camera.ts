@@ -5,6 +5,7 @@ import { frames } from "../frames";
 import { createMapState } from "../map-state";
 import { PLACERS } from "../placers";
 import { sizeable } from "./sized-element";
+import { stubDrawingProgress } from "./stub-drawing";
 import type { StubMap } from "./stub-libraries";
 import { latestResizeObserver, stubResizeObserver } from "./stub-resize-observer";
 import { stubSite } from "./stub-site";
@@ -21,12 +22,8 @@ export function cameraOnStubs() {
   state.mounted = undefined;
   const map = mounted.map as unknown as StubMap;
   const size = sizeable(map.getDiv(), MAP_SIZE.width, MAP_SIZE.height);
-  /** Diffs the store has applied, and how many of them are drawn. */
-  const drawing = { applied: 0, drawn: 0 };
-  const camera = createCamera(state, {
-    applied: () => drawing.applied,
-    drawnThrough: (count) => drawing.drawn >= count,
-  });
+  const { counts: drawing, progress } = stubDrawingProgress();
+  const camera = createCamera(state, progress);
   return {
     map,
     camera,

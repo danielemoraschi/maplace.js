@@ -5,6 +5,7 @@ import { wait } from "./testing/map-waits";
 import { sizeable } from "./testing/sized-element";
 import { attachedToGoogle } from "./testing/store-on-google";
 import { StubMap, stubMapsJs } from "./testing/stub-libraries";
+import { stubRoutes } from "./testing/stub-routes";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -35,5 +36,20 @@ describe("the assembled Google adapter", () => {
     expect(ready).toBe(false);
     created[0]?.initialise({ isAdvancedMarkersAvailable: true });
     expect(await outcome).toBe("ready");
+  });
+
+  it("draws routes of up to 27 stops, the store's route reaching Google", async () => {
+    const routes = stubRoutes();
+    stubMapsJs(undefined, { routes: routes.library });
+    const locations = [
+      { id: "a", lat: 44.5, lng: 11.3 },
+      { id: "b", lat: 44.8, lng: 11.6 },
+    ];
+    const { maplace, adapter, outcome } = attachedToGoogle(createMaplace({ locations }));
+    expect(adapter.capabilities.has("route")).toBe(true);
+    expect(adapter.routeStopLimit).toBe(27);
+    await outcome;
+    maplace.setRoute({ stops: ["a", "b"] });
+    await vi.waitFor(() => expect(routes.computeRoutes).toHaveBeenCalledOnce());
   });
 });

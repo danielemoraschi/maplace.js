@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadLibraries } from "./libraries";
+import { loadLibraries, loadRoutesLibrary } from "./libraries";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -29,5 +29,15 @@ describe("loadLibraries", () => {
       marker: { name: "marker" },
     });
     expect(importLibrary.mock.calls).toEqual([["core"], ["maps"], ["marker"]]);
+  });
+});
+
+describe("loadRoutesLibrary", () => {
+  it("asks the page's Maps JS for the routes library only when called", async () => {
+    const importLibrary = vi.fn(async (name: string) => ({ name }));
+    vi.stubGlobal("google", { maps: { importLibrary } });
+    await loadLibraries();
+    expect(importLibrary.mock.calls.flat()).not.toContain("routes");
+    await expect(loadRoutesLibrary()).resolves.toEqual({ name: "routes" });
   });
 });

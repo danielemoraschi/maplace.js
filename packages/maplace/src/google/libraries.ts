@@ -32,3 +32,11 @@ export async function loadLibraries(): Promise<GoogleLibraries> {
 function canImportLibraries(): boolean {
   return typeof google === "object" && typeof google.maps?.importLibrary === "function";
 }
+
+/**
+ * Google's routes library, on the first route: a map that draws none never fetches it. Called
+ * once the map is open, so Maps JS is on the page.
+ */
+export function loadRoutesLibrary(): Promise<google.maps.RoutesLibrary> {
+  return google.maps.importLibrary("routes");
+}

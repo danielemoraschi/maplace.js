@@ -100,6 +100,7 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
       if (infoWindow) google.maps.event.trigger(infoWindow, "closeclick");
     },
     async settle() {
+      await state.routeSettling;
       await camera()?.settled();
       const drawnOn = map();
       if (drawnOn) await controlsPlaced(drawnOn);

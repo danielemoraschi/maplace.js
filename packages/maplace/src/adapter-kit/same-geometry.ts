@@ -23,7 +23,7 @@ export function sameGeometry(a: Geometry, b: Geometry): boolean {
   }
 }
 
-function samePoint(a: LatLng, b: LatLng): boolean {
+export function samePoint(a: LatLng, b: LatLng): boolean {
   return a.lat === b.lat && a.lng === b.lng;
 }
 
@@ -31,7 +31,12 @@ function sameRing(a: Ring, b: Ring): boolean {
   return sameList(a, b, samePoint);
 }
 
-function sameList<T>(a: readonly T[], b: readonly T[], same: (a: T, b: T) => boolean): boolean {
+/** The same items in the same order, each compared by `same`. */
+export function sameList<T>(
+  a: readonly T[],
+  b: readonly T[],
+  same: (a: T, b: T) => boolean,
+): boolean {
   // Same length, so every index of `a` is one of `b`.
   return a.length === b.length && a.every((item, index) => same(item, b[index] as T));
 }

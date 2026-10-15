@@ -1,8 +1,7 @@
+import { type Journey, journeyOf, type StopPoint, sameJourney } from "../../adapter-kit/journey";
+import { withTotals } from "../../adapter-kit/route-result";
 import type { LatLng } from "../../geometry";
 import type { Route, RouteLeg, RouteResult, TravelMode } from "../../route";
-
-/** Where a stop's location is pinned, if the map has it yet. */
-export type AnchorOf = (id: string) => LatLng | undefined;
 
 /** Metres per second for each travel mode: a straight line at a steady speed. */
 const SPEED_BY_MODE: Readonly<Record<TravelMode, number>> = {
@@ -17,48 +16,42 @@ const EARTH_RADIUS_METERS = 6_371_000;
 export interface FakeRouting {
   set(route: Route | undefined): void;
   /**
-   * The result for the route asked for, once its stops are on the map; then none until asked
-   * again.
+   * The result for a journey not computed yet (a new style alone isn't one); none while a stop
+   * is still to be drawn.
    */
-  settle(anchorOf: AnchorOf): RouteResult | undefined;
+  settle(pointOf: StopPoint): RouteResult | undefined;
 }
 
 export function createRouting(): FakeRouting {
-  let pending: Route | undefined;
+  let route: Route | undefined;
+  let computed: Journey | undefined;
   return {
-    set(route) {
-      pending = route;
+    set(next) {
+      route = next;
+      if (next === undefined) computed = undefined;
     },
-    settle(anchorOf) {
-      const result = pending && straightRoute(pending, anchorOf);
-      // A stop still being drawn: the provider answers once it has them all.
-      if (result) pending = undefined;
-      return result;
+    settle(pointOf) {
+      const journey = route && journeyOf(route, pointOf);
+      if (journey === undefined || sameJourney(computed, journey)) return undefined;
+      computed = journey;
+      return straightRoute(journey);
     },
   };
 }
 
-/** A straight-line route through the stops; undefined when a stop isn't on the map. */
-function straightRoute(route: Route, anchorOf: AnchorOf): RouteResult | undefined {
-  const points = route.stops.map(anchorOf);
-  if (points.includes(undefined)) return undefined;
-  const path = points as LatLng[];
-  const speed = SPEED_BY_MODE[route.travelMode ?? "driving"];
-  const legs: RouteLeg[] = route.stops.slice(1).map((to, index) => {
-    const distanceMeters = distanceBetween(path[index] as LatLng, path[index + 1] as LatLng);
+/** A straight-line route through the stops. */
+function straightRoute({ stops, travelMode, points }: Journey): RouteResult {
+  const speed = SPEED_BY_MODE[travelMode ?? "driving"];
+  const legs: RouteLeg[] = stops.slice(1).map((to, index) => {
+    const distanceMeters = distanceBetween(points[index] as LatLng, points[index + 1] as LatLng);
     return {
-      from: route.stops[index] as string,
+      from: stops[index] as string,
       to,
       distanceMeters,
       durationSeconds: distanceMeters / speed,
     };
   });
-  return {
-    legs,
-    distanceMeters: sum(legs.map((leg) => leg.distanceMeters)),
-    durationSeconds: sum(legs.map((leg) => leg.durationSeconds)),
-    path,
-  };
+  return withTotals(legs, points);
 }
 
 /** Great-circle distance (haversine). */
@@ -70,8 +63,4 @@ function distanceBetween(from: LatLng, to: LatLng): number {
     Math.sin(dLat / 2) ** 2 +
     Math.cos(radians(from.lat)) * Math.cos(radians(to.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(a));
-}
-
-function sum(values: readonly number[]): number {
-  return values.reduce((total, value) => total + value, 0);
 }

@@ -20,6 +20,7 @@ const BUILT = [
   "controls",
   "reports",
   "editing",
+  "route",
 ] as const;
 
 /** A new Google adapter, its probe, and the map state the adapter draws into. */
