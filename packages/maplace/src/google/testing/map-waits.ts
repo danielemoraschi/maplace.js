@@ -1,6 +1,9 @@
 /// <reference types="google.maps" />
 
-/** Google's next `idle` on `map`. */
+/**
+ * Google's next `idle` on `map`. Listen before what moves the map: one already idle, or a move
+ * to where it is, gives no further `idle`, and this never resolves.
+ */
 export function idle(map: google.maps.Map): Promise<void> {
   return new Promise((resolve) => google.maps.event.addListenerOnce(map, "idle", () => resolve()));
 }

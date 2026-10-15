@@ -8,9 +8,8 @@ import { LARGE_DIFF, manyMarkers } from "../testing/conformance/fixtures";
 import { sizedContainer } from "../testing/container";
 import type { View } from "../viewport";
 import { frames } from "./frames";
-import { idle } from "./testing/map-waits";
 import { centreOf, tabTo } from "./testing/page-input";
-import { onGoogle } from "./testing/store-on-google";
+import { onGoogle, TILES_TIMEOUT_MS } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -28,24 +27,29 @@ function points(count: number, hidden: (index: number) => boolean = () => false)
   }));
 }
 
-/** The markers Google shows on `map`: clusters with their counts, and locations drawn alone. */
+/**
+ * The markers Google shows on `map`: clusters with their counts, the locations drawn alone, and
+ * the `total` of locations those show.
+ */
 function shownOn(map: google.maps.Map) {
   const elements = [...map.getDiv().querySelectorAll<HTMLElement>("gmp-advanced-marker")];
   const counts = elements.map((element) => /^Cluster of (\d+)/.exec(element.title)?.[1]);
   const clustered = counts.filter((count) => count !== undefined).map(Number);
-  return { elements, clustered, alone: counts.length - clustered.length };
+  const alone = counts.length - clustered.length;
+  const total = clustered.reduce((sum, count) => sum + count, 0) + alone;
+  return { elements, clustered, alone, total };
 }
 
-/** Every location on the map: those clusters count, and those drawn alone. */
-function total(clustered: readonly number[], alone: number): number {
-  return clustered.reduce((sum, count) => sum + count, 0) + alone;
-}
-
-/** A store on Google clustering `locations`, once its map has settled and rendered clusters. */
+/**
+ * A store on Google clustering `locations`, once every shown location is on the map, in a
+ * cluster or alone. Not Google's next `idle`: on a slow runner the map is idle before a test
+ * listens, and nothing moves it again.
+ */
 async function clusteredOnGoogle(locations: Location[], view?: View) {
   const attached = await onGoogle(createMaplace({ locations, cluster: true, view }));
   const map = attached.googleMap() as google.maps.Map;
-  await idle(map);
+  const shownCount = locations.filter((location) => location.visible !== false).length;
+  await expect.poll(() => shownOn(map).total, { timeout: TILES_TIMEOUT_MS }).toBe(shownCount);
   // The clusterer takes old cluster markers off a frame after each render.
   await frames(3);
   return { ...attached, map };
@@ -69,26 +73,20 @@ describeWithMaps("clustering on Google", () => {
     const longest = await longestTaskDuring(async () => {
       ({ map } = await clusteredOnGoogle(points(LARGE_DIFF)));
     });
-    const { elements, clustered, alone } = shownOn(map as google.maps.Map);
+    const { elements, total } = shownOn(map as google.maps.Map);
     console.info(
       `clustering ${LARGE_DIFF}: ${elements.length} markers, longest task ${longest} ms`,
     );
     expect(elements.length).toBeLessThan(1000);
-    expect(total(clustered, alone)).toBe(LARGE_DIFF);
+    expect(total).toBe(LARGE_DIFF);
     expect(longest).toBeLessThanOrEqual(LONGEST_CLUSTERING_TASK_MS);
   });
 
   it("counts no hidden location in a cluster, nor a removed one", async () => {
     const { maplace, map } = await clusteredOnGoogle(points(400, (index) => index % 2 === 0));
-    let shown = shownOn(map);
-    expect(total(shown.clustered, shown.alone)).toBe(200);
+    expect(shownOn(map).total).toBe(200);
     maplace.setLocations(points(300, (index) => index % 2 === 0));
-    await expect
-      .poll(() => {
-        shown = shownOn(map);
-        return total(shown.clustered, shown.alone);
-      })
-      .toBe(150);
+    await expect.poll(() => shownOn(map).total).toBe(150);
   });
 
   it("clusters a moved location where it now is", async () => {
@@ -137,8 +135,9 @@ describeWithMaps("clustering on Google", () => {
     const map = pageMapIn(container);
     const store = createMaplace({ locations: points(400), cluster: true });
     const { adapter } = await onGoogle(store, { map, container });
-    await idle(map);
-    expect(shownOn(map).clustered.length).toBeGreaterThan(0);
+    await expect
+      .poll(() => shownOn(map).clustered.length, { timeout: TILES_TIMEOUT_MS })
+      .toBeGreaterThan(0);
     adapter.destroy();
     // The clusterer takes cluster markers off a frame after it lets go.
     await expect.poll(() => shownOn(map).elements).toEqual([]);
