@@ -19,6 +19,10 @@ expectTypeOf(map.route).toEqualTypeOf<Route | undefined>();
 map.locations = [{ id: "a", lat: 1, lng: 2 }];
 map.route = { stops: ["a", "b"] };
 map.release();
+expectTypeOf(map.sanitize).toEqualTypeOf<((html: string) => string) | undefined>();
+map.sanitize = (html) => html;
+// @ts-expect-error sanitize turns HTML into safe HTML, a string
+map.sanitize = (html: string) => document.createTextNode(html);
 
 // @ts-expect-error the load state is the element's to say
 map.loadState = "ready";

@@ -1,8 +1,24 @@
+import { createGoogleAdapter } from "../google/index";
+import { adapterAfter } from "./google-after-loading";
+import { googleSettingsOf } from "./google-attributes";
+import { mapsLoadingFor } from "./google-loading";
+import { defineProvider, type MaplaceMapElement, type ProviderFactory } from "./index";
+
 /**
  * Registers the `google` provider for `<maplace-map>`; the CDN builds are this entry bundled.
  *
- * Provider attributes: `api-key`, `map-id`, `version`, `language`, `region`, `nonce`.
- * Injects Google's bootstrap once per page when Maps isn't loaded yet; conflicting loader
- * attributes on a second element are misuse (error state + `maplace-error`).
+ * Provider attributes, read when the map opens: `map-id` (required), and for Maps JS `api-key`
+ * (required unless the page loaded Maps JS itself), `version`, `language`, `region` and `nonce`.
+ * The first map to open adds Maps JS to the page, once however many maps; a map asking for
+ * another `api-key`, `version`, `language` or `region` than the page loaded is misuse (error
+ * state and `maplace-error`). A held map adds nothing until released.
  */
-export type { MaplaceMapElement } from "./index";
+const googleProvider: ProviderFactory = (element) => {
+  const { mapId, script } = googleSettingsOf(element);
+  const loading = mapsLoadingFor(script, element.ownerDocument);
+  return adapterAfter(loading, createGoogleAdapter({ mapId }));
+};
+
+defineProvider("google", googleProvider);
+
+export type { MaplaceMapElement };

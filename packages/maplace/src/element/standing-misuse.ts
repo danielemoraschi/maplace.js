@@ -9,9 +9,10 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `selection`: a `selected-id` the locations don't have, until they do or something is selected;
  * - `route`: the `route` property;
  * - `list`: `list`, `list-position` or `fit-all-label`;
- * - `store`: an attribute the store took when it was created (`cluster`).
+ * - `store`: an attribute the store took when it was created (`cluster`);
+ * - `sanitize`: the property, which the store also took when it was created.
  */
-export type MisuseCause = "setup" | "data" | "selection" | "route" | "list" | "store";
+export type MisuseCause = "setup" | "data" | "selection" | "route" | "list" | "store" | "sanitize";
 
 /** The misuse standing on an element, which is in error while any does. */
 export interface StandingMisuse {

@@ -7,7 +7,7 @@ import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
-import { StoreFeed } from "./store-feed";
+import { type Sanitize, StoreFeed } from "./store-feed";
 import { MAPLACE_VERSION } from "./version";
 
 /**
@@ -51,6 +51,14 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
 
   set locations(locations: readonly Location[]) {
     this.#feed.giveLocations(locations);
+  }
+
+  get sanitize(): Sanitize | undefined {
+    return this.#feed.sanitize;
+  }
+
+  set sanitize(sanitize: Sanitize | undefined) {
+    this.#feed.giveSanitize(sanitize);
   }
 
   get route(): Route | undefined {
@@ -169,7 +177,7 @@ function paneIn(document: Document): HTMLElement {
  */
 function reapplyOwnProperties(element: MaplaceMap): void {
   const properties = element as unknown as Record<string, unknown>;
-  for (const name of ["locations", "route"]) {
+  for (const name of ["locations", "route", "sanitize"]) {
     if (Object.getOwnPropertyDescriptor(element, name) === undefined) continue;
     const value = properties[name];
     delete properties[name];

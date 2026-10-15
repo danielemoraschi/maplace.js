@@ -29,7 +29,8 @@ export async function loadLibraries(): Promise<GoogleLibraries> {
   return { core, maps, marker };
 }
 
-function canImportLibraries(): boolean {
+/** Whether Maps JS is on the page, by whichever loader. */
+export function canImportLibraries(): boolean {
   return typeof google === "object" && typeof google.maps?.importLibrary === "function";
 }
 

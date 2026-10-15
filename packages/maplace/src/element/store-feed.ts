@@ -1,8 +1,17 @@
-import { createMaplace, type Location, type Maplace, type Route } from "../index";
+import {
+  createMaplace,
+  type Location,
+  type Maplace,
+  type MaplaceOptions,
+  type Route,
+} from "../index";
 import { elementMisuse } from "./element-error";
 import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
 import type { StandingMisuse } from "./standing-misuse";
+
+/** What the store renders `html` through, as its `sanitize` option. */
+export type Sanitize = NonNullable<MaplaceOptions["sanitize"]>;
 
 /**
  * The element's store and what feeds it: the `locations` and `route` properties, or the
@@ -14,6 +23,8 @@ export class StoreFeed {
   readonly #onStoreChange: () => void;
   #store: Maplace | undefined;
   #clusters = false;
+  /** Given before the store exists, or what the store was created with. */
+  #sanitize: Sanitize | undefined;
   #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
   #locationsGiven = false;
   /** `selected-id`, until the locations have it or something else is selected. */
@@ -32,13 +43,14 @@ export class StoreFeed {
   }
 
   /**
-   * The store, created now if not yet, from `cluster` (fixed for its life), then given the
-   * locations so far through the same path as any later ones, then `selected-id` and the route.
+   * The store, created now if not yet, from `cluster` and `sanitize` (fixed for its life), then
+   * given the locations so far through the same path as any later ones, then `selected-id` and
+   * the route.
    */
   store(): Maplace {
     if (this.#store !== undefined) return this.#store;
     this.#clusters = this.#host.hasAttribute("cluster");
-    const store = createMaplace({ cluster: this.#clusters });
+    const store = this.#createStore();
     this.#store = store;
     this.#pendingSelection = this.#host.getAttribute("selected-id") ?? undefined;
     const { locations, route } = this.#pending;
@@ -53,6 +65,20 @@ export class StoreFeed {
     store.on("select", () => this.#selectionMade());
     store.subscribe(this.#onStoreChange);
     return store;
+  }
+
+  get sanitize(): Sanitize | undefined {
+    return this.#sanitize;
+  }
+
+  /** `sanitize` from the property: taken until the store exists, misuse once it does. */
+  giveSanitize(sanitize: Sanitize | undefined): void {
+    if (this.#store === undefined) this.#sanitize = sanitize;
+    else if (sanitize === this.#sanitize) this.#misuse.clear("sanitize");
+    else {
+      const problem = "sanitize can't change once the map is created";
+      this.#misuse.fail("sanitize", elementMisuse(problem, { field: "sanitize" }));
+    }
   }
 
   /** Locations from the property: from now on the element's children are not read. */
@@ -88,6 +114,17 @@ export class StoreFeed {
   checkClusterUnchanged(): void {
     if (this.#host.hasAttribute("cluster") === this.#clusters) this.#misuse.clear("store");
     else this.#misuse.fail("store", elementMisuse("cluster can't change once the map is created"));
+  }
+
+  /** A store always exists: one `sanitize` the store refuses is left out, standing as misuse. */
+  #createStore(): Maplace {
+    const cluster = this.#clusters;
+    const sanitize = this.#sanitize;
+    if (sanitize === undefined) return createMaplace({ cluster });
+    const store = this.#misuse.attempt("sanitize", () => createMaplace({ cluster, sanitize }));
+    if (store !== undefined) return store;
+    this.#sanitize = undefined;
+    return createMaplace({ cluster });
   }
 
   #readSource(): void {

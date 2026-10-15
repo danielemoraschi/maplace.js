@@ -1,5 +1,4 @@
 import { nextTask } from "../../adapter-kit/chunks";
-import type { MaplaceError } from "../../index";
 import { createFakeAdapter, type FakeAdapter } from "../../testing/fake-adapter";
 import { defineProvider, type MaplaceMapElement } from "../index";
 
@@ -28,15 +27,7 @@ export async function mapFrom(html: string): Promise<MaplaceMapElement> {
   return map;
 }
 
-/** The errors `map` dispatches as `maplace-error`, from now on. */
-export function errorsOn(map: MaplaceMapElement): MaplaceError[] {
-  const errors: MaplaceError[] = [];
-  map.addEventListener("maplace-error", (event) => {
-    errors.push((event as CustomEvent<{ error: MaplaceError }>).detail.error);
-  });
-  return errors;
-}
-
+export { errorsOn } from "./dom";
 export { nextTask };
 
 export const ROME =

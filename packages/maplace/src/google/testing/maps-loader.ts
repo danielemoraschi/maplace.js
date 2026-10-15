@@ -1,4 +1,5 @@
 import { loadLibraries } from "../libraries";
+import { mapsScriptUrl } from "../maps-script-url";
 
 /**
  * The Maps JS the tests run against: numbered, so runs repeat. Google retires a numbered version
@@ -36,18 +37,15 @@ function injectMapsScript(key: string): Promise<void> {
       },
     });
     const script = document.createElement("script");
-    script.src = mapsScriptUrl(key);
+    script.src = testScriptUrl(key);
     script.onerror = () => reject(new Error("Maps JS failed to load"));
     document.head.append(script);
   });
 }
 
-function mapsScriptUrl(key: string): string {
-  const query = new URLSearchParams({
-    key,
-    v: MAPS_JS_VERSION,
-    loading: "async",
-    callback: LOADED_CALLBACK,
-  });
-  return `https://maps.googleapis.com/maps/api/js?${query}`;
+/** The element's URL, pinned, with a callback: tests know when Maps JS arrived. */
+function testScriptUrl(key: string): string {
+  const url = new URL(mapsScriptUrl({ key, version: MAPS_JS_VERSION }));
+  url.searchParams.set("callback", LOADED_CALLBACK);
+  return url.href;
 }

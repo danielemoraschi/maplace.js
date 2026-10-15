@@ -22,13 +22,30 @@ export function describeWithRefusedKey(name: string, body: () => void): void {
   describeLoaded(name, MAPS_KEY && REFUSED_KEY, body);
 }
 
+/**
+ * Tests that load Maps JS themselves, as the element's Google provider does: the key, with no
+ * Maps JS on the page yet.
+ */
+export function describeWithKey(name: string, body: (key: string) => void): void {
+  describeKeyed(name, MAPS_KEY, body);
+}
+
 function describeLoaded(name: string, key: string | undefined, body: () => void): void {
+  describeKeyed(name, key, async (loadedKey) => {
+    await loadMapsForTests(loadedKey);
+    body();
+  });
+}
+
+/** Without a key, one skipped test says why: a skipped suite's body still runs. */
+function describeKeyed(
+  name: string,
+  key: string | undefined,
+  body: (key: string) => void | Promise<void>,
+): void {
   if (key === undefined) {
     describe.skip(name, () => it("runs with VITE_MAPS_KEY set"));
     return;
   }
-  describe(name, async () => {
-    await loadMapsForTests(key);
-    body();
-  });
+  describe(name, () => body(key));
 }

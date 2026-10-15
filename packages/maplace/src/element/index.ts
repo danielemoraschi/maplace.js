@@ -31,9 +31,11 @@ export { defineProvider } from "./define";
  * - provider attributes, such as `api-key` and `map-id` for Google, read when the map opens.
  *
  * The store is created when the element first connects (or `maplace`, `locations` or `route` is
- * first read), from `cluster`, `selected-id` and the locations, and lives as long as the element:
- * disconnected, the map closes and the store goes back to `idle`, keeping its locations,
- * selection and listeners; connected again, a new map opens. A move within one task keeps the map.
+ * first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as
+ * the element: disconnected, the map closes and the store goes back to `idle`, keeping its
+ * locations, selection and listeners; connected again, a new map opens. A move within one task
+ * keeps the map. A map waits for the document to parse its children before it opens, whether
+ * parsed or created by a script, so its first view and `selected-id` see them all.
  *
  * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent. It stands
  * until corrected: bad locations or route keep the previous ones until valid ones are given, and
@@ -42,6 +44,12 @@ export { defineProvider } from "./define";
 export interface MaplaceMapElement extends HTMLElement {
   locations: readonly Location[];
   route: Route | undefined;
+  /**
+   * Makes `html` in the locations safe to render, as the store's `sanitize` option (a
+   * `<template>` child needs none: it is the page's own markup). Read when the store is created,
+   * so set it before the map opens; set later, it is misuse.
+   */
+  sanitize: ((html: string) => string) | undefined;
   /** The underlying store, for anything the attributes don't cover. */
   readonly maplace: Maplace;
   /**
