@@ -24,6 +24,18 @@ export interface MaplaceEvents<Data = unknown> {
 
 export type MaplaceEventName = keyof MaplaceEvents;
 
+/** Every event's name, as a record so a new event fails to compile until it is listed. */
+export const MAPLACE_EVENT_NAMES = {
+  select: true,
+  hover: true,
+  change: true,
+  popupOpen: true,
+  popupClose: true,
+  viewport: true,
+  route: true,
+  error: true,
+} as const satisfies Record<MaplaceEventName, true>;
+
 export type Listener<K extends MaplaceEventName, Data = unknown> = (
   event: MaplaceEvents<Data>[K],
 ) => void;

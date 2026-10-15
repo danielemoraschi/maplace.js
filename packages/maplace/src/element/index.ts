@@ -2,7 +2,8 @@ import type { Adapter, ControlPosition } from "../adapter";
 import type { MaplaceEvents } from "../events";
 import type { Location } from "../location";
 import type { Route } from "../route";
-import type { Maplace } from "../store";
+import type { LoadState, Maplace } from "../store";
+import { defineElements } from "./define";
 
 /** Where the element puts its list: on the map, or outside it in the page. */
 export type ListPosition = ControlPosition | "outside";
@@ -10,33 +11,44 @@ export type ListPosition = ControlPosition | "outside";
 /** Builds an adapter from the element's own attributes (e.g. `api-key`, `map-id`). */
 export type ProviderFactory = (element: MaplaceMapElement) => Adapter;
 
-/**
- * Registers a provider under a name for `<maplace-map provider="…">`.
- * Also defines the elements if needed (idempotent); a different maplace copy logs an error.
- */
-export declare function defineProvider(name: string, factory: ProviderFactory): void;
+export { defineProvider } from "./define";
 
 /**
- * `<maplace-map>`: a map plus an optional list, from child `<maplace-location>` elements,
- * an inline `<script type="application/json">` child, or the `locations` property.
+ * `<maplace-map>`: a map plus an optional list. Its locations come from the `locations` property
+ * once set; else from one inline `<script type="application/json">` child, or from
+ * `<maplace-location>` children (both is misuse). Children and the script are watched.
  *
  * Attributes:
- * - `provider`: registered provider name; defaults to the only one registered.
+ * - `provider`: registered provider name; defaults to the only one registered. A change opens
+ *   the map again on it.
  * - `list`: present = list view; `list="select"` = native select; absent = no list.
- * - `list-position`: a `ListPosition`.
+ * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
  * - `fit-all-label`: label of a first list entry that fits all locations.
+ *   (`list`, `list-position` and `fit-all-label` are live: the list is built again.)
  * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
- * - `cluster`: cluster markers (a CDN page needs the cluster build).
+ * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `hold`: stay idle, with no provider request, until `release()`.
- * - provider attributes, such as `api-key` and `map-id` for Google.
+ * - provider attributes, such as `api-key` and `map-id` for Google, read when the map opens.
  *
- * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent.
+ * The store is created when the element first connects (or `maplace`, `locations` or `route` is
+ * first read), from `cluster`, `selected-id` and the locations, and lives as long as the element:
+ * disconnected, the map closes and the store goes back to `idle`, keeping its locations,
+ * selection and listeners; connected again, a new map opens. A move within one task keeps the map.
+ *
+ * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent. It stands
+ * until corrected: bad locations or route keep the previous ones until valid ones are given, and
+ * a `selected-id` the locations don't have is selected once they do.
  */
 export interface MaplaceMapElement extends HTMLElement {
   locations: readonly Location[];
   route: Route | undefined;
   /** The underlying store, for anything the attributes don't cover. */
   readonly maplace: Maplace;
+  /**
+   * `error` while a misuse stands, else the store's. Shown as the custom state
+   * `:state(idle | loading | ready | error)`, so CSS can style e.g. a consent placeholder.
+   */
+  readonly loadState: LoadState;
   /** Starts loading when the element has `hold`. */
   release(): void;
 }
@@ -49,7 +61,7 @@ export interface MaplaceLocationElement extends HTMLElement {
   readonly location: Location;
 }
 
-/** DOM events dispatched by `<maplace-map>`, named `maplace-<event>`. */
+/** DOM events dispatched by `<maplace-map>`, named `maplace-<event>` in lower case; they bubble. */
 export type MaplaceElementEventMap = {
   readonly [K in keyof MaplaceEvents as `maplace-${Lowercase<K & string>}`]: CustomEvent<
     MaplaceEvents[K]
@@ -62,3 +74,5 @@ declare global {
     "maplace-location": MaplaceLocationElement;
   }
 }
+
+defineElements();

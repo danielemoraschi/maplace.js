@@ -1,18 +1,9 @@
-import type { ListenOptions, MaplaceEventName } from "../events";
+import { type ListenOptions, MAPLACE_EVENT_NAMES, type MaplaceEventName } from "../events";
 import { type Field, mustBe } from "./fail";
 import { type Assert, recordOf } from "./record";
 import { members, oneOf, optional } from "./values";
 
-const EVENT_NAMES = members<MaplaceEventName>({
-  select: true,
-  hover: true,
-  change: true,
-  popupOpen: true,
-  popupClose: true,
-  viewport: true,
-  route: true,
-  error: true,
-});
+const EVENT_NAMES = members<MaplaceEventName>(MAPLACE_EVENT_NAMES);
 
 export const checkEventName = oneOf(EVENT_NAMES);
 

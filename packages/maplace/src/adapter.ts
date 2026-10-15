@@ -11,6 +11,14 @@ export type Capability = "route" | "cluster" | "circle" | "edit";
 /** Where an on-map control sits, in provider-neutral terms. */
 export type ControlPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
+/** Every corner, as a record so a new one fails to compile until it is listed. */
+export const CONTROL_POSITIONS = {
+  "top-left": true,
+  "top-right": true,
+  "bottom-left": true,
+  "bottom-right": true,
+} as const satisfies Record<ControlPosition, true>;
+
 /**
  * What changed since the last `apply`; adapters touch only these locations. Apply `removed`
  * first: a location whose `type` changed is in `removed` and in `added`, never in `updated`. An

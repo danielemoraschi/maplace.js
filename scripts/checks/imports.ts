@@ -56,7 +56,16 @@ const LAYERS = {
   "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },
   view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
   entry: { files: /^index$/, imports: ["data", "contract", "store", "view", "maplace"] },
-  element: { files: /^element\/index$/, imports: ["data", "contract", "store", "view"] },
+  // The element uses the core through its entry, the public API only.
+  element: {
+    files: /^element\/(?!google$|testing\/)/,
+    imports: ["data", "contract", "store", "view", "entry"],
+  },
+  // The element's test support: maps on the fake adapter.
+  "element-testing": {
+    files: /^element\/testing\//,
+    imports: ["data", "contract", "adapter-kit", "entry", "element", "fake"],
+  },
   wiring: { files: /^element\/google$/, imports: ["data", "contract", "element", "google"] },
   react: { files: /^react\//, imports: ["data", "contract", "store", "view"], packages: ["react"] },
   // Shares the store's option checks, so its misuse reads the same.
