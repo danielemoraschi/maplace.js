@@ -10,7 +10,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: "v8",
-      reporter: ["text-summary", "lcovonly"],
+      reporter: ["text-summary", "lcovonly", "json-summary"],
       include: ["packages/maplace/src/**", "scripts/**"],
       // Keep in step with sonar.coverage.exclusions.
       exclude: [
@@ -20,6 +20,7 @@ export default defineConfig({
         "**/src/google/testing/**",
         "scripts/check.ts",
         "scripts/build.ts",
+        "scripts/coverage.ts",
         "scripts/checks/consumer/**",
       ],
     },
