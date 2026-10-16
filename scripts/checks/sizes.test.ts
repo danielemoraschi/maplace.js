@@ -1,0 +1,33 @@
+import { describe, expect, it } from "vitest";
+import { check, measureSizes, SIZE_MEASURES } from "./sizes.ts";
+
+const [core] = SIZE_MEASURES;
+if (core === undefined) throw new Error("no budgets");
+
+describe("size budgets", () => {
+  it("passes an entry at or under its budget, and names one over it", () => {
+    const budgets = new Map([[core.rfcRow, 15.5]]);
+    expect(check([{ measure: core, kilobytes: 15.5 }], budgets)).toEqual([]);
+    expect(check([{ measure: core, kilobytes: 15.51 }], budgets)).toEqual([
+      "maplace is 15.51 kB gzip, over its 15.5 kB budget",
+    ]);
+  });
+
+  it("names a budget the RFC sets but nothing measures, and one measured without a budget", () => {
+    expect(check([{ measure: core, kilobytes: 1 }], new Map([["Element CDN build", 30]]))).toEqual([
+      "Core (`maplace`) has no budget in docs/rfc-1.0.md",
+      "Element CDN build in docs/rfc-1.0.md is never measured",
+    ]);
+  });
+
+  it("measures every budget from source, the clustering chunk only where it is counted", () => {
+    const sizes = new Map(
+      measureSizes().map(({ measure, kilobytes }) => [measure.name, kilobytes]),
+    );
+    expect([...sizes.keys()]).toEqual(SIZE_MEASURES.map(({ name }) => name));
+    const clustering =
+      (sizes.get("element CDN with clustering") ?? 0) - (sizes.get("element CDN") ?? 0);
+    // The clusterer and maplace's clustered layer, loaded only by a store that clusters.
+    expect(clustering).toBeGreaterThan(5);
+  });
+});

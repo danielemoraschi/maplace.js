@@ -16,7 +16,8 @@
     "check": "biome check && node scripts/check.ts",
     "fix": "biome check --write",
     "test": "vitest run --coverage",
-    "sonar": "node --env-file-if-exists=.env.local node_modules/.bin/sonar-scanner-npm"
+    "sonar": "node --env-file-if-exists=.env.local node_modules/.bin/sonar-scanner-npm",
+    "sizes": "node scripts/sizes.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
@@ -26,6 +27,7 @@
     "@types/react": "^19.3.0",
     "@vitest/browser-playwright": "^5.0.4",
     "@vitest/coverage-v8": "^5.0.4",
+    "esbuild": "0.28.2",
     "happy-dom": "20.14.5",
     "playwright": "1.63.0",
     "typescript": "^7.0.2",

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { API_LISTS } from "../../packages/maplace/src/__typetests__/api-lists.ts";
 
-const RFC = "docs/rfc-1.0.md";
+export const RFC = "docs/rfc-1.0.md";
 
 export type ApiLists = { readonly [K in keyof typeof API_LISTS]: readonly string[] };
 
@@ -56,7 +56,7 @@ export function listsInRfc(markdown: string): ApiLists {
 }
 
 /** From `heading` to the next heading. */
-function section(markdown: string, heading: string): string {
+export function section(markdown: string, heading: string): string {
   const lines = markdown.split("\n");
   const start = lines.indexOf(heading);
   if (start === -1) throw new Error(`RFC: no "${heading}" section`);
@@ -90,6 +90,6 @@ function captures(text: string, regex: RegExp): string[] {
   return Array.from(text.matchAll(regex), ([, captured]) => captured ?? "");
 }
 
-function missingFrom(list: readonly string[], candidates: readonly string[]): string[] {
+export function missingFrom(list: readonly string[], candidates: readonly string[]): string[] {
   return candidates.filter((candidate) => !list.includes(candidate));
 }

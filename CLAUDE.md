@@ -8,7 +8,8 @@ maplace.js is being rewritten from scratch as 1.0. Three documents, one job each
 ## Commands
 Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm ci`: install; then, once, `npx playwright install chromium` for the browser tests.
-- `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers and RFC ↔ types.
+- `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers, RFC ↔ types, and the size budgets of RFC §3 Numbers (each entry bundled from source with esbuild and gzipped; the budgets are read from the RFC table).
+- `npm run sizes`: each budget with what it measures now and the headroom left.
 - `npm run typecheck`: source, examples, type tests, then `scripts/`.
 - `npm test`: Vitest, with a coverage report (`coverage/lcov.info`): the `node` project (node and happy-dom) and the `browser` project (`*.browser.test.ts`, headless Chromium, served from `localhost:63315` when the port is free); `--project <name>` runs one. Tests on real Google Maps run when `VITE_MAPS_KEY` is set (in `.env.local`; the key must allow `http://localhost:63315/*`) and skip otherwise; CI runs them on `next`.
 - `npm run fix`: Biome's safe fixes and formatting.

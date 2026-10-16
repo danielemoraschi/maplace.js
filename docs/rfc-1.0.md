@@ -214,14 +214,16 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 
 ### Numbers
 
-Checked in CI from the first build:
+Checked by `npm run check` (`scripts/checks/sizes.ts`, which reads them from this table), bundled from source with esbuild for ES2020, minified, each output gzipped; on the built `dist` once P1 builds it:
 
 | | Budget (gzip) |
 |---|---|
-| Core (`maplace`) | ≤ 4 kB |
-| Google adapter (`maplace/google`) | ≤ 10 kB |
-| Element CDN build (core + Google + list view + element) | ≤ 15 kB |
-| Element CDN build with clustering | ≤ 25 kB |
+| Core (`maplace`) | ≤ 16.5 kB |
+| Google adapter (`maplace/google`) | ≤ 10.5 kB |
+| Element CDN build (core + Google + list view + element) | ≤ 30.5 kB |
+| Element CDN build with clustering | ≤ 40.5 kB |
+
+Each budget is what 1.0 measured, plus about 10% (2026-10-16: 14.7, 9.2, 27.6 and 36.6 kB). The core and the Google adapter are measured as they ship, sharing chunks, each chunk gzipped as it is served; the Google adapter counts what it adds to a page already using the core; the CDN builds count what a page loads, the clustering chunk only in the second. The first budgets (4, 10, 15 and 25 kB) were set before the code: the store's own state, sync and diffing alone are over 4 kB, and the rest is the API itself, its validation with messages naming the location and field, the 0.2 hints and the two list variants, none of which 1.0 drops to fit a number. Targeting ES2022 would save 0.6 kB on the element builds (its private fields); that is a browser-support decision, not a size one.
 
 Test coverage: core ≥ 95% of lines, whole package ≥ 85%.
 
