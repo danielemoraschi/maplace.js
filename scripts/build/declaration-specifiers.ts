@@ -11,7 +11,7 @@ export function withJsSpecifiers(
   source: string,
   hasDeclaration: (path: string) => boolean,
 ): string {
-  return source.replace(
+  return source.replaceAll(
     RELATIVE_SPECIFIER,
     (_, before: string, quote: string, specifier: string) =>
       `${before}${quote}${jsPathOf(specifier, hasDeclaration)}${quote}`,

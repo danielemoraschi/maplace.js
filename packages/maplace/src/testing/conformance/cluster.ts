@@ -27,7 +27,7 @@ export function clusterChecks(subject: ConformanceSubject, supports: Supports): 
   describe("cluster", () => {
     it.runIf(supports.has("cluster"))("still draws every location when clustering", async () => {
       const { probe } = await clusteredSubject(subject);
-      expect([...probe.locationIds()].sort()).toEqual(["a", "b", "c"]);
+      expect([...probe.locationIds()].sort((a, b) => a.localeCompare(b))).toEqual(["a", "b", "c"]);
     });
 
     it.runIf(supports.has("cluster"))("shows the selected location on its own", async () => {
@@ -41,7 +41,7 @@ export function clusterChecks(subject: ConformanceSubject, supports: Supports): 
       const { adapter, probe } = await clusteredSubject(subject);
       await adapter.apply(removing("b"));
       await probe.settle();
-      expect([...probe.locationIds()].sort()).toEqual(["a", "c"]);
+      expect([...probe.locationIds()].sort((a, b) => a.localeCompare(b))).toEqual(["a", "c"]);
     });
 
     it.runIf(supports.has("cluster"))(

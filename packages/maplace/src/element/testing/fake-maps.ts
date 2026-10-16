@@ -13,7 +13,7 @@ defineProvider("fake", () => {
 
 /** The adapter the `fake` provider made last. */
 export function lastAdapter(): FakeAdapter {
-  const adapter = adaptersMade[adaptersMade.length - 1];
+  const adapter = adaptersMade.at(-1);
   if (adapter === undefined) throw new Error("no map was opened");
   return adapter;
 }
@@ -27,8 +27,8 @@ export async function mapFrom(html: string): Promise<MaplaceMapElement> {
   return map;
 }
 
+export { nextTask } from "../../adapter-kit/chunks";
 export { errorsOn } from "./dom";
-export { nextTask };
 
 export const ROME =
   '<maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome"></maplace-location>';

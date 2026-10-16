@@ -11,11 +11,8 @@ const FIXTURES = join(import.meta.dirname, "consumer");
 /** An error `tsc` reports: `path(line,col): error TSnnnn: …`, or `error TSnnnn: …` for none. */
 const TSC_ERROR = /^(?:(.+?)\(\d+,\d+\): )?error TS\d+:/;
 
-/**
- * A path outside the consumer project or in another installed package: errors there aren't
- * maplace's to fix (the consumer sits in the repo, so its dependencies resolve upward).
- */
-const NOT_OURS = /^\.\.\/|(?:^|\/)node_modules\/(?!maplace\/)/;
+/** A path in an installed package other than maplace. */
+const IN_OTHER_PACKAGE = /(?:^|\/)node_modules\/(?!maplace\/)/;
 
 export interface ConsumerTypeCheck {
   /** Errors in maplace's declarations or the fixture. */
@@ -48,8 +45,16 @@ export function typeCheckConsumer(dir: string, fixture: ConsumerFixture): Consum
 export function ourErrors(output: string): string[] {
   return output.split("\n").filter((line) => {
     const error = TSC_ERROR.exec(line);
-    return error !== null && !NOT_OURS.test(error[1] ?? "");
+    return error !== null && isOurs(error[1] ?? "");
   });
+}
+
+/**
+ * Whether an error at `path` is maplace's to fix: in its declarations or the fixture, not in a
+ * dependency (outside the project, as they resolve upward in the repo, or in another package).
+ */
+function isOurs(path: string): boolean {
+  return !path.startsWith("../") && !IN_OTHER_PACKAGE.test(path);
 }
 
 /** The files `tsc --listFiles` printed. */

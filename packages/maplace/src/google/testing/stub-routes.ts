@@ -12,6 +12,8 @@ interface StubLeg {
   readonly durationMillis: number | null;
 }
 
+const ONE_KM_LEG: StubLeg = { distanceMeters: 1000, durationMillis: 60_000 };
+
 type PolylineOptionsOf = (
   defaults: google.maps.PolylineOptions,
   details: google.maps.routes.RoutePolylineDetails,
@@ -31,7 +33,7 @@ export class StubRoute {
     },
   );
 
-  constructor(leg: StubLeg = { distanceMeters: 1000, durationMillis: 60_000 }) {
+  constructor(leg: StubLeg = ONE_KM_LEG) {
     this.legs = [leg];
   }
 }

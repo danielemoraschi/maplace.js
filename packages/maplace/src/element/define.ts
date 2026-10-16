@@ -35,9 +35,14 @@ export function defineProvider(name: string, factory: ProviderFactory): void {
 function reportOtherCopy(name: string, defined: CustomElementConstructor): void {
   if (otherCopyReported) return;
   otherCopyReported = true;
-  const other = (defined as { maplaceVersion?: unknown }).maplaceVersion ?? "(unknown version)";
   console.error(
-    `maplace ${MAPLACE_VERSION}: <${name}> is already defined by maplace ${String(other)}. ` +
+    `maplace ${MAPLACE_VERSION}: <${name}> is already defined by maplace ${versionOf(defined)}. ` +
       "Load one copy of maplace per page.",
   );
+}
+
+/** The version another copy of maplace gives its element class, if it gives one. */
+function versionOf(defined: CustomElementConstructor): string {
+  const { maplaceVersion } = defined as { maplaceVersion?: unknown };
+  return typeof maplaceVersion === "string" ? maplaceVersion : "(unknown version)";
 }

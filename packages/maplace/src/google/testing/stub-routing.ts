@@ -72,5 +72,5 @@ export function routingOnStubs() {
 /** The line drawn last from `route`. */
 export function lineOf(route: StubRoute): StubPolyline {
   const drawn = route.createPolylines.mock.results;
-  return drawn[drawn.length - 1]?.value[0] as StubPolyline;
+  return drawn.at(-1)?.value[0] as StubPolyline;
 }

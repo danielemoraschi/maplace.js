@@ -20,7 +20,9 @@ export function registerProvider(name: string, factory: ProviderFactory): void {
   }
   if (existing !== undefined) return;
   registered.set(name, factory);
-  for (const retry of [...waiting]) retry();
+  // A retry may stop waiting or wait again: retry those waiting now, not ones added meanwhile.
+  const waitingNow = Array.from(waiting);
+  for (const retry of waitingNow) retry();
 }
 
 /** Calls `retry` whenever a provider is registered, until the returned function is called. */

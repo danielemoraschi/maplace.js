@@ -3,7 +3,7 @@ import { defineProvider } from "./define";
 import { adapterAfter } from "./google-after-loading";
 import { googleSettingsOf } from "./google-attributes";
 import { mapsLoadingFor } from "./google-loading";
-import type { MaplaceMapElement, ProviderFactory } from "./index";
+import type { ProviderFactory } from "./index";
 
 /**
  * Registers the `google` provider for `<maplace-map>`; the CDN builds are this entry bundled.
@@ -22,4 +22,4 @@ const googleProvider: ProviderFactory = (element) => {
 
 defineProvider("google", googleProvider);
 
-export type { MaplaceMapElement };
+export type { MaplaceMapElement } from "./index";

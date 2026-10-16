@@ -19,7 +19,7 @@ export function bundledPackages(metafiles: readonly Metafile[]): string[] {
   const dirs = metafiles
     .flatMap((metafile) => Object.keys(metafile.inputs))
     .flatMap((input) => PACKAGE_IN_PATH.exec(input)?.[0] ?? []);
-  return [...new Set(dirs)].sort();
+  return [...new Set(dirs)].sort((a, b) => a.localeCompare(b));
 }
 
 /** The notices bundles owe the packages they took code from: each one's licence text. */

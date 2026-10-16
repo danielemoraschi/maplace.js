@@ -108,7 +108,7 @@ History up to the RFC freeze (2026-10-12): where a row and the RFC differ, the R
 | F6 | Grow `CLAUDE.md` | done | `CLAUDE.md`; this file's "How to work" points to it |
 | F7 | Renew maplacejs.com | do | expires 2027-02-25 (GoDaddy); consider transferring to Cloudflare Registrar |
 | F8 | Dependabot for Action SHAs and npm | do | GitHub reads its config only from the default branch: lands with R3 |
-| F9 | SonarQube analysis | done | `sonar-project.properties`; a report-only scan step in CI on `next` only (Community Build analyses one branch; its main branch is named `next`); `npm run sonar` locally. At R3 the SonarQube main branch and the step's branch move to `main` |
+| F9 | SonarQube analysis | done | `sonar-project.properties`; a report-only scan step in CI on `next` only (Community Build analyses one branch; its main branch is named `next`); `npm run sonar` locally. At R3 the SonarQube main branch and the step's branch move to `main`. Checked locally after each implementation (CLAUDE.md, Agent workflow), since CI's scan is report-only: on 2026-10-16 the gate was red after P1/T4 (15 new issues, most from V3/G7, and an unreviewed hotspot on `npm` looked up on `PATH`), all fixed: `npm pack` runs npm's own CLI with the running Node |
 
 ## 3. Core (headless)
 | # | Item | Status | Note |

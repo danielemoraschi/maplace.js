@@ -10,7 +10,7 @@ export const MarkerClustererEvents = { CLUSTERING_END: "clusteringend" } as cons
 export class SuperClusterAlgorithm {
   protected markers: Marker[] = [];
 
-  constructor(_options: object) {}
+  constructor(readonly options: object) {}
 
   /** Reads `markers` as a render would. */
   read(markers: Marker[]): void {

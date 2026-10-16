@@ -12,8 +12,11 @@ export interface BuildDirs {
   readonly packed: string;
 }
 
+/** Where `npm run build` writes, in the repo. */
+export const REPO_BUILD_DIRS: BuildDirs = { dist: DIST, packed: PACKED };
+
 /** The whole build: `dist` (npm ESM, declarations, the CDN scripts), then the package staged. */
-export async function buildPackage({ dist, packed }: BuildDirs = { dist: DIST, packed: PACKED }) {
+export async function buildPackage({ dist, packed }: BuildDirs = REPO_BUILD_DIRS): Promise<void> {
   rmSync(resolve(ROOT, dist), { recursive: true, force: true });
   buildEsm(dist);
   emitDeclarations(dist);
