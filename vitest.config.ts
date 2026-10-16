@@ -1,4 +1,5 @@
 import { playwright } from "@vitest/browser-playwright";
+import { defaultClientConditions } from "vite";
 import { configDefaults, defineConfig } from "vitest/config";
 import { MAPS_TEST_PORT } from "./packages/maplace/src/google/testing/maps-origin.ts";
 import { MOUSE_COMMANDS } from "./packages/maplace/src/google/testing/mouse-commands.ts";
@@ -34,6 +35,8 @@ export default defineConfig({
       },
       {
         extends: true,
+        // The examples import `maplace` by name, as readers do: resolved to the source, as in tsconfig.
+        resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
         test: {
           name: "browser",
           include: [BROWSER_TESTS],
