@@ -4,6 +4,11 @@
   "private": true,
   "description": "A list of locations becomes a map plus a synced list, in a few lines.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielemoraschi/maplace.js.git",
+    "directory": "packages/maplace"
+  },
   "type": "module",
   "files": [
     "dist",

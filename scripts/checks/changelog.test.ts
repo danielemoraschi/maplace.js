@@ -1,33 +1,16 @@
-import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { installedGit } from "../build/installed-tool.ts";
-import { tempDir } from "../build/temp-dir.ts";
+import { commitAll, testGit as git, newTestRepo } from "../build/test-repo.ts";
 import { check } from "./changelog.ts";
-
-/** Git in `repo`, with no dependence on the machine's own git config. */
-function git(repo: string, ...args: string[]): string {
-  const identity = [
-    "-c",
-    "user.name=Test",
-    "-c",
-    "user.email=test@example.com",
-    "-c",
-    "commit.gpgsign=false",
-  ];
-  return execFileSync(installedGit(), [...identity, ...args], { cwd: repo, encoding: "utf8" });
-}
 
 function commit(repo: string, message: string, changelog?: string): void {
   if (changelog !== undefined) writeFileSync(join(repo, "CHANGELOG.md"), changelog);
-  git(repo, "add", "-A");
-  git(repo, "commit", "--allow-empty", "-q", "-m", message);
+  commitAll(repo, message);
 }
 
 function newRepo(): string {
-  const repo = tempDir("changelog");
-  git(repo, "init", "-q");
+  const repo = newTestRepo("changelog");
   commit(repo, "[add] before the changelog, fixes #1");
   return repo;
 }
@@ -48,12 +31,12 @@ describe("the CHANGELOG check", () => {
     commit(
       repo,
       "[add] P4: CHANGELOG.md",
-      "# Changelog\n\n## 0.2.10 (2017-04-02)\n\n- 2017-04-02 Old #9\n",
+      "# Changelog\n\n## 0.2.10 (2017-04-02)\n\n- 2017-04-02 Fixed old #9\n",
     );
     commit(
       repo,
       "[fix] the list\n\nFixes #12",
-      "# Changelog\n\n- 2026-10-20 Fixed the list #12\n\n## 0.2.10 (2017-04-02)\n\n- 2017-04-02 Old #9\n",
+      "# Changelog\n\n- 2026-10-20 Fixed the list #12\n\n## 0.2.10 (2017-04-02)\n\n- 2017-04-02 Fixed old #9\n",
     );
     commit(repo, "[fix] again: closes #9 and resolves #13");
     const sha = git(repo, "rev-parse", "--short", "HEAD").trim();
@@ -72,9 +55,11 @@ describe("the CHANGELOG check", () => {
     expect(check(repo)).toEqual([]);
   });
 
-  it("names a line without its date", () => {
+  it("names a line without its date and verb", () => {
     const repo = newRepo();
     commit(repo, "[add] P4: CHANGELOG.md", "# Changelog\n\n- Changed everything\n");
-    expect(check(repo)).toEqual(["CHANGELOG.md line 3: - Changed everything has no date"]);
+    expect(check(repo)).toEqual([
+      "CHANGELOG.md line 3: - Changed everything doesn't open `- YYYY-MM-DD Added/Changed/Fixed/Removed`",
+    ]);
   });
 });

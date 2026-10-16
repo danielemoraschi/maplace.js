@@ -19,7 +19,9 @@
     "sonar": "node --env-file-if-exists=.env.local node_modules/.bin/sonar-scanner-npm",
     "sizes": "node scripts/sizes.ts",
     "build": "node scripts/build.ts",
-    "coverage": "node scripts/coverage.ts"
+    "coverage": "node scripts/coverage.ts",
+    "release": "node scripts/release.ts",
+    "release-notes": "node scripts/release-notes.ts"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.5",

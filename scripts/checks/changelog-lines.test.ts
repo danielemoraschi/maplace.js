@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { issuesClosedBy, issuesNamedIn, undatedLines, unreleasedLines } from "./changelog-lines.ts";
+import { issuesClosedBy, issuesNamedIn, malformedLines, verbOf } from "./changelog-lines.ts";
 
 const CHANGELOG = `# Changelog
 
@@ -40,15 +40,6 @@ describe("issuesClosedBy", () => {
   });
 });
 
-describe("unreleasedLines", () => {
-  it("are the lines above the first version heading", () => {
-    expect(unreleasedLines(CHANGELOG)).toEqual([
-      "- 2026-10-20 Fixed the list's focus after a reorder #12",
-      "- 2026-10-16 Changed everything: maplace 1.0",
-    ]);
-  });
-});
-
 describe("issuesNamedIn", () => {
   it("reads the issues at each line's end, not those in its text", () => {
     expect(
@@ -57,11 +48,25 @@ describe("issuesNamedIn", () => {
   });
 });
 
-describe("undatedLines", () => {
-  it("names each list line without its date, by line number", () => {
-    expect(undatedLines(`${CHANGELOG}- Fixed something\n- 2017-4-2 Short date\n`)).toEqual([
+describe("malformedLines", () => {
+  it("names each list line without its date or its verb, by line number", () => {
+    const lines =
+      "- Fixed something\n- 2017-4-2 Fixed a short date\n- 2026-10-16 Tweaked a thing\n";
+    expect(malformedLines(`${CHANGELOG}${lines}`)).toEqual([
       "line 11: - Fixed something",
-      "line 12: - 2017-4-2 Short date",
+      "line 12: - 2017-4-2 Fixed a short date",
+      "line 13: - 2026-10-16 Tweaked a thing",
     ]);
+  });
+
+  it("passes each of the four verbs", () => {
+    const lines = ["Added", "Changed", "Fixed", "Removed"].map((verb) => `- 2026-10-16 ${verb} x`);
+    expect(malformedLines(lines.join("\n"))).toEqual([]);
+  });
+});
+
+describe("verbOf", () => {
+  it("is the word after a line's date", () => {
+    expect(verbOf("- 2026-10-16 Removed the old menu #3")).toBe("Removed");
   });
 });

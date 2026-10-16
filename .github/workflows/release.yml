@@ -1,0 +1,162 @@
+# Release maplace: run by hand from the Actions tab on main, with the version (P2, docs/MODERNIZE.md).
+# The logic is in scripts/release/ and tested there; this file runs it (scripts/release/release-workflow.test.ts
+# holds the two together). Three jobs, each safe to re-run with "Re-run failed jobs":
+#   release   the version written and CHANGELOG.md headed (npm run release), the result committed, verified,
+#             tagged v<version> and pushed to main with its tag in one atomic push. Refused, before anything is
+#             pushed, when the version isn't above every release from v1.0.0, is below what the CHANGELOG lines
+#             call for, or the last release isn't on npm.
+#   publish   the tag built and published to npm through trusted publishing (OIDC, provenance included),
+#             `next` for a pre-release, `latest` otherwise. A version already on npm is skipped.
+#   announce  the GitHub release, its notes the version's CHANGELOG lines (npm run release-notes). An existing
+#             release is skipped.
+# Recovery: a publish or announce that failed is re-run (it starts again from the tag); a push refused because
+# main moved is dispatched again; a release tagged whose publish can't be made to pass blocks the next dispatch
+# until it is on npm.
+# A push made with GITHUB_TOKEN starts no CI run: the release job's own checks are the release commit's gate.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version: x.y.z, or x.y.z-pre.release for the next dist-tag"
+        type: string
+        required: true
+
+permissions: {}
+
+env:
+  VERSION: ${{ inputs.version }}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write # the release commit and its tag, pushed by the last step alone
+    env:
+      # The release commit's author and committer, and its tag's tagger.
+      GIT_AUTHOR_NAME: github-actions[bot]
+      GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+      GIT_COMMITTER_NAME: github-actions[bot]
+      GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+    outputs:
+      tag: ${{ steps.prepare.outputs.tag }}
+      dist-tag: ${{ steps.prepare.outputs.dist-tag }}
+      prerelease: ${{ steps.prepare.outputs.prerelease }}
+    steps:
+      - name: Releases come from main
+        run: test "$GITHUB_REF" = refs/heads/main || { echo "::error::release from main, not $GITHUB_REF"; exit 1; }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # every tag, and the history the CHANGELOG check reads
+          persist-credentials: false # npm ci and the suite run code from npm: the token goes to the push alone
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      # Node alone runs the release script and npm view: a refusal comes before minutes of installing.
+      - name: The version written and CHANGELOG.md headed, or why not
+        id: prepare
+        run: npm run --silent release -- "$VERSION" >> "$GITHUB_OUTPUT"
+      - name: The last release is on npm
+        if: steps.prepare.outputs.last != ''
+        env:
+          LAST: ${{ steps.prepare.outputs.last }}
+        run: |
+          test "$(npm view "maplace@$LAST" version)" = "$LAST" || {
+            echo "::error::maplace $LAST is tagged and not on npm: re-run its release's publish job first"
+            exit 1
+          }
+      - name: The release commit, holding only what the release wrote
+        env:
+          FILES: ${{ steps.prepare.outputs.files }}
+          TAG: ${{ steps.prepare.outputs.tag }}
+        run: |
+          read -r -a files <<< "$FILES"
+          git add -- "${files[@]}"
+          git commit -q -m "[upd] Release $TAG"
+          test -z "$(git status --porcelain)"
+      # CI's gates on the release commit (release-workflow.test.ts holds the two lists together).
+      - run: npm ci
+      - run: npm run check
+      - run: npm run typecheck
+      - run: npx --no playwright install --with-deps --only-shell chromium
+      - run: npm test
+      - run: npm run coverage
+      - name: The checks changed nothing
+        run: git diff --exit-code HEAD
+      - name: Tag and push, both or neither
+        env:
+          TAG: ${{ steps.prepare.outputs.tag }}
+          TOKEN: ${{ github.token }}
+        run: |
+          git tag -a "$TAG" -m "maplace $VERSION"
+          # No hooks: the suite ran npm code on this runner, which mustn't see the token in a hook's URL.
+          git -c core.hooksPath=/dev/null push --atomic \
+            "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:main "$TAG"
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: release # npm's trusted publisher names it; its reviewers approve each publish
+    permissions:
+      contents: read
+      id-token: write # npm's trusted publishing, and the provenance statement
+    env:
+      DIST_TAG: ${{ needs.release.outputs.dist-tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+          persist-credentials: false
+      # No registry-url: it writes an .npmrc with a placeholder token, which npm would send instead of OIDC.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Publish, unless a run before did
+        run: |
+          if [ "$(npm view "maplace@$VERSION" version)" = "$VERSION" ]; then
+            echo "maplace $VERSION is already on npm: this is a re-run"
+            exit 0
+          fi
+          # Trusted publishing needs npm 11.5.1 or later.
+          test "$(printf '%s\n' 11.5.1 "$(npm --version)" | sort -V | head -n 1)" = 11.5.1
+          npm ci
+          npm run build
+          npm publish ./packages/maplace/packed --tag "$DIST_TAG" --access public --ignore-scripts
+
+  announce:
+    needs: [release, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # the GitHub release
+    env:
+      TAG: ${{ needs.release.outputs.tag }}
+      PRERELEASE: ${{ needs.release.outputs.prerelease }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: The GitHub release, unless a run before made it
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "$TAG is already released: this is a re-run"
+            exit 0
+          fi
+          npm run --silent release-notes -- "$VERSION" > "$RUNNER_TEMP/notes.md"
+          prerelease=()
+          if [ "$PRERELEASE" = true ]; then prerelease=(--prerelease); fi
+          gh release create "$TAG" --verify-tag --title "maplace $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" "${prerelease[@]}"

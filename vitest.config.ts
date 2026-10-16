@@ -18,9 +18,8 @@ export default defineConfig({
         "**/*.test.ts",
         "**/src/testing/**",
         "**/src/google/testing/**",
-        "scripts/check.ts",
-        "scripts/build.ts",
-        "scripts/coverage.ts",
+        // The command-line entry points: their logic is in the folders below, tested there.
+        "scripts/*.ts",
         "scripts/checks/consumer/**",
       ],
     },

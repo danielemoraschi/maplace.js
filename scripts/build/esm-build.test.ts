@@ -45,6 +45,15 @@ describe("the npm ESM build", () => {
     }
   });
 
+  it("ships a changelog whose links reach the repo at the version's tag", () => {
+    const changelog = readFileSync(join(packageDir, "CHANGELOG.md"), "utf8");
+    const { version } = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8"));
+    expect(changelog).toContain(
+      `(https://github.com/danielemoraschi/maplace.js/blob/v${version}/docs/rfc-1.0.md)`,
+    );
+    expect(changelog).not.toMatch(/\]\((?!https?:|#)/);
+  });
+
   it("writes every entry the packed manifest names", () => {
     const manifest = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8")) as Manifest;
     const entries = Object.values(manifest.exports).flatMap((target) =>

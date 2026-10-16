@@ -12,6 +12,7 @@ Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm run sizes`: each budget with what it measures now and the headroom left.
 - `npm run coverage`: after `npm test`, the line coverage of the core (what the `maplace` entry loads) and of the package against the floors of RFC §3 Numbers; a CI step.
 - `npm run build`: `packages/maplace/dist` (npm ESM and `.d.ts`, the two CDN scripts), then `packages/maplace/packed`, the package as npm packs it (no `maplace:source`, no `./react`).
+- `npm run release <version>`: what the release workflow (`.github/workflows/release.yml`, P2) runs first, in this checkout: the version written (manifest, lockfile, `MAPLACE_VERSION`) and the unreleased CHANGELOG lines headed `## <version> (<date>)`, or why the version can't be released; `npm run release-notes <version>` prints that version's GitHub release notes. A local run is a rehearsal: undo it with `git checkout`.
 - `npm run typecheck`: source, examples, type tests, then `scripts/`.
 - `npm test`: Vitest, with a coverage report (`coverage/lcov.info`): the `node` project (node and happy-dom) and the `browser` project (`*.browser.test.ts`, headless Chromium, served from `localhost:63315` when the port is free); `--project <name>` runs one. Tests on real Google Maps run when `VITE_MAPS_KEY` is set (in `.env.local`; the key must allow `http://localhost:63315/*`) and skip otherwise; CI runs them on `next`. The node project also checks the package as npm would pack it (built into temp dirs): publint, attw, and a strict consumer type-check (`scripts/checks/packed-package.test.ts`).
 - `npm run fix`: Biome's safe fixes and formatting.
@@ -41,5 +42,5 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 - Before any change merges, run on the branch diff, in order: `/simplify`, then `/code-review`, then `/clean-code` (a user skill; skip it if unavailable and say so). Fix findings, then merge. Documentation-only changes skip the chain.
 - After the chain, before committing: `npm run sonar`, then read the quality gate and open issues. A red gate is fixed, or explained to the user, before the change merges; CI's own scan is report-only.
 - A fix lands with a test shown failing first.
-- A change a reader would notice adds its dated line at the top of `CHANGELOG.md` in the same commit (`- YYYY-MM-DD Added/Fixed/Changed …`, a closed issue as `#N` at the end).
+- A change a reader would notice adds its dated line at the top of `CHANGELOG.md` in the same commit (`- YYYY-MM-DD Added/Changed/Fixed/Removed …`, the verb required, a closed issue as `#N` at the end).
 - Commit message style: `[add]`, `[upd]`, `[fix]` prefix, short summary; a commit that closes an issue says `Fixes #N` (the CHANGELOG test, P4 in `docs/MODERNIZE.md`, reads it).

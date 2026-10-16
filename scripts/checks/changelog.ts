@@ -1,11 +1,17 @@
-import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { installedGit } from "../build/installed-tool.ts";
+import { gitIn } from "../build/git.ts";
 import { ROOT } from "../build/package.ts";
-import { issuesClosedBy, issuesNamedIn, listLines, undatedLines } from "./changelog-lines.ts";
+import {
+  CHANGELOG_FILE as CHANGELOG,
+  issuesClosedBy,
+  issuesNamedIn,
+  listLines,
+  malformedLines,
+  VERBS,
+} from "./changelog-lines.ts";
 
-const CHANGELOG = "CHANGELOG.md";
+const LINE_OPENING = `\`- YYYY-MM-DD ${VERBS.join("/")}\``;
 
 interface Commit {
   readonly sha: string;
@@ -14,7 +20,7 @@ interface Commit {
 
 /**
  * Each commit since CHANGELOG.md was created that closes an issue no line names, and
- * each line without its date. The history before the file is not judged.
+ * each line not opening with its date and what it did. The history before the file is not judged.
  */
 export function check(repo: string = ROOT): string[] {
   const path = join(repo, CHANGELOG);
@@ -30,7 +36,7 @@ export function check(repo: string = ROOT): string[] {
         .filter((issue) => !named.has(issue))
         .map((issue) => `${sha} closes #${issue}, which no line of ${CHANGELOG} names`),
     ),
-    ...undatedLines(changelog).map((line) => `${CHANGELOG} ${line} has no date`),
+    ...malformedLines(changelog).map((line) => `${CHANGELOG} ${line} doesn't open ${LINE_OPENING}`),
   ];
 }
 
@@ -54,9 +60,4 @@ function commitsAfter(repo: string, baseline: string): Commit[] {
       const [sha = "", message = ""] = record.split("\0");
       return { sha: sha.trim(), message };
     });
-}
-
-/** The installed git, with fixed arguments and no shell. */
-function gitIn(repo: string, args: readonly string[]): string {
-  return execFileSync(installedGit(), args, { cwd: repo, encoding: "utf8" });
 }
