@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { type CameraSite, cameraMove } from "../adapter-kit/camera-move";
 import { hasSize, sizeOf } from "../adapter-kit/map-size";
 import type { MapSize } from "../adapter-kit/web-mercator";

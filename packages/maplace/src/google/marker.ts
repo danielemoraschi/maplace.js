@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 
 import { placementOf } from "../adapter-kit/placement";
 import { stackRank } from "../adapter-kit/stacking";

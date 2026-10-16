@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng } from "../geometry";
 import type { LocationState } from "../location";

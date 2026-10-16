@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { CameraMove } from "../adapter-kit/camera-move";
 
 /** Google's call for each kind of move. */

@@ -3,15 +3,18 @@ import * as rfc from "./checks/rfc.ts";
 import * as sizes from "./checks/sizes.ts";
 
 /** Repo checks run by `npm run check` after Biome; each returns its problems. */
-const CHECKS: Readonly<Record<string, () => string[]>> = {
+const CHECKS: Readonly<Record<string, () => string[] | Promise<string[]>>> = {
   "import layers": imports.check,
   "RFC ↔ types": rfc.check,
   "size budgets": sizes.check,
 };
 
-const problems = Object.entries(CHECKS).flatMap(([name, check]) =>
-  check().map((problem) => `${name}: ${problem}`),
+const reports = await Promise.all(
+  Object.entries(CHECKS).map(async ([name, check]) =>
+    (await check()).map((problem) => `${name}: ${problem}`),
+  ),
 );
+const problems = reports.flat();
 for (const problem of problems) console.error(problem);
 if (problems.length > 0) process.exitCode = 1;
 else console.log(`Repo checks passed: ${Object.keys(CHECKS).join(", ")}.`);

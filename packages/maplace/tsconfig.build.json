@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "files": ["src/index.ts", "src/google/index.ts", "src/element/index.ts", "src/element/google.ts"],
+  "include": []
+}

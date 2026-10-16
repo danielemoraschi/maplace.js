@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { MaplaceError } from "../errors";
 
 /** The Maps JS libraries the adapter draws with. */

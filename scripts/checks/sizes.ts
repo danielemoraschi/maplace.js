@@ -1,58 +1,49 @@
-import { type Bundle, bundle, gzipKilobytes, reachableOutputs } from "./bundle-size.ts";
+import { type CdnScript, cdnBuildOptions } from "../build/cdn-builds.ts";
+import { esmBuildOptions } from "../build/esm-build.ts";
+import { PACKAGE_ENTRIES } from "../build/package.ts";
+import {
+  type Bundle,
+  bundleInMemory,
+  gzipKilobytes,
+  reachableOutputs,
+  scriptsOf,
+} from "./bundle-size.ts";
 import { missingFrom, RFC } from "./rfc.ts";
 import { rfcBudgets } from "./rfc-numbers.ts";
 
-const SRC = "packages/maplace/src";
-const CORE = `${SRC}/index.ts`;
-const GOOGLE = `${SRC}/google/index.ts`;
-const ELEMENT_GOOGLE = `${SRC}/element/google.ts`;
-
 /**
- * How one budget of RFC §3 Numbers is measured: what a page loads for `entry`, in one of the
- * bundles, with or without what it imports on demand, and less what it shares with `beside`.
+ * How one budget of RFC §3 Numbers is measured, on the builds `npm run build` makes: what a page
+ * loads for an npm `entry`, less what it shares with `beside`; or a CDN script.
  */
-export interface SizeMeasure {
+export type SizeMeasure = {
   readonly name: string;
   /** The budget's row in the RFC's Numbers table, its first cell exactly. */
   readonly rfcRow: string;
-  readonly bundle: keyof Bundles;
-  readonly entry: string;
-  readonly dynamic: boolean;
-  readonly beside?: string;
-}
-
-/**
- * The bundles every budget is measured on, built as the package will be: the core and Google
- * entries sharing chunks (one copy of the core), and the CDN shape, its clusterer a lazy chunk.
- */
-interface Bundles {
-  readonly adapter: Bundle;
-  readonly element: Bundle;
-}
+} & (
+  | { readonly kind: "esm"; readonly entry: string; readonly beside?: string }
+  | { readonly kind: "cdn"; readonly script: CdnScript }
+);
 
 export const SIZE_MEASURES: readonly SizeMeasure[] = [
-  { name: "maplace", rfcRow: "Core (`maplace`)", bundle: "adapter", entry: CORE, dynamic: false },
+  { name: "maplace", rfcRow: "Core (`maplace`)", kind: "esm", entry: PACKAGE_ENTRIES.core },
   {
     name: "maplace/google",
     rfcRow: "Google adapter (`maplace/google`)",
-    bundle: "adapter",
-    entry: GOOGLE,
-    dynamic: false,
-    beside: CORE,
+    kind: "esm",
+    entry: PACKAGE_ENTRIES.google,
+    beside: PACKAGE_ENTRIES.core,
   },
   {
     name: "element CDN",
     rfcRow: "Element CDN build (core + Google + list view + element)",
-    bundle: "element",
-    entry: ELEMENT_GOOGLE,
-    dynamic: false,
+    kind: "cdn",
+    script: "plain",
   },
   {
     name: "element CDN with clustering",
     rfcRow: "Element CDN build with clustering",
-    bundle: "element",
-    entry: ELEMENT_GOOGLE,
-    dynamic: true,
+    kind: "cdn",
+    script: "cluster",
   },
 ];
 
@@ -62,29 +53,33 @@ export interface Measurement {
   readonly kilobytes: number;
 }
 
-/** Every budget measured, on bundles built for `target` (ES2020 unless given). */
-export function measureSizes(target?: string): Measurement[] {
-  const bundles: Bundles = {
-    adapter: bundle({ entries: [CORE, GOOGLE], splitting: true, target }),
-    element: bundle({ entries: [ELEMENT_GOOGLE], splitting: true, target }),
-  };
+/** Every budget measured on the package's builds, made in memory and minified. */
+export async function measureSizes(): Promise<Measurement[]> {
+  const [esm, plain, cluster] = await Promise.all([
+    bundleInMemory(esmBuildOptions()),
+    bundleInMemory(cdnBuildOptions("plain")),
+    bundleInMemory(cdnBuildOptions("cluster")),
+  ]);
+  const scripts: Record<CdnScript, Bundle> = { plain, cluster };
   return SIZE_MEASURES.map((measure) => {
-    const bundled = bundles[measure.bundle];
-    return { measure, kilobytes: gzipKilobytes(bundled, loadedBy(bundled, measure)) };
+    if (measure.kind === "cdn") {
+      const script = scripts[measure.script];
+      return { measure, kilobytes: gzipKilobytes(script, scriptsOf(script)) };
+    }
+    return { measure, kilobytes: gzipKilobytes(esm, loadedBy(esm, measure)) };
   });
 }
 
 /** Each entry over its RFC budget, and each budget measured or written in one place only. */
-export function check(
-  measurements: readonly Measurement[] = measureSizes(),
+export async function check(
+  measured?: readonly Measurement[],
   budgets: ReadonlyMap<string, number> = rfcBudgets(),
-): string[] {
-  const measured = measurements.map(({ measure }) => measure.rfcRow);
+): Promise<string[]> {
+  const measurements = measured ?? (await measureSizes());
+  const rows = measurements.map(({ measure }) => measure.rfcRow);
   return [
-    ...missingFrom([...budgets.keys()], measured).map((row) => `${row} has no budget in ${RFC}`),
-    ...missingFrom(measured, [...budgets.keys()]).map(
-      (row) => `${row} in ${RFC} is never measured`,
-    ),
+    ...missingFrom([...budgets.keys()], rows).map((row) => `${row} has no budget in ${RFC}`),
+    ...missingFrom(rows, [...budgets.keys()]).map((row) => `${row} in ${RFC} is never measured`),
     ...measurements.flatMap(({ measure, kilobytes }) => {
       const budget = budgets.get(measure.rfcRow);
       if (budget === undefined || kilobytes <= budget) return [];
@@ -93,9 +88,11 @@ export function check(
   ];
 }
 
-function loadedBy(bundled: Bundle, { entry, dynamic, beside }: SizeMeasure): Set<string> {
-  const loaded = reachableOutputs(bundled.metafile, entry, { dynamic });
-  if (beside === undefined) return loaded;
-  const already = reachableOutputs(bundled.metafile, beside, { dynamic: false });
-  return new Set([...loaded].filter((path) => !already.has(path)));
+type EsmMeasure = Extract<SizeMeasure, { kind: "esm" }>;
+
+function loadedBy(esm: Bundle, { entry, beside }: EsmMeasure): string[] {
+  const loaded = reachableOutputs(esm.metafile, entry);
+  if (beside === undefined) return [...loaded];
+  const already = reachableOutputs(esm.metafile, beside);
+  return [...loaded].filter((path) => !already.has(path));
 }

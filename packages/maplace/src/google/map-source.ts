@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { GoogleLibraries } from "./libraries";
 import { GOOGLE_COLOR_SCHEMES, type GoogleAdapterOptions } from "./options";
 

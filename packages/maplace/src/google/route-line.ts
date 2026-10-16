@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { ROUTE_LINE_RANK } from "../adapter-kit/stacking";
 import type { LineStyle } from "../style";
 import { styleValues } from "./shape-style";

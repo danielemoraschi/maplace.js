@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run typecheck
+      - run: npm run build
       - run: npx --no playwright install --with-deps --only-shell chromium
       # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed.
       # Without the key the Maps tests would only skip, so a missing secret fails instead.

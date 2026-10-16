@@ -17,7 +17,8 @@
     "fix": "biome check --write",
     "test": "vitest run --coverage",
     "sonar": "node --env-file-if-exists=.env.local node_modules/.bin/sonar-scanner-npm",
-    "sizes": "node scripts/sizes.ts"
+    "sizes": "node scripts/sizes.ts",
+    "build": "node scripts/build.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",

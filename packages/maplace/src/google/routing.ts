@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 
 import { anchorOf } from "../adapter-kit/anchor";
 import { type Journey, journeyOf, sameJourney } from "../adapter-kit/journey";

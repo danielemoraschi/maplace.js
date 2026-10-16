@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { Journey } from "../adapter-kit/journey";
 import type { RouteResult } from "../route";
 import { loadRoutesLibrary } from "./libraries";

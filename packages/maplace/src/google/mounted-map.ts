@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { AdapterHost, MountContext } from "../adapter";
 import type { ResolvedPopupOptions } from "../popup";
 import type { GoogleLibraries } from "./libraries";

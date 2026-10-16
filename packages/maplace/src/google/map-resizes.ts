@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { hasSize, sizeOf } from "../adapter-kit/map-size";
 import type { MapSize } from "../adapter-kit/web-mercator";
 import { frames } from "./frames";

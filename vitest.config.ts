@@ -19,6 +19,7 @@ export default defineConfig({
         "**/src/testing/**",
         "**/src/google/testing/**",
         "scripts/check.ts",
+        "scripts/build.ts",
       ],
     },
     projects: [

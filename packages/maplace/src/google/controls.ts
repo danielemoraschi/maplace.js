@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { Adapter, ControlPosition } from "../adapter";
 import { googlePosition } from "./control-positions";
 import type { MapPart, MountedMap } from "./mounted-map";

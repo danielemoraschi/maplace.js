@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { ResolvedView } from "../viewport";
 
 /** The view the map was last moved to, while nothing else has moved it. */

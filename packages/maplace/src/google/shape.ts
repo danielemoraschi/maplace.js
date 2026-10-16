@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { anchorOf } from "../adapter-kit/anchor";
 import { stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";

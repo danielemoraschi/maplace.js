@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { PresentationState } from "../adapter";
 import { NOTHING_PRESENTED } from "../adapter-kit/presentation-changes";
 import type { MountedMap } from "./mounted-map";

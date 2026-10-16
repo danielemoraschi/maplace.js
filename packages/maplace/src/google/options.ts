@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { type Assert, recordOf } from "../validate/record";
 import { checkNonEmptyString, checkObject, isElement, oneOf, optional } from "../validate/values";

@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import type { Cluster, Renderer } from "@googlemaps/markerclusterer";
 import { CLUSTER_RANK } from "../adapter-kit/stacking";
 import type { GoogleLibraries } from "./libraries";

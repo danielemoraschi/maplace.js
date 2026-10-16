@@ -5,10 +5,10 @@ const row = (...cells: string[]) =>
   cells.map((cell, i) => (i === 0 ? cell.padEnd(28) : cell.padStart(9))).join("");
 
 /** `npm run sizes`: each budget, what it measures now, and how much room is left (gzip kB). */
-function printSizes(): void {
+async function printSizes(): Promise<void> {
   const budgets = rfcBudgets();
   console.log(row("gzip kB", "budget", "measured", "headroom"));
-  for (const { measure, kilobytes } of measureSizes()) {
+  for (const { measure, kilobytes } of await measureSizes()) {
     const budget = budgets.get(measure.rfcRow) ?? Number.NaN;
     console.log(
       row(measure.name, String(budget), kilobytes.toFixed(2), (budget - kilobytes).toFixed(2)),
@@ -16,4 +16,4 @@ function printSizes(): void {
   }
 }
 
-printSizes();
+await printSizes();

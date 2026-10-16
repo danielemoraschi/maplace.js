@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { MaplaceError } from "../errors";
 import type { GoogleLibraries } from "./libraries";
 import type { Look } from "./placed-location";
@@ -42,6 +42,8 @@ export const directMarkers: MarkerLayerFactory = (map) => ({
 export async function loadMarkerLayer(cluster: boolean): Promise<MarkerLayerFactory> {
   if (!cluster) return directMarkers;
   const { clusteredMarkers } = await import("./clustered-markers").catch((cause: unknown) => {
+    // A build without clustering gives its own reason.
+    if (cause instanceof MaplaceError) throw cause;
     throw new MaplaceError("provider-load-failed", "attach: maplace's clustering failed to load", {
       cause,
     });

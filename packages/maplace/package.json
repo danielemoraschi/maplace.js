@@ -8,6 +8,10 @@
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "./dist/element/index.js",
+    "./dist/element/google.js"
+  ],
   "exports": {
     ".": {
       "maplace:source": "./src/index.ts",
@@ -36,5 +40,13 @@
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "2.6.2"
+  },
+  "peerDependencies": {
+    "@types/google.maps": "^3.66.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/google.maps": {
+      "optional": true
+    }
   }
 }

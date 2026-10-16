@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+/// <reference types="google.maps" preserve="true" />
 import { latLngOf } from "./lat-lng";
 import type { PlacedMarker, PlacingSite } from "./placed-location";
 

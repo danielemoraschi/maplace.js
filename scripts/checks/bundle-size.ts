@@ -1,52 +1,36 @@
 import { relative } from "node:path";
 import { gzipSync } from "node:zlib";
-import { buildSync, type Metafile } from "esbuild";
+import { type BuildOptions, build, type Metafile } from "esbuild";
+import { ROOT } from "../build/package.ts";
 
-/** What to bundle: entry files, and whether code they share goes in chunks of its own. */
-export interface BundleSpec {
-  readonly entries: readonly string[];
-  readonly splitting: boolean;
-  /** The JavaScript the bundle is written for; RFC §3 promises evergreen browsers, ES2020. */
-  readonly target?: string | undefined;
-}
-
-/** A bundle built in memory: esbuild's account of it, and each output's bytes by path. */
+/** A build made in memory: esbuild's account of it, and each output's bytes by path. */
 export interface Bundle {
   readonly metafile: Metafile;
   readonly outputs: ReadonlyMap<string, Uint8Array>;
 }
 
-const SHIPPED_TARGET = "es2020";
-
-/** Bundles `spec` minified, as a page gets it, writing nothing. */
-export function bundle(spec: BundleSpec): Bundle {
-  const result = buildSync({
-    entryPoints: [...spec.entries],
-    bundle: true,
-    format: "esm",
+/** Builds as `options` say, minified as a page gets it, writing nothing. */
+export async function bundleInMemory(options: BuildOptions): Promise<Bundle> {
+  const result = await build({
+    ...options,
     minify: true,
-    splitting: spec.splitting,
-    target: spec.target ?? SHIPPED_TARGET,
-    outdir: "out",
+    // Measured without their maps, which pages load only in devtools.
+    sourcemap: false,
     write: false,
     metafile: true,
     logLevel: "silent",
   });
   const outputs = new Map(
-    result.outputFiles.map((file) => [relative(".", file.path), file.contents]),
+    result.outputFiles.map((file) => [relative(ROOT, file.path), file.contents]),
   );
   return { metafile: result.metafile, outputs };
 }
 
 /**
- * The outputs a page loads for `entry`: its own and those it imports, statically, and with
- * `dynamic` also those it imports on demand (the clustering chunk).
+ * The outputs a page loads for `entry`: its own and those it imports statically, not those it
+ * imports on demand (the clustering chunk).
  */
-export function reachableOutputs(
-  metafile: Metafile,
-  entry: string,
-  { dynamic }: { readonly dynamic: boolean },
-): Set<string> {
+export function reachableOutputs(metafile: Metafile, entry: string): Set<string> {
   const start = Object.keys(metafile.outputs).find(
     (path) => metafile.outputs[path]?.entryPoint === entry,
   );
@@ -57,11 +41,15 @@ export function reachableOutputs(
     if (reached.has(path)) continue;
     reached.add(path);
     for (const { path: imported, kind } of metafile.outputs[path]?.imports ?? []) {
-      if (kind === "import-statement" || (dynamic && kind === "dynamic-import"))
-        queue.push(imported);
+      if (kind === "import-statement") queue.push(imported);
     }
   }
   return reached;
+}
+
+/** The scripts of a bundle, without their source maps. */
+export function scriptsOf(bundled: Bundle): string[] {
+  return [...bundled.outputs.keys()].filter((path) => path.endsWith(".js"));
 }
 
 /** Each output gzipped as it is served, together, in kB (1,000 bytes). */

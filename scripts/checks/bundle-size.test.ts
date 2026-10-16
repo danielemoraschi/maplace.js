@@ -27,23 +27,18 @@ const METAFILE: Metafile = {
 
 describe("reachableOutputs", () => {
   it("follows static imports into shared chunks", () => {
-    expect(reachableOutputs(METAFILE, "src/core.ts", { dynamic: false })).toEqual(
+    expect(reachableOutputs(METAFILE, "src/core.ts")).toEqual(
       new Set(["out/core.js", "out/shared.js"]),
     );
   });
 
-  it("leaves chunks imported on demand out, unless asked", () => {
-    expect(reachableOutputs(METAFILE, "src/google.ts", { dynamic: false })).toEqual(
+  it("leaves chunks imported on demand out", () => {
+    expect(reachableOutputs(METAFILE, "src/google.ts")).toEqual(
       new Set(["out/google.js", "out/shared.js"]),
-    );
-    expect(reachableOutputs(METAFILE, "src/google.ts", { dynamic: true })).toEqual(
-      new Set(["out/google.js", "out/shared.js", "out/lazy.js"]),
     );
   });
 
   it("refuses an entry the bundle doesn't have", () => {
-    expect(() => reachableOutputs(METAFILE, "src/none.ts", { dynamic: false })).toThrow(
-      /no output/,
-    );
+    expect(() => reachableOutputs(METAFILE, "src/none.ts")).toThrow(/no output/);
   });
 });

@@ -1,8 +1,9 @@
 import { createGoogleAdapter } from "../google/index";
+import { defineProvider } from "./define";
 import { adapterAfter } from "./google-after-loading";
 import { googleSettingsOf } from "./google-attributes";
 import { mapsLoadingFor } from "./google-loading";
-import { defineProvider, type MaplaceMapElement, type ProviderFactory } from "./index";
+import type { MaplaceMapElement, ProviderFactory } from "./index";
 
 /**
  * Registers the `google` provider for `<maplace-map>`; the CDN builds are this entry bundled.

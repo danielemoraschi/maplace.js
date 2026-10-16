@@ -8,8 +8,9 @@ maplace.js is being rewritten from scratch as 1.0. Three documents, one job each
 ## Commands
 Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm ci`: install; then, once, `npx playwright install chromium` for the browser tests.
-- `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers, RFC ↔ types, and the size budgets of RFC §3 Numbers (each entry bundled from source with esbuild and gzipped; the budgets are read from the RFC table).
+- `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers, RFC ↔ types, and the size budgets of RFC §3 Numbers (the builds made in memory with `npm run build`'s options, minified and gzipped; the budgets are read from the RFC table).
 - `npm run sizes`: each budget with what it measures now and the headroom left.
+- `npm run build`: `packages/maplace/dist` (npm ESM and `.d.ts`, the two CDN scripts), then `packages/maplace/packed`, the package as npm packs it (no `maplace:source`, no `./react`).
 - `npm run typecheck`: source, examples, type tests, then `scripts/`.
 - `npm test`: Vitest, with a coverage report (`coverage/lcov.info`): the `node` project (node and happy-dom) and the `browser` project (`*.browser.test.ts`, headless Chromium, served from `localhost:63315` when the port is free); `--project <name>` runs one. Tests on real Google Maps run when `VITE_MAPS_KEY` is set (in `.env.local`; the key must allow `http://localhost:63315/*`) and skip otherwise; CI runs them on `next`.
 - `npm run fix`: Biome's safe fixes and formatting.
@@ -23,7 +24,7 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 - `packages/maplace/src/location-state.ts`: a location's state from selection and hover, shared by the adapters and the list view.
 - `packages/maplace/src/__typetests__/`: compile-time API tests (`@ts-expect-error` must stay errors) and `api-lists.ts`, the RFC's lists of codes, events and capabilities.
 - `packages/maplace/examples/`: the RFC §2 use cases as HTML, vanilla and React snippets; type-checked, never published.
-- `scripts/`: repo checks, each in `scripts/checks/` beside its test.
+- `scripts/`: repo checks, each in `scripts/checks/` beside its test; the build's definitions in `scripts/build/`, which the size check measures too.
 - `docs/`: the RFC and the tracker. They are deliberately single documents; everything else stays small.
 
 ## Rules

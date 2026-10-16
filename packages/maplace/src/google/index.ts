@@ -1,3 +1,4 @@
+/// <reference types="google.maps" preserve="true" />
 import type { Adapter } from "../adapter";
 import { assembleGoogleAdapter } from "./assemble";
 import { createMapState } from "./map-state";
