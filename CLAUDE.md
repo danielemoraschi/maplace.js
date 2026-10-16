@@ -8,7 +8,7 @@ maplace.js is being rewritten from scratch as 1.0. Three documents, one job each
 ## Commands
 Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm ci`: install; then, once, `npx playwright install chromium` for the browser tests.
-- `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers, RFC ↔ types, and the size budgets of RFC §3 Numbers (the builds made in memory with `npm run build`'s options, minified and gzipped; the budgets are read from the RFC table).
+- `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers, RFC ↔ types, the size budgets of RFC §3 Numbers (the builds made in memory with `npm run build`'s options, minified and gzipped; the budgets are read from the RFC table), CHANGELOG, doc links (every relative link in the docs reaches a file) and doc snippets (a fence after `<!-- example: <path> -->` is a copy of that file).
 - `npm run sizes`: each budget with what it measures now and the headroom left.
 - `npm run coverage`: after `npm test`, the line coverage of the core (what the `maplace` entry loads) and of the package against the floors of RFC §3 Numbers; a CI step.
 - `npm run build`: `packages/maplace/dist` (npm ESM and `.d.ts`, the two CDN scripts), then `packages/maplace/packed`, the package as npm packs it (no `maplace:source`, no `./react`).
@@ -27,6 +27,7 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 - `packages/maplace/src/__typetests__/`: compile-time API tests (`@ts-expect-error` must stay errors) and `api-lists.ts`, the RFC's lists of codes, events and capabilities.
 - `packages/maplace/examples/`: the RFC §2 use cases as HTML, vanilla and React snippets; type-checked, never published.
 - `scripts/`: repo checks, each in `scripts/checks/` beside its test; the build's definitions in `scripts/build/`, which the size check measures too.
+- `README.md`, `MIGRATION.md`, `CHANGELOG.md` at the root: the package's own docs. The README's pinned CDN snippets (`maplace@x.y.z`, `sha384-…`) are filled in when the package is staged; never write real values there.
 - `docs/`: the RFC and the tracker. They are deliberately single documents; everything else stays small.
 
 ## Rules

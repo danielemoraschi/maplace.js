@@ -7,6 +7,7 @@ import {
   untilNextHeading,
   untilNextStableHeading,
 } from "../checks/changelog-lines.ts";
+import { withAbsoluteLinks } from "../checks/markdown.ts";
 import { isPrerelease, parseVersion, type Version } from "./versions.ts";
 
 export interface Release {
@@ -20,9 +21,6 @@ interface Notes {
   /** Where the repo's files are at the release's tag: `https://github.com/o/r/blob/v1.1.0/`. */
   readonly blobBase: string;
 }
-
-/** The end of a Markdown link to a path in the repo: neither a URL (`https:`, `mailto:`), an anchor nor rooted. */
-const RELATIVE_LINK = /\]\((?![a-z][a-z\d+.-]*:|[#/])([^)\s]+)\)/gi;
 
 /**
  * The changelog with the release's heading on top of what it ships: its unreleased lines, and
@@ -58,16 +56,4 @@ function sectionOf(lines: readonly string[], version: string): readonly string[]
   const heading = lines.findIndex((line) => isHeadingOf(version, line));
   if (heading === -1) throw new Error(`${CHANGELOG_FILE} has no heading for ${version}`);
   return lines.slice(heading + 1);
-}
-
-/** `text` with its links to repo paths made absolute at `blobBase`; images left as written. */
-export function withAbsoluteLinks(text: string, blobBase: string): string {
-  return text.replaceAll(RELATIVE_LINK, (link, path: string, offset: number) =>
-    isImageAt(text, offset) ? link : `](${blobBase}${path})`,
-  );
-}
-
-/** Whether the link ending at `offset` opened as an image, `![`. */
-function isImageAt(text: string, offset: number): boolean {
-  return text[text.lastIndexOf("[", offset) - 1] === "!";
 }

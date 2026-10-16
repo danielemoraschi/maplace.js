@@ -2,7 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
-- 2026-10-16 Changed everything: maplace 1.0 is a rewrite, with a new API (a headless store, a Google adapter, a list view and the `<maplace-map>` element) and no jQuery; see [the 1.0 RFC](docs/rfc-1.0.md) and its migration section (§4)
+- 2026-10-16 Changed everything: maplace 1.0 is a rewrite, with a new API (a headless store, a Google adapter, a list view and the `<maplace-map>` element) and no jQuery; see [the README](README.md), [MIGRATION.md](MIGRATION.md) for moving a 0.2 page, and [the 1.0 RFC](docs/rfc-1.0.md)
 
 ## 0.2.10 (2017-04-02)
 

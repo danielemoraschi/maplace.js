@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { releaseNotes, withAbsoluteLinks, withReleaseHeading } from "./changelog-release.ts";
+import { releaseNotes, withReleaseHeading } from "./changelog-release.ts";
 
 const HEADER = "# Changelog\n\nNewest first: lines above the first heading are unreleased.\n";
 
@@ -70,12 +70,6 @@ describe("releaseNotes", () => {
     expect(releaseNotes(withFix, { version: "1.1.0", blobBase: BLOB }).split("\n")).toHaveLength(4);
     expect(releaseNotes(withFix, { version: "1.1.0-rc.1", blobBase: BLOB })).not.toContain(
       "Fixed rc",
-    );
-  });
-
-  it("leave images as written: a blob page isn't an image", () => {
-    expect(withAbsoluteLinks("see ![a map](docs/map.png) and [the RFC](docs/rfc.md)", BLOB)).toBe(
-      `see ![a map](docs/map.png) and [the RFC](${BLOB}docs/rfc.md)`,
     );
   });
 

@@ -1,11 +1,14 @@
-import { existsSync, globSync, readFileSync } from "node:fs";
+import { existsSync, globSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildSync } from "esbuild";
 import { beforeAll, describe, expect, it } from "vitest";
 import { importsOf } from "../checks/imports.ts";
+import { relativeLinksIn } from "../checks/markdown.ts";
+import { CDN_SCRIPTS } from "./cdn-builds.ts";
 import { buildEsm } from "./esm-build.ts";
 import type { Manifest } from "./packed-manifest.ts";
 import { stagePackage } from "./stage-package.ts";
+import { integrityOfFile } from "./subresource-integrity.ts";
 import { tempDir } from "./temp-dir.ts";
 
 const CLUSTERER = "@googlemaps/markerclusterer";
@@ -35,8 +38,15 @@ function bundledPage(code: string): string {
 beforeAll(() => {
   const dist = join(consumerDir, "dist");
   buildEsm(dist);
+  // Staging pins the README to the CDN scripts' bytes, whatever they are (cdn-builds.test.ts builds them).
+  for (const file of Object.values(CDN_SCRIPTS)) writeFileSync(join(dist, file), `/* ${file} */`);
   stagePackage(packageDir, dist);
 });
+
+/** The packed manifest, as staged. */
+function staged(): Manifest & { readonly version: string } {
+  return JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8"));
+}
 
 describe("the npm ESM build", () => {
   it("is staged with its licence and readme, as npm packs them", () => {
@@ -45,17 +55,29 @@ describe("the npm ESM build", () => {
     }
   });
 
+  it("ships a README pinning each CDN script to its version and its integrity", () => {
+    const readme = readFileSync(join(packageDir, "README.md"), "utf8");
+    for (const file of Object.values(CDN_SCRIPTS)) {
+      const integrity = integrityOfFile(join(packageDir, "dist", file));
+      expect(readme).toContain(
+        `maplace@${staged().version}/dist/${file}"\n  integrity="${integrity}"`,
+      );
+    }
+    expect(readme).not.toContain("x.y.z");
+    expect(relativeLinksIn(readme)).toEqual([]);
+  });
+
   it("ships a changelog whose links reach the repo at the version's tag", () => {
     const changelog = readFileSync(join(packageDir, "CHANGELOG.md"), "utf8");
-    const { version } = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8"));
+    const { version } = staged();
     expect(changelog).toContain(
       `(https://github.com/danielemoraschi/maplace.js/blob/v${version}/docs/rfc-1.0.md)`,
     );
-    expect(changelog).not.toMatch(/\]\((?!https?:|#)/);
+    expect(relativeLinksIn(changelog)).toEqual([]);
   });
 
   it("writes every entry the packed manifest names", () => {
-    const manifest = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8")) as Manifest;
+    const manifest = staged();
     const entries = Object.values(manifest.exports).flatMap((target) =>
       typeof target === "string" || target.default === undefined
         ? []

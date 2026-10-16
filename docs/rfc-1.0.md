@@ -15,6 +15,7 @@ A list of your locations becomes a map with a synced list, in about five lines. 
 
 ### The five-line promise
 
+<!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
@@ -64,7 +65,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 | Other provider services (places search, distance, elevation) | Not in 1.0; Places integration is a likely later addition. |
 | A React map toolkit | Excellent ones exist (see below); maplace's job is the data list and selection, in any framework. |
 | Legacy browsers | Evergreen browsers only (§3 Loading). |
-| 0.2 API compatibility | The 0.2 API was index-based and jQuery-shaped; §4 (and the MIGRATION.md written from it) shows a short data conversion instead. |
+| 0.2 API compatibility | The 0.2 API was index-based and jQuery-shaped; [MIGRATION.md](../MIGRATION.md) (once §4) shows a short data conversion instead. |
 
 ### How it compares
 
@@ -90,7 +91,7 @@ React binding; MapLibre adapter; Places integration (search box that adds locati
 ### How we'll know it worked
 
 - The five-line snippet runs from a blank HTML file with only an API key.
-- A typical 0.2 page migrates by following §4 (MIGRATION.md) in under 30 minutes.
+- A typical 0.2 page migrates by following [MIGRATION.md](../MIGRATION.md) in under 30 minutes.
 - None of the "pick it when" cases above is something maplace does half-way.
 
 ## 2. Use cases
@@ -248,108 +249,7 @@ Decisions:
 
 ## 4. Migrating from 0.2
 
-Everything a 0.2 page could touch, from the source and README of tag `0.2.10` and the old docs site, and what 1.0 does with it. "Dropped" always names the replacement or the reason. [`examples/migrate/from-0.2.ts`](../packages/maplace/examples/migrate/from-0.2.ts) converts 0.2 locations in a few lines and type-checks in CI.
-
-### Options
-
-| 0.2 option | 1.0 |
-|---|---|
-| `map_div` | the container passed to `attach`, or `<maplace-map>` itself |
-| `controls_div`, `controls_on_map`, `controls_position` | element `list-position` (a corner, or `outside`); in code, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
-| `generate_controls`, `force_generate_controls` | a list exists only when asked for, at any number of locations |
-| `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'`, element `list="select"` / `list` |
-| `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win |
-| `controls_title` | dropped: a heading in your page |
-| `type` (one per map) | `type` per location, so one map mixes markers and shapes |
-| `type: 'directions'` | `setRoute({ stops })` through your own locations |
-| `type: 'fusion'`, `fusion_options` | dropped: Google shut down Fusion Tables in 2019 |
-| `view_all`, `view_all_text` | `fitAllLabel` (element `fit-all-label`); no entry unless set |
-| `start` | `selectedId` (element `selected-id`, React `defaultSelectedId`) |
-| `locations` | kept; every location needs an `id` |
-| `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
-| `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
-| `show_infowindows`, `infowindow_type` | leave `content` out; there is only one kind of popup |
-| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`; centre and zoom through `view` |
-| `styles` | map ID and Cloud styling (§3 Loading) |
-| `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
-| `directions_options.travelMode` | `route.travelMode` |
-| `directions_options.avoidHighways`, `avoidTolls` | not in 1.0; route modifiers may come later |
-| `directions_options.unitSystem` | dropped: results are metres and seconds, format them as you like |
-| `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
-| `directions_panel` | dropped: render legs from the `route` event |
-| `draggable`, `editable` (map-wide) | `editable` per location, for markers and shapes alike; dragging the route itself is gone |
-| `listeners` | pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
-| `pan_on_click` | `select(id, { pan: false })` from code; the map always pans to a clicked location |
-| `debug` | the `error` event and `MaplaceError`; nothing is logged or silent |
-| `visualRefresh` | dropped: Google removed the flag |
-
-### Location fields
-
-| 0.2 field | 1.0 |
-|---|---|
-| (array index) | `id`, required and unique |
-| `lat` | kept |
-| `lon` | `lng`, no alias |
-| `title` | kept; plain text, also the marker's accessible name |
-| `html` | `content` (text, a DOM node or a function), or `html` with a `sanitize` option |
-| `%index`, `%title` in `html` | a `content` function |
-| `infoWindowMaxWidth` | `popup.maxWidth`, for all popups |
-| `icon` | kept: an image URL, a DOM node or a function of the selected/hovered state |
-| `image`, `image_w`, `image_h` | an `icon` node, e.g. a sized `<img>` |
-| `zoom` | `select(id, { zoom })`; keep the number in `data` |
-| `show_infowindow` | leave `content` out |
-| `visible` | kept, default `true` (0.2's docs said `false`, its code did `true`) |
-| `animation` | dropped: animate the `icon` node with CSS |
-| `stopover` | dropped: every route stop ends a leg |
-| `stroke_options`, `circle_options` | `style`; the circle's `radius` |
-| `type` | kept: `marker`, `circle`, `polyline`, `polygon`; a polyline or polygon is one location with a `path` |
-| `zIndex` | dropped: stacking order is fixed (§3, decisions from the 0.2 issues) |
-| `on_menu` | dropped: build your own list from `subscribe` for a partial menu |
-| `pan_on_click` | dropped per location |
-| `draggable` | `editable`: one word for dragging markers and reshaping shapes |
-| any other field, including Google marker options | your fields go in `data`; Google options belong on your own map |
-
-### Methods
-
-| 0.2 method | 1.0 |
-|---|---|
-| `new Maplace(options).Load()` | `createMaplace(options)` then `attach(adapter, container)`, or `<maplace-map>` |
-| `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
-| `Load(true)` (rebuild) | `detach()`, then `attach()` with a new adapter |
-| `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |
-| `ViewOnMap(index)` | `select(id)` |
-| `ViewOnMap('all')` | `select(undefined)` and `fitAll()` |
-| `CloseInfoWindow()` | `select(undefined)`: the popup follows the selection |
-| `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
-| `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
-| `ShowOnMenu(index)` | dropped |
-| `AddControl(name, menu)` | `createListView(maplace, { render })`, or your own view from `subscribe` and `getSnapshot` |
-| internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
-
-### Events
-
-| 0.2 callback | 1.0 event |
-|---|---|
-| `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | dropped: one event per change, after it happened |
-| `afterShow` | `select` |
-| `afterViewAll` | `select` with `id` undefined, then `viewport` |
-| `afterCreateMarker` | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
-| `afterOpenInfowindow`, `afterCloseInfowindow` | `popupOpen` (content is in the DOM; again when an open popup gets new content), `popupClose` |
-| `afterRoute` | `route`, with legs, distance and duration |
-| `onPolylineClick`, `onPolygonClick` | `select`: shapes are locations |
-| `circleRadiusChanged`, `circleCenterChanged`, `dragEnd` | `change`, with the location and its `previous` value |
-| `drag`, `dragStart` | dropped |
-
-### Behaviour that changes
-
-- Locations are identified by `id`, not by their 1-based position.
-- Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
-- Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
-- No jQuery and no `Maplace` global: ES modules or one CDN script. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap); in code, the page loads it and the adapter imports what it needs.
-- The menu's inline styles are replaced by a stylesheet you can override.
-- Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in §3, decisions from the 0.2 issues.
-
-Never released (the unmerged `develop` branch): `onPolylineClick` is `select`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions.gestureHandling`.
+Moved to [MIGRATION.md](../MIGRATION.md): every 0.2 option, location field, method and callback, with what 1.0 does with it.
 
 ## Appendix A: 0.2 issue triage
 
