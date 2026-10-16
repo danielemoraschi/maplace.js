@@ -85,7 +85,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 | `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers |
 | `maplace/element/google` | the element with the Google provider registered |
 
-`@googlemaps/markerclusterer` is a dependency, loaded only by a store that clusters. `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`. React bindings come in 1.x.
+`@googlemaps/markerclusterer` is a dependency, loaded only by a store that clusters. `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`.
 
 ## What it needs
 
@@ -95,7 +95,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 ## Documentation
 
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): ten scenarios, each as an HTML page, vanilla TypeScript and React (1.x draft).
+- [Examples](packages/maplace/examples/): ten scenarios, each as an HTML page and vanilla TypeScript.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 

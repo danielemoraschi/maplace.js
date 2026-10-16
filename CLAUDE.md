@@ -21,7 +21,7 @@ Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every push. A tracker row that adds a gate adds its CI step in the same commit. On `next` it also sends the analysis to SonarQube, report-only. On `next`, `npm test` gets the `MAPS_KEY` secret, so the Google tests run on real Maps JS there.
 
 ## Layout
-- `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/`, and `react/`, a type-only 1.x draft that stays out of the published `exports`.
+- `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/`, and `react/`, a type-only draft until V4 builds it, out of the published `exports` until then.
 - `packages/maplace/src/adapter-kit/`: what every adapter draws with; the fake and Google share it, the core entry never imports it.
 - `packages/maplace/src/location-state.ts`: a location's state from selection and hover, shared by the adapters and the list view.
 - `packages/maplace/src/__typetests__/`: compile-time API tests (`@ts-expect-error` must stay errors) and `api-lists.ts`, the RFC's lists of codes, events and capabilities.
