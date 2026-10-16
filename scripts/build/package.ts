@@ -19,6 +19,9 @@ export const PACKAGE_ENTRIES = {
   elementGoogle: `${SRC}/element/google.ts`,
 } as const;
 
+/** The repo's TypeScript compiler (TS 7 is a native binary, with no JS API). */
+export const TSC = resolve(ROOT, "node_modules/.bin/tsc");
+
 /** RFC §3: evergreen browsers. */
 export const TARGET = "es2022";
 

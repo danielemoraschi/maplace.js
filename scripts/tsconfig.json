@@ -6,5 +6,7 @@
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true
   },
-  "include": ["**/*.ts", "../vitest.config.ts"]
+  "include": ["**/*.ts", "../vitest.config.ts"],
+  // Type-checked as a consumer, against the packed package (checks/consumer-types.ts).
+  "exclude": ["checks/consumer/**"]
 }

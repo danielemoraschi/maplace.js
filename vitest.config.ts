@@ -20,6 +20,7 @@ export default defineConfig({
         "**/src/google/testing/**",
         "scripts/check.ts",
         "scripts/build.ts",
+        "scripts/checks/consumer/**",
       ],
     },
     projects: [

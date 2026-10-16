@@ -2,9 +2,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, globSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { withJsSpecifiers } from "./declaration-specifiers.ts";
-import { DIST, PACKAGE_DIR, ROOT } from "./package.ts";
+import { DIST, PACKAGE_DIR, ROOT, TSC } from "./package.ts";
 
-const TSC = resolve(ROOT, "node_modules/.bin/tsc");
 const BUILD_CONFIG = resolve(ROOT, PACKAGE_DIR, "tsconfig.build.json");
 
 /** Emits the entries' `.d.ts` into `outdir`, each specifier a path `node16` consumers resolve. */

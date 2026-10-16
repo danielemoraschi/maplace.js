@@ -12,7 +12,7 @@ Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm run sizes`: each budget with what it measures now and the headroom left.
 - `npm run build`: `packages/maplace/dist` (npm ESM and `.d.ts`, the two CDN scripts), then `packages/maplace/packed`, the package as npm packs it (no `maplace:source`, no `./react`).
 - `npm run typecheck`: source, examples, type tests, then `scripts/`.
-- `npm test`: Vitest, with a coverage report (`coverage/lcov.info`): the `node` project (node and happy-dom) and the `browser` project (`*.browser.test.ts`, headless Chromium, served from `localhost:63315` when the port is free); `--project <name>` runs one. Tests on real Google Maps run when `VITE_MAPS_KEY` is set (in `.env.local`; the key must allow `http://localhost:63315/*`) and skip otherwise; CI runs them on `next`.
+- `npm test`: Vitest, with a coverage report (`coverage/lcov.info`): the `node` project (node and happy-dom) and the `browser` project (`*.browser.test.ts`, headless Chromium, served from `localhost:63315` when the port is free); `--project <name>` runs one. Tests on real Google Maps run when `VITE_MAPS_KEY` is set (in `.env.local`; the key must allow `http://localhost:63315/*`) and skip otherwise; CI runs them on `next`. The node project also checks the package as npm would pack it (built into temp dirs): publint, attw, and a strict consumer type-check (`scripts/checks/packed-package.test.ts`).
 - `npm run fix`: Biome's safe fixes and formatting.
 - `npm run sonar`: SonarQube scan (scope in `sonar-project.properties`, host and token from `.env.local`); it lands on the same main branch as CI's, so use it to check before a push.
 
