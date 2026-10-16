@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { installedGit } from "../build/installed-tool.ts";
 import { tempDir } from "../build/temp-dir.ts";
 import { check } from "./changelog.ts";
 
@@ -15,7 +16,7 @@ function git(repo: string, ...args: string[]): string {
     "-c",
     "commit.gpgsign=false",
   ];
-  return execFileSync("git", [...identity, ...args], { cwd: repo, encoding: "utf8" });
+  return execFileSync(installedGit(), [...identity, ...args], { cwd: repo, encoding: "utf8" });
 }
 
 function commit(repo: string, message: string, changelog?: string): void {

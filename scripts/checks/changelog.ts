@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { installedGit } from "../build/installed-tool.ts";
 import { ROOT } from "../build/package.ts";
 import { issuesClosedBy, issuesNamedIn, listLines, undatedLines } from "./changelog-lines.ts";
 
@@ -55,7 +56,7 @@ function commitsAfter(repo: string, baseline: string): Commit[] {
     });
 }
 
-/** Git with fixed arguments and no shell: a repo check run by developers and CI. */
+/** The installed git, with fixed arguments and no shell. */
 function gitIn(repo: string, args: readonly string[]): string {
-  return execFileSync("git", args, { cwd: repo, encoding: "utf8" });
+  return execFileSync(installedGit(), args, { cwd: repo, encoding: "utf8" });
 }
