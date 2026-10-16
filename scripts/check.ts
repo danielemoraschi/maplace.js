@@ -1,3 +1,4 @@
+import * as changelog from "./checks/changelog.ts";
 import * as imports from "./checks/imports.ts";
 import * as rfc from "./checks/rfc.ts";
 import * as sizes from "./checks/sizes.ts";
@@ -7,6 +8,7 @@ const CHECKS: Readonly<Record<string, () => string[] | Promise<string[]>>> = {
   "import layers": imports.check,
   "RFC ↔ types": rfc.check,
   "size budgets": sizes.check,
+  CHANGELOG: changelog.check,
 };
 
 const reports = await Promise.all(

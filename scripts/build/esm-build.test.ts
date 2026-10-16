@@ -40,7 +40,7 @@ beforeAll(() => {
 
 describe("the npm ESM build", () => {
   it("is staged with its licence and readme, as npm packs them", () => {
-    for (const file of ["package.json", "LICENSE", "README.md"]) {
+    for (const file of ["package.json", "LICENSE", "README.md", "CHANGELOG.md"]) {
       expect(existsSync(join(packageDir, file)), file).toBe(true);
     }
   });

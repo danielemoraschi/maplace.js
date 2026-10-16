@@ -41,4 +41,5 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 - Before any change merges, run on the branch diff, in order: `/simplify`, then `/code-review`, then `/clean-code` (a user skill; skip it if unavailable and say so). Fix findings, then merge. Documentation-only changes skip the chain.
 - After the chain, before committing: `npm run sonar`, then read the quality gate and open issues. A red gate is fixed, or explained to the user, before the change merges; CI's own scan is report-only.
 - A fix lands with a test shown failing first.
+- A change a reader would notice adds its dated line at the top of `CHANGELOG.md` in the same commit (`- YYYY-MM-DD Added/Fixed/Changed …`, a closed issue as `#N` at the end).
 - Commit message style: `[add]`, `[upd]`, `[fix]` prefix, short summary; a commit that closes an issue says `Fixes #N` (the CHANGELOG test, P4 in `docs/MODERNIZE.md`, reads it).

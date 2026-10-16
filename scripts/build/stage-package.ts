@@ -4,9 +4,9 @@ import { DIST, PACKED, packageManifest, ROOT } from "./package.ts";
 import { packedManifest } from "./packed-manifest.ts";
 
 /** Files from the repo root packed beside `dist`. */
-const ROOT_FILES = ["README.md", "LICENSE"];
+const ROOT_FILES = ["README.md", "LICENSE", "CHANGELOG.md"];
 
-/** Writes the package as npm packs it into `dir`: its packed manifest, `dist`, README and licence. */
+/** Writes the package as npm packs it into `dir`: its packed manifest, `dist`, README, licence and changelog. */
 export function stagePackage(dir: string = PACKED, dist: string = DIST): void {
   const staged = resolve(ROOT, dir);
   rmSync(staged, { recursive: true, force: true });
