@@ -110,6 +110,54 @@ export function Simple() {
 
 `<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelect` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content, and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
+In a React Server Component, `maplace/react` is a client boundary (it starts with `"use client"`): the server component loads the data and renders the provider and the list with it, and a small client component of yours holds the map, since its adapter is made by a function:
+
+<!-- example: scripts/checks/rsc-app/src/page.tsx -->
+```tsx
+import type { Location } from "maplace";
+import { LocationList, MaplaceProvider } from "maplace/react";
+import { CityMap } from "./city-map";
+
+/** Where a server component's data would come from: a database, an API. */
+async function loadCities(): Promise<Location[]> {
+  return [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+  ];
+}
+
+/** A server component: it loads the data and hands it to the binding, a client boundary. */
+export async function Page() {
+  const cities = await loadCities();
+  return (
+    <html lang="en">
+      <body>
+        <MaplaceProvider locations={cities}>
+          <CityMap />
+          <LocationList label="Cities" />
+        </MaplaceProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+<!-- example: scripts/checks/rsc-app/src/city-map.tsx -->
+```tsx
+"use client";
+import { createGoogleAdapter } from "maplace/google";
+import { MaplaceMap } from "maplace/react";
+
+// Functions can't cross from a server component: the map's adapter is made here, on the client.
+const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
+
+export function CityMap() {
+  return <MaplaceMap createAdapter={createAdapter} className="map" />;
+}
+```
+
+`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelect`. A server component can start the selection with `defaultSelectedId`. Both files are the ones maplace's own test builds with Vite's RSC plugin.
+
 ## What it needs
 
 - Evergreen browsers (ES2022). The package is ES modules only.

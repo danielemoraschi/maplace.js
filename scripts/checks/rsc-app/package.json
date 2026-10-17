@@ -1,0 +1,7 @@
+{
+  "//": "The RSC plugin bundles, so honours \"use client\" in, the app's dependencies that peer on React.",
+  "type": "module",
+  "dependencies": {
+    "maplace": "*"
+  }
+}

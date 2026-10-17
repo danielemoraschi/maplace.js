@@ -6,6 +6,7 @@ import { ROOT } from "../build/package.ts";
 import { tempDir } from "../build/temp-dir.ts";
 import { layOutConsumer, typeCheckConsumer } from "./consumer-types.ts";
 import { packageLintProblems } from "./package-lint.ts";
+import { renderServerComponentsApp } from "./server-components.ts";
 import { typeResolutionProblems } from "./type-resolution.ts";
 
 /** Under the repo, so the consumer finds maplace's dependencies installed, as a page would. */
@@ -40,6 +41,15 @@ describe("the packed package", () => {
     expect(errors).toEqual([]);
     expect(loadedFiles.some((file) => file.includes("/@types/react/"))).toBe(true);
   }, 30_000);
+
+  it("renders in a React Server Components app, its binding a client boundary", () => {
+    const render = renderServerComponentsApp(stagedDir);
+    expect(render.serverRefersToBinding).toBe(true);
+    expect(render.clientHoldsBinding).toBe(true);
+    expect(render.html).toContain('<div class="map"></div>');
+    expect(render.html).toContain('<div style="display:contents"></div>');
+    expect(render.payload).toContain('"title":"Rome"');
+  }, 120_000);
 
   it("type-checks for a strict consumer on Google, its types reached through maplace's", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "google");

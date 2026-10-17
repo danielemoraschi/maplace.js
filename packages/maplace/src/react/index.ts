@@ -1,3 +1,6 @@
+// The binding keeps state: React Server Components bundlers treat this entry as a client boundary.
+"use client";
+
 export type { MarkerIconRender, PopupContentRender } from "./content-renders";
 export type { LocationListProps } from "./location-list";
 export { LocationList } from "./location-list";

@@ -117,6 +117,13 @@ describe("the npm ESM build", () => {
     expect(usingReact.map(([file]) => file)).toEqual(["react/index.js"]);
   });
 
+  it('opens the React entry, and only it, with "use client", for server components', () => {
+    const clientEntries = [...scripts(join(packageDir, "dist"))].filter(([, text]) =>
+      /^"use client";/.test(text),
+    );
+    expect(clientEntries.map(([file]) => file)).toEqual(["react/index.js"]);
+  });
+
   it("keeps the elements' definition in a page's bundle, for either element entry", () => {
     expect(bundledPage('import "maplace/element";')).toContain("customElements.define");
     expect(bundledPage('import "maplace/element/google";')).toContain("customElements.define");

@@ -11,5 +11,5 @@
     "jsx": "react-jsx",
     "skipLibCheck": true
   },
-  "include": ["packages/*/src", "packages/*/examples"]
+  "include": ["packages/*/src", "packages/*/examples", "scripts/checks/rsc-app/src"]
 }

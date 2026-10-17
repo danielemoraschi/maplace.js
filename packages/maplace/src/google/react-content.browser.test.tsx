@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { afterEach, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
 import type { Location } from "../location";
-import { MaplaceMap, MaplaceProvider, useMaplace } from "../react/index";
+import { MaplaceMap, MaplaceProvider } from "../react/index";
 import { storeCatcher } from "../react/testing/render";
 import { sizedContainer } from "../testing/container";
 import { createGoogleAdapter } from "./index";
