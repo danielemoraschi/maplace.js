@@ -62,6 +62,18 @@ describeWithMaps("Google popups under real input", () => {
       .toBe(true);
   });
 
+  it("shows its content in dark text on Google's white bubble, on a page whose text is white", async () => {
+    document.body.style.color = "white";
+    try {
+      const { adapter, state } = await drawn([ALPHA]);
+      adapter.present(presented({ selectedId: "a" }));
+      const element = await openedPopup(state);
+      expect(getComputedStyle(element).color).toBe("rgb(31, 31, 31)");
+    } finally {
+      document.body.style.color = "";
+    }
+  });
+
   it("leaves focus where it was for a popup opened from outside the map", async () => {
     const { adapter, state, outside } = await drawn([ALPHA]);
     adapter.present(presented({ selectedId: "a" }));

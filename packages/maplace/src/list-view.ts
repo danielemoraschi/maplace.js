@@ -1,9 +1,11 @@
+import { adoptStyles } from "./adopted-styles";
 import type { Location, LocationState } from "./location";
 import { runSafely } from "./state/safely";
 import type { Maplace } from "./store";
 import { child, root } from "./validate/fail";
 import { listActionsFor } from "./views/actions";
 import { follow } from "./views/follow";
+import { LIST_STYLES } from "./views/list-styles";
 import { createListbox } from "./views/listbox";
 import { createNativeSelect } from "./views/native-select";
 import { checkListViewOptions } from "./views/options";
@@ -58,6 +60,7 @@ export function createListView<Data>(
   options?: ListViewOptions<Data>,
 ): ListView {
   checkListViewOptions(options, child(root("createListView"), "options"));
+  adoptStyles(document, LIST_STYLES);
   let destroy: () => void = () => {};
   const actions = listActionsFor(maplace, (error) => {
     destroy();

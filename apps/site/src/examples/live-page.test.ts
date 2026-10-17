@@ -43,6 +43,11 @@ describe("livePage", () => {
     expect(live).not.toMatch(/<script>|<script type="module">/);
   });
 
+  it("keeps a page's own styles", () => {
+    const page = PAGE.replace("<maplace-map", "<style>#m { color: red; }</style>\n<maplace-map");
+    expect(livePage(page, "k")).toContain("<style>#m { color: red; }</style>");
+  });
+
   it("leaves the data inside the map as it is", () => {
     const page = PAGE.replace(
       "<maplace-location",

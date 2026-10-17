@@ -19,7 +19,7 @@ One script, no build step:
 
 - `api-key` is your Google Maps JavaScript API key. The element loads Maps JS itself, once per page.
 - `map-id` is required: maplace draws advanced markers, which need a map ID. `DEMO_MAP_ID` is Google's public ID for development.
-- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, and `list-position` places it on the map or outside it.
+- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, and `list-position` places it on the map or outside it. The list and popups come with default styles in `:where()`: any rule of yours wins.
 
 Locations can also come from an inline `<script type="application/json">` child or the element's `locations` property. The element never fetches: load your data and assign it.
 

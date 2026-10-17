@@ -22,11 +22,10 @@ export function createNativeSelect<Data>(
   const select = document.createElement("select");
   select.setAttribute("aria-label", settings.label);
   select.className = SELECT_CLASS;
-  // Shown while nothing is selected, so "fit all" stays a choice that fires `change` again.
-  const placeholder = textOption(settings.fitAllLabel ?? "");
-  placeholder.hidden = true;
+  // What shows while nothing is selected: "fit all" itself, or a blank placeholder without one.
+  // No hidden placeholder beside "fit all": Safari lists hidden options, so it would show twice.
   const fitAll = settings.fitAllLabel === undefined ? undefined : textOption(settings.fitAllLabel);
-  const fixed = fitAll ? [placeholder, fitAll] : [placeholder];
+  const nothingSelected = fitAll ?? blankPlaceholder();
   const sections = createSections<Data, HTMLOptionElement>(select, {
     option: () => textOption(""),
     fill: (option, location) => {
@@ -53,14 +52,14 @@ export function createNativeSelect<Data>(
 
   function showSelection(): void {
     const wanted =
-      (selectedId === undefined ? undefined : sections.optionOf(selectedId)) ?? placeholder;
+      (selectedId === undefined ? undefined : sections.optionOf(selectedId)) ?? nothingSelected;
     if (!wanted.selected) wanted.selected = true;
   }
 
   return {
     element: select,
     renderStructure(structure) {
-      const listed = sections.render(structure, fixed);
+      const listed = sections.render(structure, [nothingSelected]);
       select.hidden = listed.length === 0 && fitAll === undefined;
       showSelection();
     },
@@ -73,6 +72,13 @@ export function createNativeSelect<Data>(
       select.remove();
     },
   };
+}
+
+/** Shown while nothing is selected, kept out of the picker where browsers allow. */
+function blankPlaceholder(): HTMLOptionElement {
+  const placeholder = textOption("");
+  placeholder.hidden = true;
+  return placeholder;
 }
 
 function textOption(text: string): HTMLOptionElement {

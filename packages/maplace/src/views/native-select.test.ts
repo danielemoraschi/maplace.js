@@ -18,7 +18,7 @@ function mounted() {
   const select = view.element as HTMLSelectElement;
   const shown = () => select.options[select.selectedIndex];
   const choose = (text: string) => {
-    const option = Array.from(select.options).find((o) => o.textContent === text && !o.hidden);
+    const option = Array.from(select.options).find((o) => o.textContent === text);
     if (option) option.selected = true;
     select.dispatchEvent(new Event("change", { bubbles: true }));
   };
@@ -29,12 +29,8 @@ describe("createNativeSelect", () => {
   it("is a named select with optgroups, ungrouped first, and a fit-all option", () => {
     const { select } = mounted();
     expect(select.getAttribute("aria-label")).toBe("Shops");
-    expect(Array.from(select.options, (o) => o.textContent)).toEqual([
-      "All",
-      "All",
-      "Beta",
-      "Alpha",
-    ]);
+    // Fit all once: Safari lists even a hidden option, so there is no placeholder beside it.
+    expect(Array.from(select.options, (o) => o.textContent)).toEqual(["All", "Beta", "Alpha"]);
     expect(select.querySelector("optgroup")?.label).toBe("N");
   });
 
@@ -45,18 +41,27 @@ describe("createNativeSelect", () => {
     expect(calls).toEqual(["choose:a", "showAll"]);
   });
 
-  it("lets fit all be chosen again: with nothing selected the placeholder shows", () => {
+  it("shows fit all while nothing is selected", () => {
     const { view, shown } = mounted();
     view.renderState({ selectedId: "a", hoveredId: undefined });
     expect(shown()?.textContent).toBe("Alpha");
     view.renderState({ selectedId: undefined, hoveredId: undefined });
-    expect(shown()?.hidden).toBe(true);
+    expect(shown()?.textContent).toBe("All");
   });
 
-  it("goes back to the placeholder after fit all when the selection doesn't change", () => {
+  it("shows fit all after it is chosen and the selection doesn't change", () => {
     const { choose, shown } = mounted();
     choose("All");
-    expect(shown()?.hidden).toBe(true);
+    expect(shown()?.textContent).toBe("All");
+  });
+
+  it("shows a blank placeholder while nothing is selected when there is no fit all", () => {
+    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
+    view.renderStructure(structureOf(locations));
+    view.renderState({ selectedId: undefined, hoveredId: undefined });
+    const select = view.element as HTMLSelectElement;
+    expect(Array.from(select.options, (o) => o.textContent)).toEqual(["", "Beta", "Alpha"]);
+    expect(select.options[select.selectedIndex]?.textContent).toBe("");
   });
 
   it("never hovers, and a hover change touches no option", () => {

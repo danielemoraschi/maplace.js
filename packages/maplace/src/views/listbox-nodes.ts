@@ -1,11 +1,11 @@
 import { setOptionState } from "./option-node";
 import type { MadeGroup } from "./sections";
 
-const LISTBOX_CLASS = "maplace-listbox";
-const OPTION_CLASS = "maplace-option";
-const GROUP_CLASS = "maplace-group";
-const HEADING_CLASS = "maplace-group-heading";
-const FIT_ALL_CLASS = "maplace-fit-all";
+export const LISTBOX_CLASS = "maplace-listbox";
+export const OPTION_CLASS = "maplace-option";
+export const GROUP_CLASS = "maplace-group";
+export const HEADING_CLASS = "maplace-group-heading";
+export const FIT_ALL_CLASS = "maplace-fit-all";
 
 /** The listbox, named by `label`; it holds options and groups directly (no list markup between). */
 export function listboxElement(label: string): HTMLElement {

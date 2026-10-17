@@ -1,5 +1,8 @@
 import type { Drawable } from "../drawable";
 
+/** The class of a popup's content element, which the adapters' popup styles name. */
+export const POPUP_CLASS = "maplace-popup";
+
 /** A popup's content in an element of its own, the one `popupOpen` gives. */
 export interface PopupContent {
   readonly element: HTMLElement;
@@ -13,6 +16,7 @@ export function popupContent(drawable: Drawable, document: Document): PopupConte
   const content = builtWith?.();
   if (content === undefined) return undefined;
   const element = document.createElement("div");
+  element.className = POPUP_CLASS;
   element.append(content);
   return { element, builtWith };
 }

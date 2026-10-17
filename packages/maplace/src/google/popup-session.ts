@@ -5,10 +5,12 @@ import {
   popupContent,
   popupStep,
 } from "../adapter-kit/popup-content";
+import { adoptStyles } from "../adopted-styles";
 import type { Geometry } from "../geometry";
 import type { GoogleMapState, ShownGooglePopup } from "./map-state";
 import type { MountedMap } from "./mounted-map";
 import type { PlacedLocation } from "./placed-location";
+import { POPUP_STYLES } from "./popup-styles";
 import { createPopupWindow } from "./popup-window";
 
 /** The popup on one open map. */
@@ -35,6 +37,7 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
   const choice = createPopupChoice(mounted.popup.openOn);
   const window = createPopupWindow(mounted, { contentShown, closedByUser });
   const document = mounted.map.getDiv().ownerDocument;
+  adoptStyles(document, POPUP_STYLES);
   let open: OpenPopup | undefined;
   /** The location whose `popupOpen` the store heard, until it hears the close. */
   let announced: string | undefined;

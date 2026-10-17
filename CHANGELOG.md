@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Added default styles for the list view and popups: options as buttons with hover and selected states, popup content in dark text on Google's white bubble, every selector in `:where()` so your rules win; see [the README](README.md)
+- 2026-10-18 Fixed "fit all" listed twice in Safari's native select: with `fitAllLabel`, the select shows "fit all" itself while nothing is selected
 - 2026-10-17 Changed the event names to say what changed: `selectionChange`, `hoverChange`, `locationChange`, `viewportChange` and `routeChange` (were `select`, `hover`, `change`, `viewport` and `route`), with the element's `maplace-*` events, React's `on*` props and the adapter host's `report…` methods named after them; see [the events table](MIGRATION.md#events)
 - 2026-10-17 Added `"use client"` to `maplace/react`, so a React Server Component renders `<MaplaceProvider>` and `<LocationList>` with its data; see [the README](README.md#with-react)
 - 2026-10-17 Added `popupContent` and `markerIcon` on `<MaplaceMap>`: popups and markers as React content, rendered in place; see [the README](README.md#with-react)
