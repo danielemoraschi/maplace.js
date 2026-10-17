@@ -55,6 +55,11 @@ export function exampleSources(name: string): readonly ExampleFile[] {
   ];
 }
 
+/** The examples that have a page: their folder names. */
+export function exampleNames(): readonly string[] {
+  return Object.keys(PAGES).map((path) => path.split("/").at(-2) ?? path);
+}
+
 function sourceOf(files: Record<string, string>, name: string, file: string): string {
   const source = files[`../../../../packages/maplace/examples/${name}/${file}`];
   if (source === undefined) throw new Error(`examples/${name}/${file} doesn't exist`);

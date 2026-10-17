@@ -31,17 +31,35 @@ export function cdnScriptOf(html: string): string {
  * `html` as the test document's body, its own scripts run: the CDN script is left out, since
  * the test has defined the elements already.
  */
-export function openPage(html: string, { apiKey }: PageOptions = {}): OpenedPage {
-  const page = parse(apiKey === undefined ? html : html.replaceAll("YOUR_KEY", apiKey));
+export function openPage(html: string, options: PageOptions = {}): OpenedPage {
+  const { maps, errors } = openPages([html], options);
+  return { map: maps[0] as MaplaceMapElement, errors };
+}
+
+/** Pages opened together in the test document, as a site shows them: each page's map, in order. */
+export interface OpenedPages {
+  readonly maps: readonly MaplaceMapElement[];
+  readonly errors: readonly unknown[];
+}
+
+/** `htmls` one after another as the test document's body, then every page's scripts run. */
+export function openPages(htmls: readonly string[], { apiKey }: PageOptions = {}): OpenedPages {
+  const pages = htmls.map((html) =>
+    parse(apiKey === undefined ? html : html.replaceAll("YOUR_KEY", apiKey)),
+  );
   // Before the nodes connect: an element reports some misuse as it connects.
   const errors = recordErrors();
   document.body.replaceChildren(
-    ...[...page.body.childNodes].map((node) => document.importNode(node, true)),
+    ...pages.flatMap((page) =>
+      [...page.body.childNodes].map((node) => document.importNode(node, true)),
+    ),
   );
   for (const script of document.body.querySelectorAll("script")) runScript(script);
-  const map = document.querySelector("maplace-map");
-  if (map === null) throw new Error("the page has no <maplace-map>");
-  return { map, errors };
+  const maps = [...document.querySelectorAll("maplace-map")];
+  if (maps.length !== htmls.length) {
+    throw new Error(`${htmls.length} pages opened ${maps.length} maps: each page has one`);
+  }
+  return { maps, errors };
 }
 
 function parse(html: string): Document {

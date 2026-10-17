@@ -2,6 +2,7 @@
 import ExampleSection from "../components/ExampleSection.astro";
 import Hero from "../components/Hero.astro";
 import InstallBox from "../components/InstallBox.astro";
+import { EXAMPLE_SECTIONS } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
 ---
 
@@ -11,5 +12,5 @@ import Base from "../layouts/Base.astro";
 >
   <Hero />
   <InstallBox />
-  <ExampleSection number={1} name="simple" title="Simple" summary="One place on a map." />
+  {EXAMPLE_SECTIONS.map((section, index) => <ExampleSection number={index + 1} {...section} />)}
 </Base>

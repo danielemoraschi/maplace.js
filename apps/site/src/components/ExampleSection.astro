@@ -15,7 +15,8 @@ const { number, name, title, summary } = Astro.props;
 const files = exampleSources(name);
 const page = files.find(({ kind }) => kind === "html")?.code ?? "";
 const tabs = [{ tab: "map", label: "Map" }, ...files.map(({ kind, label }) => ({ tab: kind, label }))];
-const panel = (tab: string) => `${name}-${tab}`;
+// `example-` keeps the site's ids apart from the pages' own (`route-map`).
+const panel = (tab: string) => `example-${name}-${tab}`;
 ---
 
 <section class="example" id={name} aria-labelledby={`${name}-title`}>

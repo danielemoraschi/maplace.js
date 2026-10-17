@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { vi } from "vitest";
 import type { Location } from "../../location";
 import { sizedContainer } from "../container";
@@ -5,20 +6,12 @@ import { sizedContainer } from "../container";
 /** A container a script reads: `byId("list")` or `querySelector<HTMLElement>("#map")`. */
 const CONTAINER_ID = /byId\("([\w-]+)"\)|querySelector(?:<\w+>)?\("#([\w-]+)"\)/g;
 
-/** The data a page serves its examples, until the site's own (W2, W4); built for each request. */
-const EXAMPLE_DATA: Readonly<Record<string, () => unknown>> = {
-  "/locations.json": () => [
-    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
-    {
-      id: "ring",
-      type: "circle",
-      center: { lat: 45.4642, lng: 9.19 },
-      radius: 8000,
-      title: "Milan area",
-    },
-  ],
-  "/points-4k.json": () => spreadPoints(4000),
-};
+/** The data the example pages fetch, by path: `examples/data/locations.json` is `/locations.json`. */
+const EXAMPLE_DATA: Readonly<Record<string, unknown>> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob("../../../examples/data/*.json", { import: "default", eager: true }),
+  ).map(([file, data]) => [`/${file.split("/").at(-1)}`, data]),
+);
 
 /** The page around `source`: a sized `<div>` for every element it reads by id. */
 export function containersFor(source: string): void {
@@ -36,7 +29,7 @@ export function containersFor(source: string): void {
 export function serveExampleData(): void {
   const fetchFromPage = async (input: RequestInfo | URL): Promise<Response> => {
     const data = EXAMPLE_DATA[pathOf(input)];
-    return data === undefined ? new Response(null, { status: 404 }) : Response.json(data());
+    return data === undefined ? new Response(null, { status: 404 }) : Response.json(data);
   };
   vi.stubGlobal("fetch", fetchFromPage);
 }

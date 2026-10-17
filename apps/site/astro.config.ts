@@ -16,5 +16,10 @@ export default defineConfig({
   },
   markdown: { shikiConfig: { theme: "css-variables" } },
   // maplace resolved to its source, as the tests and the examples' type-check do.
-  vite: { resolve: { conditions: ["maplace:source", ...defaultClientConditions] } },
+  vite: {
+    resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
+    // The Google adapter imports the clusterer on demand: found that late, the dev server
+    // re-optimizes and refuses the import it had already handed out (`big` failed to cluster).
+    optimizeDeps: { include: ["@googlemaps/markerclusterer"] },
+  },
 });

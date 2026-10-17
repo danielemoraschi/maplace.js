@@ -68,10 +68,11 @@ const LAYERS = {
     files: /^element\/(?!google(-|$)|testing\/)/,
     imports: ["data", "contract", "store", "view", "entry"],
   },
-  // The element's test support: maps on the fake adapter.
+  // The element's test support: maps on the fake adapter, and what each example page does there.
   "element-testing": {
     files: /^element\/testing\//,
     imports: ["data", "contract", "adapter-kit", "entry", "element", "fake"],
+    packages: ["vitest"],
   },
   wiring: {
     files: /^element\/google(-[a-z-]+)?$/,

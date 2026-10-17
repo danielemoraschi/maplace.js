@@ -1,8 +1,8 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-cluster.iife.js"></script>
 <!-- 4,000 points, clustered: the cluster build bundles @googlemaps/markerclusterer. -->
-<maplace-map id="map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" cluster></maplace-map>
+<maplace-map id="big-map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" cluster></maplace-map>
 <script type="module">
   const response = await fetch('/points-4k.json');
-  document.getElementById('map').locations = await response.json();
+  document.getElementById('big-map').locations = await response.json();
 </script>

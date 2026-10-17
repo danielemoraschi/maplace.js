@@ -1,6 +1,6 @@
 ---
 import { SITE_MAPS_KEY } from "astro:env/server";
-import { liveMap } from "../examples/live-map.ts";
+import { livePage } from "../examples/live-page.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
 
 interface Props {
@@ -8,11 +8,17 @@ interface Props {
   html: string;
 }
 
-const map = liveMap(Astro.props.html, SITE_MAPS_KEY);
+const { html } = Astro.props;
+const page = livePage(html, SITE_MAPS_KEY);
+/** The page calls `save(location)`, which the site writes: a note says what was saved. */
+const savesEdits = html.includes("save(");
 ---
 
-<div class="map-frame">
-  <Fragment set:html={map} />
+<div class="map-frame" data-live-page>
+  <div class="page">
+    <Fragment set:html={page} />
+    {savesEdits && <p data-saved hidden />}
+  </div>
   <p class="map-note loading">Loading the map…</p>
   <p class="map-note failed" data-map-failure>The map couldn't load.</p>
   <ConsentPlaceholder />
@@ -21,12 +27,30 @@ const map = liveMap(Astro.props.html, SITE_MAPS_KEY);
 <style>
   .map-frame {
     position: relative;
+    display: flex;
+    flex-direction: column;
     height: clamp(18rem, 50vh, 28rem);
     border: var(--hairline);
     background: var(--wash);
   }
   .map-frame :global(maplace-map) {
-    height: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  /* The page's own nodes, laid out in the frame: its map, then tabs' details, polygon's note. */
+  .page {
+    display: contents;
+  }
+  .page > :global(:not(maplace-map, script)) {
+    flex: none;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--hairline);
+    background: var(--paper);
+    font-size: 0.875rem;
+  }
+  .page > :global(:empty:not(maplace-map)) {
+    display: none;
   }
   .map-note {
     display: none;
