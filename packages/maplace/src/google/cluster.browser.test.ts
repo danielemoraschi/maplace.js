@@ -8,7 +8,7 @@ import { LARGE_DIFF, manyMarkers } from "../testing/conformance/fixtures";
 import { sizedContainer } from "../testing/container";
 import type { View } from "../viewport";
 import { frames } from "./frames";
-import { centreOf, tabTo } from "./testing/page-input";
+import { steadyPoint, tabTo } from "./testing/page-input";
 import { onGoogle, TILES_TIMEOUT_MS } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -37,8 +37,8 @@ function points(count: number, hidden: (index: number) => boolean = () => false)
  */
 function shownOn(map: google.maps.Map) {
   const elements = [...map.getDiv().querySelectorAll<HTMLElement>("gmp-advanced-marker")];
-  const counts = elements.map((element) => /^Cluster of (\d+)/.exec(element.title)?.[1]);
-  const clustered = counts.filter((count) => count !== undefined).map(Number);
+  const counts = elements.map(clusterSize);
+  const clustered = counts.filter((count) => count !== undefined);
   const alone = counts.length - clustered.length;
   const total = clustered.reduce((sum, count) => sum + count, 0) + alone;
   return { elements, clustered, alone, total };
@@ -64,6 +64,21 @@ async function allShownOn(map: google.maps.Map, count: number): Promise<void> {
   await expect.poll(() => shownOn(map).total, { timeout: TILES_TIMEOUT_MS }).toBe(count);
   // The clusterer takes old cluster markers off a frame after each render.
   await frames(3);
+}
+
+/** The cluster of the fewest locations: the tightest bounds, so a click on it zooms in. */
+function smallestCluster(map: google.maps.Map): HTMLElement | undefined {
+  const clusters = shownOn(map).elements.flatMap((element) => {
+    const size = clusterSize(element);
+    return size === undefined ? [] : [{ element, size }];
+  });
+  return clusters.sort((a, b) => a.size - b.size)[0]?.element;
+}
+
+/** The locations a cluster marker stands for; undefined for a location drawn alone. */
+function clusterSize(element: HTMLElement): number | undefined {
+  const count = /^Cluster of (\d+)/.exec(element.title)?.[1];
+  return count === undefined ? undefined : Number(count);
 }
 
 /** The markers drawing location `id` on its own. */
@@ -140,9 +155,8 @@ describeWithMaps("clustering on Google", () => {
   it("zooms into a cluster when it is clicked", async () => {
     const { map } = await clusteredOnGoogle(points(400));
     const zoom = map.getZoom() as number;
-    const cluster = shownOn(map).elements.find((element) => element.title.startsWith("Cluster"));
-    await commands.pressMouse([centreOf(cluster as HTMLElement)]);
-    await expect.poll(() => map.getZoom()).toBeGreaterThan(zoom);
+    await commands.pressMouse([await steadyPoint(() => smallestCluster(map))]);
+    await expect.poll(() => map.getZoom(), { timeout: TILES_TIMEOUT_MS }).toBeGreaterThan(zoom);
   });
 
   it("is a button reached from the keyboard, zooming in on Enter", async () => {

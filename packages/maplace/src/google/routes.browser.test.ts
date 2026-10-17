@@ -8,7 +8,7 @@ import { TOWNS } from "../testing/conformance/fixtures";
 import { frames } from "./frames";
 import { inputOn } from "./testing/map-input";
 import { idle } from "./testing/map-waits";
-import { centreOf } from "./testing/page-input";
+import { steadyPoint } from "./testing/page-input";
 import { onGoogle } from "./testing/store-on-google";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -32,11 +32,9 @@ async function routeOnGoogle() {
   return { ...attached, computeRoutes, createPolylines, results, reported };
 }
 
-/** The Bologna marker's pin, where a user grabs it, once Google has put it on the page. */
-async function bolognaPin(map: google.maps.Map) {
-  const find = () => map.getDiv().querySelector<HTMLElement>('[aria-label="Bologna"]');
-  await expect.poll(find).toBeTruthy();
-  return centreOf(find() as HTMLElement);
+/** The Bologna marker's pin, where a user grabs it, once Google has put it there to stay. */
+function bolognaPin(map: google.maps.Map) {
+  return steadyPoint(() => map.getDiv().querySelector('[aria-label="Bologna"]') ?? undefined);
 }
 
 describeWithMaps("routes on Google", () => {
