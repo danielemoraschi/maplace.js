@@ -69,6 +69,15 @@ describe("placeMarker", () => {
     expect(a.marker.zIndex).toBeGreaterThan(before ?? 0);
   });
 
+  it("leaves an icon that is already the marker's in place, so its CSS transitions run", () => {
+    const icon = document.createElement("i");
+    const { placed: a } = placed(markerDrawable("a", ORIGIN, { renderIcon: () => icon }));
+    const replaced = vi.spyOn(a.marker, "replaceChildren");
+    a.present({ ...shown, state: { selected: true, hovered: false } });
+    expect(a.marker.firstChild).toBe(icon);
+    expect(replaced).not.toHaveBeenCalled();
+  });
+
   it("hides and shows without leaving the map, and leaves it on remove", () => {
     const { placed: a, site } = placed();
     a.present({ ...shown, visible: false });

@@ -29,7 +29,7 @@ export function sameIconSource(previous: Location, next: Location): boolean {
 }
 
 /** Sets the attributes of the states the marker is in, removes the others; returns the marker. */
-function stampState(node: Node, state: LocationState): Node {
+export function stampState<N extends Node>(node: N, state: LocationState): N {
   if (isElement(node)) {
     node.toggleAttribute("data-selected", state.selected);
     node.toggleAttribute("data-hovered", state.hovered);

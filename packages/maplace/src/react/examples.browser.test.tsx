@@ -30,6 +30,16 @@ const BEHAVIOURS: Readonly<Record<string, (page: HTMLElement) => Promise<void>>>
     await inAct(() => attachedStore().select("milan"));
     expect(page.querySelector("aside")?.textContent).toBe("milan");
   },
+  markers: async () => {
+    const probe = adapters.live().probe();
+    expect([probe.location("milan")?.icon?.textContent, probe.location("naples")?.icon]).toEqual([
+      "★",
+      undefined,
+    ]);
+    await inAct(() => probe.click("rome"));
+    await inAct(() => probe.settle());
+    expect(probe.shownPopup()?.element.textContent).toBe("RomeCapital of Italy.");
+  },
   menu: async (page) => {
     expect(page.querySelector("select")).not.toBeNull();
   },

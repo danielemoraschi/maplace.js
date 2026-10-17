@@ -6,11 +6,16 @@ import { TOWNS } from "./testing/bound-store";
 
 // No DOM in this file: importing the binding, and rendering it on a server, must not need one.
 describe("maplace/react on a server", () => {
-  it("renders the map's and the list's places, empty, with no DOM", () => {
+  it("renders the map's and the list's places, empty, with no DOM, React content or not", () => {
     expect(typeof document).toBe("undefined");
     const html = renderToString(
       <MaplaceProvider locations={TOWNS}>
-        <MaplaceMap createAdapter={fakeAdapters().createAdapter} className="map" />
+        <MaplaceMap
+          createAdapter={fakeAdapters().createAdapter}
+          className="map"
+          popupContent={(location) => <p>{location.id}</p>}
+          markerIcon={() => <b>pin</b>}
+        />
         <LocationList>{({ location }) => location.id}</LocationList>
       </MaplaceProvider>,
     );

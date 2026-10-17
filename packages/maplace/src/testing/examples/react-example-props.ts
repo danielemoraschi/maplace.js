@@ -13,7 +13,19 @@ const CITIES: readonly Location[] = [
  */
 export const REACT_EXAMPLE_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>> = {
   big: { points: spreadPoints(500) },
-  markers: { locations: CITIES },
+  markers: {
+    locations: [
+      {
+        id: "rome",
+        lat: 41.9028,
+        lng: 12.4964,
+        title: "Rome",
+        data: { about: "Capital of Italy." },
+      },
+      { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", data: { starred: true } },
+      { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
+    ],
+  },
   menu: { locations: CITIES },
   polygon: {
     locations: [

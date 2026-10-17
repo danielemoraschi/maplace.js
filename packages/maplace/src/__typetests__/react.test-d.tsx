@@ -1,5 +1,5 @@
 // Compile-time checks of the React binding: each @ts-expect-error must stay an error.
-import type { Maplace, RouteResult } from "maplace";
+import type { Location, LocationState, Maplace, MarkerLocation, RouteResult } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
 import { expectTypeOf } from "vitest";
@@ -39,3 +39,26 @@ const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 export const instance = <MaplaceMap createAdapter={adapter} />;
 // @ts-expect-error an entry's content is React content, rendered by a function
 export const staticContent = <LocationList>{"Shops"}</LocationList>;
+
+const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
+
+export const content = (
+  <MaplaceMap<{ price: number }>
+    createAdapter={createAdapter}
+    popupContent={(location) => {
+      expectTypeOf(location).toEqualTypeOf<Location<{ price: number }>>();
+      return location.data && <p>{location.data.price}</p>;
+    }}
+    markerIcon={(location, state) => {
+      expectTypeOf(location).toEqualTypeOf<MarkerLocation<{ price: number }>>();
+      expectTypeOf(state).toEqualTypeOf<LocationState>();
+      return state.selected ? <b>★</b> : null;
+    }}
+  />
+);
+
+const node = document.createElement("b");
+export const nodeContent = (
+  // @ts-expect-error content is React content: a DOM node is the core's `content`, not React's
+  <MaplaceMap createAdapter={createAdapter} popupContent={() => node} />
+);

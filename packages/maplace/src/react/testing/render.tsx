@@ -57,7 +57,10 @@ export async function renderInto(
 }
 
 /** Renders nothing once a child throws, as an app's boundary would; the root reports the error. */
-class Boundary extends Component<{ readonly children: ReactNode }, { readonly failed: boolean }> {
+export class Boundary extends Component<
+  { readonly children: ReactNode },
+  { readonly failed: boolean }
+> {
   override state = { failed: false };
 
   static getDerivedStateFromError() {

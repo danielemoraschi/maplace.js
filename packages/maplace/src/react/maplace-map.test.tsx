@@ -5,7 +5,7 @@ import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
 import { fakeAdapters } from "./testing/adapters";
 import { TOWNS } from "./testing/bound-store";
-import { inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
+import { Boundary, inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
 
 describe.each(ROOT_MODES)("MaplaceMap, in $mode", (root) => {
   it("attaches a fresh adapter to its div on mount and detaches on unmount", async () => {
@@ -84,4 +84,27 @@ describe.each(ROOT_MODES)("MaplaceMap, in $mode", (root) => {
     await render(app("visible"));
     expect(adapters.live()).not.toBe(first);
   });
+});
+
+// StrictMode detaches, so destroys, a map's first adapter: a shared one only works in a plain root.
+// The second map has a boundary of its own, so the first stays mounted.
+it.each([
+  ["a plain map", {}],
+  ["one with React content", { markerIcon: () => "★" }],
+])("leaves an adapter attached before to the map it drives, refused by %s", async (_, content) => {
+  const shared = fakeAdapters().createAdapter();
+  const { errors } = await renderInto(
+    <>
+      <MaplaceProvider locations={TOWNS}>
+        <MaplaceMap createAdapter={() => shared} />
+      </MaplaceProvider>
+      <Boundary>
+        <MaplaceProvider locations={TOWNS}>
+          <MaplaceMap createAdapter={() => shared} {...content} />
+        </MaplaceProvider>
+      </Boundary>
+    </>,
+  );
+  expect(errors[0]).toMatchObject({ code: "already-attached", field: "adapter" });
+  expect(shared.destroyed).toBe(false);
 });

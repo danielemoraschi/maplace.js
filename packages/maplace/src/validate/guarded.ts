@@ -28,8 +28,7 @@ export function guardedRenderer<Arg>(
   function failed(problem: string, cause?: unknown): undefined {
     if (reported) return undefined;
     reported = true;
-    const field = child(locationRoot(guard.locationId), guard.field);
-    guard.report(pageCodeFailed(field, problem, cause));
+    guard.report(pageCodeFailure(guard.locationId, guard.field, problem, cause));
     return undefined;
   }
 
@@ -44,4 +43,14 @@ export function guardedRenderer<Arg>(
       ? (built as Node)
       : failed(`must return a Node, got ${describeValue(built)}`);
   };
+}
+
+/** The error for a location's page code failing: `location "a": icon threw`. */
+export function pageCodeFailure(
+  locationId: string,
+  field: string,
+  problem: string,
+  cause?: unknown,
+): MaplaceError {
+  return pageCodeFailed(child(locationRoot(locationId), field), problem, cause);
 }

@@ -77,11 +77,11 @@ const LAYERS = {
     imports: ["data", "contract", "element", "google"],
   },
   // The React binding makes stores and list views through the entry, as the element does, and
-  // reads the shared data rules, the store's equality rules and the list view's own helpers
-  // (option naming, structure) directly.
+  // reads the shared data rules, the store's equality and icon rules, the list view's own helpers
+  // (option naming, structure) and the store's messages for the page's code failing directly.
   react: {
     files: /^react\/(?!testing\/)/,
-    imports: ["data", "contract", "store", "view", "entry", "diff"],
+    imports: ["data", "contract", "store", "view", "entry", "diff", "validation"],
     packages: ["react", "react-dom"],
   },
   // The binding's test support: rendering into a root that collects what error boundaries catch.

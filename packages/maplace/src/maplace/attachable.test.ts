@@ -3,7 +3,8 @@ import type { Location } from "../location";
 import { initialSnapshot } from "../state/initial";
 import { CONTAINER as container } from "../testing/container";
 import { createFakeAdapter } from "../testing/fake-adapter";
-import { checkAttachable, markUsed, type StoreAtAttach } from "./attachable";
+import { markUsed } from "../validate/used-adapters";
+import { checkAttachable, type StoreAtAttach } from "./attachable";
 
 const circle: Location = { id: "c", type: "circle", center: { lat: 0, lng: 0 }, radius: 5 };
 const free: StoreAtAttach = {

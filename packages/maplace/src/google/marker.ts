@@ -85,10 +85,15 @@ function titleOf(drawable: Drawable): string {
 
 /**
  * The page's icon for this state, as the marker's only child; with none, Google draws its
- * default pin. Children, not `content`, which Maps JS deprecates.
+ * default pin. Children, not `content`, which Maps JS deprecates. An icon already there stays,
+ * so a CSS transition on its `data-selected` runs.
  */
 function showIcon(marker: HTMLElement, drawable: Drawable, state: LocationState): void {
   const icon = drawable.renderIcon?.(state);
-  if (icon) marker.replaceChildren(icon);
-  else marker.replaceChildren();
+  if (icon === undefined) marker.replaceChildren();
+  else if (!isOnlyChild(marker, icon)) marker.replaceChildren(icon);
+}
+
+function isOnlyChild(marker: HTMLElement, icon: Node): boolean {
+  return marker.firstChild === icon && marker.childNodes.length === 1;
 }

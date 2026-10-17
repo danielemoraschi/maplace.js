@@ -1,3 +1,4 @@
+export type { MarkerIconRender, PopupContentRender } from "./content-renders";
 export type { LocationListProps } from "./location-list";
 export { LocationList } from "./location-list";
 export type { MaplaceMapProps } from "./maplace-map";

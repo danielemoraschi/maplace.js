@@ -108,7 +108,7 @@ export function Simple() {
 }
 ```
 
-`<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelect` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). `<LocationList>` is the store's list, with a function child for each entry's content, and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
+`<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelect` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content, and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
 ## What it needs
 
