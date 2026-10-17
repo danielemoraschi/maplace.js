@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { withPinnedScripts } from "./cdn-pins.ts";
+import { pinnedSnippetOf, withPinnedScripts } from "./cdn-pins.ts";
 
 const PINNED = (file: string) =>
   `<script src="https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/${file}"\n  integrity="sha384-…" crossorigin="anonymous"></script>`;
@@ -40,5 +40,19 @@ describe("withPinnedScripts", () => {
     expect(() => withPinnedScripts("# maplace\n", { version: "1.2.0", integrityOf })).toThrow(
       "README.md has no pinned script (maplace@x.y.z/dist/… with integrity) to fill in",
     );
+  });
+});
+
+describe("pinnedSnippetOf", () => {
+  const fenced = `# maplace\n\n\`\`\`html\n${PINNED("maplace-element.iife.js")}\n\`\`\`\n\n\`\`\`html\n${PINNED("maplace-element-cluster.iife.js")}\n\`\`\`\n`;
+
+  it("is the README's pinned snippet for that script, as the README writes it", () => {
+    expect(pinnedSnippetOf(fenced, "maplace-element-cluster.iife.js")).toBe(
+      PINNED("maplace-element-cluster.iife.js"),
+    );
+  });
+
+  it("refuses a script the README pins nowhere", () => {
+    expect(() => pinnedSnippetOf(fenced, "other.js")).toThrow("README.md pins no other.js");
   });
 });

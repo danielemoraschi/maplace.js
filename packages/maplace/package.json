@@ -16,7 +16,9 @@
   ],
   "sideEffects": [
     "./dist/element/index.js",
-    "./dist/element/google.js"
+    "./dist/element/google.js",
+    "./src/element/index.ts",
+    "./src/element/google.ts"
   ],
   "exports": {
     ".": {

@@ -1,11 +1,11 @@
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CHANGELOG_FILE } from "../checks/changelog-lines.ts";
 import { withAbsoluteLinks } from "../checks/markdown.ts";
 import { blobBaseFor } from "../release/repository.ts";
 import { tagOf } from "../release/tags.ts";
 import { withPinnedScripts } from "./cdn-pins.ts";
-import { DIST, PACKED, packageManifest, ROOT } from "./package.ts";
+import { DIST, PACKED, packageManifest, ROOT, readRootFile } from "./package.ts";
 import { packedManifest } from "./packed-manifest.ts";
 import { integrityOfFile } from "./subresource-integrity.ts";
 
@@ -42,8 +42,4 @@ function stagedChangelog(source: SourceManifest): string {
 /** Where the repo's files are at this version's tag. */
 function blobBaseAt(source: SourceManifest): string {
   return blobBaseFor(source, tagOf(source.version));
-}
-
-function readRootFile(name: string): string {
-  return readFileSync(resolve(ROOT, name), "utf8");
 }

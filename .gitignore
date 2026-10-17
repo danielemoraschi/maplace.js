@@ -10,3 +10,4 @@ coverage
 .scannerwork
 .vitest
 spikes
+.astro

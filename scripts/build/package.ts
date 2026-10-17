@@ -26,6 +26,11 @@ export const TSC = resolve(ROOT, "node_modules/.bin/tsc");
 /** RFC §3: evergreen browsers. */
 export const TARGET = "es2022";
 
+/** A file at the repo's root, as text: README.md, CHANGELOG.md. */
+export function readRootFile(name: string): string {
+  return readFileSync(resolve(ROOT, name), "utf8");
+}
+
 /** The package's own manifest, as the repo has it. */
 export function packageManifest(): Manifest & { readonly version: string } {
   return JSON.parse(readFileSync(resolve(ROOT, PACKAGE_DIR, "package.json"), "utf8"));

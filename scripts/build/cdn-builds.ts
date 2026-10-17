@@ -1,5 +1,5 @@
-import { writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { basename, join, resolve } from "node:path";
 import { type BuildOptions, build } from "esbuild";
 import { leaveOutClustering } from "./leave-out-clustering.ts";
 import { DIST, PACKAGE_ENTRIES, packageManifest, ROOT, TARGET } from "./package.ts";
@@ -41,14 +41,35 @@ export function cdnBuildOptions(
   };
 }
 
-/** Writes both scripts, their source maps, and the licences file of what they bundle. */
+/**
+ * Writes both scripts, their source maps, and the licences file of what they bundle: the bytes
+ * `builtCdnScript` makes, so a hash of either is the other's.
+ */
 export async function buildCdnScripts(outdir: string = DIST): Promise<void> {
-  const built = await Promise.all([
-    build(cdnBuildOptions("plain", outdir)),
-    build(cdnBuildOptions("cluster", outdir)),
-  ]);
+  const built = await Promise.all([inMemory("plain", outdir), inMemory("cluster", outdir)]);
+  mkdirSync(resolve(ROOT, outdir), { recursive: true });
+  for (const { path, contents } of built.flatMap(({ outputFiles }) => outputFiles)) {
+    writeFileSync(path, contents);
+  }
   const licences = thirdPartyLicenses(built.map(({ metafile }) => metafile));
   writeFileSync(resolve(ROOT, outdir, LICENSES_FILE), `${licences}\n`);
+}
+
+/**
+ * A CDN script's bytes, built in memory exactly as `buildCdnScripts` writes them: what a page
+ * pinning the published file gets, so its integrity is the published file's.
+ */
+export async function builtCdnScript(script: CdnScript): Promise<Uint8Array> {
+  const { outputFiles } = await inMemory(script);
+  const file = outputFiles.find(({ path }) => basename(path) === CDN_SCRIPTS[script]);
+  if (file === undefined)
+    throw new Error(`the ${script} CDN build wrote no ${CDN_SCRIPTS[script]}`);
+  return file.contents;
+}
+
+/** A CDN script built as `cdnBuildOptions` says, kept in memory: its script and source map. */
+function inMemory(script: CdnScript, outdir?: string) {
+  return build({ ...cdnBuildOptions(script, outdir), write: false });
 }
 
 function bannerOf(clusters: boolean): string {

@@ -1,0 +1,54 @@
+---
+import { docRoute, REPO_DOCS, REPOSITORY_URL } from "../site/repo-docs.ts";
+
+const here = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/">maplace</a>
+    <nav aria-label="Documentation">
+      {
+        REPO_DOCS.map(({ id, label }) => (
+          <a href={docRoute(id)} aria-current={here === docRoute(id) ? "page" : undefined}>
+            {label}
+          </a>
+        ))
+      }
+      <a href={REPOSITORY_URL}>GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: var(--rule);
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-block: 0.875rem;
+  }
+  .brand {
+    font: 800 1.5rem/1 var(--font-display);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+  nav a {
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+  }
+  nav a[aria-current="page"] {
+    border-bottom-color: var(--accent);
+  }
+</style>

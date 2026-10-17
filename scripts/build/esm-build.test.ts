@@ -6,6 +6,7 @@ import { importsOf, packageName } from "../checks/imports.ts";
 import { relativeLinksIn } from "../checks/markdown.ts";
 import { CDN_SCRIPTS } from "./cdn-builds.ts";
 import { buildEsm } from "./esm-build.ts";
+import { ROOT } from "./package.ts";
 import type { Manifest } from "./packed-manifest.ts";
 import { stagePackage } from "./stage-package.ts";
 import { integrityOfFile } from "./subresource-integrity.ts";
@@ -27,10 +28,14 @@ function bareImportsOf(text: string): string[] {
   return importsOf(text).filter((path) => !path.startsWith("."));
 }
 
-/** What a page's bundler (esbuild here, honouring `sideEffects`) keeps of `code`. */
-function bundledPage(code: string): string {
+/**
+ * What a page's bundler (esbuild here, honouring `sideEffects`) keeps of `code`: against the
+ * built package, or against its source as the repo's own tools (the site) resolve it.
+ */
+function bundledPage(code: string, { fromSource = false } = {}): string {
   const result = buildSync({
-    stdin: { contents: code, resolveDir: consumerDir },
+    stdin: { contents: code, resolveDir: fromSource ? ROOT : consumerDir },
+    conditions: fromSource ? ["maplace:source"] : [],
     bundle: true,
     write: false,
     format: "esm",
@@ -127,6 +132,14 @@ describe("the npm ESM build", () => {
   it("keeps the elements' definition in a page's bundle, for either element entry", () => {
     expect(bundledPage('import "maplace/element";')).toContain("customElements.define");
     expect(bundledPage('import "maplace/element/google";')).toContain("customElements.define");
+  });
+
+  it("keeps them from the source too, for the repo's own pages", () => {
+    const fromSource = { fromSource: true };
+    expect(bundledPage('import "maplace/element";', fromSource)).toContain("customElements.define");
+    expect(bundledPage('import "maplace/element/google";', fromSource)).toContain(
+      "customElements.define",
+    );
   });
 
   it("leaves nothing of the core in a page's bundle that uses none of it", () => {

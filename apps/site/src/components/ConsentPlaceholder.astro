@@ -1,0 +1,29 @@
+<div class="consent">
+  <p>
+    These maps come from Google, which sees your IP address. They stay off until you say so, once
+    for the whole site.
+  </p>
+  <button type="button" class="button" data-maps-grant>Load Google Maps</button>
+</div>
+
+<style>
+  .consent {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+    background: var(--wash);
+  }
+  .consent p {
+    max-width: 26rem;
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  :global(html[data-maps="on"]) .consent {
+    display: none;
+  }
+</style>

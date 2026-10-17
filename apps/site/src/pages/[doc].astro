@@ -1,0 +1,95 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../layouts/Base.astro";
+
+// A page per repo document the site renders (src/site/repo-docs.ts).
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs.map((doc) => ({ params: { doc: doc.id }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+const sections = headings.filter(({ depth }) => depth === 2);
+---
+
+<Base title={`${doc.data.title} · maplace`} description={`maplace: ${doc.data.title}.`}>
+  <div class="doc">
+    <nav class="contents" aria-label="On this page">
+      <ol>
+        {sections.map(({ slug, text }) => <li><a href={`#${slug}`}>{text}</a></li>)}
+      </ol>
+    </nav>
+    <article>
+      <h1>{doc.data.title}</h1>
+      <Content />
+    </article>
+  </div>
+</Base>
+
+<style>
+  .doc {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 2.5rem;
+    padding-top: 2rem;
+  }
+  @media (max-width: 800px) {
+    .doc {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .contents {
+      display: none;
+    }
+  }
+  .contents ol {
+    position: sticky;
+    top: 1.5rem;
+    margin: 0;
+    padding: 0 0 0 1rem;
+    border-left: var(--rule);
+    list-style: none;
+    font-size: 0.875rem;
+    line-height: 2;
+  }
+  .contents a {
+    text-decoration: none;
+  }
+  article {
+    max-width: 48rem;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    margin: 0 0 1.5rem;
+  }
+  article :global(h2) {
+    font-size: 1.75rem;
+    margin: 2.5rem 0 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--rule);
+  }
+  article :global(h3) {
+    font-size: 1.25rem;
+    margin: 2rem 0 0.5rem;
+  }
+  article :global(pre) {
+    overflow-x: auto;
+  }
+  article :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    display: block;
+    overflow-x: auto;
+  }
+  article :global(th),
+  article :global(td) {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    border-bottom: 1px solid var(--muted);
+  }
+  article :global(th) {
+    border-bottom: var(--hairline);
+  }
+</style>

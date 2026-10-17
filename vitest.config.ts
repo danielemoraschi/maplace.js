@@ -12,7 +12,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text-summary", "lcovonly", "json-summary"],
-      include: ["packages/maplace/src/**", "scripts/**"],
+      include: ["packages/maplace/src/**", "scripts/**", "apps/site/src/**"],
       // Keep in step with sonar.coverage.exclusions.
       exclude: [
         "**/__typetests__/**",
@@ -23,6 +23,10 @@ export default defineConfig({
         // The command-line entry points: their logic is in the folders below, tested there.
         "scripts/*.ts",
         "scripts/checks/consumer/**",
+        // The site's pages, content config and page script arrange what its tested modules do.
+        "apps/site/src/**/*.astro",
+        "apps/site/src/content.config.ts",
+        "apps/site/src/scripts/site.ts",
       ],
     },
     projects: [
@@ -30,7 +34,11 @@ export default defineConfig({
         extends: true,
         test: {
           name: "node",
-          include: ["scripts/**/*.test.ts", "packages/maplace/src/**/*.test.{ts,tsx}"],
+          include: [
+            "scripts/**/*.test.ts",
+            "packages/maplace/src/**/*.test.{ts,tsx}",
+            "apps/site/{src,test}/**/*.test.ts",
+          ],
           exclude: [...configDefaults.exclude, BROWSER_TESTS],
         },
       },

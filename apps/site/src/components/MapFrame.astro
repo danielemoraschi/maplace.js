@@ -1,0 +1,48 @@
+---
+import { SITE_MAPS_KEY } from "astro:env/server";
+import { liveMap } from "../examples/live-map.ts";
+import ConsentPlaceholder from "./ConsentPlaceholder.astro";
+
+interface Props {
+  /** The example's page, whose map this runs. */
+  html: string;
+}
+
+const map = liveMap(Astro.props.html, SITE_MAPS_KEY);
+---
+
+<div class="map-frame">
+  <Fragment set:html={map} />
+  <p class="map-note loading">Loading the map…</p>
+  <p class="map-note failed" data-map-failure>The map couldn't load.</p>
+  <ConsentPlaceholder />
+</div>
+
+<style>
+  .map-frame {
+    position: relative;
+    height: clamp(18rem, 50vh, 28rem);
+    border: var(--hairline);
+    background: var(--wash);
+  }
+  .map-frame :global(maplace-map) {
+    height: 100%;
+  }
+  .map-note {
+    display: none;
+    position: absolute;
+    inset: auto auto 0.75rem 0.75rem;
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    background: var(--paper);
+    border: var(--hairline);
+    font-size: 0.875rem;
+  }
+  .script-failed .failed {
+    display: block;
+  }
+  .map-frame:has(:global(maplace-map:state(loading))) .loading,
+  .map-frame:has(:global(maplace-map:state(error))) .failed {
+    display: block;
+  }
+</style>

@@ -2,7 +2,8 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "devEngines": {
     "runtime": {
@@ -12,7 +13,7 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc && tsc -p scripts",
+    "typecheck": "tsc && tsc -p scripts && tsc -p apps/site",
     "check": "biome check && node scripts/check.ts",
     "fix": "biome check --write",
     "test": "vitest run --coverage",
@@ -21,7 +22,9 @@
     "build": "node scripts/build.ts",
     "coverage": "node scripts/coverage.ts",
     "release": "node scripts/release.ts",
-    "release-notes": "node scripts/release-notes.ts"
+    "release-notes": "node scripts/release-notes.ts",
+    "site:dev": "npm run dev -w site",
+    "site:build": "npm run build -w site"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.5",

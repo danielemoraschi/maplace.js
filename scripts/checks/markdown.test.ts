@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { relativeLinksIn, withAbsoluteLinks } from "./markdown.ts";
+import { fencedBlocks, relativeLinksIn, withAbsoluteLinks, withLinksResolved } from "./markdown.ts";
 
 describe("relativeLinksIn", () => {
   it("finds links and images to repo paths, by line, without their anchors", () => {
@@ -38,5 +38,22 @@ describe("withAbsoluteLinks", () => {
     expect(withAbsoluteLinks("```md\n[x](a.md)\n```\n[y](b.md)", BLOB)).toBe(
       `\`\`\`md\n[x](a.md)\n\`\`\`\n[y](${BLOB}b.md)`,
     );
+  });
+});
+
+describe("withLinksResolved", () => {
+  it("gives each link to a repo path, anchor included, the target `resolve` makes of it", () => {
+    const resolve = (path: string) => `/site/${path.toLowerCase()}`;
+    expect(withLinksResolved("[m](MIGRATION.md#options), ![i](a.png), [s](#s)", resolve)).toBe(
+      "[m](/site/migration.md#options), ![i](a.png), [s](#s)",
+    );
+  });
+});
+
+describe("fencedBlocks", () => {
+  it("is the code of each block fenced in that language, whatever the line endings", () => {
+    const markdown =
+      "```html \r\n<a></a>\r\n```\r\ntext\n```sh\nls\n```\n```html\n<b></b>\n<i></i>\n```";
+    expect(fencedBlocks(markdown, "html")).toEqual(["<a></a>", "<b></b>\n<i></i>"]);
   });
 });

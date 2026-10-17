@@ -1,0 +1,14 @@
+---
+import { Code } from "astro:components";
+import type { ExampleFile } from "../examples/example-sources.ts";
+
+interface Props {
+  code: string;
+  lang: ExampleFile["lang"];
+}
+
+// <Code> doesn't read the Markdown's shikiConfig: the theme is set here, for every block.
+const { code, lang } = Astro.props;
+---
+
+<Code code={code.trimEnd()} lang={lang} theme="css-variables" />

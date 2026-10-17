@@ -1,0 +1,54 @@
+---
+import { getEntry } from "astro:content";
+import { docRoute } from "../site/repo-docs.ts";
+
+const entry = await getEntry("install", "element");
+if (entry === undefined) throw new Error("the install collection has no element entry");
+const { version, snippet } = entry.data;
+---
+
+<div class="install">
+  <div>
+    <h2>Install</h2>
+    <pre><code id="npm-install">npm install maplace</code></pre>
+    <button type="button" class="button-plain" data-copy="npm-install">Copy</button>
+  </div>
+  <div>
+    <h2>Or pin the CDN script</h2>
+    <pre><code id="pinned-script">{snippet}</code></pre>
+    <button type="button" class="button-plain" data-copy="pinned-script">Copy</button>
+    <p>maplace {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
+  </div>
+</div>
+
+<style>
+  .install {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 1.5rem;
+    border-top: var(--rule);
+    padding-top: 1rem;
+  }
+  @media (max-width: 720px) {
+    .install {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+  pre {
+    margin: 0 0 0.5rem;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    border: var(--hairline);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  p {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+</style>

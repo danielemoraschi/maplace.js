@@ -1,0 +1,15 @@
+---
+import ExampleSection from "../components/ExampleSection.astro";
+import Hero from "../components/Hero.astro";
+import InstallBox from "../components/InstallBox.astro";
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="maplace: a map and a list, in sync"
+  description="A list of locations becomes a Google map plus a synced list, in a few lines."
+>
+  <Hero />
+  <InstallBox />
+  <ExampleSection number={1} name="simple" title="Simple" summary="One place on a map." />
+</Base>

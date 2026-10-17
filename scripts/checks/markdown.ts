@@ -35,9 +35,34 @@ export function relativeLinksIn(markdown: string): RelativeLink[] {
  * images are left as written, since a blob page isn't an image.
  */
 export function withAbsoluteLinks(markdown: string, blobBase: string): string {
+  return withLinksResolved(markdown, (path) => `${blobBase}${path}`);
+}
+
+/**
+ * `markdown` with each link to a repo path (as written, anchor included) pointing where
+ * `resolve` says, outside code fences; images are left as written.
+ */
+export function withLinksResolved(markdown: string, resolve: (path: string) => string): string {
   return linesOf(markdown)
-    .map(({ text, isProse }) => (isProse ? withAbsoluteLinksOn(text, blobBase) : text))
+    .map(({ text, isProse }) => (isProse ? withLinksResolvedOn(text, resolve) : text))
     .join("\n");
+}
+
+/** The code of each fenced block in `markdown` whose fence names `lang`, e.g. `html`. */
+export function fencedBlocks(markdown: string, lang: string): string[] {
+  const blocks: string[] = [];
+  let open: { lang: string; lines: string[] } | undefined;
+  for (const line of markdown.split(/\r?\n/)) {
+    if (!isFence(line)) {
+      open?.lines.push(line);
+    } else if (open === undefined) {
+      open = { lang: line.slice(3).trim(), lines: [] };
+    } else {
+      if (open.lang === lang) blocks.push(open.lines.join("\n"));
+      open = undefined;
+    }
+  }
+  return blocks;
 }
 
 export function isFence(line: string): boolean {
@@ -62,9 +87,9 @@ function linesOf(markdown: string): Line[] {
   });
 }
 
-function withAbsoluteLinksOn(text: string, blobBase: string): string {
+function withLinksResolvedOn(text: string, resolve: (path: string) => string): string {
   return text.replaceAll(RELATIVE_LINK, (link, path: string, offset: number) =>
-    isImageAt(text, offset) ? link : `](${blobBase}${path})`,
+    isImageAt(text, offset) ? link : `](${resolve(path)})`,
   );
 }
 

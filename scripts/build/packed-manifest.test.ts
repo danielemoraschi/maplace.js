@@ -4,6 +4,7 @@ import { packedManifest } from "./packed-manifest.ts";
 const MANIFEST = {
   name: "maplace",
   files: ["dist"],
+  sideEffects: ["./dist/element/index.js", "./src/element/index.ts"],
   exports: {
     ".": {
       "maplace:source": "./src/index.ts",
@@ -27,5 +28,9 @@ describe("packedManifest", () => {
     const packed = packedManifest(MANIFEST);
     expect(Object.keys(packed.exports["."] as object)).toEqual(["types", "default"]);
     expect(packed).toMatchObject({ name: "maplace", files: ["dist"] });
+  });
+
+  it("drops the side effects only the source has: npm packs no src", () => {
+    expect(packedManifest(MANIFEST).sideEffects).toEqual(["./dist/element/index.js"]);
   });
 });

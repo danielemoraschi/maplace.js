@@ -1,6 +1,6 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { packageManifest } from "../build/package.ts";
-import { blobBaseFor } from "./repository.ts";
+import { blobBaseFor, repositoryPageFor } from "./repository.ts";
 
 const BLOB = "https://github.com/owner/repo/blob/v1.1.0/";
 
@@ -22,4 +22,11 @@ it("reads the package's own manifest, which npm's provenance checks against the 
   expect(blobBaseFor(packageManifest(), "v1.1.0")).toBe(
     "https://github.com/danielemoraschi/maplace.js/blob/v1.1.0/",
   );
+});
+
+describe("repositoryPageFor", () => {
+  it("is the repository's page on GitHub", () => {
+    const repository = { type: "git", url: "git+https://github.com/o/r.git" };
+    expect(repositoryPageFor({ repository })).toBe("https://github.com/o/r");
+  });
 });

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"],
+    "allowImportingTsExtensions": true
+  },
+  // .astro files are checked by the build: Astro's checker needs TypeScript 6 or older.
+  "include": ["src/**/*.ts", "test/**/*.ts", "astro.config.ts"],
+  "exclude": ["src/content.config.ts"]
+}

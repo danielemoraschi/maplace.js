@@ -1,4 +1,7 @@
-interface Pin {
+import { fencedBlocks } from "../checks/markdown.ts";
+
+/** What pins a CDN script: a version, and each script's integrity. */
+export interface Pin {
   readonly version: string;
   /** The integrity of a script in `dist`, by file name. */
   readonly integrityOf: (file: string) => string;
@@ -30,4 +33,13 @@ export function withPinnedScripts(readme: string, { version, integrityOf }: Pin)
         `${ANY_VERSION}/dist/${file}"${gap}integrity="${integrityOf(file)}"`,
     )
     .replaceAll(ANY_VERSION, `maplace@${version}`);
+}
+
+/** The README's snippet that pins `file` (with its integrity), as the README writes it. */
+export function pinnedSnippetOf(readme: string, file: string): string {
+  const snippet = fencedBlocks(readme, "html").find(
+    (body) => body.includes(`/dist/${file}"`) && body.includes("integrity="),
+  );
+  if (snippet === undefined) throw new Error(`README.md pins no ${file}`);
+  return snippet;
 }

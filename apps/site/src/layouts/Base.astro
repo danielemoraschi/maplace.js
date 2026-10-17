@@ -1,0 +1,42 @@
+---
+import "@fontsource/bricolage-grotesque/800.css";
+import "@fontsource-variable/instrument-sans";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/tokens.css";
+import "../styles/base.css";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-maps="off">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* Before the first paint, so a returning visitor's placeholders never show. */}
+    <script is:inline define:vars={{ key: CONSENT_KEY, granted: CONSENT_GRANTED }}>
+      try {
+        if (localStorage.getItem(key) === granted) document.documentElement.dataset.maps = "on";
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <SiteHeader />
+    <main class="wrap"><slot /></main>
+    <SiteFooter />
+    <script>
+      import "../scripts/site.ts";
+    </script>
+  </body>
+</html>

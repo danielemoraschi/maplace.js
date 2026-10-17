@@ -1,0 +1,103 @@
+---
+import { exampleSources } from "../examples/example-sources.ts";
+import MapFrame from "./MapFrame.astro";
+import SourceCode from "./SourceCode.astro";
+
+interface Props {
+  number: number;
+  /** Its folder in `packages/maplace/examples/`. */
+  name: string;
+  title: string;
+  summary: string;
+}
+
+const { number, name, title, summary } = Astro.props;
+const files = exampleSources(name);
+const page = files.find(({ kind }) => kind === "html")?.code ?? "";
+const tabs = [{ tab: "map", label: "Map" }, ...files.map(({ kind, label }) => ({ tab: kind, label }))];
+const panel = (tab: string) => `${name}-${tab}`;
+---
+
+<section class="example" id={name} aria-labelledby={`${name}-title`}>
+  <div class="head">
+    <h2 id={`${name}-title`}>
+      <span class="number">{String(number).padStart(2, "0")}</span>
+      {title}
+    </h2>
+    <p>{summary}</p>
+  </div>
+  <div class="tabs" role="tablist" aria-label={`${title}: the map and its code`}>
+    {
+      tabs.map(({ tab, label }, index) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${panel(tab)}-tab`}
+          aria-controls={panel(tab)}
+          aria-selected={index === 0 ? "true" : "false"}
+          tabindex={index === 0 ? 0 : -1}
+        >
+          {label}
+        </button>
+      ))
+    }
+  </div>
+  <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
+    <MapFrame html={page} />
+  </div>
+  {
+    files.map(({ kind, file, code, lang }) => (
+      <div role="tabpanel" id={panel(kind)} aria-labelledby={`${panel(kind)}-tab`} hidden>
+        <SourceCode code={code} lang={lang} />
+        <p class="path">examples/{name}/{file}, as the tests run it</p>
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  .example {
+    border-top: var(--rule);
+    padding-top: 1rem;
+    margin-top: 3rem;
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+  .number {
+    color: var(--accent);
+    margin-right: 0.25rem;
+  }
+  .head p {
+    margin: 0;
+    color: var(--muted);
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 1rem 0 0.75rem;
+  }
+  [role="tab"] {
+    border: 0;
+    background: none;
+    padding: 0.25rem 0.875rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+  [role="tab"][aria-selected="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .path {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+</style>

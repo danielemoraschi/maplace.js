@@ -102,12 +102,12 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `locations` | kept; every location needs an `id` |
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
-| `show_infowindows`, `infowindow_type` | leave `content` out; there is only one kind of popup |
+| `show_infowindows`, `infowindow_type` | a location opens a popup only when it has `content` (or `html`): leave it out for none; there is only one kind of popup |
 | `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`; centre and zoom through `view` |
 | `styles` | map ID and Cloud styling ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)) |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
-| `directions_options.avoidHighways`, `avoidTolls` | not in 1.0; route modifiers may come later |
+| `directions_options.avoidHighways`, `avoidTolls` | dropped |
 | `directions_options.unitSystem` | dropped: results are metres and seconds, format them as you like |
 | `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
 | `directions_panel` | dropped: render legs from the `route` event |
@@ -131,7 +131,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `icon` | kept: an image URL, a DOM node or a function of the selected/hovered state |
 | `image`, `image_w`, `image_h` | an `icon` node, e.g. a sized `<img>` |
 | `zoom` | `select(id, { zoom })`; keep the number in `data` |
-| `show_infowindow` | leave `content` out |
+| `show_infowindow` | `false` kept a location's info window shut: leave its `content` (and `html`) out, and a click selects it without a popup |
 | `visible` | kept, default `true` (0.2's docs said `false`, its code did `true`) |
 | `animation` | dropped: animate the `icon` node with CSS |
 | `stopover` | dropped: every route stop ends a leg |
@@ -156,7 +156,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `CloseInfoWindow()` | `select(undefined)`: the popup follows the selection |
 | `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
 | `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
-| `ShowOnMenu(index)` | dropped |
+| `ShowOnMenu(index)` | dropped with `on_menu`: it said whether a location was in the menu, and the 1.0 list shows every location the map shows (`setFilter` narrows both) |
 | `AddControl(name, menu)` | `createListView(maplace, { render })`, or your own view from `subscribe` and `getSnapshot` |
 | internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
 
@@ -164,7 +164,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 
 | 0.2 callback | 1.0 event |
 |---|---|
-| `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | dropped: one event per change, after it happened |
+| `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | dropped: they ran just before 0.2 acted and couldn't stop it; run the same code on the event below that follows the change (`select`, `popupOpen`, `popupClose`) |
 | `afterShow` | `select` |
 | `afterViewAll` | `select` with `id` undefined, then `viewport` |
 | `afterCreateMarker` | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
