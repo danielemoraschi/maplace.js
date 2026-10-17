@@ -14,10 +14,10 @@ export function reportMarkerInput(
   id: string,
   { mounted, hover }: PlacingSite,
 ): void {
-  marker.addEventListener("gmp-click", () => mounted.live()?.reportSelect(id));
+  marker.addEventListener("gmp-click", () => mounted.live()?.reportSelectionChange(id));
   marker.addEventListener("gmp-dragend", () => {
     const dropped = marker.position;
-    if (dropped) mounted.live()?.reportChange(id, { type: "marker", ...latLngOf(dropped) });
+    if (dropped) mounted.live()?.reportLocationChange(id, { type: "marker", ...latLngOf(dropped) });
   });
   marker.addEventListener("pointerenter", () => hover.enter("pointer", id));
   marker.addEventListener("pointerleave", () => hover.leave("pointer", id));

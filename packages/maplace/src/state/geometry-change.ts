@@ -15,9 +15,9 @@ export interface GeometryReport {
 
 /**
  * Writes a drag or edit back: the location becomes a new object with the reported geometry, then
- * `change` fires with it and the one it replaces. An id the store no longer has is a race with a
- * diff still being drawn: no change. A report the location can't take is the adapter's bug and
- * throws.
+ * `locationChange` fires with it and the one it replaces. An id the store no longer has is a race
+ * with a diff still being drawn: no change. A report the location can't take is the adapter's bug
+ * and throws.
  */
 export function changeGeometry<Data>(
   snapshot: Snapshot<Data>,
@@ -30,7 +30,7 @@ export function changeGeometry<Data>(
   checkLocationFields(location);
   return {
     patch: { locations: replaced(snapshot.locations, { previous, location }) },
-    events: [{ name: "change", payload: { location, previous } }],
+    events: [{ name: "locationChange", payload: { location, previous } }],
   };
 }
 

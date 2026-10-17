@@ -9,7 +9,7 @@ function reporting() {
   const hover = createHoverReports(() => live);
   return {
     hover,
-    reports: () => host.reportsOf("reportHover").map(([id]) => id),
+    reports: () => host.reportsOf("reportHoverChange").map(([id]) => id),
     stop: () => (live = undefined),
   };
 }

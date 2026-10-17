@@ -35,13 +35,13 @@ describeWithMaps("Google markers under real input", () => {
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
     // Google dispatches the click after the input, not during it.
-    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["a"]]);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     // A second report, the map's, would come in the same dispatch.
     await frames(2);
-    expect(host.reportsOf("reportSelect")).toEqual([["a"]]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     // The click focuses the marker too, but only keyboard focus hovers it.
     await userEvent.unhover(marker);
-    expect(host.reportsOf("reportHover")).toEqual([["a"], [undefined]]);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
   });
 
   it("reports the pointer onto a marker and off it", async () => {
@@ -50,7 +50,7 @@ describeWithMaps("Google markers under real input", () => {
     const marker = await drawnMarker(state, "a");
     await userEvent.hover(marker);
     await userEvent.unhover(marker);
-    expect(host.reportsOf("reportHover")).toEqual([["a"], [undefined]]);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
   });
 
   it("is reached with Tab, named by its title, hovered by focus, and selected with Enter", async () => {
@@ -60,8 +60,8 @@ describeWithMaps("Google markers under real input", () => {
     expect(marker.getAttribute("aria-label")).toBe("Rome");
     await tabTo(marker);
     await userEvent.keyboard("{Enter}");
-    expect(host.reportsOf("reportHover")).toEqual([["a"]]);
-    expect(host.reportsOf("reportSelect")).toEqual([["a"]]);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"]]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
   });
 
   it("selects an editable marker on a click, and reports a drag of it once, on release", async () => {
@@ -69,11 +69,11 @@ describeWithMaps("Google markers under real input", () => {
     await adapter.apply(adding(markerDrawable("a", ORIGIN, { editable: true })));
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
-    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["a"]]);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     const grabbed = centreOf(marker);
     await commands.pressMouse([grabbed, { x: grabbed.x + 80, y: grabbed.y - 40 }]);
-    await expect.poll(() => host.reportsOf("reportChange").length).toBe(1);
-    expect(host.reportsOf("reportChange")).toEqual([
+    await expect.poll(() => host.reportsOf("reportLocationChange").length).toBe(1);
+    expect(host.reportsOf("reportLocationChange")).toEqual([
       ["a", { type: "marker", lat: expect.any(Number), lng: expect.any(Number) }],
     ]);
   });

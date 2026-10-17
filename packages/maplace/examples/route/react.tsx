@@ -12,7 +12,9 @@ export function Route({ locations }: { readonly locations: readonly Location[] }
     <MaplaceProvider
       locations={locations}
       route={{ stops, travelMode: "driving" }}
-      onRoute={({ result }) => setDistanceKm(result && Math.round(result.distanceMeters / 1000))}
+      onRouteChange={({ result }) =>
+        setDistanceKm(result && Math.round(result.distanceMeters / 1000))
+      }
     >
       <MaplaceMap createAdapter={createAdapter} className="map" />
       <LocationList />

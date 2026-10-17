@@ -7,7 +7,7 @@ describe("forwardEvents", () => {
     const store = createMaplace({ locations: [{ id: "a", lat: 1, lng: 2 }] });
     const target = new EventTarget();
     const seen: CustomEvent[] = [];
-    target.addEventListener("maplace-select", (event) => seen.push(event as CustomEvent));
+    target.addEventListener("maplace-selectionchange", (event) => seen.push(event as CustomEvent));
     forwardEvents(store, target);
     store.select("a");
     expect(seen.map(({ detail, bubbles }) => ({ detail, bubbles }))).toEqual([
@@ -17,5 +17,6 @@ describe("forwardEvents", () => {
 
   it("names events in lower case", () => {
     expect(elementEventName("popupOpen")).toBe("maplace-popupopen");
+    expect(elementEventName("selectionChange")).toBe("maplace-selectionchange");
   });
 });

@@ -23,7 +23,7 @@ export function createHoverReports(live: () => AdapterHost | undefined): HoverRe
     const hovered = on.pointer ?? on.focus;
     if (hovered === reported) return;
     reported = hovered;
-    live()?.reportHover(hovered);
+    live()?.reportHoverChange(hovered);
   }
 
   return {

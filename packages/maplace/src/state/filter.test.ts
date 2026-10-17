@@ -31,7 +31,7 @@ describe("setFilter", () => {
   it("deselects a selected location the filter hides", () => {
     expect(setFilter(SNAPSHOT, ["N"])).toEqual({
       patch: { filter: ["N"], selectedId: undefined },
-      events: [{ name: "select", payload: { id: undefined } }],
+      events: [{ name: "selectionChange", payload: { id: undefined } }],
     });
   });
 

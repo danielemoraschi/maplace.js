@@ -48,7 +48,7 @@ const OPTIONS_0_2: Readonly<Record<string, string>> = {
   stroke_options: "use style",
   circle_options: "use style",
   directions_options: "use setRoute({ stops, travelMode })",
-  directions_panel: "render the legs from the route event",
+  directions_panel: "render the legs from the routeChange event",
   draggable: "use editable per location",
   editable: "use editable per location",
   listeners: "pass your own map to createGoogleAdapter and listen on it",

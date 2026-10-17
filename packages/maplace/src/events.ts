@@ -5,19 +5,19 @@ import type { Viewport } from "./viewport";
 
 /** Payloads of every event `on()` can listen to. */
 export interface MaplaceEvents<Data = unknown> {
-  /** Selection changed, from the map, a view or `select()`. `id` is undefined when cleared. */
-  readonly select: { readonly id: string | undefined };
-  /** Pointer or focus moved onto (or off) a location. */
-  readonly hover: { readonly id: string | undefined };
+  /** The selection changed, from the map, a view or `select()`; `id` is undefined when cleared. */
+  readonly selectionChange: { readonly id: string | undefined };
+  /** The pointer or focus moved onto a location, or off it (`id` undefined). */
+  readonly hoverChange: { readonly id: string | undefined };
   /** A drag or edit changed a location's geometry; the store already holds the new value. */
-  readonly change: { readonly location: Location<Data>; readonly previous: Location<Data> };
+  readonly locationChange: { readonly location: Location<Data>; readonly previous: Location<Data> };
   /** A popup opened and its content is in the DOM; again when an open popup gets new content. */
   readonly popupOpen: { readonly id: string; readonly element: HTMLElement };
   readonly popupClose: { readonly id: string };
   /** The visible area settled after a pan or zoom, the user's too, and once the map first shows. */
-  readonly viewport: { readonly viewport: Viewport };
+  readonly viewportChange: { readonly viewport: Viewport };
   /** A route was computed, or cleared (`result` undefined). */
-  readonly route: { readonly result: RouteResult | undefined };
+  readonly routeChange: { readonly result: RouteResult | undefined };
   /** A runtime failure (load, auth, routing). Misuse throws instead. */
   readonly error: { readonly error: MaplaceError };
 }
@@ -26,13 +26,13 @@ export type MaplaceEventName = keyof MaplaceEvents;
 
 /** Every event's name, as a record so a new event fails to compile until it is listed. */
 export const MAPLACE_EVENT_NAMES = {
-  select: true,
-  hover: true,
-  change: true,
+  selectionChange: true,
+  hoverChange: true,
+  locationChange: true,
   popupOpen: true,
   popupClose: true,
-  viewport: true,
-  route: true,
+  viewportChange: true,
+  routeChange: true,
   error: true,
 } as const satisfies Record<MaplaceEventName, true>;
 

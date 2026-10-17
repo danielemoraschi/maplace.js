@@ -11,6 +11,15 @@ export const API_LISTS = {
     "destroyed",
   ],
   runtimeCodes: ["provider-load-failed", "provider-auth-failed", "route-failed"],
-  events: ["select", "hover", "change", "popupOpen", "popupClose", "viewport", "route", "error"],
+  events: [
+    "selectionChange",
+    "hoverChange",
+    "locationChange",
+    "popupOpen",
+    "popupClose",
+    "viewportChange",
+    "routeChange",
+    "error",
+  ],
   capabilities: ["route", "cluster", "circle", "edit"],
 } as const;

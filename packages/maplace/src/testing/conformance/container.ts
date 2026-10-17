@@ -7,7 +7,7 @@ import type { ConformanceSubject } from "./subject";
 /** A box a 512-px map fits at zoom 5, and a map half as wide only further out. */
 const BOX = { south: 10, west: 20, north: 20, east: 35 };
 
-const viewports = ({ host }: MountedSubject) => host.reportsOf("reportViewport").length;
+const viewports = ({ host }: MountedSubject) => host.reportsOf("reportViewportChange").length;
 
 /** Hidden, as a closed tab or dialog hides a map: the container has no size. */
 function hide({ container }: MountedSubject): void {

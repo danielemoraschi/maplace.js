@@ -54,10 +54,10 @@ describe("createCore", () => {
       afterCommit: () => order.push(`after:${core.getSnapshot().selectedId}`),
     });
     core.subscribers.add(() => order.push("subscriber"));
-    core.emitter.on("select", () => order.push("listener"));
+    core.emitter.on("selectionChange", () => order.push("listener"));
     core.commit("select", {
       patch: { selectedId: "a" },
-      events: [{ name: "select", payload: { id: "a" } }],
+      events: [{ name: "selectionChange", payload: { id: "a" } }],
     });
     expect(order).toEqual(["after:a", "subscriber", "listener"]);
   });

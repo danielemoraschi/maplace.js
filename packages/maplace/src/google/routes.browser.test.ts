@@ -26,7 +26,7 @@ async function routeOnGoogle() {
   const computeRoutes = vi.spyOn(Route, "computeRoutes");
   const createPolylines = vi.spyOn(Route.prototype, "createPolylines");
   const results: (RouteResult | undefined)[] = [];
-  attached.maplace.on("route", ({ result }) => results.push(result));
+  attached.maplace.on("routeChange", ({ result }) => results.push(result));
   const reported = (count: number) =>
     expect.poll(() => results.length, { timeout: ROUTE_TIMEOUT_MS }).toBe(count);
   return { ...attached, computeRoutes, createPolylines, results, reported };

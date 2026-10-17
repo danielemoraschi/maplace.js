@@ -6,44 +6,47 @@ const NORTH = { locations: TOWNS, selectedId: "north" };
 
 describe("a controlled selectedId", () => {
   it("takes a selection the parent passes back, panning once", async () => {
-    const onSelect = vi.fn();
-    const { store, adapter, host, renders, render } = await boundStore({ ...NORTH, onSelect });
-    host.reportSelect("south");
+    const onSelectionChange = vi.fn();
+    const { store, adapter, host, renders, render } = await boundStore({
+      ...NORTH,
+      onSelectionChange,
+    });
+    host.reportSelectionChange("south");
     const pans = adapter.callsOf("setView").length;
-    render({ ...NORTH, selectedId: "south", onSelect });
-    expect(onSelect.mock.calls).toEqual([[{ id: "south" }]]);
+    render({ ...NORTH, selectedId: "south", onSelectionChange });
+    expect(onSelectionChange.mock.calls).toEqual([[{ id: "south" }]]);
     expect(renders()).toBe(1);
     expect(store.getSnapshot().selectedId).toBe("south");
     expect(adapter.callsOf("setView")).toHaveLength(pans);
   });
 
   it("goes back to the prop, panning back, when the parent keeps it", async () => {
-    const onSelect = vi.fn();
-    const { store, adapter, host, render } = await boundStore({ ...NORTH, onSelect });
-    host.reportSelect("south");
+    const onSelectionChange = vi.fn();
+    const { store, adapter, host, render } = await boundStore({ ...NORTH, onSelectionChange });
+    host.reportSelectionChange("south");
     const pans = adapter.callsOf("setView").length;
-    render({ ...NORTH, onSelect });
+    render({ ...NORTH, onSelectionChange });
     expect(store.getSnapshot().selectedId).toBe("north");
     expect(adapter.callsOf("setView")).toHaveLength(pans + 1);
-    expect(onSelect.mock.calls).toEqual([[{ id: "south" }]]);
+    expect(onSelectionChange.mock.calls).toEqual([[{ id: "south" }]]);
   });
 
   it("holds the app's own select() to the prop too", async () => {
-    const onSelect = vi.fn();
-    const { store, render } = await boundStore({ ...NORTH, onSelect });
+    const onSelectionChange = vi.fn();
+    const { store, render } = await boundStore({ ...NORTH, onSelectionChange });
     store.select("east");
-    render({ ...NORTH, onSelect });
-    expect(onSelect.mock.calls).toEqual([[{ id: "east" }]]);
+    render({ ...NORTH, onSelectionChange });
+    expect(onSelectionChange.mock.calls).toEqual([[{ id: "east" }]]);
     expect(store.getSnapshot().selectedId).toBe("north");
   });
 
   it("selects a new prop without reporting it", async () => {
-    const onSelect = vi.fn();
-    const { store, renders, render } = await boundStore({ ...NORTH, onSelect });
-    render({ ...NORTH, selectedId: "east", onSelect });
-    render({ ...NORTH, selectedId: undefined, onSelect });
+    const onSelectionChange = vi.fn();
+    const { store, renders, render } = await boundStore({ ...NORTH, onSelectionChange });
+    render({ ...NORTH, selectedId: "east", onSelectionChange });
+    render({ ...NORTH, selectedId: undefined, onSelectionChange });
     expect(store.getSnapshot().selectedId).toBeUndefined();
-    expect(onSelect).not.toHaveBeenCalled();
+    expect(onSelectionChange).not.toHaveBeenCalled();
     expect(renders()).toBe(0);
   });
 
@@ -56,12 +59,12 @@ describe("a controlled selectedId", () => {
   });
 
   it("selects an id that comes with new locations, without reporting the old one cleared", async () => {
-    const onSelect = vi.fn();
-    const { store, render } = await boundStore({ ...NORTH, onSelect });
+    const onSelectionChange = vi.fn();
+    const { store, render } = await boundStore({ ...NORTH, onSelectionChange });
     const west: Location = { id: "west", lat: 44, lng: 8 };
-    render({ locations: [west], selectedId: "west", onSelect });
+    render({ locations: [west], selectedId: "west", onSelectionChange });
     expect(store.getSnapshot().selectedId).toBe("west");
-    expect(onSelect).not.toHaveBeenCalled();
+    expect(onSelectionChange).not.toHaveBeenCalled();
   });
 
   it("waits for an id not loaded yet, or hidden, and selects it once shown", async () => {
@@ -102,14 +105,14 @@ describe("a controlled selectedId", () => {
 
 describe("defaultSelectedId", () => {
   it("starts the selection, then leaves it to the user", async () => {
-    const onSelect = vi.fn();
-    const props = { locations: TOWNS, defaultSelectedId: "north", onSelect };
+    const onSelectionChange = vi.fn();
+    const props = { locations: TOWNS, defaultSelectedId: "north", onSelectionChange };
     const { store, host, renders, render } = await boundStore(props);
     expect(store.getSnapshot().selectedId).toBe("north");
-    host.reportSelect("south");
+    host.reportSelectionChange("south");
     render(props);
     expect(store.getSnapshot().selectedId).toBe("south");
-    expect(onSelect.mock.calls).toEqual([[{ id: "south" }]]);
+    expect(onSelectionChange.mock.calls).toEqual([[{ id: "south" }]]);
     expect(renders()).toBe(0);
   });
 
@@ -119,7 +122,7 @@ describe("defaultSelectedId", () => {
     expect(waiting.store.getSnapshot().selectedId).toBe("north");
 
     const overtaken = await boundStore({ locations: TOWNS.slice(1), defaultSelectedId: "north" });
-    overtaken.host.reportSelect("south");
+    overtaken.host.reportSelectionChange("south");
     overtaken.render({ locations: TOWNS, defaultSelectedId: "north" });
     expect(overtaken.store.getSnapshot().selectedId).toBe("south");
   });
@@ -129,7 +132,7 @@ describe("locations, filter and route props", () => {
   it("apply locations when the array changes, so an edit outlives a render", async () => {
     const locations: Location[] = [{ id: "pin", lat: 45, lng: 9, editable: true }];
     const { store, adapter, host, render } = await boundStore({ locations });
-    host.reportChange("pin", { type: "marker", lat: 46, lng: 10 });
+    host.reportLocationChange("pin", { type: "marker", lat: 46, lng: 10 });
     render({ locations });
     expect(store.getSnapshot().locations[0]).toMatchObject({ lat: 46, lng: 10 });
     const applies = adapter.callsOf("apply").length;

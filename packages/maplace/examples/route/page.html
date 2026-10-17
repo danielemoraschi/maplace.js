@@ -9,5 +9,5 @@
 <script>
   const map = document.getElementById('map');
   map.route = { stops: ['milan', 'bologna', 'florence'], travelMode: 'driving' };
-  map.addEventListener('maplace-route', (event) => console.log(event.detail.result?.distanceMeters));
+  map.addEventListener('maplace-routechange', (event) => console.log(event.detail.result?.distanceMeters));
 </script>

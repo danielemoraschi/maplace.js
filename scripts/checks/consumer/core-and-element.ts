@@ -8,7 +8,7 @@ const cities: Location<{ population: number }>[] = [
   { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", data: { population: 2_750_000 } },
 ];
 const maplace = createMaplace({ locations: cities });
-maplace.on("select", ({ id }) => console.log(id));
+maplace.on("selectionChange", ({ id }) => console.log(id));
 document.body.append(createListView(maplace).element);
 
 const map = document.querySelector("maplace-map");

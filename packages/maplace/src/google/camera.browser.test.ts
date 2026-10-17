@@ -19,12 +19,12 @@ describeWithMaps("the Google camera under real input", () => {
     const { adapter, state, host, probe } = await mountedGoogle();
     adapter.setView({ kind: "center", center: { lat: 0, lng: 0 }, zoom: 5 });
     await probe.settle();
-    const before = host.reportsOf("reportViewport").length;
+    const before = host.reportsOf("reportViewportChange").length;
     const map = state.mounted?.map as google.maps.Map;
     const input = await inputOn(map);
     await input.drag({ from: { lat: 0, lng: 0 }, to: { lat: 3, lng: 4 } });
     await probe.settle();
-    const reports = host.reportsOf("reportViewport").slice(before);
+    const reports = host.reportsOf("reportViewportChange").slice(before);
     expect(reports).toHaveLength(1);
     expect(reports[0]?.[0].center).toEqual(centerOf(map));
     expect(centredOn(reports[0]?.[0].center, { lat: 0, lng: 0 })).toBe(false);

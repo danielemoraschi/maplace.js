@@ -9,7 +9,7 @@ export function reportShapeInput(
   id: string,
   { mounted, hover }: PlacingSite,
 ): void {
-  shape.addListener("click", () => mounted.live()?.reportSelect(id));
+  shape.addListener("click", () => mounted.live()?.reportSelectionChange(id));
   shape.addListener("mouseover", () => hover.enter("pointer", id));
   shape.addListener("mouseout", () => hover.leave("pointer", id));
 }

@@ -16,7 +16,7 @@ const area: Location = {
 const snapshot = initialSnapshot({ locations: [pin, fixed, area] });
 
 describe("changeGeometry", () => {
-  it("writes the geometry back as a new location, then fires change with both", () => {
+  it("writes the geometry back as a new location, then fires locationChange with both", () => {
     const change = changeGeometry(snapshot, {
       id: "pin",
       geometry: { type: "marker", lat: 5, lng: 6 },
@@ -26,7 +26,9 @@ describe("changeGeometry", () => {
     expect(location).not.toHaveProperty("type");
     expect(change.patch.locations?.slice(1)).toEqual([fixed, area]);
     expect(Object.isFrozen(change.patch.locations)).toBe(true);
-    expect(change.events).toEqual([{ name: "change", payload: { location, previous: pin } }]);
+    expect(change.events).toEqual([
+      { name: "locationChange", payload: { location, previous: pin } },
+    ]);
   });
 
   it("changes nothing for a location the store no longer has", () => {

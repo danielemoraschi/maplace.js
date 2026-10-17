@@ -14,13 +14,13 @@ export function createHost(signal: AbortSignal, reports: AdapterHost): AdapterHo
       if (!signal.aborted) runSafely(() => report(...args));
     };
   return {
-    reportSelect: whileAttached(reports.reportSelect),
-    reportHover: whileAttached(reports.reportHover),
-    reportChange: whileAttached(reports.reportChange),
+    reportSelectionChange: whileAttached(reports.reportSelectionChange),
+    reportHoverChange: whileAttached(reports.reportHoverChange),
+    reportLocationChange: whileAttached(reports.reportLocationChange),
     reportPopupOpen: whileAttached(reports.reportPopupOpen),
     reportPopupClose: whileAttached(reports.reportPopupClose),
-    reportViewport: whileAttached(reports.reportViewport),
-    reportRoute: whileAttached(reports.reportRoute),
+    reportViewportChange: whileAttached(reports.reportViewportChange),
+    reportRouteChange: whileAttached(reports.reportRouteChange),
     reportError: whileAttached(reports.reportError),
   };
 }

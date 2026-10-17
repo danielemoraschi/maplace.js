@@ -18,19 +18,19 @@ describe("andThen", () => {
   it("runs each step on the snapshot with the earlier patches applied", () => {
     const first: Change = {
       patch: { selectedId: "b" },
-      events: [{ name: "select", payload: { id: "b" } }],
+      events: [{ name: "selectionChange", payload: { id: "b" } }],
     };
     const seen: (string | undefined)[] = [];
     const change = andThen(snapshot, first, (current) => {
       seen.push(current.selectedId);
-      return { patch: { hoveredId: "b" }, events: [{ name: "hover", payload: { id: "b" } }] };
+      return { patch: { hoveredId: "b" }, events: [{ name: "hoverChange", payload: { id: "b" } }] };
     });
     expect(seen).toEqual(["b"]);
     expect(change).toEqual({
       patch: { selectedId: "b", hoveredId: "b" },
       events: [
-        { name: "select", payload: { id: "b" } },
-        { name: "hover", payload: { id: "b" } },
+        { name: "selectionChange", payload: { id: "b" } },
+        { name: "hoverChange", payload: { id: "b" } },
       ],
     });
   });

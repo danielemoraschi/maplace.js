@@ -8,7 +8,7 @@ const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 export function Tabs({ locations }: { readonly locations: readonly Location[] }) {
   const [selectedId, setSelectedId] = useState<string | undefined>();
   return (
-    <MaplaceProvider locations={locations} onSelect={({ id }) => setSelectedId(id)}>
+    <MaplaceProvider locations={locations} onSelectionChange={({ id }) => setSelectedId(id)}>
       <LocationList />
       <MaplaceMap createAdapter={createAdapter} className="map" />
       <aside>{selectedId}</aside>

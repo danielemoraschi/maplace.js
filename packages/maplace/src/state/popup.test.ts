@@ -34,7 +34,7 @@ describe("popupClosed", () => {
     const selected = { ...snapshot, selectedId: "a" };
     expect(popupClosed(selected, { id: "a", openOn: "click" })).toEqual({
       patch: { selectedId: undefined },
-      events: [...closeOf("a").events, { name: "select", payload: { id: undefined } }],
+      events: [...closeOf("a").events, { name: "selectionChange", payload: { id: undefined } }],
     });
     expect(popupClosed(selected, { id: "a", openOn: "hover" })).toEqual(closeOf("a"));
   });

@@ -11,7 +11,7 @@ export function Polygon(props: {
   return (
     <MaplaceProvider
       locations={props.locations}
-      onChange={({ location }) => props.onSave(location)}
+      onLocationChange={({ location }) => props.onSave(location)}
     >
       <MaplaceMap createAdapter={createAdapter} className="map" />
     </MaplaceProvider>

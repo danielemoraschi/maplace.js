@@ -54,7 +54,9 @@ function clearRoute<Data>(snapshot: Snapshot<Data>): Change<Data> {
 
 function clearResult<Data>(snapshot: Snapshot<Data>): Change<Data> {
   const events: Change<Data>["events"] =
-    snapshot.routeResult === undefined ? [] : [{ name: "route", payload: { result: undefined } }];
+    snapshot.routeResult === undefined
+      ? []
+      : [{ name: "routeChange", payload: { result: undefined } }];
   return { patch: { routeResult: undefined }, events };
 }
 

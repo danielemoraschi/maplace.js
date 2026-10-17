@@ -63,7 +63,7 @@ export function startMount(
 /** The viewport the map last reported; failing the check when it reported none. */
 export function reportedViewport({ host }: MountedSubject): Viewport {
   // A copy's `pop`: `.at(-1)` is ES2022, past the ES2020 target.
-  const viewport = [...host.reportsOf("reportViewport")].pop()?.[0];
+  const viewport = [...host.reportsOf("reportViewportChange")].pop()?.[0];
   if (viewport === undefined) throw new Error("expected the map to report a viewport");
   return viewport;
 }

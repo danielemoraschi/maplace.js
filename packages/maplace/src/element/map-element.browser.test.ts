@@ -135,7 +135,7 @@ describe("<maplace-map> on a provider", () => {
   it("dispatches the store's events as bubbling maplace-* events", async () => {
     const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
     const selected: unknown[] = [];
-    document.addEventListener("maplace-select", (event) =>
+    document.addEventListener("maplace-selectionchange", (event) =>
       selected.push((event as CustomEvent).detail),
     );
     map.maplace.select("rome");

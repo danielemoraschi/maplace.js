@@ -122,9 +122,9 @@ describe("placeMarker", () => {
     a.marker.dispatchEvent(new Event("pointerenter"));
     a.marker.dispatchEvent(new Event("pointerleave"));
     expect(host.reports.map(({ method, args }) => [method, ...args])).toEqual([
-      ["reportSelect", "a"],
-      ["reportHover", "a"],
-      ["reportHover", undefined],
+      ["reportSelectionChange", "a"],
+      ["reportHoverChange", "a"],
+      ["reportHoverChange", undefined],
     ]);
   });
 
@@ -135,7 +135,7 @@ describe("placeMarker", () => {
     a.present(shown);
     a.marker.dispatchEvent(new Event("pointerenter"));
     a.remove();
-    expect(host.reportsOf("reportHover")).toEqual([["a"], [undefined], ["a"], [undefined]]);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined], ["a"], [undefined]]);
   });
 
   it("lets the user drag it only while it is editable", () => {
@@ -149,7 +149,9 @@ describe("placeMarker", () => {
     const { placed: a, host } = placed(markerDrawable("a", ORIGIN, { editable: true }));
     a.marker.position = { lat: 3, lng: 4, altitude: 0 } as google.maps.LatLngAltitudeLiteral;
     a.marker.dispatchEvent(new Event("gmp-dragend"));
-    expect(host.reportsOf("reportChange")).toEqual([["a", { type: "marker", lat: 3, lng: 4 }]]);
+    expect(host.reportsOf("reportLocationChange")).toEqual([
+      ["a", { type: "marker", lat: 3, lng: 4 }],
+    ]);
   });
 
   it("reports nothing once the load is cancelled", () => {

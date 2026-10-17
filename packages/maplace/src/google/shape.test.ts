@@ -63,7 +63,7 @@ describe("shape placers", () => {
   it("report a user's edit once, as the location's new geometry", () => {
     const { stub, host } = placed(polygonDrawable("p", { editable: true }));
     stub.getPaths().getArray()[1]?.setAt(2, MOVED_HOLE_CORNER);
-    expect(host.reportsOf("reportChange")).toMatchObject([
+    expect(host.reportsOf("reportLocationChange")).toMatchObject([
       ["p", { type: "polygon", holes: [[{}, {}, MOVED_HOLE_CORNER, {}]] }],
     ]);
   });
@@ -71,7 +71,7 @@ describe("shape placers", () => {
   it("report a point added by a midpoint drag (0.2 #164)", () => {
     const { stub, host } = placed<StubPolyline>(polylineDrawable("l", { editable: true }));
     stub.getPath().insertAt(1, { lat: 0.5, lng: 0 });
-    expect(host.reportsOf("reportChange")).toEqual([
+    expect(host.reportsOf("reportLocationChange")).toEqual([
       ["l", { type: "polyline", path: [ORIGIN, { lat: 0.5, lng: 0 }, { lat: 1, lng: 1 }] }],
     ]);
   });
@@ -84,16 +84,16 @@ describe("shape placers", () => {
     p.update(reshaped(drawable, holeCornerMoved()));
     expect(setPaths).not.toHaveBeenCalled();
     stub.getPaths().getArray()[0]?.setAt(0, { lat: -1.5, lng: -1 });
-    expect(host.reportsOf("reportChange")).toHaveLength(2);
+    expect(host.reportsOf("reportLocationChange")).toHaveLength(2);
   });
 
   it("report nothing for their own redraws, and the next edit after one", () => {
     const drawable = circleDrawable("c", { editable: true });
     const { placed: c, stub, host } = placed<StubCircle>(drawable);
     c.update(reshaped(drawable, { type: "circle", center: ORIGIN, radius: 5 }));
-    expect(host.reportsOf("reportChange")).toEqual([]);
+    expect(host.reportsOf("reportLocationChange")).toEqual([]);
     stub.setRadius(7);
-    expect(host.reportsOf("reportChange")).toEqual([
+    expect(host.reportsOf("reportLocationChange")).toEqual([
       ["c", { type: "circle", center: ORIGIN, radius: 7 }],
     ]);
   });
@@ -103,8 +103,8 @@ describe("shape placers", () => {
     stub.trigger("click");
     stub.trigger("mouseover");
     stub.trigger("mouseout");
-    expect(host.reportsOf("reportSelect")).toEqual([["p"]]);
-    expect(host.reportsOf("reportHover")).toEqual([["p"], [undefined]]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
   });
 
   it("restack on a state change, hide, and leave the map on remove, unhovered", () => {
@@ -117,6 +117,6 @@ describe("shape placers", () => {
     expect(stub.get("visible")).toBe(false);
     p.remove();
     expect(stub.getMap()).toBeNull();
-    expect(host.reportsOf("reportHover")).toEqual([["p"], [undefined]]);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
   });
 });

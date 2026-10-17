@@ -90,9 +90,9 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     expect(map.loadState).toBe("loading");
   });
 
-  it("starts on its selected-id without a maplace-select, as an input's value is no change", async () => {
+  it("starts on its selected-id without a maplace-selectionchange, as an input's value is no change", async () => {
     const selected: unknown[] = [];
-    document.addEventListener("maplace-select", (event) => selected.push(event));
+    document.addEventListener("maplace-selectionchange", (event) => selected.push(event));
     const map = await mapFrom(`<maplace-map selected-id="rome">${ROME}</maplace-map>`);
     expect(map.maplace.getSnapshot().selectedId).toBe("rome");
     expect(selected).toEqual([]);

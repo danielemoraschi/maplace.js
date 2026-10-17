@@ -9,13 +9,13 @@ afterEach(() => {
 
 function recordingReports(): AdapterHost {
   return {
-    reportSelect: vi.fn(),
-    reportHover: vi.fn(),
-    reportChange: vi.fn(),
+    reportSelectionChange: vi.fn(),
+    reportHoverChange: vi.fn(),
+    reportLocationChange: vi.fn(),
     reportPopupOpen: vi.fn(),
     reportPopupClose: vi.fn(),
-    reportViewport: vi.fn(),
-    reportRoute: vi.fn(),
+    reportViewportChange: vi.fn(),
+    reportRouteChange: vi.fn(),
     reportError: vi.fn(),
   };
 }
@@ -25,15 +25,15 @@ describe("createHost", () => {
     const controller = new AbortController();
     const reports = recordingReports();
     const host = createHost(controller.signal, reports);
-    host.reportSelect("a");
+    host.reportSelectionChange("a");
     host.reportError(new MaplaceError("route-failed", "no route"));
     controller.abort();
-    host.reportSelect("b");
-    host.reportHover("b");
-    expect(reports.reportSelect).toHaveBeenCalledTimes(1);
-    expect(reports.reportSelect).toHaveBeenCalledWith("a");
+    host.reportSelectionChange("b");
+    host.reportHoverChange("b");
+    expect(reports.reportSelectionChange).toHaveBeenCalledTimes(1);
+    expect(reports.reportSelectionChange).toHaveBeenCalledWith("a");
     expect(reports.reportError).toHaveBeenCalledTimes(1);
-    expect(reports.reportHover).not.toHaveBeenCalled();
+    expect(reports.reportHoverChange).not.toHaveBeenCalled();
   });
 
   it("rethrows a failing report in a microtask instead of into the adapter", () => {
@@ -42,12 +42,12 @@ describe("createHost", () => {
     const bug = new Error("bad report");
     const reports = {
       ...recordingReports(),
-      reportChange: () => {
+      reportLocationChange: () => {
         throw bug;
       },
     };
     const host = createHost(new AbortController().signal, reports);
-    expect(() => host.reportChange("a", { type: "marker", lat: 0, lng: 0 })).not.toThrow();
+    expect(() => host.reportLocationChange("a", { type: "marker", lat: 0, lng: 0 })).not.toThrow();
     expect(() => queued[0]?.()).toThrow(bug);
   });
 });

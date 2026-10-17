@@ -1,7 +1,7 @@
 import type { Location } from "../index";
 import { elementMisuse } from "./element-error";
 import { MaplaceLocation } from "./location-element";
-import { onLocationChange } from "./source-changes";
+import { onLocationSourceChange } from "./source-changes";
 
 const JSON_SCRIPT = 'script[type="application/json"]';
 
@@ -57,7 +57,7 @@ export function watchLocationSource(host: Element, onChange: () => void): () => 
   });
   childrenWatch.observe(host, { childList: true });
   watchScripts();
-  const stopListening = onLocationChange(host, schedule);
+  const stopListening = onLocationSourceChange(host, schedule);
   return () => {
     childrenWatch.disconnect();
     scriptWatch.disconnect();

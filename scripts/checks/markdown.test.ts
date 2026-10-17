@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { fencedBlocks, relativeLinksIn, withAbsoluteLinks, withLinksResolved } from "./markdown.ts";
+import {
+  backticked,
+  fencedBlocks,
+  relativeLinksIn,
+  section,
+  tableRows,
+  withAbsoluteLinks,
+  withLinksResolved,
+} from "./markdown.ts";
 
 describe("relativeLinksIn", () => {
   it("finds links and images to repo paths, by line, without their anchors", () => {
@@ -55,5 +63,64 @@ describe("fencedBlocks", () => {
     const markdown =
       "```html \r\n<a></a>\r\n```\r\ntext\n```sh\nls\n```\n```html\n<b></b>\n<i></i>\n```";
     expect(fencedBlocks(markdown, "html")).toEqual(["<a></a>", "<b></b>\n<i></i>"]);
+  });
+});
+
+describe("section", () => {
+  const markdown = "# Doc\n### Events\nevents here\n\nmore\n### Next\nnot this";
+
+  it("is the text from a heading to the next one", () => {
+    expect(section(markdown, "### Events", "DOC.md")).toBe("events here\n\nmore");
+  });
+
+  it("reads past a fenced line that starts with #, a comment rather than a heading", () => {
+    const fenced = "### Events\n```sh\n# a comment\n```\nafter\n### Next";
+    expect(section(fenced, "### Events", "DOC.md")).toBe("```sh\n# a comment\n```\nafter");
+  });
+
+  it("throws naming the document when the heading is missing", () => {
+    expect(() => section(markdown, "### Methods", "DOC.md")).toThrow(
+      'DOC.md: no "### Methods" section',
+    );
+  });
+});
+
+describe("tableRows", () => {
+  it("is each body row's cells, with neither header nor separator, indented tables too", () => {
+    const text = [
+      "Intro.",
+      "| 0.2 | 1.0 |",
+      "|---|---|",
+      "| `a` | `b`, `c` |",
+      "  | `d` \\| `e` | — |",
+    ].join("\n");
+    expect(tableRows(text)).toEqual([
+      ["`a`", "`b`, `c`"],
+      ["`d` \\| `e`", "—"],
+    ]);
+  });
+
+  it("keeps a body row of dashes, telling header and separator by place, not by look", () => {
+    expect(tableRows("| a | b |\n|---|---|\n| `c` | `d` |\n| - | - |")).toEqual([
+      ["`c`", "`d`"],
+      ["-", "-"],
+    ]);
+  });
+
+  it("reads each table of a text, skipping the header and separator of each", () => {
+    expect(tableRows("| h |\n|---|\n| a |\n\ntext\n\n| H |\n|---|\n| b |")).toEqual([["a"], ["b"]]);
+  });
+
+  it("keeps a row's last cell whole when the row has no closing pipe", () => {
+    expect(tableRows("| a | b |\n|---|---|\n| `c` | `d`")).toEqual([["`c`", "`d`"]]);
+  });
+});
+
+describe("backticked", () => {
+  it("is each backticked name of a text, in order", () => {
+    expect(backticked("`selectionChange` with `id` undefined, then the view")).toEqual([
+      "selectionChange",
+      "id",
+    ]);
   });
 });

@@ -12,21 +12,21 @@ const viewport: Viewport = {
 const snapshot = initialSnapshot(undefined);
 
 describe("setViewport", () => {
-  it("stores a frozen copy and fires viewport with it", () => {
+  it("stores a frozen copy and fires viewportChange with it", () => {
     const change = setViewport(snapshot, viewport);
     const stored = change.patch.viewport;
     expect(stored).toEqual(viewport);
     expect(stored).not.toBe(viewport);
     expect(Object.isFrozen(stored?.bounds)).toBe(true);
-    expect(change.events).toEqual([{ name: "viewport", payload: { viewport: stored } }]);
+    expect(change.events).toEqual([{ name: "viewportChange", payload: { viewport: stored } }]);
   });
 
   it("throws on a viewport no map can show (an adapter bug)", () => {
     expect(() => setViewport(snapshot, { ...viewport, zoom: Number.NaN })).toThrow(
-      "reportViewport: viewport.zoom",
+      "reportViewportChange: viewport.zoom",
     );
     const inverted = { ...viewport, bounds: { ...viewport.bounds, south: 50 } };
-    expect(() => setViewport(snapshot, inverted)).toThrow("reportViewport: viewport.bounds");
+    expect(() => setViewport(snapshot, inverted)).toThrow("reportViewportChange: viewport.bounds");
   });
 
   it("changes nothing for an equal viewport, but does for a nested change", () => {

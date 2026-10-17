@@ -30,7 +30,7 @@ function openedReports(drawn?: typeof SHOWN) {
     onDestroy: (teardown: () => void) => teardowns.push(teardown),
   } as unknown as MountedMap;
   viewportReports.open(mounted);
-  const reported = () => host.reportsOf("reportViewport").map(([viewport]) => viewport);
+  const reported = () => host.reportsOf("reportViewportChange").map(([viewport]) => viewport);
   return { map, size, reported, teardowns, stop: () => (live = undefined) };
 }
 

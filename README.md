@@ -108,7 +108,7 @@ export function Simple() {
 }
 ```
 
-`<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelect` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content, and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
+`<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelectionChange` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content, and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
 In a React Server Component, `maplace/react` is a client boundary (it starts with `"use client"`): the server component loads the data and renders the provider and the list with it, and a small client component of yours holds the map, since its adapter is made by a function:
 
@@ -156,7 +156,7 @@ export function CityMap() {
 }
 ```
 
-`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelect`. A server component can start the selection with `defaultSelectedId`. Both files are the ones maplace's own test builds with Vite's RSC plugin.
+`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelectionChange`. A server component can start the selection with `defaultSelectedId`. Both files are the ones maplace's own test builds with Vite's RSC plugin.
 
 ## What it needs
 

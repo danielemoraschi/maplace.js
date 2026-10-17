@@ -52,7 +52,9 @@ const BEHAVIOURS: Readonly<Record<string, (page: HTMLElement) => Promise<void>>>
       { lat: 41.93, lng: 12.5 },
       { lat: 41.9, lng: 12.5 },
     ];
-    await inAct(() => adapters.live().host().reportChange("park", { type: "polygon", path }));
+    await inAct(() =>
+      adapters.live().host().reportLocationChange("park", { type: "polygon", path }),
+    );
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ id: "park", path }));
   },
 };

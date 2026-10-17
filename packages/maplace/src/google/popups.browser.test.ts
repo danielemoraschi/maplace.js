@@ -52,7 +52,7 @@ describeWithMaps("Google popups under real input", () => {
   it("opens a clicked marker's popup with its content in the DOM, and moves focus into it", async () => {
     const { adapter, state, host } = await drawn([ALPHA]);
     await userEvent.click(await drawnMarker(state, "a"));
-    expect(host.reportsOf("reportSelect")).toEqual([["a"]]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     adapter.present(presented({ selectedId: "a" }));
     const element = await openedPopup(state);
     expect(host.reportsOf("reportPopupOpen")).toEqual([["a", element]]);

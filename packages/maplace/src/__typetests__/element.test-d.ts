@@ -35,7 +35,7 @@ map.locations = [{ id: "a", lat: "1", lng: 2 }];
 declare const location: MaplaceLocationElement;
 expectTypeOf(location.location).toEqualTypeOf<Location>();
 
-expectTypeOf<MaplaceElementEventMap["maplace-select"]>().toEqualTypeOf<
+expectTypeOf<MaplaceElementEventMap["maplace-selectionchange"]>().toEqualTypeOf<
   CustomEvent<{ readonly id: string | undefined }>
 >();
 expectTypeOf<

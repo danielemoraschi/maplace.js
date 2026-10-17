@@ -8,7 +8,7 @@ maplace 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in the
 - **Locations have an `id`.** Selection, events and updates name a location by its id, not its position in the array.
 - **`lon` is `lng`**, as Google and MapLibre name it, with no alias.
 - **Text is text.** Titles and string content are never inserted as HTML; `html` needs a `sanitize` function you provide (DOMPurify, for one).
-- **One kind of change, after it happened.** The `before…` callbacks are gone; events such as `select`, `change` and `route` report what changed.
+- **One kind of change, after it happened.** The `before…` callbacks are gone; events such as `selectionChange`, `locationChange` and `routeChange` report what changed.
 - **Google Maps needs a map ID**, because maplace draws advanced markers. `DEMO_MAP_ID` works for development.
 
 ## Before and after
@@ -110,7 +110,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `directions_options.avoidHighways`, `avoidTolls` | dropped |
 | `directions_options.unitSystem` | dropped: results are metres and seconds, format them as you like |
 | `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
-| `directions_panel` | dropped: render legs from the `route` event |
+| `directions_panel` | dropped: render legs from the `routeChange` event |
 | `draggable`, `editable` (map-wide) | `editable` per location, for markers and shapes alike; dragging the route itself is gone |
 | `listeners` | pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
 | `pan_on_click` | `select(id, { pan: false })` from code; the map always pans to a clicked location |
@@ -162,17 +162,17 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 
 ### Events
 
-| 0.2 callback | 1.0 event |
-|---|---|
-| `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | dropped: they ran just before 0.2 acted and couldn't stop it; run the same code on the event below that follows the change (`select`, `popupOpen`, `popupClose`) |
-| `afterShow` | `select` |
-| `afterViewAll` | `select` with `id` undefined, then `viewport` |
-| `afterCreateMarker` | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
-| `afterOpenInfowindow`, `afterCloseInfowindow` | `popupOpen` (content is in the DOM; again when an open popup gets new content), `popupClose` |
-| `afterRoute` | `route`, with legs, distance and duration |
-| `onPolylineClick`, `onPolygonClick` | `select`: shapes are locations |
-| `circleRadiusChanged`, `circleCenterChanged`, `dragEnd` | `change`, with the location and its `previous` value |
-| `drag`, `dragStart` | dropped |
+| 0.2 callback | 1.0 event | How |
+|---|---|---|
+| `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | `selectionChange`, `popupOpen`, `popupClose` | dropped: they ran just before 0.2 acted and couldn't stop it; run the same code on the event that follows the change |
+| `afterShow` | `selectionChange` | |
+| `afterViewAll` | `selectionChange`, `viewportChange` | the selection cleared (`id` undefined), then the view settled |
+| `afterCreateMarker` | — | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
+| `afterOpenInfowindow`, `afterCloseInfowindow` | `popupOpen`, `popupClose` | the content is in the DOM; `popupOpen` fires again when an open popup gets new content |
+| `afterRoute` | `routeChange` | with legs, distance and duration; again, `result` undefined, when the route is cleared |
+| `onPolylineClick`, `onPolygonClick` | `selectionChange` | shapes are locations |
+| `circleRadiusChanged`, `circleCenterChanged`, `dragEnd` | `locationChange` | with the location and its `previous` value |
+| `drag`, `dragStart` | — | dropped |
 
 ### Behaviour that changes
 
@@ -183,4 +183,4 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 - The menu's inline styles are replaced by a stylesheet you can override.
 - Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in [RFC §3, decisions from the 0.2 issues](docs/rfc-1.0.md#decisions-from-the-02-issues).
 
-Never released (the unmerged `develop` branch): `onPolylineClick` is `select`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions.gestureHandling`.
+Never released (the unmerged `develop` branch): `onPolylineClick` is `selectionChange`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions.gestureHandling`.

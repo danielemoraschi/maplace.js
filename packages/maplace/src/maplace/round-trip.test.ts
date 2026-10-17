@@ -12,7 +12,7 @@ describe("a report comes back to the adapter", () => {
     const { adapter, host } = await mounted({
       locations: [{ id: "a", lat: 0, lng: 0, editable: true }],
     });
-    host.reportChange("a", { type: "marker", lat: 5, lng: 6 });
+    host.reportLocationChange("a", { type: "marker", lat: 5, lng: 6 });
     const [update] = adapter.callsOf("apply").slice(-1);
     expect(update?.diff.updated.map((drawable) => drawable.geometry)).toEqual([
       { type: "marker", lat: 5, lng: 6 },
@@ -24,7 +24,7 @@ describe("a report comes back to the adapter", () => {
     const present = adapter.present;
     adapter.present = (state) => {
       present(state);
-      if (state.selectedId === "a") host.reportHover("b");
+      if (state.selectedId === "a") host.reportHoverChange("b");
     };
     maplace.select("a");
     expect(adapter.calls.slice(-3).map((call) => call.method)).toEqual([

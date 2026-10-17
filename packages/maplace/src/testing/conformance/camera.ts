@@ -111,20 +111,20 @@ export function cameraChecks(subject: ConformanceSubject): void {
     it("reports the view it opens at once it settles", async () => {
       const mounted = await mountSubject(subject);
       await mounted.probe.settle();
-      expect(mounted.host.reportsOf("reportViewport")).toHaveLength(1);
+      expect(mounted.host.reportsOf("reportViewportChange")).toHaveLength(1);
     });
 
     it("reports the viewport once a move settles, and not again without one", async () => {
       const mounted = await mountSubject(subject);
       // Settled first: once the map opens, it reports the view it opens at, once.
       await mounted.probe.settle();
-      const before = mounted.host.reportsOf("reportViewport").length;
+      const before = mounted.host.reportsOf("reportViewportChange").length;
       expect(before).toBe(1);
       mounted.adapter.setView({ kind: "center", center: { lat: 0, lng: 0 }, zoom: 3 });
-      expect(mounted.host.reportsOf("reportViewport")).toHaveLength(before);
+      expect(mounted.host.reportsOf("reportViewportChange")).toHaveLength(before);
       await mounted.probe.settle();
       await mounted.probe.settle();
-      expect(mounted.host.reportsOf("reportViewport")).toHaveLength(before + 1);
+      expect(mounted.host.reportsOf("reportViewportChange")).toHaveLength(before + 1);
     });
   });
 }

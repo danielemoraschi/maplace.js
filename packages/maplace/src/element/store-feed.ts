@@ -62,7 +62,7 @@ export class StoreFeed {
     if (route !== undefined) this.giveRoute(route);
     // Only now: the state the store starts from is no event, as an <input value> is no change.
     forwardEvents(store, this.#host);
-    store.on("select", () => this.#selectionMade());
+    store.on("selectionChange", () => this.#selectionMade());
     store.subscribe(this.#onStoreChange);
     return store;
   }

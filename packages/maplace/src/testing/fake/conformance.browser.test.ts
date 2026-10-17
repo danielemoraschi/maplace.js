@@ -35,6 +35,9 @@ describe("the fake beyond the contract", () => {
     adapter.setView({ kind: "location", id: "a", zoom: 3 });
     expect(host.reports).toEqual([]);
     await adapter.probe().settle();
-    expect(host.reports.map(({ method }) => method)).toEqual(["reportViewport", "reportPopupOpen"]);
+    expect(host.reports.map(({ method }) => method)).toEqual([
+      "reportViewportChange",
+      "reportPopupOpen",
+    ]);
   });
 });

@@ -35,13 +35,13 @@ describe("listsInRfc", () => {
 
   it("throws when a section the check reads is missing", () => {
     expect(() => listsInRfc(RFC.replace("### Errors", "### Failures"))).toThrow(
-      'RFC: no "### Errors" section',
+      'docs/rfc-1.0.md: no "### Errors" section',
     );
   });
 
   it("throws when a line the check reads is missing", () => {
     expect(() => listsInRfc(RFC.replace("- **Events**:", "- **Signals**:"))).toThrow(
-      'RFC: no line starting "- **Events**:"',
+      'docs/rfc-1.0.md: no line starting "- **Events**:"',
     );
   });
 });

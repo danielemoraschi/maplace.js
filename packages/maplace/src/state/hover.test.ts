@@ -33,14 +33,14 @@ describe("hover", () => {
 });
 
 describe("hoverReported", () => {
-  it("sets hoveredId and fires hover, onto a location and off it", () => {
+  it("sets hoveredId and fires hoverChange, onto a location and off it", () => {
     expect(hoverReported(snapshot, "a")).toEqual({
       patch: { hoveredId: "a" },
-      events: [{ name: "hover", payload: { id: "a" } }],
+      events: [{ name: "hoverChange", payload: { id: "a" } }],
     });
     expect(hoverReported({ ...snapshot, hoveredId: "a" }, undefined)).toEqual({
       patch: { hoveredId: undefined },
-      events: [{ name: "hover", payload: { id: undefined } }],
+      events: [{ name: "hoverChange", payload: { id: undefined } }],
     });
   });
 

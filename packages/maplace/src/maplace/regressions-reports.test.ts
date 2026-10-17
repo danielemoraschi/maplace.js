@@ -26,25 +26,25 @@ function routeOf(distanceMeters: number): RouteResult {
 describe("#64, #164, #178: editing shapes never throws and always reports", () => {
   it("writes back a polygon with an inserted vertex and a dragged polyline", async () => {
     const { maplace, host } = await mounted({ locations });
-    const onChange = vi.fn();
-    maplace.on("change", onChange);
+    const onLocationChange = vi.fn();
+    maplace.on("locationChange", onLocationChange);
     const inserted = [...square, { lat: 0.5, lng: 0 }];
-    host.reportChange("area", { type: "polygon", path: inserted });
-    host.reportChange("line", { type: "polyline", path: inserted.slice(2) });
-    const paths = onChange.mock.calls.map(([{ location }]) => location.path);
+    host.reportLocationChange("area", { type: "polygon", path: inserted });
+    host.reportLocationChange("line", { type: "polyline", path: inserted.slice(2) });
+    const paths = onLocationChange.mock.calls.map(([{ location }]) => location.path);
     expect(paths).toEqual([inserted, inserted.slice(2)]);
   });
 });
 
 describe("#127: clicks on the map reach the page after load", () => {
-  it("fires select for each click that changes the selection", async () => {
+  it("fires selectionChange for each click that changes the selection", async () => {
     const { maplace, host } = await mounted({ locations });
-    const onSelect = vi.fn();
-    maplace.on("select", onSelect);
-    host.reportSelect("a");
-    host.reportSelect("b");
-    host.reportSelect("b");
-    expect(onSelect.mock.calls).toEqual([[{ id: "a" }], [{ id: "b" }]]);
+    const onSelectionChange = vi.fn();
+    maplace.on("selectionChange", onSelectionChange);
+    host.reportSelectionChange("a");
+    host.reportSelectionChange("b");
+    host.reportSelectionChange("b");
+    expect(onSelectionChange.mock.calls).toEqual([[{ id: "a" }], [{ id: "b" }]]);
   });
 });
 
@@ -62,16 +62,16 @@ describe("#137: popupClose fires on close, not on reopen", () => {
   });
 });
 
-describe("#147: the route event carries the result, once per result", () => {
+describe("#147: the routeChange event carries the result, once per result", () => {
   it("reports each computed route with its data, after a stop is dragged too", async () => {
     const { maplace, host } = await mounted({ locations });
     const distances: (number | undefined)[] = [];
-    maplace.on("route", ({ result }) => distances.push(result?.distanceMeters));
+    maplace.on("routeChange", ({ result }) => distances.push(result?.distanceMeters));
     maplace.setRoute({ stops: ["a", "b"] });
-    host.reportRoute(routeOf(100));
+    host.reportRouteChange(routeOf(100));
     maplace.setRoute({ stops: ["a", "b"] });
-    host.reportChange("a", { type: "marker", lat: 0.5, lng: 0.5 });
-    host.reportRoute(routeOf(80));
+    host.reportLocationChange("a", { type: "marker", lat: 0.5, lng: 0.5 });
+    host.reportRouteChange(routeOf(80));
     expect(distances).toEqual([100, 80]);
   });
 });

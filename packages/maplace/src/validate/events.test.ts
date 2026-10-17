@@ -7,13 +7,13 @@ const on = root("on");
 describe("checkEventName", () => {
   it("accepts every event name", () => {
     for (const name of [
-      "select",
-      "hover",
-      "change",
+      "selectionChange",
+      "hoverChange",
+      "locationChange",
       "popupOpen",
       "popupClose",
-      "viewport",
-      "route",
+      "viewportChange",
+      "routeChange",
       "error",
     ]) {
       expect(() => checkEventName(name, child(on, "event"))).not.toThrow();
@@ -25,7 +25,7 @@ describe("checkEventName", () => {
       expect.objectContaining({
         code: "invalid-input",
         message: expect.stringMatching(
-          /^on: event must be one of "select", "hover", .*got "selected"$/,
+          /^on: event must be one of "selectionChange", "hoverChange", .*got "selected"$/,
         ),
         field: "event",
       }),

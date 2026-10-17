@@ -18,7 +18,7 @@ describe("clearHidden", () => {
     const gone = { ...only([{ id: "a", ...at }]), selectedId: "b" };
     expect(clearHidden(gone)).toEqual({
       patch: { selectedId: undefined },
-      events: [{ name: "select", payload: { id: undefined } }],
+      events: [{ name: "selectionChange", payload: { id: undefined } }],
     });
   });
 
@@ -31,7 +31,7 @@ describe("clearHidden", () => {
   it("clears the hover of a location that is gone or hidden", () => {
     expect(clearHidden({ ...AB, hoveredId: "a", filter: ["N"] })).toEqual({
       patch: { hoveredId: undefined },
-      events: [{ name: "hover", payload: { id: undefined } }],
+      events: [{ name: "hoverChange", payload: { id: undefined } }],
     });
   });
 

@@ -54,7 +54,7 @@ describe("setRoute", () => {
   it("clears the result when the stops or travel mode change", () => {
     expect(setRoute(routed(), { stops: ["b", "a"], travelMode: "walking" })).toMatchObject({
       patch: { routeResult: undefined },
-      events: [{ name: "route", payload: { result: undefined } }],
+      events: [{ name: "routeChange", payload: { result: undefined } }],
     });
     expect(setRoute(routed(), { stops: ["a", "b"] }).patch).toHaveProperty(
       "routeResult",
@@ -75,7 +75,7 @@ describe("setRoute", () => {
   it("clears the route and its result with undefined", () => {
     expect(setRoute(routed(), undefined)).toEqual({
       patch: { route: undefined, routeResult: undefined },
-      events: [{ name: "route", payload: { result: undefined } }],
+      events: [{ name: "routeChange", payload: { result: undefined } }],
     });
     expect(setRoute(ABC, undefined)).toBe(NO_CHANGE);
   });
@@ -124,7 +124,7 @@ describe("pruneRoute", () => {
     };
     expect(pruneRoute(current)).toEqual({
       patch: { route: { stops: ["a", "c"] }, routeResult: undefined },
-      events: [{ name: "route", payload: { result: undefined } }],
+      events: [{ name: "routeChange", payload: { result: undefined } }],
     });
   });
 

@@ -1,7 +1,7 @@
 const listeners = new WeakMap<Element, () => void>();
 
 /** Hears a `<maplace-location>` inside `host` change, until the returned function is called. */
-export function onLocationChange(host: Element, onChange: () => void): () => void {
+export function onLocationSourceChange(host: Element, onChange: () => void): () => void {
   listeners.set(host, onChange);
   return () => listeners.delete(host);
 }

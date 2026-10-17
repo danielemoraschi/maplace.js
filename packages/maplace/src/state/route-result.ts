@@ -4,7 +4,7 @@ import type { Snapshot } from "../store";
 import { type Change, NO_CHANGE } from "./change";
 
 /**
- * A route the map computed, or cleared (`undefined`): stored as a frozen copy, then `route`
+ * A route the map computed, or cleared (`undefined`): stored as a frozen copy, then `routeChange`
  * fires. A result whose legs don't run through the current stops was computed before they
  * changed, a race like an unknown id: no change. So is any result while no route is set.
  */
@@ -17,7 +17,10 @@ export function setRouteResult<Data>(
   if (result === undefined && snapshot.routeResult === undefined) return NO_CHANGE;
   if (result !== undefined && !runsThrough(result, route)) return NO_CHANGE;
   const routeResult = result && frozenResult(result);
-  return { patch: { routeResult }, events: [{ name: "route", payload: { result: routeResult } }] };
+  return {
+    patch: { routeResult },
+    events: [{ name: "routeChange", payload: { result: routeResult } }],
+  };
 }
 
 function runsThrough({ legs }: RouteResult, { stops }: Route): boolean {

@@ -24,7 +24,7 @@ function Fit() {
 
 export function Towns({ onPick }: { readonly onPick: (id: string | undefined) => void }) {
   return (
-    <MaplaceProvider locations={towns} onSelect={({ id }) => onPick(id)}>
+    <MaplaceProvider locations={towns} onSelectionChange={({ id }) => onPick(id)}>
       <MaplaceMap<{ population: number }>
         createAdapter={createAdapter}
         className="map"

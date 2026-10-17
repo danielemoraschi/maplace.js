@@ -42,25 +42,25 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
     locationIds: () => [...map.entries.keys()],
     stackOrder: () => stackOrder(map),
     shownPopup: () => live()?.popups.shown(),
-    click: (id) => ifShown(id, (to) => to.reportSelect(id)),
-    clickMap: () => host()?.reportSelect(undefined),
-    pointerOver: (id) => ifShown(id, (to) => to.reportHover(id)),
-    pointerOut: () => host()?.reportHover(undefined),
+    click: (id) => ifShown(id, (to) => to.reportSelectionChange(id)),
+    clickMap: () => host()?.reportSelectionChange(undefined),
+    pointerOver: (id) => ifShown(id, (to) => to.reportHoverChange(id)),
+    pointerOut: () => host()?.reportHoverChange(undefined),
     drag(id, geometry) {
       const entry = shownEntry(map, id);
       if (!entry?.drawable.editable || entry.geometry.type !== geometry.type) return;
       entry.geometry = geometry;
-      host()?.reportChange(id, geometry);
+      host()?.reportLocationChange(id, geometry);
     },
     closePopup: () => live()?.popups.closeByUser(),
     async settle() {
       const liveMap = live();
       if (liveMap === undefined) return;
       const viewport = camera.settle(geometryOf);
-      if (viewport) liveMap.host.reportViewport(viewport);
+      if (viewport) liveMap.host.reportViewportChange(viewport);
       liveMap.popups.settle();
       const route = routing.settle(located);
-      if (route) liveMap.host.reportRoute(route);
+      if (route) liveMap.host.reportRouteChange(route);
     },
   };
 }

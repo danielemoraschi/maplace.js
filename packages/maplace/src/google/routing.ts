@@ -80,7 +80,7 @@ export function createRouting(
     if (mounted === undefined) return;
     removeLine();
     line = drawRouteLine(google, route?.style, mounted.map);
-    mounted.live()?.reportRoute(result);
+    mounted.live()?.reportRouteChange(result);
   }
 
   /** The line goes; the journey stays asked, so it isn't billed again until it changes. */

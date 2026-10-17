@@ -39,8 +39,8 @@ async function drawnOnMap(...drawables: Drawable[]) {
 
 /** The `nth` change reported, from 1, once it is the last one. */
 async function changeReported(host: RecordingHost, nth: number): Promise<[string, Geometry]> {
-  await expect.poll(() => host.reportsOf("reportChange").length).toBe(nth);
-  return host.reportsOf("reportChange")[nth - 1] as [string, Geometry];
+  await expect.poll(() => host.reportsOf("reportLocationChange").length).toBe(nth);
+  return host.reportsOf("reportLocationChange")[nth - 1] as [string, Geometry];
 }
 
 describeWithMaps("Google shapes under real input", () => {
@@ -49,27 +49,27 @@ describeWithMaps("Google shapes under real input", () => {
   it("reports a click on a shape once, as the shape's and not the map's", async () => {
     const { input, host } = await drawnOnMap(polygonDrawable("p"));
     await input.click(IN_RING);
-    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["p"]]);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
   });
 
   it("reports a click in a shape's hole as the map's", async () => {
     const { input, host } = await drawnOnMap(polygonDrawable("p"));
     await input.click(ORIGIN);
-    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([[undefined]]);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([[undefined]]);
   });
 
   it("reports the pointer onto a shape and off it", async () => {
     const { input, host } = await drawnOnMap(polygonDrawable("p"));
     await input.pointTo(IN_RING);
     await input.pointTo({ lat: 1.5, lng: 1.5 });
-    await expect.poll(() => host.reportsOf("reportHover")).toEqual([["p"], [undefined]]);
+    await expect.poll(() => host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
   });
 
   it("gives the click to the selected of two overlapping shapes", async () => {
     const { adapter, input, host } = await drawnOnMap(polygonDrawable("p"), polygonDrawable("q"));
     adapter.present(presented({ selectedId: "p" }));
     await input.click(IN_RING);
-    await expect.poll(() => host.reportsOf("reportSelect")).toEqual([["p"]]);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
   });
 
   it("reports a circle's new radius once, when its handle is let go", async () => {
@@ -85,7 +85,7 @@ describeWithMaps("Google shapes under real input", () => {
       "c",
       { type: "circle", radius: expect.closeTo(75_000, -4) },
     ]);
-    expect(host.reportsOf("reportSelect")).toEqual([]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([]);
   });
 
   it("reports a moved and an added polygon corner, the second after the store wrote back the first (0.2 #64, #164)", async () => {
@@ -100,7 +100,7 @@ describeWithMaps("Google shapes under real input", () => {
       "p",
       { type: "polygon", path: { length: 5 } },
     ]);
-    expect(host.reportsOf("reportSelect")).toEqual([]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([]);
   });
 
   it("reports a moved polyline point (0.2 #178)", async () => {

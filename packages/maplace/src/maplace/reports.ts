@@ -27,13 +27,14 @@ export function createReports<Data>({
   const { commitOwn } = state;
   const { getSnapshot } = state.store;
   return {
-    reportSelect: (id) => commitOwn(selectReported(getSnapshot(), id)),
-    reportHover: (id) => commitOwn(hoverReported(getSnapshot(), id)),
-    reportChange: (id, geometry) => commitOwn(changeGeometry(getSnapshot(), { id, geometry })),
+    reportSelectionChange: (id) => commitOwn(selectReported(getSnapshot(), id)),
+    reportHoverChange: (id) => commitOwn(hoverReported(getSnapshot(), id)),
+    reportLocationChange: (id, geometry) =>
+      commitOwn(changeGeometry(getSnapshot(), { id, geometry })),
     reportPopupOpen: (id, element) => commitOwn(popupOpened(getSnapshot(), { id, element })),
     reportPopupClose: (id) => commitOwn(popupClosed(getSnapshot(), { id, openOn })),
-    reportViewport: (viewport) => commitOwn(setViewport(getSnapshot(), viewport)),
-    reportRoute: (result) => commitOwn(setRouteResult(getSnapshot(), result)),
+    reportViewportChange: (viewport) => commitOwn(setViewport(getSnapshot(), viewport)),
+    reportRouteChange: (result) => commitOwn(setRouteResult(getSnapshot(), result)),
     reportError: loadStates.reportError,
   };
 }

@@ -64,7 +64,7 @@ export function routingOnStubs() {
       routing.sync();
       await tick();
     },
-    reported: () => opened.host.reportsOf("reportRoute").map(([result]) => result),
+    reported: () => opened.host.reportsOf("reportRouteChange").map(([result]) => result),
     errors: () => opened.host.reportsOf("reportError").map(([error]) => error),
   };
 }

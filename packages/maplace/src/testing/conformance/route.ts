@@ -20,7 +20,7 @@ async function routedSubject(subject: ConformanceSubject, stops = ["a", "b"]) {
   await mounted.adapter.apply(adding(...STOPS));
   mounted.adapter.setRoute({ stops });
   await mounted.probe.settle();
-  return { ...mounted, routes: () => mounted.host.reportsOf("reportRoute") };
+  return { ...mounted, routes: () => mounted.host.reportsOf("reportRouteChange") };
 }
 
 export function routeChecks(subject: ConformanceSubject, supports: Supports): void {
@@ -46,7 +46,7 @@ export function routeChecks(subject: ConformanceSubject, supports: Supports): vo
         await probe.settle();
         await drawing;
         await probe.settle();
-        expect(host.reportsOf("reportRoute")).toHaveLength(1);
+        expect(host.reportsOf("reportRouteChange")).toHaveLength(1);
       },
     );
 

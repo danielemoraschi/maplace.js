@@ -17,13 +17,13 @@ function reportsFor(openOn: ResolvedPopupOptions["openOn"] = "click") {
   const loadStates = createLoadStates(state, createReadiness());
   const events: unknown[] = [];
   for (const name of [
-    "select",
-    "hover",
-    "change",
+    "selectionChange",
+    "hoverChange",
+    "locationChange",
     "popupOpen",
     "popupClose",
-    "viewport",
-    "route",
+    "viewportChange",
+    "routeChange",
     "error",
   ] as const) {
     state.store.on(name, (payload) => events.push({ [name]: payload }));
@@ -35,17 +35,17 @@ describe("createReports", () => {
   it("commits each report as the store's own change", () => {
     const { store, events, reports } = reportsFor();
     store.setRoute({ stops: ["a", "b"] });
-    reports.reportSelect("b");
-    reports.reportHover("a");
-    reports.reportChange("a", { type: "marker", lat: 5, lng: 6 });
+    reports.reportSelectionChange("b");
+    reports.reportHoverChange("a");
+    reports.reportLocationChange("a", { type: "marker", lat: 5, lng: 6 });
     const viewport = {
       center: { lat: 0, lng: 0 },
       zoom: 3,
       bounds: { south: -1, west: -1, north: 1, east: 1 },
     };
-    reports.reportViewport(viewport);
+    reports.reportViewportChange(viewport);
     const leg = { from: "a", to: "b", distanceMeters: 9, durationSeconds: 9 };
-    reports.reportRoute({ legs: [leg], distanceMeters: 9, durationSeconds: 9, path: [] });
+    reports.reportRouteChange({ legs: [leg], distanceMeters: 9, durationSeconds: 9, path: [] });
     const failure = new MaplaceError("route-failed", "no route");
     reports.reportError(failure);
     expect(store.getSnapshot()).toMatchObject({
@@ -56,11 +56,11 @@ describe("createReports", () => {
     });
     expect(store.getSnapshot().locations[0]).toMatchObject({ lat: 5, lng: 6 });
     expect(events.map((event) => Object.keys(event as object)[0])).toEqual([
-      "select",
-      "hover",
-      "change",
-      "viewport",
-      "route",
+      "selectionChange",
+      "hoverChange",
+      "locationChange",
+      "viewportChange",
+      "routeChange",
       "error",
     ]);
   });
@@ -82,7 +82,7 @@ describe("createReports", () => {
   it("lets a malformed report throw, for the host to rethrow later", () => {
     const { store, reports } = reportsFor();
     const before = store.getSnapshot();
-    expect(() => reports.reportChange("b", { type: "marker", lat: 0, lng: 0 })).toThrow(
+    expect(() => reports.reportLocationChange("b", { type: "marker", lat: 0, lng: 0 })).toThrow(
       "editable is not true",
     );
     expect(store.getSnapshot()).toBe(before);

@@ -16,18 +16,18 @@ const result: RouteResult = {
 };
 
 describe("setRouteResult", () => {
-  it("stores a frozen copy and fires route with it", () => {
+  it("stores a frozen copy and fires routeChange with it", () => {
     const change = setRouteResult(routed, result);
     const stored = change.patch.routeResult;
     expect(stored).toEqual(result);
     expect(Object.isFrozen(stored?.legs[0])).toBe(true);
-    expect(change.events).toEqual([{ name: "route", payload: { result: stored } }]);
+    expect(change.events).toEqual([{ name: "routeChange", payload: { result: stored } }]);
   });
 
   it("clears a stored result", () => {
     expect(setRouteResult({ ...routed, routeResult: result }, undefined)).toEqual({
       patch: { routeResult: undefined },
-      events: [{ name: "route", payload: { result: undefined } }],
+      events: [{ name: "routeChange", payload: { result: undefined } }],
     });
   });
 

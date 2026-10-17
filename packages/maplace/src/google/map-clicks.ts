@@ -4,7 +4,7 @@ import type { MapPart } from "./mounted-map";
 export const mapClicks: MapPart = {
   open(mounted) {
     const listener = mounted.map.addListener("click", () =>
-      mounted.live()?.reportSelect(undefined),
+      mounted.live()?.reportSelectionChange(undefined),
     );
     mounted.onDestroy(() => listener.remove());
   },

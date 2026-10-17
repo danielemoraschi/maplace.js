@@ -37,7 +37,7 @@ export function selectShown<Data>(
       selectedId: id,
       ...(options?.pan !== false && { view: locationView(id, options?.zoom) }),
     },
-    events: id === snapshot.selectedId ? [] : [{ name: "select", payload: { id } }],
+    events: id === snapshot.selectedId ? [] : [{ name: "selectionChange", payload: { id } }],
   };
 }
 
@@ -46,10 +46,13 @@ export function deselectIfSelected<Data>(snapshot: Snapshot<Data>): Change<Data>
   return snapshot.selectedId === undefined ? NO_CHANGE : deselect();
 }
 
-/** Clears the selection and fires `select` with no id; callers check there is one to clear. */
+/**
+ * Clears the selection and fires `selectionChange` with no id; callers check there is one to
+ * clear.
+ */
 export function deselect<Data>(): Change<Data> {
   return {
     patch: { selectedId: undefined },
-    events: [{ name: "select", payload: { id: undefined } }],
+    events: [{ name: "selectionChange", payload: { id: undefined } }],
   };
 }

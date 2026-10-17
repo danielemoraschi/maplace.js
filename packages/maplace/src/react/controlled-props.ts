@@ -10,11 +10,12 @@ type Props<Data> = MaplaceProviderProps<Data>;
 export interface PropFollower<Data> {
   follow(props: Props<Data>): void;
   /**
-   * Decides whether a `select` the store fired goes on to `onSelect`. The provider's own changes
-   * don't; a selection a controlled prop doesn't name does, and also asks the provider to render,
-   * after which the store goes back to the prop unless the parent passed the new id.
+   * Decides whether a `selectionChange` the store fired goes on to `onSelectionChange`. The
+   * provider's own changes don't; a selection a controlled prop doesn't name does, and also asks
+   * the provider to render, after which the store goes back to the prop unless the parent passed
+   * the new id.
    */
-  reportsSelect(id: string | undefined, props: Props<Data>): boolean;
+  reportsSelectionChange(id: string | undefined, props: Props<Data>): boolean;
 }
 
 /** The selection to create the store with: the wanted id, if the first locations show it. */
@@ -94,7 +95,7 @@ export function createPropFollower<Data>(
         following = false;
       }
     },
-    reportsSelect(id, props) {
+    reportsSelectionChange(id, props) {
       if (!controlled) return true;
       if (following || id === props.selectedId) return false;
       rerender();

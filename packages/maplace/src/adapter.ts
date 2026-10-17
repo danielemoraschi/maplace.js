@@ -47,15 +47,15 @@ export interface PresentationState {
  */
 export interface AdapterHost {
   /** A click on a location, or `undefined` for a click on the map. */
-  reportSelect(id: string | undefined): void;
-  reportHover(id: string | undefined): void;
+  reportSelectionChange(id: string | undefined): void;
+  reportHoverChange(id: string | undefined): void;
   /** A drag or edit moved or reshaped a location; `geometry.type` is the location's own. */
-  reportChange(id: string, geometry: Geometry): void;
+  reportLocationChange(id: string, geometry: Geometry): void;
   reportPopupOpen(id: string, element: HTMLElement): void;
   /** With `openOn: 'click'`, the store deselects when the selected location's popup closes. */
   reportPopupClose(id: string): void;
-  reportViewport(viewport: Viewport): void;
-  reportRoute(result: RouteResult | undefined): void;
+  reportViewportChange(viewport: Viewport): void;
+  reportRouteChange(result: RouteResult | undefined): void;
   /** Runtime failures only; misuse is thrown by the store before it reaches the adapter. */
   reportError(error: MaplaceError): void;
 }

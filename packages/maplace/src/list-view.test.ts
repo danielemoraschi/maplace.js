@@ -27,7 +27,7 @@ describe("createListView, end to end through the fake adapter", () => {
 
   it("a click on the map moves the selection in the list", async () => {
     const { list, host } = await listOnMap();
-    host.reportSelect("c");
+    host.reportSelectionChange("c");
     expect(options(list.element)[2]?.getAttribute("aria-selected")).toBe("true");
   });
 

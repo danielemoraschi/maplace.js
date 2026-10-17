@@ -40,28 +40,32 @@ describe.each(ROOT_MODES)("MaplaceProvider, in $mode", (root) => {
   });
 
   it("hears an event from a child's first layout effect", async () => {
-    const onSelect = vi.fn();
+    const onSelectionChange = vi.fn();
     function SelectsOnMount() {
       const store = useMaplace();
       useLayoutEffect(() => store.select("east"), [store]);
       return null;
     }
     await renderInto(
-      <MaplaceProvider locations={TOWNS} onSelect={onSelect}>
+      <MaplaceProvider locations={TOWNS} onSelectionChange={onSelectionChange}>
         <SelectsOnMount />
       </MaplaceProvider>,
       root,
     );
-    expect(onSelect).toHaveBeenCalledWith({ id: "east" });
+    expect(onSelectionChange).toHaveBeenCalledWith({ id: "east" });
   });
 
-  it("follows a parent that takes onSelect into its state, in one render", async () => {
+  it("follows a parent that takes onSelectionChange into its state, in one render", async () => {
     const adapters = fakeAdapters();
     const { Keep, store } = storeCatcher();
     function Parent() {
       const [id, setId] = useState<string | undefined>("north");
       return (
-        <MaplaceProvider locations={TOWNS} selectedId={id} onSelect={(event) => setId(event.id)}>
+        <MaplaceProvider
+          locations={TOWNS}
+          selectedId={id}
+          onSelectionChange={(event) => setId(event.id)}
+        >
           <MaplaceMap createAdapter={adapters.createAdapter} />
           <Keep />
           <output>{id}</output>
@@ -72,7 +76,7 @@ describe.each(ROOT_MODES)("MaplaceProvider, in $mode", (root) => {
     const adapter = adapters.live();
     await inAct(() => adapter.finishMount());
     const pans = adapter.callsOf("setView").length;
-    await inAct(() => adapter.host().reportSelect("south"));
+    await inAct(() => adapter.host().reportSelectionChange("south"));
     expect(container.textContent).toBe("south");
     expect(store().getSnapshot().selectedId).toBe("south");
     expect(adapter.callsOf("setView")).toHaveLength(pans + 1);
@@ -90,7 +94,7 @@ describe.each(ROOT_MODES)("MaplaceProvider, in $mode", (root) => {
     );
     const adapter = adapters.live();
     await inAct(() => adapter.finishMount());
-    await inAct(() => adapter.host().reportSelect("south"));
+    await inAct(() => adapter.host().reportSelectionChange("south"));
     expect(store().getSnapshot().selectedId).toBe("north");
   });
 
@@ -98,10 +102,10 @@ describe.each(ROOT_MODES)("MaplaceProvider, in $mode", (root) => {
     const { Keep, store } = storeCatcher();
     function Parent() {
       const [id, setId] = useState<string | undefined>("north");
-      const onSelect = (event: { id: string | undefined }) =>
+      const onSelectionChange = (event: { id: string | undefined }) =>
         startTransition(() => setId(event.id));
       return (
-        <MaplaceProvider locations={TOWNS} selectedId={id} onSelect={onSelect}>
+        <MaplaceProvider locations={TOWNS} selectedId={id} onSelectionChange={onSelectionChange}>
           <Keep />
         </MaplaceProvider>
       );

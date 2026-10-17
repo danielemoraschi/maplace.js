@@ -11,11 +11,11 @@ export const typed = (
     locations={shops}
     selectedId={undefined}
     route={{ stops: ["s", "t"], travelMode: "walking" }}
-    onSelect={({ id }) => expectTypeOf(id).toEqualTypeOf<string | undefined>()}
-    onChange={({ location }) =>
+    onSelectionChange={({ id }) => expectTypeOf(id).toEqualTypeOf<string | undefined>()}
+    onLocationChange={({ location }) =>
       expectTypeOf(location.data).toEqualTypeOf<{ price: number } | undefined>()
     }
-    onRoute={({ result }) => expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>()}
+    onRouteChange={({ result }) => expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>()}
     onPopupOpen={({ element }) => expectTypeOf(element).toEqualTypeOf<HTMLElement>()}
   >
     <MaplaceMap createAdapter={() => createGoogleAdapter({ mapId: "DEMO_MAP_ID" })} />

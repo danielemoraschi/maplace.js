@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { RFC, section } from "./rfc.ts";
+import { section } from "./markdown.ts";
+import { RFC } from "./rfc.ts";
 
 // A budget row of the Numbers table, e.g. | Core (`maplace`) | ≤ 15.5 kB |.
 const BUDGET_ROW = /^\| (.+?) \| ≤ ([\d.]+) kB \|$/gm;
@@ -11,7 +12,7 @@ export function rfcBudgets(): Map<string, number> {
 
 /** Each budget row of the Numbers table: its first cell, and its kB. */
 export function budgetsInRfc(markdown: string): Map<string, number> {
-  const rows = section(markdown, "### Numbers").matchAll(BUDGET_ROW);
+  const rows = section(markdown, "### Numbers", RFC).matchAll(BUDGET_ROW);
   return new Map(Array.from(rows, ([, row, kilobytes]) => [row ?? "", Number(kilobytes)]));
 }
 
@@ -31,7 +32,7 @@ export function rfcCoverageFloors(): CoverageFloors {
 
 /** The coverage line of the Numbers section, read; a line not in its format throws. */
 export function coverageFloorsInRfc(markdown: string): CoverageFloors {
-  const floors = COVERAGE_LINE.exec(section(markdown, "### Numbers"));
+  const floors = COVERAGE_LINE.exec(section(markdown, "### Numbers", RFC));
   if (floors === null)
     throw new Error(`${RFC} §3 Numbers has no coverage floors in the format read`);
   return { core: Number(floors[1]), package: Number(floors[2]) };

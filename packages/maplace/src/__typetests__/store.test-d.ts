@@ -29,7 +29,7 @@ maplace.hover(undefined);
 maplace.hover(null);
 expectTypeOf<Maplace>().toHaveProperty("hover");
 
-maplace.on("select", (event: MaplaceEvents["select"]) => event.id);
+maplace.on("selectionChange", (event: MaplaceEvents["selectionChange"]) => event.id);
 // @ts-expect-error unknown event names don't compile
 maplace.on("selected", () => {});
 
@@ -47,19 +47,21 @@ maplace.setView({ lat: 1, lng: 2 });
 // A store with your own data attaches any adapter, and events carry the data type.
 declare const priced: Maplace<{ price: number }>;
 priced.attach(adapter, document.body);
-priced.on("change", ({ location }) => location.data?.price.toFixed(2));
+priced.on("locationChange", ({ location }) => location.data?.price.toFixed(2));
 
 // The data type comes from the locations given; events and the snapshot carry it.
 const shop = createMaplace({ locations: [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }] });
 expectTypeOf(shop.getSnapshot().locations).toEqualTypeOf<readonly Location<{ price: number }>[]>();
-shop.on("change", ({ location, previous }) => {
+shop.on("locationChange", ({ location, previous }) => {
   expectTypeOf(location).toEqualTypeOf<Location<{ price: number }>>();
   expectTypeOf(previous).toEqualTypeOf<Location<{ price: number }>>();
 });
-shop.on("viewport", ({ viewport }) => expectTypeOf(viewport).toEqualTypeOf<Viewport>());
-shop.on("route", ({ result }) => expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>());
+shop.on("viewportChange", ({ viewport }) => expectTypeOf(viewport).toEqualTypeOf<Viewport>());
+shop.on("routeChange", ({ result }) =>
+  expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>(),
+);
 // @ts-expect-error a viewport has no `center.lon`; coordinates are lat/lng
-shop.on("viewport", ({ viewport }) => viewport.center.lon);
+shop.on("viewportChange", ({ viewport }) => viewport.center.lon);
 
 // Loading: whenReady is awaitable, attach returns detach.
 expectTypeOf(shop.whenReady()).toEqualTypeOf<Promise<void>>();

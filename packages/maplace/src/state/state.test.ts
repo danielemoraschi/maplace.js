@@ -33,25 +33,27 @@ describe("createState", () => {
   it("notifies subscribers, then emits events, with the new snapshot already in place", () => {
     const state = createState({ locations });
     const order: string[] = [];
-    state.subscribe(() => order.push(`change:${state.getSnapshot().selectedId}`));
-    state.on("select", ({ id }) => order.push(`select:${id}:${state.getSnapshot().selectedId}`));
+    state.subscribe(() => order.push(`notified:${state.getSnapshot().selectedId}`));
+    state.on("selectionChange", ({ id }) =>
+      order.push(`selectionChange:${id}:${state.getSnapshot().selectedId}`),
+    );
     state.select("a");
-    expect(order).toEqual(["change:a", "select:a:a"]);
+    expect(order).toEqual(["notified:a", "selectionChange:a:a"]);
   });
 
   it("emits the events of a cascade: a filter hiding the selection deselects", () => {
     const state = createState({ locations, selectedId: "b" });
-    const onSelect = vi.fn();
-    state.on("select", onSelect);
+    const onSelectionChange = vi.fn();
+    state.on("selectionChange", onSelectionChange);
     state.setFilter(["N"]);
-    expect(onSelect).toHaveBeenCalledWith({ id: undefined });
+    expect(onSelectionChange).toHaveBeenCalledWith({ id: undefined });
     expect(state.getSnapshot().selectedId).toBeUndefined();
   });
 
   it("lets a listener call the store, which commits before returning", () => {
     const state = createState({ locations });
     const seen: (string | undefined)[] = [];
-    state.on("select", ({ id }) => {
+    state.on("selectionChange", ({ id }) => {
       seen.push(id);
       if (id === "a") state.select("b");
     });
@@ -63,13 +65,13 @@ describe("createState", () => {
   it("delivers a nested call's notification and events after the outer call's, in order", () => {
     const state = createState({ locations });
     const order: string[] = [];
-    state.subscribe(() => order.push(`change:${state.getSnapshot().selectedId}`));
-    state.on("select", ({ id }) => {
+    state.subscribe(() => order.push(`notified:${state.getSnapshot().selectedId}`));
+    state.on("selectionChange", ({ id }) => {
       if (id === "a") state.select("b");
     });
-    state.on("select", ({ id }) => order.push(`select:${id}`));
+    state.on("selectionChange", ({ id }) => order.push(`selectionChange:${id}`));
     state.select("a");
-    expect(order).toEqual(["change:a", "select:a", "change:b", "select:b"]);
+    expect(order).toEqual(["notified:a", "selectionChange:a", "notified:b", "selectionChange:b"]);
   });
 
   it("keeps the view the store holds frozen, coordinates included", () => {
@@ -140,7 +142,7 @@ describe("after destroy", () => {
       ["fitBounds", () => state.fitBounds({ south: 0, west: 0, north: 1, east: 1 })],
       ["setView", () => state.setView({ lat: 0, lng: 0 }, 1)],
       ["setRoute", () => state.setRoute(undefined)],
-      ["on", () => state.on("select", () => {})],
+      ["on", () => state.on("selectionChange", () => {})],
       ["subscribe", () => state.subscribe(() => {})],
     ];
     for (const [method, call] of calls) {
@@ -156,7 +158,7 @@ describe("after destroy", () => {
   it("keeps getSnapshot, a second destroy and unsubscribe functions safe", () => {
     const state = createState({ locations });
     const unsubscribe = state.subscribe(() => {});
-    const off = state.on("select", () => {});
+    const off = state.on("selectionChange", () => {});
     const last = state.getSnapshot();
     state.destroy();
     expect(() => {
@@ -171,7 +173,7 @@ describe("after destroy", () => {
     const state = createState({ locations });
     const signal = new AbortController().signal;
     const remove = vi.spyOn(signal, "removeEventListener");
-    state.on("select", () => {}, { signal });
+    state.on("selectionChange", () => {}, { signal });
     state.destroy();
     expect(remove).toHaveBeenCalledTimes(1);
   });

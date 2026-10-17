@@ -11,6 +11,6 @@ const maplace = createMaplace({ locations });
 maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
 byId("list").append(createListView(maplace).element);
 maplace.setRoute({ stops: locations.map((location) => location.id), travelMode: "driving" });
-maplace.on("route", ({ result }) => {
+maplace.on("routeChange", ({ result }) => {
   byId("distance").textContent = result ? `${Math.round(result.distanceMeters / 1000)} km` : "";
 });

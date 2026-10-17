@@ -1,5 +1,6 @@
 import { globSync, readFileSync } from "node:fs";
 import { posix } from "node:path";
+import { captures } from "./markdown.ts";
 
 const SRC = "packages/maplace/src/";
 
@@ -142,7 +143,7 @@ export function layerOf(module: string): Layer | undefined {
 }
 
 export function importsOf(source: string): string[] {
-  return Array.from(source.matchAll(IMPORT_SPECIFIER), ([, specifier]) => specifier ?? "");
+  return captures(source, IMPORT_SPECIFIER);
 }
 
 function layerProblems(file: string, layer: Layer, specifier: string): string[] {

@@ -68,7 +68,7 @@ describe("setLocations", () => {
         route: { stops: ["a", "c"] },
         routeResult: undefined,
       },
-      events: [{ name: "select", payload: { id: undefined } }],
+      events: [{ name: "selectionChange", payload: { id: undefined } }],
     });
   });
 

@@ -2,8 +2,8 @@ import { MAPLACE_EVENT_NAME_LIST, type MaplaceEventName } from "../events";
 import type { Maplace } from "../index";
 
 /** The DOM event a store event is dispatched as: `popupOpen` is `maplace-popupopen`. */
-export function elementEventName(name: MaplaceEventName): `maplace-${string}` {
-  return `maplace-${name.toLowerCase()}`;
+export function elementEventName<K extends MaplaceEventName>(name: K): `maplace-${Lowercase<K>}` {
+  return `maplace-${name.toLowerCase() as Lowercase<K>}`;
 }
 
 /** Dispatches each of the store's events on `target` as a bubbling `maplace-*` event. */

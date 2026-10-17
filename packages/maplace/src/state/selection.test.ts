@@ -30,7 +30,7 @@ describe("select", () => {
   it("selects a location and pans to it", () => {
     expect(select(AB, "b")).toEqual({
       patch: { selectedId: "b", view: { kind: "location", id: "b", zoom: undefined } },
-      events: [{ name: "select", payload: { id: "b" } }],
+      events: [{ name: "selectionChange", payload: { id: "b" } }],
     });
   });
 
@@ -45,11 +45,11 @@ describe("select", () => {
   it("leaves the view alone with pan: false", () => {
     expect(select(AB, "b", { pan: false })).toEqual({
       patch: { selectedId: "b" },
-      events: [{ name: "select", payload: { id: "b" } }],
+      events: [{ name: "selectionChange", payload: { id: "b" } }],
     });
   });
 
-  it("pans again to the selected location without a select event", () => {
+  it("pans again to the selected location without a selectionChange event", () => {
     const selected = { ...AB, selectedId: "b" };
     const change = select(selected, "b");
     expect(change.events).toEqual([]);
@@ -59,7 +59,7 @@ describe("select", () => {
   it("clears the selection with undefined, keeping the view", () => {
     expect(select({ ...AB, selectedId: "a" }, undefined)).toEqual({
       patch: { selectedId: undefined },
-      events: [{ name: "select", payload: { id: undefined } }],
+      events: [{ name: "selectionChange", payload: { id: undefined } }],
     });
   });
 

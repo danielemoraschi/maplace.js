@@ -16,7 +16,7 @@ export const viewportReports: MapPart = {
     const { map } = mounted;
     const report = () => {
       const viewport = viewportOf(map);
-      if (viewport) mounted.live()?.reportViewport(viewport);
+      if (viewport) mounted.live()?.reportViewportChange(viewport);
     };
     const listener = map.addListener("idle", report);
     mounted.onDestroy(() => listener.remove());

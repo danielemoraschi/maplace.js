@@ -27,13 +27,13 @@ export function createRecordingHost(): RecordingHost {
       recorder
         .entriesOf(report)
         .map((entry) => entry.args as Parameters<AdapterHost[typeof report]>),
-    reportSelect: recording("reportSelect"),
-    reportHover: recording("reportHover"),
-    reportChange: recording("reportChange"),
+    reportSelectionChange: recording("reportSelectionChange"),
+    reportHoverChange: recording("reportHoverChange"),
+    reportLocationChange: recording("reportLocationChange"),
     reportPopupOpen: recording("reportPopupOpen"),
     reportPopupClose: recording("reportPopupClose"),
-    reportViewport: recording("reportViewport"),
-    reportRoute: recording("reportRoute"),
+    reportViewportChange: recording("reportViewportChange"),
+    reportRouteChange: recording("reportRouteChange"),
     reportError: recording("reportError"),
   };
 }

@@ -14,6 +14,6 @@ const maplace = createMaplace({
 });
 maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
 byId("list").append(createListView(maplace).element);
-maplace.on("select", ({ id }) => {
+maplace.on("selectionChange", ({ id }) => {
   byId("details").textContent = id === undefined ? "" : (notes[id] ?? "");
 });

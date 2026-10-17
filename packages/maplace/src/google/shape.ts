@@ -85,7 +85,7 @@ function newShape(kind: ShapeKind, { drawable, site, zIndex, visible }: Placing)
   const geometry = showGeometry(drawable.geometry, {
     kind,
     shape,
-    edited: (edited) => site.mounted.live()?.reportChange(id, edited),
+    edited: (edited) => site.mounted.live()?.reportLocationChange(id, edited),
   });
   reportShapeInput(shape, id, site);
   shape.setMap(site.mounted.map);

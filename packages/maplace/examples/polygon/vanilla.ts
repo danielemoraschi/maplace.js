@@ -17,4 +17,4 @@ const park: Location = {
 };
 const maplace = createMaplace({ locations: [park] });
 maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
-maplace.on("change", ({ location }) => void save(location));
+maplace.on("locationChange", ({ location }) => void save(location));

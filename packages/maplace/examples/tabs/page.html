@@ -7,7 +7,7 @@
 </maplace-map>
 <aside id="details"></aside>
 <script>
-  document.getElementById('map').addEventListener('maplace-select', (event) => {
+  document.getElementById('map').addEventListener('maplace-selectionchange', (event) => {
     document.getElementById('details').textContent = event.detail.id ?? '';
   });
 </script>

@@ -63,7 +63,7 @@ function caseChecks(
     const { adapter, probe, host } = await mountSubject(subject);
     await adapter.apply(adding(drawable));
     probe.drag(id, edited);
-    expect(host.reportsOf("reportChange")).toEqual([[id, edited]]);
+    expect(host.reportsOf("reportLocationChange")).toEqual([[id, edited]]);
   });
 
   it.runIf(editable)(
@@ -75,7 +75,7 @@ function caseChecks(
       // The store writes back a copy, as it freezes what it keeps.
       await adapter.apply(updating(reshaped(drawable, structuredClone(edited))));
       await probe.settle();
-      expect(host.reportsOf("reportChange")).toEqual([[id, edited]]);
+      expect(host.reportsOf("reportLocationChange")).toEqual([[id, edited]]);
       expect(probe.location(id)?.geometry).toEqual(edited);
     },
   );
@@ -84,7 +84,7 @@ function caseChecks(
     const { adapter, probe, host } = await mountSubject(subject);
     await adapter.apply(adding(edit.drawable));
     probe.drag(id, edited);
-    expect(host.reportsOf("reportChange")).toEqual([]);
+    expect(host.reportsOf("reportLocationChange")).toEqual([]);
     expect(probe.location(id)?.geometry).toEqual(edit.drawable.geometry);
   });
 }

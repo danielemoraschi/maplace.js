@@ -17,7 +17,7 @@ function openedClicks() {
     onDestroy: (teardown: () => void) => teardowns.push(teardown),
   } as unknown as MountedMap;
   mapClicks.open(mounted);
-  const selects = () => host.reportsOf("reportSelect").map(([id]) => id);
+  const selects = () => host.reportsOf("reportSelectionChange").map(([id]) => id);
   return { map, selects, teardowns, stop: () => (live = undefined) };
 }
 

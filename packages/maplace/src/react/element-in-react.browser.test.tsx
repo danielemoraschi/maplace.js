@@ -10,22 +10,22 @@ const locations: Location[] = [
 ];
 
 // No JSX types ship for the element: React 19 sets `locations` as a property and listens for
-// `maplace-select` from `onmaplace-select`, as it does for any custom element.
+// `maplace-selectionchange` from `onmaplace-selectionchange`, as it does for any custom element.
 const mapElement = (props: Record<string, unknown>) => createElement("maplace-map", props);
 
 describe("<maplace-map> in React 19", () => {
-  it("takes locations as a property and reports a selection through onmaplace-select", async () => {
-    const onSelect = vi.fn();
+  it("takes locations as a property and reports a selection through onmaplace-selectionchange", async () => {
+    const onSelectionChange = vi.fn();
     const { container } = await renderInto(
-      mapElement({ provider: "fake", locations, "onmaplace-select": onSelect }),
+      mapElement({ provider: "fake", locations, "onmaplace-selectionchange": onSelectionChange }),
     );
     await nextTask();
     const map = container.querySelector("maplace-map");
     expect(map?.maplace.getSnapshot().locations.map(({ id }) => id)).toEqual(["rome", "milan"]);
     await inAct(() => lastAdapter().finishMount());
-    await inAct(() => lastAdapter().host().reportSelect("milan"));
-    expect(onSelect).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "maplace-select", detail: { id: "milan" } }),
+    await inAct(() => lastAdapter().host().reportSelectionChange("milan"));
+    expect(onSelectionChange).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "maplace-selectionchange", detail: { id: "milan" } }),
     );
   });
 });

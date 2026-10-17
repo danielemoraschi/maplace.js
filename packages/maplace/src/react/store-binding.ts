@@ -37,14 +37,16 @@ export function bindStore<Data>(
   });
   const follower = createPropFollower(store, props, rerender);
   follower.follow(props);
-  forwardEvent(store, "select", latest, ({ id }) => follower.reportsSelect(id, latest.current));
+  forwardEvent(store, "selectionChange", latest, ({ id }) =>
+    follower.reportsSelectionChange(id, latest.current),
+  );
   for (const name of MAPLACE_EVENT_NAME_LIST) {
-    if (name !== "select") forwardEvent(store, name, latest);
+    if (name !== "selectionChange") forwardEvent(store, name, latest);
   }
   return { store, follow: () => follower.follow(latest.current) };
 }
 
-/** The listener prop of an event: `select` → `onSelect`. */
+/** The listener prop of an event: `selectionChange` → `onSelectionChange`. */
 export function eventPropName<K extends MaplaceEventName>(name: K): EventPropName<K> {
   return `on${name.charAt(0).toUpperCase()}${name.slice(1)}` as EventPropName<K>;
 }
