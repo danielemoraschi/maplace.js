@@ -1,11 +1,9 @@
-import { type ListenOptions, MAPLACE_EVENT_NAMES, type MaplaceEventName } from "../events";
+import { type ListenOptions, MAPLACE_EVENT_NAME_LIST } from "../events";
 import { type Field, mustBe } from "./fail";
 import { type Assert, recordOf } from "./record";
-import { members, oneOf, optional } from "./values";
+import { oneOf, optional } from "./values";
 
-const EVENT_NAMES = members<MaplaceEventName>(MAPLACE_EVENT_NAMES);
-
-export const checkEventName = oneOf(EVENT_NAMES);
+export const checkEventName = oneOf(MAPLACE_EVENT_NAME_LIST);
 
 export const checkListenOptions: Assert<ListenOptions> = recordOf<ListenOptions>({
   checks: { signal: optional(checkSignal) },

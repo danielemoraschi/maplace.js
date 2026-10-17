@@ -1,11 +1,11 @@
 import { geometryTypeOf, withGeometry } from "../diff/geometry";
 import type { Geometry } from "../geometry";
 import type { Location } from "../location";
+import { locationById } from "../location-state";
 import type { Snapshot } from "../store";
 import { child, reject } from "../validate/fail";
 import { checkLocationFields, locationRoot } from "../validate/location";
 import { type Change, NO_CHANGE } from "./change";
-import { locationById } from "./lookup";
 
 /** What the map reports after a drag or an edit ends. */
 export interface GeometryReport {

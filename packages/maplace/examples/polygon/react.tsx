@@ -13,7 +13,7 @@ export function Polygon(props: {
       locations={props.locations}
       onChange={({ location }) => props.onSave(location)}
     >
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
     </MaplaceProvider>
   );
 }

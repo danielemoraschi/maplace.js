@@ -38,6 +38,19 @@ describe("reachableOutputs", () => {
     );
   });
 
+  it("leaves out the packages it imports, which aren't outputs", () => {
+    const metafile: Metafile = {
+      inputs: {},
+      outputs: {
+        "out/react.js": output(
+          [{ path: "react/jsx-runtime", kind: "import-statement", external: true }],
+          "src/react.ts",
+        ),
+      },
+    };
+    expect(reachableOutputs(metafile, "src/react.ts")).toEqual(new Set(["out/react.js"]));
+  });
+
   it("refuses an entry the bundle doesn't have", () => {
     expect(() => reachableOutputs(METAFILE, "src/none.ts")).toThrow(/no output/);
   });

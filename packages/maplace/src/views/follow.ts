@@ -39,7 +39,8 @@ export function follow<Data>(
   return unsubscribe;
 }
 
-function structureChanged(shown: Snapshot | undefined, snapshot: Snapshot): boolean {
+/** Whether the list shows other entries: its locations or filter changed. */
+export function structureChanged(shown: Snapshot | undefined, snapshot: Snapshot): boolean {
   if (shown === undefined) return true;
   return snapshot.locations !== shown.locations || snapshot.filter !== shown.filter;
 }

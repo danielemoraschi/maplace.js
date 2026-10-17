@@ -9,10 +9,7 @@ export interface Manifest {
 /** Points the repo's own tools at `src`; nothing outside the repo has it. */
 const SOURCE_CONDITION = "maplace:source";
 
-/**
- * The manifest npm packs: without the source condition, and without the exports only it
- * served (`./react`, source-only until 1.x).
- */
+/** The manifest npm packs: without the source condition, and without any export only it served. */
 export function packedManifest(manifest: Manifest): Manifest {
   const exports = Object.entries(manifest.exports).flatMap(([path, target]) => {
     const packed = withoutSource(target);

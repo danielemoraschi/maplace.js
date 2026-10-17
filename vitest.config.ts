@@ -5,7 +5,7 @@ import { MAPS_TEST_PORT } from "./packages/maplace/src/google/testing/maps-origi
 import { MOUSE_COMMANDS } from "./packages/maplace/src/google/testing/mouse-commands.ts";
 
 // What only a real browser shows: layout, scrolling, focus, trusted input, the accessibility tree.
-const BROWSER_TESTS = "packages/maplace/src/**/*.browser.test.ts";
+const BROWSER_TESTS = "packages/maplace/src/**/*.browser.test.{ts,tsx}";
 
 export default defineConfig({
   test: {
@@ -16,9 +16,10 @@ export default defineConfig({
       // Keep in step with sonar.coverage.exclusions.
       exclude: [
         "**/__typetests__/**",
-        "**/*.test.ts",
+        "**/*.test.{ts,tsx}",
         "**/src/testing/**",
         "**/src/google/testing/**",
+        "**/src/react/testing/**",
         // The command-line entry points: their logic is in the folders below, tested there.
         "scripts/*.ts",
         "scripts/checks/consumer/**",
@@ -29,7 +30,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: "node",
-          include: ["scripts/**/*.test.ts", "packages/maplace/src/**/*.test.ts"],
+          include: ["scripts/**/*.test.ts", "packages/maplace/src/**/*.test.{ts,tsx}"],
           exclude: [...configDefaults.exclude, BROWSER_TESTS],
         },
       },
@@ -37,6 +38,11 @@ export default defineConfig({
         extends: true,
         // The examples import `maplace` by name, as readers do: resolved to the source, as in tsconfig.
         resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
+        // React pre-bundled from the start: a dependency Vite finds mid-run is optimized and
+        // reloaded, and a component holding the old copy breaks the hooks of the new.
+        optimizeDeps: {
+          include: ["react", "react/jsx-dev-runtime", "react-dom", "react-dom/client"],
+        },
         test: {
           name: "browser",
           include: [BROWSER_TESTS],

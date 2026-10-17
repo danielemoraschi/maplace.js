@@ -17,6 +17,7 @@ export const PACKAGE_ENTRIES = {
   google: `${SRC}/google/index.ts`,
   element: `${SRC}/element/index.ts`,
   elementGoogle: `${SRC}/element/google.ts`,
+  react: `${SRC}/react/index.ts`,
 } as const;
 
 /** The repo's TypeScript compiler (TS 7 is a native binary, with no JS API). */

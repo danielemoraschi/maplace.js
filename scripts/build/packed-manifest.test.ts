@@ -10,7 +10,7 @@ const MANIFEST = {
       types: "./dist/index.d.ts",
       default: "./dist/index.js",
     },
-    "./react": { "maplace:source": "./src/react/index.ts" },
+    "./testing": { "maplace:source": "./src/testing/index.ts" },
     "./package.json": "./package.json",
   },
 };

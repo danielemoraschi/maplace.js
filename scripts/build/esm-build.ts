@@ -16,6 +16,8 @@ export function esmBuildOptions(outdir: string = DIST): BuildOptions {
     format: "esm",
     target: TARGET,
     packages: "external",
+    // The React entry's JSX, as `react/jsx-runtime` calls: set here, not left to a tsconfig.
+    jsx: "automatic",
     chunkNames: "chunks/[name]-[hash]",
     logLevel: "warning",
   };

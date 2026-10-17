@@ -1,5 +1,5 @@
 import type { Location } from "../location";
-import { isShown, type Scope } from "../state/lookup";
+import { isShown, type Scope } from "../location-state";
 
 /** Locations under one group heading, or none (`heading` undefined). */
 export interface ListSection<Data = unknown> {

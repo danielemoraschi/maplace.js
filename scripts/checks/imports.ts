@@ -76,7 +76,20 @@ const LAYERS = {
     files: /^element\/google(-[a-z-]+)?$/,
     imports: ["data", "contract", "element", "google"],
   },
-  react: { files: /^react\//, imports: ["data", "contract", "store", "view"], packages: ["react"] },
+  // The React binding makes stores and list views through the entry, as the element does, and
+  // reads the shared data rules, the store's equality rules and the list view's own helpers
+  // (option naming, structure) directly.
+  react: {
+    files: /^react\/(?!testing\/)/,
+    imports: ["data", "contract", "store", "view", "entry", "diff"],
+    packages: ["react", "react-dom"],
+  },
+  // The binding's test support: rendering into a root that collects what error boundaries catch.
+  "react-testing": {
+    files: /^react\/testing\//,
+    imports: ["data", "contract", "entry", "react", "testing", "fake"],
+    packages: ["react", "react-dom", "vitest"],
+  },
   // Shares the store's option checks, so its misuse reads the same.
   google: {
     files: /^google\/(?!testing\/)/,
@@ -103,7 +116,10 @@ const IMPORT_SPECIFIER = /(?<![\w$.'"`])(?:from|import)\s*(?:\(\s*)?["']([^"']+)
 
 /** Imports that cross a layer boundary or reach for a package the layer may not use (T10); tests may import anything. */
 export function check(): string[] {
-  return globSync("**/*.{ts,tsx}", { cwd: SRC, exclude: ["__typetests__/**", "**/*.test.ts"] })
+  return globSync("**/*.{ts,tsx}", {
+    cwd: SRC,
+    exclude: ["__typetests__/**", "**/*.test.{ts,tsx}"],
+  })
     .flatMap((file) => problemsIn(file, readFileSync(SRC + file, "utf8")))
     .map((problem) => SRC + problem);
 }
@@ -153,7 +169,7 @@ function packageProblems(file: string, layer: Layer, specifier: string): string[
 }
 
 /** `react/jsx-runtime` → `react`, `@scope/name/sub` → `@scope/name`. */
-function packageName(specifier: string): string {
+export function packageName(specifier: string): string {
   const parts = specifier.split("/");
   return parts.slice(0, specifier.startsWith("@") ? 2 : 1).join("/");
 }

@@ -14,7 +14,7 @@ export function Route({ locations }: { readonly locations: readonly Location[] }
       route={{ stops, travelMode: "driving" }}
       onRoute={({ result }) => setDistanceKm(result && Math.round(result.distanceMeters / 1000))}
     >
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
       <LocationList />
       {distanceKm !== undefined && <p>{distanceKm} km</p>}
     </MaplaceProvider>

@@ -120,6 +120,22 @@ describe("problemsIn", () => {
     expect(problemsIn("route.ts", 'import type { Maplace } from "./store";')).toHaveLength(1);
   });
 
+  it("lets the React binding use the core through its entry only", () => {
+    expect(problemsIn("react/provider.tsx", 'import { createMaplace } from "../index";')).toEqual(
+      [],
+    );
+    expect(
+      problemsIn("react/provider.tsx", 'import { createMaplace } from "../maplace/create";'),
+    ).toHaveLength(1);
+  });
+
+  it("keeps the React test support out of the binding", () => {
+    expect(layerOf("react/testing/render")).toBe("react-testing");
+    expect(
+      problemsIn("react/provider.tsx", 'import { renderInto } from "./testing/render";'),
+    ).toHaveLength(1);
+  });
+
   it("reports a file in no layer", () => {
     expect(problemsIn("helpers.ts", "")).toEqual([
       "helpers.ts: in no layer; add it to LAYERS in scripts/checks/imports.ts",
@@ -133,6 +149,7 @@ describe("problemsIn", () => {
   it("accepts only the packages a layer may use", () => {
     expect(problemsIn("react/index.ts", 'import type { ReactNode } from "react";')).toEqual([]);
     expect(problemsIn("react/index.ts", 'import { jsx } from "react/jsx-runtime";')).toEqual([]);
+    expect(problemsIn("react/list.tsx", 'import { createPortal } from "react-dom";')).toEqual([]);
     expect(problemsIn("store.ts", 'import { produce } from "immer";')).toEqual([
       "store.ts: imports package immer; store may use none",
     ]);

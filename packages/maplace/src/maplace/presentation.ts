@@ -1,5 +1,5 @@
 import type { PresentationState } from "../adapter";
-import { isShown } from "../state/lookup";
+import { isShown } from "../location-state";
 import type { Snapshot } from "../store";
 
 /** The last presentation sent, with the snapshot it was made from. */

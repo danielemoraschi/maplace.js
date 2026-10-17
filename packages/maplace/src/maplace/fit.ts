@@ -1,5 +1,5 @@
 import type { Adapter } from "../adapter";
-import { isShown, type Scope } from "../state/lookup";
+import { isShown, type Scope } from "../location-state";
 import { runSafely } from "../state/safely";
 import { boundsView } from "../state/views";
 import type { Snapshot } from "../store";

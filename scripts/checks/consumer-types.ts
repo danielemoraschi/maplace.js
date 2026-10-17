@@ -1,10 +1,10 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, writeFileSync } from "node:fs";
+import { cpSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { TSC } from "../build/package.ts";
 
 /** A page's code using the packed package, one per `<fixture>.json` in `consumer/`. */
-export type ConsumerFixture = "core-and-element" | "google";
+export type ConsumerFixture = "core-and-element" | "google" | "react";
 
 const FIXTURES = join(import.meta.dirname, "consumer");
 
@@ -35,10 +35,17 @@ export function typeCheckConsumer(dir: string, fixture: ConsumerFixture): Consum
   });
   if (checked.error) throw checked.error;
   const loaded = loadedFiles(checked.stdout);
-  if (!loaded.some((file) => file.endsWith(`/${fixture}.ts`))) {
-    throw new Error(`tsc checked no ${fixture}.ts:\n${checked.stdout}${checked.stderr}`);
+  const source = fixtureSource(fixture);
+  if (!loaded.some((file) => file.endsWith(`/${source}`))) {
+    throw new Error(`tsc checked no ${source}:\n${checked.stdout}${checked.stderr}`);
   }
   return { errors: ourErrors(checked.stdout), loadedFiles: loaded };
+}
+
+/** The page a fixture checks: the one file its `<fixture>.json` names. */
+function fixtureSource(fixture: ConsumerFixture): string {
+  const { files } = JSON.parse(readFileSync(join(FIXTURES, `${fixture}.json`), "utf8"));
+  return files[0];
 }
 
 /** The errors in `tsc` output that are maplace's: in its declarations or the fixture. */

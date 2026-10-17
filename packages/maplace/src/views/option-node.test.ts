@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { optionElement } from "./listbox-nodes";
-import { setOptionContent, setOptionState } from "./option-node";
+import { nameOption, setOptionContent, setOptionState } from "./option-node";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -32,6 +32,17 @@ describe("setOptionContent", () => {
     setOptionContent(option, { entry, render: () => "text" as never });
     expect(option.textContent).toBe(title);
     expect(() => queued[0]?.()).toThrow('createListView: render must return a Node, got "text"');
+  });
+});
+
+describe("nameOption", () => {
+  it("names an option by its label until its content has text", () => {
+    const option = optionElement();
+    nameOption(option, "Alpha");
+    expect(option.getAttribute("aria-label")).toBe("Alpha");
+    option.append("Alpha, open now");
+    nameOption(option, "Alpha");
+    expect(option.hasAttribute("aria-label")).toBe(false);
   });
 });
 

@@ -25,8 +25,9 @@ export interface ListViewOptions<Data = unknown> {
   readonly label?: string | undefined;
   /**
    * Custom entry content for `as: 'list'`, re-run only for entries whose location object or state
-   * changed; the view keeps keyboard, focus and ARIA handling. Return a fresh, non-interactive
-   * node each call (it sits inside an option). Not for `as: 'select'`, whose options hold text.
+   * changed; the view keeps keyboard, focus and ARIA handling. Return a non-interactive node for
+   * this entry alone (it sits inside an option): fresh, or the same one each time for its id. Not
+   * for `as: 'select'`, whose options hold text.
    */
   readonly render?: ((entry: ListEntry<Data>) => Node) | undefined;
 }

@@ -1,11 +1,11 @@
-import { sameFields, sameItems, sameOptional } from "../diff/same";
+import { sameJourney, sameRoute } from "../diff/same";
+import { locationById } from "../location-state";
 import type { Route } from "../route";
 import type { Snapshot } from "../store";
 import { child, type Field, item, reject, root } from "../validate/fail";
 import { checkRoute } from "../validate/route";
 import { andThen, type Change, NO_CHANGE, patchOnly } from "./change";
 import { checkKnownId } from "./checks";
-import { locationById } from "./lookup";
 
 const MIN_STOPS = 2;
 
@@ -56,15 +56,6 @@ function clearResult<Data>(snapshot: Snapshot<Data>): Change<Data> {
   const events: Change<Data>["events"] =
     snapshot.routeResult === undefined ? [] : [{ name: "route", payload: { result: undefined } }];
   return { patch: { routeResult: undefined }, events };
-}
-
-function sameRoute(a: Route, b: Route): boolean {
-  return sameJourney(a, b) && sameOptional(a.style, b.style, sameFields);
-}
-
-/** Same stops in order and same travel mode: what a computed route depends on. */
-function sameJourney(a: Route, b: Route): boolean {
-  return a.travelMode === b.travelMode && sameItems(a.stops, b.stops);
 }
 
 function frozenCopy(route: Route): Route {

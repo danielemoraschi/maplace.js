@@ -2,7 +2,7 @@ import { existsSync, globSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildSync } from "esbuild";
 import { beforeAll, describe, expect, it } from "vitest";
-import { importsOf } from "../checks/imports.ts";
+import { importsOf, packageName } from "../checks/imports.ts";
 import { relativeLinksIn } from "../checks/markdown.ts";
 import { CDN_SCRIPTS } from "./cdn-builds.ts";
 import { buildEsm } from "./esm-build.ts";
@@ -12,6 +12,7 @@ import { integrityOfFile } from "./subresource-integrity.ts";
 import { tempDir } from "./temp-dir.ts";
 
 const CLUSTERER = "@googlemaps/markerclusterer";
+const REACT = ["react", "react-dom"];
 
 const consumerDir = tempDir("esm");
 const packageDir = join(consumerDir, "node_modules", "maplace");
@@ -20,6 +21,10 @@ const packageDir = join(consumerDir, "node_modules", "maplace");
 function scripts(dir: string): Map<string, string> {
   const files = globSync("**/*.js", { cwd: dir });
   return new Map(files.map((file) => [file, readFileSync(join(dir, file), "utf8")]));
+}
+
+function bareImportsOf(text: string): string[] {
+  return importsOf(text).filter((path) => !path.startsWith("."));
 }
 
 /** What a page's bundler (esbuild here, honouring `sideEffects`) keeps of `code`. */
@@ -90,6 +95,7 @@ describe("the npm ESM build", () => {
         "google/index.js",
         "element/index.js",
         "element/google.js",
+        "react/index.js",
       ]),
     );
     for (const entry of entries) expect(built.has(entry), entry).toBe(true);
@@ -100,8 +106,15 @@ describe("the npm ESM build", () => {
     expect(
       built.filter((text) => /\bMaplaceError = class\b|\bclass MaplaceError\b/.test(text)),
     ).toHaveLength(1);
-    const bare = built.flatMap((text) => importsOf(text).filter((path) => !path.startsWith(".")));
-    expect(new Set(bare)).toEqual(new Set([CLUSTERER]));
+    const bare = built.flatMap(bareImportsOf);
+    expect(new Set(bare.map(packageName))).toEqual(new Set([CLUSTERER, ...REACT]));
+  });
+
+  it("leaves React to the React entry alone, so no other entry needs it", () => {
+    const usingReact = [...scripts(join(packageDir, "dist"))].filter(([, text]) =>
+      bareImportsOf(text).some((path) => REACT.includes(packageName(path))),
+    );
+    expect(usingReact.map(([file]) => file)).toEqual(["react/index.js"]);
   });
 
   it("keeps the elements' definition in a page's bundle, for either element entry", () => {

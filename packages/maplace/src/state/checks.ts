@@ -1,7 +1,7 @@
 import type { Location } from "../location";
+import { isShown, locationById, type Scope } from "../location-state";
 import { child, describeValue, type Field, reject, root } from "../validate/fail";
 import { checkNonEmptyString } from "../validate/values";
-import { isShown, locationById, type Scope } from "./lookup";
 
 /** Throws `unknown-id` unless `id` names a location; returns it. */
 export function checkKnownId<Data>(

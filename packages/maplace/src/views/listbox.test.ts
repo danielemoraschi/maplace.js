@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
+import type { ListEntry } from "../list-view";
 import type { Location } from "../location";
 import { optionsIn, recordingActions, structureOf } from "../testing/lists";
 import { createListbox } from "./listbox";
@@ -10,7 +11,7 @@ const locations: Location[] = [
   { id: "c", lat: 0, lng: 0, title: "Gamma" },
 ];
 
-function listbox(settings: { fitAllLabel?: string; render?: () => Node } = {}) {
+function listbox(settings: { fitAllLabel?: string; render?: (entry: ListEntry) => Node } = {}) {
   const actions = recordingActions();
   const view = createListbox(actions, {
     label: "Shops",
@@ -74,6 +75,21 @@ describe("createListbox: state", () => {
     expect(render.mock.calls[0]).toEqual([
       expect.objectContaining({ hovered: true, selected: false }),
     ]);
+  });
+
+  it("keeps a node render gives again for the same id in its option", () => {
+    const nodes = new Map<string, HTMLElement>();
+    const nodeFor = ({ location }: ListEntry) => {
+      const node = nodes.get(location.id) ?? document.createElement("span");
+      nodes.set(location.id, node);
+      return node;
+    };
+    const { view } = listbox({ render: nodeFor });
+    view.renderState({ selectedId: "a", hoveredId: "a" });
+    view.renderState({ selectedId: undefined, hoveredId: undefined });
+    const option = options().find((element) => element.contains(nodes.get("a") ?? null));
+    expect(option?.childNodes).toHaveLength(1);
+    expect(option?.firstChild).toBe(nodes.get("a"));
   });
 
   it("clears its own hover when destroyed", () => {

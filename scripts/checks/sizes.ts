@@ -34,6 +34,13 @@ export const SIZE_MEASURES: readonly SizeMeasure[] = [
     beside: PACKAGE_ENTRIES.core,
   },
   {
+    name: "maplace/react",
+    rfcRow: "React binding (`maplace/react`)",
+    kind: "esm",
+    entry: PACKAGE_ENTRIES.react,
+    beside: PACKAGE_ENTRIES.core,
+  },
+  {
     name: "element CDN",
     rfcRow: "Element CDN build (core + Google + list view + element)",
     kind: "cdn",

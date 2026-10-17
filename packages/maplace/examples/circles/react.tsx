@@ -12,7 +12,7 @@ const circles: Location[] = [
 export function Circles() {
   return (
     <MaplaceProvider locations={circles}>
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
       <LocationList />
     </MaplaceProvider>
   );

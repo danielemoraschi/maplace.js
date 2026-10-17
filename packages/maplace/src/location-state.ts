@@ -1,4 +1,7 @@
-import type { LocationState } from "./location";
+import type { Location, LocationState } from "./location";
+
+// A location's state from selection and hover, and whether it is shown at all: the data rules
+// the store, the views and the bindings share.
 
 /** Which location is selected and which hovered: what a location's state follows. */
 export interface SelectionAndHover {
@@ -20,4 +23,41 @@ export function changedIds(previous: SelectionAndHover, next: SelectionAndHover)
   return [...new Set(ids)].filter(
     (id): id is string => id !== undefined && !sameState(stateIn(previous, id), stateIn(next, id)),
   );
+}
+
+/** Drawn, listed and selectable: not `visible: false`, and with a filter, in one of its groups. */
+export function isShown(location: Location, filter: readonly string[] | undefined): boolean {
+  if (location.visible === false) return false;
+  return filter === undefined || (location.group !== undefined && filter.includes(location.group));
+}
+
+/** What decides whether a location is shown: the locations and the filter over them. */
+export interface Scope {
+  readonly locations: readonly Location[];
+  readonly filter: readonly string[] | undefined;
+}
+
+// Snapshot location lists are frozen (`frozenList`), so an index built once per list stays right.
+const INDEXES = new WeakMap<readonly Location[], ReadonlyMap<string, Location>>();
+
+export function locationById<Data>(
+  locations: readonly Location<Data>[],
+  id: string,
+): Location<Data> | undefined {
+  return (indexById(locations) as ReadonlyMap<string, Location<Data>>).get(id);
+}
+
+/** Known and shown: an id a map report, or a selection, may name. Lists must be frozen. */
+export function isSelectable(scope: Scope, id: string): boolean {
+  const location = locationById(scope.locations, id);
+  return location !== undefined && isShown(location, scope.filter);
+}
+
+function indexById(locations: readonly Location[]): ReadonlyMap<string, Location> {
+  let index = INDEXES.get(locations);
+  if (index === undefined) {
+    index = new Map(locations.map((location) => [location.id, location]));
+    INDEXES.set(locations, index);
+  }
+  return index;
 }

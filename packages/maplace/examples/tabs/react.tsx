@@ -10,7 +10,7 @@ export function Tabs({ locations }: { readonly locations: readonly Location[] })
   return (
     <MaplaceProvider locations={locations} onSelect={({ id }) => setSelectedId(id)}>
       <LocationList />
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
       <aside>{selectedId}</aside>
     </MaplaceProvider>
   );

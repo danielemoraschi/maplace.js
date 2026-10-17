@@ -28,7 +28,7 @@ export async function bundleInMemory(options: BuildOptions): Promise<Bundle> {
 
 /**
  * The outputs a page loads for `entry`: its own and those it imports statically, not those it
- * imports on demand (the clustering chunk).
+ * imports on demand (the clustering chunk), nor the packages it leaves to the page (React).
  */
 export function reachableOutputs(metafile: Metafile, entry: string): Set<string> {
   const start = Object.keys(metafile.outputs).find(
@@ -40,8 +40,8 @@ export function reachableOutputs(metafile: Metafile, entry: string): Set<string>
   for (let path = queue.pop(); path !== undefined; path = queue.pop()) {
     if (reached.has(path)) continue;
     reached.add(path);
-    for (const { path: imported, kind } of metafile.outputs[path]?.imports ?? []) {
-      if (kind === "import-statement") queue.push(imported);
+    for (const { path: imported, kind, external } of metafile.outputs[path]?.imports ?? []) {
+      if (kind === "import-statement" && !external) queue.push(imported);
     }
   }
   return reached;

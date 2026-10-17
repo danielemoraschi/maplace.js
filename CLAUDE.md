@@ -11,7 +11,7 @@ Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 - `npm run check`: Biome (lint, format, file length, `google.maps` only in `src/google/`), then `scripts/check.ts`: import layers, RFC ↔ types, the size budgets of RFC §3 Numbers (the builds made in memory with `npm run build`'s options, minified and gzipped; the budgets are read from the RFC table), CHANGELOG, doc links (every relative link in the docs reaches a file) and doc snippets (a fence after `<!-- example: <path> -->` is a copy of that file).
 - `npm run sizes`: each budget with what it measures now and the headroom left.
 - `npm run coverage`: after `npm test`, the line coverage of the core (what the `maplace` entry loads) and of the package against the floors of RFC §3 Numbers; a CI step.
-- `npm run build`: `packages/maplace/dist` (npm ESM and `.d.ts`, the two CDN scripts), then `packages/maplace/packed`, the package as npm packs it (no `maplace:source`, no `./react`).
+- `npm run build`: `packages/maplace/dist` (npm ESM and `.d.ts`, the two CDN scripts), then `packages/maplace/packed`, the package as npm packs it (no `maplace:source`).
 - `npm run release <version>`: what the release workflow (`.github/workflows/release.yml`, P2) runs first, in this checkout: the version written (manifest, lockfile, `MAPLACE_VERSION`) and the unreleased CHANGELOG lines headed `## <version> (<date>)`, or why the version can't be released; `npm run release-notes <version>` prints that version's GitHub release notes. A local run is a rehearsal: undo it with `git checkout`.
 - `npm run typecheck`: source, examples, type tests, then `scripts/`.
 - `npm test`: Vitest, with a coverage report (`coverage/lcov.info`): the `node` project (node and happy-dom) and the `browser` project (`*.browser.test.ts`, headless Chromium, served from `localhost:63315` when the port is free); `--project <name>` runs one. Tests on real Google Maps run when `VITE_MAPS_KEY` is set (in `.env.local`; the key must allow `http://localhost:63315/*`) and skip otherwise; CI runs them on `next`. The node project also checks the package as npm would pack it (built into temp dirs): publint, attw, and a strict consumer type-check (`scripts/checks/packed-package.test.ts`).
@@ -21,7 +21,7 @@ Node 24 (`.nvmrc`). Scripts in `scripts/` are TypeScript run directly by Node.
 CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every push. A tracker row that adds a gate adds its CI step in the same commit. On `next` it also sends the analysis to SonarQube, report-only. On `next`, `npm test` gets the `MAPS_KEY` secret, so the Google tests run on real Maps JS there.
 
 ## Layout
-- `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/`, and `react/`, a type-only draft until V4 builds it, out of the published `exports` until then.
+- `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/` and `react/` (the React binding, which uses the core through its entry, as the element does).
 - `packages/maplace/src/adapter-kit/`: what every adapter draws with; the fake and Google share it, the core entry never imports it.
 - `packages/maplace/src/location-state.ts`: a location's state from selection and hover, shared by the adapters and the list view.
 - `packages/maplace/src/__typetests__/`: compile-time API tests (`@ts-expect-error` must stay errors) and `api-lists.ts`, the RFC's lists of codes, events and capabilities.

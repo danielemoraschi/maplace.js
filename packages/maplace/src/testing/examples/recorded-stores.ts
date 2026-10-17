@@ -1,4 +1,5 @@
 import type { createMaplace, Maplace } from "../../index";
+import { isShown } from "../../location-state";
 
 const stores: Maplace[] = [];
 
@@ -18,12 +19,18 @@ export function lastStore(): Maplace {
   return store;
 }
 
+/** The store an example attached last: under StrictMode, React makes one it never uses first. */
+export function attachedStore(): Maplace {
+  const attached = stores.filter((store) => store.getSnapshot().loadState !== "idle");
+  if (attached.length !== 1) throw new Error(`${attached.length} attached stores, expected 1`);
+  return attached[0] as Maplace;
+}
+
 /** The ids `store` shows, sorted: what its map must draw. */
 export function shownIds(store: Maplace): string[] {
   const { locations, filter } = store.getSnapshot();
   return locations
-    .filter((location) => location.visible !== false)
-    .filter((location) => filter === undefined || filter.includes(location.group ?? ""))
+    .filter((location) => isShown(location, filter))
     .map(({ id }) => id)
     .sort(byId);
 }

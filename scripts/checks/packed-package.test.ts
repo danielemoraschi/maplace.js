@@ -29,10 +29,16 @@ describe("the packed package", () => {
     expect(await typeResolutionProblems(tarball)).toEqual([]);
   }, 30_000);
 
-  it("type-checks for a strict consumer without Google, who needs no Google types", () => {
+  it("type-checks for a strict consumer without Google or React, who needs neither's types", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "core-and-element");
     expect(errors).toEqual([]);
-    expect(loadedFiles.filter((file) => file.includes("/@types/google.maps/"))).toEqual([]);
+    expect(loadedFiles.filter((file) => /\/@types\/(google\.maps|react)\//.test(file))).toEqual([]);
+  }, 30_000);
+
+  it("type-checks for a strict consumer in React", () => {
+    const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "react");
+    expect(errors).toEqual([]);
+    expect(loadedFiles.some((file) => file.includes("/@types/react/"))).toBe(true);
   }, 30_000);
 
   it("type-checks for a strict consumer on Google, its types reached through maplace's", () => {

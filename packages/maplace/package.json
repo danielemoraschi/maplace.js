@@ -40,7 +40,9 @@
       "default": "./dist/element/google.js"
     },
     "./react": {
-      "maplace:source": "./src/react/index.ts"
+      "maplace:source": "./src/react/index.ts",
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -48,10 +50,22 @@
     "@googlemaps/markerclusterer": "2.6.2"
   },
   "peerDependencies": {
-    "@types/google.maps": "^3.66.0"
+    "@types/google.maps": "^3.66.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "peerDependenciesMeta": {
     "@types/google.maps": {
+      "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   }

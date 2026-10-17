@@ -28,8 +28,17 @@ export function setOptionContent<Data>(
   const label = labelOf(entry.location);
   const content =
     (render && runSafely(() => renderedNode(render, entry))) ?? document.createTextNode(label);
-  option.replaceChildren(content);
-  // Content without text (an icon) still needs an accessible name.
+  // A `render` giving the same node for its id again leaves it in place, its own state kept.
+  if (option.firstChild !== content || option.childNodes.length !== 1)
+    option.replaceChildren(content);
+  nameOption(option, label);
+}
+
+/**
+ * Names an option by its label when its content has no text (an icon), and by its content
+ * otherwise. Again once content rendered later, as React's, is in the option.
+ */
+export function nameOption(option: HTMLElement, label: string): void {
   if (option.textContent?.trim()) option.removeAttribute("aria-label");
   else option.setAttribute("aria-label", label);
 }

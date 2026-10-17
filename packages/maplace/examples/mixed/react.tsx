@@ -14,7 +14,7 @@ export function Mixed() {
   }, []);
   return (
     <MaplaceProvider locations={locations}>
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
       <LocationList />
     </MaplaceProvider>
   );

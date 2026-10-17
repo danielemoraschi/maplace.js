@@ -1,3 +1,4 @@
+import type { Route } from "../route";
 /**
  * Shallow equality: every field of either object is `===` the same field of the other. A field
  * written as `undefined` equals a missing one, as everywhere in the API.
@@ -18,6 +19,24 @@ export function sameOptional<T>(
   same: (a: T, b: T) => boolean,
 ): boolean {
   return a === undefined || b === undefined ? a === b : same(a, b);
+}
+
+/** The same groups in the same order, or both no filter. */
+export function sameFilter(
+  a: readonly string[] | undefined,
+  b: readonly string[] | undefined,
+): boolean {
+  return sameOptional(a, b, sameItems);
+}
+
+/** The same route: its journey and its style. */
+export function sameRoute(a: Route, b: Route): boolean {
+  return sameJourney(a, b) && sameOptional(a.style, b.style, sameFields);
+}
+
+/** Same stops in order and same travel mode: what a computed route depends on. */
+export function sameJourney(a: Route, b: Route): boolean {
+  return a.travelMode === b.travelMode && sameItems(a.stops, b.stops);
 }
 
 /** `previous` when `next` has the same fields, so unchanged values keep their reference. */

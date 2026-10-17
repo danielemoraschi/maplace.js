@@ -8,7 +8,7 @@ export function Menu({ locations }: { readonly locations: readonly Location[] })
   return (
     <MaplaceProvider locations={locations}>
       <LocationList as="select" fitAllLabel="All cities" />
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
     </MaplaceProvider>
   );
 }

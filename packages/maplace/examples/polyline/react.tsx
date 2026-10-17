@@ -8,7 +8,7 @@ const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 export function Polyline({ trail }: { readonly trail: readonly Location[] }) {
   return (
     <MaplaceProvider locations={trail}>
-      <MaplaceMap createAdapter={createAdapter} />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
     </MaplaceProvider>
   );
 }

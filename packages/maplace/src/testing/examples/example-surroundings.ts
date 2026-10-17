@@ -1,4 +1,5 @@
 import { vi } from "vitest";
+import type { Location } from "../../location";
 import { sizedContainer } from "../container";
 
 /** A container a script reads: `byId("list")` or `querySelector<HTMLElement>("#map")`. */
@@ -16,13 +17,7 @@ const EXAMPLE_DATA: Readonly<Record<string, () => unknown>> = {
       title: "Milan area",
     },
   ],
-  "/points-4k.json": () =>
-    Array.from({ length: 4000 }, (_, index) => ({
-      id: `p${index}`,
-      lat: (index % 170) - 85,
-      lng: (index % 360) - 180,
-      title: `Point ${index}`,
-    })),
+  "/points-4k.json": () => spreadPoints(4000),
 };
 
 /** The page around `source`: a sized `<div>` for every element it reads by id. */
@@ -50,4 +45,14 @@ export function serveExampleData(): void {
 function pathOf(input: RequestInfo | URL): string {
   if (typeof input === "string") return input;
   return input instanceof URL ? input.pathname : new URL(input.url).pathname;
+}
+
+/** `count` titled markers spread over the globe, as `big` loads them. */
+export function spreadPoints(count: number): Location[] {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `p${index}`,
+    lat: (index % 170) - 85,
+    lng: (index % 360) - 180,
+    title: `Point ${index}`,
+  }));
 }

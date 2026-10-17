@@ -36,6 +36,11 @@ export const MAPLACE_EVENT_NAMES = {
   error: true,
 } as const satisfies Record<MaplaceEventName, true>;
 
+/** Every event's name, as a list to go through. */
+export const MAPLACE_EVENT_NAME_LIST: readonly MaplaceEventName[] = Object.keys(
+  MAPLACE_EVENT_NAMES,
+) as MaplaceEventName[];
+
 export type Listener<K extends MaplaceEventName, Data = unknown> = (
   event: MaplaceEvents<Data>[K],
 ) => void;

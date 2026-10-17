@@ -84,8 +84,31 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 | `maplace/google` | `createGoogleAdapter`: the only entry that knows `google.maps` |
 | `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers |
 | `maplace/element/google` | the element with the Google provider registered |
+| `maplace/react` | `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>` and `useMaplace()` |
 
-`@googlemaps/markerclusterer` is a dependency, loaded only by a store that clusters. `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`.
+`@googlemaps/markerclusterer` is a dependency, loaded only by a store that clusters. `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`; `react` and `react-dom` (19) are optional peers, for `maplace/react`.
+
+## With React
+
+<!-- example: packages/maplace/examples/simple/react.tsx -->
+```tsx
+import type { Location } from "maplace";
+import { createGoogleAdapter } from "maplace/google";
+import { MaplaceMap, MaplaceProvider } from "maplace/react";
+
+const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
+const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
+
+export function Simple() {
+  return (
+    <MaplaceProvider locations={rome}>
+      <MaplaceMap createAdapter={createAdapter} className="map" />
+    </MaplaceProvider>
+  );
+}
+```
+
+`<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelect` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). `<LocationList>` is the store's list, with a function child for each entry's content, and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
 ## What it needs
 
@@ -95,7 +118,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 ## Documentation
 
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): ten scenarios, each as an HTML page and vanilla TypeScript.
+- [Examples](packages/maplace/examples/): ten scenarios, each as an HTML page, vanilla TypeScript and React.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 
