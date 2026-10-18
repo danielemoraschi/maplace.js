@@ -63,7 +63,8 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
       recorder.record({ method: "setRoute", route });
       routing.set(route);
     },
-    mountControl(node) {
+    mountControl(node, position) {
+      recorder.record({ method: "mountControl", position });
       mountedMap?.layer?.append(node);
       return () => node.remove?.();
     },

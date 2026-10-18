@@ -2,6 +2,7 @@ import type {
   Adapter,
   AdapterHost,
   Capability,
+  ControlPosition,
   LocationDiff,
   MountContext,
   PresentationState,
@@ -29,7 +30,8 @@ export type FakeCall =
   | { readonly method: "apply"; readonly diff: LocationDiff }
   | { readonly method: "present"; readonly state: PresentationState }
   | { readonly method: "setView"; readonly view: ResolvedView }
-  | { readonly method: "setRoute"; readonly route: Route | undefined };
+  | { readonly method: "setRoute"; readonly route: Route | undefined }
+  | { readonly method: "mountControl"; readonly position: ControlPosition };
 
 /**
  * An in-memory map behind the adapter contract: it records what the store asks of it, draws

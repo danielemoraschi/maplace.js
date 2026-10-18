@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Added `<MapControl position>` to `maplace/react`: inside `<MaplaceMap>`, its children go on the map in that corner, a `<LocationList>` too; see [the README](README.md#with-react)
 - 2026-10-18 Added a marker icon from HTML: `<maplace-location icon="…">` (an image URL) or a `<template data-icon>` child, marked `data-selected` and `data-hovered` for your CSS
 - 2026-10-18 Changed selecting a shape: the map fits the circle, polygon or polyline, no closer than zoom 15, where it used to pan to its centre; `select(id, { zoom })` still centres it at that zoom, and markers still pan
 - 2026-10-18 Added a selected and hovered look for shapes: a heavier stroke and a stronger fill, wherever the shape's `style` (or the store's) leaves those fields unset

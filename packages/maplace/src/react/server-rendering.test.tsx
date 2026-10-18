@@ -1,12 +1,12 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { LocationList, MaplaceMap, MaplaceProvider } from "./index";
+import { LocationList, MapControl, MaplaceMap, MaplaceProvider } from "./index";
 import { fakeAdapters } from "./testing/adapters";
 import { TOWNS } from "./testing/bound-store";
 
 // No DOM in this file: importing the binding, and rendering it on a server, must not need one.
 describe("maplace/react on a server", () => {
-  it("renders the map's and the list's places, empty, with no DOM, React content or not", () => {
+  it("renders the map's and the list's places, empty, with no DOM, React content or controls or not", () => {
     expect(typeof document).toBe("undefined");
     const html = renderToString(
       <MaplaceProvider locations={TOWNS}>
@@ -15,7 +15,11 @@ describe("maplace/react on a server", () => {
           className="map"
           popupContent={(location) => <p>{location.id}</p>}
           markerIcon={() => <b>pin</b>}
-        />
+        >
+          <MapControl position="top-right">
+            <LocationList as="select" />
+          </MapControl>
+        </MaplaceMap>
         <LocationList>{({ location }) => location.id}</LocationList>
       </MaplaceProvider>,
     );

@@ -7,21 +7,28 @@ import { MapContentPortals } from "./content-portals";
 import type { ContentRenders } from "./content-renders";
 import type { ContentSession } from "./content-slots";
 import { useLatest } from "./hooks";
+import { type MapControls, MapControlsContext } from "./map-controls";
 import { useMaplace } from "./maplace-provider";
 import { withReactContent } from "./react-content-adapter";
+
+/** A map not attached yet: controls wait. */
+const NO_CONTROLS: MapControls = { mountControl: undefined };
 
 export interface MaplaceMapProps<Data = unknown> extends ContentRenders<Data> {
   /** Called once per mount; an adapter instance drives one map. */
   readonly createAdapter: () => Adapter;
   /** Size the map through it: a map fills its container. */
   readonly className?: string | undefined;
+  /** What goes on the map: `<MapControl>`s. Rendered beside the map's div, never in it. */
+  readonly children?: ReactNode;
 }
 
 /**
  * Attaches a fresh adapter on mount and detaches on unmount, so StrictMode and `<Activity>`
  * just work. The adapter owns what is inside the div, so it never has React children; React
  * content for popups and markers (`popupContent`, `markerIcon`, whether given read on mount)
- * goes there through portals.
+ * goes there through portals, and its children (`<MapControl>`s) onto the map through the
+ * adapter's `mountControl`.
  */
 export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   const store = useMaplace<Data>();
@@ -29,6 +36,7 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   const createAdapter = useLatest(props.createAdapter);
   const container = useRef<HTMLDivElement>(null);
   const [session, setSession] = useState<ContentSession>();
+  const [controls, setControls] = useState<MapControls>(NO_CONTROLS);
   useEffect(() => {
     const element = container.current;
     if (element === null) return;
@@ -43,8 +51,12 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
           locationOf: (id) => locationById(store.getSnapshot().locations, id),
         });
     setSession(withContent?.session);
-    const detach = attachMap(store, withContent?.adapter ?? adapter, element, used);
+    const attached = withContent?.adapter ?? adapter;
+    const detach = attachMap(store, attached, element, used);
+    // Called on the adapter, which may be a class relying on `this`.
+    setControls({ mountControl: (node, position) => attached.mountControl(node, position) });
     return () => {
+      setControls(NO_CONTROLS);
       detach();
       setSession(undefined);
     };
@@ -52,6 +64,7 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   return (
     <>
       <div ref={container} className={props.className} />
+      <MapControlsContext value={controls}>{props.children}</MapControlsContext>
       {session && (
         <MapContentPortals
           session={session}
