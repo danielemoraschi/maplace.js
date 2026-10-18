@@ -4,7 +4,9 @@ import type {
   Location,
   Maplace,
   MaplaceEvents,
+  RouteLeg,
   RouteResult,
+  RouteStep,
   Snapshot,
   Viewport,
 } from "maplace";
@@ -60,6 +62,15 @@ shop.on("viewportChange", ({ viewport }) => expectTypeOf(viewport).toEqualTypeOf
 shop.on("routeChange", ({ result }) =>
   expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>(),
 );
+// Each leg has its turn-by-turn steps; a step's instruction is absent when the provider gives none.
+expectTypeOf<RouteLeg["steps"]>().toEqualTypeOf<readonly RouteStep[]>();
+expectTypeOf<RouteStep["instruction"]>().toEqualTypeOf<string | undefined>();
+expectTypeOf<RouteStep["distanceMeters"]>().toEqualTypeOf<number>();
+expectTypeOf<RouteStep["durationSeconds"]>().toEqualTypeOf<number>();
+// A route passes through its `via` stops without ending a leg there.
+maplace.setRoute({ stops: ["a", "b", "c"], via: ["b"] });
+// @ts-expect-error via is an array of location ids
+maplace.setRoute({ stops: ["a", "b", "c"], via: "b" });
 // @ts-expect-error a viewport has no `center.lon`; coordinates are lat/lng
 shop.on("viewportChange", ({ viewport }) => viewport.center.lon);
 

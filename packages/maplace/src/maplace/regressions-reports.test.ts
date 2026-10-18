@@ -19,7 +19,7 @@ const locations: Location[] = [
 
 /** A computed route from a to b, told apart by its distance. */
 function routeOf(distanceMeters: number): RouteResult {
-  const leg = { from: "a", to: "b", distanceMeters, durationSeconds: 60 };
+  const leg = { from: "a", to: "b", distanceMeters, durationSeconds: 60, steps: [] };
   return { legs: [leg], distanceMeters, durationSeconds: 60, path: [] };
 }
 

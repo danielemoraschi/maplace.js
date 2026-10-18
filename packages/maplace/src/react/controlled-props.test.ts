@@ -157,6 +157,17 @@ describe("locations, filter and route props", () => {
     expect(adapter.callsOf("setRoute")).toHaveLength(1);
   });
 
+  it("apply a route whose stops passed through alone change", async () => {
+    const stops = ["north", "south", "east"];
+    const props = (via?: string[]) => ({ locations: TOWNS, route: { stops, via } });
+    const { store, adapter, render } = await boundStore(props());
+    render(props(["south"]));
+    expect(store.getSnapshot().route?.via).toEqual(["south"]);
+    expect(adapter.callsOf("setRoute")).toHaveLength(2);
+    render(props(["south"]));
+    expect(adapter.callsOf("setRoute")).toHaveLength(2);
+  });
+
   it("leave app code's own filter and route until the props change", async () => {
     const props = (stops: string[]) => ({ locations: TOWNS, filter: ["N", "S"], route: { stops } });
     const { store, adapter, render } = await boundStore(props(["north", "south"]));

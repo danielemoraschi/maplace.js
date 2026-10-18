@@ -1,5 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { keepIfSame, sameFields, sameItems, sameOptional, sameValueSource } from "./same";
+import {
+  keepIfSame,
+  sameFields,
+  sameItems,
+  sameJourney,
+  sameOptional,
+  sameValueSource,
+} from "./same";
+
+describe("sameJourney", () => {
+  it("holds for the same travel mode and stops, failing for other stops passed through", () => {
+    const stops = ["a", "b", "c"];
+    expect(sameJourney({ stops, via: ["b"] }, { stops, via: ["b"] })).toBe(true);
+    expect(sameJourney({ stops, via: ["b"] }, { stops })).toBe(false);
+    expect(sameJourney({ stops }, { stops, travelMode: "walking" })).toBe(false);
+  });
+});
 
 describe("sameFields", () => {
   it("compares own fields with ===", () => {

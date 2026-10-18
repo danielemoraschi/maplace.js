@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { markerDrawable } from "../testing/conformance/fixtures";
-import { StubRoute } from "./testing/stub-routes";
+import { StubRoute, stubLeg } from "./testing/stub-routes";
 import { AB, lineOf, routingOnStubs, tick } from "./testing/stub-routing";
 
 afterEach(() => {
@@ -49,6 +49,24 @@ describe("the Google route", () => {
     expect(routes.computeRoutes.mock.calls[0]?.[0].destination).toEqual({ lat: 1, lng: 11 });
   });
 
+  it("computes again when only via changes, never for the same via in another order", async () => {
+    const { routing, routes, open, move } = routingOnStubs();
+    move("c", 46);
+    open();
+    const stops = ["a", "b", "c", "a"];
+    routing.setRoute({ stops });
+    await tick();
+    routing.setRoute({ stops, via: ["b", "c"] });
+    await tick();
+    routing.setRoute({ stops, via: ["c", "b"] });
+    await tick();
+    expect(routes.computeRoutes).toHaveBeenCalledTimes(2);
+    expect(routes.computeRoutes.mock.calls[1]?.[0].intermediates).toEqual([
+      { location: { lat: 45, lng: 11 }, via: true },
+      { location: { lat: 46, lng: 11 }, via: true },
+    ]);
+  });
+
   it("computes again once a stop moves, never for other locations", async () => {
     const { routing, routes, routed, answer, move, moveStopB } = routingOnStubs();
     await routed();
@@ -65,8 +83,8 @@ describe("the Google route", () => {
     const { routes, routed, reported, moveStopB } = routingOnStubs();
     await routed();
     await moveStopB();
-    routes.answer(new StubRoute({ distanceMeters: 1, durationMillis: 1 }));
-    routes.answer(new StubRoute({ distanceMeters: 2, durationMillis: 1 }));
+    routes.answer(new StubRoute(stubLeg(1, 1)));
+    routes.answer(new StubRoute(stubLeg(2, 1)));
     await tick();
     expect(reported().map((result) => result?.distanceMeters)).toEqual([2]);
   });

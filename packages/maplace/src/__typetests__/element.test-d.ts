@@ -18,6 +18,7 @@ expectTypeOf(map.loadState).toEqualTypeOf<LoadState>();
 expectTypeOf(map.route).toEqualTypeOf<Route | undefined>();
 map.locations = [{ id: "a", lat: 1, lng: 2 }];
 map.route = { stops: ["a", "b"] };
+map.route = { stops: ["a", "b", "c"], via: ["b"] };
 map.release();
 expectTypeOf(map.sanitize).toEqualTypeOf<((html: string) => string) | undefined>();
 map.sanitize = (html) => html;

@@ -1,5 +1,5 @@
 import { frozenPath } from "../diff/frozen";
-import type { Route, RouteResult } from "../route";
+import { legStops, type Route, type RouteLeg, type RouteResult } from "../route";
 import type { Snapshot } from "../store";
 import { type Change, NO_CHANGE } from "./change";
 
@@ -23,18 +23,25 @@ export function setRouteResult<Data>(
   };
 }
 
-function runsThrough({ legs }: RouteResult, { stops }: Route): boolean {
+/** Whether the legs run between the stops that end legs, those the route doesn't pass through. */
+function runsThrough({ legs }: RouteResult, route: Route): boolean {
+  const ends = legStops(route);
   return (
-    legs.length === stops.length - 1 &&
-    legs.every((leg, index) => leg.from === stops[index] && leg.to === stops[index + 1])
+    legs.length === ends.length - 1 &&
+    legs.every((leg, index) => leg.from === ends[index] && leg.to === ends[index + 1])
   );
 }
 
 function frozenResult(result: RouteResult): RouteResult {
   return Object.freeze({
-    legs: Object.freeze(result.legs.map((leg) => Object.freeze({ ...leg }))),
+    legs: Object.freeze(result.legs.map(frozenLeg)),
     distanceMeters: result.distanceMeters,
     durationSeconds: result.durationSeconds,
     path: frozenPath(result.path),
   });
+}
+
+function frozenLeg(leg: RouteLeg): RouteLeg {
+  const steps = Object.freeze(leg.steps.map((step) => Object.freeze({ ...step })));
+  return Object.freeze({ ...leg, steps });
 }

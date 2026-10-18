@@ -10,7 +10,7 @@ export const typed = (
   <MaplaceProvider
     locations={shops}
     selectedId={undefined}
-    route={{ stops: ["s", "t"], travelMode: "walking" }}
+    route={{ stops: ["s", "u", "t"], via: ["u"], travelMode: "walking" }}
     onSelectionChange={({ id }) => expectTypeOf(id).toEqualTypeOf<string | undefined>()}
     onLocationChange={({ location }) =>
       expectTypeOf(location.data).toEqualTypeOf<{ price: number } | undefined>()

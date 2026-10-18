@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Added `route.via`: stops a route passes through without ending a leg (Google's via waypoints), as 0.2's `stopover: false` did; see [MIGRATION.md](MIGRATION.md)
+- 2026-10-18 Added turn-by-turn steps to each route leg: `steps`, each with its `instruction`, `distanceMeters` and `durationSeconds`, so a page renders its own directions as 0.2's `directions_panel` did; see [MIGRATION.md](MIGRATION.md)
 - 2026-10-18 Added selected and hovered styles for shapes: `selectedStyle` and `hoveredStyle` beside `style`, per shape and as the store's defaults (React props of the same names), `shape-style`, `selected-style` and `hovered-style` on `<maplace-location>`; the built-in look fills only what they leave unset
 - 2026-10-18 Added `<MapControl position>` to `maplace/react`: inside `<MaplaceMap>`, its children go on the map in that corner, a `<LocationList>` too; see [the README](README.md#with-react)
 - 2026-10-18 Added a marker icon from HTML: `<maplace-location icon="…">` (an image URL) or a `<template data-icon>` child, marked `data-selected` and `data-hovered` for your CSS

@@ -40,7 +40,7 @@ export type {
 export { createMaplace } from "./maplace/create";
 export type { MaplaceOptions } from "./options";
 export type { PopupOptions, ResolvedPopupOptions } from "./popup";
-export type { Route, RouteLeg, RouteResult, TravelMode } from "./route";
+export type { Route, RouteLeg, RouteResult, RouteStep, TravelMode } from "./route";
 export type { LoadState, Maplace, Snapshot } from "./store";
 export type { LineStyle, ShapeStyle } from "./style";
 export type {

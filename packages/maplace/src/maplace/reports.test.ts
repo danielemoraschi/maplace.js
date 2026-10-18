@@ -44,7 +44,7 @@ describe("createReports", () => {
       bounds: { south: -1, west: -1, north: 1, east: 1 },
     };
     reports.reportViewportChange(viewport);
-    const leg = { from: "a", to: "b", distanceMeters: 9, durationSeconds: 9 };
+    const leg = { from: "a", to: "b", distanceMeters: 9, durationSeconds: 9, steps: [] };
     reports.reportRouteChange({ legs: [leg], distanceMeters: 9, durationSeconds: 9, path: [] });
     const failure = new MaplaceError("route-failed", "no route");
     reports.reportError(failure);

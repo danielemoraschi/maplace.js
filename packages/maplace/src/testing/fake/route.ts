@@ -1,7 +1,14 @@
 import { type Journey, journeyOf, type StopPoint, sameJourney } from "../../adapter-kit/journey";
-import { withTotals } from "../../adapter-kit/route-result";
+import { sum, withTotals } from "../../adapter-kit/route-result";
 import type { LatLng } from "../../geometry";
-import type { Route, RouteLeg, RouteResult, TravelMode } from "../../route";
+import {
+  passesThrough,
+  type Route,
+  type RouteLeg,
+  type RouteResult,
+  type RouteStep,
+  type TravelMode,
+} from "../../route";
 
 /** Metres per second for each travel mode: a straight line at a steady speed. */
 const SPEED_BY_MODE: Readonly<Record<TravelMode, number>> = {
@@ -39,19 +46,47 @@ export function createRouting(): FakeRouting {
   };
 }
 
-/** A straight-line route through the stops. */
-function straightRoute({ stops, travelMode, points }: Journey): RouteResult {
+/**
+ * A straight-line route through the stops: one step per stretch between two stops, and a leg
+ * ending at every stop the route doesn't pass through.
+ */
+function straightRoute(journey: Journey): RouteResult {
+  const { stops, travelMode, points } = journey;
   const speed = SPEED_BY_MODE[travelMode ?? "driving"];
-  const legs: RouteLeg[] = stops.slice(1).map((to, index) => {
-    const distanceMeters = distanceBetween(points[index] as LatLng, points[index + 1] as LatLng);
-    return {
-      from: stops[index] as string,
-      to,
-      distanceMeters,
-      durationSeconds: distanceMeters / speed,
-    };
-  });
+  const legs: RouteLeg[] = [];
+  let legFrom = stops[0] as string;
+  let steps: RouteStep[] = [];
+  for (let index = 1; index < stops.length; index++) {
+    const to = stops[index] as string;
+    steps.push(straightStep(points[index - 1] as LatLng, points[index] as LatLng, to, speed));
+    if (!passesThrough(journey, index)) {
+      legs.push(legOf(legFrom, to, steps));
+      legFrom = to;
+      steps = [];
+    }
+  }
   return withTotals(legs, points);
+}
+
+/** Straight on to the stop `toId`, at `speed` metres per second. */
+function straightStep(from: LatLng, to: LatLng, toId: string, speed: number): RouteStep {
+  const distanceMeters = distanceBetween(from, to);
+  return {
+    instruction: `Head straight for "${toId}"`,
+    distanceMeters,
+    durationSeconds: distanceMeters / speed,
+  };
+}
+
+/** A leg from `from` to `to`, as long as its steps together. */
+function legOf(from: string, to: string, steps: readonly RouteStep[]): RouteLeg {
+  return {
+    from,
+    to,
+    distanceMeters: sum(steps.map((step) => step.distanceMeters)),
+    durationSeconds: sum(steps.map((step) => step.durationSeconds)),
+    steps,
+  };
 }
 
 /** Great-circle distance (haversine). */

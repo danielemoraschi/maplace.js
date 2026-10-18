@@ -39,7 +39,8 @@ function bolognaPin(map: google.maps.Map) {
 
 describeWithMaps("routes on Google", () => {
   it("reports the route over the roads, drawing its line on the map", async () => {
-    const { maplace, googleMap, createPolylines, results, reported } = await routeOnGoogle();
+    const { maplace, googleMap, computeRoutes, createPolylines, results, reported } =
+      await routeOnGoogle();
     maplace.setRoute({ stops: ["a", "b"] });
     await reported(1);
     const [result] = results;
@@ -47,6 +48,11 @@ describeWithMaps("routes on Google", () => {
     // Some 45 km by road; straight, about 40.
     expect(result?.distanceMeters).toBeGreaterThan(40_000);
     expect(result?.path.length).toBeGreaterThan(10);
+    // Turn-by-turn steps come with the whole legs, with no field asked for them.
+    expect(computeRoutes.mock.calls[0]?.[0].fields).toEqual(["legs", "path"]);
+    const steps = result?.legs[0]?.steps ?? [];
+    expect(steps.length).toBeGreaterThan(2);
+    expect(steps.some(({ instruction }) => instruction !== undefined)).toBe(true);
     const lines = createPolylines.mock.results.flatMap(({ value }) => value);
     expect(lines.length).toBeGreaterThan(0);
     expect(lines.every((line) => line.getMap() === googleMap())).toBe(true);

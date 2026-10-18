@@ -21,7 +21,7 @@ export interface Routing {
 
 /**
  * Draws the store's route and reports it. Each computation is billed, so one is asked only for a
- * new journey (stops, travel mode, or where a stop is), at most once per task, and only once
+ * new journey (stops, `via`, travel mode, or where a stop is), at most once per task, and only once
  * every diff applied so far is drawn: never for a half-drawn map. The store doesn't send the
  * route again when a stop moves; a stop moves here only when the store writes it, which after a
  * drag is once, on release. A new style alone draws the line again without computing. An answer

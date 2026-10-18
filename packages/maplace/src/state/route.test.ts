@@ -101,6 +101,43 @@ describe("setRoute", () => {
     );
   });
 
+  it("sets a frozen copy of the stops passed through", () => {
+    const via = ["b"];
+    const { patch } = setRoute(ABC, { stops: ["a", "b", "c"], via });
+    expect(patch.route?.via).toEqual(via);
+    expect(patch.route?.via).not.toBe(via);
+    expect(Object.isFrozen(patch.route?.via)).toBe(true);
+  });
+
+  it("rejects a via id that isn't a stop between the first and the last", () => {
+    for (const id of ["a", "zz"]) {
+      expect(() => setRoute(ABC, { stops: ["a", "b", "c"], via: [id] })).toThrow(
+        expect.objectContaining({
+          code: "invalid-input",
+          message: `setRoute: route.via[0] must name a stop between the first and the last, got "${id}"`,
+          field: "route.via[0]",
+        }),
+      );
+    }
+  });
+
+  it("clears the result when only the stops passed through change", () => {
+    const current = routed({ route: { stops: ["a", "b", "c"] } });
+    expect(setRoute(current, { stops: ["a", "b", "c"], via: ["b"] })).toMatchObject({
+      patch: { routeResult: undefined },
+      events: [{ name: "routeChange", payload: { result: undefined } }],
+    });
+  });
+
+  it("changes nothing for the same stops passed through, repeated, or none named", () => {
+    const current = routed({ route: { stops: ["a", "b", "c", "a"], via: ["b", "c"] } });
+    expect(setRoute(current, { stops: ["a", "b", "c", "a"], via: ["c", "b", "b"] })).toBe(
+      NO_CHANGE,
+    );
+    const direct = routed({ route: { stops: ["a", "b", "c"] } });
+    expect(setRoute(direct, { stops: ["a", "b", "c"], via: [] })).toBe(NO_CHANGE);
+  });
+
   it("rejects a bad shape", () => {
     expect(() => setRoute(ABC, { stops: ["a", "b"], travelMode: "flying" } as never)).toThrow(
       /^setRoute: route\.travelMode must be one of/,
@@ -125,6 +162,25 @@ describe("pruneRoute", () => {
     expect(pruneRoute(current)).toEqual({
       patch: { route: { stops: ["a", "c"] }, routeResult: undefined },
       events: [{ name: "routeChange", payload: { result: undefined } }],
+    });
+    expect(Object.hasOwn(pruneRoute(current).patch.route ?? {}, "via")).toBe(false);
+  });
+
+  it("drops via ids that are no longer stops between the first and the last", () => {
+    const route = { stops: ["a", "b", "c"], via: ["b"] };
+    const without = (gone: string) => ({
+      ...routed({ route }),
+      locations: Object.freeze(
+        ["a", "b", "c"].filter((id) => id !== gone).map((id) => ({ id, ...at })),
+      ),
+    });
+    expect(pruneRoute(without("c")).patch).toEqual({
+      route: { stops: ["a", "b"], via: [] },
+      routeResult: undefined,
+    });
+    expect(pruneRoute(without("b")).patch).toEqual({
+      route: { stops: ["a", "c"], via: [] },
+      routeResult: undefined,
     });
   });
 

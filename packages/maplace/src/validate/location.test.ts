@@ -93,6 +93,9 @@ describe("validateLocation: fields", () => {
     expect(check({ id: "a", lat: 1, lng: 2, draggable: true })).toThrow(
       /draggable is a 0.2 field; use editable/,
     );
+    expect(check({ id: "a", lat: 1, lng: 2, stopover: false })).toThrow(
+      /stopover is a 0.2 field; list the stop's id in route.via to pass through it/,
+    );
   });
 
   it("names the type a misplaced field belongs to", () => {

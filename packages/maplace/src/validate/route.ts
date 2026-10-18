@@ -10,10 +10,13 @@ const TRAVEL_MODES = members<TravelMode>({
   transit: true,
 });
 
-/** The route's shape only; the store checks that stops exist, then their count. */
+const LOCATION_IDS = arrayOf("an array of location ids", checkNonEmptyString);
+
+/** The route's shape only; the store checks that stops exist, then their count, then `via`. */
 export const checkRoute: Assert<Route> = recordOf<Route>({
   checks: {
-    stops: arrayOf("an array of location ids", checkNonEmptyString),
+    stops: LOCATION_IDS,
+    via: optional(LOCATION_IDS),
     travelMode: optional(oneOf(TRAVEL_MODES)),
     style: optional(checkLineStyle),
   },

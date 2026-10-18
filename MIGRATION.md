@@ -110,7 +110,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `directions_options.avoidHighways`, `avoidTolls` | dropped |
 | `directions_options.unitSystem` | dropped: results are metres and seconds, format them as you like |
 | `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
-| `directions_panel` | dropped: render legs from the `routeChange` event |
+| `directions_panel` | dropped: render each leg's `steps` from the `routeChange` event |
 | `draggable`, `editable` (map-wide) | `editable` per location, for markers and shapes alike; dragging the route itself is gone |
 | `listeners` | pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
 | `pan_on_click` | `select(id, { pan: false })` from code; the map always brings a clicked location into view (a marker panned to, a shape fitted) |
@@ -134,7 +134,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `show_infowindow` | `false` kept a location's info window shut: leave its `content` (and `html`) out, and a click selects it without a popup |
 | `visible` | kept, default `true` (0.2's docs said `false`, its code did `true`) |
 | `animation` | dropped: animate the `icon` node with CSS |
-| `stopover` | dropped: every route stop ends a leg |
+| `stopover` | `route.via`: list the stops the route passes through without ending a leg |
 | `stroke_options`, `circle_options` | `style`; the circle's `radius` |
 | `type` | kept: `marker`, `circle`, `polyline`, `polygon`; a polyline or polygon is one location with a `path` |
 | `zIndex` | dropped: stacking order is fixed ([RFC §3, decisions from the 0.2 issues](docs/rfc-1.0.md#decisions-from-the-02-issues)) |
@@ -169,7 +169,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `afterViewAll` | `selectionChange`, `viewportChange` | the selection cleared (`id` undefined), then the view settled |
 | `afterCreateMarker` | — | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
 | `afterOpenInfowindow`, `afterCloseInfowindow` | `popupOpen`, `popupClose` | the content is in the DOM; `popupOpen` fires again when an open popup gets new content |
-| `afterRoute` | `routeChange` | with legs, distance and duration; again, `result` undefined, when the route is cleared |
+| `afterRoute` | `routeChange` | with legs (each with its steps), distance and duration; again, `result` undefined, when the route is cleared |
 | `onPolylineClick`, `onPolygonClick` | `selectionChange` | shapes are locations |
 | `circleRadiusChanged`, `circleCenterChanged`, `dragEnd` | `locationChange` | with the location and its `previous` value |
 | `drag`, `dragStart` | — | dropped |

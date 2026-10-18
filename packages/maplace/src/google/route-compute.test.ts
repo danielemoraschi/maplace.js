@@ -5,7 +5,7 @@ import type { Journey } from "../adapter-kit/journey";
 import { computeRoute } from "./route-compute";
 import { routeRequest } from "./route-conversions";
 import { stubMapsJs } from "./testing/stub-libraries";
-import { routeFailure, routesOnPage, StubRoute } from "./testing/stub-routes";
+import { routeFailure, routesOnPage, StubRoute, stubLeg } from "./testing/stub-routes";
 import { tick as requested } from "./testing/stub-routing";
 
 afterEach(() => {
@@ -14,6 +14,7 @@ afterEach(() => {
 
 const JOURNEY: Journey = {
   stops: ["a", "b"],
+  via: undefined,
   travelMode: undefined,
   points: [
     { lat: 44.49, lng: 11.34 },
@@ -32,8 +33,29 @@ describe("computeRoute", () => {
     expect(routes.computeRoutes.mock.calls).toEqual([[routeRequest(JOURNEY)]]);
     expect(google).toBe(route);
     expect(result.legs).toEqual([
-      { from: "a", to: "b", distanceMeters: 1000, durationSeconds: 60 },
+      {
+        from: "a",
+        to: "b",
+        distanceMeters: 1000,
+        durationSeconds: 60,
+        steps: [{ instruction: "Head north", distanceMeters: 1000, durationSeconds: 60 }],
+      },
     ]);
+  });
+
+  it("names the one leg past a via stop by the stops that end it", async () => {
+    const routes = routesOnPage();
+    const passing: Journey = {
+      stops: ["a", "m", "c"],
+      via: ["m"],
+      travelMode: undefined,
+      points: [...JOURNEY.points, { lat: 44.65, lng: 10.93 }],
+    };
+    const computing = computeRoute(passing);
+    await requested();
+    routes.answer(new StubRoute());
+    const { result } = await computing;
+    expect(result.legs).toEqual([expect.objectContaining({ from: "a", to: "c" })]);
   });
 
   it("fails the route with Google's error as its cause", async () => {
@@ -67,7 +89,7 @@ describe("computeRoute", () => {
     const routes = routesOnPage();
     const computing = computeRoute(JOURNEY);
     await requested();
-    routes.answer(new StubRoute({ distanceMeters: 1000, durationMillis: null }));
+    routes.answer(new StubRoute(stubLeg(1000, null)));
     await expect(computing).rejects.toThrow(routeFailure("no duration"));
   });
 });

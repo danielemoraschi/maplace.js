@@ -110,8 +110,8 @@ export interface Adapter {
   /**
    * The route to draw, sent again only when it changes. A stop moving is the adapter's to notice
    * (its location's next diff): it computes again then, after a drag only once it ends, at most
-   * once per task. A new style alone redraws the line without computing; `undefined` clears it,
-   * reporting nothing (the store has).
+   * once per task. A new style alone redraws the line without computing; new stops, `via` or
+   * travel mode compute again; `undefined` clears it, reporting nothing (the store has).
    */
   setRoute(route: Route | undefined): void;
   /**

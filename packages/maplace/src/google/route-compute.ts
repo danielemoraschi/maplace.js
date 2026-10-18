@@ -22,7 +22,7 @@ export async function computeRoute(journey: Journey): Promise<ComputedRoute> {
   });
   const route = answer.routes?.[0];
   if (route === undefined) throw routeFailed("Google found no route through the stops");
-  return { google: route, result: routeResultOf(route, journey.stops) };
+  return { google: route, result: routeResultOf(route, journey) };
 }
 
 /** Google's `Route`, from Maps JS 3.63 on. */

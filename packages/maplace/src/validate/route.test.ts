@@ -13,9 +13,23 @@ function fails(message: string, field: string) {
 describe("checkRoute", () => {
   const field = argument("setRoute", "route");
 
-  it("accepts stops, a travel mode and a line style", () => {
-    const route = { stops: ["a", "b", "a"], travelMode: "walking", style: { stroke: "blue" } };
+  it("accepts stops, via stops, a travel mode and a line style", () => {
+    const route = {
+      stops: ["a", "b", "a"],
+      via: ["b"],
+      travelMode: "walking",
+      style: { stroke: "blue" },
+    };
     expect(() => checkRoute(route, field)).not.toThrow();
+  });
+
+  it("rejects via stops that are not an array of ids", () => {
+    expect(() => checkRoute({ stops: [], via: "b" }, field)).toThrow(
+      fails('setRoute: route.via must be an array of location ids, got "b"', "route.via"),
+    );
+    expect(() => checkRoute({ stops: [], via: ["b", 2] }, field)).toThrow(
+      fails("setRoute: route.via[1] must be a non-empty string, got 2", "route.via[1]"),
+    );
   });
 
   it("checks only the shape: counting stops waits until their ids are known", () => {

@@ -1,4 +1,5 @@
-import type { Route } from "../route";
+import { type Route, sameStops } from "../route";
+
 /**
  * Shallow equality: every field of either object is `===` the same field of the other. A field
  * written as `undefined` equals a missing one, as everywhere in the API.
@@ -34,9 +35,12 @@ export function sameRoute(a: Route, b: Route): boolean {
   return sameJourney(a, b) && sameOptional(a.style, b.style, sameFields);
 }
 
-/** Same stops in order and same travel mode: what a computed route depends on. */
+/**
+ * Same stops in order, the same ones ending legs, and same travel mode: what a computed route
+ * depends on.
+ */
 export function sameJourney(a: Route, b: Route): boolean {
-  return a.travelMode === b.travelMode && sameItems(a.stops, b.stops);
+  return a.travelMode === b.travelMode && sameStops(a, b);
 }
 
 /** `previous` when `next` has the same fields, so unchanged values keep their reference. */

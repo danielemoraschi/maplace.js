@@ -6,13 +6,30 @@ import { StubPolyline } from "./stub-shapes";
 /** The look Google gives a route's polylines before the adapter's options. */
 export const STUB_ROUTE_LOOK: google.maps.PolylineOptions = { strokeColor: "#4285f4" };
 
-/** One leg as Google gives it: metres, and milliseconds or `null` when Google can't tell. */
-interface StubLeg {
+/** One turn-by-turn step as Google gives it: its duration is without traffic. */
+export interface StubStep {
+  readonly instructions: string | null;
   readonly distanceMeters: number;
-  readonly durationMillis: number | null;
+  readonly staticDurationMillis: number | null | undefined;
 }
 
-const ONE_KM_LEG: StubLeg = { distanceMeters: 1000, durationMillis: 60_000 };
+/** One leg as Google gives it: metres, and milliseconds or `null` when Google can't tell. */
+export interface StubLeg {
+  readonly distanceMeters: number;
+  readonly durationMillis: number | null | undefined;
+  readonly steps: readonly StubStep[];
+}
+
+/** A leg of `steps`, by default one, "Head north", as long as the leg. */
+export const stubLeg = (
+  distanceMeters: number,
+  durationMillis: number | null | undefined,
+  steps: readonly StubStep[] = [
+    { instructions: "Head north", distanceMeters, staticDurationMillis: durationMillis },
+  ],
+): StubLeg => ({ distanceMeters, durationMillis, steps });
+
+const ONE_KM_LEG: StubLeg = stubLeg(1000, 60_000);
 
 type PolylineOptionsOf = (
   defaults: google.maps.PolylineOptions,

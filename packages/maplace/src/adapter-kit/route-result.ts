@@ -11,6 +11,7 @@ export function withTotals(legs: readonly RouteLeg[], path: readonly LatLng[]): 
   };
 }
 
-function sum(values: readonly number[]): number {
+/** The values added up. */
+export function sum(values: readonly number[]): number {
   return values.reduce((total, value) => total + value, 0);
 }
