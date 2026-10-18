@@ -17,6 +17,14 @@ function hostWith(html: string): HTMLElement {
   return host;
 }
 
+/** The first location's icon builder, called as a provider calls it for a state. */
+function iconOf(host: HTMLElement): () => Element | undefined {
+  const icon = readLocationSource(host)[0] as { icon?: unknown };
+  expect(icon.icon).toBeTypeOf("function");
+  const build = icon.icon as (location: unknown, state: unknown) => Element | undefined;
+  return () => build(undefined, { selected: false, hovered: false });
+}
+
 const ROME = '<maplace-location location-id="rome" lat="41.9" lng="12.5"></maplace-location>';
 const JSON_SCRIPT = (text: string) => `<script type="application/json">${text}</script>`;
 
@@ -44,6 +52,39 @@ describe("readLocationSource", () => {
     const shown = document.createElement("div");
     shown.append(content(), content());
     expect(shown.innerHTML).toBe("<b>A</b><b>A</b>");
+  });
+
+  it("gives an icon attribute as the marker's image URL", () => {
+    const host = hostWith(
+      '<maplace-location location-id="a" lat="1" lng="2" icon="star.svg"></maplace-location>',
+    );
+    expect(readLocationSource(host)[0]).toMatchObject({ icon: "star.svg" });
+  });
+
+  it("gives an icon template's element as the marker, a fresh copy for each state", () => {
+    const host = hostWith(
+      '<maplace-location location-id="a" lat="1" lng="2"><template data-icon> <span class="star">★</span> </template></maplace-location>',
+    );
+    const icon = iconOf(host);
+    const [first, second] = [icon(), icon()];
+    expect(first?.outerHTML).toBe('<span class="star">★</span>');
+    expect(second).not.toBe(first);
+  });
+
+  it("wraps an icon template's other content in a span, so the marker is one element", () => {
+    const host = hostWith(
+      '<maplace-location location-id="a" lat="1" lng="2"><template data-icon>★ <b>1</b></template></maplace-location>',
+    );
+    expect(iconOf(host)()?.outerHTML).toBe("<span>★ <b>1</b></span>");
+  });
+
+  it("keeps the popup's template and the icon's apart", () => {
+    const host = hostWith(
+      '<maplace-location location-id="a" lat="1" lng="2"><template data-icon><i>★</i></template><template><b>A</b></template></maplace-location>',
+    );
+    const content = readLocationSource(host)[0]?.content as () => Node;
+    expect((content() as DocumentFragment).firstElementChild?.outerHTML).toBe("<b>A</b>");
+    expect(iconOf(host)()?.outerHTML).toBe("<i>★</i>");
   });
 
   it("reads a location again once a template is added, not for other children", async () => {

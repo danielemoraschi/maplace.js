@@ -21,6 +21,8 @@ One script, no build step:
 - `map-id` is required: maplace draws advanced markers, which need a map ID. `DEMO_MAP_ID` is Google's public ID for development.
 - `list` puts a list beside the map; `list="select"` makes it a native `<select>`, and `list-position` places it on the map or outside it. The list and popups come with default styles in `:where()`: any rule of yours wins.
 
+A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS).
+
 Locations can also come from an inline `<script type="application/json">` child or the element's `locations` property. The element never fetches: load your data and assign it.
 
 ## One script per page

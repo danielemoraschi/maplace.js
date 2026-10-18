@@ -23,6 +23,18 @@ describe("<maplace-map> on a provider", () => {
     expect(map.locations.map(({ id }) => id)).toEqual(["milan"]);
   });
 
+  it("draws a location's icon template as its marker, marked while selected", async () => {
+    const map = await mapFrom(
+      '<maplace-map><maplace-location location-id="milan" lat="45.46" lng="9.19"><template data-icon><span>★</span></template></maplace-location></maplace-map>',
+    );
+    const adapter = lastAdapter();
+    await adapter.finishMount();
+    const marker = () => adapter.probe().location("milan")?.icon as Element | undefined;
+    await expect.poll(() => marker()?.outerHTML).toBe("<span>★</span>");
+    map.maplace.select("milan");
+    expect(marker()?.outerHTML).toBe('<span data-selected="">★</span>');
+  });
+
   it("reads an inline JSON script", async () => {
     const map = await mapFrom(
       '<maplace-map><script type="application/json">[{"id":"a","lat":1,"lng":2}]</script></maplace-map>',

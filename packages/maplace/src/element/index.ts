@@ -62,8 +62,9 @@ export interface MaplaceMapElement extends HTMLElement {
 }
 
 /**
- * `<maplace-location location-id="…" lat lng title type group radius>`: `lat`/`lng` are a
- * marker's position or a circle's centre; a `<template>` child is trusted popup content.
+ * `<maplace-location location-id="…" lat lng title type group radius icon>`: `lat`/`lng` are a
+ * marker's position or a circle's centre, `icon` a marker's image URL; a `<template>` child is
+ * trusted popup content, and a `<template data-icon>` child the marker, in place of `icon`.
  */
 export interface MaplaceLocationElement extends HTMLElement {
   readonly location: Location;

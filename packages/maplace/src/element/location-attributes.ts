@@ -1,4 +1,5 @@
 import type { Location } from "../index";
+import type { LocationTemplates } from "./location-templates";
 
 /** The attributes a `<maplace-location>` reads; a change of any of them re-reads it. */
 export const LOCATION_ATTRIBUTES = [
@@ -9,14 +10,22 @@ export const LOCATION_ATTRIBUTES = [
   "type",
   "group",
   "radius",
+  "icon",
 ] as const;
 
+/** No popup content and no icon from templates. */
+const NO_TEMPLATES: LocationTemplates = { content: undefined, icon: undefined };
+
 /**
- * A location from an element's attributes: `lat` and `lng` are a marker's position or a circle's
- * centre. Values are passed on as written when they aren't numbers, so the store's own checks
- * name the field and the value.
+ * A location from an element's attributes and its templates: `lat` and `lng` are a marker's
+ * position or a circle's centre, and the `icon` attribute an image URL, which an icon template
+ * stands in for. Values are passed on as written when they aren't numbers, so the store's own
+ * checks name the field and the value.
  */
-export function locationFromAttributes(element: Element, content?: () => Node): Location {
+export function locationFromAttributes(
+  element: Element,
+  { content, icon }: LocationTemplates = NO_TEMPLATES,
+): Location {
   const type = element.getAttribute("type") ?? undefined;
   const position = { lat: numberOrRaw(element, "lat"), lng: numberOrRaw(element, "lng") };
   const geometry =
@@ -28,6 +37,7 @@ export function locationFromAttributes(element: Element, content?: () => Node): 
     title: element.getAttribute("title") ?? undefined,
     group: element.getAttribute("group") ?? undefined,
     content,
+    icon: icon ?? element.getAttribute("icon") ?? undefined,
     ...geometry,
   }) as unknown as Location;
 }

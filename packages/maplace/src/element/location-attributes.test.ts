@@ -37,10 +37,10 @@ describe("locationFromAttributes", () => {
 
   it("keeps the group and the popup content given", () => {
     const content = () => document.createTextNode("x");
-    const location = locationFromAttributes(
-      element({ "location-id": "a", group: "north" }),
+    const location = locationFromAttributes(element({ "location-id": "a", group: "north" }), {
       content,
-    );
+      icon: undefined,
+    });
     expect(location).toMatchObject({ group: "north", content });
   });
 });
