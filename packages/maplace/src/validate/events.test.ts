@@ -9,6 +9,8 @@ describe("checkEventName", () => {
     for (const name of [
       "selectionChange",
       "hoverChange",
+      "mapClick",
+      "locationEdit",
       "locationChange",
       "popupOpen",
       "popupClose",

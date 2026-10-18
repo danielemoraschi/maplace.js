@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MaplaceError } from "../errors";
+import { MAPLACE_EVENT_NAME_LIST } from "../events";
 import type { Location } from "../location";
 import type { ResolvedPopupOptions } from "../popup";
 import { createInternalState } from "../state/state";
@@ -16,16 +17,7 @@ function reportsFor(openOn: ResolvedPopupOptions["openOn"] = "click") {
   const state = createInternalState({ locations, selectedId: "a" });
   const loadStates = createLoadStates(state, createReadiness());
   const events: unknown[] = [];
-  for (const name of [
-    "selectionChange",
-    "hoverChange",
-    "locationChange",
-    "popupOpen",
-    "popupClose",
-    "viewportChange",
-    "routeChange",
-    "error",
-  ] as const) {
+  for (const name of MAPLACE_EVENT_NAME_LIST) {
     state.store.on(name, (payload) => events.push({ [name]: payload }));
   }
   return { store: state.store, events, reports: createReports({ state, loadStates, openOn }) };
@@ -65,6 +57,28 @@ describe("createReports", () => {
     ]);
   });
 
+  it("reports a live edit as locationEdit, keeping the snapshot", () => {
+    const { store, events, reports } = reportsFor();
+    const before = store.getSnapshot();
+    let notified = 0;
+    store.subscribe(() => notified++);
+    const geometry = { type: "marker", lat: 5, lng: 6 } as const;
+    reports.reportLocationEdit("a", geometry);
+    expect(store.getSnapshot()).toBe(before);
+    expect(events).toEqual([{ locationEdit: { location: before.locations[0], geometry } }]);
+    expect(notified).toBe(0);
+  });
+
+  it("reports a click on the map as mapClick, then the selection cleared", () => {
+    const { store, events, reports } = reportsFor();
+    reports.reportMapClick({ lat: 1, lng: 2 });
+    expect(store.getSnapshot().selectedId).toBeUndefined();
+    expect(events).toEqual([
+      { mapClick: { position: { lat: 1, lng: 2 } } },
+      { selectionChange: { id: undefined } },
+    ]);
+  });
+
   it("passes the store's openOn to popup close", () => {
     const click = reportsFor("click");
     click.reports.reportPopupClose("a");
@@ -85,6 +99,10 @@ describe("createReports", () => {
     expect(() => reports.reportLocationChange("b", { type: "marker", lat: 0, lng: 0 })).toThrow(
       "editable is not true",
     );
+    expect(() => reports.reportLocationEdit("b", { type: "marker", lat: 0, lng: 0 })).toThrow(
+      "editable is not true",
+    );
+    expect(() => reports.reportMapClick({ lat: 200, lng: 0 })).toThrow("reportMapClick: position");
     expect(store.getSnapshot()).toBe(before);
   });
 });

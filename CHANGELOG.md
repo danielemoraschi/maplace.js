@@ -2,6 +2,9 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Added the `mapClick` event: a single click on the map itself, not on a location, with its `position`; it still clears the selection, and a double- or triple-click (Google's zoom) fires neither; `maplace-mapclick` on the element, `onMapClick` in React
+- 2026-10-18 Changed the adapter host: `reportSelectionChange` takes a location's id only, and a click on the map is `reportMapClick(position)`
+- 2026-10-18 Added the `locationEdit` event: while a user drags a marker or reshapes a shape, its geometry so far, never written to the store, the last one where the edit ended (`locationChange` still fires once, on release); `maplace-locationedit` on the element, `onLocationEdit` in React. On Google, a shape's edit comes once, as its handle is let go
 - 2026-10-18 Added `route.via`: stops a route passes through without ending a leg (Google's via waypoints), as 0.2's `stopover: false` did; see [MIGRATION.md](MIGRATION.md)
 - 2026-10-18 Added turn-by-turn steps to each route leg: `steps`, each with its `instruction`, `distanceMeters` and `durationSeconds`, so a page renders its own directions as 0.2's `directions_panel` did; see [MIGRATION.md](MIGRATION.md)
 - 2026-10-18 Added selected and hovered styles for shapes: `selectedStyle` and `hoveredStyle` beside `style`, per shape and as the store's defaults (React props of the same names), `shape-style`, `selected-style` and `hovered-style` on `<maplace-location>`; the built-in look fills only what they leave unset

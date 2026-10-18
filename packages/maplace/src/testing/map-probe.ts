@@ -1,5 +1,5 @@
 import type { MapSize } from "../adapter-kit/web-mercator";
-import type { Geometry } from "../geometry";
+import type { Geometry, LatLng } from "../geometry";
 import type { ShapeStyle } from "../style";
 
 /** The size conformance maps are drawn at. */
@@ -37,7 +37,8 @@ export interface MapProbe {
   stackOrder(): readonly string[];
   shownPopup(): ShownPopup | undefined;
   click(id: string): void;
-  clickMap(): void;
+  /** Clicks the map itself at `at`, away from every location. */
+  clickMap(at: LatLng): void;
   pointerOver(id: string): void;
   pointerOut(): void;
   /**
@@ -47,8 +48,9 @@ export interface MapProbe {
   drag(id: string, geometry: Geometry): void;
   closePopup(): void;
   /**
-   * Lets the map finish what it started by itself (a camera move, a popup opening, a route) and
-   * report it. Resolves at once when nothing is pending: a real map fires no idle event then.
+   * Lets the map finish what it started by itself (a camera move, a popup opening, a route, a
+   * click on the map held until it can't be half of a double-click) and report it. Resolves at
+   * once when nothing is pending: a real map fires no idle event then.
    */
   settle(): Promise<void>;
 }

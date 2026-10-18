@@ -1,16 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { adding, markerDrawable, polygonDrawable, presented } from "./fixtures";
+import { AWAY, adding, markerDrawable, polygonDrawable, presented } from "./fixtures";
 import { mountSubject } from "./harness";
 import type { ConformanceSubject } from "./subject";
 
 export function reportChecks(subject: ConformanceSubject): void {
   describe("reports", () => {
-    it("reports a click on a location, and on the map as no location", async () => {
+    it("reports a click on a location", async () => {
       const { adapter, probe, host } = await mountSubject(subject);
       await adapter.apply(adding(markerDrawable("a")));
       probe.click("a");
-      probe.clickMap();
-      expect(host.reportsOf("reportSelectionChange")).toEqual([["a"], [undefined]]);
+      expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
+      expect(host.reportsOf("reportMapClick")).toEqual([]);
+    });
+
+    it("reports a click on the map with where it was, as no location's", async () => {
+      const { adapter, probe, host } = await mountSubject(subject);
+      await adapter.apply(adding(markerDrawable("a")));
+      probe.clickMap(AWAY);
+      // A map may hold a click until it can't be half of a double-click.
+      await probe.settle();
+      expect(host.reportsOf("reportMapClick")).toEqual([[AWAY]]);
+      expect(host.reportsOf("reportSelectionChange")).toEqual([]);
     });
 
     it("reports the pointer onto a location and off it", async () => {

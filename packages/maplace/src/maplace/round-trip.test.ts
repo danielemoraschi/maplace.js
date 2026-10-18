@@ -19,6 +19,15 @@ describe("a report comes back to the adapter", () => {
     ]);
   });
 
+  it("a live edit reaches no adapter and keeps the location", async () => {
+    const editable: Location = { id: "a", lat: 0, lng: 0, editable: true };
+    const { maplace, adapter, host } = await mounted({ locations: [editable] });
+    const calls = adapter.calls.length;
+    host.reportLocationEdit("a", { type: "marker", lat: 5, lng: 6 });
+    expect(adapter.calls).toHaveLength(calls);
+    expect(maplace.getSnapshot().locations).toEqual([editable]);
+  });
+
   it("a report during a pass waits for the next one, keeping the store's order", async () => {
     const { maplace, adapter, host } = await mounted({ locations });
     const present = adapter.present;

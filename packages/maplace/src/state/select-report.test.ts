@@ -16,15 +16,19 @@ describe("selectReported", () => {
     expect(selectReported(AB, "b")).toEqual(select(AB, "b"));
   });
 
-  it("deselects on a click on the map", () => {
-    const selected = { ...AB, selectedId: "a" };
-    expect(selectReported(selected, undefined)).toEqual(select(selected, undefined));
-    expect(selectReported(AB, undefined)).toBe(NO_CHANGE);
-  });
-
   it("changes nothing for an id the store no longer shows, where select would throw", () => {
     const filtered = { ...AB, filter: ["S"] };
     expect(selectReported(filtered, "b")).toBe(NO_CHANGE);
     expect(selectReported(AB, "gone")).toBe(NO_CHANGE);
+  });
+
+  it("throws on a report without a location's id, as a click on the map is reportMapClick", () => {
+    const selected = { ...AB, selectedId: "a" };
+    expect(() => selectReported(selected, undefined as unknown as string)).toThrow(
+      expect.objectContaining({
+        code: "invalid-input",
+        message: expect.stringMatching(/^reportSelectionChange: id/),
+      }),
+    );
   });
 });

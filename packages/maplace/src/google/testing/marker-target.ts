@@ -31,6 +31,7 @@ export function markerTarget(marker: Marker, onMap: () => boolean): ProbeTarget 
     drag(geometry) {
       if (!marker.gmpDraggable || geometry.type !== "marker") return;
       marker.position = { lat: geometry.lat, lng: geometry.lng };
+      dispatch("gmp-drag");
       dispatch("gmp-dragend");
     },
   };

@@ -13,6 +13,8 @@ export interface RecordingHost extends AdapterHost {
   readonly reports: readonly HostReport[];
   /** The arguments of each report of one kind, in order. */
   reportsOf<R extends Report>(report: R): Parameters<AdapterHost[R]>[];
+  /** The reports of the kinds given, in the order made, each as its method and arguments. */
+  reportsIn(...kinds: readonly Report[]): readonly unknown[][];
 }
 
 export function createRecordingHost(): RecordingHost {
@@ -27,8 +29,14 @@ export function createRecordingHost(): RecordingHost {
       recorder
         .entriesOf(report)
         .map((entry) => entry.args as Parameters<AdapterHost[typeof report]>),
+    reportsIn: (...kinds) =>
+      recorder.entries
+        .filter(({ method }) => kinds.includes(method))
+        .map(({ method, args }) => [method, ...args]),
     reportSelectionChange: recording("reportSelectionChange"),
+    reportMapClick: recording("reportMapClick"),
     reportHoverChange: recording("reportHoverChange"),
+    reportLocationEdit: recording("reportLocationEdit"),
     reportLocationChange: recording("reportLocationChange"),
     reportPopupOpen: recording("reportPopupOpen"),
     reportPopupClose: recording("reportPopupClose"),

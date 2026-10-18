@@ -1,9 +1,11 @@
 // @vitest-environment happy-dom
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, onTestFinished, vi } from "vitest";
 import type { Drawable } from "../drawable";
 import type { LocationState } from "../location";
 import { markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
+import { mapClicks } from "./map-clicks";
 import { placeMarker } from "./marker";
+import type { StubMap } from "./testing/stub-libraries";
 import { stubSite } from "./testing/stub-site";
 
 const shown = { state: { selected: false, hovered: false }, visible: true };
@@ -128,6 +130,20 @@ describe("placeMarker", () => {
     ]);
   });
 
+  it("drops a map click still held when it is clicked", () => {
+    vi.useFakeTimers();
+    onTestFinished(() => {
+      vi.useRealTimers();
+    });
+    const { placed: a, site, host } = placed();
+    mapClicks.open(site.mounted);
+    (site.mounted.map as unknown as StubMap).trigger("click", { latLng: { toJSON: () => ORIGIN } });
+    a.marker.dispatchEvent(new Event("gmp-click"));
+    vi.runAllTimers();
+    expect(host.reportsOf("reportMapClick")).toEqual([]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
+  });
+
   it("stops being hovered once hidden or removed", () => {
     const { placed: a, host } = placed();
     a.marker.dispatchEvent(new Event("pointerenter"));
@@ -154,11 +170,26 @@ describe("placeMarker", () => {
     ]);
   });
 
+  it("reports where a drag has it as it moves, then where it ended", () => {
+    const { placed: a, host } = placed(markerDrawable("a", ORIGIN, { editable: true }));
+    const moveTo = (lat: number) => {
+      a.marker.position = { lat, lng: 4 };
+      a.marker.dispatchEvent(new Event("gmp-drag"));
+    };
+    moveTo(1);
+    moveTo(2);
+    a.marker.dispatchEvent(new Event("gmp-dragend"));
+    const at = (lat: number) => ["a", { type: "marker", lat, lng: 4 }];
+    expect(host.reportsOf("reportLocationEdit")).toEqual([at(1), at(2)]);
+    expect(host.reportsOf("reportLocationChange")).toEqual([at(2)]);
+  });
+
   it("reports nothing once the load is cancelled", () => {
     const { placed: a, host, controller } = placed();
     controller.abort();
     a.marker.dispatchEvent(new Event("gmp-click"));
     a.marker.dispatchEvent(new Event("pointerenter"));
+    a.marker.dispatchEvent(new Event("gmp-drag"));
     a.marker.dispatchEvent(new Event("gmp-dragend"));
     expect(host.reports).toEqual([]);
   });

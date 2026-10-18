@@ -9,6 +9,8 @@ describe("eventPropName", () => {
     expect(MAPLACE_EVENT_NAME_LIST.map(eventPropName)).toEqual([
       "onSelectionChange",
       "onHoverChange",
+      "onMapClick",
+      "onLocationEdit",
       "onLocationChange",
       "onPopupOpen",
       "onPopupClose",
@@ -42,19 +44,33 @@ describe("bindStore", () => {
 
   it("passes each event to the prop of the latest render", async () => {
     const first = { onHoverChange: vi.fn(), onError: vi.fn() };
-    const latest = { onHoverChange: vi.fn(), onError: vi.fn(), onLocationChange: vi.fn() };
+    const latest = {
+      onHoverChange: vi.fn(),
+      onError: vi.fn(),
+      onLocationEdit: vi.fn(),
+      onLocationChange: vi.fn(),
+      onMapClick: vi.fn(),
+    };
     const locations = [{ id: "pin", lat: 45, lng: 9, editable: true }];
     const { host, render } = await boundStore({ locations, ...first });
     render({ locations, ...latest });
     host.reportHoverChange("pin");
-    host.reportLocationChange("pin", { type: "marker", lat: 46, lng: 10 });
+    const geometry = { type: "marker", lat: 46, lng: 10 } as const;
+    host.reportLocationEdit("pin", geometry);
+    host.reportLocationChange("pin", geometry);
+    host.reportMapClick({ lat: 1, lng: 2 });
     const error = new MaplaceError("route-failed", "no route");
     host.reportError(error);
     expect(first.onHoverChange).not.toHaveBeenCalled();
     expect(latest.onHoverChange).toHaveBeenCalledWith({ id: "pin" });
+    expect(latest.onLocationEdit).toHaveBeenCalledWith({
+      location: expect.objectContaining({ id: "pin", lat: 45 }),
+      geometry,
+    });
     expect(latest.onLocationChange).toHaveBeenCalledWith(
       expect.objectContaining({ location: expect.objectContaining({ lat: 46 }) }),
     );
+    expect(latest.onMapClick).toHaveBeenCalledWith({ position: { lat: 1, lng: 2 } });
     expect(latest.onError).toHaveBeenCalledWith({ error });
   });
 

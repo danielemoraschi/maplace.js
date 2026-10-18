@@ -14,6 +14,8 @@ export const API_LISTS = {
   events: [
     "selectionChange",
     "hoverChange",
+    "mapClick",
+    "locationEdit",
     "locationChange",
     "popupOpen",
     "popupClose",

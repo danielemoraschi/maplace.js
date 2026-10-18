@@ -2,6 +2,8 @@ import type { AdapterHost } from "../adapter";
 import type { ResolvedPopupOptions } from "../popup";
 import { changeGeometry } from "../state/geometry-change";
 import { hoverReported } from "../state/hover";
+import { locationEdited } from "../state/location-edit";
+import { mapClicked } from "../state/map-click";
 import { popupClosed, popupOpened } from "../state/popup";
 import { setRouteResult } from "../state/route-result";
 import { selectReported } from "../state/select-report";
@@ -28,7 +30,10 @@ export function createReports<Data>({
   const { getSnapshot } = state.store;
   return {
     reportSelectionChange: (id) => commitOwn(selectReported(getSnapshot(), id)),
+    reportMapClick: (position) => commitOwn(mapClicked(getSnapshot(), position)),
     reportHoverChange: (id) => commitOwn(hoverReported(getSnapshot(), id)),
+    reportLocationEdit: (id, geometry) =>
+      commitOwn(locationEdited(getSnapshot(), { id, geometry })),
     reportLocationChange: (id, geometry) =>
       commitOwn(changeGeometry(getSnapshot(), { id, geometry })),
     reportPopupOpen: (id, element) => commitOwn(popupOpened(getSnapshot(), { id, element })),

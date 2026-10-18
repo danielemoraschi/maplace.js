@@ -11,6 +11,8 @@ function recordingReports(): AdapterHost {
   return {
     reportSelectionChange: vi.fn(),
     reportHoverChange: vi.fn(),
+    reportMapClick: vi.fn(),
+    reportLocationEdit: vi.fn(),
     reportLocationChange: vi.fn(),
     reportPopupOpen: vi.fn(),
     reportPopupClose: vi.fn(),

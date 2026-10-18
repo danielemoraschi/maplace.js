@@ -1,9 +1,11 @@
 /// <reference types="google.maps" />
 import { frontFirst, type MapProbe } from "../../testing/map-probe";
+import { DOUBLE_CLICK_WAIT_MS } from "../map-clicks";
 import { createMapState, type GoogleMapState } from "../map-state";
 import type { PlacedLocation } from "../placed-location";
 import { type CameraWatch, watchCamera } from "./camera-watch";
 import { controlsPlaced } from "./controls-placed";
+import { wait } from "./map-waits";
 import { markerTarget } from "./marker-target";
 import type { ProbeTarget } from "./probe-target";
 import { shapeTarget } from "./shape-target";
@@ -65,6 +67,7 @@ interface ProbeSources {
 /** A user can reach only a location on a map and not hidden; Google adds it to the page later. */
 function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapProbe {
   let pointedAt: ProbeTarget | undefined;
+  let clickHeld: Promise<void> = Promise.resolve();
   const onMap = (id: string) => {
     const target = targets.get(id);
     return target?.onMap() ? target : undefined;
@@ -88,10 +91,13 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
       return popup?.infoWindow.isOpen ? { id: popup.id, element: popup.element } : undefined;
     },
     click: (id) => reachable(id)?.click(),
-    clickMap() {
-      // Google's own click handler reads the event, so it needs one.
+    clickMap(at) {
       const clicked = map();
-      if (clicked) google.maps.event.trigger(clicked, "click", {});
+      if (clicked === undefined) return;
+      // Google's click handlers read where from the event's `latLng`.
+      google.maps.event.trigger(clicked, "click", { latLng: new google.maps.LatLng(at) });
+      // Set after the map's own hold, with the same delay, so it ends after the map reports.
+      clickHeld = wait(DOUBLE_CLICK_WAIT_MS);
     },
     pointerOver(id) {
       pointedAt = reachable(id);
@@ -109,6 +115,7 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
       if (infoWindow) google.maps.event.trigger(infoWindow, "closeclick");
     },
     async settle() {
+      await clickHeld;
       await state.routeSettling;
       await camera()?.settled();
       const drawnOn = map();

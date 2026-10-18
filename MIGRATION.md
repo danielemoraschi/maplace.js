@@ -112,7 +112,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
 | `directions_panel` | dropped: render each leg's `steps` from the `routeChange` event |
 | `draggable`, `editable` (map-wide) | `editable` per location, for markers and shapes alike; dragging the route itself is gone |
-| `listeners` | pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
+| `listeners` | the `mapClick` event (`{ position }`) for a click on the map; for any other map event, pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
 | `pan_on_click` | `select(id, { pan: false })` from code; the map always brings a clicked location into view (a marker panned to, a shape fitted) |
 | `debug` | the `error` event and `MaplaceError`; nothing is logged or silent |
 | `visualRefresh` | dropped: Google removed the flag |
@@ -172,7 +172,8 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `afterRoute` | `routeChange` | with legs (each with its steps), distance and duration; again, `result` undefined, when the route is cleared |
 | `onPolylineClick`, `onPolygonClick` | `selectionChange` | shapes are locations |
 | `circleRadiusChanged`, `circleCenterChanged`, `dragEnd` | `locationChange` | with the location and its `previous` value |
-| `drag`, `dragStart` | — | dropped |
+| `drag` | `locationEdit` | the geometry so far, never written to the store; its last is where the drag ended |
+| `dragStart` | — | dropped: the first `locationEdit` of a drag comes as it starts to move |
 
 ### Behaviour that changes
 

@@ -1,5 +1,6 @@
 import type { AdapterHost } from "../../adapter";
 import { anchorOf } from "../../adapter-kit/anchor";
+import { editReportsFor } from "../../adapter-kit/edit-reports";
 import { styleInState } from "../../adapter-kit/shape-looks";
 import type { LatLng } from "../../geometry";
 import { stateIn } from "../../location-state";
@@ -52,14 +53,14 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
     stackOrder: () => stackOrder(map),
     shownPopup: () => live()?.popups.shown(),
     click: (id) => ifShown(id, (to) => to.reportSelectionChange(id)),
-    clickMap: () => host()?.reportSelectionChange(undefined),
+    clickMap: (at) => host()?.reportMapClick(at),
     pointerOver: (id) => ifShown(id, (to) => to.reportHoverChange(id)),
     pointerOut: () => host()?.reportHoverChange(undefined),
     drag(id, geometry) {
       const entry = shownEntry(map, id);
       if (!entry?.drawable.editable || entry.geometry.type !== geometry.type) return;
       entry.geometry = geometry;
-      host()?.reportLocationChange(id, geometry);
+      editReportsFor(id, host).ended(geometry);
     },
     closePopup: () => live()?.popups.closeByUser(),
     async settle() {

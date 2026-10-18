@@ -15,6 +15,7 @@ import { unmountAll } from "../testing/conformance/harness";
 import type { RecordingHost } from "../testing/conformance/recording-host";
 import { cameraAt } from "./testing/camera-at";
 import { inputOn } from "./testing/map-input";
+import { clickHoldPassed } from "./testing/map-waits";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -50,12 +51,27 @@ describeWithMaps("Google shapes under real input", () => {
     const { input, host } = await drawnOnMap(polygonDrawable("p"));
     await input.click(IN_RING);
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
+    await clickHoldPassed();
+    expect(host.reportsOf("reportMapClick")).toEqual([]);
   });
 
-  it("reports a click in a shape's hole as the map's", async () => {
+  it("reports no click on the map for a double- or triple-click on it", async () => {
+    const { input, host } = await drawnOnMap(polygonDrawable("p"));
+    await input.multiClick(ORIGIN, 2);
+    await clickHoldPassed();
+    await input.multiClick(ORIGIN, 3);
+    await clickHoldPassed();
+    expect(host.reportsOf("reportMapClick")).toEqual([]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([]);
+  });
+
+  it("reports a click in a shape's hole as the map's, with where it was", async () => {
     const { input, host } = await drawnOnMap(polygonDrawable("p"));
     await input.click(ORIGIN);
-    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([[undefined]]);
+    await expect
+      .poll(() => host.reportsOf("reportMapClick"))
+      .toEqual([[{ lat: expect.closeTo(0, 1), lng: expect.closeTo(0, 1) }]]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([]);
   });
 
   it("reports the pointer onto a shape and off it", async () => {
@@ -70,6 +86,8 @@ describeWithMaps("Google shapes under real input", () => {
     adapter.present(presented({ selectedId: "p" }));
     await input.click(IN_RING);
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
+    await clickHoldPassed();
+    expect(host.reportsOf("reportMapClick")).toEqual([]);
   });
 
   it("reports a circle's new radius once, when its handle is let go", async () => {
@@ -85,6 +103,8 @@ describeWithMaps("Google shapes under real input", () => {
       "c",
       { type: "circle", radius: expect.closeTo(75_000, -4) },
     ]);
+    // Google says where a handle went only once it is let go: one edit, with the change.
+    expect(host.reportsOf("reportLocationEdit")).toEqual(host.reportsOf("reportLocationChange"));
     expect(host.reportsOf("reportSelectionChange")).toEqual([]);
   });
 

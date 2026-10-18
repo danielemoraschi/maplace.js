@@ -1,5 +1,14 @@
 // Compile-time checks of the element: each @ts-expect-error must stay an error.
-import type { Adapter, LoadState, Location, Maplace, MaplaceError, Route } from "maplace";
+import type {
+  Adapter,
+  Geometry,
+  LatLng,
+  LoadState,
+  Location,
+  Maplace,
+  MaplaceError,
+  Route,
+} from "maplace";
 import {
   defineProvider,
   type MaplaceElementEventMap,
@@ -45,6 +54,12 @@ expectTypeOf<
 expectTypeOf<
   MaplaceElementEventMap["maplace-error"]["detail"]["error"]
 >().toEqualTypeOf<MaplaceError>();
+expectTypeOf<
+  MaplaceElementEventMap["maplace-locationedit"]["detail"]["geometry"]
+>().toEqualTypeOf<Geometry>();
+expectTypeOf<
+  MaplaceElementEventMap["maplace-mapclick"]["detail"]["position"]
+>().toEqualTypeOf<LatLng>();
 // @ts-expect-error event names are lower case, as DOM events are
 expectTypeOf<MaplaceElementEventMap["maplace-popupOpen"]>();
 

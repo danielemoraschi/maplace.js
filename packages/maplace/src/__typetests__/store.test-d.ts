@@ -1,6 +1,8 @@
 // Compile-time checks of the store API: each @ts-expect-error must stay an error.
 import type {
   Adapter,
+  Geometry,
+  LatLng,
   Location,
   Maplace,
   MaplaceEvents,
@@ -58,6 +60,11 @@ shop.on("locationChange", ({ location, previous }) => {
   expectTypeOf(location).toEqualTypeOf<Location<{ price: number }>>();
   expectTypeOf(previous).toEqualTypeOf<Location<{ price: number }>>();
 });
+shop.on("locationEdit", ({ location, geometry }) => {
+  expectTypeOf(location).toEqualTypeOf<Location<{ price: number }>>();
+  expectTypeOf(geometry).toEqualTypeOf<Geometry>();
+});
+shop.on("mapClick", ({ position }) => expectTypeOf(position).toEqualTypeOf<LatLng>());
 shop.on("viewportChange", ({ viewport }) => expectTypeOf(viewport).toEqualTypeOf<Viewport>());
 shop.on("routeChange", ({ result }) =>
   expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>(),

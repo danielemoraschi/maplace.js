@@ -1,6 +1,6 @@
 import type { Drawable } from "./drawable";
 import type { MaplaceError } from "./errors";
-import type { Geometry } from "./geometry";
+import type { Geometry, LatLng } from "./geometry";
 import type { ResolvedPopupOptions } from "./popup";
 import type { Route, RouteResult } from "./route";
 import type { ResolvedView, Viewport } from "./viewport";
@@ -41,15 +41,27 @@ export interface PresentationState {
 /**
  * The only way an adapter reports back. Adapters never read or write the store directly. A report
  * about a location the store no longer shows, or a route result for other stops, is a race with
- * what the adapter is still drawing and is ignored. A report the store can't take (a write-back
- * for a location that isn't `editable` or of another type, a viewport no map shows) changes
- * nothing and is rethrown in a microtask; no report ever throws back into the adapter.
+ * what the adapter is still drawing and is ignored. A report the store can't take (an edit or a
+ * write-back for a location that isn't `editable` or of another type, a click position or a
+ * viewport no map shows) changes nothing and is rethrown in a microtask; no report ever throws
+ * back into the adapter.
  */
 export interface AdapterHost {
-  /** A click on a location, or `undefined` for a click on the map. */
-  reportSelectionChange(id: string | undefined): void;
+  /** A click on a location. */
+  reportSelectionChange(id: string): void;
+  /**
+   * A single click on the map itself, not on any location, and where; the store clears the
+   * selection. A double-click is not a click: neither of its clicks is reported.
+   */
+  reportMapClick(position: LatLng): void;
   reportHoverChange(id: string | undefined): void;
-  /** A drag or edit moved or reshaped a location; `geometry.type` is the location's own. */
+  /**
+   * Where a user's drag or reshape has a location so far, as often as the provider says; before
+   * `reportLocationChange`, the last edit reported is where it ended (a provider that says only on
+   * release reports both then). The store keeps none of it.
+   */
+  reportLocationEdit(id: string, geometry: Geometry): void;
+  /** A drag or edit ended, moving or reshaping a location; `geometry.type` is the location's own. */
   reportLocationChange(id: string, geometry: Geometry): void;
   reportPopupOpen(id: string, element: HTMLElement): void;
   /** With `openOn: 'click'`, the store deselects when the selected location's popup closes. */

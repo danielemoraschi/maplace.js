@@ -9,6 +9,9 @@ export const LARGE_DIFF = 4000;
 
 export const ORIGIN: LatLng = { lat: 0, lng: 0 };
 
+/** A point off every location the checks draw, for a click on the map itself. */
+export const AWAY: LatLng = { lat: 10, lng: 20 };
+
 /** Towns a road joins, for routes: a provider finds no road between points at sea. */
 export const TOWNS = {
   bologna: { lat: 44.4949, lng: 11.3426 },

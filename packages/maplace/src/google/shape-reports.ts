@@ -1,3 +1,4 @@
+import { reportLocationClick } from "./map-clicks";
 import type { GoogleShape, PlacingSite } from "./placed-location";
 
 /**
@@ -9,7 +10,7 @@ export function reportShapeInput(
   id: string,
   { mounted, hover }: PlacingSite,
 ): void {
-  shape.addListener("click", () => mounted.live()?.reportSelectionChange(id));
+  shape.addListener("click", () => reportLocationClick(mounted, id));
   shape.addListener("mouseover", () => hover.enter("pointer", id));
   shape.addListener("mouseout", () => hover.leave("pointer", id));
 }

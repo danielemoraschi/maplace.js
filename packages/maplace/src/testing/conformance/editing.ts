@@ -24,6 +24,9 @@ interface EditCase {
   readonly edited: Geometry;
 }
 
+/** What a user's edit reports. */
+const EDITING = ["reportLocationEdit", "reportLocationChange"] as const;
+
 const CASES: readonly EditCase[] = [
   { name: "marker", drawable: markerDrawable("e"), edited: { type: "marker", lat: 3, lng: 4 } },
   {
@@ -67,15 +70,31 @@ function caseChecks(
   });
 
   it.runIf(editable)(
+    `reports an edited ${name} as it is edited, the last edit where the change leaves it`,
+    async () => {
+      const { adapter, probe, host } = await mountSubject(subject);
+      await adapter.apply(adding(drawable));
+      probe.drag(id, edited);
+      expect(host.reportsIn(...EDITING).slice(-2)).toEqual([
+        ["reportLocationEdit", id, edited],
+        ["reportLocationChange", id, edited],
+      ]);
+      expect(host.reportsOf("reportLocationChange")).toHaveLength(1);
+    },
+  );
+
+  it.runIf(editable)(
     `takes the store's write-back of an edited ${name} without moving it or reporting again`,
     async () => {
       const { adapter, probe, host } = await mountSubject(subject);
       await adapter.apply(adding(drawable));
       probe.drag(id, edited);
+      const edits = host.reportsOf("reportLocationEdit").length;
       // The store writes back a copy, as it freezes what it keeps.
       await adapter.apply(updating(reshaped(drawable, structuredClone(edited))));
       await probe.settle();
       expect(host.reportsOf("reportLocationChange")).toEqual([[id, edited]]);
+      expect(host.reportsOf("reportLocationEdit")).toHaveLength(edits);
       expect(probe.location(id)?.geometry).toEqual(edited);
     },
   );
@@ -84,7 +103,7 @@ function caseChecks(
     const { adapter, probe, host } = await mountSubject(subject);
     await adapter.apply(adding(edit.drawable));
     probe.drag(id, edited);
-    expect(host.reportsOf("reportLocationChange")).toEqual([]);
+    expect(host.reportsIn(...EDITING)).toEqual([]);
     expect(probe.location(id)?.geometry).toEqual(edit.drawable.geometry);
   });
 }

@@ -1,17 +1,8 @@
-import { geometryTypeOf, withGeometry } from "../diff/geometry";
-import type { Geometry } from "../geometry";
 import type { Location } from "../location";
 import { locationById } from "../location-state";
 import type { Snapshot } from "../store";
-import { child, reject } from "../validate/fail";
-import { checkLocationFields, locationRoot } from "../validate/location";
 import { type Change, NO_CHANGE } from "./change";
-
-/** What the map reports after a drag or an edit ends. */
-export interface GeometryReport {
-  readonly id: string;
-  readonly geometry: Geometry;
-}
+import { editedLocation, type GeometryReport } from "./edited-location";
 
 /**
  * Writes a drag or edit back: the location becomes a new object with the reported geometry, then
@@ -25,25 +16,11 @@ export function changeGeometry<Data>(
 ): Change<Data> {
   const previous = locationById(snapshot.locations, id);
   if (previous === undefined) return NO_CHANGE;
-  checkWriteBack(previous, geometry);
-  const location = withGeometry(previous, geometry);
-  checkLocationFields(location);
+  const location = editedLocation(previous, geometry);
   return {
     patch: { locations: replaced(snapshot.locations, { previous, location }) },
     events: [{ name: "locationChange", payload: { location, previous } }],
   };
-}
-
-function checkWriteBack(location: Location, geometry: Geometry): void {
-  if (location.editable !== true) {
-    const problem = "is not true, so the map can't change its geometry";
-    reject(child(locationRoot(location.id), "editable"), problem);
-  }
-  const type = geometryTypeOf(location);
-  if (geometry.type !== type) {
-    const problem = `is ${type}, got a ${geometry.type} geometry`;
-    reject(child(locationRoot(location.id), "type"), problem);
-  }
 }
 
 /** The list with one location swapped in place: a copy at native speed, not a scan per item. */

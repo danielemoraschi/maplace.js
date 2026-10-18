@@ -5,6 +5,7 @@ import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { frames } from "./frames";
 import type { GoogleMapState } from "./map-state";
+import { clickHoldPassed } from "./testing/map-waits";
 import { centreOf, tabTo } from "./testing/page-input";
 import { mountedGoogle, pageMapIn, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -36,9 +37,11 @@ describeWithMaps("Google markers under real input", () => {
     await userEvent.click(marker);
     // Google dispatches the click after the input, not during it.
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
-    // A second report, the map's, would come in the same dispatch.
+    // A second report, the map's, would come in the same dispatch; a map click once held.
     await frames(2);
     expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
+    await clickHoldPassed();
+    expect(host.reportsOf("reportMapClick")).toEqual([]);
     // The click focuses the marker too, but only keyboard focus hovers it.
     await userEvent.unhover(marker);
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
@@ -64,7 +67,7 @@ describeWithMaps("Google markers under real input", () => {
     expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
   });
 
-  it("selects an editable marker on a click, and reports a drag of it once, on release", async () => {
+  it("selects an editable marker on a click, and reports it as it is dragged, and the drag once, on release", async () => {
     const { adapter, state, host } = await mountedGoogle();
     await adapter.apply(adding(markerDrawable("a", ORIGIN, { editable: true })));
     const marker = await drawnMarker(state, "a");
@@ -76,6 +79,12 @@ describeWithMaps("Google markers under real input", () => {
     expect(host.reportsOf("reportLocationChange")).toEqual([
       ["a", { type: "marker", lat: expect.any(Number), lng: expect.any(Number) }],
     ]);
+    const edits = host.reportsOf("reportLocationEdit");
+    expect(edits.length).toBeGreaterThan(1);
+    // A marker read only where it started and where it was let go would show no move between.
+    const underWay = edits.slice(0, -1).map(([, geometry]) => geometry);
+    expect(underWay).toContainEqual(expect.not.objectContaining(ORIGIN));
+    expect(edits[edits.length - 1]).toEqual(host.reportsOf("reportLocationChange")[0]);
   });
 
   it("leaves the page's own map as it was on destroy: its listeners, without maplace's markers", async () => {

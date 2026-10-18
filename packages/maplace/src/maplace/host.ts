@@ -15,7 +15,9 @@ export function createHost(signal: AbortSignal, reports: AdapterHost): AdapterHo
     };
   return {
     reportSelectionChange: whileAttached(reports.reportSelectionChange),
+    reportMapClick: whileAttached(reports.reportMapClick),
     reportHoverChange: whileAttached(reports.reportHoverChange),
+    reportLocationEdit: whileAttached(reports.reportLocationEdit),
     reportLocationChange: whileAttached(reports.reportLocationChange),
     reportPopupOpen: whileAttached(reports.reportPopupOpen),
     reportPopupClose: whileAttached(reports.reportPopupClose),

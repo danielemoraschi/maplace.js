@@ -7,6 +7,8 @@ import type { ViewportPoint } from "./mouse-commands";
 /** A user's mouse on a Google map: trusted input at places given in degrees. */
 export interface MapInput {
   click(at: LatLng): Promise<void>;
+  /** Clicks `count` times in one gesture: 2 is a double-click. */
+  multiClick(at: LatLng, count: number): Promise<void>;
   pointTo(at: LatLng): Promise<void>;
   drag(move: { readonly from: LatLng; readonly to: LatLng }): Promise<void>;
 }
@@ -22,6 +24,7 @@ export async function inputOn(map: google.maps.Map): Promise<MapInput> {
   };
   return {
     click: (at) => commands.pressMouse([onScreen(at)]),
+    multiClick: (at, count) => commands.multiClickMouse(onScreen(at), count),
     pointTo: (at) => commands.moveMouse(onScreen(at)),
     drag: ({ from, to }) => commands.pressMouse([onScreen(from), onScreen(to)]),
   };

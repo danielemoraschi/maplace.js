@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, onTestFinished, vi } from "vitest";
 import { SELECTED_LOOK } from "../adapter-kit/shape-looks";
 import type { Drawable } from "../drawable";
 import {
@@ -11,8 +11,10 @@ import {
   polylineDrawable,
   reshaped,
 } from "../testing/conformance/fixtures";
+import { mapClicks } from "./map-clicks";
 import { SHAPE_PLACERS } from "./shape";
 import type { ShapeType } from "./shape-kinds";
+import type { StubMap } from "./testing/stub-libraries";
 import type { StubCircle, StubPolygon, StubPolyline } from "./testing/stub-shapes";
 import { stubSite } from "./testing/stub-site";
 
@@ -61,12 +63,13 @@ describe("shape placers", () => {
     expect(setPaths).not.toHaveBeenCalled();
   });
 
-  it("report a user's edit once, as the location's new geometry", () => {
+  it("report a user's edit once, as the location's new geometry, its one edit there too", () => {
     const { stub, host } = placed(polygonDrawable("p", { editable: true }));
     stub.getPaths().getArray()[1]?.setAt(2, MOVED_HOLE_CORNER);
     expect(host.reportsOf("reportLocationChange")).toMatchObject([
       ["p", { type: "polygon", holes: [[{}, {}, MOVED_HOLE_CORNER, {}]] }],
     ]);
+    expect(host.reportsOf("reportLocationEdit")).toEqual(host.reportsOf("reportLocationChange"));
   });
 
   it("report a point added by a midpoint drag (0.2 #164)", () => {
@@ -92,7 +95,7 @@ describe("shape placers", () => {
     const drawable = circleDrawable("c", { editable: true });
     const { placed: c, stub, host } = placed<StubCircle>(drawable);
     c.update(reshaped(drawable, { type: "circle", center: ORIGIN, radius: 5 }));
-    expect(host.reportsOf("reportLocationChange")).toEqual([]);
+    expect(host.reports).toEqual([]);
     stub.setRadius(7);
     expect(host.reportsOf("reportLocationChange")).toEqual([
       ["c", { type: "circle", center: ORIGIN, radius: 7 }],
@@ -106,6 +109,20 @@ describe("shape placers", () => {
     stub.trigger("mouseout");
     expect(host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
     expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
+  });
+
+  it("drop a map click still held when one is clicked", () => {
+    vi.useFakeTimers();
+    onTestFinished(() => {
+      vi.useRealTimers();
+    });
+    const { stub, site, host } = placed(polygonDrawable("p"));
+    mapClicks.open(site.mounted);
+    (site.mounted.map as unknown as StubMap).trigger("click", { latLng: { toJSON: () => ORIGIN } });
+    stub.trigger("click");
+    vi.runAllTimers();
+    expect(host.reportsOf("reportMapClick")).toEqual([]);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
   });
 
   it("restyle on a state change and on an update, the state's look under the shape's own style", () => {

@@ -1,5 +1,13 @@
 // Compile-time checks of the React binding: each @ts-expect-error must stay an error.
-import type { Location, LocationState, Maplace, MarkerLocation, RouteResult } from "maplace";
+import type {
+  Geometry,
+  LatLng,
+  Location,
+  LocationState,
+  Maplace,
+  MarkerLocation,
+  RouteResult,
+} from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
 import { expectTypeOf } from "vitest";
@@ -15,6 +23,11 @@ export const typed = (
     onLocationChange={({ location }) =>
       expectTypeOf(location.data).toEqualTypeOf<{ price: number } | undefined>()
     }
+    onLocationEdit={({ location, geometry }) => {
+      expectTypeOf(location.data).toEqualTypeOf<{ price: number } | undefined>();
+      expectTypeOf(geometry).toEqualTypeOf<Geometry>();
+    }}
+    onMapClick={({ position }) => expectTypeOf(position).toEqualTypeOf<LatLng>()}
     onRouteChange={({ result }) => expectTypeOf(result).toEqualTypeOf<RouteResult | undefined>()}
     onPopupOpen={({ element }) => expectTypeOf(element).toEqualTypeOf<HTMLElement>()}
   >

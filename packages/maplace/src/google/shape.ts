@@ -1,5 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import { anchorOf } from "../adapter-kit/anchor";
+import { editReportsFor } from "../adapter-kit/edit-reports";
 import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
 import { stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
@@ -88,7 +89,7 @@ function newShape(kind: ShapeKind, { drawable, site, look, order }: Placing) {
   const geometry = showGeometry(drawable.geometry, {
     kind,
     shape,
-    edited: (edited) => site.mounted.live()?.reportLocationChange(id, edited),
+    edited: editReportsFor(id, site.mounted.live).ended,
   });
   reportShapeInput(shape, id, site);
   shape.setMap(site.mounted.map);

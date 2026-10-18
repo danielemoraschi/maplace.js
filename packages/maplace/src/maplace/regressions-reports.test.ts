@@ -46,6 +46,19 @@ describe("#127: clicks on the map reach the page after load", () => {
     host.reportSelectionChange("b");
     expect(onSelectionChange.mock.calls).toEqual([[{ id: "a" }], [{ id: "b" }]]);
   });
+  it("fires mapClick with where, for every click on the map", async () => {
+    const { maplace, host } = await mounted({ locations });
+    const onMapClick = vi.fn();
+    maplace.on("mapClick", onMapClick);
+    host.reportMapClick({ lat: 1, lng: 2 });
+    host.reportMapClick({ lat: 1, lng: 2 });
+    host.reportMapClick({ lat: 3, lng: 4 });
+    expect(onMapClick.mock.calls.map(([{ position }]) => position)).toEqual([
+      { lat: 1, lng: 2 },
+      { lat: 1, lng: 2 },
+      { lat: 3, lng: 4 },
+    ]);
+  });
 });
 
 describe("#137: popupClose fires on close, not on reopen", () => {

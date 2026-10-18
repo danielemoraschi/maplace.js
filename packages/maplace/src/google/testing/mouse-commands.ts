@@ -12,6 +12,8 @@ declare module "vitest/browser" {
     /** Presses the mouse at the first point, moves through the rest, and lets go. */
     pressMouse(path: readonly ViewportPoint[]): Promise<void>;
     moveMouse(point: ViewportPoint): Promise<void>;
+    /** Clicks `count` times at a point, as one gesture: from 2, a `dblclick` too. */
+    multiClickMouse(point: ViewportPoint, count: number): Promise<void>;
     /** Turns the wheel over a point, by `deltaY` pixels (down is positive). */
     wheelMouse(point: ViewportPoint, deltaY: number): Promise<void>;
   }
@@ -38,6 +40,10 @@ export const MOUSE_COMMANDS = {
     const [onScreen] = await onPage(context, [point]);
     if (onScreen) await context.page.mouse.move(onScreen.x, onScreen.y, { steps: MOVE_STEPS });
   }) satisfies BrowserCommand<[ViewportPoint]>,
+  multiClickMouse: (async (context, point, count) => {
+    const [onScreen] = await onPage(context, [point]);
+    if (onScreen) await context.page.mouse.click(onScreen.x, onScreen.y, { clickCount: count });
+  }) satisfies BrowserCommand<[ViewportPoint, number]>,
   wheelMouse: (async (context, point, deltaY) => {
     const [onScreen] = await onPage(context, [point]);
     if (onScreen === undefined) return;

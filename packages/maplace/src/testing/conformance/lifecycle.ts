@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adding, markerDrawable, polygonDrawable } from "./fixtures";
+import { AWAY, adding, markerDrawable, polygonDrawable } from "./fixtures";
 import { mountSubject, startMount } from "./harness";
 import type { ConformanceSubject } from "./subject";
 
@@ -14,7 +14,7 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
       // Not awaiting the mount: the contract doesn't say a cancelled load settles.
       const { controller, probe, host } = startMount(subject);
       controller.abort();
-      probe.clickMap();
+      probe.clickMap(AWAY);
       await probe.settle();
       expect(host.reports).toEqual([]);
     });
@@ -27,7 +27,7 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
       controller.abort();
       probe.click("a");
       probe.pointerOver("a");
-      probe.clickMap();
+      probe.clickMap(AWAY);
       await probe.settle();
       expect(host.reports.slice(reportedBefore)).toEqual([]);
     });
@@ -40,7 +40,7 @@ export function lifecycleChecks(subject: ConformanceSubject): void {
       destroy();
       probe.click("a");
       probe.click("p");
-      probe.clickMap();
+      probe.clickMap(AWAY);
       await probe.settle();
       expect([...container.children]).toEqual(pageChildren);
       expect(probe.locationIds()).toEqual([]);
