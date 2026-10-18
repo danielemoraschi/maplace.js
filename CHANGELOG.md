@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Changed selecting a shape: the map fits the circle, polygon or polyline, no closer than zoom 15, where it used to pan to its centre; `select(id, { zoom })` still centres it at that zoom, and markers still pan
+- 2026-10-18 Added a selected and hovered look for shapes: a heavier stroke and a stronger fill, wherever the shape's `style` (or the store's) leaves those fields unset
 - 2026-10-18 Added default styles for the list view and popups: options as buttons with hover and selected states, popup content in dark text on Google's white bubble, every selector in `:where()` so your rules win; see [the README](README.md)
 - 2026-10-18 Fixed "fit all" listed twice in Safari's native select: with `fitAllLabel`, the select shows "fit all" itself while nothing is selected
 - 2026-10-17 Changed the event names to say what changed: `selectionChange`, `hoverChange`, `locationChange`, `viewportChange` and `routeChange` (were `select`, `hover`, `change`, `viewport` and `route`), with the element's `maplace-*` events, React's `on*` props and the adapter host's `report…` methods named after them; see [the events table](MIGRATION.md#events)

@@ -1,6 +1,8 @@
 import type { AdapterHost } from "../../adapter";
 import { anchorOf } from "../../adapter-kit/anchor";
+import { styleInState } from "../../adapter-kit/shape-looks";
 import type { LatLng } from "../../geometry";
+import { stateIn } from "../../location-state";
 import type { MapProbe } from "../map-probe";
 import type { FakeCamera } from "./camera";
 import { isVisible, type MapState, shownEntry, stackOrder } from "./map-state";
@@ -37,7 +39,14 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
       const entry = map.entries.get(id);
       if (entry === undefined) return undefined;
       const { geometry, icon, drawable } = entry;
-      return { geometry, visible: isVisible(map, id), icon, title: drawable.title };
+      const state = stateIn(map.presented, id);
+      return {
+        geometry,
+        visible: isVisible(map, id),
+        icon,
+        title: drawable.title,
+        style: geometry.type === "marker" ? undefined : { ...styleInState(drawable, state) },
+      };
     },
     locationIds: () => [...map.entries.keys()],
     stackOrder: () => stackOrder(map),

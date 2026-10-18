@@ -1,7 +1,9 @@
 /// <reference types="google.maps" preserve="true" />
 import { anchorOf } from "../adapter-kit/anchor";
+import { styleInState } from "../adapter-kit/shape-looks";
 import { stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
+import type { LocationState } from "../location";
 import { sameState } from "../location-state";
 import type { Look, PlacedShape, PlacingSite } from "./placed-location";
 import { showGeometry } from "./shape-geometry";
@@ -19,9 +21,9 @@ export const SHAPE_PLACERS: Readonly<Record<ShapeType, ShapePlacer>> = {
 };
 
 /**
- * One circle, polyline or polygon: clickable, styled, reshaped by the user when `editable`, its
- * `zIndex` the stacking rank (Google draws every marker above every shape). Each change redoes
- * only what it touches; an edit is reported once, when the user lets go.
+ * One circle, polyline or polygon: clickable, styled in its state's look, reshaped by the user
+ * when `editable`, its `zIndex` the stacking rank (Google draws every marker above every shape).
+ * Each change redoes only what it touches; an edit is reported once, when the user lets go.
  */
 function shapePlacer(kind: ShapeKind): ShapePlacer {
   return (drawable, site) => {
@@ -30,12 +32,7 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
     const order = site.nextOrder();
     let drawn = drawable;
     let look = site.lookOf(id);
-    const { shape, geometry } = newShape(kind, {
-      drawable,
-      site,
-      zIndex: stackRank(order, look.state),
-      visible: look.visible,
-    });
+    const { shape, geometry } = newShape(kind, { drawable, site, look, order });
 
     return {
       shape,
@@ -43,13 +40,15 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
       popupPlace: () => ({ position: anchorOf(drawn.geometry) }),
       update(next) {
         if (next.geometry !== drawn.geometry) geometry.show(next.geometry);
-        if (next.style !== drawn.style) shape.setValues(styleValues(next.style));
+        if (next.style !== drawn.style) {
+          shape.setValues(styleValues(styleInState(next, look.state)));
+        }
         if (next.editable !== drawn.editable) shape.setValues({ editable: next.editable });
         drawn = next;
       },
       present(next: Look) {
         if (!sameState(look.state, next.state)) {
-          shape.setValues({ zIndex: stackRank(order, next.state) });
+          shape.setValues(presentedValues(drawn, next.state, order));
         }
         if (next.visible !== look.visible) shape.setValues({ visible: next.visible });
         if (!next.visible) site.hover.gone(id);
@@ -63,23 +62,27 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
   };
 }
 
-/** What a new shape shows, where, and how it starts: its place in the stack and visibility. */
+/** What a new shape shows, where, and how it starts: its look and its place in the order. */
 interface Placing {
   readonly drawable: Drawable;
   readonly site: PlacingSite;
-  readonly zIndex: number;
-  readonly visible: boolean;
+  readonly look: Look;
+  readonly order: number;
+}
+
+/** What a shape's state decides: its style in the state's look, and its place in the stack. */
+function presentedValues(drawable: Drawable, state: LocationState, order: number) {
+  return { ...styleValues(styleInState(drawable, state)), zIndex: stackRank(order, state) };
 }
 
 /** A clickable shape on the map showing the drawable, reporting its input while the map is live. */
-function newShape(kind: ShapeKind, { drawable, site, zIndex, visible }: Placing) {
+function newShape(kind: ShapeKind, { drawable, site, look, order }: Placing) {
   const shape = kind.create(site.mounted.libraries.maps);
   shape.setValues({
-    ...styleValues(drawable.style),
+    ...presentedValues(drawable, look.state, order),
     clickable: true,
     editable: drawable.editable,
-    zIndex,
-    visible,
+    visible: look.visible,
   });
   const { id } = drawable;
   const geometry = showGeometry(drawable.geometry, {

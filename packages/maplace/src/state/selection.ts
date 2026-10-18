@@ -26,7 +26,7 @@ export function select<Data>(
   return selectShown(snapshot, id, options);
 }
 
-/** Selects a location the caller already knows is shown, panning unless `pan: false`. */
+/** Selects a location the caller already knows is shown, bringing it into view unless `pan: false`. */
 export function selectShown<Data>(
   snapshot: Snapshot<Data>,
   id: string,

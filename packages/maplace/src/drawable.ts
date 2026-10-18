@@ -13,7 +13,10 @@ export interface Drawable {
   readonly geometry: Geometry;
   /** Accessible name on the map. */
   readonly title: string | undefined;
-  /** The location's style over the default; line fields only for polylines, none for markers. */
+  /**
+   * The location's style over the default, with no field set to undefined; line fields only for
+   * polylines, none for markers.
+   */
   readonly style: ShapeStyle | undefined;
   readonly editable: boolean;
   /**

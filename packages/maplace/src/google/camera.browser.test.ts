@@ -1,9 +1,12 @@
 import { afterEach, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
+import type { Location } from "../location";
+import { boundsAround } from "../maplace/bounds";
 import { createMaplace } from "../maplace/create";
-import { FIT_MAX_ZOOM } from "../testing/conformance/geo";
+import { boxContains, FIT_MAX_ZOOM } from "../testing/conformance/geo";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
+import type { Bounds, Viewport } from "../viewport";
 import { inputOn } from "./testing/map-input";
 import { centerOf, centredOn, onGoogle } from "./testing/store-on-google";
 import { mountedGoogle, pageMapIn } from "./testing/subject";
@@ -11,6 +14,9 @@ import { describeWithMaps } from "./testing/with-maps";
 
 const ROME = { id: "rome", lat: 41.9, lng: 12.5, title: "Rome" };
 const OSLO = { id: "oslo", lat: 59.91, lng: 10.75, title: "Oslo" };
+const AROUND_ROME = { lat: ROME.lat, lng: ROME.lng };
+const WITHIN_5_KM: Location = { id: "near", type: "circle", center: AROUND_ROME, radius: 5000 };
+const WITHIN_15_KM: Location = { id: "far", type: "circle", center: AROUND_ROME, radius: 15000 };
 
 describeWithMaps("the Google camera under real input", () => {
   afterEach(unmountAll);
@@ -44,6 +50,21 @@ describeWithMaps("the Google camera under real input", () => {
     await expect.poll(() => oslo()?.getBoundingClientRect().width ?? 0).toBeGreaterThan(0);
     await userEvent.click(oslo() as HTMLElement);
     await expect.poll(() => centredOn(maplace.getSnapshot().viewport?.center, OSLO)).toBe(true);
+  });
+
+  it("fits a selected circle: the wider one shown further out, each inside the map", async () => {
+    const { maplace } = await onGoogle(createMaplace({ locations: [WITHIN_5_KM, WITHIN_15_KM] }));
+    await expect.poll(() => maplace.getSnapshot().viewport).toBeDefined();
+    const shown = async (circle: Location, previousZoom: number | undefined) => {
+      maplace.select(circle.id);
+      await expect.poll(() => maplace.getSnapshot().viewport?.zoom).not.toBe(previousZoom);
+      const { bounds, zoom } = maplace.getSnapshot().viewport as Viewport;
+      expect(boxContains(bounds, boundsAround([circle]) as Bounds)).toBe(true);
+      return zoom;
+    };
+    const near = await shown(WITHIN_5_KM, maplace.getSnapshot().viewport?.zoom);
+    const far = await shown(WITHIN_15_KM, near);
+    expect(far).toBeLessThan(near);
   });
 
   it("moves the page's own map to the store's view", async () => {

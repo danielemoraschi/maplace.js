@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
+import { SELECTED_LOOK } from "../adapter-kit/shape-looks";
 import type { Drawable } from "../drawable";
 import {
   circleDrawable,
@@ -105,6 +106,18 @@ describe("shape placers", () => {
     stub.trigger("mouseout");
     expect(host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
     expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
+  });
+
+  it("restyle on a state change and on an update, the state's look under the shape's own style", () => {
+    const { placed: p, stub } = placed(polygonDrawable("p", { style: { strokeWidth: 1 } }));
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    expect(stub.get("strokeWeight")).toBe(1);
+    expect(stub.get("fillOpacity")).toBe(SELECTED_LOOK.fillOpacity);
+    p.update(polygonDrawable("p", { style: { fill: "blue" } }));
+    expect(stub.get("strokeWeight")).toBe(SELECTED_LOOK.strokeWidth);
+    expect(stub.get("fillColor")).toBe("blue");
+    p.present({ state: { selected: false, hovered: false }, visible: true });
+    expect(stub.get("fillOpacity")).toBeUndefined();
   });
 
   it("restack on a state change, hide, and leave the map on remove, unhovered", () => {

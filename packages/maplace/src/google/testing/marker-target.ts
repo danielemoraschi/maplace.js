@@ -22,6 +22,7 @@ export function markerTarget(marker: Marker, onMap: () => boolean): ProbeTarget 
       title: marker.title || undefined,
       visible: shown(),
       icon: marker.firstChild ?? undefined,
+      style: undefined,
     }),
     stack: () => marker.zIndex ?? 0,
     click: () => dispatch("gmp-click"),

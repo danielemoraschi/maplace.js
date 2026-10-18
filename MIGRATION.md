@@ -113,7 +113,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `directions_panel` | dropped: render legs from the `routeChange` event |
 | `draggable`, `editable` (map-wide) | `editable` per location, for markers and shapes alike; dragging the route itself is gone |
 | `listeners` | pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
-| `pan_on_click` | `select(id, { pan: false })` from code; the map always pans to a clicked location |
+| `pan_on_click` | `select(id, { pan: false })` from code; the map always brings a clicked location into view (a marker panned to, a shape fitted) |
 | `debug` | the `error` event and `MaplaceError`; nothing is logged or silent |
 | `visualRefresh` | dropped: Google removed the flag |
 

@@ -1,5 +1,6 @@
 import type { Adapter } from "../adapter";
-import { isShown, type Scope } from "../location-state";
+import { isMarker } from "../diff/geometry";
+import { isShown, locationById, type Scope } from "../location-state";
 import { runSafely } from "../state/safely";
 import { boundsView } from "../state/views";
 import type { Snapshot } from "../store";
@@ -24,13 +25,35 @@ export function createViewSender(adapter: Adapter): ViewSender {
   };
 }
 
+type FitAllView = Extract<View, { readonly kind: "fit-all" }>;
+type LocationView = Extract<View, { readonly kind: "location" }>;
+
 /**
- * The view an adapter is sent: `fit-all` becomes a box around the shown locations, resolved
- * once, when asked for; undefined when nothing is shown.
+ * The view an adapter is sent, resolved once, when asked for: `fit-all` becomes a box around the
+ * shown locations (undefined when nothing is shown), and a shape selected without a zoom a box
+ * around it.
  */
 export function resolveView(view: View, scope: Scope): ResolvedView | undefined {
-  if (view.kind !== "fit-all") return view;
+  switch (view.kind) {
+    case "fit-all":
+      return shownLocationsFitted(view, scope);
+    case "location":
+      return fittedIfShape(view, scope);
+    default:
+      return view;
+  }
+}
+
+function shownLocationsFitted({ padding }: FitAllView, scope: Scope): ResolvedView | undefined {
   const shown = scope.locations.filter((location) => isShown(location, scope.filter));
   const bounds = boundsAround(shown);
-  return bounds && boundsView(bounds, view.padding);
+  return bounds && boundsView(bounds, padding);
+}
+
+/** A shape selected without a zoom fits; a marker, or a shape at a zoom, stays as asked. */
+function fittedIfShape(view: LocationView, { locations }: Scope): ResolvedView {
+  const location = locationById(locations, view.id);
+  if (view.zoom !== undefined || location === undefined || isMarker(location)) return view;
+  const bounds = boundsAround([location]);
+  return bounds ? boundsView(bounds) : view;
 }

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { HOVERED_LOOK, SELECTED_LINE_LOOK, SELECTED_LOOK } from "../../adapter-kit/shape-looks";
 import {
   adding,
+  circleDrawable,
   iconRecorder,
   markerDrawable,
   ORIGIN,
@@ -85,6 +87,30 @@ export function presentationChecks(subject: ConformanceSubject): void {
       await adapter.apply(adding(markerDrawable("a", ORIGIN, { renderIcon: icon.renderIcon })));
       await adapter.apply(updating(markerDrawable("a", ORIGIN, { renderIcon: () => undefined })));
       expect(probe.location("a")?.icon).toBeUndefined();
+    });
+
+    it("draws a selected or hovered shape in its look, and as before once neither", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(adding(circleDrawable("c"), polygonDrawable("p")));
+      adapter.present(presented({ selectedId: "c", hoveredId: "p" }));
+      expect(probe.location("c")?.style).toEqual(SELECTED_LOOK);
+      expect(probe.location("p")?.style).toEqual(HOVERED_LOOK);
+      adapter.present(presented({}));
+      expect(probe.location("c")?.style).toEqual({});
+      expect(probe.location("p")?.style).toEqual({});
+    });
+
+    it("keeps a shape's own style through its states; a polyline gets no fill", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      const style = { stroke: "#ff0000", strokeWidth: 2 };
+      adapter.present(presented({ selectedId: "p" }));
+      await adapter.apply(adding(polygonDrawable("p", { style }), polylineDrawable("r")));
+      expect(probe.location("p")?.style).toEqual({ ...SELECTED_LOOK, ...style });
+      adapter.present(presented({ selectedId: "r" }));
+      expect(probe.location("p")?.style).toEqual(style);
+      expect(probe.location("r")?.style).toEqual(SELECTED_LINE_LOOK);
+      await adapter.apply(updating(polylineDrawable("r", { style: { strokeWidth: 1 } })));
+      expect(probe.location("r")?.style).toEqual({ ...SELECTED_LINE_LOOK, strokeWidth: 1 });
     });
 
     it("stacks the hovered location on top, then the selected one, the rest in the order added", async () => {

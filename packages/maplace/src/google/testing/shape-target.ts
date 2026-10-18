@@ -1,5 +1,6 @@
 /// <reference types="google.maps" />
 import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
+import type { ShapeStyle } from "../../style";
 import type { GoogleShape } from "../placed-location";
 import type { ProbeTarget } from "./probe-target";
 
@@ -23,6 +24,7 @@ export function shapeTarget(shape: GoogleShape): ProbeTarget {
       title: undefined,
       visible: shown(),
       icon: undefined,
+      style: styleOf(shape),
     }),
     stack: () => shape.get("zIndex") ?? 0,
     click: () => trigger("click"),
@@ -32,6 +34,24 @@ export function shapeTarget(shape: GoogleShape): ProbeTarget {
       if (shape.getEditable()) edit(shape, geometry);
     },
   };
+}
+
+/** Google's name for each style field, written out here rather than shared with the adapter. */
+const GOOGLE_OPTION_OF: Readonly<Record<keyof ShapeStyle, string>> = {
+  stroke: "strokeColor",
+  strokeOpacity: "strokeOpacity",
+  strokeWidth: "strokeWeight",
+  fill: "fillColor",
+  fillOpacity: "fillOpacity",
+};
+
+/** Google's options back in maplace's names: only those set, so `{}` is Google's defaults. */
+function styleOf(shape: GoogleShape): ShapeStyle {
+  return Object.fromEntries(
+    Object.entries(GOOGLE_OPTION_OF)
+      .map(([name, option]) => [name, shape.get(option)])
+      .filter(([, value]) => value !== undefined),
+  );
 }
 
 function geometryOf(shape: GoogleShape): Geometry {
