@@ -24,6 +24,8 @@ describe("validateLocation: valid locations", () => {
       content: node,
       group: "g",
       visible: false,
+      listed: false,
+      zoom: 12,
       editable: true,
       icon: () => node,
       data: { anything: [1] },
@@ -37,7 +39,7 @@ describe("validateLocation: valid locations", () => {
 
   it("accepts each shape", () => {
     const ring = [point, point, point];
-    expect(check({ id: "c", type: "circle", center: point, radius: 5 })).not.toThrow();
+    expect(check({ id: "c", type: "circle", center: point, radius: 5, zoom: 9 })).not.toThrow();
     expect(check({ id: "l", type: "polyline", path: [point, point] })).not.toThrow();
     expect(check({ id: "p", type: "polygon", path: ring, holes: [ring] })).not.toThrow();
   });
@@ -96,6 +98,9 @@ describe("validateLocation: fields", () => {
     expect(check({ id: "a", lat: 1, lng: 2, stopover: false })).toThrow(
       /stopover is a 0.2 field; list the stop's id in route.via to pass through it/,
     );
+    expect(check({ id: "a", lat: 1, lng: 2, on_menu: false })).toThrow(
+      /on_menu is a 0.2 field; use listed: false/,
+    );
   });
 
   it("names the type a misplaced field belongs to", () => {
@@ -124,7 +129,16 @@ describe("validateLocation: fields", () => {
     expect(check({ id: "a", lat: 1, lng: 2, visible: "no" })).toThrow(
       /visible must be a boolean, got "no"/,
     );
+    expect(check({ id: "a", lat: 1, lng: 2, listed: "no" })).toThrow(
+      /listed must be a boolean, got "no"/,
+    );
     expect(check({ id: "a", lat: 1, lng: 2, title: 3 })).toThrow(/title must be a string, got 3/);
+    expect(check({ id: "a", lat: 1, lng: 2, zoom: -1 })).toThrow(
+      fails('location "a": zoom must be a number of at least 0, got -1', "zoom", "a"),
+    );
+    expect(check({ id: "a", lat: 1, lng: 2, zoom: "12" })).toThrow(
+      /zoom must be a number of at least 0, got "12"/,
+    );
     expect(check({ id: "a", lat: 1, lng: 2, content: 3 })).toThrow(
       /content must be a string, a DOM node or a function, got 3/,
     );

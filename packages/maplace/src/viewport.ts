@@ -29,8 +29,8 @@ export type View =
   | { readonly kind: "center"; readonly center: LatLng; readonly zoom: number }
   /**
    * Bring one location into view, as `select` does: a marker to the centre, keeping the zoom; a
-   * shape fitted, no closer than 15. With a `zoom`, either is brought to the point its popup
-   * points at, at that zoom.
+   * shape fitted, no closer than 15. With a `zoom`, or without one for a location with its own
+   * `zoom`, either is brought to the point its popup points at, at that zoom.
    */
   | { readonly kind: "location"; readonly id: string; readonly zoom: number | undefined };
 
@@ -43,7 +43,7 @@ export type ResolvedView = Exclude<View, { readonly kind: "fit-all" }>;
 
 /**
  * Selecting brings the location into view by default (a marker panned to, a shape fitted);
- * `zoom` centres either at that zoom.
+ * `zoom` centres either at that zoom; without it, the location's own `zoom` does.
  */
 export type SelectOptions =
   | { readonly pan?: true | undefined; readonly zoom?: number | undefined }

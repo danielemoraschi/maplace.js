@@ -37,7 +37,7 @@ export interface ListViewOptions<Data = unknown> {
 /**
  * A list view renders store state and asks the store for changes; it never talks to an adapter.
  * Without `fitAllLabel` a listbox can't clear the selection; the "fit all" entry shows as selected
- * whenever nothing else is.
+ * whenever nothing is (a selected location the list leaves out marks no entry).
  */
 export interface ListView {
   /** The listbox or select itself: label it from the page, or place it with `mountControl`. */
@@ -54,7 +54,7 @@ const DEFAULT_LABEL = "Locations";
 
 const VARIANTS = { list: createListbox, select: createNativeSelect } as const;
 
-/** A list or native select of the store's shown locations, in step with it both ways. */
+/** A list or native select of the store's listed locations, in step with it both ways. */
 export function createListView<Data>(
   maplace: Maplace<Data>,
   options?: ListViewOptions<Data>,

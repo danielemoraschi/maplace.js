@@ -6,7 +6,6 @@ const LON_HINT = "use lng";
 const LOCATION_FIELDS_0_2: Readonly<Record<string, string>> = {
   lon: LON_HINT,
   draggable: "use editable",
-  zoom: "use select(id, { zoom }); keep the number in data",
   show_infowindow: "leave content out",
   infoWindowMaxWidth: "use the popup.maxWidth option",
   image: "use an icon node, e.g. a sized <img>",
@@ -17,7 +16,7 @@ const LOCATION_FIELDS_0_2: Readonly<Record<string, string>> = {
   stroke_options: "use style",
   circle_options: "use style",
   zIndex: "leave it out: the selected or hovered location stacks on top",
-  on_menu: "leave it out: build your own list from subscribe",
+  on_menu: "use listed: false",
   pan_on_click: "leave it out: the map always pans to a clicked location",
 };
 

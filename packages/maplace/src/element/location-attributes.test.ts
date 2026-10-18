@@ -35,6 +35,21 @@ describe("locationFromAttributes", () => {
     expect(location).toMatchObject({ lat: "", lng: "east" });
   });
 
+  it("reads a location's zoom as a number, or as written when it isn't one", () => {
+    const zoomed = (zoom: string) => locationFromAttributes(element({ "location-id": "a", zoom }));
+    expect(zoomed("9")).toMatchObject({ zoom: 9 });
+    expect(zoomed("near")).toMatchObject({ zoom: "near" });
+  });
+
+  it("reads listed as a boolean, or as written when it isn't true or false", () => {
+    const listed = (value: string) =>
+      locationFromAttributes(element({ "location-id": "a", listed: value }));
+    expect(listed("false")).toMatchObject({ listed: false });
+    expect(listed("true")).toMatchObject({ listed: true });
+    expect(listed("no")).toMatchObject({ listed: "no" });
+    expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("listed");
+  });
+
   it("keeps the group and the popup content given", () => {
     const content = () => document.createTextNode("x");
     const location = locationFromAttributes(element({ "location-id": "a", group: "north" }), {

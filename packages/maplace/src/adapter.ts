@@ -111,8 +111,8 @@ export interface Adapter {
   apply(diff: LocationDiff): Promise<void>;
   present(state: PresentationState): void;
   /**
-   * Moves the camera; `select` sends a `location` view unless `pan: false` (a shape selected
-   * without a zoom comes as a box around it). A view waits while the
+   * Moves the camera; `select` sends a `location` view unless `pan: false` (the store fills in a
+   * location's own `zoom`; a shape with neither comes as a box around it). A view waits while the
    * container has no size (a closed tab or dialog), which reports no viewport either; once it has
    * one, and after each resize, the last view is shown again unless the user moved the map since
    * (a move after their input on it, until a view is shown again; one with no input doesn't count,

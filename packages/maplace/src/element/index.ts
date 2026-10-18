@@ -62,9 +62,10 @@ export interface MaplaceMapElement extends HTMLElement {
 }
 
 /**
- * `<maplace-location location-id="…" lat lng title type group radius icon shape-style
+ * `<maplace-location location-id="…" lat lng title type group radius icon zoom listed shape-style
  * selected-style hovered-style>`: `lat`/`lng` are a marker's position or a circle's centre,
- * `icon` a marker's image URL, and the three style attributes a shape's `style`,
+ * `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `listed="false"` keeps
+ * it out of the list (on the map still), and the three style attributes a shape's `style`,
  * `selectedStyle` and `hoveredStyle` as JSON; a `<template>` child is trusted popup content, and
  * a `<template data-icon>` child the marker, in place of `icon`.
  */

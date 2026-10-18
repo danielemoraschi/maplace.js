@@ -11,8 +11,11 @@ export interface HoverIntent {
   pointerLeft(): HoverCommand;
   focused(id: string): HoverCommand;
   blurred(): HoverCommand;
-  /** Forgets entries no longer listed; the store has already cleared their hover. */
-  retain(isListed: (id: string) => boolean): void;
+  /**
+   * Forgets entries the view no longer has and says how its own hover changes: a location left
+   * out of the list (`listed: false`) is still on the map, so the store keeps its hover until told.
+   */
+  retain(hasEntry: (id: string) => boolean): HoverCommand;
   /** The view's own hover, for `destroy` to clear. */
   current(): string | undefined;
 }
@@ -48,10 +51,10 @@ export function createHoverIntent(): HoverIntent {
       focusedId = undefined;
       return settle();
     },
-    retain(isListed) {
-      if (pointerId !== undefined && !isListed(pointerId)) pointerId = undefined;
-      if (focusedId !== undefined && !isListed(focusedId)) focusedId = undefined;
-      if (applied !== undefined && !isListed(applied)) applied = undefined;
+    retain(hasEntry) {
+      if (pointerId !== undefined && !hasEntry(pointerId)) pointerId = undefined;
+      if (focusedId !== undefined && !hasEntry(focusedId)) focusedId = undefined;
+      return settle();
     },
     current: () => applied,
   };

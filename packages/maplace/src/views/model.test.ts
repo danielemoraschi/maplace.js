@@ -48,6 +48,22 @@ describe("listStructureOf", () => {
   });
 });
 
+describe("listStructureOf: locations not listed", () => {
+  const unlisted: Location = { id: "u", lat: 0, lng: 0, group: "U", listed: false };
+
+  it("leaves them out, and their groups' headings, with headings on or off", () => {
+    const list = [...locations, unlisted];
+    expect(sections({ groupHeadings: undefined }, undefined, list)).toEqual([
+      { heading: undefined, ids: ["l"] },
+      { heading: "N", ids: ["n"] },
+      { heading: "S", ids: ["s"] },
+    ]);
+    expect(sections({ groupHeadings: false }, undefined, list)).toEqual([
+      { heading: undefined, ids: ["n", "s", "l"] },
+    ]);
+  });
+});
+
 describe("labelOf", () => {
   it("is the title when it has text, else the id", () => {
     expect([north, south, loose].map(labelOf)).toEqual(["North", "s", "Loose"]);

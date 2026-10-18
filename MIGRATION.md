@@ -47,11 +47,11 @@ Pages that build the map in code use `createMaplace` and `createGoogleAdapter` f
 
 ## Converting your locations
 
-0.2 locations become 1.0 locations in a few lines: an id from the old 1-based position, `lon` renamed, and the fields 1.0 has no place for kept in `data`. This snippet is [`packages/maplace/examples/migrate/from-0.2.ts`](packages/maplace/examples/migrate/from-0.2.ts), type-checked in CI:
+0.2 locations become 1.0 locations in a few lines: an id from the old 1-based position, `lon` renamed, `zoom` kept, and anything else of yours in `data`. This snippet is [`packages/maplace/examples/migrate/from-0.2.ts`](packages/maplace/examples/migrate/from-0.2.ts), type-checked in CI:
 
 <!-- example: packages/maplace/examples/migrate/from-0.2.ts -->
 ```ts
-// Converting 0.2 locations: ids from the old 1-based index, `lon` → `lng`, extras into `data`.
+// Converting 0.2 locations: ids from the old 1-based index, `lon` → `lng`, `zoom` kept.
 import { createMaplace, type MarkerLocation } from "maplace";
 
 interface Legacy {
@@ -63,11 +63,9 @@ interface Legacy {
   readonly zoom?: number;
 }
 
-type LegacyData = { readonly zoom: number | undefined };
-
-function toLocation(legacy: Legacy, index: number): MarkerLocation<LegacyData> {
+function toLocation(legacy: Legacy, index: number): MarkerLocation {
   const { lat, lon, title, html, icon, zoom } = legacy;
-  return { id: String(index + 1), lat, lng: lon, title, html, icon, data: { zoom } };
+  return { id: String(index + 1), lat, lng: lon, title, html, icon, zoom };
 }
 
 declare const old: readonly Legacy[];
@@ -75,9 +73,9 @@ declare const sanitize: (html: string) => string; // e.g. DOMPurify.sanitize
 
 const locations = old.map((legacy, index) => toLocation(legacy, index));
 const maplace = createMaplace({ locations, sanitize });
-// 0.2's `ViewOnMap(1)` with the location's own zoom:
+// 0.2's `ViewOnMap(1)`, at the location's own zoom:
 const [first] = maplace.getSnapshot().locations;
-if (first) maplace.select(first.id, { zoom: first.data?.zoom });
+if (first) maplace.select(first.id);
 ```
 
 ## Everything a 0.2 page could touch
@@ -130,7 +128,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `infoWindowMaxWidth` | `popup.maxWidth`, for all popups |
 | `icon` | kept: an image URL, a DOM node or a function of the selected/hovered state |
 | `image`, `image_w`, `image_h` | an `icon` node, e.g. a sized `<img>` |
-| `zoom` | `select(id, { zoom })`; keep the number in `data` |
+| `zoom` | kept: the zoom selecting it shows it at, a click on its marker or in the list too; `select(id, { zoom })` overrides it |
 | `show_infowindow` | `false` kept a location's info window shut: leave its `content` (and `html`) out, and a click selects it without a popup |
 | `visible` | kept, default `true` (0.2's docs said `false`, its code did `true`) |
 | `animation` | dropped: animate the `icon` node with CSS |
@@ -138,7 +136,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `stroke_options`, `circle_options` | `style`; the circle's `radius` |
 | `type` | kept: `marker`, `circle`, `polyline`, `polygon`; a polyline or polygon is one location with a `path` |
 | `zIndex` | dropped: stacking order is fixed ([RFC §3, decisions from the 0.2 issues](docs/rfc-1.0.md#decisions-from-the-02-issues)) |
-| `on_menu` | dropped: build your own list from `subscribe` for a partial menu |
+| `on_menu` | `listed: false` (element `listed="false"`): on the map and selectable there, left out of every list view |
 | `pan_on_click` | dropped per location |
 | `draggable` | `editable`: one word for dragging markers and reshaping shapes |
 | any other field, including Google marker options | your fields go in `data`; Google options belong on your own map |
@@ -151,12 +149,12 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
 | `Load(true)` (rebuild) | `detach()`, then `attach()` with a new adapter |
 | `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |
-| `ViewOnMap(index)` | `select(id)` |
+| `ViewOnMap(index)` | `select(id)`, at the location's own `zoom` as in 0.2 |
 | `ViewOnMap('all')` | `select(undefined)` and `fitAll()` |
 | `CloseInfoWindow()` | `select(undefined)`: the popup follows the selection |
 | `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
 | `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
-| `ShowOnMenu(index)` | dropped with `on_menu`: it said whether a location was in the menu, and the 1.0 list shows every location the map shows (`setFilter` narrows both) |
+| `ShowOnMenu(index)` | dropped: a location is in the list when it is shown and its `listed` isn't `false` |
 | `AddControl(name, menu)` | `createListView(maplace, { render })`, or your own view from `subscribe` and `getSnapshot` |
 | internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
 

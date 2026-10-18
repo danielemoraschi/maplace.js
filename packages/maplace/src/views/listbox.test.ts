@@ -66,6 +66,14 @@ describe("createListbox: state", () => {
     expect(Array.from(stops, (option) => option.textContent)).toEqual(["Beta"]);
   });
 
+  it("marks no entry while a location it leaves out is selected, the first entry the tab stop", () => {
+    const { view } = listbox({ fitAllLabel: "All" });
+    view.renderState({ selectedId: "x", hoveredId: undefined });
+    expect(document.querySelectorAll('[aria-selected="true"]')).toHaveLength(0);
+    expect(options()[0]?.hasAttribute("aria-selected")).toBe(false);
+    expect(options()[0]?.tabIndex).toBe(0);
+  });
+
   it("re-runs render only for the entries whose state changed", () => {
     const render = vi.fn(() => document.createElement("span"));
     const { view } = listbox({ render });

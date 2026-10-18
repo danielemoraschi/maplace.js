@@ -22,7 +22,8 @@ export function createNativeSelect<Data>(
   const select = document.createElement("select");
   select.setAttribute("aria-label", settings.label);
   select.className = SELECT_CLASS;
-  // What shows while nothing is selected: "fit all" itself, or a blank placeholder without one.
+  // What shows while nothing is selected: "fit all" itself, or a blank placeholder without one;
+  // none shows while a location it leaves out is, so choosing "fit all" then fires change.
   // No hidden placeholder beside "fit all": Safari lists hidden options, so it would show twice.
   const fitAll = settings.fitAllLabel === undefined ? undefined : textOption(settings.fitAllLabel);
   const nothingSelected = fitAll ?? blankPlaceholder();
@@ -50,10 +51,15 @@ export function createNativeSelect<Data>(
   }
   select.addEventListener("change", onChange);
 
+  /** The store's selection: "fit all" (or the placeholder) for none, no option if unlisted. */
   function showSelection(): void {
-    const wanted =
-      (selectedId === undefined ? undefined : sections.optionOf(selectedId)) ?? nothingSelected;
-    if (!wanted.selected) wanted.selected = true;
+    const option = selectedId === undefined ? nothingSelected : sections.optionOf(selectedId);
+    if (option === undefined) showNoOption();
+    else if (!option.selected) option.selected = true;
+  }
+
+  function showNoOption(): void {
+    if (select.selectedIndex !== -1) select.selectedIndex = -1;
   }
 
   return {

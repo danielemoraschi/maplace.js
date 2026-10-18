@@ -24,11 +24,19 @@ describe("createHoverIntent", () => {
     expect(createHoverIntent().blurred()).toBeUndefined();
   });
 
-  it("forgets entries no longer listed, without asking the store", () => {
+  it("forgets entries no longer in the view, taking its hover off them", () => {
     const intent = createHoverIntent();
     intent.focused("a");
-    intent.retain((id) => id !== "a");
+    expect(intent.retain((id) => id !== "a")).toEqual({ unhover: "a" });
     expect(intent.current()).toBeUndefined();
     expect(intent.blurred()).toBeUndefined();
+  });
+
+  it("falls back to the focused entry when the one under the pointer goes", () => {
+    const intent = createHoverIntent();
+    intent.focused("a");
+    intent.pointerEntered("b");
+    expect(intent.retain((id) => id !== "b")).toEqual({ hover: "a" });
+    expect(intent.retain(() => true)).toBeUndefined();
   });
 });

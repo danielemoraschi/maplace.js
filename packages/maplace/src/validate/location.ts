@@ -23,6 +23,7 @@ import {
   optional,
   POSITIVE,
 } from "./values";
+import { checkZoom } from "./viewport";
 
 /** Where a location sits in its list, and the store's `sanitize` option (`html` needs one). */
 export interface LocationContext {
@@ -47,6 +48,8 @@ const COMMON_CHECKS = {
   html: optional(checkString),
   group: optional(checkString),
   visible: optional(checkBoolean),
+  listed: optional(checkBoolean),
+  zoom: optional(checkZoom),
   editable: optional(checkBoolean),
 } satisfies Readonly<Record<Exclude<CommonKey, (typeof UNCHECKED)[number]>, Check>>;
 

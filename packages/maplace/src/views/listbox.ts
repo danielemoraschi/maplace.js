@@ -2,6 +2,7 @@ import type { ListActions } from "./actions";
 import { createHoverIntent } from "./hover-intent";
 import { heldFocus, keepFocus } from "./kept-focus";
 import { listenToListbox } from "./listbox-events";
+import { applyHover } from "./listbox-hover";
 import {
   fitAllElement,
   groupElement,
@@ -66,7 +67,8 @@ export function createListbox<Data>(
     renderStructure(structure) {
       const held = heldFocus(listbox, ordered);
       ordered = [...fixed, ...sections.render(structure, fixed)];
-      intent.retain((id) => sections.optionOf(id) !== undefined);
+      const hover = intent.retain((id) => sections.optionOf(id) !== undefined);
+      applyHover(actions, hover);
       listbox.hidden = ordered.length === 0;
       placeTabStop();
       keepFocus(roving, { held, order: ordered });

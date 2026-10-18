@@ -41,8 +41,18 @@ interface LocationBase<Data> {
   readonly html?: string | undefined;
   /** Grouping key for list headings and `setFilter`. */
   readonly group?: string | undefined;
+  /**
+   * The zoom selecting it shows it at, centred where its popup points (a shape too, instead of
+   * being fitted); a select's own `zoom` wins. Zooms as in `Viewport`.
+   */
+  readonly zoom?: number | undefined;
   /** Hidden locations stay in the data but are not drawn, listed or selected. Default true. */
   readonly visible?: boolean | undefined;
+  /**
+   * `false` leaves it out of every list view; the map still draws it, and it is selected there.
+   * Default true.
+   */
+  readonly listed?: boolean | undefined;
   /** Lets the user drag a marker or reshape a shape; needs the `edit` capability. */
   readonly editable?: boolean | undefined;
   /** Your own fields, passed back to content, icon and render functions. Any other field throws. */

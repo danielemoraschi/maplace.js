@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Added `listed: false`: a location drawn on the map and selectable there but left out of every list view, as 0.2's `on_menu: false` did; `listed="false"` on `<maplace-location>`; see [MIGRATION.md](MIGRATION.md)
+- 2026-10-18 Added a location's own `zoom`: selecting it without a zoom of the select's (a click on its marker or in the list, `selectedId`, `select(id)`) centres it at that zoom, a shape too in place of its fit; `zoom` on `<maplace-location>`, as 0.2's `zoom` did; see [MIGRATION.md](MIGRATION.md)
 - 2026-10-18 Changed the examples: every Vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`, Maps JS from Google's bootstrap loader), the same map as its page; the React versions render their own root, and the site runs any of the three live
 - 2026-10-18 Added the `mapClick` event: a single click on the map itself, not on a location, with its `position`; it still clears the selection, and a double- or triple-click (Google's zoom) fires neither; `maplace-mapclick` on the element, `onMapClick` in React
 - 2026-10-18 Changed the adapter host: `reportSelectionChange` takes a location's id only, and a click on the map is `reportMapClick(position)`

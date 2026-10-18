@@ -20,6 +20,18 @@ accept({ id: "a", lat: 1, lng: 2, draggable: true });
 // @ts-expect-error a polyline has no fill
 accept({ id: "l", type: "polyline", path: [], style: { fill: "red" } });
 
+// Any location may have the zoom selecting it shows it at.
+accept({ id: "a", lat: 1, lng: 2, zoom: 12 });
+accept({ id: "c", type: "circle", center: { lat: 1, lng: 2 }, radius: 50, zoom: 9 });
+accept({ id: "l", type: "polyline", path: [], zoom: 9 });
+// @ts-expect-error a zoom is a number
+accept({ id: "a", lat: 1, lng: 2, zoom: "12" });
+
+// On the map, out of the list.
+accept({ id: "a", lat: 1, lng: 2, listed: false });
+// @ts-expect-error 0.2's on_menu is listed
+accept({ id: "a", lat: 1, lng: 2, on_menu: false });
+
 // A shape's selected and hovered styles, beside its style.
 const center = { lat: 1, lng: 2 };
 accept({ id: "c", type: "circle", center, radius: 5, selectedStyle: { fill: "red" } });

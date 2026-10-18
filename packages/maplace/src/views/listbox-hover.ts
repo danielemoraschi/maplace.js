@@ -1,3 +1,4 @@
+import type { ListActions } from "./actions";
 import { isFocused } from "./active-element";
 import type { HoverCommand } from "./hover-intent";
 import type { ListboxEventContext } from "./listbox-context";
@@ -13,15 +14,15 @@ export function onPointerOver(context: ListboxEventContext, event: PointerEvent)
   if (!hovers(event)) return;
   const option = context.optionAt(event.target);
   const id = option && context.idOf(option);
-  apply(
-    context,
+  applyHover(
+    context.actions,
     id === undefined ? context.intent.pointerLeft() : context.intent.pointerEntered(id),
   );
 }
 
 export function onPointerOut(context: ListboxEventContext, event: PointerEvent): void {
   if (!hovers(event) || context.optionAt(event.relatedTarget)) return;
-  apply(context, context.intent.pointerLeft());
+  applyHover(context.actions, context.intent.pointerLeft());
 }
 
 export function onFocusIn(context: ListboxEventContext, event: FocusEvent): void {
@@ -31,12 +32,12 @@ export function onFocusIn(context: ListboxEventContext, event: FocusEvent): void
   const id = context.idOf(option);
   // A click or a tap focuses too; only keyboard focus hovers, the pointer has its own.
   const hovering = id !== undefined && isKeyboardFocus(option);
-  apply(context, hovering ? context.intent.focused(id) : context.intent.blurred());
+  applyHover(context.actions, hovering ? context.intent.focused(id) : context.intent.blurred());
 }
 
 /** Moving between options is one focusin, not a blur and a focus: only leaving the list blurs. */
 export function onFocusOut(context: ListboxEventContext, event: FocusEvent): void {
-  if (leftTheList(context, event)) apply(context, context.intent.blurred());
+  if (leftTheList(context, event)) applyHover(context.actions, context.intent.blurred());
 }
 
 /** Not the view's own refocus, not a move to another option, not the window losing focus. */
@@ -60,7 +61,8 @@ function isKeyboardFocus(element: Element): boolean {
   }
 }
 
-function apply(context: ListboxEventContext, command: HoverCommand): void {
-  if (command && "hover" in command) context.actions.hover(command.hover);
-  else if (command) context.actions.unhover(command.unhover);
+/** Asks the store for what `command` says, if anything. */
+export function applyHover(actions: ListActions, command: HoverCommand): void {
+  if (command && "hover" in command) actions.hover(command.hover);
+  else if (command) actions.unhover(command.unhover);
 }

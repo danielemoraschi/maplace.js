@@ -8,6 +8,7 @@ import type { Bounds, FitOptions, View } from "../viewport";
 import { type Change, patchOnly } from "./change";
 
 type BoundsView = Extract<View, { readonly kind: "fit-bounds" }>;
+export type LocationView = Extract<View, { readonly kind: "location" }>;
 
 /** Pixels around fitted locations or boxes unless `padding` says otherwise (RFC §3). */
 export const FIT_PADDING = 40;
@@ -41,7 +42,7 @@ export function fitAllView(padding = FIT_PADDING): View {
 }
 
 /** One location brought into view, as selecting does; `zoom` undefined keeps the zoom. */
-export function locationView(id: string, zoom: number | undefined): View {
+export function locationView(id: string, zoom: number | undefined): LocationView {
   return Object.freeze({ kind: "location", id, zoom });
 }
 

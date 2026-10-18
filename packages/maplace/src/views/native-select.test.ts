@@ -7,6 +7,7 @@ import { createNativeSelect } from "./native-select";
 const locations: Location[] = [
   { id: "a", lat: 0, lng: 0, title: "Alpha", group: "N" },
   { id: "b", lat: 0, lng: 0, title: "Beta" },
+  { id: "x", lat: 0, lng: 0, title: "Unlisted", listed: false },
 ];
 
 function mounted() {
@@ -53,6 +54,21 @@ describe("createNativeSelect", () => {
     const { choose, shown } = mounted();
     choose("All");
     expect(shown()?.textContent).toBe("All");
+  });
+
+  it("shows no option while a location it leaves out is selected, so fit all can be chosen", () => {
+    const { view, select, choose, calls } = mounted();
+    view.renderState({ selectedId: "x", hoveredId: undefined });
+    expect(select.selectedIndex).toBe(-1);
+    choose("All");
+    expect(calls).toEqual(["showAll"]);
+  });
+
+  it("shows no option for a location it leaves out without fit all too", () => {
+    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
+    view.renderStructure(structureOf(locations));
+    view.renderState({ selectedId: "x", hoveredId: undefined });
+    expect((view.element as HTMLSelectElement).selectedIndex).toBe(-1);
   });
 
   it("shows a blank placeholder while nothing is selected when there is no fit all", () => {

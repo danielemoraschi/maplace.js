@@ -56,6 +56,24 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(options.some((option) => option.hasAttribute("aria-label"))).toBe(false);
   });
 
+  it("leaves out a location not listed, with content children too", async () => {
+    const hidden = { id: "west", lat: 0, lng: -1, listed: false };
+    const { container } = await renderInto(
+      <MaplaceProvider locations={[...TOWNS, hidden]}>
+        <LocationList>
+          {({ location }) => <strong>{location.id.toUpperCase()}</strong>}
+        </LocationList>
+      </MaplaceProvider>,
+      root,
+    );
+    expect(optionsIn(container).map((option) => option.textContent)).toEqual([
+      "EAST",
+      "NORTH",
+      "SOUTH",
+    ]);
+    expect(container.textContent).not.toContain("WEST");
+  });
+
   it("names an option by its label only while its content has no text", async () => {
     const { container } = await renderInto(
       <MaplaceProvider locations={TOWNS}>

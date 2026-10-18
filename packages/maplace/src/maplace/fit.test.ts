@@ -76,6 +76,23 @@ describe("resolveView", () => {
     expect(resolveView(marker, scope)).toBe(marker);
     expect(resolveView(zoomed, scope)).toBe(zoomed);
   });
+
+  it("centres a location at its own zoom when the view has none", () => {
+    const own: Location[] = [
+      { id: "m", lat: 1, lng: 2, zoom: 9 },
+      { ...(shapes[0] as Location), zoom: 11 },
+    ];
+    const scope = { locations: own, filter: undefined };
+    const shown = (id: string) => resolveView({ kind: "location", id, zoom: undefined }, scope);
+    expect(shown("m")).toEqual({ kind: "location", id: "m", zoom: 9 });
+    expect(shown("park")).toEqual({ kind: "location", id: "park", zoom: 11 });
+  });
+
+  it("lets the view's zoom win over the location's", () => {
+    const scope = { locations: [{ ...(shapes[0] as Location), zoom: 11 }], filter: undefined };
+    const view: View = { kind: "location", id: "park", zoom: 4 };
+    expect(resolveView(view, scope)).toBe(view);
+  });
 });
 
 describe("createViewSender", () => {

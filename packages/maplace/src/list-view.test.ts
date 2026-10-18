@@ -49,6 +49,34 @@ describe("createListView, end to end through the fake adapter", () => {
     expect(adapter.callsOf("setView")).toHaveLength(views);
   });
 
+  it("a location not listed is drawn and selected from the map, never in the list", async () => {
+    const unlisted = { id: "x", title: "X", lat: 50, lng: 50, listed: false };
+    const { list, adapter, host, maplace } = await listed({ locations: [...locations, unlisted] });
+    expect(adapter.probe().location("x")).toBeDefined();
+    expect(options(list.element).map((option) => option.textContent)).toEqual(["A", "B", "C"]);
+    host.reportSelectionChange("x");
+    expect(maplace.getSnapshot().selectedId).toBe("x");
+    expect(adapter.callsOf("setView").at(-1)?.view).toMatchObject({ kind: "location", id: "x" });
+    expect(list.element.querySelectorAll('[aria-selected="true"]')).toHaveLength(0);
+    maplace.fitAll();
+    expect(adapter.callsOf("setView").at(-1)?.view).toMatchObject({
+      kind: "fit-bounds",
+      bounds: { north: 50, east: 50 },
+    });
+  });
+
+  it("an entry left out of the list under the pointer takes its hover off the map", async () => {
+    const { list, maplace } = await listOnMap();
+    options(list.element)[0]?.dispatchEvent(
+      new PointerEvent("pointerover", { bubbles: true, pointerType: "mouse" }),
+    );
+    expect(maplace.getSnapshot().hoveredId).toBe("a");
+    maplace.setLocations(
+      maplace.getSnapshot().locations.map((l) => (l.id === "a" ? { ...l, listed: false } : l)),
+    );
+    expect(maplace.getSnapshot().hoveredId).toBeUndefined();
+  });
+
   it("a filter removes hidden entries, and keeps focus in the list", async () => {
     const { list, maplace } = await listOnMap();
     maplace.setLocations(

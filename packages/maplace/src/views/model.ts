@@ -1,5 +1,5 @@
 import type { Location } from "../location";
-import { isShown, type Scope } from "../location-state";
+import { isListed, type Scope } from "../location-state";
 
 /** Locations under one group heading, or none (`heading` undefined). */
 export interface ListSection<Data = unknown> {
@@ -18,14 +18,14 @@ export interface ListRules {
   readonly matches?: ((location: Location) => boolean) | undefined;
 }
 
-/** The shown locations that match `rules`, by group when headings are on, else in data order. */
+/** The listed locations that match `rules`, by group when headings are on, else in data order. */
 export function listStructureOf<Data>(scope: Scope, rules: ListRules): ListStructure<Data> {
-  const listed = (scope.locations as readonly Location<Data>[]).filter(
-    (location) => isShown(location, scope.filter) && (rules.matches?.(location) ?? true),
+  const entries = (scope.locations as readonly Location<Data>[]).filter(
+    (location) => isListed(location, scope.filter) && (rules.matches?.(location) ?? true),
   );
   if (!headingsShown(scope.locations, rules))
-    return { sections: [{ heading: undefined, locations: listed }] };
-  return { sections: byGroup(listed) };
+    return { sections: [{ heading: undefined, locations: entries }] };
+  return { sections: byGroup(entries) };
 }
 
 /** What an entry is called: its title if it has text, else its id. */

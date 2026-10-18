@@ -18,6 +18,14 @@ const AROUND_ROME = { lat: ROME.lat, lng: ROME.lng };
 const WITHIN_5_KM: Location = { id: "near", type: "circle", center: AROUND_ROME, radius: 5000 };
 const WITHIN_15_KM: Location = { id: "far", type: "circle", center: AROUND_ROME, radius: 15000 };
 
+/** Clicks a marker by its title once Google has laid it out. */
+async function clickMarker(container: HTMLElement, title: string): Promise<void> {
+  const marker = () =>
+    container.querySelector<HTMLElement>(`gmp-advanced-marker[aria-label="${title}"]`);
+  await expect.poll(() => marker()?.getBoundingClientRect().width ?? 0).toBeGreaterThan(0);
+  await userEvent.click(marker() as HTMLElement);
+}
+
 describeWithMaps("the Google camera under real input", () => {
   afterEach(unmountAll);
 
@@ -45,10 +53,7 @@ describeWithMaps("the Google camera under real input", () => {
   it("pans to a marker the user clicks", async () => {
     const { maplace, container } = await onGoogle(createMaplace({ locations: [ROME, OSLO] }));
     await expect.poll(() => maplace.getSnapshot().viewport).toBeDefined();
-    const oslo = () =>
-      container.querySelector<HTMLElement>('gmp-advanced-marker[aria-label="Oslo"]');
-    await expect.poll(() => oslo()?.getBoundingClientRect().width ?? 0).toBeGreaterThan(0);
-    await userEvent.click(oslo() as HTMLElement);
+    await clickMarker(container, "Oslo");
     await expect.poll(() => centredOn(maplace.getSnapshot().viewport?.center, OSLO)).toBe(true);
   });
 
@@ -65,6 +70,24 @@ describeWithMaps("the Google camera under real input", () => {
     const near = await shown(WITHIN_5_KM, maplace.getSnapshot().viewport?.zoom);
     const far = await shown(WITHIN_15_KM, near);
     expect(far).toBeLessThan(near);
+  });
+
+  it("shows a marker the user clicks at its own zoom, centred on it", async () => {
+    const zoomedOslo = { ...OSLO, zoom: 9 };
+    const { maplace, container } = await onGoogle(createMaplace({ locations: [ROME, zoomedOslo] }));
+    await expect.poll(() => maplace.getSnapshot().viewport).toBeDefined();
+    await clickMarker(container, "Oslo");
+    await expect.poll(() => maplace.getSnapshot().viewport?.zoom).toBe(9);
+    expect(centredOn(maplace.getSnapshot().viewport?.center, OSLO)).toBe(true);
+  });
+
+  it("centres a selected circle at its own zoom instead of fitting it", async () => {
+    const zoomedCircle: Location = { ...WITHIN_15_KM, zoom: 9 };
+    const { maplace } = await onGoogle(createMaplace({ locations: [ROME, zoomedCircle] }));
+    await expect.poll(() => maplace.getSnapshot().viewport).toBeDefined();
+    maplace.select("far");
+    await expect.poll(() => maplace.getSnapshot().viewport?.zoom).toBe(9);
+    expect(centredOn(maplace.getSnapshot().viewport?.center, AROUND_ROME)).toBe(true);
   });
 
   it("moves the page's own map to the store's view", async () => {

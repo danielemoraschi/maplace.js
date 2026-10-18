@@ -1,7 +1,7 @@
 import type { Location, LocationState } from "./location";
 
-// A location's state from selection and hover, and whether it is shown at all: the data rules
-// the store, the views and the bindings share.
+// A location's state from selection and hover, whether it is shown at all, and listed: the data
+// rules the store, the views and the bindings share.
 
 /** Which location is selected and which hovered: what a location's state follows. */
 export interface SelectionAndHover {
@@ -25,10 +25,15 @@ export function changedIds(previous: SelectionAndHover, next: SelectionAndHover)
   );
 }
 
-/** Drawn, listed and selectable: not `visible: false`, and with a filter, in one of its groups. */
+/** Drawn and selectable: not `visible: false`, and with a filter, in one of its groups. */
 export function isShown(location: Location, filter: readonly string[] | undefined): boolean {
   if (location.visible === false) return false;
   return filter === undefined || (location.group !== undefined && filter.includes(location.group));
+}
+
+/** In the list views: shown, and not `listed: false`. */
+export function isListed(location: Location, filter: readonly string[] | undefined): boolean {
+  return location.listed !== false && isShown(location, filter);
 }
 
 /** What decides whether a location is shown: the locations and the filter over them. */

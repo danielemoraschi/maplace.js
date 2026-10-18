@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "./location";
-import { changedIds, isShown, locationById, sameState, stateIn } from "./location-state";
+import { changedIds, isListed, isShown, locationById, sameState, stateIn } from "./location-state";
 
 describe("stateIn", () => {
   it("reads one location's selection and hover", () => {
@@ -53,6 +53,21 @@ describe("isShown", () => {
 
   it("with a filter, hides locations without a group", () => {
     expect(isShown({ id: "a", ...at }, ["N"])).toBe(false);
+  });
+});
+
+describe("isListed", () => {
+  const at = { lat: 0, lng: 0 };
+
+  it("lists a shown location unless it says listed: false", () => {
+    expect(isListed({ id: "a", ...at }, undefined)).toBe(true);
+    expect(isListed({ id: "a", ...at, listed: true }, undefined)).toBe(true);
+    expect(isListed({ id: "a", ...at, listed: false }, undefined)).toBe(false);
+  });
+
+  it("never lists a location that isn't shown, whatever listed says", () => {
+    expect(isListed({ id: "a", ...at, visible: false, listed: true }, undefined)).toBe(false);
+    expect(isListed({ id: "a", ...at, group: "S", listed: true }, ["N"])).toBe(false);
   });
 });
 

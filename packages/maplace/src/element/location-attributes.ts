@@ -22,6 +22,8 @@ export const LOCATION_ATTRIBUTES = [
   "group",
   "radius",
   "icon",
+  "zoom",
+  "listed",
   ...Object.values(STYLE_ATTRIBUTES),
 ] as const;
 
@@ -48,6 +50,8 @@ export function locationFromAttributes(
     id: element.getAttribute("location-id") ?? undefined,
     title: element.getAttribute("title") ?? undefined,
     group: element.getAttribute("group") ?? undefined,
+    zoom: numberOrRaw(element, "zoom"),
+    listed: booleanOrRaw(element, "listed"),
     content,
     icon: icon ?? element.getAttribute("icon") ?? undefined,
     ...geometry,
@@ -61,6 +65,14 @@ export function numberOrRaw(element: Element, name: string): number | string | u
   if (value === null) return undefined;
   const number = Number(value);
   return value.trim() === "" || !Number.isFinite(number) ? value : number;
+}
+
+/** `"true"` or `"false"` as a boolean, or as written otherwise, for the store to name. */
+function booleanOrRaw(element: Element, name: string): boolean | string | undefined {
+  const value = element.getAttribute(name);
+  if (value === null) return undefined;
+  if (value === "true") return true;
+  return value === "false" ? false : value;
 }
 
 /** The attribute parsed as JSON, or as written when it isn't JSON. */
