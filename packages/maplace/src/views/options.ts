@@ -18,6 +18,7 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     groupHeadings: optional(checkBoolean),
     fitAllLabel: optional(checkNonBlankString),
     label: optional(checkNonBlankString),
+    heading: optional(checkNonBlankString),
     render: optional(checkFunction),
   },
   unknown: "is not a list view option",

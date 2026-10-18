@@ -31,7 +31,7 @@ const OPTIONS_0_2: Readonly<Record<string, string>> = {
   controls_type: "use createListView(maplace, { as })",
   controls_cssclass: "style the list with your own classes",
   controls_applycss: "style the list with your own classes",
-  controls_title: "leave it out: add a heading to your page",
+  controls_title: "use the list view's heading option",
   type: "set type per location; for directions use setRoute",
   fusion_options: "leave it out: Google shut down Fusion Tables",
   view_all: "use the list view's fitAllLabel",

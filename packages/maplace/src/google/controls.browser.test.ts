@@ -22,19 +22,25 @@ const PLACES = Array.from({ length: 30 }, (_, index) => ({
 }));
 
 /** The page's map with a store fitted on it, and its list view mounted in the top-left corner. */
-async function listOnMap(as: ListViewOptions["as"] = "list") {
+async function listOnMap(options: ListViewOptions = {}) {
   const container = sizedContainer();
   const map = pageMapIn(container);
   const maplace = createMaplace({ locations: PLACES });
   const { adapter } = await onGoogle(maplace, { map, container });
   await fitted(maplace);
-  const list = createListView(maplace, { as });
+  const list = createListView(maplace, options);
   onTestFinished(() => list.destroy());
   list.element.style.cssText = "width: 200px; max-height: 200px; overflow: auto";
   const remove = adapter.mountControl(list.element, "top-left");
   await controlsPlaced(map);
   await laidOut(list.element);
   return { map, maplace, list, remove };
+}
+
+/** Tabs until the focus is in `list`, past the map's own stops. */
+async function tabInto(list: HTMLElement): Promise<void> {
+  for (let presses = 0; presses < 20 && !list.contains(document.activeElement); presses++)
+    await userEvent.keyboard("{Tab}");
 }
 
 /** Where the map is, as a user sees it: centre and zoom. */
@@ -46,13 +52,28 @@ describeWithMaps("lists on a Google map", () => {
   it("is reached with Tab, and its keys never move or zoom the map", async () => {
     const { map, list } = await listOnMap();
     const before = cameraOf(map);
-    for (let presses = 0; presses < 20 && !list.element.contains(document.activeElement); presses++)
-      await userEvent.keyboard("{Tab}");
+    await tabInto(list.element);
     expect(list.element.contains(document.activeElement)).toBe(true);
     await userEvent.keyboard(
       "{ArrowDown}{ArrowDown}{End}{Home}{PageDown}+-{ArrowLeft}{ArrowRight}",
     );
     await wait(QUIET_MS);
+    expect(cameraOf(map)).toEqual(before);
+  });
+
+  it("a headed list keeps its heading in view while its entries scroll", async () => {
+    const { map, list } = await listOnMap({ heading: "Choose a location:" });
+    const before = cameraOf(map);
+    await tabInto(list.element);
+    expect(document.activeElement?.getAttribute("role")).toBe("option");
+    await userEvent.keyboard("{End}");
+    await wait(QUIET_MS);
+    const listbox = list.element.querySelector('[role="listbox"]') as HTMLElement;
+    const heading = list.element.querySelector(".maplace-list-heading") as HTMLElement;
+    expect(listbox.scrollTop).toBeGreaterThan(0);
+    expect(heading.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      list.element.getBoundingClientRect().top,
+    );
     expect(cameraOf(map)).toEqual(before);
   });
 
@@ -78,7 +99,7 @@ describeWithMaps("lists on a Google map", () => {
   });
 
   it("changes the selection from a select's keys, never the map's zoom", async () => {
-    const { map, maplace, list } = await listOnMap("select");
+    const { map, maplace, list } = await listOnMap({ as: "select" });
     (list.element as HTMLSelectElement).focus();
     const zoom = map.getZoom();
     // Type-ahead changes a closed select on every platform; the arrows open it on some.

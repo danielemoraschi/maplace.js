@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
+import { expect, it, onTestFinished } from "vitest";
 import "../element/google";
+import { defineListView, type ListViewSetup } from "../element";
 import { errorsOn } from "../element/testing/dom";
 import { MAPS_SCRIPT_ORIGIN } from "./maps-script-url";
 import { MAPS_JS_VERSION } from "./testing/maps-loader";
@@ -60,5 +61,32 @@ describeWithKey("<maplace-map> loading Google Maps itself", (key) => {
     expect(list?.textContent).toContain("Rome");
     expect(list?.textContent).toContain("Milan");
     await expect.poll(() => map.querySelectorAll("gmp-advanced-marker").length).toBe(2);
+  });
+
+  it("puts a list view of the page's own on the map, with its heading", async () => {
+    const given: ListViewSetup[] = [];
+    defineListView("plain-checks", (_, setup) => {
+      given.push(setup);
+      const element = document.createElement("fieldset");
+      for (const { id } of setup.listed()) {
+        element.append(
+          Object.assign(document.createElement("input"), { type: "checkbox", value: id }),
+        );
+      }
+      return { element, destroy: () => element.remove() };
+    });
+    const map = mapWith(
+      `${settings} list="plain-checks" list-position="top-left" list-heading="Choose a location:"`,
+    );
+    // Google puts controls on a map only once it is in view; the file's earlier maps push this one below.
+    map.scrollIntoView();
+    onTestFinished(() => map.remove());
+    await ready(map);
+    const pane = map.querySelector(".maplace-map-pane");
+    await expect
+      .poll(() => pane?.querySelector("fieldset"), { timeout: TILES_TIMEOUT_MS })
+      .not.toBeNull();
+    expect(pane?.querySelectorAll("fieldset input")).toHaveLength(2);
+    expect(given.map(({ options }) => options.heading)).toEqual(["Choose a location:"]);
   });
 });

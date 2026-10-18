@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Added the list view's `heading` option: a heading above the entries, beside the map or on it, the list's accessible name unless `label` is given; element `list-heading`, React's `<LocationList heading>`
+- 2026-10-18 Added `defineListView(name, factory)` in `maplace/element`: your own list view for `<maplace-map list="<name>">`, given the store, the list options and the locations maplace's lists show, placed by `list-position` as the built-in lists are, and built as soon as it is defined (on the CDN script, `customElements.get("maplace-map").defineListView`); any list beside the map now takes the list's width
 - 2026-10-18 Changed the adapter host: `reportRouteChange(route, result)` and a `route-failed` `reportError(error, route)` name the route they were computed for, and the store ignores either for any route but its current one; a result whose legs don't run between its route's stops throws
 - 2026-10-18 Added `listed: false`: a location drawn on the map and selectable there but left out of every list view, as 0.2's `on_menu: false` did; `listed="false"` on `<maplace-location>`; see [MIGRATION.md](MIGRATION.md)
 - 2026-10-18 Added a location's own `zoom`: selecting it without a zoom of the select's (a click on its marker or in the list, `selectedId`, `select(id)`) centres it at that zoom, a shape too in place of its fit; `zoom` on `<maplace-location>`, as 0.2's `zoom` did; see [MIGRATION.md](MIGRATION.md)

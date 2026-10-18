@@ -1,18 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { errorsOn, lastAdapter, mapFrom, nextTask, ROME } from "./testing/fake-maps";
-
-const PAGE_STYLES = "maplace-map { width: 600px; height: 300px; }";
-
-function styledPage(): void {
-  const style = document.createElement("style");
-  style.textContent = PAGE_STYLES;
-  document.head.replaceChildren(style);
-}
-
-function box(element: Element | null | undefined) {
-  const { width, height } = element?.getBoundingClientRect() ?? { width: 0, height: 0 };
-  return { width: Math.round(width), height: Math.round(height) };
-}
+import {
+  box,
+  errorsOn,
+  lastAdapter,
+  mapFrom,
+  nextTask,
+  ROME,
+  styledPage,
+} from "./testing/fake-maps";
 
 describe("<maplace-map> on the page", () => {
   it("fills itself with the map, which the page sizes", async () => {

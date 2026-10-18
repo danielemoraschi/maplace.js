@@ -1,5 +1,5 @@
-import { type Adapter, type Maplace, MaplaceError } from "../index";
-import { elementMisuse } from "./element-error";
+import type { Adapter, Maplace } from "../index";
+import { runPageCode } from "./element-error";
 import type { ElementList } from "./element-list";
 import type { MaplaceMapElement } from "./index";
 import { providerFor } from "./providers";
@@ -48,10 +48,7 @@ export function openSession(
 /** The adapter `host`'s provider builds; any failure of the provider's own is the element's misuse. */
 function adapterFrom(host: MaplaceMapElement): Adapter {
   const provider = providerFor(host);
-  try {
-    return provider(host);
-  } catch (error) {
-    if (error instanceof MaplaceError) throw error;
-    throw elementMisuse("its provider failed to build a map", { field: "provider", cause: error });
-  }
+  return runPageCode(() => provider(host), "its provider failed to build a map", {
+    field: "provider",
+  });
 }

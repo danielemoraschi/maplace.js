@@ -13,7 +13,7 @@ export const DEFAULT_STYLES = `
 :where(.${PANE_CLASS}) { height: 100%; }
 ${BESIDE} { display: flex; }
 ${BESIDE} > :where(.${PANE_CLASS}) { flex: 1 1 auto; min-width: 0; }
-${BESIDE} > :where([role="listbox"], select) { flex: 0 1 16rem; }
+${BESIDE} > :where([data-maplace-list]) { flex: 0 1 16rem; }
 `;
 
 /** Adds the elements' default styles to `document`, once. */

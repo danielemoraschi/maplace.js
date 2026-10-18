@@ -20,8 +20,9 @@ export interface LocationListProps<Data = unknown> extends ListOptions<Data> {
 }
 
 /**
- * The store's list view. A change of `as`, `groupHeadings`, `fitAllLabel` or `label` builds it
- * again, as `createListView` reads them once; a new `children` function just renders again.
+ * The store's list view. A change of `as`, `groupHeadings`, `fitAllLabel`, `label` or `heading`
+ * builds it again, as `createListView` reads them once; a new `children` function just renders
+ * again.
  */
 export function LocationList<Data>(props: LocationListProps<Data>): ReactNode {
   const { children, ...options } = props;
@@ -45,21 +46,21 @@ export function LocationList<Data>(props: LocationListProps<Data>): ReactNode {
  * layout effect: the list fills its options as it is made, and their content renders before paint.
  */
 function useListView<Data>(
-  { as, groupHeadings, fitAllLabel, label }: ListOptions<Data>,
+  { as, groupHeadings, fitAllLabel, label, heading }: ListOptions<Data>,
   portals: EntryPortals<Data> | undefined,
 ): RefObject<HTMLDivElement | null> {
   const store = useMaplace<Data>();
   const place = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const render = portals?.renderEntry;
-    const view = createListView(store, { as, groupHeadings, fitAllLabel, label, render });
+    const view = createListView(store, { as, groupHeadings, fitAllLabel, label, heading, render });
     place.current?.append(view.element);
     const stopPruning = portals && pruneOnListChanges(store, portals, view.element);
     return () => {
       stopPruning?.();
       view.destroy();
     };
-  }, [store, portals, as, groupHeadings, fitAllLabel, label]);
+  }, [store, portals, as, groupHeadings, fitAllLabel, label, heading]);
   return place;
 }
 

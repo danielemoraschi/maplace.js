@@ -40,6 +40,9 @@ describe("validateOptions", () => {
     expect(() => validateOptions({ directions_panel: "#panel" })).toThrow(
       /directions_panel is a 0.2 option; render each leg's steps from the routeChange event/,
     );
+    expect(() => validateOptions({ controls_title: "Choose a location:" })).toThrow(
+      /controls_title is a 0.2 option; use the list view's heading/,
+    );
   });
 
   it("rejects unknown options", () => {

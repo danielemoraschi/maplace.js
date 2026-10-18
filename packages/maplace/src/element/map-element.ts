@@ -1,8 +1,10 @@
 import type { LoadState, Location, Maplace, Route } from "../index";
 import { afterParsing } from "./after-parsing";
 import { adoptDefaultStyles, PANE_CLASS } from "./default-styles";
-import { type ElementList, LIST_ATTRIBUTES, listFromAttributes } from "./element-list";
+import { isListAttribute, LIST_ATTRIBUTES } from "./element-list";
 import type { MaplaceMapElement } from "./index";
+import { createListKeeper, type ListKeeper } from "./list-keeper";
+import { defineListView } from "./list-views";
 import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
 import { createSetupRetry } from "./setup-retry";
@@ -17,6 +19,8 @@ import { MAPLACE_VERSION } from "./version";
 export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   static readonly maplaceVersion = MAPLACE_VERSION;
   static readonly observedAttributes = [...LIST_ATTRIBUTES, "provider", "cluster"];
+  /** `defineListView`, for a page on the CDN script, which can't import it. */
+  static readonly defineListView = defineListView;
 
   readonly #internals = this.attachInternals();
   readonly #misuse = createStandingMisuse(this, () => this.#showLoadState());
@@ -24,8 +28,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   readonly #setupRetry = createSetupRetry(this, () => this.#start());
   readonly #ownNodesWatch = new MutationObserver(() => this.#keepOwnNodes());
   readonly #feed = new StoreFeed(this, this.#misuse, () => this.#showLoadState());
-  #list: ElementList | undefined;
-  #listRebuildQueued = false;
+  #lists: ListKeeper | undefined;
   #session: MapSession | undefined;
   #shownState: LoadState = "idle";
   #released = false;
@@ -86,11 +89,10 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   attributeChangedCallback(name: string, previous: string | null, value: string | null): void {
-    const store = this.#feed.created;
-    if (previous === value || store === undefined) return;
+    if (previous === value || this.#feed.created === undefined) return;
     if (name === "cluster") this.#feed.checkClusterUnchanged();
     else if (name === "provider") this.#restart();
-    else this.#queueListRebuild(store);
+    else if (isListAttribute(name)) this.#lists?.rebuildSoon();
   }
 
   release(): void {
@@ -101,8 +103,12 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   /** Creates the store and its list, and opens the map unless held. */
   #open(): void {
     if (!this.isConnected) return;
-    const store = this.#feed.store();
-    this.#list ??= this.#listFor(store);
+    this.#lists ??= createListKeeper(this, {
+      store: this.#feed.store(),
+      misuse: this.#misuse,
+      show: (list) => this.#session?.showList(list),
+    });
+    this.#lists.open();
     this.#start();
   }
 
@@ -112,7 +118,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
 
   #start(): void {
     if (!this.isConnected || this.#isHeld() || this.#session !== undefined) return;
-    const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#list };
+    const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#lists?.list };
     this.#session = this.#misuse.retry("setup", () => openSession(this, parts));
     if (this.#session === undefined) this.#setupRetry.wait();
     else this.#setupRetry.stop();
@@ -121,6 +127,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #stop(): void {
     this.#closeSession();
     this.#setupRetry.stop();
+    this.#lists?.stop();
     this.#ownNodesWatch.disconnect();
     this.#feed.stopWatching();
   }
@@ -128,7 +135,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   /** The page may replace the element's children, rendering its locations: the map and list stay. */
   #keepOwnNodes(): void {
     if (this.#pane.parentNode !== this) this.prepend(this.#pane);
-    this.#list?.restore();
+    this.#lists?.restore();
   }
 
   #restart(): void {
@@ -139,22 +146,6 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #closeSession(): void {
     this.#session?.close();
     this.#session = undefined;
-  }
-
-  #listFor(store: Maplace): ElementList | undefined {
-    return this.#misuse.attempt("list", () => listFromAttributes(this, store));
-  }
-
-  /** One rebuild for the list attributes a page sets together. */
-  #queueListRebuild(store: Maplace): void {
-    if (this.#listRebuildQueued) return;
-    this.#listRebuildQueued = true;
-    queueMicrotask(() => {
-      this.#listRebuildQueued = false;
-      this.#list?.destroy();
-      this.#list = this.#listFor(store);
-      this.#session?.showList(this.#list);
-    });
   }
 
   #showLoadState(): void {

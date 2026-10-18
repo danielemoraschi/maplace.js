@@ -73,7 +73,7 @@ export function optionAt(
   return undefined;
 }
 
-function element(tag: string, className: string): HTMLElement {
+export function element(tag: string, className: string): HTMLElement {
   const created = document.createElement(tag);
   created.className = className;
   return created;

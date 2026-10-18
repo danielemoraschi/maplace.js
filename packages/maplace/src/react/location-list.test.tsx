@@ -29,6 +29,23 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(container.querySelector("select")?.value).toBe("south");
   });
 
+  it("shows a heading naming the list, and builds the list again only for a new one", async () => {
+    const app = (heading: string) => (
+      <MaplaceProvider locations={TOWNS}>
+        <LocationList heading={heading} />
+      </MaplaceProvider>
+    );
+    const { container, render } = await renderInto(app("Towns near you"), root);
+    const list = listboxes(container)[0];
+    expect(container.querySelector(".maplace-list-heading")?.textContent).toBe("Towns near you");
+    expect(list?.getAttribute("aria-label")).toBe("Towns near you");
+    await render(app("Towns near you"));
+    expect(listboxes(container)[0]).toBe(list);
+    await render(app("Towns"));
+    expect(listboxes(container)[0]).not.toBe(list);
+    expect(listboxes(container)[0]?.getAttribute("aria-label")).toBe("Towns");
+  });
+
   it("keeps its view across renders with the same options", async () => {
     const app = () => (
       <MaplaceProvider locations={TOWNS}>

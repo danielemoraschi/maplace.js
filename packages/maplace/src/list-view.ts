@@ -5,6 +5,7 @@ import type { Maplace } from "./store";
 import { child, root } from "./validate/fail";
 import { listActionsFor } from "./views/actions";
 import { follow } from "./views/follow";
+import { headed } from "./views/headed";
 import { LIST_STYLES } from "./views/list-styles";
 import { createListbox } from "./views/listbox";
 import { createNativeSelect } from "./views/native-select";
@@ -23,8 +24,13 @@ export interface ListViewOptions<Data = unknown> {
   readonly groupHeadings?: boolean | undefined;
   /** Adds a first entry with this label that clears the selection and fits all locations. */
   readonly fitAllLabel?: string | undefined;
-  /** The list's accessible name. Default "Locations"; or label `element` from the page. */
+  /**
+   * The list's accessible name. Default the `heading`, else "Locations"; or label `element` from
+   * the page.
+   */
   readonly label?: string | undefined;
+  /** A visible heading above the entries; the list's accessible name unless `label` is given. */
+  readonly heading?: string | undefined;
   /**
    * Custom entry content for `as: 'list'`, re-run only for entries whose location object or state
    * changed; the view keeps keyboard, focus and ARIA handling. Return a non-interactive node for
@@ -40,7 +46,11 @@ export interface ListViewOptions<Data = unknown> {
  * whenever nothing is (a selected location the list leaves out marks no entry).
  */
 export interface ListView {
-  /** The listbox or select itself: label it from the page, or place it with `mountControl`. */
+  /**
+   * The listbox or select itself, or with `heading` a block holding the heading above it: place
+   * it with `mountControl`. Label it from the page only without `heading`: the block is no list,
+   * so a label on it names nothing (give `label` instead).
+   */
   readonly element: HTMLElement;
   /**
    * Stops following the store, clears the hover it set, and removes `element` (a later remover
@@ -68,11 +78,16 @@ export function createListView<Data>(
       throw error;
     });
   });
-  const variant: ListVariant<Data> = VARIANTS[options?.as ?? "list"](actions, {
-    label: options?.label ?? DEFAULT_LABEL,
+  const list: ListVariant<Data> = VARIANTS[options?.as ?? "list"](actions, {
+    label: options?.label ?? options?.heading ?? DEFAULT_LABEL,
     fitAllLabel: options?.fitAllLabel,
     render: options?.render,
   });
+  const heading = options?.heading;
+  const variant =
+    heading === undefined
+      ? list
+      : headed(list, { text: heading, namesList: options?.label === undefined });
   const stopFollowing = follow(maplace, {
     variant,
     rules: { groupHeadings: options?.groupHeadings },

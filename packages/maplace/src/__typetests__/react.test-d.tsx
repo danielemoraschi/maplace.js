@@ -60,6 +60,9 @@ const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 export const instance = <MaplaceMap createAdapter={adapter} />;
 // @ts-expect-error an entry's content is React content, rendered by a function
 export const staticContent = <LocationList>{"Shops"}</LocationList>;
+export const headed = <LocationList heading="Choose a location:" />;
+// @ts-expect-error a heading is text
+export const headingNode = <LocationList heading={<h2>Shops</h2>} />;
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 

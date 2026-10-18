@@ -1,41 +1,26 @@
 import { elementMisuse } from "./element-error";
 import type { ProviderFactory } from "./index";
+import { createRegistry } from "./registry";
 
 const PROVIDER_FIELD = { field: "provider" };
 
-const registered = new Map<string, ProviderFactory>();
-const waiting = new Set<() => void>();
+const providers = createRegistry<ProviderFactory>({
+  noun: "provider",
+  builds: "an adapter",
+  ...PROVIDER_FIELD,
+});
 
 /** Adds a provider under `name`; the same one again changes nothing, another one under it throws. */
-export function registerProvider(name: string, factory: ProviderFactory): void {
-  if (typeof name !== "string" || name === "") {
-    throw elementMisuse(`a provider's name must be a non-empty string, got ${String(name)}`);
-  }
-  if (typeof factory !== "function") {
-    throw elementMisuse(`provider "${name}" must be a function building an adapter`);
-  }
-  const existing = registered.get(name);
-  if (existing !== undefined && existing !== factory) {
-    throw elementMisuse(`provider "${name}" is already registered`);
-  }
-  if (existing !== undefined) return;
-  registered.set(name, factory);
-  // A retry may stop waiting or wait again: retry those waiting now, not ones added meanwhile.
-  const waitingNow = Array.from(waiting);
-  for (const retry of waitingNow) retry();
-}
+export const registerProvider = providers.add;
 
 /** Calls `retry` whenever a provider is registered, until the returned function is called. */
-export function onProviderRegistered(retry: () => void): () => void {
-  waiting.add(retry);
-  return () => waiting.delete(retry);
-}
+export const onProviderRegistered = providers.onAdded;
 
 /** The provider `host` names in its `provider` attribute, or the only one registered. */
 export function providerFor(host: Element): ProviderFactory {
   const name = host.getAttribute("provider");
   if (name !== null) return namedProvider(name);
-  const [only, ...others] = registered.values();
+  const [only, ...others] = providers.values();
   if (only === undefined) {
     throw elementMisuse(
       "no provider is registered: import maplace/element/google, or load the CDN script",
@@ -44,7 +29,7 @@ export function providerFor(host: Element): ProviderFactory {
   }
   if (others.length > 0) {
     throw elementMisuse(
-      `several providers are registered (${namesRegistered()}): set provider`,
+      `several providers are registered (${providers.names()}): set provider`,
       PROVIDER_FIELD,
     );
   }
@@ -52,17 +37,14 @@ export function providerFor(host: Element): ProviderFactory {
 }
 
 function namedProvider(name: string): ProviderFactory {
-  const factory = registered.get(name);
+  const factory = providers.get(name);
   if (factory === undefined) {
-    const known = registered.size === 0 ? "none is" : `${namesRegistered()} are`;
+    const names = providers.names();
+    const known = names === "" ? "none is" : `${names} are`;
     throw elementMisuse(
       `provider "${name}" is not registered (${known} registered)`,
       PROVIDER_FIELD,
     );
   }
   return factory;
-}
-
-function namesRegistered(): string {
-  return [...registered.keys()].map((name) => `"${name}"`).join(", ");
 }

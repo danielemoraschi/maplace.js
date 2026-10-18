@@ -6,6 +6,7 @@ const shop = createMaplace({ locations: [{ id: "s", lat: 1, lng: 2, data: { pric
 
 const list = createListView(shop, {
   label: "Shops",
+  heading: "Shops near you",
   fitAllLabel: "All shops",
   render: ({ location, selected }) => {
     expectTypeOf(location.data).toEqualTypeOf<{ price: number } | undefined>();
@@ -20,3 +21,5 @@ expectTypeOf(list.element).toEqualTypeOf<HTMLElement>();
 createListView(shop, { as: "dropdown" });
 // @ts-expect-error render returns a node, never an HTML string
 createListView(shop, { render: () => "<b>Shop</b>" });
+// @ts-expect-error a heading is text, never a node
+createListView(shop, { heading: document.createElement("h2") });

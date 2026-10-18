@@ -32,14 +32,26 @@ describe("the list's default styles", () => {
     await expect.poll(() => background("Alpha")).not.toBe(background("Beta"));
   });
 
+  it("set the heading apart from the entries", async () => {
+    const { list } = await listed({ locations }, { heading: "Choose a location:" });
+    const style = getComputedStyle(headingIn(list.element));
+    expect(Number(style.fontWeight)).toBeGreaterThanOrEqual(600);
+    expect(style.paddingTop).not.toBe("0px");
+  });
+
   it("give way to any rule of the page", async () => {
     const rule = Object.assign(document.createElement("style"), { id: "page-rule" });
-    rule.textContent = ".maplace-option { padding: 0; }";
+    rule.textContent = ".maplace-option, .maplace-list-heading { padding: 0; }";
     document.head.append(rule);
-    const { list } = await listed({ locations });
+    const { list } = await listed({ locations }, { heading: "Choose a location:" });
     expect(getComputedStyle(optionTitled(list.element, "Alpha")).paddingTop).toBe("0px");
+    expect(getComputedStyle(headingIn(list.element)).paddingTop).toBe("0px");
   });
 });
+
+function headingIn(list: Element): HTMLElement {
+  return list.querySelector(".maplace-list-heading") as HTMLElement;
+}
 
 function optionTitled(list: Element, title: string): HTMLElement {
   return optionsIn(list).find((option) => option.textContent === title) as HTMLElement;

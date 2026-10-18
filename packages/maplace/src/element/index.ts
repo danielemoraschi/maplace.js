@@ -1,5 +1,6 @@
 import type { Adapter, ControlPosition } from "../adapter";
 import type { MaplaceEvents } from "../events";
+import type { ListView, ListViewOptions } from "../list-view";
 import type { Location } from "../location";
 import type { Route } from "../route";
 import type { LoadState, Maplace } from "../store";
@@ -13,6 +14,25 @@ export type ProviderFactory = (element: MaplaceMapElement) => Adapter;
 
 export { defineProvider } from "./define";
 
+/** The list options `<maplace-map>` reads from its attributes and gives every list view. */
+export type ElementListOptions = Pick<ListViewOptions, "fitAllLabel" | "heading">;
+
+/** What `<maplace-map>` gives a list view besides its store. */
+export interface ListViewSetup {
+  /** The list options from the attributes (`fit-all-label`, `list-heading`). */
+  readonly options: ElementListOptions;
+  /**
+   * The locations maplace's own lists show now, in data order (those shown under the filter).
+   * Read it again on each store change, so a view of yours lists what they list.
+   */
+  listed(): readonly Location[];
+}
+
+/** Builds the list view `<maplace-map list="<name>">` names, from the element's store and setup. */
+export type ListViewFactory = (maplace: Maplace, setup: ListViewSetup) => ListView;
+
+export { defineListView } from "./list-views";
+
 /**
  * `<maplace-map>`: a map plus an optional list. Its locations come from the `locations` property
  * once set; else from one inline `<script type="application/json">` child, or from
@@ -21,10 +41,13 @@ export { defineProvider } from "./define";
  * Attributes:
  * - `provider`: registered provider name; defaults to the only one registered. A change opens
  *   the map again on it.
- * - `list`: present = list view; `list="select"` = native select; absent = no list.
+ * - `list`: present = list view; `list="select"` = native select; `list="<name>"` = a view given
+ *   to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
  * - `fit-all-label`: label of a first list entry that fits all locations.
- *   (`list`, `list-position` and `fit-all-label` are live: the list is built again.)
+ * - `list-heading`: a heading above the list, beside the map or on it; the list's accessible name.
+ *   (`list`, `list-position`, `fit-all-label` and `list-heading` are live: the list is built
+ *   again.)
  * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `hold`: stay idle, with no provider request, until `release()`.

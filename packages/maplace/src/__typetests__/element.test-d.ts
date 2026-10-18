@@ -1,16 +1,20 @@
 // Compile-time checks of the element: each @ts-expect-error must stay an error.
-import type {
-  Adapter,
-  Geometry,
-  LatLng,
-  LoadState,
-  Location,
-  Maplace,
-  MaplaceError,
-  Route,
+import {
+  type Adapter,
+  createListView,
+  type Geometry,
+  type LatLng,
+  type LoadState,
+  type Location,
+  type Maplace,
+  type MaplaceError,
+  type Route,
 } from "maplace";
 import {
+  defineListView,
   defineProvider,
+  type ListViewFactory,
+  type ListViewSetup,
   type MaplaceElementEventMap,
   type MaplaceLocationElement,
   type MaplaceMapElement,
@@ -69,3 +73,13 @@ defineProvider("mine", (element) => {
 });
 // @ts-expect-error a provider builds an adapter
 defineProvider("mine", () => "google");
+
+defineListView("checks", (maplace, { options, listed }) => {
+  expectTypeOf(maplace).toEqualTypeOf<Maplace>();
+  expectTypeOf(options.fitAllLabel).toEqualTypeOf<string | undefined>();
+  expectTypeOf(listed()).toEqualTypeOf<readonly Location[]>();
+  return createListView(maplace, options);
+});
+// @ts-expect-error a list view factory returns a ListView, not an element
+defineListView("checks", () => document.createElement("div"));
+expectTypeOf<ListViewFactory>().parameters.toEqualTypeOf<[Maplace, ListViewSetup]>();

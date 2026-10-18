@@ -13,6 +13,7 @@ describe("checkListViewOptions", () => {
       groupHeadings: true,
       fitAllLabel: "All",
       label: "Shops",
+      heading: "Choose a location:",
       render: () => {},
     };
     expect(check(all)).not.toThrow();
@@ -22,6 +23,8 @@ describe("checkListViewOptions", () => {
     expect(check({ type: "list" })).toThrow("createListView: type is not a list view option");
     expect(check({ as: "dropdown" })).toThrow(/as must be one of/);
     expect(check({ label: "  " })).toThrow("createListView: label must be a non-blank string");
+    expect(check({ heading: " " })).toThrow("createListView: heading must be a non-blank string");
+    expect(check({ heading: 3 })).toThrow(/heading must be a non-blank string/);
   });
 
   it("refuses render for a native select instead of ignoring it", () => {

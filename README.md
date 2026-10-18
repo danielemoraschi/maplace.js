@@ -19,7 +19,7 @@ One script, no build step:
 
 - `api-key` is your Google Maps JavaScript API key. The element loads Maps JS itself, once per page.
 - `map-id` is required: maplace draws advanced markers, which need a map ID. `DEMO_MAP_ID` is Google's public ID for development.
-- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, and `list-position` places it on the map or outside it. The list and popups come with default styles in `:where()`: any rule of yours wins.
+- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplace's lists do; `list-position` places it on the map or outside it, and `list-heading` shows a heading above it (on the map too), naming it for screen readers. The list and popups come with default styles in `:where()`: any rule of yours wins.
 
 A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list.
 
@@ -37,6 +37,8 @@ The CDN has two scripts. Load exactly one of them:
 | `maplace-element-cluster.iife.js` | the same, with `cluster` (bundles Google's MarkerClusterer; its licences are in `THIRD-PARTY-LICENSES.txt` beside it) |
 
 A map with `cluster` on the first script fails to load and says to use the second.
+
+The scripts set no global: the element is the API. A page on either defines its own list view through the element, `customElements.get("maplace-map").defineListView(name, factory)` (after `customElements.whenDefined("maplace-map")` when its script may run first).
 
 ## Pin it for production
 
@@ -105,7 +107,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 |---|---|
 | `maplace` | `createMaplace` (the headless store), `createListView`, the adapter contract and the types |
 | `maplace/google` | `createGoogleAdapter`: the only entry that knows `google.maps` |
-| `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers |
+| `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |
 | `maplace/element/google` | the element with the Google provider registered |
 | `maplace/react` | `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>` and `useMaplace()` |
 
