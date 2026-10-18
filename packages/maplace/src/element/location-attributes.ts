@@ -25,6 +25,7 @@ export const LOCATION_ATTRIBUTES = [
   "icon",
   "zoom",
   "listed",
+  "editable",
   ...Object.values(STYLE_ATTRIBUTES),
 ] as const;
 
@@ -53,6 +54,7 @@ export function locationFromAttributes(
     group: element.getAttribute("group") ?? undefined,
     zoom: numberOrRaw(element, "zoom"),
     listed: booleanOrRaw(element, "listed"),
+    editable: booleanOrRaw(element, "editable"),
     content,
     icon: icon ?? element.getAttribute("icon") ?? undefined,
     ...geometry,
@@ -68,11 +70,14 @@ export function numberOrRaw(element: Element, name: string): number | string | u
   return value.trim() === "" || !Number.isFinite(number) ? value : number;
 }
 
-/** `"true"` or `"false"` as a boolean, or as written otherwise, for the store to name. */
+/**
+ * A present attribute with no value, or `"true"`, as true; `"false"` as false; anything else as
+ * written, for the store to name.
+ */
 function booleanOrRaw(element: Element, name: string): boolean | string | undefined {
   const value = element.getAttribute(name);
   if (value === null) return undefined;
-  if (value === "true") return true;
+  if (value === "" || value === "true") return true;
   return value === "false" ? false : value;
 }
 

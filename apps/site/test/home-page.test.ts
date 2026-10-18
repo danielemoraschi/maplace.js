@@ -1,6 +1,7 @@
 import { type Browser, type BrowserContext, chromium, type Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
+import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
 import { chooseVersion, firstMap, placeholder, visitor as visitorOf } from "./visitor.ts";
 
@@ -11,7 +12,7 @@ import { chooseVersion, firstMap, placeholder, visitor as visitorOf } from "./vi
 const SETTLE_MS = 500;
 
 /** One section per example on the home page (D23). */
-const EXAMPLE_COUNT = 10;
+const EXAMPLE_COUNT = EXAMPLE_SECTIONS.length;
 
 /** How long a released map may take to ask for Maps JS, on a busy machine. */
 const ASKED = { timeout: 10_000 };
@@ -132,7 +133,7 @@ describe("the home page's examples", () => {
           ),
         ASKED,
       )
-      .toMatchObject({ stops: ["milan", "bologna", "florence"] });
+      .toMatchObject({ stops: ["milan", "zurich", "paris", "munich"], via: ["zurich"] });
     await page.locator("#big-map").scrollIntoViewIfNeeded();
     await expect.poll(() => fetched("/points-4k.json"), ASKED).toBe(true);
     await context.close();

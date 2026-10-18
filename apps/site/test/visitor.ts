@@ -61,7 +61,7 @@ export async function visitor(
   };
 }
 
-/** The page's first map: every section has one, so a locator for all would match ten. */
+/** The page's first map: every section has one, so a locator for all would match them all. */
 export const firstMap = (page: Page) => page.locator("maplace-map").first();
 
 export const placeholder = (page: Page) =>

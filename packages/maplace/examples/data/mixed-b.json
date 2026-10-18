@@ -1,0 +1,34 @@
+[
+  {
+    "id": "b1",
+    "group": "Group B",
+    "title": "Title A2",
+    "content": "Content A2 Lorem Ipsum..",
+    "lat": 52.1,
+    "lng": 11.3
+  },
+  {
+    "id": "b2",
+    "group": "Group B",
+    "title": "Title B2",
+    "content": "Content B2 Lorem Ipsum..",
+    "lat": 51.2,
+    "lng": 22.2
+  },
+  {
+    "id": "b3",
+    "group": "Group B",
+    "title": "Title C2",
+    "content": "Content C2 Lorem Ipsum..",
+    "lat": 49.4,
+    "lng": 35.9
+  },
+  {
+    "id": "b4",
+    "group": "Group B",
+    "title": "Title D2",
+    "content": "Content D2 Lorem Ipsum..",
+    "lat": 47.8,
+    "lng": 15.6
+  }
+]

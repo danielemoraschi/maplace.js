@@ -19,10 +19,10 @@ One script, no build step:
 
 - `api-key` is your Google Maps JavaScript API key. The element loads Maps JS itself, once per page.
 - `map-id` is required: maplace draws advanced markers, which need a map ID. `DEMO_MAP_ID` is Google's public ID for development.
-- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplace's lists do; `list-position` places it on the map or outside it, and `list-heading` shows a heading above it (on the map too), naming it for screen readers. The list and popups come with default styles in `:where()`: any rule of yours wins.
+- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplace's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, and `list-heading` shows a heading above it (on the map too), naming it for screen readers. The list and popups come with default styles in `:where()`: any rule of yours wins.
 - `color-scheme` (`light`, `dark` or `follow-system`) and `map-options` (Google's map options as JSON, e.g. `'{"mapTypeControl":false}'`: not centre, zoom, map ID, colour scheme or `styles`) set the map Google creates; change either and the map opens again where it was.
 
-A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list.
+A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
 
 A circle's styles (colours, opacities, stroke width) are JSON objects in `shape-style`, `selected-style` and `hovered-style`: `<maplace-location type="circle" … selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>`.
 
@@ -106,7 +106,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 
 | Entry | What it gives |
 |---|---|
-| `maplace` | `createMaplace` (the headless store), `createListView`, the adapter contract and the types |
+| `maplace` | `createMaplace` (the headless store), `createListView`, `listedLocations`, the adapter contract and the types |
 | `maplace/google` | `createGoogleAdapter`: the only entry that knows `google.maps` |
 | `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |
 | `maplace/element/google` | the element with the Google provider registered |
@@ -200,7 +200,7 @@ export function CityMap() {
 ## Documentation
 
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): ten scenarios, each as an HTML page, vanilla TypeScript and React.
+- [Examples](packages/maplace/examples/): twelve scenarios, each as an HTML page, vanilla TypeScript and React.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 

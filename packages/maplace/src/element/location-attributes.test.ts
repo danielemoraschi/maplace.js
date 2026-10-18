@@ -50,6 +50,22 @@ describe("locationFromAttributes", () => {
     expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("listed");
   });
 
+  it("reads a present listed or editable attribute with no value as true", () => {
+    const read = (name: string, value: string) =>
+      locationFromAttributes(element({ "location-id": "a", [name]: value }));
+    expect(read("listed", "")).toMatchObject({ listed: true });
+    expect(read("editable", "")).toMatchObject({ editable: true });
+  });
+
+  it("reads editable as a boolean, or as written when it isn't true or false", () => {
+    const editable = (value: string) =>
+      locationFromAttributes(element({ "location-id": "a", editable: value }));
+    expect(editable("true")).toMatchObject({ editable: true });
+    expect(editable("false")).toMatchObject({ editable: false });
+    expect(editable("x")).toMatchObject({ editable: "x" });
+    expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("editable");
+  });
+
   it("keeps the group and the popup content given", () => {
     const content = () => document.createTextNode("x");
     const location = locationFromAttributes(element({ "location-id": "a", group: "north" }), {

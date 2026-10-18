@@ -12,30 +12,54 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
   {
     name: "markers",
     title: "Markers",
-    summary: "Places with a list beside them, and a popup of your own markup.",
+    summary:
+      "Image icons and popups, a list on the map, one place listed nowhere: click the map to add one.",
   },
-  { name: "circles", title: "Circles", summary: "Areas around a point, by radius in metres." },
+  {
+    name: "circles",
+    title: "Circles",
+    summary: "Areas in their own colours, with popups; resize the third and see its radius.",
+  },
   {
     name: "menu",
     title: "Menu",
     summary: "A native select on the map, grouped by region, with an entry for all.",
   },
   {
+    name: "custom-list",
+    title: "Custom list",
+    summary: "A list of your own on the map, as 0.2's checks menu: a radio per place, and fit all.",
+  },
+  {
     name: "tabs",
     title: "Tabs",
     summary: "The list outside the map; a details panel follows the selection.",
   },
-  { name: "polyline", title: "Polyline", summary: "A path through points, from inline JSON." },
+  {
+    name: "polyline",
+    title: "Polyline",
+    summary: "A trail to edit, with points of interest along it, from inline JSON.",
+  },
   {
     name: "polygon",
     title: "Polygon",
     summary: "An area to edit: drag a corner, and the edit is written back.",
   },
-  { name: "route", title: "Route", summary: "One route through your own places, in order." },
+  {
+    name: "route",
+    title: "Route",
+    summary: "A drive through your own places, passing through one, with directions by leg.",
+  },
   {
     name: "mixed",
     title: "Mixed",
-    summary: "Markers and a circle, from a JSON file the page fetches.",
+    summary:
+      "0.2's five data sets, fetched and swapped in live: markers, a route, an area, a circle.",
+  },
+  {
+    name: "styled",
+    title: "Styled",
+    summary: "Google's own look: a light or dark map, and the map-type control.",
   },
   { name: "big", title: "Big", summary: "4,000 points from 0.2's demo, clustered." },
 ];

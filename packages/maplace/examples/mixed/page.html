@@ -1,8 +1,32 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<!-- Markers and circles together, data loaded by the page. -->
+<!-- 0.2's five data sets, each fetched by the page and swapped in live: markers, markers with a
+     route through them, an area and a circle; leaving C takes its route with it. -->
+<p id="mixed-groups">
+  <button type="button" value="a">Group A</button>
+  <button type="button" value="b">Group B</button>
+  <button type="button" value="c">Group C</button>
+  <button type="button" value="d">Group D</button>
+  <button type="button" value="e">Group E</button>
+</p>
 <maplace-map id="mixed-map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list></maplace-map>
 <script type="module">
-  const response = await fetch('/locations.json');
-  document.getElementById('mixed-map').locations = await response.json();
+  const map = document.getElementById('mixed-map');
+  let latestGroup;
+
+  /** Swaps in the group last asked for: a slower answer to an earlier click is dropped. */
+  async function showGroup(letter) {
+    latestGroup = letter;
+    const response = await fetch(`/mixed-${letter}.json`);
+    const locations = await response.json();
+    if (letter !== latestGroup) return;
+    map.locations = locations;
+    if (letter === 'c') map.route = { stops: locations.map(({ id }) => id), travelMode: 'driving' };
+    map.maplace.fitAll();
+  }
+
+  for (const button of document.querySelectorAll('#mixed-groups button')) {
+    button.addEventListener('click', () => showGroup(button.value));
+  }
+  await showGroup('a');
 </script>

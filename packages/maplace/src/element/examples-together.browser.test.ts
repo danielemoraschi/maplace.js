@@ -8,6 +8,7 @@ import {
   adapterInside,
   comparableSnapshot,
   type ExampleRun,
+  exampleRun,
   expectDrawsItsStore,
   hasList,
   runHost,
@@ -88,7 +89,8 @@ async function openEveryPage() {
     const index = EXAMPLE_PAGES.indexOf(page);
     const map = maps[index] as MaplaceMapElement;
     const root = roots[index] as HTMLElement;
-    return { store: map.maplace, adapter: adapterInside(root, adapters), root };
+    const adapter = adapterInside(root, adapters);
+    return exampleRun({ store: map.maplace, adapter, root }, adaptersMade);
   };
   return { runOf, errors };
 }

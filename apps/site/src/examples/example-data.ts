@@ -14,7 +14,32 @@ const DATA = import.meta.glob("../../../../packages/maplace/examples/data/*.json
 /** Each of `packages/maplace/examples/data/*.json`, by its name without `.json`. */
 export function exampleData(): readonly ExampleData[] {
   return Object.entries(DATA).map(([path, json]) => ({
-    name: path.slice(path.lastIndexOf("/") + 1, -".json".length),
+    name: fileNameOf(path, ".json"),
     json,
   }));
+}
+
+/** An icon the example pages show, as the site serves it: `/icons/<name>.svg`. */
+export interface ExampleIcon {
+  readonly name: string;
+  readonly svg: string;
+}
+
+const ICONS = import.meta.glob<string>("../../../../packages/maplace/examples/data/icons/*.svg", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
+
+/** Each of `packages/maplace/examples/data/icons/*.svg`, by its name without `.svg`. */
+export function exampleIcons(): readonly ExampleIcon[] {
+  return Object.entries(ICONS).map(([path, svg]) => ({
+    name: fileNameOf(path, ".svg"),
+    svg,
+  }));
+}
+
+/** `…/data/mixed-a.json` → `mixed-a`. */
+function fileNameOf(path: string, extension: string): string {
+  return path.slice(path.lastIndexOf("/") + 1, -extension.length);
 }

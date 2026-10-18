@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+  <title>Marker C</title>
+  <path d="M16 39C16 39 30 24 30 15A14 14 0 0 0 2 15C2 24 16 39 16 39Z" fill="#1d4ed8" stroke="#ffffff" stroke-width="2"/>
+  <text x="16" y="20" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">C</text>
+</svg>

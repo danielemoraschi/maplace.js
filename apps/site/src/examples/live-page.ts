@@ -10,7 +10,7 @@ const KEY_PLACEHOLDER = ' api-key="YOUR_KEY"';
 const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]+"><\/script>\s*/g;
 
 /**
- * An example page as the site runs it, beside nine others: its map held until the visitor
+ * An example page as the site runs it, beside the others: its map held until the visitor
  * consents (`release()`), with the site's key, or none when it has none; its own scripts inert
  * until then (`runPageScripts`); its doctype and CDN script left out, since the site's bundle
  * defines the element. Everything else stays as written, in order.

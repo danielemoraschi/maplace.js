@@ -6,6 +6,8 @@ interface LegacyLocation {
   readonly lon: number;
   readonly title?: string;
   readonly html?: string;
+  /** `false`: no popup, whatever the `html`. */
+  readonly show_infowindow?: boolean;
   readonly circle_options?: { readonly radius: number };
 }
 
@@ -15,8 +17,14 @@ interface LegacyGroup {
   readonly locations: readonly LegacyLocation[];
 }
 
-/** The groups the `mixed` example shows: two of markers and one of a circle. */
-const MIXED_GROUPS = ["Group A", "Group B", "Group E"] as const;
+/** One of the `mixed` example's data sets: 0.2's group of that letter. */
+export interface MixedGroup {
+  readonly letter: string;
+  readonly locations: readonly Location[];
+}
+
+/** The groups the `mixed` example swaps between, as 0.2's demo did. */
+const MIXED_GROUPS = ["Group A", "Group B", "Group C", "Group D", "Group E"] as const;
 
 /** One `echo '{…}';` of `ajax.php`: a group as JSON. */
 const ECHOED_GROUP = /echo '(\{[^']+\})';/g;
@@ -25,15 +33,21 @@ const ECHOED_GROUP = /echo '(\{[^']+\})';/g;
 const LEGACY_POINT = /\{lat:(-?[\d.]+),lon:(-?[\d.]+)\}/g;
 
 /**
- * The `mixed` example's locations, from 0.2's `website/data/ajax.php`: groups A and B as
- * markers, E as a circle. `html` becomes plain-text `content` (the page has no sanitizer), `lon`
- * is `lng`, and 0.2's icons, which were Google's own `http:` images, are left out.
+ * The `mixed` example's data sets, from 0.2's `website/data/ajax.php`: groups A and B as
+ * markers, C's directions as markers (the example routes through them), D's points as one
+ * polygon and E as a circle. `html` becomes plain-text `content` (the page has no sanitizer),
+ * none where `show_infowindow` is false; `lon` is `lng`, and 0.2's icons, which were Google's
+ * own `http:` images, are left out.
  */
-export function locationsFromAjax(php: string): Location[] {
+export function mixedGroupsFromAjax(php: string): MixedGroup[] {
   const groups = Array.from(php.matchAll(ECHOED_GROUP), ([, json]) =>
     JSON.parse(json ?? "{}"),
   ) as LegacyGroup[];
-  return MIXED_GROUPS.flatMap((title) => locationsOf(groupTitled(groups, title)));
+  return MIXED_GROUPS.map((title) => {
+    const group = groupTitled(groups, title);
+    const letter = letterOf(group);
+    return { letter, locations: locationsOf(group, letter) };
+  });
 }
 
 /** The `big` example's 4,000 points, from 0.2's `website/data/4k.js`: ids from 1-based places. */
@@ -51,20 +65,32 @@ function groupTitled(groups: readonly LegacyGroup[], title: string): LegacyGroup
   return group;
 }
 
-function locationsOf({ title: group, type, locations }: LegacyGroup): Location[] {
-  const letter = group.at(-1)?.toLowerCase() ?? "";
-  return locations.map((legacy, index) => {
+/** `Group A` → `a`. */
+function letterOf({ title }: LegacyGroup): string {
+  return title.at(-1)?.toLowerCase() ?? "";
+}
+
+/** A group's locations, with ids from its letter and 1-based places. */
+function locationsOf(group: LegacyGroup, letter: string): Location[] {
+  if (group.type === "polygon") return [polygonOf(group, letter)];
+  return group.locations.map((legacy, index) => {
     const shared = {
       id: `${letter}${index + 1}`,
-      group,
+      group: group.title,
       title: legacy.title,
-      content: textOf(legacy.html ?? ""),
+      ...(legacy.show_infowindow === false ? {} : { content: textOf(legacy.html ?? "") }),
     };
     const { lat, lon: lng } = legacy;
-    return type === "circle"
-      ? { ...shared, type, center: { lat, lng }, radius: radiusOf(legacy) }
+    return group.type === "circle"
+      ? { ...shared, type: "circle", center: { lat, lng }, radius: radiusOf(legacy) }
       : { ...shared, lat, lng };
   });
+}
+
+/** A polygon group's points as one area, named after the group. */
+function polygonOf({ title, locations }: LegacyGroup, letter: string): Location {
+  const path = locations.map(({ lat, lon: lng }) => ({ lat, lng }));
+  return { id: `${letter}1`, group: title, title, type: "polygon", path };
 }
 
 function radiusOf({ title, circle_options }: LegacyLocation): number {

@@ -4,7 +4,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gitIn } from "./build/git.ts";
 import { ROOT } from "./build/package.ts";
-import { locationsFromAjax, pointsFrom4k } from "./sample-data/from-0.2.ts";
+import { mixedGroupsFromAjax, pointsFrom4k } from "./sample-data/from-0.2.ts";
 
 const TAG = "0.2.10";
 const DATA = join(ROOT, "packages/maplace/examples/data");
@@ -17,5 +17,7 @@ function write(file: string, data: unknown): void {
   writeFileSync(join(DATA, file), `${JSON.stringify(data, null, 2)}\n`);
 }
 
-write("locations.json", locationsFromAjax(legacyFile("ajax.php")));
+for (const { letter, locations } of mixedGroupsFromAjax(legacyFile("ajax.php"))) {
+  write(`mixed-${letter}.json`, locations);
+}
 write("points-4k.json", pointsFrom4k(legacyFile("4k.js")));

@@ -8,6 +8,7 @@ describe("the maplace entry", () => {
       "MaplaceError",
       "createListView",
       "createMaplace",
+      "listedLocations",
     ]);
   });
 });

@@ -4,7 +4,7 @@ import { EXAMPLE_PAGES } from "../testing/examples/example-files";
 import { cdnScriptOf, openPage } from "../testing/examples/example-page";
 import {
   adapterInside,
-  type ExampleRun,
+  exampleRun,
   expectDrawsItsStore,
   hasList,
 } from "../testing/examples/example-runs";
@@ -33,7 +33,7 @@ describe.each(EXAMPLE_PAGES)("the $name page", ({ name, html }) => {
     const adapter = adapterInside(root, adaptersMade.slice(made));
     await adapter.finishMount();
     await expect.poll(() => map.loadState).toBe("ready");
-    const run: ExampleRun = { store: map.maplace, adapter, root };
+    const run = exampleRun({ store: map.maplace, adapter, root }, adaptersMade);
     await expectDrawsItsStore(run);
     expect(hasList(root)).toBe(map.hasAttribute("list"));
     await EXAMPLE_BEHAVIOURS[name]?.(run);

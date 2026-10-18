@@ -1,0 +1,26 @@
+[
+  {
+    "id": "d1",
+    "group": "Group D",
+    "title": "Group D",
+    "type": "polygon",
+    "path": [
+      {
+        "lat": 52.1,
+        "lng": 11.3
+      },
+      {
+        "lat": 51.2,
+        "lng": 22.2
+      },
+      {
+        "lat": 49.4,
+        "lng": 35.9
+      },
+      {
+        "lat": 47.8,
+        "lng": 15.6
+      }
+    ]
+  }
+]

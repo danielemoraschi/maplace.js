@@ -31,9 +31,19 @@ describe("<maplace-location>'s view fields", () => {
     expect(list?.textContent).not.toContain("Milan");
   });
 
+  it("writes back the drag of an editable circle", async () => {
+    const circle =
+      '<maplace-location location-id="ring" type="circle" lat="41.9" lng="12.5" radius="500" editable></maplace-location>';
+    const { map, adapter } = await readyMap(`<maplace-map>${circle}</maplace-map>`);
+    const edited = { type: "circle", center: { lat: 41.9, lng: 12.5 }, radius: 900 } as const;
+    adapter.probe().drag("ring", edited);
+    expect(map.maplace.getSnapshot().locations[0]).toMatchObject({ radius: 900 });
+  });
+
   it.each([
     ["zoom", "near"],
     ["listed", "no"],
+    ["editable", "yes"],
   ])("puts the map in error for a %s of %s", async (field, value) => {
     const { map } = await readyMap(`<maplace-map>${ZOOMED}${UNLISTED}</maplace-map>`);
     const errors = errorsOn(map);

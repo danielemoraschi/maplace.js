@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import { vi } from "vitest";
 
-/** The data the example pages fetch, by path: `examples/data/locations.json` is `/locations.json`. */
+/** The data the example pages fetch, by path: `examples/data/mixed-a.json` is `/mixed-a.json`. */
 const EXAMPLE_DATA: Readonly<Record<string, unknown>> = Object.fromEntries(
   Object.entries(
     import.meta.glob("../../../examples/data/*.json", { import: "default", eager: true }),
@@ -20,7 +20,7 @@ export function serveExampleData(): void {
   vi.stubGlobal("fetch", fetchFromPage);
 }
 
-/** The path a script fetched: `/locations.json` from a string, a URL or a request. */
+/** The path a script fetched: `/mixed-a.json` from a string, a URL or a request. */
 function pathOf(input: RequestInfo | URL): string {
   if (typeof input === "string") return input;
   return input instanceof URL ? input.pathname : new URL(input.url).pathname;

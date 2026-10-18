@@ -1,0 +1,14 @@
+[
+  {
+    "id": "e1",
+    "group": "Group E",
+    "title": "Title A2",
+    "content": "Content A2 Lorem Ipsum..",
+    "type": "circle",
+    "center": {
+      "lat": 52.1,
+      "lng": 11.3
+    },
+    "radius": 30000
+  }
+]

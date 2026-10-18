@@ -1,0 +1,25 @@
+[
+  {
+    "id": "a1",
+    "group": "Group A",
+    "title": "Title A1",
+    "content": "Content A1",
+    "lat": 45.9,
+    "lng": 10.9
+  },
+  {
+    "id": "a2",
+    "group": "Group A",
+    "title": "Title B1",
+    "lat": 44.8,
+    "lng": 1.7
+  },
+  {
+    "id": "a3",
+    "group": "Group A",
+    "title": "Title C1",
+    "content": "Content C1 Lorem Ipsum..",
+    "lat": 51.5,
+    "lng": -1.1
+  }
+]

@@ -1,10 +1,9 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
-import type { Maplace } from "../index";
+import { listedLocations, type Maplace } from "../index";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
 import type { ElementListOptions, ListPosition } from "./index";
 import { buildListView } from "./list-views";
-import { listedNow } from "./listed-now";
 
 /** The attributes the list is built from; a change of any of them builds it again. */
 export const LIST_ATTRIBUTES = ["list", "list-position", "fit-all-label", "list-heading"] as const;
@@ -37,7 +36,10 @@ export function listFromAttributes(host: HTMLElement, store: Maplace): ElementLi
   if (name === null) return undefined;
   // Checked before the page's view is built, so a refused list leaves nothing to destroy.
   const position = listPosition(host.getAttribute("list-position"));
-  const setup = { options: listOptionsOf(host), listed: () => listedNow(store) };
+  const setup = {
+    options: listOptionsOf(host),
+    listed: () => listedLocations(store.getSnapshot()),
+  };
   const view = buildListView(name, store, setup);
   view.element.classList.add(PLACED_LIST_CLASS);
   const restore = () => {

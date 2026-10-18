@@ -16,6 +16,16 @@ export interface ExampleRun {
   readonly store: Maplace;
   readonly adapter: FakeAdapter;
   readonly root: Element;
+  /** The adapter drawing the run's map now: another than `adapter` once the map opened again. */
+  liveAdapter(): FakeAdapter;
+}
+
+/** The run of `store` on `adapter`, inside `root`, among the adapters `made` so far. */
+export function exampleRun(
+  run: Omit<ExampleRun, "liveAdapter">,
+  made: readonly FakeAdapter[],
+): ExampleRun {
+  return { ...run, liveAdapter: () => adapterInside(run.root, made) };
 }
 
 /** The one live adapter whose map is inside `root`: a version's map, among every map made. */
@@ -46,7 +56,7 @@ export async function runHost(
   const adapter = await vi.waitFor(() => adapterInside(root, adapters));
   await adapter.finishMount();
   await adapter.probe().settle();
-  return { store, adapter, root };
+  return exampleRun({ store, adapter, root }, adapters);
 }
 
 /**
@@ -88,9 +98,9 @@ function withoutPresentation(location: Location): Partial<Location> {
   return Object.fromEntries(Object.entries(location).filter(([key]) => !PRESENTATION.has(key)));
 }
 
-/** Whether a list view, as listbox or select, is inside `root`. */
+/** Whether a list, as listbox, select or a page's own fieldset of radios, is inside `root`. */
 export function hasList(root: Element): boolean {
-  return root.querySelector("[role=listbox], select") !== null;
+  return root.querySelector("[role=listbox], select, fieldset:has(input[type=radio])") !== null;
 }
 
 /** Whether `example`'s page shows a list: its `<maplace-map>` has `list`, whatever its value. */

@@ -1,6 +1,5 @@
 import { expect, it } from "vitest";
-import { createMaplace } from "../index";
-import { listedNow } from "./listed-now";
+import { createMaplace, listedLocations } from "../index";
 
 const at = { lat: 0, lng: 0 };
 
@@ -14,11 +13,12 @@ it("lists the shown, listed locations in data order, whatever their groups", () 
       { id: "c", ...at, group: "south" },
     ],
   });
-  expect(listedNow(maplace).map(({ id }) => id)).toEqual(["b", "a", "c"]);
+  const ids = () => listedLocations(maplace.getSnapshot()).map(({ id }) => id);
+  expect(ids()).toEqual(["b", "a", "c"]);
   maplace.setFilter(["south"]);
-  expect(listedNow(maplace).map(({ id }) => id)).toEqual(["b", "c"]);
+  expect(ids()).toEqual(["b", "c"]);
 });
 
 it("lists nothing without locations", () => {
-  expect(listedNow(createMaplace())).toEqual([]);
+  expect(listedLocations(createMaplace().getSnapshot())).toEqual([]);
 });

@@ -1,0 +1,19 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- Google's own look: a light or dark map, and Google's map options (here the map-type control).
+     "Dark" opens the map again in the other scheme, where it was. -->
+<button type="button" id="styled-dark" aria-pressed="false">Dark</button>
+<maplace-map id="styled-map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" color-scheme="light"
+  map-options='{"mapTypeControl":true}'>
+  <maplace-location location-id="lisbon" lat="38.7223" lng="-9.1393" title="Lisbon"></maplace-location>
+  <maplace-location location-id="porto" lat="41.1579" lng="-8.6291" title="Porto"></maplace-location>
+  <maplace-location location-id="coimbra" lat="40.2033" lng="-8.4103" title="Coimbra"></maplace-location>
+  <maplace-location location-id="faro" lat="37.0194" lng="-7.9304" title="Faro"></maplace-location>
+</maplace-map>
+<script>
+  document.getElementById('styled-dark').addEventListener('click', (event) => {
+    const dark = event.currentTarget.getAttribute('aria-pressed') !== 'true';
+    event.currentTarget.setAttribute('aria-pressed', String(dark));
+    document.getElementById('styled-map').setAttribute('color-scheme', dark ? 'dark' : 'light');
+  });
+</script>

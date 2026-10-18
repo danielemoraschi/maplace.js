@@ -15,7 +15,7 @@ import { type Sanitize, StoreFeed } from "./store-feed";
 import { MAPLACE_VERSION } from "./version";
 
 /**
- * `<maplace-map>`: a store that lives as long as the element, its list, and a map from the
+ * `<maplace-map>`: a store that lives as long as the element, and its list and a map from the
  * provider while the element is connected and not held.
  */
 export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
@@ -104,10 +104,14 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#open();
   }
 
-  /** Creates the store and its list, and opens the map unless held. */
+  /**
+   * Creates the store, then, unless held, its list and the map: a held page's scripts, and the
+   * list views they define, may run only on release.
+   */
   #open(): void {
     if (!this.isConnected) return;
     const store = this.#feed.store();
+    if (this.#isHeld()) return;
     this.#lists ??= createListKeeper(this, {
       store,
       misuse: this.#misuse,

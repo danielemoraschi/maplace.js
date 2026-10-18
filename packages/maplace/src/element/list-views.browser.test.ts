@@ -130,6 +130,19 @@ describe("<maplace-map> naming a list view not yet defined", () => {
     expect([errors.length, map.loadState]).toEqual([1, "loading"]);
   });
 
+  it("is not in error while held, building the view defined meanwhile once released", async () => {
+    const view = checksView();
+    const map = mapListing(view.name, "hold");
+    const errors = errorsOn(map);
+    await nextTask();
+    view.define();
+    expect([errors, map.loadState, map.querySelector(".checks")]).toEqual([[], "idle", null]);
+    map.release();
+    expect(view.factory).toHaveBeenCalledOnce();
+    expect(map.querySelector(".checks")).not.toBeNull();
+    expect(errors).toEqual([]);
+  });
+
   it("lets go of a map removed from the page meanwhile", async () => {
     const view = checksView();
     const map = mapListing(view.name);

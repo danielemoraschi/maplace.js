@@ -51,3 +51,4 @@ export type {
   View,
   Viewport,
 } from "./viewport";
+export { listedLocations } from "./views/listed-locations";

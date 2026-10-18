@@ -53,7 +53,7 @@ export { defineListView } from "./list-views";
  *   again.)
  * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
- * - `hold`: stay idle, with no provider request, until `release()`.
+ * - `hold`: stay idle, with no provider request and no list built, until `release()`.
  * - provider attributes, such as `api-key` and `map-id` for Google, read when the map opens.
  *
  * The store is created when the element first connects (or `maplace`, `locations` or `route` is
@@ -88,12 +88,13 @@ export interface MaplaceMapElement extends HTMLElement {
 }
 
 /**
- * `<maplace-location location-id="…" lat lng title type group radius icon zoom listed shape-style
- * selected-style hovered-style>`: `lat`/`lng` are a marker's position or a circle's centre,
- * `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `listed="false"` keeps
- * it out of the list (on the map still), and the three style attributes a shape's `style`,
- * `selectedStyle` and `hoveredStyle` as JSON; a `<template>` child is trusted popup content, and
- * a `<template data-icon>` child the marker, in place of `icon`.
+ * `<maplace-location location-id="…" lat lng title type group radius icon zoom listed editable
+ * shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's position or a circle's
+ * centre, `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `listed="false"`
+ * keeps it out of the list (on the map still), `editable` lets the user drag or reshape it (both
+ * true when present with no value, or `"true"`), and the three style attributes a shape's
+ * `style`, `selectedStyle` and `hoveredStyle` as JSON; a `<template>` child is trusted popup
+ * content, and a `<template data-icon>` child the marker, in place of `icon`.
  */
 export interface MaplaceLocationElement extends HTMLElement {
   readonly location: Location;

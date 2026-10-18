@@ -79,16 +79,17 @@ describe("<maplace-map> on a provider", () => {
     ).toEqual([{ id: "a", lat: 1, lng: 2 }]);
   });
 
-  it("stays idle with hold, asking no provider, until released", async () => {
+  it("stays idle with hold, asking no provider and building no list, until released", async () => {
     const before = adaptersMade.length;
     const map = await mapFrom(`<maplace-map hold list>${ROME}</maplace-map>`);
     await nextTask();
     expect(adaptersMade).toHaveLength(before);
     expect([map.loadState, map.matches(":state(idle)")]).toEqual(["idle", true]);
-    expect(map.querySelector('[role="listbox"]')?.textContent).toContain("Rome");
+    expect(map.querySelector('[role="listbox"]')).toBeNull();
     map.release();
     expect(adaptersMade).toHaveLength(before + 1);
     expect(map.loadState).toBe("loading");
+    expect(map.querySelector('[role="listbox"]')?.textContent).toContain("Rome");
   });
 
   it("keeps its map and list when the page replaces its children", async () => {
