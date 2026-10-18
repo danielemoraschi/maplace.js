@@ -75,9 +75,11 @@ const LAYERS = {
     imports: ["data", "contract", "adapter-kit", "entry", "element", "fake"],
     packages: ["vitest"],
   },
+  // The element's Google provider checks its attributes with the store's checks, so its misuse
+  // reads the same.
   wiring: {
     files: /^element\/google(-[a-z-]+)?$/,
-    imports: ["data", "contract", "element", "google"],
+    imports: ["data", "contract", "element", "google", "validation"],
   },
   // The React binding makes stores and list views through the entry, as the element does, and
   // reads the shared data rules, the store's equality and icon rules, the list view's own helpers

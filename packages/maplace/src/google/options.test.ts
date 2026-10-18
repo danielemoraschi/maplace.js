@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { checkGoogleOptions } from "./options";
+import { child, root } from "../validate/fail";
+import { checkGoogleOptions, mapOptionsCheck } from "./options";
 
 const pageMap = { getDiv: () => ({ nodeType: 1 }) };
 
@@ -93,4 +94,27 @@ describe("checkGoogleOptions", () => {
       `options.${key} is for a map maplace creates: set it on your own map`,
     )(),
   );
+});
+
+describe("mapOptionsCheck", () => {
+  const field = child(root("caller"), "settings");
+  const check = mapOptionsCheck({ mapId: "goes in A", colorScheme: "goes in B" }, "a JSON object");
+
+  it.each([
+    ["mapId", "goes in A"],
+    ["colorScheme", "goes in B"],
+  ])("says where %s goes in the caller's own words", (key, remark) => {
+    expect(() => check({ [key]: 1 }, field)).toThrow(
+      expect.objectContaining({
+        field: `settings.${key}`,
+        message: `caller: settings.${key} ${remark}`,
+      }),
+    );
+  });
+
+  it("names what the caller expects instead of a non-object", () => {
+    expect(() => check([1], field)).toThrow(
+      expect.objectContaining({ message: "caller: settings must be a JSON object, got an array" }),
+    );
+  });
 });

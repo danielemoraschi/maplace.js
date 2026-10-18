@@ -139,3 +139,24 @@ export function stubMapsJs(
   vi.stubGlobal("google", { maps: { importLibrary } });
   return libraries;
 }
+
+/** A Maps JS on the page as `stubMapsJs` puts it, and the maps and markers made on it, in order. */
+export function stubMapsJsRecording(): { maps: StubMap[]; markers: StubMarker[] } {
+  const maps: StubMap[] = [];
+  const markers: StubMarker[] = [];
+  const libraries = stubMapsJs();
+  libraries.maps.Map = class extends StubMap {
+    constructor(element: HTMLElement, options?: google.maps.MapOptions) {
+      super(element, options);
+      maps.push(this);
+    }
+  } as unknown as typeof google.maps.Map;
+  libraries.marker.AdvancedMarkerElement = new Proxy(StubMarker, {
+    construct(target, args: [google.maps.marker.AdvancedMarkerElementOptions?]) {
+      const marker = new target(...args);
+      markers.push(marker);
+      return marker;
+    },
+  }) as unknown as typeof google.maps.marker.AdvancedMarkerElement;
+  return { maps, markers };
+}

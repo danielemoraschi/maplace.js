@@ -1,5 +1,6 @@
 import type { StyleField } from "../drawable";
 import type { Location } from "../index";
+import { jsonOrRaw } from "./attribute-values";
 import type { LocationTemplates } from "./location-templates";
 
 /**
@@ -75,20 +76,12 @@ function booleanOrRaw(element: Element, name: string): boolean | string | undefi
   return value === "false" ? false : value;
 }
 
-/** The attribute parsed as JSON, or as written when it isn't JSON. */
-function jsonOrRaw(element: Element, name: string): unknown {
-  const value = element.getAttribute(name);
-  if (value === null) return undefined;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-}
-
 function stylesFromAttributes(element: Element): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(STYLE_ATTRIBUTES).map(([field, name]) => [field, jsonOrRaw(element, name)]),
+    Object.entries(STYLE_ATTRIBUTES).map(([field, name]) => [
+      field,
+      jsonOrRaw(element.getAttribute(name)),
+    ]),
   );
 }
 

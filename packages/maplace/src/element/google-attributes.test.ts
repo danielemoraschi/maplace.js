@@ -7,8 +7,21 @@ describe("googleSettingsOf", () => {
   it("reads the map ID and the Maps JS settings, leaving out what isn't written", () => {
     const element = elementWith({ "map-id": "m", "api-key": "k", language: "it", nonce: "n0" });
     expect(googleSettingsOf(element)).toEqual({
-      mapId: "m",
+      adapterOptions: { mapId: "m", colorScheme: undefined, mapOptions: undefined },
       script: { key: "k", version: undefined, language: "it", region: undefined, nonce: "n0" },
+    });
+  });
+
+  it("reads the map's colour scheme and Google's options into the adapter's options", () => {
+    const element = elementWith({
+      "map-id": "m",
+      "color-scheme": "follow-system",
+      "map-options": '{"disableDefaultUI":true}',
+    });
+    expect(googleSettingsOf(element).adapterOptions).toEqual({
+      mapId: "m",
+      colorScheme: "follow-system",
+      mapOptions: { disableDefaultUI: true },
     });
   });
 
@@ -20,6 +33,12 @@ describe("googleSettingsOf", () => {
   it.each([{}, { "map-id": "" }])("refuses a map without a map ID", (attributes) => {
     expect(() => googleSettingsOf(elementWith(attributes))).toThrow(
       expect.objectContaining({ code: "invalid-input", field: "map-id" }),
+    );
+  });
+
+  it("refuses a bad map setting", () => {
+    expect(() => googleSettingsOf(elementWith({ "map-id": "m", "color-scheme": "night" }))).toThrow(
+      expect.objectContaining({ code: "invalid-input", field: "color-scheme" }),
     );
   });
 });

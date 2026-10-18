@@ -41,6 +41,9 @@ export { defineListView } from "./list-views";
  * Attributes:
  * - `provider`: registered provider name; defaults to the only one registered. A change opens
  *   the map again on it.
+ * - `color-scheme`, `map-options`: the map's colour scheme and the provider's map options
+ *   (Google: `light`, `dark`, `follow-system`; a JSON object of its map options). A change opens
+ *   the map again where it was.
  * - `list`: present = list view; `list="select"` = native select; `list="<name>"` = a view given
  *   to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.

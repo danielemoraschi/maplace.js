@@ -24,6 +24,16 @@ function mapWith(attributes: string): HTMLElementTagNameMap["maplace-map"] {
   return document.body.lastElementChild as HTMLElementTagNameMap["maplace-map"];
 }
 
+/**
+ * A map of this test's own, loading Maps JS itself if no test before it did, and removed when the
+ * test ends, so the page later tests see is as they would find it without this one.
+ */
+function ownMapWith(attributes: string): HTMLElementTagNameMap["maplace-map"] {
+  const map = mapWith(attributes);
+  onTestFinished(() => map.remove());
+  return map;
+}
+
 const ready = (map: HTMLElementTagNameMap["maplace-map"]) =>
   expect.poll(() => map.loadState, { timeout: TILES_TIMEOUT_MS }).toBe("ready");
 
@@ -44,6 +54,38 @@ describeWithKey("<maplace-map> loading Google Maps itself", (key) => {
     const map = mapWith(`map-id="DEMO_MAP_ID"`);
     await ready(map);
     expect(mapsScripts()).toHaveLength(1);
+  });
+
+  it("opens a dark map with Google's map options from its attributes", async () => {
+    const map = ownMapWith(`${settings} color-scheme="dark" map-options='{"maxZoom":4}'`);
+    const errors = errorsOn(map);
+    await ready(map);
+    // Rome and Milan fitted alone come to about zoom 6, and the map opens at 1: Google kept the
+    // fit within maxZoom.
+    await expect
+      .poll(() => map.maplace.getSnapshot().viewport?.zoom, { timeout: TILES_TIMEOUT_MS })
+      .toBeCloseTo(4, 1);
+    expect(errors).toEqual([]);
+  });
+
+  it("opens the map again, dark and where it was, when color-scheme changes from light", async () => {
+    const map = ownMapWith(`${settings} color-scheme="light"`);
+    const errors = errorsOn(map);
+    await ready(map);
+    const there = { lat: 44, lng: 10 };
+    map.maplace.setView(there, 7);
+    const viewport = () => map.maplace.getSnapshot().viewport;
+    await expect.poll(() => viewport()?.zoom, { timeout: TILES_TIMEOUT_MS }).toBe(7);
+    const googleMap = () => map.querySelector(".maplace-map-pane > div");
+    const first = googleMap();
+    map.setAttribute("color-scheme", "dark");
+    await expect.poll(() => googleMap() !== first && googleMap() !== null).toBe(true);
+    await ready(map);
+    await expect.poll(() => viewport()?.zoom, { timeout: TILES_TIMEOUT_MS }).toBeCloseTo(7, 1);
+    expect(viewport()?.center.lat).toBeCloseTo(there.lat, 2);
+    expect(viewport()?.center.lng).toBeCloseTo(there.lng, 2);
+    expect(first?.isConnected).toBe(false);
+    expect(errors).toEqual([]);
   });
 
   it("refuses a map asking for another language than the page loaded", async () => {

@@ -1,5 +1,6 @@
 import type { LoadState, Location, Maplace, Route } from "../index";
 import { afterParsing } from "./after-parsing";
+import { type CameraKeeper, createCameraKeeper } from "./camera-keeper";
 import { adoptDefaultStyles, PANE_CLASS } from "./default-styles";
 import { isListAttribute, LIST_ATTRIBUTES } from "./element-list";
 import type { MaplaceMapElement } from "./index";
@@ -7,6 +8,7 @@ import { createListKeeper, type ListKeeper } from "./list-keeper";
 import { defineListView } from "./list-views";
 import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
+import { createMapSettingsWatch } from "./map-settings-watch";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
 import { type Sanitize, StoreFeed } from "./store-feed";
@@ -26,9 +28,11 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   readonly #misuse = createStandingMisuse(this, () => this.#showLoadState());
   readonly #pane = paneIn(this.ownerDocument);
   readonly #setupRetry = createSetupRetry(this, () => this.#start());
+  readonly #settingsWatch = createMapSettingsWatch(this, () => this.#reopenAtCamera());
   readonly #ownNodesWatch = new MutationObserver(() => this.#keepOwnNodes());
   readonly #feed = new StoreFeed(this, this.#misuse, () => this.#showLoadState());
   #lists: ListKeeper | undefined;
+  #camera: CameraKeeper | undefined;
   #session: MapSession | undefined;
   #shownState: LoadState = "idle";
   #released = false;
@@ -103,12 +107,14 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   /** Creates the store and its list, and opens the map unless held. */
   #open(): void {
     if (!this.isConnected) return;
+    const store = this.#feed.store();
     this.#lists ??= createListKeeper(this, {
-      store: this.#feed.store(),
+      store,
       misuse: this.#misuse,
       show: (list) => this.#session?.showList(list),
     });
     this.#lists.open();
+    this.#camera ??= createCameraKeeper(store);
     this.#start();
   }
 
@@ -119,9 +125,15 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #start(): void {
     if (!this.isConnected || this.#isHeld() || this.#session !== undefined) return;
     const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#lists?.list };
+    // Before attaching: an adapter may report where it opened while it mounts.
+    this.#camera?.opening();
     this.#session = this.#misuse.retry("setup", () => openSession(this, parts));
-    if (this.#session === undefined) this.#setupRetry.wait();
-    else this.#setupRetry.stop();
+    if (this.#session === undefined) {
+      this.#setupRetry.wait();
+    } else {
+      this.#setupRetry.stop();
+      this.#settingsWatch.start();
+    }
   }
 
   #stop(): void {
@@ -143,7 +155,14 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#start();
   }
 
+  /** Opens the map again for new map settings, where the map was: the store keeps the rest. */
+  #reopenAtCamera(): void {
+    this.#camera?.keep();
+    this.#restart();
+  }
+
   #closeSession(): void {
+    this.#settingsWatch.stop();
     this.#session?.close();
     this.#session = undefined;
   }

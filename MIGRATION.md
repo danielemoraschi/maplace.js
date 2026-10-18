@@ -101,8 +101,8 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
 | `show_infowindows`, `infowindow_type` | a location opens a popup only when it has `content` (or `html`): leave it out for none; there is only one kind of popup |
-| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`; centre and zoom through `view` |
-| `styles` | map ID and Cloud styling ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)) |
+| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on the element `map-options` (JSON); centre and zoom through `view` |
+| `styles` | map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)) |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
 | `directions_options.avoidHighways`, `avoidTolls` | dropped |

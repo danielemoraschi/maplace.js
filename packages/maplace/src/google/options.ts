@@ -1,7 +1,13 @@
 /// <reference types="google.maps" preserve="true" />
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { type Assert, recordOf } from "../validate/record";
-import { checkNonEmptyString, checkObject, isElement, oneOf, optional } from "../validate/values";
+import {
+  checkNonEmptyString,
+  checkObject,
+  checkOneOf,
+  isElement,
+  optional,
+} from "../validate/values";
 
 /** Google's map options maplace sets elsewhere: kept out of `mapOptions`, by type and by check. */
 type SetElsewhere = "mapId" | "colorScheme" | "center" | "zoom" | "styles";
@@ -23,7 +29,13 @@ export interface GoogleAdapterOptions {
   readonly mapOptions?: Omit<google.maps.MapOptions, SetElsewhere> | undefined;
 }
 
-type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
+export type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
+
+/** What `mapOptions` takes: Google's map options without those maplace sets elsewhere. */
+export type CreatedMapOptions = NonNullable<GoogleAdapterOptions["mapOptions"]>;
+
+/** Where the caller takes a map ID and a colour scheme instead of map options, as told the page. */
+export type OwnSettingRemarks = Readonly<Record<"mapId" | "colorScheme", string>>;
 
 /** maplace's colour scheme names, as Google spells them. */
 export const GOOGLE_COLOR_SCHEMES: Readonly<Record<ColorScheme, google.maps.ColorSchemeString>> = {
@@ -32,26 +44,42 @@ export const GOOGLE_COLOR_SCHEMES: Readonly<Record<ColorScheme, google.maps.Colo
   "follow-system": "FOLLOW_SYSTEM",
 };
 
+const COLOR_SCHEMES = Object.keys(GOOGLE_COLOR_SCHEMES) as ColorScheme[];
+
+export const checkColorScheme: Assert<ColorScheme> = (value, field) =>
+  checkOneOf(value, field, COLOR_SCHEMES);
+
+/** Why map options leave out the keys maplace itself sets, whoever gives them. */
+const SET_BY_MAPLACE = {
+  center: "is set by the store's view",
+  zoom: "is set by the store's view",
+  styles: "is not offered: style the map in Cloud Console, through its map ID",
+} as const satisfies Record<Exclude<SetElsewhere, keyof OwnSettingRemarks>, string>;
+
+/** Checks map options for a map maplace creates: an object (`expected`), none of `SetElsewhere`. */
+export function mapOptionsCheck(
+  own: OwnSettingRemarks,
+  expected = "an object",
+): Assert<CreatedMapOptions> {
+  const remarks: Readonly<Record<SetElsewhere, string>> = { ...SET_BY_MAPLACE, ...own };
+  const refused = Object.entries(remarks);
+  return (value, field) => {
+    checkObject(value, field, expected);
+    for (const [key, remark] of refused) {
+      if (key in value) reject(child(field, key), remark);
+    }
+  };
+}
+
+const ADAPTER_OWN_SETTINGS: OwnSettingRemarks = {
+  mapId: "is its own option: createGoogleAdapter({ mapId })",
+  colorScheme: "is its own option: createGoogleAdapter({ colorScheme })",
+};
+
 export function checkGoogleOptions(value: unknown): asserts value is GoogleAdapterOptions {
   const field = child(root("createGoogleAdapter"), "options");
   checkOptionFields(value, field);
   if (value.map !== undefined) refuseCreatedMapOptions(value, field);
-}
-
-/** Why each `SetElsewhere` key is refused in `mapOptions`; complete, so type and check agree. */
-const SET_ELSEWHERE: Readonly<Record<SetElsewhere, string>> = {
-  center: "is set by the store's view",
-  zoom: "is set by the store's view",
-  mapId: "is its own option: createGoogleAdapter({ mapId })",
-  colorScheme: "is its own option: createGoogleAdapter({ colorScheme })",
-  styles: "is not offered: style the map in Cloud Console, through its map ID",
-};
-
-function checkMapOptions(value: unknown, field: Field): void {
-  checkObject(value, field);
-  for (const [key, remark] of Object.entries(SET_ELSEWHERE)) {
-    if (key in value) reject(child(field, key), remark);
-  }
 }
 
 /**
@@ -72,9 +100,9 @@ function isPageMap(value: unknown): boolean {
 const checkOptionFields: Assert<GoogleAdapterOptions> = recordOf<GoogleAdapterOptions>({
   checks: {
     mapId: checkNonEmptyString,
-    colorScheme: optional(oneOf(Object.keys(GOOGLE_COLOR_SCHEMES))),
+    colorScheme: optional(checkColorScheme),
     map: optional(checkPageMap),
-    mapOptions: optional(checkMapOptions),
+    mapOptions: optional(mapOptionsCheck(ADAPTER_OWN_SETTINGS)),
   },
   unknown: "is not a Google adapter option",
   remarks: { google: "is not an option: Google's map options go in mapOptions" },
