@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { MaplaceError } from "../errors";
 import type { Location } from "../location";
 import type { RouteResult } from "../route";
 import { mounted } from "../testing/mounted";
@@ -17,9 +18,11 @@ const locations: Location[] = [
   { id: "line", type: "polyline", path: square.slice(0, 2), editable: true },
 ];
 
-/** A computed route from a to b, told apart by its distance. */
-function routeOf(distanceMeters: number): RouteResult {
-  const leg = { from: "a", to: "b", distanceMeters, durationSeconds: 60, steps: [] };
+const AB = { stops: ["a", "b"] };
+
+/** A computed route from `from` to `to`, told apart by its distance. */
+function routeOf(distanceMeters: number, from = "a", to = "b"): RouteResult {
+  const leg = { from, to, distanceMeters, durationSeconds: 60, steps: [] };
   return { legs: [leg], distanceMeters, durationSeconds: 60, path: [] };
 }
 
@@ -80,11 +83,40 @@ describe("#147: the routeChange event carries the result, once per result", () =
     const { maplace, host } = await mounted({ locations });
     const distances: (number | undefined)[] = [];
     maplace.on("routeChange", ({ result }) => distances.push(result?.distanceMeters));
-    maplace.setRoute({ stops: ["a", "b"] });
-    host.reportRouteChange(routeOf(100));
+    maplace.setRoute(AB);
+    host.reportRouteChange(AB, routeOf(100));
     maplace.setRoute({ stops: ["a", "b"] });
     host.reportLocationChange("a", { type: "marker", lat: 0.5, lng: 0.5 });
-    host.reportRouteChange(routeOf(80));
+    host.reportRouteChange(AB, routeOf(80));
     expect(distances).toEqual([100, 80]);
+  });
+});
+
+describe("G14: a late answer for a route since replaced", () => {
+  const withC: Location[] = [...locations, { id: "c", lat: 2, lng: 2 }];
+  const through = { stops: ["a", "b", "c"], via: ["b"] };
+  const direct = { stops: ["a", "c"] };
+
+  it("ignores a result named for the route before, whose legs are the same", async () => {
+    const { maplace, host } = await mounted({ locations: withC });
+    const onRouteChange = vi.fn();
+    maplace.on("routeChange", onRouteChange);
+    maplace.setRoute(through);
+    maplace.setRoute(direct);
+    host.reportRouteChange(through, routeOf(300, "a", "c"));
+    expect(onRouteChange).not.toHaveBeenCalled();
+    expect(maplace.getSnapshot().routeResult).toBeUndefined();
+  });
+
+  it("ignores a failure named for the route before, and emits one for the route now", async () => {
+    const { maplace, host } = await mounted({ locations: withC });
+    const onError = vi.fn();
+    maplace.on("error", onError);
+    maplace.setRoute(through);
+    maplace.setRoute(direct);
+    host.reportError(new MaplaceError("route-failed", "late"), through);
+    const failure = new MaplaceError("route-failed", "no route");
+    host.reportError(failure, { ...direct, style: { stroke: "#f00" } });
+    expect(onError.mock.calls).toEqual([[{ error: failure }]]);
   });
 });

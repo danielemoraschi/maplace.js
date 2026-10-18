@@ -5,7 +5,7 @@ import { hoverReported } from "../state/hover";
 import { locationEdited } from "../state/location-edit";
 import { mapClicked } from "../state/map-click";
 import { popupClosed, popupOpened } from "../state/popup";
-import { setRouteResult } from "../state/route-result";
+import { isStaleRouteFailure, setRouteResult } from "../state/route-result";
 import { selectReported } from "../state/select-report";
 import type { InternalState } from "../state/state";
 import { setViewport } from "../state/viewport";
@@ -39,7 +39,10 @@ export function createReports<Data>({
     reportPopupOpen: (id, element) => commitOwn(popupOpened(getSnapshot(), { id, element })),
     reportPopupClose: (id) => commitOwn(popupClosed(getSnapshot(), { id, openOn })),
     reportViewportChange: (viewport) => commitOwn(setViewport(getSnapshot(), viewport)),
-    reportRouteChange: (result) => commitOwn(setRouteResult(getSnapshot(), result)),
-    reportError: loadStates.reportError,
+    reportRouteChange: (route, result) =>
+      commitOwn(setRouteResult(getSnapshot(), { route, result })),
+    reportError(error, route) {
+      if (!isStaleRouteFailure(getSnapshot(), error, route)) loadStates.reportError(error);
+    },
   };
 }

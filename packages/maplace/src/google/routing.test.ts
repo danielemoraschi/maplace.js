@@ -89,6 +89,42 @@ describe("the Google route", () => {
     expect(reported().map((result) => result?.distanceMeters)).toEqual([2]);
   });
 
+  it("drops an answer for stops since replaced, while the new ones wait to be drawn", async () => {
+    const { routing, routed, answer, reported, drawing } = routingOnStubs();
+    await routed();
+    drawing.applied = 1;
+    routing.setRoute({ stops: ["b", "a"] });
+    await tick();
+    const stale = await answer();
+    expect(reported()).toEqual([]);
+    expect(stale.createPolylines).not.toHaveBeenCalled();
+  });
+
+  it("names the route it asked for, through a new style while it computes", async () => {
+    const { routing, routed, answer, reportedRoutes } = routingOnStubs();
+    await routed();
+    routing.setRoute({ ...AB, style: { stroke: "#ff0000" } });
+    await tick();
+    await answer();
+    const reversed = { stops: ["b", "a"] };
+    routing.setRoute(reversed);
+    await tick();
+    await answer();
+    expect(reportedRoutes()).toEqual([AB, reversed]);
+    expect(reportedRoutes()[0]).toBe(AB);
+  });
+
+  it("names the route a failure was asked for, through a new style while it computes", async () => {
+    const { routing, routes, routed, state, failedRoutes } = routingOnStubs();
+    await routed();
+    routing.setRoute({ ...AB, style: { stroke: "#ff0000" } });
+    await tick();
+    routes.fail(new Error("over quota"));
+    await state.routeSettling;
+    expect(failedRoutes()).toHaveLength(1);
+    expect(failedRoutes()[0]).toBe(AB);
+  });
+
   it("takes the line off on a clear, reporting nothing, and drops the answer to come", async () => {
     const { routing, routed, answer, reported } = routingOnStubs();
     await routed();

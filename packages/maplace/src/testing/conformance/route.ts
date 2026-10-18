@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { nextTask } from "../../adapter-kit/chunks";
 import { sum } from "../../adapter-kit/route-result";
-import type { RouteLeg } from "../../route";
+import { type RouteLeg, runsThrough } from "../../route";
 import {
   adding,
   LARGE_DIFF,
@@ -28,7 +29,8 @@ async function routedSubject(subject: ConformanceSubject, stops = ["a", "b"]) {
   await mounted.adapter.apply(adding(...STOPS));
   mounted.adapter.setRoute({ stops });
   await mounted.probe.settle();
-  return { ...mounted, routes: () => mounted.host.reportsOf("reportRouteChange") };
+  const results = () => mounted.host.reportsOf("reportRouteChange").map(([, result]) => result);
+  return { ...mounted, results };
 }
 
 export function routeChecks(subject: ConformanceSubject, supports: Supports): void {
@@ -36,9 +38,8 @@ export function routeChecks(subject: ConformanceSubject, supports: Supports): vo
     it.runIf(supports.has("route"))(
       "reports a route whose legs run through the stops",
       async () => {
-        const { routes } = await routedSubject(subject, ["a", "b", "c"]);
-        const [result] = routes()[0] ?? [];
-        expect(result?.legs.map(({ from, to }) => [from, to])).toEqual([
+        const { results } = await routedSubject(subject, ["a", "b", "c"]);
+        expect(results()[0]?.legs.map(({ from, to }) => [from, to])).toEqual([
           ["a", "b"],
           ["b", "c"],
         ]);
@@ -48,8 +49,8 @@ export function routeChecks(subject: ConformanceSubject, supports: Supports): vo
     it.runIf(supports.has("route"))(
       "gives each leg its steps, which add up to the leg",
       async () => {
-        const { routes } = await routedSubject(subject, ["a", "b", "c"]);
-        const legs = routes()[0]?.[0]?.legs ?? [];
+        const { results } = await routedSubject(subject, ["a", "b", "c"]);
+        const legs = results()[0]?.legs ?? [];
         const steps = legs.flatMap((leg) => leg.steps);
         expect(legs).toHaveLength(2);
         expect(legs.every((leg) => leg.steps.length > 0)).toBe(true);
@@ -82,13 +83,13 @@ export function routeChecks(subject: ConformanceSubject, supports: Supports): vo
     it.runIf(supports.has("route"))(
       "reports the route anew once a stop moves, and only then",
       async () => {
-        const { adapter, probe, routes } = await routedSubject(subject);
+        const { adapter, probe, results } = await routedSubject(subject);
         await adapter.apply(updating(markerDrawable("c", TOWNS.bologna)));
         await probe.settle();
-        expect(routes()).toHaveLength(1);
+        expect(results()).toHaveLength(1);
         await adapter.apply(updating(markerDrawable("b", TOWNS.ferrara)));
         await probe.settle();
-        const [first, moved] = routes().map(([result]) => result?.distanceMeters);
+        const [first, moved] = results().map((result) => result?.distanceMeters);
         expect(moved).toBeDefined();
         expect(moved).not.toBe(first);
       },
@@ -97,27 +98,47 @@ export function routeChecks(subject: ConformanceSubject, supports: Supports): vo
     it.runIf(supports.has("route"))(
       "passes through a via stop: one leg between the others, longer than the direct route",
       async () => {
-        const { adapter, probe, routes } = await routedSubject(subject, ["a", "c"]);
+        const { adapter, probe, results } = await routedSubject(subject, ["a", "c"]);
         adapter.setRoute({ stops: ["a", "b", "c"], via: ["b"] });
         await probe.settle();
-        const [direct, through] = routes().map(([result]) => result);
+        const [direct, through] = results();
         expect(through?.legs.map(({ from, to }) => [from, to])).toEqual([["a", "c"]]);
         expect(through?.distanceMeters).toBeGreaterThan(direct?.distanceMeters ?? Infinity);
       },
     );
 
     it.runIf(supports.has("route"))("reports the route anew when only via changes", async () => {
-      const { adapter, probe, routes } = await routedSubject(subject, ["a", "b", "c"]);
+      const { adapter, probe, results } = await routedSubject(subject, ["a", "b", "c"]);
       adapter.setRoute({ stops: ["a", "b", "c"], via: ["b"] });
       await probe.settle();
-      expect(routes()).toHaveLength(2);
+      expect(results()).toHaveLength(2);
     });
 
+    it.runIf(supports.has("route"))(
+      "names each result for its route, the newest last, when the route changes while computing",
+      async () => {
+        const { adapter, probe, host } = await mountSubject(subject);
+        await adapter.apply(adding(...STOPS));
+        const through = { stops: ["a", "b", "c"], via: ["b"] };
+        const direct = { stops: ["a", "c"] };
+        adapter.setRoute(through);
+        await nextTask();
+        adapter.setRoute(direct);
+        await probe.settle();
+        const reports = host.reportsOf("reportRouteChange");
+        expect(reports.at(-1)?.[0]).toEqual(direct);
+        for (const [route, result] of reports) {
+          expect(result).toBeDefined();
+          expect(runsThrough(result?.legs ?? [], route)).toBe(true);
+        }
+      },
+    );
+
     it.runIf(supports.has("route"))("reports nothing new for a new style alone", async () => {
-      const { adapter, probe, routes } = await routedSubject(subject);
+      const { adapter, probe, results } = await routedSubject(subject);
       adapter.setRoute({ stops: ["a", "b"], style: { stroke: "#ff0000" } });
       await probe.settle();
-      expect(routes()).toHaveLength(1);
+      expect(results()).toHaveLength(1);
     });
   });
 }

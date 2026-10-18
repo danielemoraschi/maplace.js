@@ -26,7 +26,8 @@ function reportsFor(openOn: ResolvedPopupOptions["openOn"] = "click") {
 describe("createReports", () => {
   it("commits each report as the store's own change", () => {
     const { store, events, reports } = reportsFor();
-    store.setRoute({ stops: ["a", "b"] });
+    const route = { stops: ["a", "b"] };
+    store.setRoute(route);
     reports.reportSelectionChange("b");
     reports.reportHoverChange("a");
     reports.reportLocationChange("a", { type: "marker", lat: 5, lng: 6 });
@@ -37,7 +38,8 @@ describe("createReports", () => {
     };
     reports.reportViewportChange(viewport);
     const leg = { from: "a", to: "b", distanceMeters: 9, durationSeconds: 9, steps: [] };
-    reports.reportRouteChange({ legs: [leg], distanceMeters: 9, durationSeconds: 9, path: [] });
+    const result = { legs: [leg], distanceMeters: 9, durationSeconds: 9, path: [] };
+    reports.reportRouteChange(route, result);
     const failure = new MaplaceError("route-failed", "no route");
     reports.reportError(failure);
     expect(store.getSnapshot()).toMatchObject({
@@ -55,6 +57,19 @@ describe("createReports", () => {
       "routeChange",
       "error",
     ]);
+  });
+
+  it("drops only a route-failed for a route since replaced, never a load failure", () => {
+    const { store, events, reports } = reportsFor();
+    const replaced = { stops: ["a", "b"] };
+    store.setRoute(replaced);
+    store.setRoute({ stops: ["b", "a"] });
+    reports.reportError(new MaplaceError("route-failed", "late"), replaced);
+    reports.reportError(new MaplaceError("provider-auth-failed", "refused"), replaced);
+    expect(events).toEqual([
+      { error: { error: expect.objectContaining({ code: "provider-auth-failed" }) } },
+    ]);
+    expect(store.getSnapshot().loadState).toBe("error");
   });
 
   it("reports a live edit as locationEdit, keeping the snapshot", () => {

@@ -11,8 +11,10 @@ host.reportLocationEdit({ id: "a", type: "marker", lat: 1, lng: 2 });
 host.reportMapClick({ lat: 1, lng: 2 });
 // @ts-expect-error a click on the map is reportMapClick, with where it was
 host.reportSelectionChange(undefined);
-// The pointer leaving, a cleared route: each reported as undefined.
+// The pointer leaving: reported as undefined.
 host.reportHoverChange(undefined);
+host.reportRouteChange({ stops: ["a", "b"] }, undefined);
+// @ts-expect-error a route result names the route it answers
 host.reportRouteChange(undefined);
 // @ts-expect-error a popup opens with its element, once the content is in the DOM
 host.reportPopupOpen("a");

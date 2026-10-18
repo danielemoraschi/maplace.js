@@ -3,7 +3,7 @@
 import { anchorOf } from "../adapter-kit/anchor";
 import { type Journey, journeyOf, sameJourney } from "../adapter-kit/journey";
 import { MaplaceError } from "../errors";
-import type { Route } from "../route";
+import { type Route, sameStops } from "../route";
 import type { Drawing } from "./drawing";
 import type { GoogleMapState } from "./map-state";
 import type { MapPart } from "./mounted-map";
@@ -25,7 +25,8 @@ export interface Routing {
  * every diff applied so far is drawn: never for a half-drawn map. The store doesn't send the
  * route again when a stop moves; a stop moves here only when the store writes it, which after a
  * drag is once, on release. A new style alone draws the line again without computing. An answer
- * for a journey since replaced, cleared or closed is dropped, its failure too.
+ * for a journey since replaced, cleared or closed is dropped, its failure too. Each result and
+ * failure names the route it was asked for.
  */
 export function createRouting(
   state: GoogleMapState,
@@ -45,50 +46,59 @@ export function createRouting(
 
   function computeIfNew(): Promise<void> {
     scheduled = undefined;
-    const journey = journeyNow();
+    if (route === undefined) return computing;
+    const journey = journeyNow(route);
     if (journey === undefined) return computing;
-    if (sameJourney(asked, journey)) line?.restyle(route?.style);
-    else computing = ask(journey);
+    if (sameJourney(asked, journey)) line?.restyle(route.style);
+    else computing = ask(journey, route);
     return computing;
   }
 
   /** The journey through the stops as drawn, once the map is open and every diff drawn. */
-  function journeyNow(): Journey | undefined {
-    if (route === undefined || state.mounted === undefined) return undefined;
-    if (!drawing.drawnThrough(drawing.applied())) return undefined;
-    return journeyOf(route, (id) => {
+  function journeyNow(forRoute: Route): Journey | undefined {
+    if (state.mounted === undefined || !drawing.drawnThrough(drawing.applied())) return undefined;
+    return journeyOf(forRoute, (id) => {
       const geometry = state.placed.get(id)?.drawable().geometry;
       return geometry && anchorOf(geometry);
     });
   }
 
-  /** Asks Google; the answer counts only while this journey is still the one asked. */
-  function ask(journey: Journey): Promise<void> {
+  /** Asks Google for `forRoute`; the answer counts only while this journey is still the one asked. */
+  function ask(journey: Journey, forRoute: Route): Promise<void> {
     asked = journey;
     const isCurrent = () => asked === journey;
     return computeRoute(journey)
       .then((computed) => {
-        if (isCurrent()) showResult(computed);
+        if (isCurrent()) showResult(computed, forRoute);
       })
       .catch((error: unknown) => {
-        if (isCurrent()) failRoute(error);
+        if (isCurrent()) failRoute(error, forRoute);
       });
   }
 
-  function showResult({ google, result }: ComputedRoute): void {
+  /** Draws the line in the style set now, and reports the result for the route asked. */
+  function showResult({ google, result }: ComputedRoute, forRoute: Route): void {
     const mounted = state.mounted;
     if (mounted === undefined) return;
     removeLine();
     line = drawRouteLine(google, route?.style, mounted.map);
-    mounted.live()?.reportRouteChange(result);
+    mounted.live()?.reportRouteChange(forRoute, result);
   }
 
   /** The line goes; the journey stays asked, so it isn't billed again until it changes. */
-  function failRoute(error: unknown): void {
+  function failRoute(error: unknown, forRoute: Route): void {
     removeLine();
     const failure =
       error instanceof MaplaceError ? error : routeFailed("Google couldn't draw the route", error);
-    state.mounted?.live()?.reportError(failure);
+    state.mounted?.live()?.reportError(failure, forRoute);
+  }
+
+  /**
+   * Whether `next` asks for the journey asked already (its stops, `via` and travel mode): if not,
+   * an answer still to come is dropped even before the new stops are drawn.
+   */
+  function asksSameJourney(next: Route): boolean {
+    return asked !== undefined && asked.travelMode === next.travelMode && sameStops(asked, next);
   }
 
   /** Nothing asked any more: answers still to come are dropped, and the line goes. */
@@ -113,8 +123,12 @@ export function createRouting(
     },
     setRoute(next) {
       route = next;
-      if (next === undefined) forget();
-      else sync();
+      if (next === undefined) {
+        forget();
+        return;
+      }
+      if (!asksSameJourney(next)) asked = undefined;
+      sync();
     },
     sync,
   };

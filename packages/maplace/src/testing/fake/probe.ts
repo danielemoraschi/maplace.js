@@ -69,8 +69,8 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
       const viewport = camera.settle(geometryOf);
       if (viewport) liveMap.host.reportViewportChange(viewport);
       liveMap.popups.settle();
-      const route = routing.settle(located);
-      if (route) liveMap.host.reportRouteChange(route);
+      const answer = routing.settle(located);
+      if (answer) liveMap.host.reportRouteChange(answer.route, answer.result);
     },
   };
 }

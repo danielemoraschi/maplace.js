@@ -45,6 +45,15 @@ export function sameStops(a: RouteStops, b: RouteStops): boolean {
   );
 }
 
+/** Whether the legs run between the stops that end legs, those the route doesn't pass through. */
+export function runsThrough(legs: readonly RouteLeg[], route: RouteStops): boolean {
+  const ends = legStops(route);
+  return (
+    legs.length === ends.length - 1 &&
+    legs.every((leg, index) => leg.from === ends[index] && leg.to === ends[index + 1])
+  );
+}
+
 export interface RouteLeg {
   readonly from: string;
   readonly to: string;

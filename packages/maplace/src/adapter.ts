@@ -40,11 +40,12 @@ export interface PresentationState {
 
 /**
  * The only way an adapter reports back. Adapters never read or write the store directly. A report
- * about a location the store no longer shows, or a route result for other stops, is a race with
- * what the adapter is still drawing and is ignored. A report the store can't take (an edit or a
- * write-back for a location that isn't `editable` or of another type, a click position or a
- * viewport no map shows) changes nothing and is rethrown in a microtask; no report ever throws
- * back into the adapter.
+ * about a location the store no longer shows, or a route result or failure for a route since
+ * replaced or cleared, is a race with what the adapter is still drawing and is ignored. A report
+ * the store can't take (an edit or a write-back for a location that isn't `editable` or of another
+ * type, a click position or a viewport no map shows, a route result whose legs don't run between
+ * its route's stops) changes nothing and is rethrown in a microtask; no report ever throws back
+ * into the adapter.
  */
 export interface AdapterHost {
   /** A click on a location. */
@@ -67,9 +68,17 @@ export interface AdapterHost {
   /** With `openOn: 'click'`, the store deselects when the selected location's popup closes. */
   reportPopupClose(id: string): void;
   reportViewportChange(viewport: Viewport): void;
-  reportRouteChange(result: RouteResult | undefined): void;
-  /** Runtime failures only; misuse is thrown by the store before it reaches the adapter. */
-  reportError(error: MaplaceError): void;
+  /**
+   * A route computed for `route`, the route `setRoute` gave; `result` undefined clears the stored
+   * result. The store takes a result only for its current route (the same stops, the same ones
+   * passed through, the same travel mode).
+   */
+  reportRouteChange(route: Route, result: RouteResult | undefined): void;
+  /**
+   * Runtime failures only; misuse is thrown by the store before it reaches the adapter. A
+   * `route-failed` names the route it was computing, and counts only for the current route.
+   */
+  reportError(error: MaplaceError, route?: Route): void;
 }
 
 /** Everything `mount` needs, as one object. */

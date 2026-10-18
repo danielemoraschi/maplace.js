@@ -1,21 +1,33 @@
 import { frozenPath } from "../diff/frozen";
-import { legStops, type Route, type RouteLeg, type RouteResult } from "../route";
+import { sameJourney } from "../diff/same";
+import { MaplaceError } from "../errors";
+import { type Route, type RouteLeg, type RouteResult, runsThrough } from "../route";
 import type { Snapshot } from "../store";
+import { child, reject, root } from "../validate/fail";
 import { type Change, NO_CHANGE } from "./change";
 
+const LEGS = child(root("reportRouteChange"), "result.legs");
+
+/** What the map reports of a route it computed: the route it was computed for, and the result. */
+export interface RouteReport {
+  readonly route: Route;
+  readonly result: RouteResult | undefined;
+}
+
 /**
- * A route the map computed, or cleared (`undefined`): stored as a frozen copy, then `routeChange`
- * fires. A result whose legs don't run through the current stops was computed before they
- * changed, a race like an unknown id: no change. So is any result while no route is set.
+ * A route the map computed for `route`, or cleared (`undefined`): stored as a frozen copy, then
+ * `routeChange` fires. A result for a route but the current one (other stops, `via` or travel
+ * mode, or none set) was computed before it changed, a race like an unknown id: no change. A
+ * result for the current route whose legs don't run between its stops is the adapter's bug and
+ * throws.
  */
 export function setRouteResult<Data>(
   snapshot: Snapshot<Data>,
-  result: RouteResult | undefined,
+  { route, result }: RouteReport,
 ): Change<Data> {
-  const { route } = snapshot;
-  if (route === undefined) return NO_CHANGE;
+  if (!answersCurrentRoute(snapshot, route)) return NO_CHANGE;
   if (result === undefined && snapshot.routeResult === undefined) return NO_CHANGE;
-  if (result !== undefined && !runsThrough(result, route)) return NO_CHANGE;
+  if (result !== undefined) checkLegs(result, route);
   const routeResult = result && frozenResult(result);
   return {
     patch: { routeResult },
@@ -23,13 +35,36 @@ export function setRouteResult<Data>(
   };
 }
 
-/** Whether the legs run between the stops that end legs, those the route doesn't pass through. */
-function runsThrough({ legs }: RouteResult, route: Route): boolean {
-  const ends = legStops(route);
+/**
+ * A `route-failed` named for a route since replaced or cleared: a race, ignored. Any other error,
+ * a load or auth failure above all, counts whatever route it names.
+ */
+export function isStaleRouteFailure(
+  snapshot: Snapshot<unknown>,
+  error: unknown,
+  route: Route | undefined,
+): boolean {
   return (
-    legs.length === ends.length - 1 &&
-    legs.every((leg, index) => leg.from === ends[index] && leg.to === ends[index + 1])
+    route !== undefined &&
+    error instanceof MaplaceError &&
+    error.code === "route-failed" &&
+    !answersCurrentRoute(snapshot, route)
   );
+}
+
+/**
+ * Whether what the map computed for `route` answers the store's route: the same journey, as a new
+ * style alone computes nothing again.
+ */
+function answersCurrentRoute({ route: current }: Snapshot<unknown>, route: Route): boolean {
+  return current !== undefined && sameJourney(current, route);
+}
+
+/** Legs that don't fit their own route are the adapter's bug, not a race: it throws. */
+function checkLegs({ legs }: RouteResult, route: Route): void {
+  if (!runsThrough(legs, route)) {
+    reject(LEGS, "must run between the stops that end legs, in order");
+  }
 }
 
 function frozenResult(result: RouteResult): RouteResult {

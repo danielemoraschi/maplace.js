@@ -19,14 +19,20 @@ const SPEED_BY_MODE: Readonly<Record<TravelMode, number>> = {
 };
 const EARTH_RADIUS_METERS = 6_371_000;
 
+/** A computed route and the route it answers. */
+export interface RouteAnswer {
+  readonly route: Route;
+  readonly result: RouteResult;
+}
+
 /** The route asked for, computed when the map settles, as a provider answers later. */
 export interface FakeRouting {
   set(route: Route | undefined): void;
   /**
-   * The result for a journey not computed yet (a new style alone isn't one); none while a stop
+   * The answer for a journey not computed yet (a new style alone isn't one); none while a stop
    * is still to be drawn.
    */
-  settle(pointOf: StopPoint): RouteResult | undefined;
+  settle(pointOf: StopPoint): RouteAnswer | undefined;
 }
 
 export function createRouting(): FakeRouting {
@@ -38,10 +44,11 @@ export function createRouting(): FakeRouting {
       if (next === undefined) computed = undefined;
     },
     settle(pointOf) {
-      const journey = route && journeyOf(route, pointOf);
+      if (route === undefined) return undefined;
+      const journey = journeyOf(route, pointOf);
       if (journey === undefined || sameJourney(computed, journey)) return undefined;
       computed = journey;
-      return straightRoute(journey);
+      return { route, result: straightRoute(journey) };
     },
   };
 }

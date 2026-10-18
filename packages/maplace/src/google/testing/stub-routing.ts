@@ -64,8 +64,12 @@ export function routingOnStubs() {
       routing.sync();
       await tick();
     },
-    reported: () => opened.host.reportsOf("reportRouteChange").map(([result]) => result),
+    reported: () => opened.host.reportsOf("reportRouteChange").map(([, result]) => result),
+    /** The route each result reported was computed for. */
+    reportedRoutes: () => opened.host.reportsOf("reportRouteChange").map(([route]) => route),
     errors: () => opened.host.reportsOf("reportError").map(([error]) => error),
+    /** The route each failure reported was computed for. */
+    failedRoutes: () => opened.host.reportsOf("reportError").map(([, route]) => route),
   };
 }
 
