@@ -1,4 +1,4 @@
-import { INERT_SCRIPT_TYPE } from "./page-scripts.ts";
+import { attributeValue, inertScripts, withoutDoctype } from "./page-markup.ts";
 
 /** An example page's map, from its opening tag to its closing one. */
 const MAP = /<maplace-map\b[\s\S]*?<\/maplace-map>/g;
@@ -6,13 +6,8 @@ const MAP = /<maplace-map\b[\s\S]*?<\/maplace-map>/g;
 /** Where an example page has the reader put their key. */
 const KEY_PLACEHOLDER = ' api-key="YOUR_KEY"';
 
-const DOCTYPE = /^\s*<!doctype html>\s*/i;
-
 /** The page's CDN script, which the site's own bundle stands in for. */
 const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]+"><\/script>\s*/g;
-
-/** A script's opening tag, with its attributes. */
-const SCRIPT_TAG = /<script\b([^>]*)>/g;
 
 /**
  * An example page as the site runs it, beside nine others: its map held until the visitor
@@ -24,7 +19,7 @@ export function livePage(pageHtml: string, apiKey: string | undefined): string {
   const map = onlyMapOf(pageHtml);
   const held = heldMap(map, apiKey);
   const [before = "", after = ""] = pageHtml.split(map);
-  const head = withoutCdnScript(before.replace(DOCTYPE, ""));
+  const head = withoutCdnScript(withoutDoctype(before));
   return `${inertScripts(head)}${held}${inertScripts(after)}`;
 }
 
@@ -51,19 +46,4 @@ function withoutCdnScript(head: string): string {
     throw new Error(`an example page loads the CDN script once, before its map: ${scripts.length}`);
   }
   return head.replaceAll(CDN_SCRIPT, "");
-}
-
-/** Each script made inert, keeping a module's type to run it with; any other script is refused. */
-function inertScripts(html: string): string {
-  return html.replaceAll(SCRIPT_TAG, (_tag, attributes: string) => {
-    if (attributes === "") return `<script type="${INERT_SCRIPT_TYPE}">`;
-    if (attributes === ' type="module"') {
-      return `<script type="${INERT_SCRIPT_TYPE}" data-type="module">`;
-    }
-    throw new Error(`the site runs an example's inline scripts only, not <script${attributes}>`);
-  });
-}
-
-function attributeValue(text: string): string {
-  return text.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 }

@@ -1,6 +1,5 @@
 import { createListView, createMaplace, type Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { byId } from "../page";
 
 const locations: Location[] = [
   { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
@@ -8,9 +7,13 @@ const locations: Location[] = [
   { id: "florence", lat: 43.7696, lng: 11.2558, title: "Florence" },
 ];
 const maplace = createMaplace({ locations });
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
-byId("list").append(createListView(maplace).element);
-maplace.setRoute({ stops: locations.map((location) => location.id), travelMode: "driving" });
+const container = document.getElementById("route-vanilla-map") as HTMLElement;
+maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
+const list = document.getElementById("route-vanilla-list") as HTMLElement;
+list.append(createListView(maplace).element);
+maplace.setRoute({ stops: ["milan", "bologna", "florence"], travelMode: "driving" });
+
+const distance = document.getElementById("route-vanilla-distance") as HTMLOutputElement;
 maplace.on("routeChange", ({ result }) => {
-  byId("distance").textContent = result ? `${Math.round(result.distanceMeters / 1000)} km` : "";
+  distance.textContent = result ? `${Math.round(result.distanceMeters / 1000)} km` : "";
 });

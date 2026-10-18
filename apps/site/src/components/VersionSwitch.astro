@@ -1,0 +1,51 @@
+---
+import { exampleCode } from "../examples/example-sources.ts";
+
+interface Props {
+  /** Its example's folder in `packages/maplace/examples/`. */
+  name: string;
+}
+
+const { name } = Astro.props;
+---
+
+<fieldset class="version-switch" data-version-switch={name}>
+  <legend>Run the map from</legend>
+  {
+    exampleCode(name).map(({ kind, label }, index) => (
+      <label>
+        <input
+          type="radio"
+          name={`${name}-version`}
+          value={kind}
+          checked={index === 0}
+          autocomplete="off"
+        />
+        {label}
+      </label>
+    ))
+  }
+</fieldset>
+
+<style>
+  .version-switch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.875rem;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    border: 0;
+    font-size: 0.875rem;
+  }
+  legend {
+    float: left;
+    padding: 0;
+    color: var(--muted);
+  }
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+</style>

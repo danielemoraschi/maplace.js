@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-18 Changed the examples: every Vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`, Maps JS from Google's bootstrap loader), the same map as its page; the React versions render their own root, and the site runs any of the three live
 - 2026-10-18 Added the `mapClick` event: a single click on the map itself, not on a location, with its `position`; it still clears the selection, and a double- or triple-click (Google's zoom) fires neither; `maplace-mapclick` on the element, `onMapClick` in React
 - 2026-10-18 Changed the adapter host: `reportSelectionChange` takes a location's id only, and a click on the map is `reportMapClick(position)`
 - 2026-10-18 Added the `locationEdit` event: while a user drags a marker or reshapes a shape, its geometry so far, never written to the store, the last one where the edit ended (`locationChange` still fires once, on release); `maplace-locationedit` on the element, `onLocationEdit` in React. On Google, a shape's edit comes once, as its handle is let go

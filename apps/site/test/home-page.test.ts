@@ -2,9 +2,7 @@ import { type Browser, type BrowserContext, chromium, type Page } from "playwrig
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
-
-/** Any of Google's hosts: none may be asked before consent. */
-const GOOGLE = /^https?:\/\/[^/]*\b(google|googleapis|gstatic)\.com\//;
+import { chooseVersion, firstMap, placeholder, visitor as visitorOf } from "./visitor.ts";
 
 /**
  * Long enough for a map scrolled into view to be released and ask for Maps JS, were it to: what a
@@ -33,41 +31,14 @@ afterAll(async () => {
   await site?.close();
 });
 
-/**
- * A visitor: their own storage, every request off this machine recorded, then refused, and every
- * request to the site recorded too.
- */
-async function visitor() {
-  const context = await browser.newContext();
-  const asked: string[] = [];
-  const onSite: string[] = [];
-  await context.route("**/*", (route) => {
-    const url = route.request().url();
-    if (url.startsWith(site.url)) {
-      onSite.push(new URL(url).pathname);
-      return route.continue();
-    }
-    asked.push(url);
-    return route.abort();
-  });
-  const page = await context.newPage();
-  return {
-    context,
-    page,
-    offsite: () => asked,
-    fetched: (path: string) => onSite.includes(path),
-    google: () => asked.filter((url) => GOOGLE.test(url)),
-  };
-}
+const visitor = (options?: Parameters<typeof visitorOf>[2]) =>
+  visitorOf(browser, site.url, options);
 
 async function openHome(page: Page): Promise<void> {
   await page.goto(site.url);
   await firstMap(page).scrollIntoViewIfNeeded();
 }
 
-/** The page's first map: every section has one, so a locator for all would match ten. */
-const firstMap = (page: Page) => page.locator("maplace-map").first();
-const placeholder = (page: Page) => page.getByRole("button", { name: "Load Google Maps" }).first();
 const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
 const consentKept = (context: BrowserContext) =>
   context.storageState().then(({ origins }) => origins.flatMap(({ localStorage }) => localStorage));
@@ -76,10 +47,12 @@ describe("the site's consent to Google Maps", () => {
   it("asks nothing off the site until the visitor loads the maps, then Google for Maps JS", async () => {
     const { page, context, google, offsite, fetched } = await visitor();
     await openHome(page);
-    await page.locator("#big").scrollIntoViewIfNeeded();
+    // A version chosen before consent waits too, as the pages' own scripts wait for their maps:
+    // big's 4,000 points aren't fetched by its page or its React version.
+    await chooseVersion(page, "route", "Vanilla");
+    await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
     expect(offsite()).toEqual([]);
-    // The pages' own scripts wait for their maps too: big's 4,000 points aren't fetched yet.
     expect(fetched("/points-4k.json")).toBe(false);
     await expect.poll(() => placeholder(page).isVisible()).toBe(true);
     await placeholder(page).click();
@@ -162,6 +135,62 @@ describe("the home page's examples", () => {
       .toMatchObject({ stops: ["milan", "bologna", "florence"] });
     await page.locator("#big-map").scrollIntoViewIfNeeded();
     await expect.poll(() => fetched("/points-4k.json"), ASKED).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("runs the chosen version once consented, its map in a box", async () => {
+    const { page, context, fetched } = await visitor({ stubMapsJs: true });
+    await openHome(page);
+    // Chosen before consent, so big's page map, hidden, is never released: only its React
+    // version can fetch the points.
+    await chooseVersion(page, "route", "Vanilla");
+    await chooseVersion(page, "big", "React");
+    await footerToggle(page).click();
+    await page.locator("#route-vanilla-map").scrollIntoViewIfNeeded();
+    await expect
+      .poll(() => page.locator('#route-vanilla-list [role="listbox"]').count(), ASKED)
+      .toBe(1);
+    const box = await page.locator("#route-vanilla-map").boundingBox();
+    expect(box?.height).toBeGreaterThan(0);
+    await page.locator("#big-react-root").scrollIntoViewIfNeeded();
+    await expect.poll(() => fetched("/points-4k.json"), ASKED).toBe(true);
+    const reactMap = await page.locator("#big-react-root .map").boundingBox();
+    expect(reactMap?.height).toBeGreaterThan(0);
+    await context.close();
+  }, 30_000);
+
+  it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
+    const { page, context, google } = await visitor();
+    await openHome(page);
+    // Only simple's section left, its Vanilla version chosen before consent: its page map never
+    // asks for Maps JS, so only the version's bootstrap does.
+    await page.evaluate(() => {
+      for (const other of document.querySelectorAll("section.example:not(#simple)")) other.remove();
+    });
+    await chooseVersion(page, "simple", "Vanilla");
+    await footerToggle(page).click();
+    await page.locator("#simple-vanilla-map").scrollIntoViewIfNeeded();
+    const vanilla = page.locator('[data-example="simple"][data-live-version="vanilla"]');
+    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
+    const mapsTags = google().filter((url) => url.startsWith(MAPS_SCRIPT_ORIGIN));
+    expect(mapsTags.length).toBeGreaterThan(0);
+    expect(mapsTags.filter((url) => !url.includes("__ib__"))).toEqual([]);
+    await context.close();
+  }, 30_000);
+
+  it("says when Maps JS didn't load for a version, the page's tag having failed first", async () => {
+    const { page, context, google } = await visitor();
+    await openHome(page);
+    await placeholder(page).click();
+    await expect
+      .poll(() => google().some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)), ASKED)
+      .toBe(true);
+    await chooseVersion(page, "simple", "Vanilla");
+    const vanilla = page.locator('[data-example="simple"][data-live-version="vanilla"]');
+    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
+    const note = page.locator("section#simple [data-map-failure]");
+    expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
+    expect(await note.isVisible()).toBe(true);
     await context.close();
   }, 30_000);
 });

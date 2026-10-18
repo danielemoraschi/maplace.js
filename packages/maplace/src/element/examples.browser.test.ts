@@ -1,11 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { EXAMPLE_BEHAVIOURS } from "../testing/examples/example-behaviours";
 import { EXAMPLE_PAGES } from "../testing/examples/example-files";
 import { cdnScriptOf, openPage } from "../testing/examples/example-page";
+import {
+  adapterInside,
+  type ExampleRun,
+  expectDrawsItsStore,
+  hasList,
+} from "../testing/examples/example-runs";
 import { serveExampleData } from "../testing/examples/example-surroundings";
-import { shownIds, sortedIds } from "../testing/examples/recorded-stores";
-import type { FakeAdapter } from "../testing/fake-adapter";
 import { adaptersMade } from "./testing/fake-maps";
-import { PAGE_BEHAVIOURS } from "./testing/page-behaviours";
 
 // The example pages, as readers copy them, on the fake provider: the only one registered.
 
@@ -24,19 +28,15 @@ describe.each(EXAMPLE_PAGES)("the $name page", ({ name, html }) => {
   it("opens its map with its locations and list, and does what it says", async () => {
     serveExampleData();
     const made = adaptersMade.length;
-    const page = openPage(html);
+    const { map, root, errors } = openPage(html);
     await expect.poll(() => adaptersMade.length).toBeGreaterThan(made);
-    const adapter = adaptersMade[made] as FakeAdapter;
+    const adapter = adapterInside(root, adaptersMade.slice(made));
     await adapter.finishMount();
-    await expect.poll(() => page.map.loadState).toBe("ready");
-    await expect.poll(() => shownIds(page.map.maplace).length).toBeGreaterThan(0);
-    await expect
-      .poll(() => sortedIds(adapter.probe().locationIds()))
-      .toEqual(shownIds(page.map.maplace));
-    if (page.map.hasAttribute("list")) {
-      expect(document.querySelector("[role=listbox], select")).not.toBeNull();
-    }
-    await PAGE_BEHAVIOURS[name]?.(page.map, adapter);
-    expect(page.errors).toEqual([]);
+    await expect.poll(() => map.loadState).toBe("ready");
+    const run: ExampleRun = { store: map.maplace, adapter, root };
+    await expectDrawsItsStore(run);
+    expect(hasList(root)).toBe(map.hasAttribute("list"));
+    await EXAMPLE_BEHAVIOURS[name]?.(run);
+    expect(errors).toEqual([]);
   });
 });

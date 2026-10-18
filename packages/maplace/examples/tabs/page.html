@@ -13,7 +13,8 @@
 </maplace-map>
 <aside id="tabs-details"></aside>
 <script>
+  const tabsNotes = { rome: 'Capital since 1871.', milan: 'Finance and fashion.' };
   document.getElementById('tabs-map').addEventListener('maplace-selectionchange', (event) => {
-    document.getElementById('tabs-details').textContent = event.detail.id ?? '';
+    document.getElementById('tabs-details').textContent = tabsNotes[event.detail.id] ?? '';
   });
 </script>

@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: Maps JS from Google's bootstrap loader, what the module mounts on, the module. -->
+<script>
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: "YOUR_KEY",
+    v: "weekly",
+  });
+</script>
+<style>
+  #tabs-vanilla-map { height: 24rem; }
+  #tabs-vanilla-list [role="listbox"] { display: flex; gap: 0.25rem; border-bottom: 1px solid; }
+  #tabs-vanilla-list [role="option"] { border-radius: 0.375rem 0.375rem 0 0; }
+  #tabs-vanilla-list [aria-selected="true"] { box-shadow: inset 0 -2px currentColor; }
+</style>
+<div id="tabs-vanilla-list"></div>
+<div id="tabs-vanilla-map"></div>
+<aside id="tabs-vanilla-details"></aside>
+<script type="module" src="./vanilla.ts"></script>

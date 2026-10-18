@@ -1,10 +1,11 @@
 import { createListView, createMaplace, type Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { byId } from "../page";
 
 const maplace = createMaplace();
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
-byId("list").append(createListView(maplace).element);
+const container = document.getElementById("mixed-vanilla-map") as HTMLElement;
+maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
+const list = document.getElementById("mixed-vanilla-list") as HTMLElement;
+list.append(createListView(maplace).element);
 
 const response = await fetch("/locations.json");
 const locations: Location[] = await response.json();

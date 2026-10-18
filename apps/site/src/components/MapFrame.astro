@@ -1,24 +1,41 @@
 ---
 import { SITE_MAPS_KEY } from "astro:env/server";
+import { exampleCode, exampleFile } from "../examples/example-sources.ts";
+import { liveHost } from "../examples/live-host.ts";
 import { livePage } from "../examples/live-page.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
 
 interface Props {
-  /** The example's page, whose map this runs. */
-  html: string;
+  /** Its example's folder in `packages/maplace/examples/`. */
+  name: string;
 }
 
-const { html } = Astro.props;
-const page = livePage(html, SITE_MAPS_KEY);
-/** The page calls `save(location)`, which the site writes: a note says what was saved. */
-const savesEdits = html.includes("save(");
+const { name } = Astro.props;
+const page = exampleFile(name, "page.html");
+/** The versions the frame runs, each from its first file (its HTML), the page shown first. */
+const versions = exampleCode(name).map(({ kind, files: [html] }) => {
+  const live = kind === "html" ? livePage : liveHost;
+  return { kind, markup: live(html?.code ?? "", SITE_MAPS_KEY) };
+});
+/** The example calls `save(location)`, which the site writes: a note says what was saved. */
+const savesEdits = page.includes("save(");
 ---
 
-<div class="map-frame" data-live-page>
-  <div class="page">
-    <Fragment set:html={page} />
-    {savesEdits && <p data-saved hidden />}
-  </div>
+<div class="map-frame" data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
+  {
+    versions.map(({ kind, markup }) => (
+      <div
+        class="version"
+        data-live-version={kind}
+        data-example={name}
+        data-live-page={kind === "html" ? "" : undefined}
+        hidden={kind !== "html"}
+      >
+        <Fragment set:html={markup} />
+      </div>
+    ))
+  }
+  {savesEdits && <p class="strip" data-saved hidden />}
   <p class="map-note loading">Loading the map…</p>
   <p class="map-note failed" data-map-failure>The map couldn't load.</p>
   <ConsentPlaceholder />
@@ -33,23 +50,39 @@ const savesEdits = html.includes("save(");
     border: var(--hairline);
     background: var(--wash);
   }
-  .map-frame :global(maplace-map) {
-    flex: 1 1 auto;
+  /* A box, not `display: contents`: a version starts once it comes into view. */
+  .version,
+  .version > :global([id$="-react-root"]) {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
     min-height: 0;
   }
-  /* The page's own nodes, laid out in the frame: its map, then tabs' details, polygon's note. */
-  .page {
-    display: contents;
+  .version[hidden] {
+    display: none;
   }
-  .page > :global(:not(maplace-map, script)) {
+  /* The version's map fills what its other nodes leave: a zero basis wins over a host's height. */
+  .version > :global(maplace-map),
+  .version > :global([id$="-vanilla-map"]),
+  .version :global([id$="-react-root"] > .map) {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  /* The version's own nodes, laid out in the frame: tabs' details, a list, route's distance. */
+  .strip,
+  .version > :global(:not(maplace-map, script, style, [id$="-vanilla-map"], [id$="-react-root"])),
+  .version :global([id$="-react-root"] > :not(.map)) {
     flex: none;
+    max-height: 8rem;
+    overflow: auto;
     margin: 0;
     padding: 0.5rem 0.75rem;
     border-top: var(--hairline);
     background: var(--paper);
     font-size: 0.875rem;
   }
-  .page > :global(:empty:not(maplace-map)) {
+  .version > :global(:empty:not(maplace-map, [id$="-vanilla-map"], [id$="-react-root"])),
+  .version :global([id$="-react-root"] > :empty:not(.map)) {
     display: none;
   }
   .map-note {
@@ -62,11 +95,14 @@ const savesEdits = html.includes("save(");
     border: var(--hairline);
     font-size: 0.875rem;
   }
-  .script-failed .failed {
+  /* Notes for the version shown only. */
+  .map-frame:has(.version[data-failed]:not([hidden])) .failed,
+  .map-frame:has(.version[data-starting]:not([hidden])) .loading {
     display: block;
   }
-  .map-frame:has(:global(maplace-map:state(loading))) .loading,
-  .map-frame:has(:global(maplace-map:state(error))) .failed {
+  .map-frame.script-failed:has([data-live-version="html"]:not([hidden])) .failed,
+  .map-frame:has(.version:not([hidden]) :global(maplace-map:state(error))) .failed,
+  .map-frame:has(.version:not([hidden]) :global(maplace-map:state(loading))) .loading {
     display: block;
   }
 </style>

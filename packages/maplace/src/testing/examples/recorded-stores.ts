@@ -12,18 +12,23 @@ export function recordingCreateMaplace(real: typeof createMaplace): typeof creat
   }) as typeof createMaplace;
 }
 
-/** The store an example made last. */
-export function lastStore(): Maplace {
-  const store = stores.at(-1);
-  if (store === undefined) throw new Error("the example made no store");
-  return store;
+/** How many stores were made so far: what `storeAttachedSince` counts from. */
+export function recordedStoreCount(): number {
+  return stores.length;
 }
 
-/** The store an example attached last: under StrictMode, React makes one it never uses first. */
-export function attachedStore(): Maplace {
-  const attached = stores.filter((store) => store.getSnapshot().loadState !== "idle");
-  if (attached.length !== 1) throw new Error(`${attached.length} attached stores, expected 1`);
+/**
+ * The one store made after the first `count` that was attached: an example's, once it ran.
+ * Under StrictMode, React makes one it never attaches first.
+ */
+export function storeAttachedSince(count: number): Maplace {
+  const attached = stores.slice(count).filter(isAttached);
+  if (attached.length !== 1) throw new Error(`${attached.length} stores attached, expected 1`);
   return attached[0] as Maplace;
+}
+
+function isAttached(store: Maplace): boolean {
+  return store.getSnapshot().loadState !== "idle";
 }
 
 /** The ids `store` shows, sorted: what its map must draw. */

@@ -1,7 +1,8 @@
 ---
-import { exampleSources } from "../examples/example-sources.ts";
+import { exampleCode } from "../examples/example-sources.ts";
+import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
-import SourceCode from "./SourceCode.astro";
+import VersionSwitch from "./VersionSwitch.astro";
 
 interface Props {
   number: number;
@@ -12,9 +13,11 @@ interface Props {
 }
 
 const { number, name, title, summary } = Astro.props;
-const files = exampleSources(name);
-const page = files.find(({ kind }) => kind === "html")?.code ?? "";
-const tabs = [{ tab: "map", label: "Map" }, ...files.map(({ kind, label }) => ({ tab: kind, label }))];
+const versions = exampleCode(name);
+const tabs = [
+  { tab: "map", label: "Map" },
+  ...versions.map(({ kind, label }) => ({ tab: kind, label })),
+];
 // `example-` keeps the site's ids apart from the pages' own (`route-map`).
 const panel = (tab: string) => `example-${name}-${tab}`;
 ---
@@ -44,13 +47,13 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     }
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <MapFrame html={page} />
+    <VersionSwitch name={name} />
+    <MapFrame name={name} />
   </div>
   {
-    files.map(({ kind, file, code, lang }) => (
+    versions.map(({ kind, files }) => (
       <div role="tabpanel" id={panel(kind)} aria-labelledby={`${panel(kind)}-tab`} hidden>
-        <SourceCode code={code} lang={lang} />
-        <p class="path">examples/{name}/{file}, as the tests run it</p>
+        <ExampleFiles name={name} files={files} />
       </div>
     ))
   }
@@ -95,10 +98,5 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   [role="tab"][aria-selected="true"] {
     background: var(--ink);
     color: var(--paper);
-  }
-  .path {
-    margin: 0.5rem 0 0;
-    font-size: 0.8125rem;
-    color: var(--muted);
   }
 </style>

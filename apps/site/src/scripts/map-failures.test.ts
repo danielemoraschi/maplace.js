@@ -4,8 +4,33 @@ import {
   clearScriptFailure,
   failureNote,
   noteScriptFailure,
+  noteVersionFailure,
   startFailureNotes,
 } from "./map-failures.ts";
+
+describe("noteVersionFailure", () => {
+  const frame = () => {
+    document.body.innerHTML = `<div class="map-frame"><div data-live-version="vanilla"></div><p data-map-failure></p></div>`;
+    return document.querySelector<HTMLElement>("[data-live-version]") as HTMLElement;
+  };
+  const note = () => document.querySelector("[data-map-failure]")?.textContent;
+
+  it("writes why the version didn't start into its frame's note, and marks the version", () => {
+    const version = frame();
+    noteVersionFailure(version, "maps-js");
+    expect(note()).toBe(
+      "The map couldn't load: Google Maps didn't load. A blocker, or the network?",
+    );
+    expect(version.hasAttribute("data-failed")).toBe(true);
+  });
+
+  it("says the site has no key, or the version's script didn't load", () => {
+    noteVersionFailure(frame(), "no-key");
+    expect(note()).toBe("The map couldn't load: this site has no Google Maps key.");
+    noteVersionFailure(frame(), "script");
+    expect(note()).toBe("The map couldn't load: its script didn't load. The network?");
+  });
+});
 
 describe("failureNote", () => {
   it("says the site has no key when the map had none", () => {

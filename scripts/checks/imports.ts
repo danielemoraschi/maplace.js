@@ -53,10 +53,11 @@ const LAYERS = {
     imports: ["data", "contract", "maplace", "testing", "fake", "view"],
     packages: ["vitest"],
   },
-  // Running the examples as readers copy them: a page around them, the stores they make (T5).
+  // Running the examples as readers copy them: the HTML around them, the stores they make (T5),
+  // and what each does on its fake map (W13), read through the fake's types and looks.
   examples: {
     files: /^testing\/examples\//,
-    imports: ["data", "testing", "entry", "element"],
+    imports: ["data", "testing", "entry", "element", "fake", "adapter-kit"],
     packages: ["vitest"],
   },
   // Test support for the list views: plain data and the view's own types.
@@ -68,7 +69,7 @@ const LAYERS = {
     files: /^element\/(?!google(-|$)|testing\/)/,
     imports: ["data", "contract", "store", "view", "entry"],
   },
-  // The element's test support: maps on the fake adapter, and what each example page does there.
+  // The element's test support: maps on the fake adapter.
   "element-testing": {
     files: /^element\/testing\//,
     imports: ["data", "contract", "adapter-kit", "entry", "element", "fake"],

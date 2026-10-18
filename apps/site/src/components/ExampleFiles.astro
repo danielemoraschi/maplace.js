@@ -1,0 +1,33 @@
+---
+import type { ExampleFile } from "../examples/example-sources.ts";
+import SourceCode from "./SourceCode.astro";
+
+interface Props {
+  /** Its folder in `packages/maplace/examples/`. */
+  name: string;
+  /** The files of one of its versions, in the order a reader reads them. */
+  files: readonly ExampleFile[];
+}
+
+const { name, files } = Astro.props;
+---
+
+{
+  files.map(({ file, code, lang }) => (
+    <figure class="file">
+      <SourceCode code={code} lang={lang} />
+      <figcaption>examples/{name}/{file}, as the tests run it</figcaption>
+    </figure>
+  ))
+}
+
+<style>
+  .file {
+    margin: 0 0 1rem;
+  }
+  figcaption {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+</style>

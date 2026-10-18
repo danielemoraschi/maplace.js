@@ -1,5 +1,6 @@
 import { defineConfig, envField } from "astro/config";
 import { defaultClientConditions } from "vite";
+import { exampleModulesRun } from "./src/site/example-modules-run.ts";
 import { mapsKeyCheck } from "./src/site/maps-key-check.ts";
 
 export default defineConfig({
@@ -17,9 +18,19 @@ export default defineConfig({
   markdown: { shikiConfig: { theme: "css-variables" } },
   // maplace resolved to its source, as the tests and the examples' type-check do.
   vite: {
+    plugins: [exampleModulesRun()],
     resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
-    // The Google adapter imports the clusterer on demand: found that late, the dev server
-    // re-optimizes and refuses the import it had already handed out (`big` failed to cluster).
-    optimizeDeps: { include: ["@googlemaps/markerclusterer"] },
+    // The Google adapter imports the clusterer on demand, and a React version React when it
+    // starts: found that late, the dev server re-optimizes and refuses the import it had already
+    // handed out (`big` failed to cluster).
+    optimizeDeps: {
+      include: [
+        "@googlemaps/markerclusterer",
+        "react",
+        "react/jsx-runtime",
+        "react/jsx-dev-runtime",
+        "react-dom/client",
+      ],
+    },
   },
 });

@@ -6,8 +6,12 @@
   <maplace-location location-id="bologna" lat="44.4949" lng="11.3426" title="Bologna"></maplace-location>
   <maplace-location location-id="florence" lat="43.7696" lng="11.2558" title="Florence"></maplace-location>
 </maplace-map>
+<output id="route-distance"></output>
 <script>
   const routeMap = document.getElementById('route-map');
   routeMap.route = { stops: ['milan', 'bologna', 'florence'], travelMode: 'driving' };
-  routeMap.addEventListener('maplace-routechange', (event) => console.log(event.detail.result?.distanceMeters));
+  routeMap.addEventListener('maplace-routechange', (event) => {
+    const meters = event.detail.result?.distanceMeters;
+    document.getElementById('route-distance').textContent = meters === undefined ? '' : `${Math.round(meters / 1000)} km`;
+  });
 </script>

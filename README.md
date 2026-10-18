@@ -66,7 +66,24 @@ curl -s https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js 
 npm install maplace
 ```
 
-The store and the Google adapter, on a page that loads Maps JS with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) (or `@googlemaps/js-api-loader`):
+The store and the Google adapter, on a page that loads Maps JS with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) (or `@googlemaps/js-api-loader`) and gives the map's container its size:
+
+<!-- example: packages/maplace/examples/simple/vanilla.html -->
+```html
+<!doctype html>
+<!-- The page vanilla.ts runs on: Maps JS from Google's bootstrap loader, what the module mounts on, the module. -->
+<script>
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: "YOUR_KEY",
+    v: "weekly",
+  });
+</script>
+<style>
+  #simple-vanilla-map { height: 24rem; }
+</style>
+<div id="simple-vanilla-map"></div>
+<script type="module" src="./vanilla.ts"></script>
+```
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
@@ -76,8 +93,8 @@ import { createGoogleAdapter } from "maplace/google";
 const maplace = createMaplace({
   locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
 });
-const container = document.querySelector<HTMLElement>("#map");
-if (container) maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
+const container = document.getElementById("simple-vanilla-map") as HTMLElement;
+maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
 ```
 
 Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplace's own selected and hovered look fills what they leave unset.
@@ -101,20 +118,28 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { MaplaceMap, MaplaceProvider } from "maplace/react";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
 
-export function Simple() {
+function Simple() {
   return (
     <MaplaceProvider locations={rome}>
       <MaplaceMap createAdapter={createAdapter} className="map" />
     </MaplaceProvider>
   );
 }
+
+createRoot(document.getElementById("simple-react-root") as HTMLElement).render(
+  <StrictMode>
+    <Simple />
+  </StrictMode>,
+);
 ```
 
-`<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelectionChange` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content (inside `<MaplaceMap>`, `<MapControl position="top-right">` puts it, or anything else, on the map), and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
+The file renders its own root, into [the page beside it](packages/maplace/examples/simple/react.html), which loads Maps JS as the vanilla page does and sizes the map's div. `<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelectionChange` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content (inside `<MaplaceMap>`, `<MapControl position="top-right">` puts it, or anything else, on the map), and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
 In a React Server Component, `maplace/react` is a client boundary (it starts with `"use client"`): the server component loads the data and renders the provider and the list with it, and a small client component of yours holds the map, since its adapter is made by a function:
 

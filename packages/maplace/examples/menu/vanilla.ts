@@ -1,6 +1,5 @@
 import { createListView, createMaplace } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { byId } from "../page";
 
 const maplace = createMaplace({
   locations: [
@@ -9,9 +8,12 @@ const maplace = createMaplace({
     { id: "turin", lat: 45.0703, lng: 7.6869, title: "Turin", group: "North" },
   ],
 });
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
-byId("menu").append(createListView(maplace, { as: "select", fitAllLabel: "All cities" }).element);
-byId("north-only").addEventListener("change", (event) => {
-  const checked = (event.target as HTMLInputElement).checked;
-  maplace.setFilter(checked ? ["North"] : undefined);
+const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
+maplace.attach(adapter, document.getElementById("menu-vanilla-map") as HTMLElement);
+const menu = createListView(maplace, { as: "select", fitAllLabel: "All cities" });
+adapter.mountControl(menu.element, "top-right");
+
+const northOnly = document.getElementById("menu-vanilla-north-only") as HTMLInputElement;
+northOnly.addEventListener("change", () => {
+  maplace.setFilter(northOnly.checked ? ["North"] : undefined);
 });

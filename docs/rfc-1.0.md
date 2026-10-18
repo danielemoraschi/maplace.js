@@ -96,14 +96,14 @@ MapLibre adapter; Places integration (search box that adds locations, place deta
 
 ## 2. Use cases
 
-Ten scenarios, each written three ways against the API: an HTML page using `<maplace-map>`, vanilla TypeScript, and React. They live in [`packages/maplace/examples/`](../packages/maplace/examples/); CI type-checks them and runs all three on a fake map, and the HTML versions on Google Maps too. Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
+Ten scenarios, each written three ways against the API: an HTML page using `<maplace-map>`, vanilla TypeScript, and React. They live in [`packages/maplace/examples/`](../packages/maplace/examples/); CI type-checks them and runs all three on a fake map, and all three on Google Maps too. Each vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`: Maps JS from Google's bootstrap loader), the same map as its page, which a test holds them to. Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
 
 | Scenario | Shows | 0.2 equivalent | 0.2 issues it answers |
 |---|---|---|---|
 | [simple](../packages/maplace/examples/simple/) | One marker, nothing else | simple | #52, #55, #65 (single location) |
-| [markers](../packages/maplace/examples/markers/) | Markers, popup content from a `<template>` or string, custom icon, list | markers | #37, #60, #101, #192 (icons) |
+| [markers](../packages/maplace/examples/markers/) | Markers, popup content from a `<template>`, a node or React content, custom icon, list | markers | #37, #60, #101, #192 (icons) |
 | [circles](../packages/maplace/examples/circles/) | Circles with radius in metres | circles | #13, #130 |
-| [menu](../packages/maplace/examples/menu/) | Native `<select>` (on the map in HTML; beside it in vanilla and React), groups, a "fit all" entry; group filter in the vanilla version | menu (dropdown) | #15, #40, #117 (groups) |
+| [menu](../packages/maplace/examples/menu/) | Native `<select>` on the map, top right, groups, a "fit all" entry, a North-only filter | menu (dropdown) | #15, #40, #117 (groups) |
 | [tabs](../packages/maplace/examples/tabs/) | List outside the map, details panel driven by the `selectionChange` event | tabs | #5, #84, #122 |
 | [polyline](../packages/maplace/examples/polyline/) | One polyline location, inline JSON data | polyline | #178 |
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `locationChange` event | polygon | #64, #164 |

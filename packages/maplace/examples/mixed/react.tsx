@@ -1,11 +1,12 @@
 import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
-import { useEffect, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 
-export function Mixed() {
+function Mixed() {
   const [locations, setLocations] = useState<readonly Location[]>([]);
   useEffect(() => {
     fetch("/locations.json")
@@ -19,3 +20,9 @@ export function Mixed() {
     </MaplaceProvider>
   );
 }
+
+createRoot(document.getElementById("mixed-react-root") as HTMLElement).render(
+  <StrictMode>
+    <Mixed />
+  </StrictMode>,
+);

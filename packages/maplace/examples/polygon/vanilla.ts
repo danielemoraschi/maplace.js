@@ -1,7 +1,7 @@
 import { createMaplace, type Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { byId } from "../page";
 
+/** Your own code, writing an edited location back to your server. */
 declare function save(location: Location): Promise<void>;
 
 const park: Location = {
@@ -16,5 +16,6 @@ const park: Location = {
   ],
 };
 const maplace = createMaplace({ locations: [park] });
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), byId("map"));
+const container = document.getElementById("polygon-vanilla-map") as HTMLElement;
+maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
 maplace.on("locationChange", ({ location }) => void save(location));

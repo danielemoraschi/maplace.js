@@ -12,6 +12,8 @@
     "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@fontsource/bricolage-grotesque": "5.3.0",
     "astro": "7.3.5",
-    "maplace": "*"
+    "maplace": "*",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }
