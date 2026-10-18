@@ -2,6 +2,8 @@ import { adoptStyles } from "../adopted-styles";
 
 /** The class of the element the map is drawn in, inside `<maplace-map>`. */
 export const PANE_CLASS = "maplace-map-pane";
+/** Marks the list the element places, whichever view built it. */
+export const PLACED_LIST_CLASS = "maplace-placed-list";
 
 const BESIDE =
   ':where(maplace-map[list]:not([list-position]), maplace-map[list-position="outside"])';
@@ -13,7 +15,7 @@ export const DEFAULT_STYLES = `
 :where(.${PANE_CLASS}) { height: 100%; }
 ${BESIDE} { display: flex; }
 ${BESIDE} > :where(.${PANE_CLASS}) { flex: 1 1 auto; min-width: 0; }
-${BESIDE} > :where([data-maplace-list]) { flex: 0 1 16rem; }
+${BESIDE} > :where(.${PLACED_LIST_CLASS}) { flex: 0 1 16rem; }
 `;
 
 /** Adds the elements' default styles to `document`, once. */

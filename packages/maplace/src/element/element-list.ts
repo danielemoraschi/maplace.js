@@ -1,5 +1,6 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
 import type { Maplace } from "../index";
+import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
 import type { ElementListOptions, ListPosition } from "./index";
 import { buildListView } from "./list-views";
@@ -38,7 +39,7 @@ export function listFromAttributes(host: HTMLElement, store: Maplace): ElementLi
   const position = listPosition(host.getAttribute("list-position"));
   const setup = { options: listOptionsOf(host), listed: () => listedNow(store) };
   const view = buildListView(name, store, setup);
-  view.element.setAttribute("data-maplace-list", "");
+  view.element.classList.add(PLACED_LIST_CLASS);
   const restore = () => {
     if (position === "outside" && view.element.parentNode !== host) host.append(view.element);
   };

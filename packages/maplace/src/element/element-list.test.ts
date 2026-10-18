@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
 import { type Adapter, createMaplace, type Maplace } from "../index";
+import { PLACED_LIST_CLASS } from "./default-styles";
 import { listFromAttributes } from "./element-list";
 import type { ListViewFactory, ListViewSetup } from "./index";
 import { defineListView } from "./list-views";
@@ -73,7 +74,10 @@ describe("listFromAttributes with a list view defined by name", () => {
     defineListView(name, () => ({ element: element as HTMLElement, destroy: () => {} }));
     const host = elementWith({ list: name });
     listFromAttributes(host, createMaplace());
-    expect([element.parentNode, element.hasAttribute("data-maplace-list")]).toEqual([host, true]);
+    expect([element.parentNode, element.classList.contains(PLACED_LIST_CLASS)]).toEqual([
+      host,
+      true,
+    ]);
   });
 
   it("puts the view on the map in the corner named", () => {
