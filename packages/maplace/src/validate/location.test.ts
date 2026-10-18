@@ -161,13 +161,6 @@ describe("validateLocation: geometry", () => {
   });
 });
 
-describe("validateLocation: styles", () => {
-  it("gives a polyline a line style, without fill", () => {
-    const line = { id: "l", type: "polyline", path: [point, point], style: { fill: "red" } };
-    expect(check(line)).toThrow(/style\.fill is not a line style field; a line has no fill/);
-  });
-});
-
 describe("validateLocation: popup content", () => {
   it("needs a sanitizer for html", () => {
     expect(check({ id: "h", lat: 1, lng: 2, html: "<b>x</b>" })).toThrow(

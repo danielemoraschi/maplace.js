@@ -44,3 +44,35 @@ describe("locationFromAttributes", () => {
     expect(location).toMatchObject({ group: "north", content });
   });
 });
+
+describe("locationFromAttributes: shape styles", () => {
+  const circle = { "location-id": "c", type: "circle", lat: "1", lng: "2", radius: "3" };
+
+  it("reads a shape's styles from shape-style, selected-style and hovered-style as JSON", () => {
+    const styled = element({
+      ...circle,
+      "shape-style": '{"stroke":"#0000ff"}',
+      "selected-style": '{"fill":"#ff0000"}',
+      "hovered-style": '{"strokeWidth":3}',
+    });
+    expect(locationFromAttributes(styled)).toMatchObject({
+      style: { stroke: "#0000ff" },
+      selectedStyle: { fill: "#ff0000" },
+      hoveredStyle: { strokeWidth: 3 },
+    });
+  });
+
+  it("passes on a style that isn't JSON as written", () => {
+    const location = locationFromAttributes(element({ ...circle, "selected-style": "red" }));
+    expect(location).toMatchObject({ selectedStyle: "red" });
+  });
+
+  it("leaves the styles out when they aren't written", () => {
+    expect(Object.keys(locationFromAttributes(element(circle)))).toEqual([
+      "id",
+      "type",
+      "center",
+      "radius",
+    ]);
+  });
+});

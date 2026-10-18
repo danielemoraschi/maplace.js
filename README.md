@@ -23,6 +23,8 @@ One script, no build step:
 
 A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS).
 
+A circle's styles (colours, opacities, stroke width) are JSON objects in `shape-style`, `selected-style` and `hovered-style`: `<maplace-location type="circle" … selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>`.
+
 Locations can also come from an inline `<script type="application/json">` child or the element's `locations` property. The element never fetches: load your data and assign it.
 
 ## One script per page
@@ -77,6 +79,8 @@ const maplace = createMaplace({
 const container = document.querySelector<HTMLElement>("#map");
 if (container) maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
 ```
+
+Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplace's own selected and hovered look fills what they leave unset.
 
 For the element from npm, `import "maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider.
 

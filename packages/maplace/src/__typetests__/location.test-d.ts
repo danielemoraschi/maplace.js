@@ -20,6 +20,16 @@ accept({ id: "a", lat: 1, lng: 2, draggable: true });
 // @ts-expect-error a polyline has no fill
 accept({ id: "l", type: "polyline", path: [], style: { fill: "red" } });
 
+// A shape's selected and hovered styles, beside its style.
+const center = { lat: 1, lng: 2 };
+accept({ id: "c", type: "circle", center, radius: 5, selectedStyle: { fill: "red" } });
+accept({ id: "p", type: "polygon", path: [], hoveredStyle: { fill: "red", strokeWidth: 3 } });
+accept({ id: "l", type: "polyline", path: [], selectedStyle: { stroke: "red" } });
+// @ts-expect-error a polyline's selected style has no fill
+accept({ id: "l", type: "polyline", path: [], selectedStyle: { fill: "red" } });
+// @ts-expect-error a marker has no shape styles
+accept({ id: "a", type: "marker", lat: 1, lng: 2, selectedStyle: { stroke: "red" } });
+
 // Absence is undefined, so mapping optional fields across compiles.
 declare const legacyTitle: string | undefined;
 accept({ id: "a", lat: 1, lng: 2, title: legacyTitle });

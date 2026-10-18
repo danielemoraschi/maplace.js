@@ -17,7 +17,11 @@ export const PAGE_BEHAVIOURS: Readonly<Record<string, PageBehaviour>> = {
       .map(({ view }) => view as BoundsView);
     expect([ring?.kind, center?.kind]).toEqual(["fit-bounds", "fit-bounds"]);
     expect(latitudeSpanOf(ring)).toBeGreaterThan(latitudeSpanOf(center));
-    expect(adapter.probe().location("center")?.style).toEqual(SELECTED_LOOK);
+    expect(adapter.probe().location("center")?.style).toEqual({
+      ...SELECTED_LOOK,
+      stroke: "#c2410c",
+      fill: "#f97316",
+    });
   },
   tabs: async (map) => {
     map.maplace.select("milan");

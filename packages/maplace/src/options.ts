@@ -16,6 +16,13 @@ export interface MaplaceOptions<Data = unknown> {
   readonly popup?: PopupOptions | undefined;
   /** Default style of circles, polylines and polygons; a location's `style` overrides it. */
   readonly style?: ShapeStyle | undefined;
+  /** Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it. */
+  readonly selectedStyle?: ShapeStyle | undefined;
+  /**
+   * Drawn over `style` while a shape is hovered and not selected; a location's `hoveredStyle`
+   * overrides it.
+   */
+  readonly hoveredStyle?: ShapeStyle | undefined;
   /** Cluster markers; needs the `cluster` capability. */
   readonly cluster?: boolean | undefined;
   readonly view?: View | undefined;

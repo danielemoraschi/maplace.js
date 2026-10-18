@@ -30,6 +30,14 @@ export function Shops() {
   return null;
 }
 
+export const stateStyles = (
+  <MaplaceProvider
+    locations={[]}
+    selectedStyle={{ fill: "red" }}
+    hoveredStyle={{ strokeWidth: 3 }}
+  />
+);
+
 // @ts-expect-error events are on + their name: there is no onClick
 export const unknownEvent = <MaplaceProvider locations={shops} onClick={() => {}} />;
 // @ts-expect-error locations are required, even when they load later: pass []

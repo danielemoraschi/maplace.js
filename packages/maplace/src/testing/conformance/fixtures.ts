@@ -131,6 +131,8 @@ function plainDrawable(id: string): Omit<Drawable, "geometry"> {
     id,
     title: undefined,
     style: undefined,
+    selectedStyle: undefined,
+    hoveredStyle: undefined,
     editable: false,
     renderContent: undefined,
     renderIcon: undefined,

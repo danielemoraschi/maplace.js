@@ -120,6 +120,14 @@ describe("shape placers", () => {
     expect(stub.get("fillOpacity")).toBeUndefined();
   });
 
+  it("restyle a selected shape when only its selected style changes", () => {
+    const { placed: p, stub } = placed(polygonDrawable("p", { selectedStyle: { fill: "red" } }));
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    expect(stub.get("fillColor")).toBe("red");
+    p.update(polygonDrawable("p", { selectedStyle: { fill: "blue" } }));
+    expect(stub.get("fillColor")).toBe("blue");
+  });
+
   it("restack on a state change, hide, and leave the map on remove, unhovered", () => {
     const { placed: p, stub, host } = placed(polygonDrawable("p"));
     const plain = stub.get("zIndex") as number;

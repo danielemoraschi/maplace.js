@@ -67,8 +67,8 @@ function forwardEvent<Data, K extends MaplaceEventName>(
 
 /** Every option read once, named so a new one fails to compile until it is passed on. */
 function mountOptionsOf<Data>(props: Props<Data>): MaplaceOptions<Data> {
-  const { sanitize, popup, style, cluster, view } = props;
-  return { sanitize, popup, style, cluster, view } satisfies Record<
+  const { sanitize, popup, style, selectedStyle, hoveredStyle, cluster, view } = props;
+  return { sanitize, popup, style, selectedStyle, hoveredStyle, cluster, view } satisfies Record<
     keyof MountOptions<Data>,
     unknown
   >;

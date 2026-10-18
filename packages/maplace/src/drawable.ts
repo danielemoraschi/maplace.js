@@ -2,11 +2,16 @@ import type { Geometry } from "./geometry";
 import type { LocationState } from "./location";
 import type { ShapeStyle } from "./style";
 
+/** A drawable's styles: at rest, and over it while selected or hovered. */
+export const STYLE_FIELDS = ["style", "selectedStyle", "hoveredStyle"] as const;
+
+export type StyleField = (typeof STYLE_FIELDS)[number];
+
 /**
- * A location as an adapter draws it, resolved by the store: default style applied, user
+ * A location as an adapter draws it, resolved by the store: default styles applied, user
  * callbacks bound. Each field keeps its reference while its inputs are shallowly unchanged (same
- * scalars, same `path`, `center`, `style`, `icon` and `content` references), so adapters compare
- * fields with `===` and redo only what changed.
+ * scalars, same `path`, `center`, `style`, `selectedStyle`, `hoveredStyle`, `icon` and `content`
+ * references), so adapters compare fields with `===` and redo only what changed.
  */
 export interface Drawable {
   readonly id: string;
@@ -18,6 +23,10 @@ export interface Drawable {
    * polylines, none for markers.
    */
   readonly style: ShapeStyle | undefined;
+  /** Drawn over `style` while selected: the location's over the store's, resolved as `style`. */
+  readonly selectedStyle: ShapeStyle | undefined;
+  /** Drawn over `style` while hovered and not selected, resolved as `selectedStyle`. */
+  readonly hoveredStyle: ShapeStyle | undefined;
   readonly editable: boolean;
   /**
    * Builds the popup content (sanitizing `html` on first call); undefined when there is none.

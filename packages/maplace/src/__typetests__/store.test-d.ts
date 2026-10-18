@@ -63,6 +63,13 @@ shop.on("routeChange", ({ result }) =>
 // @ts-expect-error a viewport has no `center.lon`; coordinates are lat/lng
 shop.on("viewportChange", ({ viewport }) => viewport.center.lon);
 
+// The store's default styles for shapes, at rest and in each state.
+createMaplace({
+  style: { fill: "blue" },
+  selectedStyle: { fill: "red" },
+  hoveredStyle: { strokeWidth: 3 },
+});
+
 // Loading: whenReady is awaitable, attach returns detach.
 expectTypeOf(shop.whenReady()).toEqualTypeOf<Promise<void>>();
 expectTypeOf(shop.attach).returns.toEqualTypeOf<() => void>();

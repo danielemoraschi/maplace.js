@@ -28,6 +28,13 @@ vi.mock("maplace", async (importOriginal) => {
 
 /** What a page around one example sees it do, beyond drawing its locations. */
 const BEHAVIOURS: Readonly<Record<string, () => Promise<void>>> = {
+  circles: async () => {
+    lastStore().select("near");
+    expect(adapters.at(-1)?.probe().location("near")?.style).toMatchObject({
+      stroke: "#c2410c",
+      fill: "#f97316",
+    });
+  },
   tabs: async () => {
     lastStore().select("milan");
     expect(byId("details").textContent).toBe("Finance and fashion.");

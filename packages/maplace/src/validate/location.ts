@@ -9,7 +9,7 @@ import { child, type Field, reject, root } from "./fail";
 import { checkLatLng, LATITUDE, LONGITUDE, pathOf } from "./geometry";
 import { OLD_LOCATION_FIELDS } from "./migration";
 import { type Assert, recordOf } from "./record";
-import { checkLineStyle, checkShapeStyle } from "./style";
+import { checkLineStyle, checkShapeStyle, shapeStyleChecks } from "./style";
 import {
   arrayOf,
   type Check,
@@ -58,12 +58,12 @@ const TYPE_CHECKS: {
   readonly polygon: OwnChecks<PolygonLocation>;
 } = {
   marker: { lat: numberIn(LATITUDE), lng: numberIn(LONGITUDE), icon: optional(checkRenderable) },
-  circle: { center: checkLatLng, radius: numberIn(POSITIVE), style: optional(checkShapeStyle) },
-  polyline: { path: pathOf(2), style: optional(checkLineStyle) },
+  circle: { center: checkLatLng, radius: numberIn(POSITIVE), ...shapeStyleChecks(checkShapeStyle) },
+  polyline: { path: pathOf(2), ...shapeStyleChecks(checkLineStyle) },
   polygon: {
     path: pathOf(3),
     holes: optional(arrayOf("an array of rings", pathOf(3))),
-    style: optional(checkShapeStyle),
+    ...shapeStyleChecks(checkShapeStyle),
   },
 };
 

@@ -41,7 +41,12 @@ export function createAttacher<Data>({
 }: AttachContext<Data>): Attacher<Data> {
   const loadStates = createLoadStates(state, readiness);
   const { getSnapshot } = state.store;
-  const drawOptions = { sanitize: options?.sanitize, style: options?.style };
+  const drawOptions = {
+    sanitize: options?.sanitize,
+    style: options?.style,
+    selectedStyle: options?.selectedStyle,
+    hoveredStyle: options?.hoveredStyle,
+  };
   const popup = resolvePopup(options);
   const reports = createReports({ state, loadStates, openOn: popup.openOn });
   const cluster = options?.cluster ?? false;

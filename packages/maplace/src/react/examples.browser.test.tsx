@@ -26,6 +26,13 @@ const onSave = vi.fn();
 
 /** What a page around one example sees it do, beyond drawing its locations. */
 const BEHAVIOURS: Readonly<Record<string, (page: HTMLElement) => Promise<void>>> = {
+  circles: async () => {
+    await inAct(() => attachedStore().select("near"));
+    expect(adapters.live().probe().location("near")?.style).toMatchObject({
+      stroke: "#c2410c",
+      fill: "#f97316",
+    });
+  },
   tabs: async (page) => {
     await inAct(() => attachedStore().select("milan"));
     expect(page.querySelector("aside")?.textContent).toBe("milan");

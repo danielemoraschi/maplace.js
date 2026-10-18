@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { type DrawContext, type DrawnLocation, toDrawable } from "./drawable";
 
-const CONTEXT: DrawContext = { sanitize: undefined, style: { stroke: "blue" }, report: () => {} };
+const CONTEXT: DrawContext = {
+  sanitize: undefined,
+  style: { stroke: "blue" },
+  selectedStyle: { strokeWidth: 6, stroke: "red" },
+  hoveredStyle: { strokeWidth: 5 },
+  report: () => {},
+};
 const path = [
   { lat: 0, lng: 0 },
   { lat: 1, lng: 1 },
@@ -59,6 +65,31 @@ describe("toDrawable", () => {
       CONTEXT,
     );
     expect(next.style).toBe(previous.drawable.style);
+  });
+
+  it("resolves the selected and hovered styles, each the location's over the store's", () => {
+    const drawable = toDrawable(
+      { id: "l", type: "polyline", path, selectedStyle: { stroke: "green" } },
+      undefined,
+      CONTEXT,
+    );
+    expect(drawable.selectedStyle).toEqual({ strokeWidth: 6, stroke: "green" });
+    expect(drawable.hoveredStyle).toEqual({ strokeWidth: 5 });
+  });
+
+  it("keeps each state style's reference while its fields are the same, even in a new object", () => {
+    const line = (): Location => ({
+      id: "l",
+      type: "polyline",
+      path,
+      selectedStyle: { stroke: "green" },
+      hoveredStyle: { strokeOpacity: 1 },
+    });
+    const previous = drawn(line());
+    const next = toDrawable(line(), previous, CONTEXT);
+    expect(next.selectedStyle).toBe(previous.drawable.selectedStyle);
+    expect(next.hoveredStyle).toBe(previous.drawable.hoveredStyle);
+    expect(next).toBe(previous.drawable);
   });
 
   it("keeps the content renderer while content is the same", () => {

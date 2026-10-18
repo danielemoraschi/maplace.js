@@ -4,9 +4,10 @@ import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const center = { lat: 41.9028, lng: 12.4964 };
+const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };
 const circles: Location[] = [
-  { id: "near", type: "circle", center, radius: 5_000, title: "Within 5 km" },
-  { id: "far", type: "circle", center, radius: 15_000, title: "Within 15 km" },
+  { id: "near", type: "circle", center, radius: 5_000, title: "Within 5 km", selectedStyle },
+  { id: "far", type: "circle", center, radius: 15_000, title: "Within 15 km", selectedStyle },
 ];
 
 export function Circles() {

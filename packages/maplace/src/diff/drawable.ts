@@ -1,19 +1,16 @@
-import type { Drawable } from "../drawable";
+import type { Drawable, StyleField } from "../drawable";
 import type { Location } from "../location";
-import type { MaplaceOptions } from "../options";
 import { type ContentContext, contentRenderer, sameContentSource } from "./content";
 import { geometryOf } from "./geometry";
 import { iconRenderer, sameIconSource } from "./icon";
 import { keepIfSame } from "./same";
-import { styleOf } from "./style";
+import { type DrawStyles, styleOf } from "./style";
 
 /**
  * What drawables depend on besides the location: the store's options, and where the page's own
  * code reports failing while an adapter draws. Fixed for one attachment.
  */
-export interface DrawContext extends ContentContext {
-  readonly style: MaplaceOptions["style"];
-}
+export interface DrawContext extends ContentContext, DrawStyles {}
 
 /** A location as last given, with the drawable made from it. */
 export interface DrawnLocation {
@@ -30,11 +27,15 @@ export function toDrawable(
   previous: DrawnLocation | undefined,
   context: DrawContext,
 ): Drawable {
+  const keptStyle = (field: StyleField) =>
+    keepIfSame(previous?.drawable[field], styleOf(location, field, context[field]));
   const drawable: Drawable = {
     id: location.id,
     geometry: keepIfSame(previous?.drawable.geometry, geometryOf(location)),
     title: location.title,
-    style: keepIfSame(previous?.drawable.style, styleOf(location, context.style)),
+    style: keptStyle("style"),
+    selectedStyle: keptStyle("selectedStyle"),
+    hoveredStyle: keptStyle("hoveredStyle"),
     editable: location.editable ?? false,
     renderContent: contentRendererOf(location, previous, context),
     renderIcon: iconRendererOf(location, previous, context),

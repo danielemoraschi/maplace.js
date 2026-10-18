@@ -4,7 +4,13 @@ import type { Location } from "../location";
 import type { DrawContext } from "./drawable";
 import { type Drawn, diffLocations, NOTHING_DRAWN } from "./locations";
 
-const CONTEXT: DrawContext = { sanitize: undefined, style: undefined, report: () => {} };
+const CONTEXT: DrawContext = {
+  sanitize: undefined,
+  style: undefined,
+  selectedStyle: undefined,
+  hoveredStyle: undefined,
+  report: () => {},
+};
 
 function marker(id: string, lng = 0): Location {
   return { id, lat: 0, lng };

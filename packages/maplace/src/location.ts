@@ -55,17 +55,33 @@ export interface MarkerLocation<Data = unknown> extends LocationBase<Data>, LatL
   readonly icon?: Icon<Data> | undefined;
 }
 
-export interface CircleLocation<Data = unknown> extends LocationBase<Data>, CircleGeometry {
-  readonly style?: ShapeStyle | undefined;
+/**
+ * A shape's styles. In a state it is drawn as maplace's look for that state, then `style`, then
+ * the state's own style; selected wins over hovered.
+ */
+interface StyledShape<Style extends LineStyle> {
+  /** Over the store's `style`. */
+  readonly style?: Style | undefined;
+  /** Drawn over `style` while selected; over the store's `selectedStyle`. */
+  readonly selectedStyle?: Style | undefined;
+  /** Drawn over `style` while hovered and not selected; over the store's `hoveredStyle`. */
+  readonly hoveredStyle?: Style | undefined;
 }
 
-export interface PolylineLocation<Data = unknown> extends LocationBase<Data>, PolylineGeometry {
-  readonly style?: LineStyle | undefined;
-}
+export interface CircleLocation<Data = unknown>
+  extends LocationBase<Data>,
+    CircleGeometry,
+    StyledShape<ShapeStyle> {}
 
-export interface PolygonLocation<Data = unknown> extends LocationBase<Data>, PolygonGeometry {
-  readonly style?: ShapeStyle | undefined;
-}
+export interface PolylineLocation<Data = unknown>
+  extends LocationBase<Data>,
+    PolylineGeometry,
+    StyledShape<LineStyle> {}
+
+export interface PolygonLocation<Data = unknown>
+  extends LocationBase<Data>,
+    PolygonGeometry,
+    StyledShape<ShapeStyle> {}
 
 export type Location<Data = unknown> =
   | MarkerLocation<Data>

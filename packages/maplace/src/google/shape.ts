@@ -1,6 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import { anchorOf } from "../adapter-kit/anchor";
-import { styleInState } from "../adapter-kit/shape-looks";
+import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
 import { stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
 import type { LocationState } from "../location";
@@ -40,7 +40,7 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
       popupPlace: () => ({ position: anchorOf(drawn.geometry) }),
       update(next) {
         if (next.geometry !== drawn.geometry) geometry.show(next.geometry);
-        if (next.style !== drawn.style) {
+        if (!sameStyles(next, drawn)) {
           shape.setValues(styleValues(styleInState(next, look.state)));
         }
         if (next.editable !== drawn.editable) shape.setValues({ editable: next.editable });

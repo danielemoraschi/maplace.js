@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { MAPLACE_EVENT_NAME_LIST } from "../events";
-import { MaplaceError } from "../index";
+import { type Location, MaplaceError } from "../index";
 import { eventPropName } from "./store-binding";
 import { boundStore, TOWNS } from "./testing/bound-store";
 
@@ -63,5 +63,18 @@ describe("bindStore", () => {
     render({ locations: TOWNS, cluster: false });
     expect(adapter.mounted?.cluster).toBe(true);
     expect(adapter.destroyed).toBe(false);
+  });
+
+  it("gives the store its selected and hovered styles", async () => {
+    const circle: Location = { id: "c", type: "circle", center: { lat: 0, lng: 0 }, radius: 5 };
+    const { store, adapter } = await boundStore({
+      locations: [circle],
+      selectedStyle: { fill: "#ff0000" },
+      hoveredStyle: { fill: "#00ff00" },
+    });
+    store.hover("c");
+    expect(adapter.probe().location("c")?.style?.fill).toBe("#00ff00");
+    store.select("c");
+    expect(adapter.probe().location("c")?.style?.fill).toBe("#ff0000");
   });
 });

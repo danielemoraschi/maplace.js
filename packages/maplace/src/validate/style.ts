@@ -1,6 +1,7 @@
+import type { StyleField } from "../drawable";
 import type { LineStyle, ShapeStyle } from "../style";
 import { type Assert, recordOf } from "./record";
-import { checkNonEmptyString, NON_NEGATIVE, numberIn, optional } from "./values";
+import { type Check, checkNonEmptyString, NON_NEGATIVE, numberIn, optional } from "./values";
 
 const colour = optional(checkNonEmptyString);
 const opacity = optional(numberIn({ min: 0, max: 1 }));
@@ -19,3 +20,9 @@ export const checkShapeStyle: Assert<ShapeStyle> = recordOf<ShapeStyle>({
   checks: { ...LINE_CHECKS, fill: colour, fillOpacity: opacity },
   unknown: "is not a style field",
 });
+
+/** A shape's style at rest and in each state, each optional and checked by `check`. */
+export function shapeStyleChecks(check: Check): Readonly<Record<StyleField, Check>> {
+  const style = optional(check);
+  return { style, selectedStyle: style, hoveredStyle: style };
+}

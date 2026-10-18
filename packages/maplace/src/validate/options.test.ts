@@ -10,6 +10,8 @@ describe("validateOptions", () => {
       sanitize: (html: string) => html,
       popup: { openOn: "click" },
       style: { fill: "red" },
+      selectedStyle: { fill: "orange" },
+      hoveredStyle: { strokeWidth: 3 },
       cluster: true,
       view: { kind: "fit-all", padding: 40 },
     };
@@ -50,6 +52,15 @@ describe("validateOptions", () => {
     );
     expect(() => validateOptions({ selectedId: "" })).toThrow(
       /options\.selectedId must be a non-empty string/,
+    );
+  });
+
+  it("checks the state styles as shape styles", () => {
+    expect(() => validateOptions({ selectedStyle: { fillOpacity: 2 } })).toThrow(
+      expect.objectContaining({ field: "options.selectedStyle.fillOpacity" }),
+    );
+    expect(() => validateOptions({ hoveredStyle: { colour: "red" } })).toThrow(
+      /options\.hoveredStyle\.colour is not a style field/,
     );
   });
 
