@@ -13,8 +13,6 @@ const SITE_LINK = /\]\(([/#][^)\s]*)(?:\s+"[^"]*")?\)/g;
 const NOT_IN_SLUG = /[^\p{L}\p{N} _-]/gu;
 // An ATX heading's opening: up to three spaces, one to six `#`, then a space or the line's end.
 const ATX_HEADING = /^ {0,3}#{1,6}(?:[ \t]+|$)/;
-// An ATX heading's optional closing `#`s, after a space: not in its text.
-const ATX_CLOSING = /[ \t]+#+[ \t]*$/;
 // A link in a heading, `[text](target)`: only its text is in the heading's id.
 const LINK = /\[([^\]]*)\]\([^)]*\)/g;
 
@@ -38,13 +36,20 @@ export function brokenSiteLinks(pages: readonly DocPage[]): string[] {
 
 /** The id a heading gets on the site: github-slugger's slug, which Astro uses. */
 export function headingSlug(heading: string): string {
-  return heading
-    .replace(ATX_HEADING, "")
-    .replace(ATX_CLOSING, "")
+  return withoutClosingHashes(heading.replace(ATX_HEADING, ""))
     .replaceAll(LINK, "$1")
     .toLowerCase()
     .replaceAll(NOT_IN_SLUG, "")
     .replaceAll(" ", "-");
+}
+
+/** A heading's text without its optional closing `#`s, which follow a space: `Foo ##` → `Foo`. */
+function withoutClosingHashes(text: string): string {
+  const trimmed = text.trimEnd();
+  let end = trimmed.length;
+  while (end > 0 && trimmed[end - 1] === "#") end--;
+  const closes = end === 0 || trimmed[end - 1] === " " || trimmed[end - 1] === "\t";
+  return closes ? trimmed.slice(0, end).trimEnd() : trimmed;
 }
 
 /** `target`, a link on the page at `route`, as a rooted link: `#markers` → `/locations/#markers`. */
@@ -80,7 +85,11 @@ function headingSlugsOf(markdown: string): ReadonlySet<string> {
 
 /** `slug`, or `slug-1`, `slug-2`, … : the first of them not `taken`. */
 function untakenSlug(slug: string, taken: ReadonlySet<string>): string {
-  let unique = slug;
-  for (let count = 1; taken.has(unique); count++) unique = `${slug}-${count}`;
-  return unique;
+  let count = 0;
+  while (taken.has(numbered(slug, count))) count++;
+  return numbered(slug, count);
+}
+
+function numbered(slug: string, count: number): string {
+  return count === 0 ? slug : `${slug}-${count}`;
 }

@@ -27,6 +27,16 @@ describe("exportedNames", () => {
     expect(exportedNames(source)).toEqual(["f", "g", "h", "K", "I", "T", "E", "C"]);
   });
 
+  it("reads declarations behind modifiers and a generator's star", () => {
+    const source = [
+      "export function* gen() {}",
+      "export declare const d: number;",
+      "export abstract class A {}",
+      "export\ntype Late = 1;",
+    ].join("\n");
+    expect(exportedNames(source)).toEqual(["gen", "d", "A", "Late"]);
+  });
+
   it("keeps the source's order across both forms", () => {
     const source = 'export type A = 1;\nexport { b } from "./b";\nexport function c() {}';
     expect(exportedNames(source)).toEqual(["A", "b", "c"]);

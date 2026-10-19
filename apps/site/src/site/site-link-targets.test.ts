@@ -65,6 +65,8 @@ describe("headingSlug", () => {
     ["## `<MaplaceProvider>`", "maplaceprovider"],
     ["## `maplace/element/google`", "maplaceelementgoogle"],
     ["## `useMaplace()`", "usemaplace"],
+    ["## Using C#", "using-c"],
+    ["## Closed ##  ", "closed"],
     ["## The [store](/store/#options)", "the-store"],
     ["## Closed heading ##", "closed-heading"],
   ])("gives %s the id the site gives it: %s", (heading, slug) => {

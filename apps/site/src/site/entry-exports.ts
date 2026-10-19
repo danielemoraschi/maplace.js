@@ -1,49 +1,72 @@
-// `export { a, b as c }` or `export type { … }`, on one line or several, with or without `from`.
-const EXPORT_LIST = /^export\s+(?:type\s+)?\{([^}]*)\}/gm;
-// `export function f`, `export const c`, `export interface I`, … : one declared name.
-const EXPORT_DECLARATION =
-  /^export\s+(?:declare\s+)?(?:async\s+)?(?:abstract\s+)?(?:function\*?|const\s+enum|const|let|var|class|interface|type|enum)\s+([A-Za-z_$][\w$]*)/gm;
-// `export *`, `export type *`, `export default`, `export =`, `export import`, a namespace and a
-// destructured declaration: exports this reader can't list by name.
-const UNLISTABLE_EXPORT =
-  /^export\s+(?:(?:type\s+)?\*|default\b|=|import\b|(?:declare\s+)?(?:namespace|module|global)\b|(?:const|let|var)\s+[{[])/m;
+// Where each export statement starts: `export` at the start of a line.
+const EXPORT_KEYWORD = /^export\b/gm;
+// The words and marks a declaration starts with: `declare`, `const`, `Name`, `*`, `{`.
+const TOKEN = /[\w$]+|[^\s\w$]/g;
+const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
 
-interface Exported {
-  readonly names: readonly string[];
-  /** Where its statement starts in the source. */
-  readonly at: number;
-}
+/** What may stand before a declaration's kind: `export declare const`, `export async function`. */
+const MODIFIERS: ReadonlySet<string> = new Set(["declare", "async", "abstract"]);
+/** The declarations that export one name, given right after their kind. */
+const DECLARATION_KINDS: ReadonlySet<string> = new Set([
+  "function",
+  "const",
+  "let",
+  "var",
+  "class",
+  "interface",
+  "type",
+  "enum",
+]);
 
 /** The names a module exports, in source order, read from its TypeScript `source`. */
 export function exportedNames(source: string): string[] {
-  const unlistable = UNLISTABLE_EXPORT.exec(source);
-  if (unlistable !== null) {
-    throw new Error(`"${unlistable[0]}": an entry must name each export, so it can be listed`);
-  }
-  return [...listedExports(source), ...declaredExports(source)]
-    .sort((a, b) => a.at - b.at)
-    .flatMap(({ names }) => names);
+  return Array.from(source.matchAll(EXPORT_KEYWORD), ({ index }) =>
+    source.slice(index + "export".length).trimStart(),
+  ).flatMap(namesOf);
 }
 
-function listedExports(source: string): Exported[] {
-  return Array.from(source.matchAll(EXPORT_LIST), (match) => ({
-    names: namesOfList(match[1] ?? ""),
-    at: match.index,
-  }));
+/** The names one export statement gives, `statement` being what follows its `export`. */
+function namesOf(statement: string): string[] {
+  const list = statement.startsWith("type")
+    ? statement.slice("type".length).trimStart()
+    : statement;
+  if (list.startsWith("{")) return namesOfList(list.slice(1, list.indexOf("}")));
+  return [declaredName(statement)];
 }
 
-function declaredExports(source: string): Exported[] {
-  return Array.from(source.matchAll(EXPORT_DECLARATION), (match) => ({
-    names: [match[1] ?? ""],
-    at: match.index,
-  }));
+/** The name a declaration exports: `const enum Kind` → `Kind`; anything else can't be listed. */
+function declaredName(statement: string): string {
+  const tokens = firstLine(statement).match(TOKEN) ?? [];
+  let at = 0;
+  while (MODIFIERS.has(tokens[at] ?? "")) at++;
+  const kind = tokens[at++] ?? "";
+  if (kind === "const" && tokens[at] === "enum") at++;
+  if (kind === "function" && tokens[at] === "*") at++;
+  const name = tokens[at] ?? "";
+  if (!DECLARATION_KINDS.has(kind) || !IDENTIFIER.test(name)) throw unlistable(statement);
+  return name;
 }
 
 /** The names an export list gives: `a, type B, c as d` → `a`, `B`, `d`. */
 function namesOfList(list: string): string[] {
   return list
     .split(",")
-    .map((item) => item.trim().replace(/^type\s+/, ""))
+    .map((item) => withoutTypePrefix(item.trim()))
     .filter((item) => item !== "")
-    .map((item) => item.split(/\s+as\s+/).at(-1) ?? item);
+    .map((item) => item.split(" as ").at(-1)?.trim() ?? item);
+}
+
+function withoutTypePrefix(item: string): string {
+  return item.startsWith("type ") ? item.slice("type ".length).trimStart() : item;
+}
+
+function firstLine(text: string): string {
+  return text.split("\n", 1)[0] ?? "";
+}
+
+/** `export *`, `export default`, a namespace, a destructured declaration: no name to list. */
+function unlistable(statement: string): Error {
+  return new Error(
+    `"export ${firstLine(statement)}": an entry must name each export, so it can be listed`,
+  );
 }
