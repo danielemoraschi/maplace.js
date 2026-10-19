@@ -1,10 +1,10 @@
-import { inertScripts, withoutDoctype } from "./page-markup.ts";
+import { inertScripts, requireOnce, withoutDoctype } from "./page-markup.ts";
 
 /** A host's module script: the site runs the version's module from its own bundle instead. */
 const MODULE_SCRIPT = /<script type="module" src="[^"]+"><\/script>\s*/g;
 
 /** Where a host's bootstrap has the reader put their key. */
-const KEY_PLACEHOLDER = 'key: "YOUR_KEY"';
+const BOOTSTRAP_KEY_PLACEHOLDER = /key: "YOUR_KEY"/g;
 
 /**
  * A vanilla or React version's HTML as the site runs it: its styles and the nodes its module
@@ -13,15 +13,16 @@ const KEY_PLACEHOLDER = 'key: "YOUR_KEY"';
  * its doctype and module script left out, since the site imports the module itself.
  */
 export function liveHost(hostHtml: string, apiKey: string | undefined): string {
-  const modules = hostHtml.match(MODULE_SCRIPT) ?? [];
-  if (modules.length !== 1) {
-    throw new Error(`an example's host loads one module script; this one ${modules.length}`);
-  }
-  if (hostHtml.split(KEY_PLACEHOLDER).length !== 2) {
-    throw new Error(`an example's host has the bootstrap's ${KEY_PLACEHOLDER} once`);
-  }
+  requireOnce(hostHtml, MODULE_SCRIPT, "an example's host loads one module script");
+  requireOnce(
+    hostHtml,
+    BOOTSTRAP_KEY_PLACEHOLDER,
+    `an example's host has the bootstrap's key: "YOUR_KEY" once`,
+  );
   const keyed =
-    apiKey === undefined ? hostHtml : hostHtml.replace(KEY_PLACEHOLDER, () => keyIn(apiKey));
+    apiKey === undefined
+      ? hostHtml
+      : hostHtml.replace(BOOTSTRAP_KEY_PLACEHOLDER, () => keyIn(apiKey));
   return inertScripts(withoutDoctype(keyed.replaceAll(MODULE_SCRIPT, "")));
 }
 

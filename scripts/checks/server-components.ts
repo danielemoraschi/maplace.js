@@ -5,7 +5,9 @@ import { ROOT } from "../build/package.ts";
 import { newTempDir, removeTempDir } from "../build/temp-dir.ts";
 
 const APP_SOURCE = join(import.meta.dirname, "rsc-app");
-const BUILD_AND_RENDER = join(import.meta.dirname, "server-components-build.ts");
+const BUILD_AND_RENDER_FILE = "server-components-build.ts";
+const BUILD_AND_RENDER = join(import.meta.dirname, BUILD_AND_RENDER_FILE);
+const RUN = "the RSC app's build and render";
 
 /** What a React Server Components app shows of maplace, built and rendered as a page's would be. */
 export interface ServerComponentsRender {
@@ -30,9 +32,11 @@ export function renderServerComponentsApp(installed: string): ServerComponentsRe
   try {
     layOutApp(app, installed);
     const run = spawnSync(process.execPath, [BUILD_AND_RENDER], { cwd: app, encoding: "utf8" });
-    if (run.error) throw run.error;
+    if (run.error) {
+      throw new Error(`${RUN} (${BUILD_AND_RENDER_FILE}) didn't start`, { cause: run.error });
+    }
     if (run.status !== 0) throw new Error(`the RSC app failed to build or render:\n${run.stderr}`);
-    return JSON.parse(run.stdout);
+    return renderIn(run.stdout);
   } finally {
     removeTempDir(app);
   }
@@ -42,4 +46,13 @@ function layOutApp(app: string, installed: string): void {
   cpSync(APP_SOURCE, app, { recursive: true });
   mkdirSync(join(app, "node_modules"));
   symlinkSync(installed, join(app, "node_modules", "maplace"), "dir");
+}
+
+/** The render the run printed as JSON, or its output when it printed something else. */
+function renderIn(stdout: string): ServerComponentsRender {
+  try {
+    return JSON.parse(stdout);
+  } catch (error) {
+    throw new Error(`${RUN} printed no JSON:\n${stdout}`, { cause: error });
+  }
 }

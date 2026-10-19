@@ -1,6 +1,6 @@
 import type { MaplaceError } from "maplace";
 import type { MaplaceElementEventMap } from "maplace/element";
-import type { VersionFailure } from "./live-frames.ts";
+import type { VersionFailure } from "./version-start.ts";
 
 /** As much of a map's error as the note reads. */
 type MapFailure = Pick<MaplaceError, "code"> & Partial<Pick<MaplaceError, "field">>;
@@ -44,6 +44,20 @@ const VERSION_FAILURES: Readonly<Record<VersionFailure, string>> = {
 export function noteVersionFailure(version: HTMLElement, failure: VersionFailure): void {
   noteFailure(version, VERSION_FAILURES[failure]);
   version.dataset.failed = "";
+}
+
+/** A version that started, or is starting, and hasn't failed yet. */
+const RUNNING_VERSION = ":is([data-started], [data-starting]):not([data-failed])";
+
+/**
+ * Shows that Maps JS didn't load for each version in `root` that is running. A version's
+ * bootstrap adds its Maps tag only once its module asks for a library, so Maps JS fails after
+ * the version started.
+ */
+export function noteMapsJsFailure(root: ParentNode): void {
+  for (const version of root.querySelectorAll<HTMLElement>(RUNNING_VERSION)) {
+    noteVersionFailure(version, "maps-js");
+  }
 }
 
 /** The script loaded after all: the note goes. */

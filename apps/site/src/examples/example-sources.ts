@@ -1,3 +1,5 @@
+import { type LiveVersion, VERSION_MODULES } from "./example-versions.ts";
+
 /** One of an example's files, as a reader copies it. */
 export interface ExampleFile {
   /** Its name in the example's folder. */
@@ -9,7 +11,7 @@ export interface ExampleFile {
 
 /** One way of using maplace an example is written in: its code tab, with every file it needs. */
 export interface ExampleCode {
-  readonly kind: "html" | "vanilla" | "react";
+  readonly kind: "html" | LiveVersion;
   readonly label: string;
   readonly files: readonly ExampleFile[];
 }
@@ -26,8 +28,8 @@ const FILES = import.meta.glob<string>("../../../../packages/maplace/examples/*/
 
 const VERSIONS: readonly (Omit<ExampleCode, "files"> & { readonly files: readonly string[] })[] = [
   { kind: "html", label: "HTML", files: ["page.html"] },
-  { kind: "vanilla", label: "Vanilla", files: ["vanilla.html", "vanilla.ts"] },
-  { kind: "react", label: "React", files: ["react.html", "react.tsx"] },
+  { kind: "vanilla", label: "Vanilla", files: ["vanilla.html", VERSION_MODULES.vanilla] },
+  { kind: "react", label: "React", files: ["react.html", VERSION_MODULES.react] },
 ];
 
 /** The code of the example in `packages/maplace/examples/<name>/`: page, vanilla, React. */

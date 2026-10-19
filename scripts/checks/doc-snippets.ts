@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ROOT } from "../build/package.ts";
-import { DOCS, isFence } from "./markdown.ts";
+import { isFence } from "../docs/markdown.ts";
+import { DOCS } from "./docs.ts";
 
 /** `<!-- example: <path from the repo root> -->`: the fence below it is a copy of that file. */
 const EXAMPLE_MARKER = /^<!-- example: (\S+) -->$/;

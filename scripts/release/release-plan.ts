@@ -1,4 +1,4 @@
-import { CHANGELOG_FILE, verbOf } from "../checks/changelog-lines.ts";
+import { CHANGELOG_FILE, verbOf } from "../docs/changelog-lines.ts";
 import { shippedLines } from "./changelog-release.ts";
 import { ReleaseRefused } from "./release-refused.ts";
 import { TAG_PREFIX, tagOf } from "./tags.ts";

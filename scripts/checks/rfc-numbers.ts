@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { section } from "./markdown.ts";
+import { section } from "../docs/markdown.ts";
 import { RFC } from "./rfc.ts";
 
 // A budget row of the Numbers table, e.g. | Core (`maplace`) | ≤ 15.5 kB |.

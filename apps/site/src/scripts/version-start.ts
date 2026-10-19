@@ -15,12 +15,12 @@ export interface VersionStarting {
 }
 
 /**
- * Starts a version once, as a page's map is released: Maps JS through its own bootstrap unless
- * the page has it already (the element's tag, or another version's bootstrap), then its module.
- * Without the site's key it runs nothing and says so. `data-starting` marks the wait,
+ * What starts a version, once, as a page's map is released: Maps JS through its own bootstrap
+ * unless the page has it already (the element's tag, or another version's bootstrap), then its
+ * module. Without the site's key it runs nothing and says so. `data-starting` marks the wait,
  * `data-started` a version whose module runs.
  */
-export function startsVersions(starting: VersionStarting): (version: HTMLElement) => Promise<void> {
+export function versionStarter(starting: VersionStarting): (version: HTMLElement) => Promise<void> {
   const started = new WeakSet<HTMLElement>();
   return async (version) => {
     if (started.has(version)) return;

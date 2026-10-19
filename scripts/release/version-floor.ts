@@ -1,4 +1,4 @@
-import { type Verb, verbOf } from "../checks/changelog-lines.ts";
+import { type Verb, verbOf } from "../docs/changelog-lines.ts";
 import { ReleaseRefused } from "./release-refused.ts";
 import type { Version } from "./versions.ts";
 

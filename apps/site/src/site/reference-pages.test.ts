@@ -2,7 +2,7 @@ import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ROOT } from "../../../../scripts/build/package.ts";
-import { DOCS } from "../../../../scripts/checks/markdown.ts";
+import { DOCS } from "../../../../scripts/checks/docs.ts";
 import { referenceProblems } from "./reference-check.ts";
 import { REFERENCE_DIR, referenceTables } from "./reference-tables.ts";
 import { REPO_DOCS } from "./repo-docs.ts";

@@ -1,6 +1,6 @@
 import { globSync, readFileSync } from "node:fs";
 import { posix } from "node:path";
-import { captures } from "./markdown.ts";
+import { captures } from "../docs/markdown.ts";
 
 const SRC = "packages/maplace/src/";
 

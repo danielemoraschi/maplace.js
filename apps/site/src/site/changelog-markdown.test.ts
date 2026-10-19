@@ -4,7 +4,7 @@ import {
   CHANGELOG_FILE,
   issuesNamedIn,
   listLines,
-} from "../../../../scripts/checks/changelog-lines.ts";
+} from "../../../../scripts/docs/changelog-lines.ts";
 import { changelogMarkdown } from "./changelog-markdown.ts";
 
 const LINKS = {

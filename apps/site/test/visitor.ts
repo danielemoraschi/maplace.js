@@ -11,7 +11,7 @@ const GOOGLE = /^https?:\/\/[^/]*\b(google|googleapis|gstatic)\.com\//;
 const STUB_MAPS_JS =
   "globalThis.google = { maps: { importLibrary: () => new Promise(() => {}) } };";
 
-interface VisitorOptions {
+export interface VisitorOptions {
   /** Answers the Maps JS request with a stub instead of refusing it, as Google never would. */
   readonly stubMapsJs?: boolean;
 }
@@ -25,6 +25,8 @@ export interface Visitor {
   /** Whether the site was asked for `path`. */
   fetched(path: string): boolean;
   google(): readonly string[];
+  /** Whether Google was asked for Maps JS. */
+  askedForMapsJs(): boolean;
 }
 
 /**
@@ -58,6 +60,7 @@ export async function visitor(
     offsite: () => asked,
     fetched: (path) => onSite.includes(path),
     google: () => asked.filter((url) => GOOGLE.test(url)),
+    askedForMapsJs: () => asked.some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)),
   };
 }
 

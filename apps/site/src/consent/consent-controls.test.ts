@@ -43,14 +43,11 @@ describe("startConsent", () => {
     expect(maps()).toBe("on");
   });
 
-  it("marks the page on itself when consent was given before, whatever the head did", () => {
-    const { openMaps, maps } = page({ granted: true, headRan: false });
-    expect(openMaps).toHaveBeenCalledOnce();
-    expect(maps()).toBe("on");
-  });
-
-  it("opens them at once when consent was given before", () => {
-    const { openMaps, maps } = page({ granted: true });
+  it.each([
+    { headRan: true, head: "the head's script marked it" },
+    { headRan: false, head: "the head's script didn't run" },
+  ])("opens them at once when consent was given before, marking the page: $head", ({ headRan }) => {
+    const { openMaps, maps } = page({ granted: true, headRan });
     expect(openMaps).toHaveBeenCalledOnce();
     expect(maps()).toBe("on");
   });

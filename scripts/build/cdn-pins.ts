@@ -1,4 +1,4 @@
-import { fencedBlocks } from "../checks/markdown.ts";
+import { fencedBlocks } from "../docs/markdown.ts";
 
 /** What pins a CDN script: a version, and each script's integrity. */
 export interface Pin {

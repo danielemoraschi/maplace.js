@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { attributeValue, inertScripts, withoutDoctype } from "./page-markup.ts";
+import { attributeValue, inertScripts, requireOnce, withoutDoctype } from "./page-markup.ts";
 import { INERT_SCRIPT_TYPE } from "./page-scripts.ts";
 
 describe("withoutDoctype", () => {
@@ -26,5 +26,20 @@ describe("inertScripts", () => {
 describe("attributeValue", () => {
   it("escapes what would end or open markup in a quoted attribute", () => {
     expect(attributeValue('a"b<c&')).toBe("a&quot;b&lt;c&amp;");
+  });
+});
+
+describe("requireOnce", () => {
+  it("is the one match", () => {
+    expect(requireOnce("<b>x</b>", /<b>[^<]*<\/b>/g, "one bold")).toBe("<b>x</b>");
+  });
+
+  it("refuses none or more, saying what an example must have and how many it has", () => {
+    expect(() => requireOnce("<i></i>", /<b>/g, "an example has one bold")).toThrow(
+      "an example has one bold: this one has 0",
+    );
+    expect(() => requireOnce("<b><b>", /<b>/g, "an example has one bold")).toThrow(
+      "an example has one bold: this one has 2",
+    );
   });
 });

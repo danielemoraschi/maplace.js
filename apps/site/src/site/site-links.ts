@@ -1,4 +1,4 @@
-import { withLinksResolved } from "../../../../scripts/checks/markdown.ts";
+import { withLinksResolved } from "../../../../scripts/docs/markdown.ts";
 
 export interface SiteLinks {
   /** The site's page for each repo document it renders, by repo path. */

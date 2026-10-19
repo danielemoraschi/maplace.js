@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gitIn } from "../build/git.ts";
-import { CHANGELOG_FILE as CHANGELOG } from "../checks/changelog-lines.ts";
+import { CHANGELOG_FILE as CHANGELOG } from "../docs/changelog-lines.ts";
 import { type Release, withReleaseHeading } from "./changelog-release.ts";
 import { planRelease, type ReleasePlan } from "./release-plan.ts";
 import { tagOf } from "./tags.ts";

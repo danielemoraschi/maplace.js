@@ -28,7 +28,7 @@ export async function buildAndServeSite(env: Record<string, string>): Promise<Bu
     await withLock(BUILD_LOCK, () => buildSite(dir, env));
     const server = await serve(dir);
     return {
-      url: server.resolvedUrls?.local[0] ?? "",
+      url: localUrlOf(server, dir),
       async close() {
         await server.close();
         removeTempDir(dir);
@@ -38,6 +38,13 @@ export async function buildAndServeSite(env: Record<string, string>): Promise<Bu
     removeTempDir(dir);
     throw error;
   }
+}
+
+/** Where `server`, serving the site built in `dir`, listens on this machine. */
+export function localUrlOf(server: Pick<PreviewServer, "resolvedUrls">, dir: string): string {
+  const url = server.resolvedUrls?.local[0];
+  if (url === undefined) throw new Error(`the site served from ${dir} has no local URL`);
+  return url;
 }
 
 /** Astro logs a failed build to stdout: the error carries both streams. */

@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
-import { startsVersions, type VersionStarting } from "./live-frames.ts";
+import { type VersionStarting, versionStarter } from "./version-start.ts";
 
 function version(keyMissing = false): HTMLElement {
   document.body.innerHTML = `<div class="map-frame"${keyMissing ? " data-maps-key-missing" : ""}>
@@ -34,10 +34,10 @@ function setup(overrides: Partial<VersionStarting> = {}) {
     failed: vi.fn(),
     ...overrides,
   };
-  return { starting, start: startsVersions(starting), maps, steps };
+  return { starting, start: versionStarter(starting), maps, steps };
 }
 
-describe("startsVersions", () => {
+describe("versionStarter", () => {
   it("runs the version's bootstrap, waits for Maps JS, then imports its module", async () => {
     const { start, maps, steps } = setup();
     const target = version();

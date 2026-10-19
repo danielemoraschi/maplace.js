@@ -1,7 +1,6 @@
 import { setTimeout as pause } from "node:timers/promises";
-import { type Browser, chromium, type Page } from "playwright";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
+import type { Page } from "playwright";
+import { describe, expect, it } from "vitest";
 import { packageManifest, readRootFile } from "../../../scripts/build/package.ts";
 import {
   CHANGELOG_FILE,
@@ -9,24 +8,15 @@ import {
   isVersionHeading,
   listLines,
   untilNextHeading,
-} from "../../../scripts/checks/changelog-lines.ts";
+} from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
 import { GOOGLE_MAPS, THIRD_PARTIES, thirdPartyOf } from "../src/site/third-parties.ts";
-import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
-import { firstMap, placeholder, type Visitor, visitor as visitorOf } from "./visitor.ts";
-
-/**
- * Long enough for a map scrolled into view to be released and ask for Maps JS, were it to: what a
- * test waits before saying nothing was asked.
- */
-const SETTLE_MS = 500;
-
-/** How long a released map may take to ask for Maps JS, on a busy machine. */
-const ASKED = { timeout: 10_000 };
+import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
+import { firstMap, placeholder, type Visitor } from "./visitor.ts";
 
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
@@ -35,24 +25,11 @@ const PAGES_WITHOUT_MAPS = [
   ...REPO_DOCS.map(({ id }) => docRoute(id)),
 ];
 
-let site: BuiltSite;
-let browser: Browser;
-
-beforeAll(async () => {
-  [site, browser] = await Promise.all([
-    buildAndServeSite({ SITE_MAPS_KEY: "not-a-real-key" }),
-    chromium.launch(),
-  ]);
-}, 120_000);
-
-afterAll(async () => {
-  await browser?.close();
-  await site?.close();
-});
+const site = siteBuiltBeforeTests();
 
 /** A fresh visitor on the site's page at `route`. */
 async function openPage(route: string): Promise<Visitor> {
-  const visit = await visitorOf(browser, site.url);
+  const visit = await site.visitor();
   await visit.page.goto(new URL(route, site.url).href);
   return visit;
 }
@@ -197,7 +174,7 @@ describe("what the site sends where", () => {
   }
 
   it("a page without maps asks nothing off the site, before consent or after", async () => {
-    const visit = await visitorOf(browser, site.url);
+    const visit = await site.visitor();
     expect(await visitPagesWithoutMaps(visit)).toEqual(onEveryPage("off"));
     expect(visit.offsite()).toEqual([]);
     await grantConsent(visit);
@@ -209,12 +186,10 @@ describe("what the site sends where", () => {
   }, 60_000);
 
   it("once Google Maps is on, every request its pages make off the site goes to a third party the privacy page names", async () => {
-    const visit = await visitorOf(browser, site.url);
-    const { page, offsite, context } = visit;
+    const visit = await site.visitor();
+    const { page, offsite, askedForMapsJs, context } = visit;
     await grantConsent(visit);
-    await expect
-      .poll(() => offsite().some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)), ASKED)
-      .toBe(true);
+    await expect.poll(askedForMapsJs, ASKED).toBe(true);
     for (const map of await page.locator("section.example maplace-map").all()) {
       await map.scrollIntoViewIfNeeded();
     }

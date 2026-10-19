@@ -1,5 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { loadedFiles, ourErrors } from "./consumer-types.ts";
+import { spawnSync } from "node:child_process";
+import { describe, expect, it, vi } from "vitest";
+import { loadedFiles, ourErrors, sourceNamedBy, typeCheckConsumer } from "./consumer-types.ts";
+
+vi.mock("node:child_process", () => ({ spawnSync: vi.fn() }));
 
 const OUTPUT = [
   "/work/node_modules/@types/google.maps/index.d.ts",
@@ -30,5 +33,30 @@ describe("loadedFiles", () => {
       "/work/node_modules/@types/google.maps/index.d.ts",
       "/work/node_modules/maplace/dist/index.d.ts",
     ]);
+  });
+});
+
+describe("typeCheckConsumer", () => {
+  it("names the fixture and the project when tsc can't run, with why", () => {
+    const why = new Error("spawn tsc ENOENT");
+    vi.mocked(spawnSync).mockReturnValueOnce({ error: why } as ReturnType<typeof spawnSync>);
+    expect(() => typeCheckConsumer("/work", "google")).toThrow(
+      expect.objectContaining({
+        message: "tsc couldn't type-check the google fixture in /work",
+        cause: why,
+      }),
+    );
+  });
+});
+
+describe("sourceNamedBy", () => {
+  it("is the one file a fixture's config names", () => {
+    expect(sourceNamedBy('{ "files": ["google.ts"] }', "google.json")).toBe("google.ts");
+  });
+
+  it("refuses a config naming no file, saying which", () => {
+    expect(() => sourceNamedBy('{ "files": [] }', "google.json")).toThrow(
+      "google.json names no file for tsc to check",
+    );
   });
 });

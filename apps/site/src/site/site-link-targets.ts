@@ -1,4 +1,4 @@
-import { proseLinesOf } from "../../../../scripts/checks/markdown.ts";
+import { proseLinesOf } from "../../../../scripts/docs/markdown.ts";
 
 /** A page of the site rendered from a repo doc: its route and its Markdown as the site has it. */
 export interface DocPage {

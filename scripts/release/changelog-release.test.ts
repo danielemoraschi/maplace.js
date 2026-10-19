@@ -14,11 +14,28 @@ const UNRELEASED = `${HEADER}
 
 const BLOB = "https://github.com/owner/repo/blob/v1.1.0/";
 
+/** The unreleased lines as a release's notes give them. */
+const UNRELEASED_NOTES = [
+  `- 2026-10-20 Fixed the list's focus, see [the RFC](${BLOB}docs/rfc-1.0.md#errors) #12`,
+  "- 2026-10-18 Added [a guide](https://example.com/guide) for `hold`",
+  "",
+].join("\n");
+
 describe("withReleaseHeading", () => {
   it("puts the version's heading above the unreleased lines, below the header", () => {
     const released = withReleaseHeading(UNRELEASED, { version: "1.1.0", date: "2026-10-21" });
     expect(released).toBe(
       UNRELEASED.replace("\n- 2026-10-20", "\n## 1.1.0 (2026-10-21)\n\n- 2026-10-20"),
+    );
+  });
+
+  it("puts a stable release's heading above its pre-release's", () => {
+    const rc = withReleaseHeading(UNRELEASED, { version: "1.1.0-rc.1", date: "2026-10-20" });
+    expect(withReleaseHeading(rc, { version: "1.1.0", date: "2026-10-21" })).toBe(
+      UNRELEASED.replace(
+        "\n- 2026-10-20",
+        "\n## 1.1.0 (2026-10-21)\n\n## 1.1.0-rc.1 (2026-10-20)\n\n- 2026-10-20",
+      ),
     );
   });
 
@@ -33,13 +50,7 @@ describe("releaseNotes", () => {
   const released = withReleaseHeading(UNRELEASED, { version: "1.1.0", date: "2026-10-21" });
 
   it("are the version's lines, its relative links made absolute at the tag", () => {
-    expect(releaseNotes(released, { version: "1.1.0", blobBase: BLOB })).toBe(
-      [
-        `- 2026-10-20 Fixed the list's focus, see [the RFC](${BLOB}docs/rfc-1.0.md#errors) #12`,
-        "- 2026-10-18 Added [a guide](https://example.com/guide) for `hold`",
-        "",
-      ].join("\n"),
-    );
+    expect(releaseNotes(released, { version: "1.1.0", blobBase: BLOB })).toBe(UNRELEASED_NOTES);
   });
 
   it("are only that version's, not a pre-release's of the same numbers", () => {
@@ -52,25 +63,29 @@ describe("releaseNotes", () => {
     );
   });
 
-  it("give a stable version its pre-releases' lines, and a pre-release only its own", () => {
+  describe("of a stable version after its pre-release", () => {
     const rc = withReleaseHeading(UNRELEASED, { version: "1.1.0-rc.1", date: "2026-10-20" });
     const stable = withReleaseHeading(rc, { version: "1.1.0", date: "2026-10-21" });
-    expect(stable).toContain(
-      "\n## 1.1.0 (2026-10-21)\n\n## 1.1.0-rc.1 (2026-10-20)\n\n- 2026-10-20",
-    );
-    const notes = (version: string) =>
-      releaseNotes(stable, { version, blobBase: BLOB }).split("\n");
-    expect(notes("1.1.0")).toHaveLength(3);
-    expect(notes("1.1.0-rc.1")).toHaveLength(3);
     const withFix = stable.replace(
       "## 1.1.0 (2026-10-21)\n",
       "## 1.1.0 (2026-10-21)\n\n- 2026-10-21 Fixed rc\n",
     );
-    expect(releaseNotes(withFix, { version: "1.1.0", blobBase: BLOB })).toContain("Fixed rc");
-    expect(releaseNotes(withFix, { version: "1.1.0", blobBase: BLOB }).split("\n")).toHaveLength(4);
-    expect(releaseNotes(withFix, { version: "1.1.0-rc.1", blobBase: BLOB })).not.toContain(
-      "Fixed rc",
-    );
+
+    it("give the stable version its pre-release's lines", () => {
+      expect(releaseNotes(stable, { version: "1.1.0", blobBase: BLOB })).toBe(UNRELEASED_NOTES);
+    });
+
+    it("give it its own lines above them", () => {
+      expect(releaseNotes(withFix, { version: "1.1.0", blobBase: BLOB })).toBe(
+        `- 2026-10-21 Fixed rc\n${UNRELEASED_NOTES}`,
+      );
+    });
+
+    it("give the pre-release only its own", () => {
+      expect(releaseNotes(withFix, { version: "1.1.0-rc.1", blobBase: BLOB })).toBe(
+        UNRELEASED_NOTES,
+      );
+    });
   });
 
   it("refuses a version without a heading", () => {

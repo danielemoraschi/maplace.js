@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { provideSave } from "./page-surroundings.ts";
+import { provideSave } from "./page-save.ts";
 
 describe("provideSave", () => {
   it("gives the page the save() it calls, showing what was saved in the section's note", () => {

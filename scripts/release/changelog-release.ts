@@ -2,12 +2,12 @@ import {
   CHANGELOG_FILE,
   isHeadingOf,
   isListLine,
-  isVersionHeading,
+  preambleEnd,
   releaseHeading,
   untilNextHeading,
   untilNextStableHeading,
-} from "../checks/changelog-lines.ts";
-import { withAbsoluteLinks } from "../checks/markdown.ts";
+} from "../docs/changelog-lines.ts";
+import { withAbsoluteLinks } from "../docs/markdown.ts";
 import { isPrerelease, parseVersion, type Version } from "./versions.ts";
 
 export interface Release {
@@ -28,8 +28,7 @@ interface Notes {
  */
 export function withReleaseHeading(changelog: string, { version, date }: Release): string {
   const lines = changelog.split("\n");
-  const first = lines.findIndex((line) => isListLine(line) || isVersionHeading(line));
-  lines.splice(first === -1 ? lines.length : first, 0, releaseHeading(version, date), "");
+  lines.splice(preambleEnd(lines), 0, releaseHeading(version, date), "");
   return lines.join("\n");
 }
 

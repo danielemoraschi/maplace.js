@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT } from "../build/package.ts";
-import { DOCS, relativeLinksIn } from "./markdown.ts";
+import { relativeLinksIn } from "../docs/markdown.ts";
+import { DOCS } from "./docs.ts";
 
 /**
  * Each relative link in the docs that reaches no file or directory of the repo. Anchors aren't

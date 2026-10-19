@@ -1,8 +1,11 @@
 /** A GitHub closing keyword with this repo's issue: `fixes #12`, `Closes: #3`. */
 const CLOSING_REFERENCE = /\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?):?\s+#(\d+)\b/gi;
 
-/** An issue named as a word of a changelog line: `#147`. */
-const ISSUE_WORD = /^#(\d+)$/;
+/** The `#N` words at a line's end, after its text: ` #147 #139`. */
+export const TRAILING_ISSUES = /(?: #\d+)+$/;
+
+/** An issue's number (group 1) where it's named: `#147`. */
+export const ISSUE = /#(\d+)/g;
 
 export const CHANGELOG_FILE = "CHANGELOG.md";
 
@@ -10,8 +13,11 @@ export const CHANGELOG_FILE = "CHANGELOG.md";
 export const VERBS = ["Added", "Changed", "Fixed", "Removed"] as const;
 export type Verb = (typeof VERBS)[number];
 
-/** A changelog line as it must open: `- YYYY-MM-DD`, then what it did (group 1). */
-const LINE_FORMAT = new RegExp(String.raw`^- \d{4}-\d{2}-\d{2} (${VERBS.join("|")}) `);
+/** A changelog line in format opens with its date (group 1). */
+export const DATED_LINE = /^- (\d{4}-\d{2}-\d{2}) /;
+
+/** A changelog line as it must open: its date, then what it did (group 2). */
+const LINE_FORMAT = new RegExp(`${DATED_LINE.source}(${VERBS.join("|")}) `);
 
 /** A released version's heading, `## 0.2.10 (2017-04-02)`; the lines above the first are unreleased. */
 const VERSION_HEADING = /^## \d/;
@@ -30,13 +36,8 @@ export function issuesNamedIn(lines: readonly string[]): Set<number> {
 }
 
 function trailingIssues(line: string): number[] {
-  const issues: number[] = [];
-  for (const word of line.split(" ").reverse()) {
-    const issue = ISSUE_WORD.exec(word);
-    if (issue === null) break;
-    issues.push(Number(issue[1]));
-  }
-  return issues;
+  const issues = TRAILING_ISSUES.exec(line)?.[0] ?? "";
+  return Array.from(issues.matchAll(ISSUE), ([, issue]) => Number(issue));
 }
 
 /** The changelog's list lines, released or not. */
@@ -55,7 +56,16 @@ export function malformedLines(changelog: string): string[] {
 
 /** What a line in format says it did. */
 export function verbOf(line: string): Verb | undefined {
-  return LINE_FORMAT.exec(line)?.[1] as Verb | undefined;
+  return LINE_FORMAT.exec(line)?.[2] as Verb | undefined;
+}
+
+/**
+ * Where a changelog's lines start, past its title and intro: its first list line or version
+ * heading, or its end when it has neither.
+ */
+export function preambleEnd(lines: readonly string[]): number {
+  const start = lines.findIndex((line) => isListLine(line) || isVersionHeading(line));
+  return start === -1 ? lines.length : start;
 }
 
 export function isListLine(line: string): boolean {

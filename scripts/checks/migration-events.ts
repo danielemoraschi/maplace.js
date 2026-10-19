@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { API_LISTS } from "../../packages/maplace/src/__typetests__/api-lists.ts";
-import { backticked, section, tableRows } from "./markdown.ts";
-import { missingFrom } from "./rfc.ts";
+import { backticked, section, tableRows } from "../docs/markdown.ts";
+import { missingFrom } from "./lists.ts";
 
 export const MIGRATION = "MIGRATION.md";
 

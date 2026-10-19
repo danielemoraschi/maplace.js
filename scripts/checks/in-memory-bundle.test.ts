@@ -1,6 +1,6 @@
 import type { Metafile } from "esbuild";
 import { describe, expect, it } from "vitest";
-import { reachableOutputs } from "./bundle-size.ts";
+import { reachableOutputs } from "./in-memory-bundle.ts";
 
 type Imports = Metafile["outputs"][string]["imports"];
 

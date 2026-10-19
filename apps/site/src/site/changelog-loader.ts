@@ -1,10 +1,9 @@
 import type { Loader } from "astro/loaders";
-import { gitIn } from "../../../../scripts/build/git.ts";
-import { packageManifest, ROOT, readRootFile } from "../../../../scripts/build/package.ts";
-import { CHANGELOG_FILE } from "../../../../scripts/checks/changelog-lines.ts";
+import { packageManifest, readRootFile } from "../../../../scripts/build/package.ts";
+import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
 import { blobBaseFor, repositoryPageFor } from "../../../../scripts/release/repository.ts";
 import { type ChangelogLinks, changelogMarkdown } from "./changelog-markdown.ts";
-import { docRoute, REPO_DOCS } from "./repo-docs.ts";
+import { builtCommit, DOC_ROUTES } from "./repo-docs-loader.ts";
 
 /** The `changelog` collection's one entry: CHANGELOG.md, rendered. */
 export const CHANGELOG_ENTRY = "changelog";
@@ -31,13 +30,8 @@ export function changelogLoader(): Loader {
 
 function changelogLinks(blobBase: string, repositoryPage: string): ChangelogLinks {
   return {
-    routes: Object.fromEntries(REPO_DOCS.map(({ file, id }) => [file, docRoute(id)])),
+    routes: DOC_ROUTES,
     blobBase,
     issueBase: `${repositoryPage}/issues/`,
   };
-}
-
-/** The commit the site is built from: its links to the repo's files read them as it saw them. */
-function builtCommit(): string {
-  return gitIn(ROOT, ["rev-parse", "HEAD"]).trim();
 }

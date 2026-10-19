@@ -1,10 +1,10 @@
-import { attributeValue, inertScripts, withoutDoctype } from "./page-markup.ts";
+import { attributeValue, inertScripts, requireOnce, withoutDoctype } from "./page-markup.ts";
 
 /** An example page's map, from its opening tag to its closing one. */
 const MAP = /<maplace-map\b[\s\S]*?<\/maplace-map>/g;
 
-/** Where an example page has the reader put their key. */
-const KEY_PLACEHOLDER = ' api-key="YOUR_KEY"';
+/** Where an example page has the reader put their key: the map's attribute. */
+const MAP_KEY_ATTRIBUTE = / api-key="YOUR_KEY"/g;
 
 /** The page's CDN script, which the site's own bundle stands in for. */
 const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]+"><\/script>\s*/g;
@@ -16,34 +16,20 @@ const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]
  * defines the element. Everything else stays as written, in order.
  */
 export function livePage(pageHtml: string, apiKey: string | undefined): string {
-  const map = onlyMapOf(pageHtml);
+  const map = requireOnce(pageHtml, MAP, "an example page has one <maplace-map>");
   const held = heldMap(map, apiKey);
   const [before = "", after = ""] = pageHtml.split(map);
   const head = withoutCdnScript(withoutDoctype(before));
   return `${inertScripts(head)}${held}${inertScripts(after)}`;
 }
 
-function onlyMapOf(pageHtml: string): string {
-  const maps = pageHtml.match(MAP) ?? [];
-  const [map] = maps;
-  if (maps.length !== 1 || map === undefined) {
-    throw new Error(`an example page has one <maplace-map>; this one has ${maps.length}`);
-  }
-  return map;
-}
-
 function heldMap(map: string, apiKey: string | undefined): string {
-  if (map.split(KEY_PLACEHOLDER).length !== 2) {
-    throw new Error(`an example's map has the key placeholder${KEY_PLACEHOLDER} once`);
-  }
+  requireOnce(map, MAP_KEY_ATTRIBUTE, `an example's map has api-key="YOUR_KEY" once`);
   const key = apiKey === undefined ? "" : ` api-key="${attributeValue(apiKey)}"`;
-  return map.replace(KEY_PLACEHOLDER, key).replace("<maplace-map", "<maplace-map hold");
+  return map.replace(MAP_KEY_ATTRIBUTE, key).replace("<maplace-map", "<maplace-map hold");
 }
 
 function withoutCdnScript(head: string): string {
-  const scripts = head.match(CDN_SCRIPT) ?? [];
-  if (scripts.length !== 1) {
-    throw new Error(`an example page loads the CDN script once, before its map: ${scripts.length}`);
-  }
+  requireOnce(head, CDN_SCRIPT, "an example page loads the CDN script once, before its map");
   return head.replaceAll(CDN_SCRIPT, "");
 }

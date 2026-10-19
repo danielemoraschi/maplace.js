@@ -1,39 +1,22 @@
-import { type Browser, type BrowserContext, chromium, type Page } from "playwright";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { BrowserContext, Page } from "playwright";
+import { describe, expect, it } from "vitest";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
-import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
-import { chooseVersion, firstMap, placeholder, visitor as visitorOf } from "./visitor.ts";
-
-/**
- * Long enough for a map scrolled into view to be released and ask for Maps JS, were it to: what a
- * test waits before saying nothing was asked.
- */
-const SETTLE_MS = 500;
+import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
+import { chooseVersion, firstMap, placeholder, type VisitorOptions } from "./visitor.ts";
 
 /** One section per example on the home page (D23). */
 const EXAMPLE_COUNT = EXAMPLE_SECTIONS.length;
 
-/** How long a released map may take to ask for Maps JS, on a busy machine. */
-const ASKED = { timeout: 10_000 };
+/**
+ * The callback Google's bootstrap loader names in the Maps tag it adds
+ * (`callback=google.maps.__ib__`): a tag without it is the element's own.
+ */
+const BOOTSTRAP_CALLBACK = "__ib__";
 
-let site: BuiltSite;
-let browser: Browser;
+const site = siteBuiltBeforeTests();
 
-beforeAll(async () => {
-  [site, browser] = await Promise.all([
-    buildAndServeSite({ SITE_MAPS_KEY: "not-a-real-key" }),
-    chromium.launch(),
-  ]);
-}, 120_000);
-
-afterAll(async () => {
-  await browser?.close();
-  await site?.close();
-});
-
-const visitor = (options?: Parameters<typeof visitorOf>[2]) =>
-  visitorOf(browser, site.url, options);
+const visitor = (options?: VisitorOptions) => site.visitor(options);
 
 async function openHome(page: Page): Promise<void> {
   await page.goto(site.url);
@@ -46,7 +29,7 @@ const consentKept = (context: BrowserContext) =>
 
 describe("the site's consent to Google Maps", () => {
   it("asks nothing off the site until the visitor loads the maps, then Google for Maps JS", async () => {
-    const { page, context, google, offsite, fetched } = await visitor();
+    const { page, context, offsite, fetched, askedForMapsJs } = await visitor();
     await openHome(page);
     // A version chosen before consent waits too, as the pages' own scripts wait for their maps:
     // big's 4,000 points aren't fetched by its page or its React version.
@@ -57,9 +40,7 @@ describe("the site's consent to Google Maps", () => {
     expect(fetched("/points-4k.json")).toBe(false);
     await expect.poll(() => placeholder(page).isVisible()).toBe(true);
     await placeholder(page).click();
-    await expect
-      .poll(() => google().some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)), ASKED)
-      .toBe(true);
+    await expect.poll(askedForMapsJs, ASKED).toBe(true);
     expect(await consentKept(context)).toHaveLength(1);
     await context.close();
   }, 30_000);
@@ -93,30 +74,39 @@ describe("the site's consent to Google Maps", () => {
   }, 30_000);
 
   it("turns the maps on from the footer as from a placeholder", async () => {
-    const { page, context, google } = await visitor();
+    const { page, context, askedForMapsJs } = await visitor();
     await openHome(page);
     await footerToggle(page).click();
-    await expect
-      .poll(() => google().some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)), ASKED)
-      .toBe(true);
+    await expect.poll(askedForMapsJs, ASKED).toBe(true);
     await context.close();
   }, 30_000);
 });
 
 describe("the home page's examples", () => {
-  it("shows every example's map, held, and uses no id twice", async () => {
+  it("shows every example's map, held", async () => {
+    const { page, context } = await visitor();
+    await page.goto(site.url);
+    expect(await page.locator("section.example maplace-map[hold]").count()).toBe(EXAMPLE_COUNT);
+    await context.close();
+  }, 30_000);
+
+  it("gives every map a box, as a map without one never comes into view to be released", async () => {
+    const { page, context } = await visitor();
+    await page.goto(site.url);
+    const heights = await page
+      .locator("section.example maplace-map")
+      .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
+    expect(heights.filter((height) => height === 0)).toEqual([]);
+    await context.close();
+  }, 30_000);
+
+  it("uses no id twice, with every example's versions on one page", async () => {
     const { page, context } = await visitor();
     await page.goto(site.url);
     const ids = await page.evaluate(() =>
       [...document.querySelectorAll("[id]")].map(({ id }) => id),
     );
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
-    expect(await page.locator("section.example maplace-map[hold]").count()).toBe(EXAMPLE_COUNT);
-    // A map without a box never comes into view, so it would never be released.
-    const heights = await page
-      .locator("section.example maplace-map")
-      .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
-    expect(heights.filter((height) => height === 0)).toEqual([]);
     await context.close();
   }, 30_000);
 
@@ -175,17 +165,15 @@ describe("the home page's examples", () => {
     await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
     const mapsTags = google().filter((url) => url.startsWith(MAPS_SCRIPT_ORIGIN));
     expect(mapsTags.length).toBeGreaterThan(0);
-    expect(mapsTags.filter((url) => !url.includes("__ib__"))).toEqual([]);
+    expect(mapsTags.filter((url) => !url.includes(BOOTSTRAP_CALLBACK))).toEqual([]);
     await context.close();
   }, 30_000);
 
   it("says when Maps JS didn't load for a version, the page's tag having failed first", async () => {
-    const { page, context, google } = await visitor();
+    const { page, context, askedForMapsJs } = await visitor();
     await openHome(page);
     await placeholder(page).click();
-    await expect
-      .poll(() => google().some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)), ASKED)
-      .toBe(true);
+    await expect.poll(askedForMapsJs, ASKED).toBe(true);
     await chooseVersion(page, "simple", "Vanilla");
     const vanilla = page.locator('[data-example="simple"][data-live-version="vanilla"]');
     await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");

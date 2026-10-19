@@ -1,6 +1,6 @@
 import { readRootFile } from "../../../../scripts/build/package.ts";
-import { backticked, section, tableRows } from "../../../../scripts/checks/markdown.ts";
-import { missingFrom } from "../../../../scripts/checks/rfc.ts";
+import { missingFrom } from "../../../../scripts/checks/lists.ts";
+import { backticked, section, tableRows } from "../../../../scripts/docs/markdown.ts";
 
 /** A table of a reference page and the names it must list. */
 export interface ReferenceTable {

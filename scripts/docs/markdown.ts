@@ -1,21 +1,3 @@
-import { CHANGELOG_FILE } from "./changelog-lines.ts";
-
-/** The repo's documents: what the doc checks read. */
-export const DOCS = [
-  "README.md",
-  "MIGRATION.md",
-  CHANGELOG_FILE,
-  "docs/rfc-1.0.md",
-  "docs/MODERNIZE.md",
-  "docs/reference/setup.md",
-  "docs/reference/element.md",
-  "docs/reference/locations.md",
-  "docs/reference/store.md",
-  "docs/reference/google.md",
-  "docs/reference/react.md",
-  "docs/reference/api.md",
-] as const;
-
 /** The end of a Markdown link to a path in the repo: neither a URL (`https:`, `mailto:`), an anchor nor rooted. */
 const RELATIVE_LINK = /\]\((?![a-z][a-z\d+.-]*:|[#/])([^)\s]+)\)/gi;
 

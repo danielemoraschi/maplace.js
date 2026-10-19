@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { LOCATION_ATTRIBUTES } from "../../../../packages/maplace/src/element/location-attributes.ts";
 import { ROOT } from "../../../../scripts/build/package.ts";
-import { captures } from "../../../../scripts/checks/markdown.ts";
+import { captures } from "../../../../scripts/docs/markdown.ts";
 import {
   ATTRIBUTES_READ_BY_NAME,
   GOOGLE_PROVIDER_ATTRIBUTES,

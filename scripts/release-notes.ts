@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { packageManifest, ROOT } from "./build/package.ts";
-import { CHANGELOG_FILE } from "./checks/changelog-lines.ts";
+import { CHANGELOG_FILE } from "./docs/changelog-lines.ts";
 import { releaseNotes } from "./release/changelog-release.ts";
 import { blobBaseFor } from "./release/repository.ts";
 import { tagOf } from "./release/tags.ts";

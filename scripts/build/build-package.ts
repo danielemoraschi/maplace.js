@@ -13,7 +13,7 @@ export interface BuildDirs {
 }
 
 /** Where `npm run build` writes, in the repo. */
-export const REPO_BUILD_DIRS: BuildDirs = { dist: DIST, packed: PACKED };
+const REPO_BUILD_DIRS: BuildDirs = { dist: DIST, packed: PACKED };
 
 /** The whole build: `dist` (npm ESM, declarations, the CDN scripts), then the package staged. */
 export async function buildPackage({ dist, packed }: BuildDirs = REPO_BUILD_DIRS): Promise<void> {

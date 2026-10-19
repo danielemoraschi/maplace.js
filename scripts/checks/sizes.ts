@@ -1,14 +1,10 @@
 import { type CdnScript, cdnBuildOptions } from "../build/cdn-builds.ts";
 import { esmBuildOptions } from "../build/esm-build.ts";
 import { PACKAGE_ENTRIES } from "../build/package.ts";
-import {
-  type Bundle,
-  bundleInMemory,
-  gzipKilobytes,
-  reachableOutputs,
-  scriptsOf,
-} from "./bundle-size.ts";
-import { missingFrom, RFC } from "./rfc.ts";
+import { gzipKilobytes } from "./bundle-size.ts";
+import { type Bundle, bundleInMemory, reachableOutputs, scriptsOf } from "./in-memory-bundle.ts";
+import { missingFrom } from "./lists.ts";
+import { RFC } from "./rfc.ts";
 import { rfcBudgets } from "./rfc-numbers.ts";
 
 /**

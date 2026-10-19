@@ -41,28 +41,37 @@ export function watchMapsJs(document: Document): MapsJsWatch {
     },
     true,
   );
-  // One wait, shared by every version that asks.
   let importable: Promise<void> | undefined;
-  const wait = () =>
-    new Promise<void>((resolve, reject) => {
-      const settled = (): boolean => {
-        if (failed) reject(new Error("Maps JS didn't load"));
-        else if (canImportLibraries()) resolve();
-        else return false;
-        return true;
-      };
-      if (settled()) return;
-      const timer = setInterval(() => {
-        if (settled()) clearInterval(timer);
-      }, POLL_MS);
-    });
   return {
     importable: () => {
-      importable ??= wait();
+      importable ??= waitForImportLibrary(() => failed);
       return importable;
     },
     whenFailed: (listener) => listeners.push(listener),
   };
+}
+
+/**
+ * Resolves once `importLibrary` is there, rejects once `hasFailed`: looking now, then every
+ * `POLL_MS`.
+ */
+function waitForImportLibrary(hasFailed: () => boolean): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const isOver = () => hasFailed() || canImportLibraries();
+    const settle = () => {
+      if (hasFailed()) reject(new Error("Maps JS didn't load"));
+      else resolve();
+    };
+    if (isOver()) {
+      settle();
+      return;
+    }
+    const timer = setInterval(() => {
+      if (!isOver()) return;
+      clearInterval(timer);
+      settle();
+    }, POLL_MS);
+  });
 }
 
 function canImportLibraries(): boolean {

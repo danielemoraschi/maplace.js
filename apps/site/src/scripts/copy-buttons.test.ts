@@ -29,4 +29,13 @@ describe("startCopyButtons", () => {
     button.click();
     await vi.waitFor(() => expect(button.textContent).toBe("Couldn't copy"));
   });
+
+  it("says it couldn't copy when its target isn't on the page, copying nothing", async () => {
+    const writeText = vi.fn(async () => {});
+    const button = copyPage(writeText);
+    button.dataset.copy = "gone";
+    button.click();
+    await vi.waitFor(() => expect(button.textContent).toBe("Couldn't copy"));
+    expect(writeText).not.toHaveBeenCalled();
+  });
 });

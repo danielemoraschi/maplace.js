@@ -1,9 +1,12 @@
 import {
   CHANGELOG_FILE,
+  DATED_LINE,
+  ISSUE,
   isListLine,
-  isVersionHeading,
   malformedLines,
-} from "../../../../scripts/checks/changelog-lines.ts";
+  preambleEnd,
+  TRAILING_ISSUES,
+} from "../../../../scripts/docs/changelog-lines.ts";
 import { type SiteLinks, withSiteLinks } from "./site-links.ts";
 
 /** Where the changelog's links go on the site. */
@@ -14,13 +17,6 @@ export interface ChangelogLinks extends SiteLinks {
 
 /** The CHANGELOG's own word for the lines above the first version heading. */
 const UNRELEASED_HEADING = "## Unreleased";
-
-/** A line in format opens with its date (group 1). */
-const DATED_LINE = /^- (\d{4}-\d{2}-\d{2}) /;
-
-/** The `#N` words at a line's end: the issues the CHANGELOG check reads (`issuesNamedIn`). */
-const TRAILING_ISSUES = /(?: #\d+)+$/;
-const ISSUE = /#(\d+)/g;
 
 /**
  * CHANGELOG.md as `/changelog/` shows it: from its first line or version heading on, unreleased
@@ -46,8 +42,7 @@ function refuseMalformedLines(changelog: string): void {
 
 /** The lines from the first list line or version heading on: the title and intro dropped. */
 function withoutPreamble(lines: readonly string[]): readonly string[] {
-  const start = lines.findIndex((line) => isListLine(line) || isVersionHeading(line));
-  return start === -1 ? [] : lines.slice(start);
+  return lines.slice(preambleEnd(lines));
 }
 
 function withUnreleasedHeading(lines: readonly string[]): readonly string[] {

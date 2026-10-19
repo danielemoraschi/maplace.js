@@ -28,3 +28,16 @@ export function inertScripts(html: string): string {
 export function attributeValue(text: string): string {
   return text.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 }
+
+/**
+ * The one match of `pattern`, a global regex, in `html`; `rule`, what an example must have once,
+ * is the error when it has none or more.
+ */
+export function requireOnce(html: string, pattern: RegExp, rule: string): string {
+  const matches = html.match(pattern) ?? [];
+  const [match] = matches;
+  if (matches.length !== 1 || match === undefined) {
+    throw new Error(`${rule}: this one has ${matches.length}`);
+  }
+  return match;
+}

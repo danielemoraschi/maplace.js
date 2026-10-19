@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   clearScriptFailure,
   failureNote,
+  noteMapsJsFailure,
   noteScriptFailure,
   noteVersionFailure,
   startFailureNotes,
@@ -81,5 +82,30 @@ describe("startFailureNotes", () => {
     expect(document.querySelector("[data-map-failure]")?.textContent).toBe(
       "The map couldn't load: Google refused this site's key.",
     );
+  });
+});
+
+describe("noteMapsJsFailure", () => {
+  const frames = (...versions: string[]) => {
+    document.body.innerHTML = versions
+      .map((version) => `<div class="map-frame">${version}<p data-map-failure></p></div>`)
+      .join("");
+  };
+  const notes = () =>
+    [...document.querySelectorAll("[data-map-failure]")].map(({ textContent }) => textContent);
+
+  it("notes it for each version started or starting", () => {
+    frames("<div data-started></div>", "<div data-starting></div>");
+    noteMapsJsFailure(document);
+    expect(notes()).toEqual([
+      failureNote({ code: "provider-load-failed" }),
+      failureNote({ code: "provider-load-failed" }),
+    ]);
+  });
+
+  it("leaves a version not started, and one that failed already, as they are", () => {
+    frames("<div></div>", '<div data-started data-failed=""></div>');
+    noteMapsJsFailure(document);
+    expect(notes()).toEqual(["", ""]);
   });
 });

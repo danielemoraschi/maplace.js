@@ -3,20 +3,22 @@ import { startConsent } from "../consent/consent-controls.ts";
 import { createConsentStore } from "../consent/consent-store.ts";
 import { gateMaps } from "../consent/map-gate.ts";
 import { whenVisible } from "../consent/when-visible.ts";
-import { type LiveVersion, versionModule } from "../examples/example-modules.ts";
+import { versionModule } from "../examples/example-modules.ts";
+import type { LiveVersion } from "../examples/example-versions.ts";
+import { provideSave } from "../examples/page-save.ts";
 import { runPageScripts } from "../examples/page-scripts.ts";
-import { provideSave } from "../examples/page-surroundings.ts";
 import { startCopyButtons } from "./copy-buttons.ts";
 import { releaseOnceDefined } from "./element-loader.ts";
-import { startsVersions } from "./live-frames.ts";
 import {
   clearScriptFailure,
+  noteMapsJsFailure,
   noteScriptFailure,
   noteVersionFailure,
   startFailureNotes,
 } from "./map-failures.ts";
 import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { startTabs } from "./tabs.ts";
+import { versionStarter } from "./version-start.ts";
 import { startVersionSwitches } from "./version-switch.ts";
 
 // Every map on the site is held (`<maplace-map hold>`): nothing from Google loads until the
@@ -44,7 +46,7 @@ const release = releaseOnceDefined<MaplaceMapElement>({
   recovered: clearScriptFailure,
 });
 
-const startVersion = startsVersions({
+const startVersion = versionStarter({
   load: ({ dataset }) => versionModule(dataset.example ?? "", dataset.liveVersion as LiveVersion)(),
   runBootstrap: runPageScripts,
   mapsJsOnPage: () => mapsJsOnPage(document),
@@ -52,15 +54,7 @@ const startVersion = startsVersions({
   failed: noteVersionFailure,
 });
 
-// A version's bootstrap adds its Maps tag only once its module asks for a library: its failing
-// comes after the version started.
-function noteMapsJsFailedForRunningVersions(): void {
-  const running = document.querySelectorAll<HTMLElement>(
-    ":is([data-started], [data-starting]):not([data-failed])",
-  );
-  for (const version of running) noteVersionFailure(version, "maps-js");
-}
-mapsJs.whenFailed(noteMapsJsFailedForRunningVersions);
+mapsJs.whenFailed(() => noteMapsJsFailure(document));
 
 const openPageMaps = gateMaps(maps, { whenVisible, release });
 const openVersions = gateMaps(versions, { whenVisible, release: startVersion });

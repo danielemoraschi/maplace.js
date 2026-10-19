@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { API_LISTS } from "../../packages/maplace/src/__typetests__/api-lists.ts";
-import { backticked, captures, section } from "./markdown.ts";
+import { backticked, captures, section } from "../docs/markdown.ts";
+import { missingFrom } from "./lists.ts";
 
 export const RFC = "docs/rfc-1.0.md";
 
@@ -73,8 +74,4 @@ function wordsAfterColon(row: string): string[] {
     .split(/[,|]/)
     .map((word) => word.trim())
     .filter(Boolean);
-}
-
-export function missingFrom(list: readonly string[], candidates: readonly string[]): string[] {
-  return candidates.filter((candidate) => !list.includes(candidate));
 }

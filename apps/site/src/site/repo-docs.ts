@@ -1,12 +1,3 @@
-import type { Loader } from "astro/loaders";
-import { type Pin, withPinnedScripts } from "../../../../scripts/build/cdn-pins.ts";
-import { gitIn } from "../../../../scripts/build/git.ts";
-import { packageManifest, ROOT, readRootFile } from "../../../../scripts/build/package.ts";
-import { blobBaseFor } from "../../../../scripts/release/repository.ts";
-import { cdnPin } from "./cdn-pin.ts";
-import { withLinksFromRoot } from "./doc-relative-links.ts";
-import { withSiteLinks } from "./site-links.ts";
-
 /** A repo document the site renders as a page of its own. */
 export interface RepoDoc {
   /** The page's path segment, and the entry's id. */
@@ -103,50 +94,4 @@ export const REPO_DOCS: readonly RepoDoc[] = [
 /** The site's page for the repo document `id`. */
 export function docRoute(id: string): string {
   return `/${id}/`;
-}
-
-const ROUTES = Object.fromEntries(REPO_DOCS.map(({ file, id }) => [file, docRoute(id)]));
-
-/** The content loader of the `docs` collection: each repo document, rendered. */
-export function repoDocsLoader(): Loader {
-  return {
-    name: "repo-docs",
-    async load({ store, renderMarkdown }) {
-      const pin = await cdnPin();
-      const blobBase = blobBaseFor(packageManifest(), builtCommit());
-      store.clear();
-      for (const doc of REPO_DOCS) {
-        const rendered = await renderMarkdown(repoDocMarkdown(doc, { pin, blobBase }));
-        store.set({
-          id: doc.id,
-          data: { title: doc.title, description: doc.description },
-          rendered,
-        });
-      }
-    },
-  };
-}
-
-/** The commit the site is built from: its links to the repo's files read them as it saw them. */
-function builtCommit(): string {
-  return gitIn(ROOT, ["rev-parse", "HEAD"]).trim();
-}
-
-export interface RepoDocSettings {
-  readonly pin: Pin;
-  /** Where the repo's other files are read. */
-  readonly blobBase: string;
-}
-
-/** `doc`'s Markdown as the site shows it: titled by the page, pinned, its links working. */
-export function repoDocMarkdown(doc: RepoDoc, { pin, blobBase }: RepoDocSettings): string {
-  const markdown = readRootFile(doc.file);
-  const pinned = doc.pinsScripts ? withPinnedScripts(markdown, pin) : markdown;
-  const fromRoot = withLinksFromRoot(withoutTitle(pinned), doc.file);
-  return withSiteLinks(fromRoot, { routes: ROUTES, blobBase });
-}
-
-/** `markdown` without its leading `# title`, which the page writes. */
-export function withoutTitle(markdown: string): string {
-  return markdown.replace(/^# [^\n]*\n+/, "");
 }

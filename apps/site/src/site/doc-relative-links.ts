@@ -1,5 +1,5 @@
 import { posix } from "node:path";
-import { withLinksResolved } from "../../../../scripts/checks/markdown.ts";
+import { withLinksResolved } from "../../../../scripts/docs/markdown.ts";
 
 /** `markdown`, the repo document at `file`, with its links relative to it made relative to the repo root. */
 export function withLinksFromRoot(markdown: string, file: string): string {

@@ -33,7 +33,11 @@ export function typeCheckConsumer(dir: string, fixture: ConsumerFixture): Consum
     cwd: dir,
     encoding: "utf8",
   });
-  if (checked.error) throw checked.error;
+  if (checked.error) {
+    throw new Error(`tsc couldn't type-check the ${fixture} fixture in ${dir}`, {
+      cause: checked.error,
+    });
+  }
   const loaded = loadedFiles(checked.stdout);
   const source = fixtureSource(fixture);
   if (!loaded.some((file) => file.endsWith(`/${source}`))) {
@@ -44,8 +48,15 @@ export function typeCheckConsumer(dir: string, fixture: ConsumerFixture): Consum
 
 /** The page a fixture checks: the one file its `<fixture>.json` names. */
 function fixtureSource(fixture: ConsumerFixture): string {
-  const { files } = JSON.parse(readFileSync(join(FIXTURES, `${fixture}.json`), "utf8"));
-  return files[0];
+  const configFile = `${fixture}.json`;
+  return sourceNamedBy(readFileSync(join(FIXTURES, configFile), "utf8"), configFile);
+}
+
+/** The one file a fixture's tsconfig, `config` read from `configFile`, gives tsc to check. */
+export function sourceNamedBy(config: string, configFile: string): string {
+  const [source] = JSON.parse(config).files ?? [];
+  if (typeof source !== "string") throw new Error(`${configFile} names no file for tsc to check`);
+  return source;
 }
 
 /** The errors in `tsc` output that are maplace's: in its declarations or the fixture. */

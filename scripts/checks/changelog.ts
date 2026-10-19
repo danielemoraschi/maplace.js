@@ -9,7 +9,7 @@ import {
   listLines,
   malformedLines,
   VERBS,
-} from "./changelog-lines.ts";
+} from "../docs/changelog-lines.ts";
 
 const LINE_OPENING = `\`- YYYY-MM-DD ${VERBS.join("/")}\``;
 

@@ -28,7 +28,7 @@ describe("withPinnedScripts", () => {
     );
   });
 
-  it("fills an integrity only on a pinned version: a moving one can't carry a hash", () => {
+  it("refuses a README whose scripts load a moving version, which can't carry a hash", () => {
     const moving =
       '<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/a.js"\n  integrity="sha384-…"';
     expect(() => withPinnedScripts(moving, { version: "1.2.0", integrityOf })).toThrow(

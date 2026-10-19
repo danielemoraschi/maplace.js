@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { docRoute, REPO_DOCS, repoDocMarkdown } from "./repo-docs.ts";
+import { docRoute, REPO_DOCS } from "./repo-docs.ts";
+import { repoDocMarkdown } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
 
 const locations: DocPage = {

@@ -2,7 +2,7 @@ import { relative } from "node:path";
 import type { Metafile } from "esbuild";
 import { esmBuildOptions } from "../build/esm-build.ts";
 import { PACKAGE_ENTRIES, ROOT, SRC } from "../build/package.ts";
-import { bundleInMemory, reachableOutputs } from "./bundle-size.ts";
+import { bundleInMemory, reachableOutputs } from "./in-memory-bundle.ts";
 import type { CoverageFloors } from "./rfc-numbers.ts";
 
 /** Vitest's `json-summary` report: each file's lines by absolute path, and their `total`. */

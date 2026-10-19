@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { issuesClosedBy, issuesNamedIn, malformedLines, verbOf } from "./changelog-lines.ts";
+import {
+  issuesClosedBy,
+  issuesNamedIn,
+  malformedLines,
+  preambleEnd,
+  verbOf,
+} from "./changelog-lines.ts";
 
 const CHANGELOG = `# Changelog
 
@@ -68,5 +74,19 @@ describe("malformedLines", () => {
 describe("verbOf", () => {
   it("is the word after a line's date", () => {
     expect(verbOf("- 2026-10-16 Removed the old menu #3")).toBe("Removed");
+  });
+});
+
+describe("preambleEnd", () => {
+  it("is the first list line, past the title and intro", () => {
+    expect(preambleEnd(CHANGELOG.split("\n"))).toBe(4);
+  });
+
+  it("is the first version heading when no line is unreleased", () => {
+    expect(preambleEnd(["# Changelog", "", "## 0.2.10 (2017-04-02)"])).toBe(2);
+  });
+
+  it("is the end of a changelog with neither", () => {
+    expect(preambleEnd(["# Changelog", "", "Newest first."])).toBe(3);
   });
 });

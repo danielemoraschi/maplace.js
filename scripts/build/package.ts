@@ -31,7 +31,10 @@ export function readRootFile(name: string): string {
   return readFileSync(resolve(ROOT, name), "utf8");
 }
 
+/** A manifest of the package, which always has its version. */
+export type VersionedManifest = Manifest & { readonly version: string };
+
 /** The package's own manifest, as the repo has it. */
-export function packageManifest(): Manifest & { readonly version: string } {
+export function packageManifest(): VersionedManifest {
   return JSON.parse(readFileSync(resolve(ROOT, PACKAGE_DIR, "package.json"), "utf8"));
 }

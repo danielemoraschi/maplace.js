@@ -1,8 +1,6 @@
 ---
 import { SITE_MAPS_KEY } from "astro:env/server";
-import { exampleCode, exampleFile } from "../examples/example-sources.ts";
-import { liveHost } from "../examples/live-host.ts";
-import { livePage } from "../examples/live-page.ts";
+import { callsSave, liveVersions } from "../examples/live-versions.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
 
 interface Props {
@@ -11,14 +9,7 @@ interface Props {
 }
 
 const { name } = Astro.props;
-const page = exampleFile(name, "page.html");
-/** The versions the frame runs, each from its first file (its HTML), the page shown first. */
-const versions = exampleCode(name).map(({ kind, files: [html] }) => {
-  const live = kind === "html" ? livePage : liveHost;
-  return { kind, markup: live(html?.code ?? "", SITE_MAPS_KEY) };
-});
-/** The example calls `save(location)`, which the site writes: a note says what was saved. */
-const savesEdits = page.includes("save(");
+const versions = liveVersions(name, SITE_MAPS_KEY);
 ---
 
 <div class="map-frame" data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
@@ -35,7 +26,7 @@ const savesEdits = page.includes("save(");
       </div>
     ))
   }
-  {savesEdits && <p class="strip" data-saved hidden />}
+  {callsSave(name) && <p class="strip" data-saved hidden />}
   <p class="map-note loading">Loading the map…</p>
   <p class="map-note failed" data-map-failure>The map couldn't load.</p>
   <ConsentPlaceholder />

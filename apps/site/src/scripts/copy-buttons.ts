@@ -10,15 +10,27 @@ export function startCopyButtons(
     const label = button.textContent;
     button.addEventListener("click", async () => {
       const source = button.ownerDocument.getElementById(button.dataset.copy ?? "");
-      try {
-        await clipboard.writeText(source?.textContent ?? "");
-        button.textContent = "Copied";
-      } catch {
-        button.textContent = "Couldn't copy";
-      }
+      button.textContent = (await copied(source, clipboard)) ? "Copied" : "Couldn't copy";
       setTimeout(() => {
         button.textContent = label;
       }, FEEDBACK_MS);
     });
+  }
+}
+
+/**
+ * Whether `source`'s text reached the clipboard: not when it isn't on the page, nor when the
+ * browser refused.
+ */
+async function copied(
+  source: Element | null,
+  clipboard: Pick<Clipboard, "writeText">,
+): Promise<boolean> {
+  if (source === null) return false;
+  try {
+    await clipboard.writeText(source.textContent ?? "");
+    return true;
+  } catch {
+    return false;
   }
 }
