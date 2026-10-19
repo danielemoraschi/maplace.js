@@ -13,7 +13,7 @@ const { Content, headings } = await render(doc);
 const sections = headings.filter(({ depth }) => depth === 2);
 ---
 
-<Base title={`${doc.data.title} · maplace`} description={`maplace: ${doc.data.title}.`}>
+<Base title={`${doc.data.title} · maplace`} description={doc.data.description}>
   <div class="doc">
     <nav class="contents" aria-label="On this page">
       <ol>

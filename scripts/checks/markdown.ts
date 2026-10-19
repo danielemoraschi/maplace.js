@@ -7,6 +7,13 @@ export const DOCS = [
   CHANGELOG_FILE,
   "docs/rfc-1.0.md",
   "docs/MODERNIZE.md",
+  "docs/reference/setup.md",
+  "docs/reference/element.md",
+  "docs/reference/locations.md",
+  "docs/reference/store.md",
+  "docs/reference/google.md",
+  "docs/reference/react.md",
+  "docs/reference/api.md",
 ] as const;
 
 /** The end of a Markdown link to a path in the repo: neither a URL (`https:`, `mailto:`), an anchor nor rooted. */
@@ -29,14 +36,12 @@ interface RelativeLink {
 
 /** The relative links and images of `markdown`, outside code fences. */
 export function relativeLinksIn(markdown: string): RelativeLink[] {
-  return linesOf(markdown)
-    .filter(({ isProse }) => isProse)
-    .flatMap(({ text, line }) =>
-      Array.from(text.matchAll(RELATIVE_LINK), ([, target = ""]) => ({
-        path: target.split("#")[0] ?? "",
-        line,
-      })).filter(({ path }) => path !== ""),
-    );
+  return proseLinesOf(markdown).flatMap(({ text, line }) =>
+    Array.from(text.matchAll(RELATIVE_LINK), ([, target = ""]) => ({
+      path: target.split("#")[0] ?? "",
+      line,
+    })).filter(({ path }) => path !== ""),
+  );
 }
 
 /**
@@ -121,6 +126,11 @@ interface Line {
   readonly line: number;
   /** Outside code fences, fences included as code. */
   readonly isProse: boolean;
+}
+
+/** The lines of `markdown` outside code fences, fences included as code. */
+export function proseLinesOf(markdown: string): Line[] {
+  return linesOf(markdown).filter(({ isProse }) => isProse);
 }
 
 /** The lines of `markdown`, each marked as prose or code. */
