@@ -5,7 +5,7 @@ import type { Maplace } from "../store";
 import { isUsed } from "../validate/used-adapters";
 import { MapContentPortals } from "./content-portals";
 import type { ContentRenders } from "./content-renders";
-import type { ContentSession } from "./content-slots";
+import type { ContentSlots } from "./content-slots";
 import { useLatest } from "./hooks";
 import { type MapControls, MapControlsContext } from "./map-controls";
 import { useMaplace } from "./maplace-provider";
@@ -38,7 +38,7 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   const renders = useLatest<ContentRenders<Data>>(props);
   const createAdapter = useLatest(props.createAdapter);
   const container = useRef<HTMLDivElement>(null);
-  const [session, setSession] = useState<ContentSession>();
+  const [session, setSession] = useState<ContentSlots>();
   const [controls, setControls] = useState<MapControls>(NO_CONTROLS);
   useEffect(() => {
     const element = container.current;
@@ -55,7 +55,7 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
         });
     setSession(withContent?.session);
     const attached = withContent?.adapter ?? adapter;
-    const detach = attachMap(store, attached, element, used);
+    const detach = attachMap(store, attached, element, used ? undefined : adapter);
     // Called on the adapter, which may be a class relying on `this`.
     setControls({ mountControl: (node, position) => attached.mountControl(node, position) });
     return () => {
@@ -79,20 +79,17 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   );
 }
 
-/**
- * `attach`, with the adapter destroyed when the store refuses it, as no detach will; except one
- * attached before, which may still drive another map.
- */
+/** `attach`, destroying `owned` when the store refuses it, as no detach will. */
 function attachMap<Data>(
   store: Maplace<Data>,
   adapter: Adapter,
   container: HTMLElement,
-  used: boolean,
+  owned: Adapter | undefined,
 ): () => void {
   try {
     return store.attach(adapter, container);
   } catch (error) {
-    if (!used) adapter.destroy();
+    owned?.destroy();
     throw error;
   }
 }

@@ -98,16 +98,15 @@ describe("an adapter asking React for content", () => {
 
 describe("withReactContent", () => {
   const renders = { current: { markerIcon: () => "pin" } };
-  const settings = (locations: readonly Location[]) => ({
-    // Snapshot lists are frozen; the id index needs it.
-    document,
-    renders,
-    locationOf: (id: string) => locationById(locations, id),
-  });
+  const settings = (locations: readonly Location[] = []) => {
+    // As the store's snapshot lists are: the id index is built once per list, so lists are frozen.
+    const frozen = Object.freeze([...locations]);
+    return { document, renders, locationOf: (id: string) => locationById(frozen, id) };
+  };
 
   it("gives a location removed while an earlier diff is still drawing no slot", async () => {
     const raw = createFakeAdapter();
-    const { adapter, session } = wrapping(raw, settings(Object.freeze([NAPLES])));
+    const { adapter, session } = wrapping(raw, settings([NAPLES]));
     const mounted = startMount({ name: "react", create: () => ({ adapter, probe: raw.probe() }) });
     onTestFinished(unmountAll);
     await raw.finishMount();
@@ -148,7 +147,7 @@ describe("withReactContent", () => {
       }
     }
     const raw = new ClassAdapter();
-    const { adapter } = wrapping(raw satisfies Adapter, settings(Object.freeze([])));
+    const { adapter } = wrapping(raw satisfies Adapter, settings());
     expect([adapter.capabilities, adapter.routeStopLimit]).toEqual([raw.capabilities, 3]);
     adapter.present({ selectedId: undefined, hoveredId: undefined, hiddenIds: new Set() });
     adapter.setView({ kind: "center", center: { lat: 0, lng: 0 }, zoom: 3 });
@@ -160,12 +159,12 @@ describe("withReactContent", () => {
 
   it("marks the adapter inside used, so the store refuses it given again", () => {
     const raw = createFakeAdapter();
-    wrapping(raw, settings(Object.freeze([])));
+    wrapping(raw, settings());
     expect(isUsed(raw)).toBe(true);
   });
 
   it("wraps nothing when no function is given", () => {
-    const nothing = { ...settings(Object.freeze([])), renders: { current: {} } };
+    const nothing = { ...settings(), renders: { current: {} } };
     expect(withReactContent(createFakeAdapter(), nothing)).toBeUndefined();
   });
 });

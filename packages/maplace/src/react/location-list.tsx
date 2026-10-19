@@ -36,9 +36,8 @@ export interface LocationListProps<Data = unknown> extends ListOptions<Data> {
 }
 
 /**
- * The store's list view. A change of `as`, `groupHeadings`, `fitAllLabel`, `label`, `heading` or
- * `position` builds it again, as `createListView` reads them once; a new `children` function just
- * renders again.
+ * The store's list view. A change of any list option or `position` builds it again, as
+ * `createListView` reads them once; a new `children` function just renders again.
  */
 export function LocationList<Data>(props: LocationListProps<Data>): ReactNode {
   const { children, ...options } = props;
@@ -78,7 +77,15 @@ function useListView<Data>(
   useLayoutEffect(() => {
     if (position && !mountControl) return;
     const render = portals?.renderEntry;
-    const view = createListView(store, { as, groupHeadings, fitAllLabel, label, heading, render });
+    const listOptions = {
+      as,
+      groupHeadings,
+      fitAllLabel,
+      label,
+      heading,
+      render,
+    } satisfies Record<keyof ListViewOptions<Data>, unknown>;
+    const view = createListView(store, listOptions);
     const takeOff = position && mountControl?.(view.element, position);
     if (!position) place.current?.append(view.element);
     const stopPruning = portals && pruneOnListChanges(store, portals, view.element);

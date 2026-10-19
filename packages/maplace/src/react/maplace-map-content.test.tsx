@@ -5,9 +5,9 @@ import type { Location } from "../location";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider, useMaplace } from "./maplace-provider";
 import { fakeAdapters } from "./testing/adapters";
-import { TOWNS } from "./testing/bound-store";
 import { inAct, ROOT_MODES, renderInto } from "./testing/render";
 import { iconOf, renderMap, settled, withData } from "./testing/rendered-map";
+import { TOWNS } from "./testing/towns";
 
 function Counter(): ReactNode {
   const [count, setCount] = useState(0);

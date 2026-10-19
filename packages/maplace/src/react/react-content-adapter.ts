@@ -2,13 +2,18 @@ import type { Adapter, AdapterHost, LocationDiff } from "../adapter";
 import type { Drawable } from "../drawable";
 import { markUsed } from "../validate/used-adapters";
 import { type Asks, asksOf } from "./content-renders";
-import { type ContentSession, createContentSession, type SessionSettings } from "./content-slots";
+import {
+  type ContentHosts,
+  type ContentSlots,
+  createContentSession,
+  type SessionSettings,
+} from "./content-slots";
 import { reactDrawable, type Wrapped } from "./react-drawables";
 
 /** An adapter that asks React for content first, and the session React renders it from. */
 export interface ReactContentAdapter {
   readonly adapter: Adapter;
-  readonly session: ContentSession;
+  readonly session: ContentSlots;
 }
 
 /**
@@ -87,7 +92,7 @@ function contentAdapter<Data>(
  * The store's host, its popup reports joined to React's commits: an open waits for the content,
  * and a close first lets out the open it pairs with, so the store hears both, in order.
  */
-function heldPopupReports(host: AdapterHost, session: ContentSession): AdapterHost {
+function heldPopupReports(host: AdapterHost, session: ContentHosts): AdapterHost {
   // The store's own host, a plain object of closures.
   return {
     ...host,

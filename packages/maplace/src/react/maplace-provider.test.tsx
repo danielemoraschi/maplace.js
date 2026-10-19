@@ -5,8 +5,8 @@ import type { Maplace } from "../store";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider, useMaplace } from "./maplace-provider";
 import { fakeAdapters } from "./testing/adapters";
-import { TOWNS } from "./testing/bound-store";
 import { inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
+import { TOWNS } from "./testing/towns";
 
 describe("useMaplace", () => {
   it("throws outside a provider", async () => {

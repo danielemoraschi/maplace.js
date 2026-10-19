@@ -8,8 +8,8 @@ import { MapControlsContext } from "./map-controls";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
 import { fakeAdapters } from "./testing/adapters";
-import { TOWNS } from "./testing/bound-store";
 import { ROOT_MODES, renderInto } from "./testing/render";
+import { TOWNS } from "./testing/towns";
 
 describe.each(ROOT_MODES)("LocationList with a position, in $mode", (root) => {
   it("puts the list itself on the map, with nothing around it and nothing beside the map", async () => {

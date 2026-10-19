@@ -33,11 +33,10 @@ export interface SessionSettings<Data> {
 }
 
 /**
- * What React renders where on one mounted map: a host per marker it draws an icon for, and one
- * for the popup it shows. The adapter's builders ask for them while their location is drawn;
- * React reads them as an external store, so a change renders at once, whoever asked.
+ * The adapter's side of a session: its builders ask for a host while their location is drawn,
+ * and its popup reports wait for React's content.
  */
-export interface ContentSession {
+export interface ContentHosts {
   /** The popup's host, or undefined: nothing to render, or the location is gone. */
   popupFor(id: string): HTMLElement | undefined;
   /** The marker's host, stamped with its state, or undefined. */
@@ -45,19 +44,32 @@ export interface ContentSession {
   removed(ids: readonly string[]): void;
   /** The popup closed: its content goes, after the open report it still held, if any. */
   popupClosed(id: string): void;
-  /** React's content is in the popup's host. */
-  popupCommitted(id: string): void;
   /** Runs `report` once the popup's content is in, at once when there's none to wait for. */
   whenPopupShown(id: string, report: () => void): void;
-  failed(id: string, field: ContentField, cause: unknown): void;
   /** The map is gone: every slot, and no new one. */
   end(): void;
+}
+
+/**
+ * React's side of a session: the slots it renders into, read as an external store, so a change
+ * renders at once, whoever asked.
+ */
+export interface ContentSlots {
+  /** React's content is in the popup's host. */
+  popupCommitted(id: string): void;
+  failed(id: string, field: ContentField, cause: unknown): void;
   popup(): ContentSlot | undefined;
   markers(): readonly MarkerSlot[];
   /** For `useSyncExternalStore`: a change of slots notifies, and moves `version` on. */
   subscribe(listener: () => void): () => void;
   version(): number;
 }
+
+/**
+ * What React renders where on one mounted map: a host per marker it draws an icon for, and one
+ * for the popup it shows.
+ */
+export interface ContentSession extends ContentHosts, ContentSlots {}
 
 export function createContentSession<Data>(settings: SessionSettings<Data>): ContentSession {
   const { document, renders, locationOf, report } = settings;

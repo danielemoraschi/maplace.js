@@ -16,7 +16,6 @@ afterEach(() => vi.unstubAllGlobals());
 
 const MAP_CLASS = "list-panel-map";
 const HEADING = "Choose a location:";
-const { Keep, store } = storeCatcher();
 const googleAdapter = () => createGoogleAdapter(TEST_OPTIONS);
 
 /** The map's own size, as a page gives it through `className`. */
@@ -34,6 +33,7 @@ function sizedMaps(): void {
 async function listOnStubs(locations: readonly Location[]) {
   sizedMaps();
   const { maps } = stubMapsJsRecording();
+  const { Keep, store } = storeCatcher();
   const app = (shown: readonly Location[]) => (
     <MaplaceProvider locations={shown}>
       <Keep />

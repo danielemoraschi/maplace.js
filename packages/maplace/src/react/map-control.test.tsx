@@ -5,8 +5,8 @@ import { MapControl } from "./map-control";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
 import { fakeAdapters } from "./testing/adapters";
-import { TOWNS } from "./testing/bound-store";
 import { ROOT_MODES, renderInto } from "./testing/render";
+import { TOWNS } from "./testing/towns";
 
 describe.each(ROOT_MODES)("MapControl, in $mode", (root) => {
   it("puts its children on the live map at its position, with the provider's context", async () => {

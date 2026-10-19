@@ -3,9 +3,7 @@ import { createRoot } from "react-dom/client";
 import { onTestFinished } from "vitest";
 import type { Maplace } from "../../index";
 import { useMaplace } from "../maplace-provider";
-
-// Tells React its updates are wrapped in `act`, so it flushes them there and warns otherwise.
-Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+import "./act-environment";
 
 /** How a test renders: inside `<StrictMode>`, which runs effects twice, or not. */
 export const ROOT_MODES = [

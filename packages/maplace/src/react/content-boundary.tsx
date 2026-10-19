@@ -1,13 +1,13 @@
 import { Component, type ReactNode } from "react";
 import type { ContentField } from "./content-renders";
-import type { ContentSession } from "./content-slots";
+import type { ContentSlots } from "./content-slots";
 
 /** What a failure is reported as, and what clears it: a new location or function. */
 export interface FailureScope {
   readonly location: unknown;
   readonly render: unknown;
   readonly field: ContentField;
-  readonly session: ContentSession;
+  readonly session: ContentSlots;
 }
 
 interface BoundaryProps extends FailureScope {

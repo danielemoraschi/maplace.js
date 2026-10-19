@@ -10,12 +10,12 @@ type Props<Data> = MaplaceProviderProps<Data>;
 export interface PropFollower<Data> {
   follow(props: Props<Data>): void;
   /**
-   * Decides whether a `selectionChange` the store fired goes on to `onSelectionChange`. The
-   * provider's own changes don't; a selection a controlled prop doesn't name does, and also asks
-   * the provider to render, after which the store goes back to the prop unless the parent passed
-   * the new id.
+   * Hears a `selectionChange` the store fired, and says whether it goes on to
+   * `onSelectionChange`. The provider's own changes don't; a selection a controlled prop doesn't
+   * name does, and asks the provider to render, after which the store goes back to the prop
+   * unless the parent passed the new id.
    */
-  reportsSelectionChange(id: string | undefined, props: Props<Data>): boolean;
+  heardSelection(id: string | undefined, props: Props<Data>): boolean;
 }
 
 /** The selection to create the store with: the wanted id, if the first locations show it. */
@@ -66,8 +66,12 @@ export function createPropFollower<Data>(
     }
   }
 
-  /** A `filter` or `route` prop applied when its value changes, like `locations`. */
-  function followFilterAndRoute(props: Props<Data>): void {
+  /** `locations` applied when its array changes; a `filter` or `route` prop when its value does. */
+  function followValues(props: Props<Data>): void {
+    if (props.locations !== appliedLocations) {
+      store.setLocations(props.locations);
+      appliedLocations = props.locations;
+    }
     if (Object.hasOwn(props, "filter") && !sameFilter(props.filter, appliedFilter)) {
       store.setFilter(props.filter);
       appliedFilter = props.filter;
@@ -85,17 +89,13 @@ export function createPropFollower<Data>(
       }
       following = true;
       try {
-        if (props.locations !== appliedLocations) {
-          store.setLocations(props.locations);
-          appliedLocations = props.locations;
-        }
-        followFilterAndRoute(props);
+        followValues(props);
         followSelection(props);
       } finally {
         following = false;
       }
     },
-    reportsSelectionChange(id, props) {
+    heardSelection(id, props) {
       if (!controlled) return true;
       if (following || id === props.selectedId) return false;
       rerender();

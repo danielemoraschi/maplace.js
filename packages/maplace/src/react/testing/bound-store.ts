@@ -1,15 +1,7 @@
-import type { Location } from "../../location";
 import { CONTAINER } from "../../testing/container";
 import { createFakeAdapter } from "../../testing/fake-adapter";
 import type { MaplaceProviderProps } from "../provider-props";
 import { bindStore } from "../store-binding";
-
-/** Three markers, for selections and filters: `north` in group N, `south` in S, `east` in neither. */
-export const TOWNS: readonly Location[] = [
-  { id: "north", lat: 46, lng: 11, group: "N" },
-  { id: "south", lat: 40, lng: 16, group: "S" },
-  { id: "east", lat: 43, lng: 13 },
-];
 
 /**
  * A provider's store without React: bound to `props` and attached to a ready fake map.

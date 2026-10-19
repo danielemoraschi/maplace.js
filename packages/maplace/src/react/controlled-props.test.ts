@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Location } from "../location";
-import { boundStore, TOWNS } from "./testing/bound-store";
+import { boundStore } from "./testing/bound-store";
+import { TOWNS } from "./testing/towns";
 
 const NORTH = { locations: TOWNS, selectedId: "north" };
 
@@ -91,11 +92,14 @@ describe("a controlled selectedId", () => {
     expect(store.getSnapshot().selectedId).toBe("north");
   });
 
-  it("can't become uncontrolled, or come with defaultSelectedId", async () => {
+  it("can't become uncontrolled", async () => {
     const { render } = await boundStore(NORTH);
     expect(() => render({ locations: TOWNS })).toThrow(
       expect.objectContaining({ code: "invalid-input", field: "selectedId" }),
     );
+  });
+
+  it("can't come with defaultSelectedId", async () => {
     await expect(boundStore({ ...NORTH, defaultSelectedId: "south" })).rejects.toMatchObject({
       code: "invalid-input",
       field: "defaultSelectedId",
@@ -116,15 +120,20 @@ describe("defaultSelectedId", () => {
     expect(renders()).toBe(0);
   });
 
-  it("waits for its location, unless something else is selected first", async () => {
-    const waiting = await boundStore({ locations: [], defaultSelectedId: "north" });
-    waiting.render({ locations: TOWNS, defaultSelectedId: "north" });
-    expect(waiting.store.getSnapshot().selectedId).toBe("north");
+  it("waits for its location, and selects it once loaded", async () => {
+    const { store, render } = await boundStore({ locations: [], defaultSelectedId: "north" });
+    render({ locations: TOWNS, defaultSelectedId: "north" });
+    expect(store.getSnapshot().selectedId).toBe("north");
+  });
 
-    const overtaken = await boundStore({ locations: TOWNS.slice(1), defaultSelectedId: "north" });
-    overtaken.host.reportSelectionChange("south");
-    overtaken.render({ locations: TOWNS, defaultSelectedId: "north" });
-    expect(overtaken.store.getSnapshot().selectedId).toBe("south");
+  it("stops waiting once something else is selected first", async () => {
+    const { store, host, render } = await boundStore({
+      locations: TOWNS.slice(1),
+      defaultSelectedId: "north",
+    });
+    host.reportSelectionChange("south");
+    render({ locations: TOWNS, defaultSelectedId: "north" });
+    expect(store.getSnapshot().selectedId).toBe("south");
   });
 });
 

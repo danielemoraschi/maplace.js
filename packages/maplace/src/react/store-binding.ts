@@ -38,7 +38,7 @@ export function bindStore<Data>(
   const follower = createPropFollower(store, props, rerender);
   follower.follow(props);
   forwardEvent(store, "selectionChange", latest, ({ id }) =>
-    follower.reportsSelectionChange(id, latest.current),
+    follower.heardSelection(id, latest.current),
   );
   for (const name of MAPLACE_EVENT_NAME_LIST) {
     if (name !== "selectionChange") forwardEvent(store, name, latest);

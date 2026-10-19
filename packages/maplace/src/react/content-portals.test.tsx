@@ -5,8 +5,8 @@ import { locationById } from "../location-state";
 import { MapContentPortals } from "./content-portals";
 import { createContentSession } from "./content-slots";
 import { MaplaceProvider } from "./maplace-provider";
-import { TOWNS } from "./testing/bound-store";
 import { renderInto } from "./testing/render";
+import { TOWNS } from "./testing/towns";
 
 it("lets a held popupOpen out once rendered, even with its function gone by then", async () => {
   const session = createContentSession({

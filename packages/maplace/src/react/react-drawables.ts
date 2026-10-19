@@ -1,7 +1,7 @@
 import type { Drawable } from "../drawable";
 import type { LocationState } from "../location";
 import type { Asks } from "./content-renders";
-import type { ContentSession } from "./content-slots";
+import type { ContentHosts } from "./content-slots";
 
 /** Whether a location is still drawn under its id: removed, its old builders ask for nothing. */
 interface Drawing {
@@ -23,7 +23,7 @@ export interface Wrapped {
 export function reactDrawable(
   next: Drawable,
   previous: Wrapped | undefined,
-  session: ContentSession,
+  session: ContentHosts,
   asks: Asks,
 ): Wrapped {
   if (previous?.original === next) return previous;
@@ -48,12 +48,12 @@ function keptOr<K extends "renderContent" | "renderIcon">(
   return previous.original[key] === next[key] ? previous.drawable[key] : wrap();
 }
 
-function popupBuilder(drawable: Drawable, drawing: Drawing, session: ContentSession) {
+function popupBuilder(drawable: Drawable, drawing: Drawing, session: ContentHosts) {
   const { id, renderContent: own } = drawable;
   return () => (drawing.live ? session.popupFor(id) : undefined) ?? own?.();
 }
 
-function iconBuilder(drawable: Drawable, drawing: Drawing, session: ContentSession) {
+function iconBuilder(drawable: Drawable, drawing: Drawing, session: ContentHosts) {
   const { id, renderIcon: own } = drawable;
   return (state: LocationState) =>
     (drawing.live ? session.iconFor(id, state) : undefined) ?? own?.(state);

@@ -4,8 +4,8 @@ import { describe, expect, it, vi } from "vitest";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
 import { fakeAdapters } from "./testing/adapters";
-import { TOWNS } from "./testing/bound-store";
 import { Boundary, inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
+import { TOWNS } from "./testing/towns";
 
 describe.each(ROOT_MODES)("MaplaceMap, in $mode", (root) => {
   it("attaches a fresh adapter to its div on mount and detaches on unmount", async () => {

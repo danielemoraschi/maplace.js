@@ -5,8 +5,8 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { LocationList, MaplaceMap, MaplaceProvider } from "./index";
 import { fakeAdapters } from "./testing/adapters";
-import { TOWNS } from "./testing/bound-store";
-import "./testing/render";
+import { TOWNS } from "./testing/towns";
+import "./testing/act-environment";
 
 describe("maplace/react hydrated", () => {
   it("takes over the server's HTML without a mismatch, then attaches and lists", async () => {

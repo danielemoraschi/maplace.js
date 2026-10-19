@@ -5,15 +5,14 @@ import type { ListEntry } from "../list-view";
 import { optionsIn } from "../testing/lists";
 import { LocationList } from "./location-list";
 import { MaplaceProvider } from "./maplace-provider";
-import { TOWNS } from "./testing/bound-store";
 import { inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
-
-const { Keep, store } = storeCatcher();
+import { TOWNS } from "./testing/towns";
 
 const listboxes = (root: HTMLElement) => root.querySelectorAll('[role="listbox"]');
 
 describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
   it("shows one listbox, or a native select, in step with the store", async () => {
+    const { Keep, store } = storeCatcher();
     const app = (as: "list" | "select") => (
       <MaplaceProvider locations={TOWNS}>
         <Keep />
@@ -105,6 +104,7 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
   });
 
   it("renders again only the entries whose state changed", async () => {
+    const { Keep, store } = storeCatcher();
     const content = vi.fn(({ location }: ListEntry) => location.id);
     await renderInto(
       <MaplaceProvider locations={TOWNS}>
@@ -121,6 +121,7 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
   });
 
   it("keeps an entry's React state as it is selected and hovered", async () => {
+    const { Keep, store } = storeCatcher();
     function Counter({ entry }: { readonly entry: ListEntry }) {
       const [clicks, setClicks] = useState(0);
       return (
@@ -170,6 +171,7 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
   });
 
   it("leaves nothing on the page once unmounted", async () => {
+    const { Keep, store } = storeCatcher();
     const { container, unmount } = await renderInto(
       <MaplaceProvider locations={TOWNS}>
         <Keep />

@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { MAPLACE_EVENT_NAME_LIST } from "../events";
 import { type Location, MaplaceError } from "../index";
 import { eventPropName } from "./store-binding";
-import { boundStore, TOWNS } from "./testing/bound-store";
+import { boundStore } from "./testing/bound-store";
+import { TOWNS } from "./testing/towns";
 
 describe("eventPropName", () => {
   it("names every event's prop on + the event", () => {

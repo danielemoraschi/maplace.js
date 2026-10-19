@@ -6,11 +6,11 @@ import { locationById } from "../location-state";
 import type { Maplace } from "../store";
 import { ContentBoundary, type FailureScope } from "./content-boundary";
 import type { ContentRenders, MarkerIconRender, PopupContentRender } from "./content-renders";
-import type { ContentSession, ContentSlot, MarkerSlot } from "./content-slots";
+import type { ContentSlot, ContentSlots, MarkerSlot } from "./content-slots";
 import { useMaplace } from "./maplace-provider";
 
 interface MapContentProps<Data> extends ContentRenders<Data> {
-  readonly session: ContentSession;
+  readonly session: ContentSlots;
 }
 
 /**
@@ -65,7 +65,7 @@ interface PortalProps<Slot, L, Render> {
   readonly slot: Slot;
   readonly location: L;
   readonly render: Render;
-  readonly session: ContentSession;
+  readonly session: ContentSlots;
 }
 
 /**

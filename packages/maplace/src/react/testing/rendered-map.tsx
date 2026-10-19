@@ -4,8 +4,8 @@ import { MaplaceMap, type MaplaceMapProps } from "../maplace-map";
 import { MaplaceProvider } from "../maplace-provider";
 import type { MaplaceProviderProps } from "../provider-props";
 import { fakeAdapters } from "./adapters";
-import { TOWNS } from "./bound-store";
 import { inAct, type RootMode, renderInto } from "./render";
+import { TOWNS } from "./towns";
 
 type MapProps = Omit<MaplaceMapProps, "createAdapter">;
 type ProviderProps = Partial<MaplaceProviderProps>;
@@ -30,7 +30,6 @@ export async function renderMap(root: RootMode, map: MapProps, provider: Provide
       await rendered.render(app(next, around));
       await settled(adapter);
     },
-    /** Lets the map draw, and open or close its popup, as a user waits for it. */
     settled: () => settled(adapter),
   };
 }
