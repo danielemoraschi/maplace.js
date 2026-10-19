@@ -67,7 +67,7 @@ describe("the panel of a control on a Google map, in the map's colour scheme", (
   it("draws the panel dark on a dark map, on a light page", async () => {
     const { list } = await mapOnStubs({ colorScheme: "dark" });
     const panel = panelStyleOf(list());
-    expect([panel.colorScheme, panel.backgroundColor]).toEqual(["dark", "rgb(34, 34, 34)"]);
+    expect([panel.colorScheme, panel.backgroundColor]).toEqual(["dark", "rgb(68, 68, 68)"]);
   });
 
   it("follows the system on a map that does", async () => {

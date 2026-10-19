@@ -14,7 +14,7 @@ const PANEL = `.${CONTROL_CLASS}`;
  */
 export const CONTROL_STYLES = `
 :where(.${GOOGLE_MAP_CLASS}:has(${PANEL})){container-type:size}
-:where(${PANEL}){box-sizing:border-box;display:flex;flex-direction:column;max-height:calc(100cqh - 20px);overflow:auto;margin:10px;padding:4px;border-radius:2px;box-shadow:0 1px 4px -1px #0000004d;background:light-dark(#fff,#222);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
+:where(${PANEL}){box-sizing:border-box;display:flex;flex-direction:column;max-height:calc(100cqh - 20px);overflow:auto;margin:10px;padding:4px;border-radius:2px;box-shadow:0 1px 4px -1px #0000004d;background:light-dark(#fff,#444);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
 :where(${PANEL}[data-color-scheme=dark]){color-scheme:dark}
 :where(${PANEL}[data-color-scheme=follow-system]){color-scheme:light dark}
 :where(${PANEL}:has(>[hidden]:only-child)){display:none}
