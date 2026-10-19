@@ -38,6 +38,8 @@ The Google Maps adapter: the only entry that knows `google.maps`.
 |---|---|---|
 | `createGoogleAdapter` | function | [Google adapter](google.md) |
 | `GoogleAdapterOptions` | type | [Options](google.md#options) |
+| `createGoogleMap` | function | [`createGoogleMap`](google.md#creategooglemap) |
+| `GoogleMapOptions`, `GoogleMapList` | types | [`createGoogleMap`](google.md#creategooglemap) |
 
 ## `maplace/element`
 

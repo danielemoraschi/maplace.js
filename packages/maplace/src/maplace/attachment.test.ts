@@ -51,6 +51,16 @@ describe("attach", () => {
     expect(Object.isFrozen(offsetAdapter.mounted?.popup.offset)).toBe(true);
   });
 
+  it("mounts in the element a selector matches", () => {
+    const element = container();
+    element.id = "map";
+    document.body.replaceChildren(element);
+    const adapter = createFakeAdapter();
+    createMaplace().attach(adapter, "#map");
+    expect(adapter.mounted?.container).toBe(element);
+    document.body.replaceChildren();
+  });
+
   it("moves idle → loading → ready once mounted and the first locations are drawn", async () => {
     const maplace = createMaplace({ locations });
     const adapter = createFakeAdapter({ holdApplies: true });

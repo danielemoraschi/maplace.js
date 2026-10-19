@@ -1,5 +1,5 @@
-import { createListView, createMaplace, type Location, type RouteLeg } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import type { Location, RouteLeg } from "maplace";
+import { createGoogleMap } from "maplace/google";
 
 const locations: Location[] = [
   { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
@@ -7,11 +7,11 @@ const locations: Location[] = [
   { id: "paris", lat: 48.8566, lng: 2.3522, title: "Paris" },
   { id: "munich", lat: 48.1351, lng: 11.582, title: "Munich" },
 ];
-const maplace = createMaplace({ locations });
-const container = document.getElementById("route-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
-const list = document.getElementById("route-vanilla-list") as HTMLElement;
-list.append(createListView(maplace).element);
+const maplace = createGoogleMap("#route-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
+  locations,
+  list: { container: "#route-vanilla-list" },
+});
 maplace.setRoute({
   stops: ["milan", "zurich", "paris", "munich"],
   via: ["zurich"],
@@ -20,6 +20,12 @@ maplace.setRoute({
 
 const km = (meters: number) => `${Math.round(meters / 1000)} km`;
 const titleOf = (id: string) => locations.find((location) => location.id === id)?.title ?? id;
+const directions = document.querySelector("#route-vanilla-directions");
+const distance = document.querySelector("#route-vanilla-distance");
+maplace.on("routeChange", ({ result }) => {
+  directions?.replaceChildren(...(result?.legs.flatMap(legDirections) ?? []));
+  if (distance) distance.textContent = result ? km(result.distanceMeters) : "";
+});
 
 /** A leg's steps, headed by where it runs and how far; a step without words shows its distance. */
 function legDirections(leg: RouteLeg): HTMLElement[] {
@@ -33,10 +39,3 @@ function legDirections(leg: RouteLeg): HTMLElement[] {
   }
   return [heading, steps];
 }
-
-const directions = document.getElementById("route-vanilla-directions") as HTMLElement;
-const distance = document.getElementById("route-vanilla-distance") as HTMLOutputElement;
-maplace.on("routeChange", ({ result }) => {
-  directions.replaceChildren(...(result?.legs.flatMap(legDirections) ?? []));
-  distance.textContent = result ? km(result.distanceMeters) : "";
-});

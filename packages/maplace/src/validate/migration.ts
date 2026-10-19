@@ -22,10 +22,10 @@ const LOCATION_FIELDS_0_2: Readonly<Record<string, string>> = {
 
 /** 0.2 options of `new Maplace({…})`. */
 const OPTIONS_0_2: Readonly<Record<string, string>> = {
-  map_div: "pass the container to attach",
-  controls_div: "use createListView and place listView.element",
-  controls_on_map: "use createListView and adapter.mountControl",
-  controls_position: "use createListView and adapter.mountControl",
+  map_div: "pass it to createGoogleMap or attach: '#map' works",
+  controls_div: "use createGoogleMap's list: { container }, or createListView",
+  controls_on_map: "use createGoogleMap's list: { position }, or createListView",
+  controls_position: "use createGoogleMap's list: { position }, or createListView",
   generate_controls: "use createListView",
   force_generate_controls: "use createListView",
   controls_type: "use createListView(maplace, { as })",
@@ -42,7 +42,7 @@ const OPTIONS_0_2: Readonly<Record<string, string>> = {
   show_markers: "use visible: false per location",
   show_infowindows: "leave content out",
   infowindow_type: "leave content out",
-  map_options: "use createGoogleAdapter({ mapOptions }) and view",
+  map_options: "use mapOptions (createGoogleMap's or createGoogleAdapter's) and view",
   styles: "use a map ID with Cloud styling",
   stroke_options: "use style",
   circle_options: "use style",

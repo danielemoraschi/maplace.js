@@ -1,6 +1,6 @@
-import type { GoogleAdapterOptions } from "../google/index";
 import type { MapsScriptLoad } from "../google/maps-script";
 import type { MapsScriptRequest } from "../google/maps-script-url";
+import type { GoogleAdapterOptions } from "../google/options";
 import { givenAttribute } from "./attribute-values";
 import { elementMisuse } from "./element-error";
 import { createdMapSettingsOf } from "./google-map-attributes";

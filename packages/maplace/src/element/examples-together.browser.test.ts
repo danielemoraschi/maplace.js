@@ -15,7 +15,7 @@ import {
 } from "../testing/examples/example-runs";
 import { serveExampleData } from "../testing/examples/example-surroundings";
 import { recordingCreateMaplace } from "../testing/examples/recorded-stores";
-import { createFakeAdapter, type FakeAdapter } from "../testing/fake-adapter";
+import type { FakeAdapter } from "../testing/fake-adapter";
 import type { MaplaceMapElement } from "./index";
 import { adaptersMade } from "./testing/fake-maps";
 
@@ -23,13 +23,10 @@ import { adaptersMade } from "./testing/fake-maps";
 // of them together: no id is shared, each map and script works as it does alone, and an example's
 // page, vanilla and React versions are the same map.
 const moduleAdapters: FakeAdapter[] = [];
-vi.mock("maplace/google", () => ({
-  createGoogleAdapter: () => {
-    const adapter = createFakeAdapter();
-    moduleAdapters.push(adapter);
-    return adapter;
-  },
-}));
+vi.mock("maplace/google", async () => {
+  const { fakeGoogleEntry } = await import("../testing/examples/fake-google");
+  return fakeGoogleEntry(moduleAdapters);
+});
 vi.mock("maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };

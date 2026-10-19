@@ -51,6 +51,9 @@ maplace.setView({ lat: 1, lng: 2 });
 // A store with your own data attaches any adapter, and events carry the data type.
 declare const priced: Maplace<{ price: number }>;
 priced.attach(adapter, document.body);
+priced.attach(adapter, "#map");
+// @ts-expect-error a container is an element or a selector
+priced.attach(adapter, 42);
 priced.on("locationChange", ({ location }) => location.data?.price.toFixed(2));
 
 // The data type comes from the locations given; events and the snapshot carry it.

@@ -54,10 +54,11 @@ const LAYERS = {
     packages: ["vitest"],
   },
   // Running the examples as readers copy them: the HTML around them, the stores they make (T5),
-  // and what each does on its fake map (W13), read through the fake's types and looks.
+  // what each does on its fake map (W13), read through the fake's types and looks, and
+  // maplace/google on the fake (A9).
   examples: {
     files: /^testing\/examples\//,
-    imports: ["data", "testing", "entry", "element", "fake", "adapter-kit"],
+    imports: ["data", "testing", "entry", "element", "fake", "adapter-kit", "google-entry"],
     packages: ["vitest"],
   },
   // Test support for the list views: plain data and the view's own types.
@@ -97,9 +98,15 @@ const LAYERS = {
   },
   // Shares the store's option checks, so its misuse reads the same.
   google: {
-    files: /^google\/(?!testing\/)/,
+    files: /^google\/(?!testing\/|index$|google-map(-options)?$)/,
     imports: ["data", "contract", "adapter-kit", "validation"],
     packages: ["@googlemaps/markerclusterer"],
+  },
+  // maplace/google: the adapter, and a store on a Google map in one call (A9), which uses the
+  // core through its entry, as React does.
+  "google-entry": {
+    files: /^google\/(index|google-map(-options)?)$/,
+    imports: ["data", "contract", "entry", "google", "validation"],
   },
   // The Google adapter's test support: its probe and the Maps JS loader for tests.
   "google-testing": {

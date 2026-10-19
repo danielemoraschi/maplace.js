@@ -1,9 +1,7 @@
-import { createMaplace, type Location } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import type { Location } from "maplace";
+import { createGoogleMap } from "maplace/google";
 
-const maplace = createMaplace({ cluster: true });
-const container = document.getElementById("big-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
+const maplace = createGoogleMap("#big-vanilla-map", { mapId: "DEMO_MAP_ID", cluster: true });
 
 const response = await fetch("/points-4k.json");
 const points: Location[] = await response.json();

@@ -11,15 +11,6 @@ import type {
   ShapeStyle,
   Snapshot,
 } from "maplace";
-import type { MaplaceMapElement } from "maplace/element";
-import type { GoogleAdapterOptions } from "maplace/google";
-import type {
-  LocationListProps,
-  MapControlProps,
-  MaplaceEventProps,
-  MaplaceMapProps,
-  MaplaceProviderProps,
-} from "maplace/react";
 
 /** Each name of `Name` once: the compiler fails on a missing or an extra key. */
 export function everyName<Name extends string>(
@@ -134,59 +125,4 @@ export const STORE_NAMES = {
     heading: true,
     render: true,
   }),
-} as const;
-
-export const GOOGLE_OPTIONS = everyName<keyof GoogleAdapterOptions>({
-  mapId: true,
-  colorScheme: true,
-  map: true,
-  mapOptions: true,
-});
-
-/** What `<maplace-map>` adds to an HTML element. */
-export const MAP_ELEMENT_PROPERTIES = everyName<
-  Exclude<keyof MaplaceMapElement, keyof HTMLElement>
->({
-  locations: true,
-  route: true,
-  sanitize: true,
-  maplace: true,
-  loadState: true,
-  release: true,
-});
-
-/** Each React component's props; the provider's event props are derived from the events. */
-export const REACT_PROPS = {
-  provider: everyName<Exclude<keyof MaplaceProviderProps, keyof MaplaceEventProps>>({
-    locations: true,
-    defaultSelectedId: true,
-    children: true,
-    selectedId: true,
-    filter: true,
-    route: true,
-    sanitize: true,
-    popup: true,
-    style: true,
-    selectedStyle: true,
-    hoveredStyle: true,
-    cluster: true,
-    view: true,
-  }),
-  map: everyName<keyof MaplaceMapProps>({
-    createAdapter: true,
-    className: true,
-    children: true,
-    popupContent: true,
-    markerIcon: true,
-  }),
-  list: everyName<keyof LocationListProps>({
-    as: true,
-    groupHeadings: true,
-    fitAllLabel: true,
-    label: true,
-    heading: true,
-    children: true,
-    position: true,
-  }),
-  control: everyName<keyof MapControlProps>({ position: true, children: true }),
 } as const;

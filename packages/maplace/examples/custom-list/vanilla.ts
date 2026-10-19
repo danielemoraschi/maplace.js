@@ -53,5 +53,5 @@ function checksMenu(maplace: Maplace, heading: string): HTMLFieldSetElement {
 
 const maplace = createMaplace({ locations });
 const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
-maplace.attach(adapter, document.getElementById("custom-list-vanilla-map") as HTMLElement);
+maplace.attach(adapter, "#custom-list-vanilla-map");
 adapter.mountControl(checksMenu(maplace, "Choose a location:"), "top-right");

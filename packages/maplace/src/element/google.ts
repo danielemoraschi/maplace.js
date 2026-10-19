@@ -1,4 +1,4 @@
-import { createGoogleAdapter } from "../google/index";
+import { createGoogleAdapter } from "../google/create-adapter";
 import { defineProvider } from "./define";
 import { adapterAfter } from "./google-after-loading";
 import { googleSettingsOf } from "./google-attributes";

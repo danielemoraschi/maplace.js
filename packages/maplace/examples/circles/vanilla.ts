@@ -1,20 +1,9 @@
-import { createListView, createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-
-/** A popup's content: the title in bold, then a line about the area. */
-function popupOf(title: string, about: string): DocumentFragment {
-  const heading = document.createElement("strong");
-  heading.textContent = title;
-  const text = document.createElement("p");
-  text.textContent = about;
-  const content = document.createDocumentFragment();
-  content.append(heading, text);
-  return content;
-}
+import { createGoogleMap } from "maplace/google";
 
 const center = { lat: 41.9028, lng: 12.4964 };
 const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };
-const maplace = createMaplace({
+const maplace = createGoogleMap("#circles-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
   selectedId: "center",
   locations: [
     {
@@ -47,20 +36,30 @@ const maplace = createMaplace({
       style: { stroke: "#7c3aed", fill: "#a78bfa" },
     },
   ],
+  list: { container: "#circles-vanilla-list" },
 });
-const container = document.getElementById("circles-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
-const list = document.getElementById("circles-vanilla-list") as HTMLElement;
-list.append(createListView(maplace).element);
 
-// The editable circle's radius, while it is resized and once it is.
-const readout = document.getElementById("circles-vanilla-radius") as HTMLOutputElement;
-function showRadius(id: string, radius: number): void {
-  if (id === "resizable") readout.textContent = `Radius: ${(radius / 1000).toFixed(1)} km`;
-}
 maplace.on("locationEdit", ({ location, geometry }) => {
   if (geometry.type === "circle") showRadius(location.id, geometry.radius);
 });
 maplace.on("locationChange", ({ location }) => {
   if (location.type === "circle") showRadius(location.id, location.radius);
 });
+
+const readout = document.querySelector<HTMLOutputElement>("#circles-vanilla-radius");
+/** The editable circle's radius, while it is resized and once it is. */
+function showRadius(id: string, radius: number): void {
+  if (readout && id === "resizable")
+    readout.textContent = `Radius: ${(radius / 1000).toFixed(1)} km`;
+}
+
+/** A popup's content: the title in bold, then a line about the area. */
+function popupOf(title: string, about: string): DocumentFragment {
+  const heading = document.createElement("strong");
+  heading.textContent = title;
+  const text = document.createElement("p");
+  text.textContent = about;
+  const content = document.createDocumentFragment();
+  content.append(heading, text);
+  return content;
+}

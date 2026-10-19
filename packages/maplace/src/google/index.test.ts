@@ -9,7 +9,7 @@ afterEach(() => {
 
 describe("maplace/google", () => {
   it("imports and makes an adapter with no DOM and no Google Maps loaded", () => {
-    expect(Object.keys(entry)).toEqual(["createGoogleAdapter"]);
+    expect(Object.keys(entry)).toEqual(["createGoogleAdapter", "createGoogleMap"]);
     expect(typeof globalThis.document).toBe("undefined");
     expect(entry.createGoogleAdapter({ mapId: "DEMO_MAP_ID" }).capabilities).toBeInstanceOf(Set);
   });

@@ -4,18 +4,16 @@ The store is maplace's headless map state: locations, selection, hover, filter, 
 
 ## Creating a store
 
-`createMaplace(options?)` returns a store. `attach(adapter, container)` connects it to a map:
+`createMaplace(options?)` returns a store. `attach(adapter, container)` connects it to a map, `container` being an element or a selector the page matches (one matching nothing is `invalid-input`; an element in a shadow root is passed as the element). On Google, [`createGoogleMap`](google.md#creategooglemap) does both in one call:
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
-import { createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createGoogleMap } from "maplace/google";
 
-const maplace = createMaplace({
+createGoogleMap("#simple-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
   locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
 });
-const container = document.getElementById("simple-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
 ```
 
 `createMaplace<Data>()` types your own fields: each location's `data`, handed back to content, icon and render functions.
@@ -63,7 +61,7 @@ The first view is the `view` option when given, else the selected location, else
 | `setView` | `setView(center, zoom)` centres the map at a zoom |
 | `setRoute` | `setRoute(route)` computes a [route](#routes), or clears it with `undefined` |
 | `on` | `on(event, listener, options?)` listens to an [event](#events); returns an unsubscribe function |
-| `attach` | `attach(adapter, container)` connects a map provider and starts loading; returns `detach` |
+| `attach` | `attach(adapter, container)` connects a map provider in `container`, an element or a selector, and starts loading; returns `detach` |
 | `whenReady` | Resolves once the provider loaded and the first locations are drawn; rejects on a load error |
 | `destroy` | Detaches and drops every listener; later calls that change state throw `destroyed` |
 

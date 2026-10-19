@@ -1,16 +1,4 @@
 /// <reference types="google.maps" preserve="true" />
-import type { Adapter } from "../adapter";
-import { assembleGoogleAdapter } from "./assemble";
-import { createMapState } from "./map-state";
-import { checkGoogleOptions, type GoogleAdapterOptions } from "./options";
-
+export { createGoogleAdapter } from "./create-adapter";
+export { createGoogleMap, type GoogleMapList, type GoogleMapOptions } from "./google-map";
 export type { GoogleAdapterOptions } from "./options";
-
-/**
- * A map provider on Google Maps. Expects the page to have loaded Maps JS (Google's bootstrap or
- * js-api-loader): it imports the libraries it needs through `google.maps.importLibrary`.
- */
-export function createGoogleAdapter(options: GoogleAdapterOptions): Adapter {
-  checkGoogleOptions(options);
-  return assembleGoogleAdapter(options, createMapState());
-}

@@ -1,16 +1,5 @@
-import { createListView, createMaplace, type Location } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-
-/** A popup's content: the title in bold, then a line about the place. */
-function popupOf(title: string, about: string): DocumentFragment {
-  const heading = document.createElement("strong");
-  heading.textContent = title;
-  const text = document.createElement("p");
-  text.textContent = about;
-  const content = document.createDocumentFragment();
-  content.append(heading, text);
-  return content;
-}
+import type { LatLng, Location } from "maplace";
+import { createGoogleMap } from "maplace/google";
 
 const star = document.createElement("span");
 star.textContent = "★";
@@ -38,18 +27,29 @@ const locations: Location[] = [
   { id: "florence", lat: 43.7696, lng: 11.2558, title: "Florence", listed: false },
 ];
 
-const maplace = createMaplace({ locations });
-const adapter = createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
-maplace.attach(adapter, document.getElementById("markers-vanilla-map") as HTMLElement);
-adapter.mountControl(
-  createListView(maplace, { heading: "Choose a location:" }).element,
-  "top-right",
-);
+const maplace = createGoogleMap("#markers-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
+  locations,
+  list: { heading: "Choose a location:" },
+});
 
-// A click on the map drops a marker there.
+maplace.on("mapClick", ({ position }) => dropMarkerAt(position));
+
 let dropped = 0;
-maplace.on("mapClick", ({ position }) => {
+/** A click on the map drops a marker there. */
+function dropMarkerAt(position: LatLng): void {
   dropped += 1;
   const marker = { id: `dropped-${dropped}`, ...position, title: `Dropped pin ${dropped}` };
   maplace.setLocations([...maplace.getSnapshot().locations, marker]);
-});
+}
+
+/** A popup's content: the title in bold, then a line about the place. */
+function popupOf(title: string, about: string): DocumentFragment {
+  const heading = document.createElement("strong");
+  heading.textContent = title;
+  const text = document.createElement("p");
+  text.textContent = about;
+  const content = document.createDocumentFragment();
+  content.append(heading, text);
+  return content;
+}

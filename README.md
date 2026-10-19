@@ -69,7 +69,7 @@ curl -s https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js 
 npm install maplace
 ```
 
-The store and the Google adapter, on a page that loads Maps JS with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) (or `@googlemaps/js-api-loader`) and gives the map's container its size:
+A store on a Google map in one call, `createGoogleMap`, on a page that loads Maps JS with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) (or `@googlemaps/js-api-loader`) and gives the map's container its size:
 
 <!-- example: packages/maplace/examples/simple/vanilla.html -->
 ```html
@@ -90,15 +90,15 @@ The store and the Google adapter, on a page that loads Maps JS with [Google's bo
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
-import { createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createGoogleMap } from "maplace/google";
 
-const maplace = createMaplace({
+createGoogleMap("#simple-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
   locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
 });
-const container = document.getElementById("simple-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
 ```
+
+`list: true` adds maplace's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
 
 Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplace's own selected and hovered look fills what they leave unset.
 
@@ -107,7 +107,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 | Entry | What it gives |
 |---|---|
 | `maplace` | `createMaplace` (the headless store), `createListView`, `listedLocations`, the adapter contract and the types |
-| `maplace/google` | `createGoogleAdapter`: the only entry that knows `google.maps` |
+| `maplace/google` | `createGoogleMap` (a store on a Google map in one call) and `createGoogleAdapter`: the only entry that knows `google.maps` |
 | `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |
 | `maplace/element/google` | the element with the Google provider registered |
 | `maplace/react` | `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>` and `useMaplace()` |

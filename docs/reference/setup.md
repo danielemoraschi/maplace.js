@@ -52,18 +52,16 @@ The page loads Maps JS with [Google's bootstrap loader](https://developers.googl
 <script type="module" src="./vanilla.ts"></script>
 ```
 
-The module makes the store and attaches the Google adapter:
+The module makes the store on a Google map in one call ([`createGoogleMap`](google.md#creategooglemap)):
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
-import { createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createGoogleMap } from "maplace/google";
 
-const maplace = createMaplace({
+createGoogleMap("#simple-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
   locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
 });
-const container = document.getElementById("simple-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
 ```
 
 For the element from npm, `import "maplace/element/google"` defines it with the Google provider; it adds Maps JS itself as on the CDN, or takes the page's when the page loaded it first. With React: [React](react.md). Routes need Maps JS 3.63 or later. Every entry and what it gives: [API reference](api.md).

@@ -35,7 +35,7 @@ describe("validateOptions", () => {
       }),
     );
     expect(() => validateOptions({ map_div: "#map" })).toThrow(
-      /map_div is a 0.2 option; pass the container to attach/,
+      /map_div is a 0.2 option; pass it to createGoogleMap or attach: '#map' works/,
     );
     expect(() => validateOptions({ directions_panel: "#panel" })).toThrow(
       /directions_panel is a 0.2 option; render each leg's steps from the routeChange event/,

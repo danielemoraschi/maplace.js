@@ -1,25 +1,24 @@
-import { createListView, createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createGoogleMap } from "maplace/google";
 
 const notes: Readonly<Record<string, string>> = {
   rome: "Capital since 1871.",
   milan: "Finance and fashion.",
 };
-const maplace = createMaplace({
+const maplace = createGoogleMap("#tabs-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
   selectedId: "rome",
   locations: [
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
     { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
   ],
+  list: { container: "#tabs-vanilla-list" },
 });
-const container = document.getElementById("tabs-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
-const list = document.getElementById("tabs-vanilla-list") as HTMLElement;
-list.append(createListView(maplace).element);
 
-const details = document.getElementById("tabs-vanilla-details") as HTMLElement;
-function showNote(id: string | undefined): void {
-  details.textContent = id === undefined ? "" : (notes[id] ?? "");
-}
+const details = document.querySelector("#tabs-vanilla-details");
 showNote(maplace.getSnapshot().selectedId);
 maplace.on("selectionChange", ({ id }) => showNote(id));
+
+/** The chosen tab's details, in the panel below the tabs. */
+function showNote(id: string | undefined): void {
+  if (details) details.textContent = id === undefined ? "" : (notes[id] ?? "");
+}

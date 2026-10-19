@@ -10,7 +10,9 @@ describe("layerOf", () => {
     expect(layerOf("location-state")).toBe("data");
     expect(layerOf("adapter")).toBe("contract");
     expect(layerOf("element/google")).toBe("wiring");
-    expect(layerOf("google/index")).toBe("google");
+    expect(layerOf("google/index")).toBe("google-entry");
+    expect(layerOf("google/google-map")).toBe("google-entry");
+    expect(layerOf("google/create-adapter")).toBe("google");
   });
 
   it("leaves unknown files out", () => {
@@ -47,18 +49,24 @@ describe("problemsIn", () => {
   });
 
   it("accepts imports within the same layer", () => {
-    expect(problemsIn("google/index.ts", 'import { draw } from "./markers";')).toEqual([]);
+    expect(problemsIn("google/drawing.ts", 'import { draw } from "./markers";')).toEqual([]);
   });
 
   it("accepts a directory import through its index", () => {
+    expect(problemsIn("react/testing/render.ts", 'import { MaplaceMap } from "..";')).toEqual([]);
+  });
+
+  it("keeps the element's Google wiring to the adapter, off maplace/google's entry", () => {
     expect(
       problemsIn("element/google.ts", 'import { createGoogleAdapter } from "../google";'),
-    ).toEqual([]);
+    ).toEqual([
+      "element/google.ts: imports ../google (google-entry); wiring may import data, contract, element, google, validation",
+    ]);
   });
 
   it("reports a view importing an adapter", () => {
     expect(problemsIn("list-view.ts", 'import "./google/index";')).toEqual([
-      "list-view.ts: imports ./google/index (google); view may import data, store, state, validation",
+      "list-view.ts: imports ./google/index (google-entry); view may import data, store, state, validation",
     ]);
   });
 

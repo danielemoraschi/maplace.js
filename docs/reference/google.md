@@ -13,6 +13,45 @@
 
 `center` and `zoom` are left out of `mapOptions` because only the store's `view` sets them, and JSON `styles` because Google ignores them on a map with a map ID ([map ID and styling](#map-id-and-styling)). An option the adapter doesn't know is `invalid-input`.
 
+## `createGoogleMap`
+
+`createGoogleMap(container, options)` is a store on a Google map in one call, as 0.2's `new Maplace(options).Load()` was. It makes the store with the [store's options](store.md#options), the adapter with `mapId`, `colorScheme` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down.
+
+<!-- example: packages/maplace/examples/menu/vanilla.ts -->
+```ts
+import { createGoogleMap } from "maplace/google";
+
+const maplace = createGoogleMap("#menu-vanilla-map", {
+  mapId: "DEMO_MAP_ID",
+  locations: [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", group: "Centre" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", group: "North" },
+    { id: "turin", lat: 45.0703, lng: 7.6869, title: "Turin", group: "North" },
+  ],
+  list: { as: "select", fitAllLabel: "All cities" },
+});
+
+const northOnly = document.querySelector<HTMLInputElement>("#menu-vanilla-north-only");
+northOnly?.addEventListener("change", () => {
+  maplace.setFilter(northOnly.checked ? ["North"] : undefined);
+});
+```
+
+Its own options, beside the store's:
+
+| Option | Type | What |
+|---|---|---|
+| `mapId` | `string` | Required, as the adapter's |
+| `colorScheme` | `"light" \| "dark" \| "follow-system"` | As the adapter's |
+| `mapOptions` | `google.maps.MapOptions` | As the adapter's |
+| `list` | `true \| GoogleMapList` | maplace's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
+| `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right`, where 0.2 put its controls |
+| `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map (0.2's `controls_div`); not with `position` |
+
+Each part checks what it is handed, so misuse names the part: `createMaplace: options…`, `createGoogleAdapter: options…`, `attach: container…` (a selector matching nothing), `createListView: options…`. A store that can't be attached is destroyed before the error goes on.
+
+Your own map (`map`), a control of your own on the map (`adapter.mountControl`) and a map opened again with a new adapter need the adapter, so they take the parts: `createMaplace`, `createGoogleAdapter` and `attach` ([creating a store](store.md#creating-a-store)).
+
 ## Your own map
 
 A map maplace creates is a new element filling the container (so size the container), removed on `destroy`. With `map`, maplace draws on your map and never moves it in the page or removes it; the store's `view` still sets its camera.

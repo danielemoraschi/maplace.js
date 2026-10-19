@@ -6,14 +6,13 @@ import { PACKAGE_ENTRIES, readRootFile } from "../../../../scripts/build/package
 import { GOOGLE_PROVIDER_ATTRIBUTES, MAP_ATTRIBUTES } from "./element-attributes.ts";
 import { exportedNames } from "./entry-exports.ts";
 import type { ReferenceTable } from "./reference-check.ts";
+import { LOCATION_FIELDS, SHAPE_STYLE_FIELDS, STORE_NAMES } from "./reference-names.ts";
 import {
+  GOOGLE_MAP_OPTIONS,
   GOOGLE_OPTIONS,
-  LOCATION_FIELDS,
   MAP_ELEMENT_PROPERTIES,
   REACT_PROPS,
-  SHAPE_STYLE_FIELDS,
-  STORE_NAMES,
-} from "./reference-names.ts";
+} from "./reference-names-bindings.ts";
 
 /** Where the reference pages are, from the repo root. */
 export const REFERENCE_DIR = "docs/reference/";
@@ -49,6 +48,7 @@ export function referenceTables(): ReferenceTable[] {
     ]),
     ...tablesOn("google.md", [
       ["## Options", GOOGLE_OPTIONS, "GoogleAdapterOptions"],
+      ["## `createGoogleMap`", GOOGLE_MAP_OPTIONS, "GoogleMapOptions and GoogleMapList"],
       [
         "## Provider attributes",
         GOOGLE_PROVIDER_ATTRIBUTES,

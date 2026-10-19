@@ -32,7 +32,7 @@ describe("exampleCode", () => {
   it("reads each file as written", () => {
     const [html, vanilla, react] = exampleCode("simple");
     expect(html?.files[0]?.code).toContain("<maplace-map");
-    expect(vanilla?.files[1]?.code).toContain("createMaplace(");
+    expect(vanilla?.files[1]?.code).toContain("createGoogleMap(");
     expect(react?.files[1]?.code).toContain("<MaplaceProvider");
   });
 

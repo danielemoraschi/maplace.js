@@ -68,9 +68,11 @@ export interface Maplace<Data = unknown> {
   ): Unsubscribe;
   /**
    * Connects a provider and starts loading; returns `detach`, which returns the store to `idle`.
-   * Throws if already attached or if the current state needs a missing capability.
+   * `container` is an element or a selector the page's document matches. Throws if already
+   * attached, if the selector isn't valid or matches nothing, or if the current state needs a
+   * missing capability.
    */
-  attach(adapter: Adapter, container: HTMLElement): () => void;
+  attach(adapter: Adapter, container: HTMLElement | string): () => void;
   /**
    * Resolves once the provider loaded and the first locations are drawn; rejects on load error.
    * Called before `attach`, or across `detach`, it waits for the next load; after `destroy` it

@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { initialSnapshot } from "../state/initial";
@@ -18,8 +19,16 @@ function attachWith(store: Partial<StoreAtAttach>, adapter = createFakeAdapter()
 }
 
 describe("checkAttachable", () => {
-  it("returns the adapter's support check for a store it can draw", () => {
-    expect(attachWith({})()).toBeTypeOf("function");
+  it("returns the adapter's support check and the container for a store it can draw", () => {
+    expect(attachWith({})()).toEqual({ checkSupport: expect.any(Function), container });
+  });
+
+  it("mounts in the element a selector matches", () => {
+    const map = Object.assign(document.createElement("div"), { id: "map" });
+    document.body.replaceChildren(map);
+    const request = { adapter: createFakeAdapter(), container: "#map" };
+    expect(checkAttachable(request, free).container).toBe(map);
+    document.body.replaceChildren();
   });
 
   it("refuses a store that is already attached", () => {
@@ -45,7 +54,7 @@ describe("checkAttachable", () => {
   it("refuses a container that is not an element", () => {
     expect(() =>
       checkAttachable({ adapter: createFakeAdapter(), container: null as never }, free),
-    ).toThrow("attach: container must be an HTMLElement, got null");
+    ).toThrow("attach: container must be an HTMLElement or a selector, got null");
   });
 
   it("refuses a container that doesn't hold the map an adapter draws on, before using it", () => {

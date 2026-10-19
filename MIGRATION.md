@@ -43,7 +43,20 @@ In 1.0 the element does the same, loading Google Maps itself:
 </maplace-map>
 ```
 
-Pages that build the map in code use `createMaplace` and `createGoogleAdapter` from npm; see the [README](README.md#with-a-bundler).
+A page that builds the map in code makes the same call 0.2 made, `createGoogleMap` from npm, on a page that loads Maps JS with Google's bootstrap loader ([README](README.md#with-a-bundler)); the list goes where 0.2's `controls_div` put it:
+
+```ts
+import { createGoogleMap } from "maplace/google";
+
+createGoogleMap("#gmap", {
+  mapId: "DEMO_MAP_ID",
+  locations: [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+  ],
+  list: { container: "#controls" },
+});
+```
 
 ## Converting your locations
 
@@ -86,12 +99,12 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 
 | 0.2 option | 1.0 |
 |---|---|
-| `map_div` | the container passed to `attach`, or `<maplace-map>` itself |
-| `controls_div`, `controls_on_map`, `controls_position` | element `list-position` (a corner, or `outside`), React's `<LocationList position>`; in code, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
+| `map_div` | `createGoogleMap('#map', …)`'s container (an element or a selector), the container passed to `attach`, or `<maplace-map>` itself |
+| `controls_div`, `controls_on_map`, `controls_position` | `createGoogleMap`'s `list: { position }` (a corner, default top right) or `list: { container }` (an element or a selector, as `controls_div`), element `list-position` (a corner, or `outside`), React's `<LocationList position>`; with the parts, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
 | `generate_controls`, `force_generate_controls` | a list exists only when asked for, at any number of locations |
-| `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'`, element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
+| `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'` (`createGoogleMap`'s `list: { as }`), element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
 | `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win (on a Google map, the panel is `.maplace-control`) |
-| `controls_title` | list view `heading` (element `list-heading`, `<LocationList heading>`), shown above the list on the map or beside it |
+| `controls_title` | list view `heading` (`createGoogleMap`'s `list: { heading }`, element `list-heading`, `<LocationList heading>`), shown above the list on the map or beside it |
 | `type` (one per map) | `type` per location, so one map mixes markers and shapes |
 | `type: 'directions'` | `setRoute({ stops })` through your own locations |
 | `type: 'fusion'`, `fusion_options` | dropped: Google shut down Fusion Tables in 2019 |
@@ -145,7 +158,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 
 | 0.2 method | 1.0 |
 |---|---|
-| `new Maplace(options).Load()` | `createMaplace(options)` then `attach(adapter, container)`, or `<maplace-map>` |
+| `new Maplace(options).Load()` | `createGoogleMap('#map', options)`, or its parts `createMaplace(options)` then `attach(adapter, '#map')`, or `<maplace-map>` |
 | `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
 | `Load(true)` (rebuild) | `detach()`, then `attach()` with a new adapter |
 | `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |

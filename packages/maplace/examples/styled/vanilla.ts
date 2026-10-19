@@ -15,16 +15,15 @@ const adapterIn = (colorScheme: ColorScheme) =>
   createGoogleAdapter({ mapId: "DEMO_MAP_ID", colorScheme, mapOptions: { mapTypeControl: true } });
 
 const maplace = createMaplace({ locations });
-const container = document.getElementById("styled-vanilla-map") as HTMLElement;
-let detach = maplace.attach(adapterIn("light"), container);
+let detach = maplace.attach(adapterIn("light"), "#styled-vanilla-map");
 
 // A map's colour scheme is set when it opens: "Dark" opens a new one where this one was.
-const dark = document.getElementById("styled-vanilla-dark") as HTMLButtonElement;
-dark.addEventListener("click", () => {
+const dark = document.querySelector<HTMLButtonElement>("#styled-vanilla-dark");
+dark?.addEventListener("click", () => {
   const isDark = dark.getAttribute("aria-pressed") !== "true";
   dark.setAttribute("aria-pressed", String(isDark));
   const { viewport } = maplace.getSnapshot();
   detach();
   if (viewport) maplace.setView(viewport.center, viewport.zoom);
-  detach = maplace.attach(adapterIn(isDark ? "dark" : "light"), container);
+  detach = maplace.attach(adapterIn(isDark ? "dark" : "light"), "#styled-vanilla-map");
 });

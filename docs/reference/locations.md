@@ -4,27 +4,27 @@ A location is one item of your data: a marker, a circle, a polyline or a polygon
 
 <!-- example: packages/maplace/examples/polygon/vanilla.ts -->
 ```ts
-import { createMaplace, type Location } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import type { Location } from "maplace";
+import { createGoogleMap } from "maplace/google";
 
 /** Your own code, writing an edited location back to your server. */
 declare function save(location: Location): Promise<void>;
 
-const park: Location = {
-  id: "park",
-  type: "polygon",
-  title: "Park",
-  editable: true,
-  path: [
-    { lat: 41.91, lng: 12.48 },
-    { lat: 41.92, lng: 12.49 },
-    { lat: 41.9, lng: 12.5 },
-  ],
-};
-const maplace = createMaplace({ locations: [park] });
-const container = document.getElementById("polygon-vanilla-map") as HTMLElement;
-maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
-maplace.on("locationChange", ({ location }) => void save(location));
+const locations: Location[] = [
+  {
+    id: "park",
+    type: "polygon",
+    title: "Park",
+    editable: true,
+    path: [
+      { lat: 41.91, lng: 12.48 },
+      { lat: 41.92, lng: 12.49 },
+      { lat: 41.9, lng: 12.5 },
+    ],
+  },
+];
+const maplace = createGoogleMap("#polygon-vanilla-map", { mapId: "DEMO_MAP_ID", locations });
+maplace.on("locationChange", ({ location }) => save(location));
 ```
 
 On a page with the element, a `<maplace-location>` sets the same fields from its [attributes](element.md#location-attributes); the last column says which.

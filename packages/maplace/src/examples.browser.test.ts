@@ -5,18 +5,15 @@ import { bootstrapOf, moduleScriptOf } from "./testing/examples/example-hosts";
 import { expectVersionRuns } from "./testing/examples/example-runs";
 import { serveExampleData } from "./testing/examples/example-surroundings";
 import { recordingCreateMaplace } from "./testing/examples/recorded-stores";
-import { createFakeAdapter, type FakeAdapter } from "./testing/fake-adapter";
+import type { FakeAdapter } from "./testing/fake-adapter";
 
 // The vanilla examples, each run as written on the HTML beside it, on the fake adapter instead
 // of Google's.
 const adapters: FakeAdapter[] = [];
-vi.mock("maplace/google", () => ({
-  createGoogleAdapter: () => {
-    const adapter = createFakeAdapter();
-    adapters.push(adapter);
-    return adapter;
-  },
-}));
+vi.mock("maplace/google", async () => {
+  const { fakeGoogleEntry } = await import("./testing/examples/fake-google");
+  return fakeGoogleEntry(adapters);
+});
 vi.mock("maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };

@@ -22,7 +22,7 @@ export interface AttachContext<Data> {
 
 /** Connects a store to one adapter at a time; its commit hooks keep that adapter in step. */
 export interface Attacher<Data> extends CommitHooks<Data> {
-  attach(adapter: Adapter, container: HTMLElement): () => void;
+  attach(adapter: Adapter, container: HTMLElement | string): () => void;
   detach(): void;
 }
 
@@ -52,10 +52,10 @@ export function createAttacher<Data>({
   const cluster = options?.cluster ?? false;
   let current: Connection | undefined;
 
-  function attach(adapter: Adapter, container: HTMLElement): () => void {
+  function attach(adapter: Adapter, container: HTMLElement | string): () => void {
     state.checkNotDestroyed("attach");
     const store = { attached: current !== undefined, cluster, snapshot: getSnapshot() };
-    const checkSupport = checkAttachable({ adapter, container }, store);
+    const { checkSupport, container: element } = checkAttachable({ adapter, container }, store);
     markUsed(adapter);
     const controller = new AbortController();
     const host = createHost(controller.signal, reports);
@@ -66,7 +66,7 @@ export function createAttacher<Data>({
     const connection = { adapter, controller, host, checkSupport, sync };
     current = connection;
     loadStates.loading();
-    void mount(connection, container);
+    void mount(connection, element);
     return () => detach(connection);
   }
 
