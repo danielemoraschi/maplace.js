@@ -1,3 +1,5 @@
+import { fadeIn } from "./fade-in.ts";
+
 /** The key that moves the selection, and where to, from the tab at `index` of `count`. */
 const MOVES: Readonly<Record<string, (index: number, count: number) => number>> = {
   ArrowRight: (index, count) => (index + 1) % count,
@@ -8,7 +10,8 @@ const MOVES: Readonly<Record<string, (index: number, count: number) => number>> 
 
 /**
  * Every `role="tablist"` under `root` as ARIA tabs: a click or an arrow key selects a tab and
- * shows its panel (`aria-controls`), the others hidden; only the selected tab is in the Tab order.
+ * shows its panel (`aria-controls`), fading it in, the others hidden at once; only the selected
+ * tab is in the Tab order.
  * The page renders the first tab selected.
  */
 export function startTabs(root: ParentNode): void {
@@ -35,5 +38,8 @@ function showTab(tab: HTMLElement, shown: boolean): void {
   tab.setAttribute("aria-selected", String(shown));
   tab.tabIndex = shown ? 0 : -1;
   const panel = tab.ownerDocument.getElementById(tab.getAttribute("aria-controls") ?? "");
-  if (panel) panel.hidden = !shown;
+  if (!panel) return;
+  const appears = shown && panel.hidden;
+  panel.hidden = !shown;
+  if (appears) fadeIn(panel);
 }

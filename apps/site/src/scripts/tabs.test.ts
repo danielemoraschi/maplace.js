@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fadeIn } from "./fade-in.ts";
 import { startTabs } from "./tabs.ts";
+
+vi.mock("./fade-in.ts");
 
 const NAMES = ["map", "html", "vanilla"];
 
@@ -21,7 +24,10 @@ const press = (key: string) =>
   document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
 
 describe("startTabs", () => {
-  beforeEach(tabsPage);
+  beforeEach(() => {
+    vi.mocked(fadeIn).mockClear();
+    tabsPage();
+  });
 
   it("shows a tab's panel when clicked, hides the others, and moves the Tab stop to it", () => {
     tab("html").click();
@@ -40,5 +46,11 @@ describe("startTabs", () => {
     expect(shown()).toEqual(["vanilla"]);
     press("Home");
     expect(shown()).toEqual(["map"]);
+  });
+
+  it("fades in the panel it shows, not one already shown", () => {
+    tab("html").click();
+    tab("html").click();
+    expect(vi.mocked(fadeIn).mock.calls).toEqual([[document.getElementById("html")]]);
   });
 });

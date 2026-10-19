@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fadeIn } from "./fade-in.ts";
 import { startVersionSwitches } from "./version-switch.ts";
+
+vi.mock("./fade-in.ts");
 
 function section(name: string): string {
   const radio = (value: string, checked = false) =>
@@ -22,6 +25,7 @@ const choose = (name: string, value: string) =>
   document.querySelector<HTMLInputElement>(`[name="${name}-version"][value="${value}"]`)?.click();
 
 beforeEach(() => {
+  vi.mocked(fadeIn).mockClear();
   document.body.innerHTML = section("route") + section("big");
   startVersionSwitches(document);
 });
@@ -41,5 +45,11 @@ describe("startVersionSwitches", () => {
   it("leaves other sections alone", () => {
     choose("route", "react");
     expect(shown("big")).toEqual(["html"]);
+  });
+
+  it("fades in the version it shows, not the ones it hides", () => {
+    choose("route", "vanilla");
+    const vanilla = document.querySelector('[data-example="route"][data-live-version="vanilla"]');
+    expect(vi.mocked(fadeIn).mock.calls).toEqual([[vanilla]]);
   });
 });
