@@ -3,7 +3,7 @@ import { afterEach, expect, it, onTestFinished } from "vitest";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import type { ColorScheme } from "./options";
-import { controlsPlaced, laidOut } from "./testing/controls-placed";
+import { settledOnMap } from "./testing/controls-placed";
 import { darkPage } from "./testing/dark-page";
 import { panelOf, queried } from "./testing/panels";
 import { places } from "./testing/places";
@@ -26,14 +26,12 @@ interface ListSetting extends ListViewOptions {
 /** A list view top-left on a map maplace creates, laid out by Google, and its panel. */
 async function listOnGoogle({ colorScheme, count, ...options }: ListSetting = {}) {
   const maplace = createMaplace({ locations: places(count) });
-  const { adapter, container, googleMap } = await onGoogle(maplace, { colorScheme });
+  const { adapter, container } = await onGoogle(maplace, { colorScheme });
   await fitted(maplace);
   const list = createListView(maplace, options);
   onTestFinished(() => list.destroy());
   adapter.mountControl(list.element, "top-left");
-  const map = googleMap() as google.maps.Map;
-  await controlsPlaced(map);
-  await laidOut(list.element);
+  await settledOnMap(list.element);
   const panel = panelOf(list.element);
   return { container, view: list.element, panel };
 }

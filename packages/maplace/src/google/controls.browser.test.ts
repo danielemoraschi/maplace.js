@@ -6,7 +6,7 @@ import { createMaplace } from "../maplace/create";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { optionsIn } from "../testing/lists";
-import { controlsPlaced, laidOut } from "./testing/controls-placed";
+import { controlsPlaced, settledOnMap } from "./testing/controls-placed";
 import { QUIET_MS, wait } from "./testing/map-waits";
 import { centreOf } from "./testing/page-input";
 import { queried } from "./testing/panels";
@@ -29,8 +29,7 @@ async function listOnMap(options: ListViewOptions = {}) {
   onTestFinished(() => list.destroy());
   list.element.style.cssText = "width: 200px; max-height: 200px; overflow: auto";
   const remove = adapter.mountControl(list.element, "top-left");
-  await controlsPlaced(map);
-  await laidOut(list.element);
+  await settledOnMap(list.element);
   return { map, maplace, list, remove };
 }
 
