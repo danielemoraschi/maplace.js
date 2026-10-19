@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { LocationList, MapControl, MaplaceMap, MaplaceProvider } from "./index";
-import { fakeAdapters } from "./testing/adapters";
 import { TOWNS } from "./testing/towns";
 
 // No DOM in this file: importing the binding, and rendering it on a server, must not need one.

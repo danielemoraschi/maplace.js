@@ -13,13 +13,14 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text-summary", "lcovonly", "json-summary"],
       include: ["packages/maplace/src/**", "scripts/**", "apps/site/src/**"],
-      // Keep in step with sonar.coverage.exclusions.
+      // Tests and type tests; Sonar leaves them out through sonar.exclusions.
+      // Every other entry is also in sonar.coverage.exclusions (coverage-exclusions.test.ts).
       exclude: [
         "**/__typetests__/**",
         "**/*.test.{ts,tsx}",
-        "**/src/testing/**",
-        "**/src/google/testing/**",
-        "**/src/react/testing/**",
+        "packages/maplace/src/testing/**",
+        "packages/maplace/src/google/testing/**",
+        "packages/maplace/src/react/testing/**",
         // The command-line entry points: their logic is in the folders below, tested there.
         "scripts/*.ts",
         "scripts/checks/consumer/**",

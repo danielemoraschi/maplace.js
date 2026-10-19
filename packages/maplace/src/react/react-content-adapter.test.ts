@@ -3,7 +3,7 @@ import { describe, expect, it, onTestFinished, vi } from "vitest";
 import type { Adapter } from "../adapter";
 import { nextTask } from "../adapter-kit/chunks";
 import type { Location } from "../location";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import { createMaplace } from "../maplace/create";
 import { adding, markerDrawable, removing } from "../testing/conformance/fixtures";
 import { startMount, unmountAll } from "../testing/conformance/harness";

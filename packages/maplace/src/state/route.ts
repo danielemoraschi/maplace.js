@@ -1,5 +1,5 @@
 import { sameJourney, sameRoute } from "../diff/same";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import { innerStops, type Route } from "../route";
 import type { Snapshot } from "../store";
 import { child, describeValue, type Field, item, reject, root } from "../validate/fail";

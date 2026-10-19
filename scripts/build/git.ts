@@ -5,3 +5,8 @@ import { installedGit } from "./installed-tool.ts";
 export function gitIn(repo: string, args: readonly string[]): string {
   return execFileSync(installedGit(), args, { cwd: repo, encoding: "utf8" });
 }
+
+/** The commit `repo` has checked out. */
+export function headCommit(repo: string): string {
+  return gitIn(repo, ["rev-parse", "HEAD"]).trim();
+}

@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { expect, it, vi } from "vitest";
 import type { Location } from "../location";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import { MapContentPortals } from "./content-portals";
 import { createContentSession } from "./content-slots";
 import { MaplaceProvider } from "./maplace-provider";

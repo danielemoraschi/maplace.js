@@ -1,15 +1,12 @@
 import type { Loader } from "astro/loaders";
 import { type Pin, withPinnedScripts } from "../../../../scripts/build/cdn-pins.ts";
-import { gitIn } from "../../../../scripts/build/git.ts";
+import { headCommit } from "../../../../scripts/build/git.ts";
 import { packageManifest, ROOT, readRootFile } from "../../../../scripts/build/package.ts";
 import { blobBaseFor } from "../../../../scripts/release/repository.ts";
 import { cdnPin } from "./cdn-pin.ts";
 import { withLinksFromRoot } from "./doc-relative-links.ts";
-import { docRoute, REPO_DOCS, type RepoDoc } from "./repo-docs.ts";
+import { DOC_ROUTES, REPO_DOCS, type RepoDoc } from "./repo-docs.ts";
 import { withSiteLinks } from "./site-links.ts";
-
-/** Each repo document's page on the site, by its path in the repo. */
-export const DOC_ROUTES = Object.fromEntries(REPO_DOCS.map(({ file, id }) => [file, docRoute(id)]));
 
 /** The content loader of the `docs` collection: each repo document, rendered. */
 export function repoDocsLoader(): Loader {
@@ -17,7 +14,7 @@ export function repoDocsLoader(): Loader {
     name: "repo-docs",
     async load({ store, renderMarkdown }) {
       const pin = await cdnPin();
-      const blobBase = blobBaseFor(packageManifest(), builtCommit());
+      const blobBase = blobBaseFor(packageManifest(), headCommit(ROOT));
       store.clear();
       for (const doc of REPO_DOCS) {
         const rendered = await renderMarkdown(repoDocMarkdown(doc, { pin, blobBase }));
@@ -29,11 +26,6 @@ export function repoDocsLoader(): Loader {
       }
     },
   };
-}
-
-/** The commit the site is built from: its links to the repo's files read them as it saw them. */
-export function builtCommit(): string {
-  return gitIn(ROOT, ["rev-parse", "HEAD"]).trim();
 }
 
 export interface RepoDocSettings {

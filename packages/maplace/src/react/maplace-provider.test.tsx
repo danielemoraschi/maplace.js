@@ -2,9 +2,9 @@
 import { startTransition, useLayoutEffect, useState, useSyncExternalStore } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { Maplace } from "../store";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider, useMaplace } from "./maplace-provider";
-import { fakeAdapters } from "./testing/adapters";
 import { inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
 import { TOWNS } from "./testing/towns";
 

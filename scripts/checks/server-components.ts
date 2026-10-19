@@ -35,7 +35,7 @@ export function renderServerComponentsApp(installed: string): ServerComponentsRe
     if (run.error) {
       throw new Error(`${RUN} (${BUILD_AND_RENDER_FILE}) didn't start`, { cause: run.error });
     }
-    if (run.status !== 0) throw new Error(`the RSC app failed to build or render:\n${run.stderr}`);
+    if (run.status !== 0) throw new Error(`${RUN} failed:\n${run.stderr}`);
     return renderIn(run.stdout);
   } finally {
     removeTempDir(app);

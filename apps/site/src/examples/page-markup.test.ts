@@ -42,4 +42,8 @@ describe("requireOnce", () => {
       "an example has one bold: this one has 2",
     );
   });
+
+  it("refuses a pattern that isn't global, which would find only the first match", () => {
+    expect(() => requireOnce("<b><b>", /<b>/, "an example has one bold")).toThrow(TypeError);
+  });
 });

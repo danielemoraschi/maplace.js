@@ -1,7 +1,13 @@
 import { onTestFinished } from "vitest";
 import { CONTROL_CLASS } from "../control-styles";
 import { settledOnMap } from "./controls-placed";
-import { type Attachable, fitted, onGoogle, type StoreSite } from "./store-on-google";
+import {
+  type Attachable,
+  type Fittable,
+  fitted,
+  onGoogle,
+  type StoreSite,
+} from "./store-on-google";
 
 /** A list view as far as putting it on a map goes. */
 interface MountableList {
@@ -9,11 +15,9 @@ interface MountableList {
   destroy(): void;
 }
 
-interface ListOnGoogle<Store> extends StoreSite {
-  readonly maplace: Store;
+interface ListOnGoogle extends StoreSite {
+  readonly maplace: Attachable & Fittable;
   readonly list: MountableList;
-  /** The list's own inline style, as a page sizes it; otherwise Google's panel sizes it. */
-  readonly style?: string | undefined;
 }
 
 /**
@@ -21,16 +25,10 @@ interface ListOnGoogle<Store> extends StoreSite {
  * laid it out, and destroyed after the test: the map's container, the panel holding the list,
  * and how to take the list off the map.
  */
-export async function listMountedOnGoogle<Store extends Attachable & Parameters<typeof fitted>[0]>({
-  maplace,
-  list,
-  style,
-  ...site
-}: ListOnGoogle<Store>) {
+export async function listMountedOnGoogle({ maplace, list, ...site }: ListOnGoogle) {
+  onTestFinished(() => list.destroy());
   const { adapter, container } = await onGoogle(maplace, site);
   await fitted(maplace);
-  onTestFinished(() => list.destroy());
-  if (style !== undefined) list.element.style.cssText = style;
   const remove = adapter.mountControl(list.element, "top-left");
   await settledOnMap(list.element);
   return { container, panel: panelOf(list.element), remove };

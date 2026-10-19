@@ -1,15 +1,13 @@
 import { nextTask } from "../../adapter-kit/chunks";
-import { createFakeAdapter, type FakeAdapter } from "../../testing/fake-adapter";
+import { fakeAdapters } from "../../testing/fake/adapters";
+import type { FakeAdapter } from "../../testing/fake-adapter";
 import { defineProvider, type MaplaceMapElement } from "../index";
 
-/** Every adapter the `fake` provider made, in order. */
-export const adaptersMade: FakeAdapter[] = [];
+const adapters = fakeAdapters();
+defineProvider("fake", adapters.createAdapter);
 
-defineProvider("fake", () => {
-  const adapter = createFakeAdapter();
-  adaptersMade.push(adapter);
-  return adapter;
-});
+/** Every adapter the `fake` provider made, in order. */
+export const adaptersMade = adapters.made;
 
 /** The adapter the `fake` provider made last. */
 export function lastAdapter(): FakeAdapter {

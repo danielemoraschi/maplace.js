@@ -1,7 +1,9 @@
 import type { Adapter, Capability } from "../../adapter";
 import type { MapProbe } from "../map-probe";
 
-/** The suite's groups, one per tracker row: an adapter joins each as its row is built. */
+/**
+ * The suite's groups, one per part of the contract: an adapter joins each once it draws that part.
+ */
 export type ConformanceGroup =
   | "declarations"
   | "lifecycle"

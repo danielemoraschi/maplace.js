@@ -1,7 +1,8 @@
 import type { Adapter } from "../adapter";
 import { isMarker } from "../diff/geometry";
 import type { Location } from "../location";
-import { isShown, locationById, type Scope } from "../location-state";
+import { locationById } from "../location-index";
+import { isShown, type Scope } from "../location-state";
 import { runSafely } from "../state/safely";
 import { boundsView, type LocationView, locationView } from "../state/views";
 import type { Snapshot } from "../store";

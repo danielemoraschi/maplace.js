@@ -83,10 +83,13 @@ function near(a: number, b: number): boolean {
  */
 export const TILES_TIMEOUT_MS = 15_000;
 
-/** Waits for the store's fit of its locations, not the view a map opens at (zoom 1). */
-export async function fitted(maplace: {
+/** A store as far as reading its fitted zoom goes. */
+export interface Fittable {
   getSnapshot(): { viewport?: { zoom: number } | undefined };
-}) {
+}
+
+/** Waits for the store's fit of its locations, not the view a map opens at (zoom 1). */
+export async function fitted(maplace: Fittable) {
   const zoom = () => maplace.getSnapshot().viewport?.zoom ?? 0;
   await expect.poll(zoom, { timeout: TILES_TIMEOUT_MS }).toBeGreaterThan(2);
 }

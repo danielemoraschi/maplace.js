@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { Adapter } from "../adapter";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import type { Maplace } from "../store";
 import { isUsed } from "../validate/used-adapters";
 import { MapContentPortals } from "./content-portals";
@@ -55,7 +55,7 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
         });
     setSession(withContent?.session);
     const attached = withContent?.adapter ?? adapter;
-    const detach = attachMap(store, attached, element, used ? undefined : adapter);
+    const detach = attachMap(store, attached, element, used);
     // Called on the adapter, which may be a class relying on `this`.
     setControls({ mountControl: (node, position) => attached.mountControl(node, position) });
     return () => {
@@ -79,17 +79,20 @@ export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   );
 }
 
-/** `attach`, destroying `owned` when the store refuses it, as no detach will. */
+/**
+ * `attach`, with the adapter destroyed when the store refuses it, as no detach will; except one
+ * attached before, which may still drive another map.
+ */
 function attachMap<Data>(
   store: Maplace<Data>,
   adapter: Adapter,
   container: HTMLElement,
-  owned: Adapter | undefined,
+  used: boolean,
 ): () => void {
   try {
     return store.attach(adapter, container);
   } catch (error) {
-    owned?.destroy();
+    if (!used) adapter.destroy();
     throw error;
   }
 }

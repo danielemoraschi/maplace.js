@@ -3,8 +3,8 @@ import { act } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { LocationList, MaplaceMap, MaplaceProvider } from "./index";
-import { fakeAdapters } from "./testing/adapters";
 import { TOWNS } from "./testing/towns";
 import "./testing/act-environment";
 

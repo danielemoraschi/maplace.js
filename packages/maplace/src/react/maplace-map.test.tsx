@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import { Activity } from "react";
 import { describe, expect, it, vi } from "vitest";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
-import { fakeAdapters } from "./testing/adapters";
 import { Boundary, inAct, ROOT_MODES, renderInto, storeCatcher } from "./testing/render";
 import { TOWNS } from "./testing/towns";
 

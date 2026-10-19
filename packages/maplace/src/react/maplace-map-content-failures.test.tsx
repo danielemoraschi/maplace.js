@@ -22,23 +22,20 @@ const reported = (onError: Mock) => new Set(onError.mock.calls.map(([{ error }])
 describe.each(ROOT_MODES)("React content that fails or waits, in $mode", (root) => {
   it("reports an icon function that throws as the page's code failing", async () => {
     const onError = vi.fn();
-    const markerIcon = (location: Location) => {
-      if (location.id === "north") throw new Error("no pin");
-      return "pin";
-    };
-    await renderMap(root, { markerIcon }, { onError });
-    expect(reported(onError)).toEqual(new Set(['location "north": markerIcon threw']));
+    await renderMap(root, { markerIcon: failingIcons }, { onError });
+    expect(reported(onError)).toContain('location "north": markerIcon threw');
   });
 
   it("reports an icon component that throws as the page's code failing", async () => {
     const onError = vi.fn();
-    const markerIcon = (location: Location) => (location.id === "south" ? <Broken /> : "pin");
-    await renderMap(root, { markerIcon }, { onError });
-    expect(reported(onError)).toEqual(new Set(['location "south": markerIcon threw']));
+    await renderMap(root, { markerIcon: failingIcons }, { onError });
+    expect(reported(onError)).toContain('location "south": markerIcon threw');
   });
 
   it("keeps the map, and the content that doesn't fail, when some does", async () => {
-    const map = await renderMap(root, { markerIcon: failingIcons }, { onError: () => {} });
+    const onError = vi.fn();
+    const map = await renderMap(root, { markerIcon: failingIcons }, { onError });
+    expect(reported(onError)).not.toContain('location "east": markerIcon threw');
     expect(map.adapter.destroyed).toBe(false);
     expect(map.container.querySelector("div.map")).not.toBeNull();
     expect([

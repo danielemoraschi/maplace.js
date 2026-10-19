@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { Location } from "../location";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import type { ContentRenders } from "./content-renders";
 import { createContentSession } from "./content-slots";
 

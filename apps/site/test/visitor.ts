@@ -25,8 +25,8 @@ export interface Visitor {
   /** Whether the site was asked for `path`. */
   fetched(path: string): boolean;
   google(): readonly string[];
-  /** Whether Google was asked for Maps JS. */
-  askedForMapsJs(): boolean;
+  /** What Google was asked for Maps JS: its script, by the page or the bootstrap. */
+  mapsJsRequests(): readonly string[];
 }
 
 /**
@@ -60,7 +60,7 @@ export async function visitor(
     offsite: () => asked,
     fetched: (path) => onSite.includes(path),
     google: () => asked.filter((url) => GOOGLE.test(url)),
-    askedForMapsJs: () => asked.some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)),
+    mapsJsRequests: () => asked.filter((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)),
   };
 }
 

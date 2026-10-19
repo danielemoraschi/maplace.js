@@ -23,8 +23,8 @@ async function listOnMap(options: ListViewOptions = {}) {
   const map = pageMapIn(sizedContainer());
   const maplace = createMaplace({ locations: PLACES });
   const list = createListView(maplace, options);
-  const style = "width: 200px; max-height: 200px; overflow: auto";
-  const { remove } = await listMountedOnGoogle({ maplace, list, map, style });
+  list.element.style.cssText = "width: 200px; max-height: 200px; overflow: auto";
+  const { remove } = await listMountedOnGoogle({ maplace, list, map });
   return { map, maplace, list, remove };
 }
 

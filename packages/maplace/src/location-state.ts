@@ -1,9 +1,6 @@
 import type { Location, LocationState } from "./location";
 import { locationById } from "./location-index";
 
-// The state rules' callers read ids here too, one import for both.
-export { locationById } from "./location-index";
-
 // A location's state from selection and hover, whether it is shown at all, listed and selectable:
 // the data rules the store, the views and the bindings share.
 

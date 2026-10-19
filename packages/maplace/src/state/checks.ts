@@ -1,5 +1,6 @@
 import type { Location } from "../location";
-import { isShown, locationById, type Scope } from "../location-state";
+import { locationById } from "../location-index";
+import { isShown, type Scope } from "../location-state";
 import { child, describeValue, type Field, reject, root } from "../validate/fail";
 import { checkNonEmptyString } from "../validate/values";
 

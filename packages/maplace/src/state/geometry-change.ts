@@ -1,5 +1,5 @@
 import type { Location } from "../location";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import type { Snapshot } from "../store";
 import { type Change, NO_CHANGE } from "./change";
 import { editedLocation, type GeometryReport } from "./edited-location";

@@ -24,9 +24,9 @@ export function livePage(pageHtml: string, apiKey: string | undefined): string {
 }
 
 function heldMap(map: string, apiKey: string | undefined): string {
-  requireOnce(map, MAP_KEY_ATTRIBUTE, `an example's map has api-key="YOUR_KEY" once`);
+  requireOnce(map, MAP_KEY_ATTRIBUTE, `an example's map has${MAP_KEY_ATTRIBUTE.source} once`);
   const key = apiKey === undefined ? "" : ` api-key="${attributeValue(apiKey)}"`;
-  return map.replace(MAP_KEY_ATTRIBUTE, key).replace("<maplace-map", "<maplace-map hold");
+  return map.replaceAll(MAP_KEY_ATTRIBUTE, () => key).replace("<maplace-map", "<maplace-map hold");
 }
 
 function withoutCdnScript(head: string): string {

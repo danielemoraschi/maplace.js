@@ -95,3 +95,6 @@ export const REPO_DOCS: readonly RepoDoc[] = [
 export function docRoute(id: string): string {
   return `/${id}/`;
 }
+
+/** Each repo document's page on the site, by its path in the repo. */
+export const DOC_ROUTES = Object.fromEntries(REPO_DOCS.map(({ file, id }) => [file, docRoute(id)]));

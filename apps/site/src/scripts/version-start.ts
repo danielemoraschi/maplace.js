@@ -11,6 +11,7 @@ export interface VersionStarting {
   readonly mapsJsOnPage: () => boolean;
   /** Resolves once `google.maps.importLibrary` is there; rejects when Maps JS failed to load. */
   readonly mapsImportable: () => Promise<void>;
+  /** Shows why `version` didn't start. */
   readonly failed: (version: HTMLElement, failure: VersionFailure) => void;
 }
 

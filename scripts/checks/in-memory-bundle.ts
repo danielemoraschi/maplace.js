@@ -35,12 +35,12 @@ export function reachableOutputs(metafile: Metafile, entry: string): Set<string>
   );
   if (start === undefined) throw new Error(`no output for entry ${entry}`);
   const reached = new Set<string>();
-  const queue = [start];
-  for (let path = queue.pop(); path !== undefined; path = queue.pop()) {
+  const toVisit = [start];
+  for (let path = toVisit.pop(); path !== undefined; path = toVisit.pop()) {
     if (reached.has(path)) continue;
     reached.add(path);
     for (const { path: imported, kind, external } of metafile.outputs[path]?.imports ?? []) {
-      if (kind === "import-statement" && !external) queue.push(imported);
+      if (kind === "import-statement" && !external) toVisit.push(imported);
     }
   }
   return reached;

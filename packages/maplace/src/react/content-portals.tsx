@@ -2,7 +2,7 @@ import { memo, type ReactNode, Suspense, useLayoutEffect, useSyncExternalStore }
 import { createPortal } from "react-dom";
 import { isMarker } from "../diff/geometry";
 import type { Location, MarkerLocation } from "../location";
-import { locationById } from "../location-state";
+import { locationById } from "../location-index";
 import type { Maplace } from "../store";
 import { ContentBoundary, type FailureScope } from "./content-boundary";
 import type { ContentRenders, MarkerIconRender, PopupContentRender } from "./content-renders";

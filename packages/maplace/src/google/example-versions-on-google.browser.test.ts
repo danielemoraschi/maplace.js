@@ -2,8 +2,8 @@ import { afterAll, expect, it, vi } from "vitest";
 import type * as Core from "../index";
 import { REACT_HOSTS, VANILLA_HOSTS } from "../testing/examples/example-files";
 import { openHost } from "../testing/examples/example-hosts";
-import { recordErrors } from "../testing/examples/example-page";
 import { serveExampleData } from "../testing/examples/example-surroundings";
+import { recordErrors } from "../testing/examples/page-errors";
 import {
   recordedStoreCount,
   recordingCreateMaplace,

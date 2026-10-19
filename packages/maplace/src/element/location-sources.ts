@@ -30,9 +30,9 @@ export function readLocationSource(host: Element): readonly Location[] {
 }
 
 /**
- * Calls `onChange` once per task in which what `readLocationSource` reads changed: a child added
- * or removed, a `<maplace-location>` changed, or the JSON script's text. Children the parser adds
- * after the map connects arrive this way too.
+ * Calls `onChange` once for the changes made together to what `readLocationSource` reads: a
+ * child added or removed, a `<maplace-location>` changed, or the JSON script's text. Children the
+ * parser adds after the map connects arrive this way too.
  */
 export function watchLocationSource(host: Element, onChange: () => void): () => void {
   const schedule = oncePerTask(onChange);

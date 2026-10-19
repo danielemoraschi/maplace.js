@@ -1,9 +1,11 @@
 /// <reference types="google.maps" />
 import { afterEach, expect, it } from "vitest";
+import { userEvent } from "vitest/browser";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import type { ColorScheme } from "./options";
 import { darkPage } from "./testing/dark-page";
+import { tabUntil } from "./testing/page-input";
 import { listMountedOnGoogle, queried } from "./testing/panels";
 import { places } from "./testing/places";
 import { describeWithMaps } from "./testing/with-maps";
@@ -62,15 +64,18 @@ describeWithMaps("controls on a Google map", () => {
     );
   });
 
-  it("keeps a long list inside the map, its entries scrolling under its heading", async () => {
+  it("keeps a long list inside the map, its heading in view as End scrolls to the last entry", async () => {
     const { container, panel, view } = await listOnGoogle({ count: 30, heading: "Places" });
-    const box = panel.getBoundingClientRect();
     const listbox = queried(view, '[role="listbox"]');
     const heading = queried(view, ".maplace-list-heading");
-    expect(box.bottom).toBeLessThanOrEqual(container.getBoundingClientRect().bottom);
+    const mapBox = container.getBoundingClientRect();
+    expect(panel.getBoundingClientRect().bottom).toBeLessThanOrEqual(mapBox.bottom);
     expect(listbox.scrollHeight).toBeGreaterThan(listbox.clientHeight);
-    listbox.scrollTop = listbox.scrollHeight;
-    expect(listbox.scrollTop).toBeGreaterThan(0);
-    expect(heading.getBoundingClientRect().top).toBeGreaterThanOrEqual(box.top);
+    await tabUntil(() => listbox.contains(document.activeElement));
+    await userEvent.keyboard("{End}");
+    await expect.poll(() => listbox.scrollTop).toBeGreaterThan(0);
+    const panelBox = panel.getBoundingClientRect();
+    expect(panelBox.top).toBeGreaterThanOrEqual(mapBox.top);
+    expect(heading.getBoundingClientRect().top).toBeGreaterThanOrEqual(panelBox.top);
   });
 });

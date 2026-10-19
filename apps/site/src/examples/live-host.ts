@@ -17,12 +17,12 @@ export function liveHost(hostHtml: string, apiKey: string | undefined): string {
   requireOnce(
     hostHtml,
     BOOTSTRAP_KEY_PLACEHOLDER,
-    `an example's host has the bootstrap's key: "YOUR_KEY" once`,
+    `an example's host has the bootstrap's ${BOOTSTRAP_KEY_PLACEHOLDER.source} once`,
   );
   const keyed =
     apiKey === undefined
       ? hostHtml
-      : hostHtml.replace(BOOTSTRAP_KEY_PLACEHOLDER, () => keyIn(apiKey));
+      : hostHtml.replaceAll(BOOTSTRAP_KEY_PLACEHOLDER, () => keyIn(apiKey));
   return inertScripts(withoutDoctype(keyed.replaceAll(MODULE_SCRIPT, "")));
 }
 

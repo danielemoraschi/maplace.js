@@ -9,8 +9,7 @@ import { stagedBeforeTests } from "./staged-test-package.ts";
 const CLUSTERER = "@googlemaps/markerclusterer";
 const REACT = ["react", "react-dom"];
 
-const staged = stagedBeforeTests("esm");
-const { consumerDir, packageDir } = staged;
+const { consumerDir, packageDir, manifest: stagedManifest } = stagedBeforeTests("esm");
 
 /** Every `.js` file under `dir`, by path relative to it, with its text. */
 function scripts(dir: string): Map<string, string> {
@@ -41,7 +40,7 @@ function bundledPage(code: string, { fromSource = false } = {}): string {
 
 describe("the npm ESM build", () => {
   it("writes every entry the packed manifest names", () => {
-    const manifest = staged.manifest();
+    const manifest = stagedManifest();
     const entries = Object.values(manifest.exports).flatMap((target) =>
       typeof target === "string" || target.default === undefined
         ? []

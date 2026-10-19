@@ -1,6 +1,6 @@
 import type { LoaderContext } from "astro/loaders";
 import { beforeAll, describe, expect, it } from "vitest";
-import { gitIn } from "../../../../scripts/build/git.ts";
+import { headCommit } from "../../../../scripts/build/git.ts";
 import { packageManifest, ROOT } from "../../../../scripts/build/package.ts";
 import { blobBaseFor, repositoryPageFor } from "../../../../scripts/release/repository.ts";
 import { CHANGELOG_ENTRY, changelogLoader } from "./changelog-loader.ts";
@@ -41,7 +41,7 @@ describe("changelogLoader", () => {
   });
 
   it("links the source and the issues to the repository the manifest names", () => {
-    const commit = gitIn(ROOT, ["rev-parse", "HEAD"]).trim();
+    const commit = headCommit(ROOT);
     expect(entry.data.source).toBe(`${blobBaseFor(packageManifest(), commit)}CHANGELOG.md`);
     expect(entry.rendered.html).toContain(`${repositoryPageFor(packageManifest())}/issues/147`);
   });

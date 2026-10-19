@@ -1,5 +1,7 @@
+import { MAPS_SCRIPT_ORIGIN } from "../../../../packages/maplace/src/google/maps-script-url.ts";
+
 /** Any Maps JS tag, the element's or a bootstrap's. */
-const MAPS_JS = 'script[src^="https://maps.googleapis.com/maps/api/js"]';
+const MAPS_JS = `script[src^="${MAPS_SCRIPT_ORIGIN}"]`;
 
 /** How often the wait for `importLibrary` looks again. */
 const POLL_MS = 50;

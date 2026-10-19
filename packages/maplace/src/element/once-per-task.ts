@@ -1,6 +1,6 @@
 /**
- * `run`, scheduled at most once at a time: the calls made in one task run it once, in a microtask
- * after them, so changes a page makes together are taken together.
+ * `run`, scheduled at most once at a time: the calls made together, before the next microtask,
+ * run it once, in a microtask after them, so changes a page makes together are taken together.
  */
 export function oncePerTask(run: () => void): () => void {
   let scheduled = false;

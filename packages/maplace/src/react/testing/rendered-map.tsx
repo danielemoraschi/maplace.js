@@ -1,9 +1,9 @@
 import type { Location } from "../../location";
+import { fakeAdapters } from "../../testing/fake/adapters";
 import type { FakeAdapter } from "../../testing/fake-adapter";
 import { MaplaceMap, type MaplaceMapProps } from "../maplace-map";
 import { MaplaceProvider } from "../maplace-provider";
 import type { MaplaceProviderProps } from "../provider-props";
-import { fakeAdapters } from "./adapters";
 import { inAct, type RootMode, renderInto } from "./render";
 import { TOWNS } from "./towns";
 

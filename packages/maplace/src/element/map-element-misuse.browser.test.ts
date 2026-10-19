@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  adaptersMade,
-  errorsOn,
-  eventsOn,
-  lastAdapter,
-  mapFrom,
-  nextTask,
-  ROME,
-} from "./testing/fake-maps";
+import { adaptersMade, errorsOn, lastAdapter, mapFrom, nextTask, ROME } from "./testing/fake-maps";
 
 describe("<maplace-map> misuse, never silent, standing until corrected", () => {
   it("keeps its locations through bad ones, in error until good ones come", async () => {
@@ -49,7 +41,7 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
   });
 
   it("starts with bad children in error, with a store and no locations", async () => {
-    const errors = eventsOn(document, "maplace-error");
+    const errors = errorsOn(document);
     const map = await mapFrom(
       '<maplace-map><maplace-location location-id="a" lat="x" lng="1"></maplace-location></maplace-map>',
     );

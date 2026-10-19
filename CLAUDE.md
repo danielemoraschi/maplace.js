@@ -24,10 +24,10 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 ## Layout
 - `packages/maplace/src/`: the package. Entries: `index.ts` (core), `google/`, `element/` and `react/` (the React binding, which uses the core through its entry, as the element does).
 - `packages/maplace/src/adapter-kit/`: what every adapter draws with; the fake and Google share it, the core entry never imports it.
-- `packages/maplace/src/location-state.ts`: a location's state from selection and hover, shared by the adapters and the list view.
+- `packages/maplace/src/location-state.ts`: a location's state from selection and hover, shared by the adapters and the list view; `location-index.ts` beside it finds a location by id.
 - `packages/maplace/src/__typetests__/`: compile-time API tests (`@ts-expect-error` must stay errors) and `api-lists.ts`, the RFC's lists of codes, events and capabilities.
 - `packages/maplace/examples/`: the RFC §2 use cases, each a page, a vanilla and a React version with the HTML they mount on (`vanilla.html`, `react.html`); type-checked, never published. `src/testing/examples/` runs them.
-- `scripts/`: repo checks, each in `scripts/checks/` beside its test; the build's definitions in `scripts/build/`, which the size check measures too.
+- `scripts/`: repo checks, each in `scripts/checks/` beside its test; the build's definitions in `scripts/build/`, which the size check measures too; `scripts/docs/`, the Markdown and CHANGELOG readers the checks, the build, the release and the site share.
 - `apps/site/`: the website (D23, D24). Its logic is in `src/{site,examples,consent,scripts}/*.ts`, tested in the node project, and its pages end to end in `test/home-page.test.ts` and `test/site-pages.test.ts` (the site built, served, and driven in Chromium with every request off the machine refused; builds take turns under `test/build-lock.ts`, since two concurrent `astro build`s clobber each other). Repo files reach it through Astro's content layer (`src/content.config.ts`), which runs unbundled: a bundled page can't find the repo.
 - `README.md`, `MIGRATION.md`, `CHANGELOG.md` at the root: the package's own docs. The README's pinned CDN snippets (`maplace@x.y.z`, `sha384-…`) are filled in when the package is staged; never write real values there.
 - `docs/`: the RFC and the tracker, deliberately single documents, and `docs/reference/`, the site's reference pages (one small file per page, rendered through `REPO_DOCS`, their tables held to the API by `apps/site/src/site/reference-pages.test.ts`); everything else stays small.

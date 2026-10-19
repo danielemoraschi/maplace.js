@@ -8,9 +8,12 @@ import { recordingCreateMaplace } from "../testing/examples/recorded-stores";
 
 // The React examples, each rendering its own root as written, on the HTML beside it, on the fake
 // adapter instead of Google's. Their roots render outside `act`, as on a page, so what they show
-// is polled (this file never loads `testing/render`, which tells React it is inside `act`).
+// is polled (this file never loads `testing/act-environment`, which tells React it is inside
+// `act`, nor `testing/render`, which loads it).
 // `maplace` is the source entry the binding imports too, so its stores are recorded.
-const adapters = await vi.hoisted(async () => (await import("./testing/adapters")).fakeAdapters());
+const adapters = await vi.hoisted(async () =>
+  (await import("../testing/fake/adapters")).fakeAdapters(),
+);
 vi.mock("maplace/google", () => ({ createGoogleAdapter: adapters.createAdapter }));
 vi.mock("maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();

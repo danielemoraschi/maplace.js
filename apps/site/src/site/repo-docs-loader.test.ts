@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { REPO_DOCS } from "./repo-docs.ts";
 import { repoDocMarkdown, withoutTitle } from "./repo-docs-loader.ts";
 
+const doc = (id: string) => REPO_DOCS.find((each) => each.id === id) as (typeof REPO_DOCS)[number];
+
 const settings = {
   pin: { version: "1.2.3", integrityOf: (file: string) => `sha384-of-${file}` },
   blobBase: "https://github.com/o/r/blob/abc123/",
@@ -18,9 +20,6 @@ describe("withoutTitle", () => {
 });
 
 describe("repoDocMarkdown", () => {
-  const doc = (id: string) =>
-    REPO_DOCS.find((each) => each.id === id) as (typeof REPO_DOCS)[number];
-
   it("pins Getting started's CDN scripts and links Migrating to its page", () => {
     const markdown = repoDocMarkdown(doc("getting-started"), settings);
     expect(markdown).toContain('maplace@1.2.3/dist/maplace-element.iife.js"');
@@ -37,10 +36,8 @@ describe("repoDocMarkdown", () => {
 });
 
 describe("repoDocMarkdown of a reference page", () => {
-  const locations = REPO_DOCS.find(({ id }) => id === "locations") as (typeof REPO_DOCS)[number];
-
   it("reads its links relative to it: a doc to its page, any other file to the repo", () => {
-    const markdown = repoDocMarkdown(locations, settings);
+    const markdown = repoDocMarkdown(doc("locations"), settings);
     expect(markdown).toContain("](/migrating/#location-fields)");
     expect(markdown).toContain("](https://github.com/o/r/blob/abc123/docs/rfc-1.0.md#shape)");
   });

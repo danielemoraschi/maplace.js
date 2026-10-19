@@ -30,8 +30,9 @@ function allConnected(map: google.maps.Map): boolean {
 
 /**
  * Waits until a control that shows is drawn and positioned on the map: on the page, its box the
- * same for a few frames, since Google moves a control once more after drawing it. A box off the page is empty and still too, so frames off the page count
- * for nothing; a hidden control never settles. Fails, saying what it saw, past `timeoutMs`.
+ * same for a few frames, since Google moves a control once more after drawing it. A box off the
+ * page is empty and still too, so frames off the page count for nothing; a hidden control never
+ * settles. Fails, saying what it saw, past `timeoutMs`.
  */
 export async function settledOnMap(
   element: HTMLElement,

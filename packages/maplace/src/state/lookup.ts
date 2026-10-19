@@ -1,5 +1,6 @@
 import type { Location } from "../location";
-import { isSelectable, locationById, type Scope } from "../location-state";
+import { locationById } from "../location-index";
+import { isSelectable, type Scope } from "../location-state";
 
 /** Whether `value` is one of these locations, the same object under its own id. */
 export function isHeld(locations: readonly Location[], value: unknown): boolean {

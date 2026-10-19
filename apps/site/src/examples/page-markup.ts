@@ -30,11 +30,11 @@ export function attributeValue(text: string): string {
 }
 
 /**
- * The one match of `pattern`, a global regex, in `html`; `rule`, what an example must have once,
- * is the error when it has none or more.
+ * The one match of `pattern` in `html`; `rule`, what an example must have once, is the error when
+ * it has none or more. `pattern` must be global: `matchAll` throws for any other.
  */
 export function requireOnce(html: string, pattern: RegExp, rule: string): string {
-  const matches = html.match(pattern) ?? [];
+  const matches = [...html.matchAll(pattern)].map(([found]) => found);
   const [match] = matches;
   if (matches.length !== 1 || match === undefined) {
     throw new Error(`${rule}: this one has ${matches.length}`);

@@ -1,10 +1,10 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { LocationList } from "./location-list";
 import { MapControl } from "./map-control";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
-import { fakeAdapters } from "./testing/adapters";
 import { ROOT_MODES, renderInto } from "./testing/render";
 import { TOWNS } from "./testing/towns";
 

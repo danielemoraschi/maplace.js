@@ -1,12 +1,15 @@
 import type { Plugin } from "vite";
 import { VERSION_MODULES } from "../examples/example-versions.ts";
 
-const MODULE_FILES = Object.values(VERSION_MODULES).map((file) =>
+/** Each version module's file name, its dots escaped for a pattern. */
+const MODULE_FILE_PATTERNS = Object.values(VERSION_MODULES).map((file) =>
   file.replaceAll(".", String.raw`\.`),
 );
 
 /** A version module of an example, which the site imports to run. */
-const VERSION_MODULE = new RegExp(`/packages/maplace/examples/[^/]+/(${MODULE_FILES.join("|")})$`);
+const VERSION_MODULE = new RegExp(
+  `/packages/maplace/examples/[^/]+/(${MODULE_FILE_PATTERNS.join("|")})$`,
+);
 
 /**
  * Marks the examples' version modules as running when imported. They export nothing, and the

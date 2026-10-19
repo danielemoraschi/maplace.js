@@ -2,9 +2,6 @@ import type { MaplaceMapElement } from "../../element/index";
 import { importedNodes, parse, rootOf, runScript, withKey } from "./example-dom";
 import { recordErrors } from "./page-errors";
 
-// Transitional, until the Google example tests import it from page-errors.
-export { recordErrors } from "./page-errors";
-
 /** A page opened in the test document: its map, and what went wrong on it. */
 export interface OpenedPage {
   readonly map: MaplaceMapElement;

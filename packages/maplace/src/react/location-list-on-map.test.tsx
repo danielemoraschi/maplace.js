@@ -2,12 +2,12 @@
 import { describe, expect, it } from "vitest";
 import type { ControlPosition } from "../adapter";
 import { controlPositions } from "../testing/examples/behaviours/reading";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { optionsIn } from "../testing/lists";
 import { LocationList } from "./location-list";
 import { MapControlsContext } from "./map-controls";
 import { MaplaceMap } from "./maplace-map";
 import { MaplaceProvider } from "./maplace-provider";
-import { fakeAdapters } from "./testing/adapters";
 import { ROOT_MODES, renderInto } from "./testing/render";
 import { TOWNS } from "./testing/towns";
 

@@ -27,6 +27,8 @@ function listbox(settings: { fitAllLabel?: string; render?: (entry: ListEntry) =
 
 const options = () => optionsIn(document.body);
 const labels = () => options().map((option) => option.textContent);
+const textsOf = (selector: string) =>
+  Array.from(document.querySelectorAll(selector), (node) => node.textContent);
 
 describe("createListbox: structure", () => {
   it("is a named listbox with groups and options, ungrouped first", () => {
@@ -58,22 +60,19 @@ describe("createListbox: structure", () => {
 describe("createListbox: state", () => {
   it("marks the fit-all entry selected while nothing is", () => {
     listbox({ fitAllLabel: "All" });
-    const selected = document.querySelectorAll('[aria-selected="true"]');
-    expect(Array.from(selected, (option) => option.textContent)).toEqual(["All"]);
+    expect(textsOf('[aria-selected="true"]')).toEqual(["All"]);
   });
 
   it("marks the selected option, and only it", () => {
     const { view } = listbox({ fitAllLabel: "All" });
     view.renderState({ selectedId: "b", hoveredId: undefined });
-    const selected = document.querySelectorAll('[aria-selected="true"]');
-    expect(Array.from(selected, (option) => option.textContent)).toEqual(["Beta"]);
+    expect(textsOf('[aria-selected="true"]')).toEqual(["Beta"]);
   });
 
   it("makes the selected option the only tab stop", () => {
     const { view } = listbox({ fitAllLabel: "All" });
     view.renderState({ selectedId: "b", hoveredId: undefined });
-    const stops = document.querySelectorAll('[tabindex="0"]');
-    expect(Array.from(stops, (option) => option.textContent)).toEqual(["Beta"]);
+    expect(textsOf('[tabindex="0"]')).toEqual(["Beta"]);
   });
 
   it("marks no entry while a location it leaves out is selected, the first entry the tab stop", () => {

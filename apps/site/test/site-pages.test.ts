@@ -187,9 +187,9 @@ describe("what the site sends where", () => {
 
   it("once Google Maps is on, every request its pages make off the site goes to a third party the privacy page names", async () => {
     const visit = await site.visitor();
-    const { page, offsite, askedForMapsJs, context } = visit;
+    const { page, offsite, mapsJsRequests, context } = visit;
     await grantConsent(visit);
-    await expect.poll(askedForMapsJs, ASKED).toBe(true);
+    await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
     for (const map of await page.locator("section.example maplace-map").all()) {
       await map.scrollIntoViewIfNeeded();
     }

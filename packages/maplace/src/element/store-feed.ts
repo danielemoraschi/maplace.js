@@ -93,8 +93,10 @@ export class StoreFeed {
   /** `cluster` changed: misuse, unless it is back to what the store was created with. */
   checkClusterUnchanged(): void {
     if (this.#host.hasAttribute("cluster") === this.#clusters) this.#misuse.clear("cluster");
-    else
-      this.#misuse.fail("cluster", elementMisuse("cluster can't change once the map is created"));
+    else {
+      const problem = "cluster can't change once the map is created";
+      this.#misuse.fail("cluster", elementMisuse(problem));
+    }
   }
 
   /**

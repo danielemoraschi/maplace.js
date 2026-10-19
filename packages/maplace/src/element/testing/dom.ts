@@ -29,10 +29,10 @@ export function eventsOn(target: EventTarget, type: string): CustomEvent[] {
   return events;
 }
 
-/** The errors `map` dispatches as `maplace-error`, from now until the test ends. */
-export function errorsOn(map: EventTarget): MaplaceError[] {
+/** The errors dispatched on `target` (or bubbling to it) as `maplace-error`, until the test ends. */
+export function errorsOn(target: EventTarget): MaplaceError[] {
   const errors: MaplaceError[] = [];
-  listenDuringTest(map, "maplace-error", (event) => errors.push(event.detail.error));
+  listenDuringTest(target, "maplace-error", (event) => errors.push(event.detail.error));
   return errors;
 }
 
