@@ -64,7 +64,9 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     <p>
       {SITE_HOST.name} serves this site's pages. As with any website, it receives each request
       your browser makes here: your IP address, your browser's user agent and the page asked for.
-      Its <a href={SITE_HOST.privacyPolicy}>privacy policy</a> says what it does with them.
+      To tell people from automated traffic, it may set a short-lived security cookie,
+      <code>{SITE_HOST.securityCookie}</code>, which {SITE_HOST.name} keeps, not this site. Its
+      <a href={SITE_HOST.privacyPolicy}>privacy policy</a> says what it does with what it receives.
     </p>
   </section>
 

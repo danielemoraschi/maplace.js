@@ -14,7 +14,7 @@ import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
-import { PRIVACY_CONTACT_EMAIL } from "../src/site/site-owner.ts";
+import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
 import { GOOGLE_MAPS, THIRD_PARTIES, thirdPartyOf } from "../src/site/third-parties.ts";
 import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
 import { firstMap, placeholder, type Visitor, visitor as visitorOf } from "./visitor.ts";
@@ -148,6 +148,7 @@ describe("the privacy page", () => {
     const text = await page.locator("main").textContent();
     expect(text).toContain(CONSENT_KEY);
     expect(text).toContain(CONSENT_GRANTED);
+    expect(text).toContain(SITE_HOST.securityCookie);
     const contact = page.locator(`a[href="mailto:${PRIVACY_CONTACT_EMAIL}"]`);
     expect(await contact.allTextContents()).toEqual([PRIVACY_CONTACT_EMAIL]);
     await context.close();

@@ -8,6 +8,8 @@ export const PRIVACY_CONTACT_EMAIL = "maplace@dmoraschi.com";
 export const SITE_HOST = {
   name: "Cloudflare",
   privacyPolicy: "https://www.cloudflare.com/privacypolicy/",
+  /** The cookie Cloudflare may set to tell people from automated traffic. */
+  securityCookie: "__cf_bm",
 } as const;
 
 /** One `@`, a name before it and a dotted domain after it, no spaces. */
