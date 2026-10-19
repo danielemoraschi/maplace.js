@@ -1,0 +1,23 @@
+---
+import type { HostParts } from "../examples/bootstrap-fold.ts";
+import type { ExampleFile } from "../examples/example-sources.ts";
+import SourceCode from "./SourceCode.astro";
+
+interface Props {
+  parts: HostParts;
+  lang: ExampleFile["lang"];
+}
+
+const { parts, lang } = Astro.props;
+---
+
+<div class="folded-host">
+  <SourceCode code={parts.before} lang={lang} />
+  <details class="bg-code-paper text-code-ink">
+    <summary class="cursor-pointer px-5 py-1 font-code text-sm">
+      Google's bootstrap loader, with your API key: from Google's docs
+    </summary>
+    <SourceCode code={parts.loader} lang={lang} />
+  </details>
+  <SourceCode code={parts.after} lang={lang} />
+</div>

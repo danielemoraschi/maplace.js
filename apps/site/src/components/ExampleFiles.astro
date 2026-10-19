@@ -1,5 +1,7 @@
 ---
+import { foldBootstrap } from "../examples/bootstrap-fold.ts";
 import type { ExampleFile } from "../examples/example-sources.ts";
+import FoldedHost from "./FoldedHost.astro";
 import SourceCode from "./SourceCode.astro";
 
 interface Props {
@@ -10,13 +12,20 @@ interface Props {
 }
 
 const { name, files } = Astro.props;
+const shown = files.map((file) => ({ ...file, host: foldBootstrap(name, file) }));
 ---
 
 {
-  files.map(({ file, code, lang }) => (
+  shown.map(({ file, code, lang, host }) => (
     <figure class="mx-0 mt-0 mb-4">
-      <SourceCode code={code} lang={lang} />
-      <figcaption class="mx-0 mt-2 mb-0 text-xs text-muted">examples/{name}/{file}, as the tests run it</figcaption>
+      {host === undefined ? (
+        <SourceCode code={code} lang={lang} />
+      ) : (
+        <FoldedHost parts={host} lang={lang} />
+      )}
+      <figcaption class="mx-0 mt-2 mb-0 text-xs text-muted">
+        examples/{name}/{file}, as the tests run it
+      </figcaption>
     </figure>
   ))
 }

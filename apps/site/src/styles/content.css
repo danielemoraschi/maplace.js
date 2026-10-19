@@ -9,6 +9,17 @@
     line-height: 1.6;
   }
 
+  /* A host's code around its folded loader (`FoldedHost.astro`) reads as one block. */
+  .folded-host pre.astro-code {
+    padding-block: 0;
+  }
+  .folded-host > pre.astro-code:first-child {
+    padding-top: 1rem;
+  }
+  .folded-host > pre.astro-code:last-child {
+    padding-bottom: 1rem;
+  }
+
   .prose-page h2 {
     font-size: var(--text-2xl);
     margin: 2.5rem 0 0.75rem;
