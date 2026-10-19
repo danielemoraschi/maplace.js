@@ -1,6 +1,7 @@
 import type { Maplace } from "../index";
 import { type ElementList, listFromAttributes } from "./element-list";
 import { namesListView, onListViewDefined } from "./list-views";
+import { oncePerTask } from "./once-per-task";
 import type { StandingMisuse } from "./standing-misuse";
 
 /**
@@ -29,7 +30,6 @@ export function createListKeeper(
   },
 ): ListKeeper {
   let list: ElementList | undefined;
-  let rebuildQueued = false;
   let stopWaiting: (() => void) | undefined;
   const build = () => listFromAttributes(host, parts.store);
 
@@ -66,14 +66,7 @@ export function createListKeeper(
     open() {
       if (list === undefined) rebuild("retry");
     },
-    rebuildSoon() {
-      if (rebuildQueued) return;
-      rebuildQueued = true;
-      queueMicrotask(() => {
-        rebuildQueued = false;
-        rebuild("attempt");
-      });
-    },
+    rebuildSoon: oncePerTask(() => rebuild("attempt")),
     restore: () => list?.restore(),
     stop,
   };

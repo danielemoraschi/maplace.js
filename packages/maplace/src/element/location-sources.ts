@@ -1,6 +1,7 @@
 import type { Location } from "../index";
 import { elementMisuse } from "./element-error";
 import { MaplaceLocation } from "./location-element";
+import { oncePerTask } from "./once-per-task";
 import { onLocationSourceChange } from "./source-changes";
 
 const JSON_SCRIPT = 'script[type="application/json"]';
@@ -34,15 +35,7 @@ export function readLocationSource(host: Element): readonly Location[] {
  * after the map connects arrive this way too.
  */
 export function watchLocationSource(host: Element, onChange: () => void): () => void {
-  let scheduled = false;
-  const schedule = () => {
-    if (scheduled) return;
-    scheduled = true;
-    queueMicrotask(() => {
-      scheduled = false;
-      onChange();
-    });
-  };
+  const schedule = oncePerTask(onChange);
   const scriptWatch = new MutationObserver(schedule);
   const watchScripts = () => {
     scriptWatch.disconnect();

@@ -10,10 +10,17 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `route`: the `route` property;
  * - `list`: `list`, `list-position`, `fit-all-label` or `list-heading`, or a list view not defined
  *   yet (tried again when one is);
- * - `store`: an attribute the store took when it was created (`cluster`);
+ * - `cluster`: the attribute, which the store took when it was created;
  * - `sanitize`: the property, which the store also took when it was created.
  */
-export type MisuseCause = "setup" | "data" | "selection" | "route" | "list" | "store" | "sanitize";
+export type MisuseCause =
+  | "setup"
+  | "data"
+  | "selection"
+  | "route"
+  | "list"
+  | "cluster"
+  | "sanitize";
 
 /** The misuse standing on an element, which is in error while any does. */
 export interface StandingMisuse {

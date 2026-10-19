@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   adaptersMade,
   errorsOn,
+  eventsOn,
   lastAdapter,
-  MILAN,
   mapFrom,
   nextTask,
   ROME,
@@ -49,8 +49,7 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
   });
 
   it("starts with bad children in error, with a store and no locations", async () => {
-    const errors: unknown[] = [];
-    document.addEventListener("maplace-error", (event) => errors.push(event), { once: true });
+    const errors = eventsOn(document, "maplace-error");
     const map = await mapFrom(
       '<maplace-map><maplace-location location-id="a" lat="x" lng="1"></maplace-location></maplace-map>',
     );
@@ -87,26 +86,6 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     map.setAttribute("provider", "fake");
     await nextTask();
     expect(adaptersMade).toHaveLength(before + 1);
-    expect(map.loadState).toBe("loading");
-  });
-
-  it("starts on its selected-id without a maplace-selectionchange, as an input's value is no change", async () => {
-    const selected: unknown[] = [];
-    document.addEventListener("maplace-selectionchange", (event) => selected.push(event));
-    const map = await mapFrom(`<maplace-map selected-id="rome">${ROME}</maplace-map>`);
-    expect(map.maplace.getSnapshot().selectedId).toBe("rome");
-    expect(selected).toEqual([]);
-  });
-
-  it("takes a selected-id once the locations have it", async () => {
-    const map = document.createElement("maplace-map");
-    map.setAttribute("selected-id", "milan");
-    expect(map.maplace.getSnapshot().selectedId).toBeUndefined();
-    expect(map.loadState).toBe("error");
-    map.innerHTML = ROME + MILAN;
-    document.body.replaceChildren(map);
-    await nextTask();
-    expect(map.maplace.getSnapshot().selectedId).toBe("milan");
     expect(map.loadState).toBe("loading");
   });
 

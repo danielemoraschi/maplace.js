@@ -20,3 +20,22 @@ export function jsonOrRaw(written: string | null | undefined): unknown {
     return written;
   }
 }
+
+/** The attribute as a number, or as written when blank or not a number (`lat=""` is never 0). */
+export function numberOrRaw(element: Element, name: string): number | string | undefined {
+  const value = element.getAttribute(name);
+  if (value === null) return undefined;
+  const number = Number(value);
+  return value.trim() === "" || !Number.isFinite(number) ? value : number;
+}
+
+/**
+ * A present attribute with no value, or `"true"`, as true; `"false"` as false; anything else as
+ * written, for the store to name.
+ */
+export function booleanOrRaw(element: Element, name: string): boolean | string | undefined {
+  const value = element.getAttribute(name);
+  if (value === null) return undefined;
+  if (value === "" || value === "true") return true;
+  return value === "false" ? false : value;
+}

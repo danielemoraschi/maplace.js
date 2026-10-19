@@ -56,12 +56,22 @@ describe("createListbox: structure", () => {
 });
 
 describe("createListbox: state", () => {
-  it("marks the selected option, makes it the only tab stop, and the fit-all entry when none", () => {
+  it("marks the fit-all entry selected while nothing is", () => {
+    listbox({ fitAllLabel: "All" });
+    const selected = document.querySelectorAll('[aria-selected="true"]');
+    expect(Array.from(selected, (option) => option.textContent)).toEqual(["All"]);
+  });
+
+  it("marks the selected option, and only it", () => {
     const { view } = listbox({ fitAllLabel: "All" });
-    expect(options()[0]?.getAttribute("aria-selected")).toBe("true");
     view.renderState({ selectedId: "b", hoveredId: undefined });
     const selected = document.querySelectorAll('[aria-selected="true"]');
     expect(Array.from(selected, (option) => option.textContent)).toEqual(["Beta"]);
+  });
+
+  it("makes the selected option the only tab stop", () => {
+    const { view } = listbox({ fitAllLabel: "All" });
+    view.renderState({ selectedId: "b", hoveredId: undefined });
     const stops = document.querySelectorAll('[tabindex="0"]');
     expect(Array.from(stops, (option) => option.textContent)).toEqual(["Beta"]);
   });

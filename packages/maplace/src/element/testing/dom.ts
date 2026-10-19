@@ -22,11 +22,27 @@ export function elementWith(attributes: Record<string, string>): HTMLElement {
   return element;
 }
 
-/** The errors `map` dispatches as `maplace-error`, from now on. */
-export function errorsOn(map: HTMLElement): MaplaceError[] {
+/** The events of `type` dispatched on `target` (or bubbling to it), from now until the test ends. */
+export function eventsOn(target: EventTarget, type: string): CustomEvent[] {
+  const events: CustomEvent[] = [];
+  listenDuringTest(target, type, (event) => events.push(event));
+  return events;
+}
+
+/** The errors `map` dispatches as `maplace-error`, from now until the test ends. */
+export function errorsOn(map: EventTarget): MaplaceError[] {
   const errors: MaplaceError[] = [];
-  map.addEventListener("maplace-error", (event) => {
-    errors.push((event as CustomEvent<{ error: MaplaceError }>).detail.error);
-  });
+  listenDuringTest(map, "maplace-error", (event) => errors.push(event.detail.error));
   return errors;
+}
+
+/** A listener removed when the test finishes, so no test hears another's events. */
+function listenDuringTest(
+  target: EventTarget,
+  type: string,
+  listener: (event: CustomEvent) => void,
+): void {
+  const heard = (event: Event) => listener(event as CustomEvent);
+  target.addEventListener(type, heard);
+  onTestFinished(() => target.removeEventListener(type, heard));
 }

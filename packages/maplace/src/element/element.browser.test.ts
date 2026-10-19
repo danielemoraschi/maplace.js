@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 import {
   box,
   errorsOn,
@@ -17,7 +17,7 @@ describe("<maplace-map> on the page", () => {
     expect(box(map.querySelector("maplace-location"))).toEqual({ width: 0, height: 0 });
   });
 
-  it("puts its list beside the map by default, and the page's styles win", async () => {
+  it("puts its list beside the map by default, as tall as the map", async () => {
     styledPage();
     const map = await mapFrom(`<maplace-map list>${ROME}</maplace-map>`);
     const pane = map.querySelector(".maplace-map-pane");
@@ -26,16 +26,24 @@ describe("<maplace-map> on the page", () => {
       pane?.getBoundingClientRect().right ?? 0,
     );
     expect(box(list).height).toBe(300);
-    const style = document.createElement("style");
-    style.textContent = "maplace-map { display: block; }";
-    document.head.append(style);
+  });
+
+  it("lets the page's styles place its list", async () => {
+    styledPage("maplace-map { width: 600px; height: 300px; display: block; }");
+    const map = await mapFrom(`<maplace-map list>${ROME}</maplace-map>`);
+    const list = map.querySelector('[role="listbox"]');
     expect(list?.getBoundingClientRect().top).toBeGreaterThanOrEqual(300);
   });
 
-  it("puts its list on the map in a corner, and builds it again once when its attributes change", async () => {
-    const map = await mapFrom(`<maplace-map list list-position="top-left">${ROME}</maplace-map>`);
+  it("puts its list on the map in a corner", async () => {
+    await mapFrom(`<maplace-map list list-position="top-left">${ROME}</maplace-map>`);
     const container = lastAdapter().mounted?.container;
     expect(container?.querySelector('[role="listbox"]')).not.toBeNull();
+  });
+
+  it("builds its list again, where its attributes now say, when they change", async () => {
+    const map = await mapFrom(`<maplace-map list list-position="top-left">${ROME}</maplace-map>`);
+    const container = lastAdapter().mounted?.container;
     map.setAttribute("list", "select");
     await nextTask();
     expect(container?.querySelector('[role="listbox"]')).toBeNull();
@@ -43,6 +51,20 @@ describe("<maplace-map> on the page", () => {
     map.setAttribute("list-position", "outside");
     await nextTask();
     expect(map.lastElementChild?.localName).toBe("select");
+  });
+
+  it("builds its list again once for the attributes a page sets together", async () => {
+    const map = await mapFrom(`<maplace-map list>${ROME}</maplace-map>`);
+    const added: Node[] = [];
+    const watch = new MutationObserver((records) => {
+      for (const { addedNodes } of records) added.push(...addedNodes);
+    });
+    watch.observe(map, { childList: true });
+    onTestFinished(() => watch.disconnect());
+    map.setAttribute("fit-all-label", "All towns");
+    map.setAttribute("list-heading", "Towns");
+    await nextTask();
+    expect(added).toEqual([map.querySelector(".maplace-list")]);
   });
 
   it("refuses a list it can't build, until its attributes are right", async () => {

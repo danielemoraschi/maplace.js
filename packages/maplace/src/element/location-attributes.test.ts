@@ -41,29 +41,21 @@ describe("locationFromAttributes", () => {
     expect(zoomed("near")).toMatchObject({ zoom: "near" });
   });
 
-  it("reads listed as a boolean, or as written when it isn't true or false", () => {
-    const listed = (value: string) =>
-      locationFromAttributes(element({ "location-id": "a", listed: value }));
-    expect(listed("false")).toMatchObject({ listed: false });
-    expect(listed("true")).toMatchObject({ listed: true });
-    expect(listed("no")).toMatchObject({ listed: "no" });
-    expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("listed");
-  });
+  it.each(["listed", "editable"])(
+    "reads %s as a boolean, or as written when it isn't true or false",
+    (name) => {
+      const read = (value: string) =>
+        locationFromAttributes(element({ "location-id": "a", [name]: value }));
+      expect(read("true")).toMatchObject({ [name]: true });
+      expect(read("false")).toMatchObject({ [name]: false });
+      expect(read("no")).toMatchObject({ [name]: "no" });
+      expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty(name);
+    },
+  );
 
-  it("reads a present listed or editable attribute with no value as true", () => {
-    const read = (name: string, value: string) =>
-      locationFromAttributes(element({ "location-id": "a", [name]: value }));
-    expect(read("listed", "")).toMatchObject({ listed: true });
-    expect(read("editable", "")).toMatchObject({ editable: true });
-  });
-
-  it("reads editable as a boolean, or as written when it isn't true or false", () => {
-    const editable = (value: string) =>
-      locationFromAttributes(element({ "location-id": "a", editable: value }));
-    expect(editable("true")).toMatchObject({ editable: true });
-    expect(editable("false")).toMatchObject({ editable: false });
-    expect(editable("x")).toMatchObject({ editable: "x" });
-    expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("editable");
+  it.each(["listed", "editable"])("reads a present %s attribute with no value as true", (name) => {
+    const location = locationFromAttributes(element({ "location-id": "a", [name]: "" }));
+    expect(location).toMatchObject({ [name]: true });
   });
 
   it("keeps the group and the popup content given", () => {

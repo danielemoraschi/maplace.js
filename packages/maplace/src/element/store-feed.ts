@@ -42,29 +42,9 @@ export class StoreFeed {
     return this.#store;
   }
 
-  /**
-   * The store, created now if not yet, from `cluster` and `sanitize` (fixed for its life), then
-   * given the locations so far through the same path as any later ones, then `selected-id` and
-   * the route.
-   */
+  /** The store, created on first use. */
   store(): Maplace {
-    if (this.#store !== undefined) return this.#store;
-    this.#clusters = this.#host.hasAttribute("cluster");
-    const store = this.#createStore();
-    this.#store = store;
-    this.#pendingSelection = this.#host.getAttribute("selected-id") ?? undefined;
-    const { locations, route } = this.#pending;
-    this.#pending = {};
-    // Given locations are checked as given, whatever they are.
-    if (this.#locationsGiven)
-      this.#apply(() => locations as readonly Location[], this.#misuse.attempt);
-    else this.#readSource();
-    if (route !== undefined) this.giveRoute(route);
-    // Only now: the state the store starts from is no event, as an <input value> is no change.
-    forwardEvents(store, this.#host);
-    store.on("selectionChange", () => this.#selectionMade());
-    store.subscribe(this.#onStoreChange);
-    return store;
+    return this.#store ?? this.#create();
   }
 
   get sanitize(): Sanitize | undefined {
@@ -112,8 +92,23 @@ export class StoreFeed {
 
   /** `cluster` changed: misuse, unless it is back to what the store was created with. */
   checkClusterUnchanged(): void {
-    if (this.#host.hasAttribute("cluster") === this.#clusters) this.#misuse.clear("store");
-    else this.#misuse.fail("store", elementMisuse("cluster can't change once the map is created"));
+    if (this.#host.hasAttribute("cluster") === this.#clusters) this.#misuse.clear("cluster");
+    else
+      this.#misuse.fail("cluster", elementMisuse("cluster can't change once the map is created"));
+  }
+
+  /**
+   * The store from `cluster` and `sanitize`, fixed for its life, then fed what waited for it. It
+   * is listened to only then: the state the store starts from is no event, as an <input value>
+   * is no change.
+   */
+  #create(): Maplace {
+    this.#clusters = this.#host.hasAttribute("cluster");
+    const store = this.#createStore();
+    this.#store = store;
+    this.#feedPending();
+    this.#listenTo(store);
+    return store;
   }
 
   /** A store always exists: one `sanitize` the store refuses is left out, standing as misuse. */
@@ -125,6 +120,27 @@ export class StoreFeed {
     if (store !== undefined) return store;
     this.#sanitize = undefined;
     return createMaplace({ cluster });
+  }
+
+  /**
+   * `selected-id`, then the locations so far through the same path as any later ones, then the
+   * route.
+   */
+  #feedPending(): void {
+    this.#pendingSelection = this.#host.getAttribute("selected-id") ?? undefined;
+    const { locations, route } = this.#pending;
+    this.#pending = {};
+    // Given locations are checked as given, whatever they are.
+    if (this.#locationsGiven)
+      this.#apply(() => locations as readonly Location[], this.#misuse.attempt);
+    else this.#readSource();
+    if (route !== undefined) this.giveRoute(route);
+  }
+
+  #listenTo(store: Maplace): void {
+    forwardEvents(store, this.#host);
+    store.on("selectionChange", () => this.#selectionMade());
+    store.subscribe(this.#onStoreChange);
   }
 
   #readSource(): void {

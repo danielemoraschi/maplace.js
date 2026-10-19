@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { createMaplace } from "../index";
 import { mounted } from "../testing/mounted";
 import { elementEventName, forwardEvents } from "./event-forwarding";
+import { eventsOn } from "./testing/dom";
 
 describe("forwardEvents", () => {
   it("dispatches each store event as a bubbling maplace-* event with its payload", () => {
     const store = createMaplace({ locations: [{ id: "a", lat: 1, lng: 2 }] });
     const target = new EventTarget();
-    const seen: CustomEvent[] = [];
-    target.addEventListener("maplace-selectionchange", (event) => seen.push(event as CustomEvent));
+    const seen = eventsOn(target, "maplace-selectionchange");
     forwardEvents(store, target);
     store.select("a");
     expect(seen.map(({ detail, bubbles }) => ({ detail, bubbles }))).toEqual([
@@ -20,14 +20,13 @@ describe("forwardEvents", () => {
     const pin = { id: "pin", lat: 1, lng: 2, editable: true };
     const { maplace, host } = await mounted({ locations: [pin] });
     const target = new EventTarget();
-    const seen: unknown[] = [];
-    target.addEventListener("maplace-locationedit", (event) =>
-      seen.push((event as CustomEvent).detail),
-    );
+    const seen = eventsOn(target, "maplace-locationedit");
     forwardEvents(maplace, target);
     const geometry = { type: "marker", lat: 3, lng: 4 } as const;
     host.reportLocationEdit("pin", geometry);
-    expect(seen).toEqual([{ location: maplace.getSnapshot().locations[0], geometry }]);
+    expect(seen.map(({ detail }) => detail)).toEqual([
+      { location: maplace.getSnapshot().locations[0], geometry },
+    ]);
   });
 
   it("dispatches a click on the map as maplace-mapclick, before the selection it clears", async () => {

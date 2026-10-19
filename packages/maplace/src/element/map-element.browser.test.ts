@@ -1,12 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { adaptersMade, lastAdapter, MILAN, mapFrom, nextTask, ROME } from "./testing/fake-maps";
+import {
+  adaptersMade,
+  eventsOn,
+  lastAdapter,
+  MILAN,
+  mapFrom,
+  nextTask,
+  ROME,
+} from "./testing/fake-maps";
 
 describe("<maplace-map> on a provider", () => {
-  it("opens a map in its pane on connect, from its children, and shows the load state", async () => {
+  it("opens a map in its pane on connect, from its children", async () => {
+    const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
+    expect(map.maplace.getSnapshot().locations.map(({ id }) => id)).toEqual(["rome"]);
+    expect(map.contains(lastAdapter().mounted?.container ?? null)).toBe(true);
+  });
+
+  it("shows its load state as a custom state: loading, then ready", async () => {
     const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
     const adapter = lastAdapter();
-    expect(map.maplace.getSnapshot().locations.map(({ id }) => id)).toEqual(["rome"]);
-    expect(map.contains(adapter.mounted?.container ?? null)).toBe(true);
     expect([map.loadState, map.matches(":state(loading)")]).toEqual(["loading", true]);
     await adapter.finishMount();
     await map.maplace.whenReady();
@@ -147,11 +159,27 @@ describe("<maplace-map> on a provider", () => {
 
   it("dispatches the store's events as bubbling maplace-* events", async () => {
     const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
-    const selected: unknown[] = [];
-    document.addEventListener("maplace-selectionchange", (event) =>
-      selected.push((event as CustomEvent).detail),
-    );
+    const selected = eventsOn(document, "maplace-selectionchange");
     map.maplace.select("rome");
-    expect(selected).toEqual([{ id: "rome" }]);
+    expect(selected.map(({ detail }) => detail)).toEqual([{ id: "rome" }]);
+  });
+
+  it("starts on its selected-id without a maplace-selectionchange, as an input's value is no change", async () => {
+    const selected = eventsOn(document, "maplace-selectionchange");
+    const map = await mapFrom(`<maplace-map selected-id="rome">${ROME}</maplace-map>`);
+    expect(map.maplace.getSnapshot().selectedId).toBe("rome");
+    expect(selected).toEqual([]);
+  });
+
+  it("takes a selected-id once the locations have it", async () => {
+    const map = document.createElement("maplace-map");
+    map.setAttribute("selected-id", "milan");
+    expect(map.maplace.getSnapshot().selectedId).toBeUndefined();
+    expect(map.loadState).toBe("error");
+    map.innerHTML = ROME + MILAN;
+    document.body.replaceChildren(map);
+    await nextTask();
+    expect(map.maplace.getSnapshot().selectedId).toBe("milan");
+    expect(map.loadState).toBe("loading");
   });
 });

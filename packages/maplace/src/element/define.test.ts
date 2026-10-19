@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { defineElements } from "./define";
 import { MaplaceMap } from "./map-element";
@@ -23,8 +24,7 @@ describe("defineElements", () => {
   });
 
   it("names this copy by the package's version", () => {
-    // Tests run from the repository's root.
-    const manifest = readFileSync("packages/maplace/package.json", "utf8");
+    const manifest = readFileSync(join(import.meta.dirname, "../../package.json"), "utf8");
     const { version } = JSON.parse(manifest) as { version: string };
     expect(MAPLACE_VERSION).toBe(version);
   });

@@ -9,6 +9,7 @@ import { defineListView } from "./list-views";
 import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
 import { createMapSettingsWatch } from "./map-settings-watch";
+import { reapplyOwnProperties } from "./own-properties";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
 import { type Sanitize, StoreFeed } from "./store-feed";
@@ -27,7 +28,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   readonly #internals = this.attachInternals();
   readonly #misuse = createStandingMisuse(this, () => this.#showLoadState());
   readonly #pane = paneIn(this.ownerDocument);
-  readonly #setupRetry = createSetupRetry(this, () => this.#start());
+  readonly #setupRetry = createSetupRetry(this, () => this.#openSession());
   readonly #settingsWatch = createMapSettingsWatch(this, () => this.#reopenAtCamera());
   readonly #ownNodesWatch = new MutationObserver(() => this.#keepOwnNodes());
   readonly #feed = new StoreFeed(this, this.#misuse, () => this.#showLoadState());
@@ -95,7 +96,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   attributeChangedCallback(name: string, previous: string | null, value: string | null): void {
     if (previous === value || this.#feed.created === undefined) return;
     if (name === "cluster") this.#feed.checkClusterUnchanged();
-    else if (name === "provider") this.#restart();
+    else if (name === "provider") this.#reopenSession();
     else if (isListAttribute(name)) this.#lists?.rebuildSoon();
   }
 
@@ -119,14 +120,14 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     });
     this.#lists.open();
     this.#camera ??= createCameraKeeper(store);
-    this.#start();
+    this.#openSession();
   }
 
   #isHeld(): boolean {
     return this.hasAttribute("hold") && !this.#released;
   }
 
-  #start(): void {
+  #openSession(): void {
     if (!this.isConnected || this.#isHeld() || this.#session !== undefined) return;
     const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#lists?.list };
     // Before attaching: an adapter may report where it opened while it mounts.
@@ -154,15 +155,15 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#lists?.restore();
   }
 
-  #restart(): void {
+  #reopenSession(): void {
     this.#closeSession();
-    this.#start();
+    this.#openSession();
   }
 
   /** Opens the map again for new map settings, where the map was: the store keeps the rest. */
   #reopenAtCamera(): void {
     this.#camera?.keep();
-    this.#restart();
+    this.#reopenSession();
   }
 
   #closeSession(): void {
@@ -183,18 +184,4 @@ function paneIn(document: Document): HTMLElement {
   const pane = document.createElement("div");
   pane.className = PANE_CLASS;
   return pane;
-}
-
-/**
- * Properties a page set before the element was defined are own properties hiding the class's
- * setters: they go through the setters now.
- */
-function reapplyOwnProperties(element: MaplaceMap): void {
-  const properties = element as unknown as Record<string, unknown>;
-  for (const name of ["locations", "route", "sanitize"]) {
-    if (Object.getOwnPropertyDescriptor(element, name) === undefined) continue;
-    const value = properties[name];
-    delete properties[name];
-    properties[name] = value;
-  }
 }

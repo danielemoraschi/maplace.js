@@ -10,9 +10,10 @@ const locations: Location[] = [
   { id: "x", lat: 0, lng: 0, title: "Unlisted", listed: false },
 ];
 
-function mounted() {
+/** A select of `locations` on the page, nothing selected, with a fit-all entry unless left out. */
+function mounted({ fitAllLabel }: { fitAllLabel: string | undefined } = { fitAllLabel: "All" }) {
   const actions = recordingActions();
-  const view = createNativeSelect(actions, { label: "Shops", fitAllLabel: "All" });
+  const view = createNativeSelect(actions, { label: "Shops", fitAllLabel });
   document.body.replaceChildren(view.element);
   view.renderStructure(structureOf(locations));
   view.renderState({ selectedId: undefined, hoveredId: undefined });
@@ -65,19 +66,15 @@ describe("createNativeSelect", () => {
   });
 
   it("shows no option for a location it leaves out without fit all too", () => {
-    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
-    view.renderStructure(structureOf(locations));
+    const { view, select } = mounted({ fitAllLabel: undefined });
     view.renderState({ selectedId: "x", hoveredId: undefined });
-    expect((view.element as HTMLSelectElement).selectedIndex).toBe(-1);
+    expect(select.selectedIndex).toBe(-1);
   });
 
   it("shows a blank placeholder while nothing is selected when there is no fit all", () => {
-    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
-    view.renderStructure(structureOf(locations));
-    view.renderState({ selectedId: undefined, hoveredId: undefined });
-    const select = view.element as HTMLSelectElement;
+    const { select, shown } = mounted({ fitAllLabel: undefined });
     expect(Array.from(select.options, (o) => o.textContent)).toEqual(["", "Beta", "Alpha"]);
-    expect(select.options[select.selectedIndex]?.textContent).toBe("");
+    expect(shown()?.textContent).toBe("");
   });
 
   it("never hovers, and a hover change touches no option", () => {
@@ -94,7 +91,7 @@ describe("createNativeSelect", () => {
   });
 
   it("is hidden while there is nothing to list, as the listbox is", () => {
-    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
+    const { view } = mounted({ fitAllLabel: undefined });
     view.renderStructure(structureOf([]));
     expect(view.element.hidden).toBe(true);
     view.renderStructure(structureOf(locations));

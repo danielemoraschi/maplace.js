@@ -28,7 +28,7 @@ export async function mapFrom(html: string): Promise<MaplaceMapElement> {
 }
 
 export { nextTask } from "../../adapter-kit/chunks";
-export { box, errorsOn, styledPage } from "./dom";
+export { box, errorsOn, eventsOn, styledPage } from "./dom";
 
 export const ROME =
   '<maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome"></maplace-location>';

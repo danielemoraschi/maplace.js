@@ -50,7 +50,7 @@ export function groupElement(heading: string): MadeGroup {
 }
 
 /** What tells a listbox's options apart from the rest of its content. */
-export interface ListboxOptions {
+interface OptionLookup {
   readonly listbox: HTMLElement;
   readonly fitAll: HTMLElement | undefined;
   readonly sections: { locationOf(option: Element): unknown };
@@ -60,7 +60,7 @@ export interface ListboxOptions {
  * The option (or fit-all entry) `target` is in, found through the view's own map, never a selector.
  */
 export function optionAt(
-  { listbox, fitAll, sections }: ListboxOptions,
+  { listbox, fitAll, sections }: OptionLookup,
   target: EventTarget | null,
 ): HTMLElement | undefined {
   for (
