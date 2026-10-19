@@ -13,20 +13,38 @@ export type ViewSender = (next: Snapshot, previous: Snapshot | undefined) => voi
 
 /**
  * A view is sent when it changes. A fit-all with nothing shown sends nothing and waits: it fits
- * once locations are shown, so a store attached before its data arrives still fits it.
+ * once locations are shown, so a store attached before its data arrives still fits it. The first
+ * view sent is the map's opening one (`openingView`), whenever it comes.
  */
 export function createViewSender(adapter: Adapter): ViewSender {
   let fitPending = false;
+  let opened = false;
   return (next, previous) => {
     const shownChanged = next.locations !== previous?.locations || next.filter !== previous.filter;
     if (next.view === previous?.view && !(fitPending && shownChanged)) return;
-    const view = resolveView(next.view, next);
+    const resolved = resolveView(next.view, next);
+    const view = opened ? resolved : openingView(resolved, next);
     fitPending = view === undefined;
-    if (view !== undefined) runSafely(() => adapter.setView(view));
+    if (view === undefined) return;
+    opened = true;
+    runSafely(() => adapter.setView(view));
   };
 }
 
 type FitAllView = Extract<View, { readonly kind: "fit-all" }>;
+
+/**
+ * The map's first view: a marker still without a zoom (none asked, none its own) is fitted, as a
+ * fit of one place is, where any later selection pans to it; a map has no zoom of its own yet.
+ */
+function openingView(
+  view: ResolvedView | undefined,
+  { locations }: Scope,
+): ResolvedView | undefined {
+  if (view?.kind !== "location" || view.zoom !== undefined) return view;
+  const marker = locationById(locations, view.id);
+  return marker === undefined ? view : locationFitted(view, marker);
+}
 
 /**
  * The view an adapter is sent, resolved once, when asked for: `fit-all` becomes a box around the
@@ -58,10 +76,10 @@ function locationShown(view: LocationView, { locations }: Scope): ResolvedView {
   const location = locationById(locations, view.id);
   if (view.zoom !== undefined || location === undefined) return view;
   if (location.zoom !== undefined) return locationView(view.id, location.zoom);
-  return isMarker(location) ? view : shapeFitted(view, location);
+  return isMarker(location) ? view : locationFitted(view, location);
 }
 
-function shapeFitted(view: LocationView, shape: Location): ResolvedView {
-  const bounds = boundsAround([shape]);
+function locationFitted(view: LocationView, location: Location): ResolvedView {
+  const bounds = boundsAround([location]);
   return bounds ? boundsView(bounds) : view;
 }

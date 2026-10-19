@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { initialSnapshot } from "../state/initial";
+import { locationView } from "../state/views";
 import type { Snapshot } from "../store";
 import { createFakeAdapter } from "../testing/fake-adapter";
 import type { View } from "../viewport";
@@ -103,6 +104,33 @@ describe("createViewSender", () => {
     send(first, undefined);
     send({ ...first, selectedId: "a" }, first);
     expect(adapter.callsOf("setView")).toHaveLength(1);
+  });
+
+  it("opens on a selected marker with no zoom as on a fit of it, then pans to the next", () => {
+    const adapter = createFakeAdapter();
+    const send = createViewSender(adapter);
+    const opening: Snapshot = {
+      ...initialSnapshot({ locations }),
+      view: locationView("a", undefined),
+    };
+    send(opening, undefined);
+    send({ ...opening, view: locationView("b", undefined) }, opening);
+    expect(adapter.callsOf("setView").map((call) => call.view)).toEqual([
+      { kind: "fit-bounds", bounds: { south: 10, west: 10, north: 10, east: 10 }, padding: 40 },
+      { kind: "location", id: "b", zoom: undefined },
+    ]);
+  });
+
+  it("fits a selected marker whose locations arrive after the map opened, as its first view", () => {
+    const adapter = createFakeAdapter();
+    const send = createViewSender(adapter);
+    const empty: Snapshot = initialSnapshot(undefined);
+    const loaded: Snapshot = { ...empty, locations, view: locationView("a", undefined) };
+    send(empty, undefined);
+    send(loaded, empty);
+    expect(adapter.callsOf("setView").map((call) => call.view)).toEqual([
+      { kind: "fit-bounds", bounds: { south: 10, west: 10, north: 10, east: 10 }, padding: 40 },
+    ]);
   });
 
   it("holds a fit-all with nothing shown until locations are shown", () => {

@@ -30,8 +30,8 @@ function Tabs() {
   return (
     <MaplaceProvider locations={cities} defaultSelectedId="rome">
       <LocationList />
-      <MaplaceMap createAdapter={createAdapter} className="map" />
       <TabDetails />
+      <MaplaceMap createAdapter={createAdapter} className="map" />
     </MaplaceProvider>
   );
 }
