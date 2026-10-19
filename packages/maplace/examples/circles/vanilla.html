@@ -7,9 +7,14 @@
   });
 </script>
 <style>
-  #circles-vanilla-map { height: 24rem; }
+  #circles-vanilla-map-and-list { display: flex; }
+  #circles-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #circles-vanilla-list { display: contents; }
+  #circles-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
 </style>
-<div id="circles-vanilla-map"></div>
-<div id="circles-vanilla-list"></div>
+<div id="circles-vanilla-map-and-list">
+  <div id="circles-vanilla-map"></div>
+  <div id="circles-vanilla-list"></div>
+</div>
 <output id="circles-vanilla-radius">Radius: 8.0 km</output>
 <script type="module" src="./vanilla.ts"></script>

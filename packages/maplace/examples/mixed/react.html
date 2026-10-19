@@ -7,7 +7,9 @@
   });
 </script>
 <style>
-  #mixed-react-root .map { height: 24rem; }
+  #mixed-react-root .map-and-list { display: flex; }
+  #mixed-react-root .map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #mixed-react-root [role="listbox"] { flex: 0 1 16rem; }
 </style>
 <div id="mixed-react-root"></div>
 <script type="module" src="./react.tsx"></script>

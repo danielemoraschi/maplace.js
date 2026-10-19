@@ -7,7 +7,9 @@
   });
 </script>
 <style>
-  #route-react-root .map { height: 24rem; }
+  #route-react-root .map-and-list { display: flex; }
+  #route-react-root .map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #route-react-root [role="listbox"] { flex: 0 1 16rem; }
 </style>
 <div id="route-react-root"></div>
 <script type="module" src="./react.tsx"></script>

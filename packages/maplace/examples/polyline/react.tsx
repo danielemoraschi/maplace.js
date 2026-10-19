@@ -32,8 +32,10 @@ const trail: Location[] = [
 function Polyline() {
   return (
     <MaplaceProvider locations={trail}>
-      <MaplaceMap createAdapter={createAdapter} className="map" />
-      <LocationList />
+      <div className="map-and-list">
+        <MaplaceMap createAdapter={createAdapter} className="map" />
+        <LocationList />
+      </div>
     </MaplaceProvider>
   );
 }

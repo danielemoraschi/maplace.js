@@ -48,8 +48,10 @@ function Route() {
       route={ROUTE}
       onRouteChange={({ result }) => setResult(result)}
     >
-      <MaplaceMap createAdapter={createAdapter} className="map" />
-      <LocationList />
+      <div className="map-and-list">
+        <MaplaceMap createAdapter={createAdapter} className="map" />
+        <LocationList />
+      </div>
       <div>
         {result?.legs.map((leg) => (
           <LegDirections key={`${leg.from}-${leg.to}`} leg={leg} />

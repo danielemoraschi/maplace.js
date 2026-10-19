@@ -1,7 +1,7 @@
 import type { Location, Route } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
-import { StrictMode, useEffect, useState } from "react";
+import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
@@ -45,15 +45,20 @@ function Mixed() {
   return (
     <MaplaceProvider locations={shown.locations} route={shown.route}>
       <p>
+        {/* A space after each button, as between buttons written in HTML. */}
         {GROUPS.map((letter) => (
-          <button key={letter} type="button" onClick={() => setGroup(letter)}>
-            Group {letter.toUpperCase()}
-          </button>
+          <Fragment key={letter}>
+            <button type="button" onClick={() => setGroup(letter)}>
+              Group {letter.toUpperCase()}
+            </button>{" "}
+          </Fragment>
         ))}
       </p>
       <FitAllOnSwap locations={shown.locations} />
-      <MaplaceMap createAdapter={createAdapter} className="map" />
-      <LocationList />
+      <div className="map-and-list">
+        <MaplaceMap createAdapter={createAdapter} className="map" />
+        <LocationList />
+      </div>
     </MaplaceProvider>
   );
 }

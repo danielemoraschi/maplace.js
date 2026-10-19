@@ -7,10 +7,15 @@
   });
 </script>
 <style>
-  #route-vanilla-map { height: 24rem; }
+  #route-vanilla-map-and-list { display: flex; }
+  #route-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #route-vanilla-list { display: contents; }
+  #route-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
 </style>
-<div id="route-vanilla-map"></div>
-<div id="route-vanilla-list"></div>
+<div id="route-vanilla-map-and-list">
+  <div id="route-vanilla-map"></div>
+  <div id="route-vanilla-list"></div>
+</div>
 <div id="route-vanilla-directions"></div>
 <p>Total: <output id="route-vanilla-distance"></output></p>
 <script type="module" src="./vanilla.ts"></script>

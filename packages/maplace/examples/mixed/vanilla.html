@@ -7,7 +7,10 @@
   });
 </script>
 <style>
-  #mixed-vanilla-map { height: 24rem; }
+  #mixed-vanilla-map-and-list { display: flex; }
+  #mixed-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #mixed-vanilla-list { display: contents; }
+  #mixed-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
 </style>
 <p id="mixed-vanilla-groups">
   <button type="button" value="a">Group A</button>
@@ -16,6 +19,8 @@
   <button type="button" value="d">Group D</button>
   <button type="button" value="e">Group E</button>
 </p>
-<div id="mixed-vanilla-map"></div>
-<div id="mixed-vanilla-list"></div>
+<div id="mixed-vanilla-map-and-list">
+  <div id="mixed-vanilla-map"></div>
+  <div id="mixed-vanilla-list"></div>
+</div>
 <script type="module" src="./vanilla.ts"></script>

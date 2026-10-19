@@ -71,8 +71,10 @@ function Circles() {
       onLocationEdit={({ location, geometry }) => showRadius(location.id, geometry)}
       onLocationChange={({ location }) => showRadius(location.id, location)}
     >
-      <MaplaceMap createAdapter={createAdapter} className="map" popupContent={popupContent} />
-      <LocationList />
+      <div className="map-and-list">
+        <MaplaceMap createAdapter={createAdapter} className="map" popupContent={popupContent} />
+        <LocationList />
+      </div>
       <output>Radius: {(radius / 1000).toFixed(1)} km</output>
     </MaplaceProvider>
   );
