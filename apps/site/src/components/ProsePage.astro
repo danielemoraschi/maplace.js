@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<Base title={`${title} · maplace`} description={description}>
+  <article class="prose-page">
+    <h1>{title}</h1>
+    <p class="lede"><slot name="lede" /></p>
+    <slot />
+  </article>
+</Base>
+
+<style>
+  .prose-page {
+    max-width: 48rem;
+    padding-top: 2rem;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    margin: 0 0 1rem;
+  }
+  .lede {
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+  .prose-page :global(h2) {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--rule);
+  }
+</style>

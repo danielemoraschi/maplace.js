@@ -1,0 +1,78 @@
+---
+import ProsePage from "../components/ProsePage.astro";
+import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
+import { PRIVACY_PAGE } from "../site/footer-pages.ts";
+import {
+  contactAddress,
+  PRIVACY_CONTACT_EMAIL,
+  SITE_HOST,
+  SITE_MAINTAINER,
+} from "../site/site-owner.ts";
+import { GOOGLE_MAPS } from "../site/third-parties.ts";
+
+const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
+---
+
+<ProsePage
+  title={PRIVACY_PAGE.label}
+  description="What maplace's site sends where, and what it keeps in your browser."
+>
+  <Fragment slot="lede">What this site sends where, and what it keeps in your browser.</Fragment>
+
+  <section aria-labelledby="in-your-browser">
+    <h2 id="in-your-browser">In your browser</h2>
+    <p>
+      This site's pages set no cookies of their own. Once you choose to load Google Maps, the
+      site keeps one entry in your browser's local storage, <code>{CONSENT_KEY}</code> set to
+      <code>{CONSENT_GRANTED}</code>, so later visits show the maps without asking again. Turning
+      Google Maps off removes it. If your browser keeps no site data, your choice lasts for the
+      page you made it on.
+    </p>
+  </section>
+
+  <section aria-labelledby={GOOGLE_MAPS.id}>
+    <h2 id={GOOGLE_MAPS.id}>{GOOGLE_MAPS.name}</h2>
+    <p>
+      Every map on this site waits behind a placeholder, and nothing is asked of Google until you
+      choose “Load Google Maps” on one of them or turn Google Maps on in the footer. From then on,
+      each map loads as it scrolls into view, on this visit and later ones, until you turn Google
+      Maps off. Pages without a map never load Google Maps.
+    </p>
+    <p>
+      Once a map loads, your browser fetches Google's Maps JavaScript API, then the map's tiles,
+      images and fonts as you look around. With each request Google receives your IP address,
+      what your browser says about itself (its user agent), the address of the page the map is
+      on, and which part of the map you're viewing. The examples with a route also ask Google's
+      Routes service for directions between their own stops. The site never asks for your
+      location.
+    </p>
+    <p>
+      Google may use its own cookies under its terms, and its Privacy Policy says what it does
+      with what it receives:
+    </p>
+    <ul>
+      {GOOGLE_MAPS.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
+    </ul>
+    <p>
+      The Google Maps switch in the footer of every page turns the maps off: it forgets your
+      choice and reloads the page, since a loaded map can't be removed from an open page.
+    </p>
+  </section>
+
+  <section aria-labelledby="host">
+    <h2 id="host">Who serves this site</h2>
+    <p>
+      {SITE_HOST.name} serves this site's pages. As with any website, it receives each request
+      your browser makes here: your IP address, your browser's user agent and the page asked for.
+      Its <a href={SITE_HOST.privacyPolicy}>privacy policy</a> says what it does with them.
+    </p>
+  </section>
+
+  <section aria-labelledby="contact">
+    <h2 id="contact">Who runs it</h2>
+    <p>
+      maplace and this site are maintained by {SITE_MAINTAINER}. Questions about this page go to
+      <a href={`mailto:${contact}`}>{contact}</a>.
+    </p>
+  </section>
+</ProsePage>

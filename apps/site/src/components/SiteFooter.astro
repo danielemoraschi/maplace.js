@@ -1,5 +1,8 @@
 ---
+import { FOOTER_PAGES } from "../site/footer-pages.ts";
 import { REPOSITORY_URL } from "../site/repo-docs.ts";
+
+const here = Astro.url.pathname;
 ---
 
 <footer class="site-footer">
@@ -10,6 +13,13 @@ import { REPOSITORY_URL } from "../site/repo-docs.ts";
         <span class="when-off">Google Maps: off · turn on</span>
         <span class="when-on">Google Maps: on · turn off</span>
       </button>
+      {
+        FOOTER_PAGES.map(({ route, label }) => (
+          <a href={route} aria-current={here === route ? "page" : undefined}>
+            {label}
+          </a>
+        ))
+      }
       <a href={REPOSITORY_URL}>GitHub</a>
     </span>
   </div>
@@ -33,6 +43,9 @@ import { REPOSITORY_URL } from "../site/repo-docs.ts";
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1.25rem;
+  }
+  .links a[aria-current="page"] {
+    text-decoration-color: var(--accent);
   }
   :global(html[data-maps="on"]) .when-off,
   :global(html:not([data-maps="on"])) .when-on {

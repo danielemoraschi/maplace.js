@@ -1,7 +1,12 @@
+---
+import { PRIVACY_PAGE } from "../site/footer-pages.ts";
+import { GOOGLE_MAPS } from "../site/third-parties.ts";
+---
+
 <div class="consent">
   <p>
     These maps come from Google, which sees your IP address. They stay off until you say so, once
-    for the whole site.
+    for the whole site. <a href={`${PRIVACY_PAGE.route}#${GOOGLE_MAPS.id}`}>What loading sends to Google</a>
   </p>
   <button type="button" class="button" data-maps-grant>Load Google Maps</button>
 </div>

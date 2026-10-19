@@ -4,10 +4,13 @@ import { promisify } from "node:util";
 import { type PreviewServer, preview } from "vite";
 import { ROOT } from "../../../scripts/build/package.ts";
 import { newTempDir, removeTempDir } from "../../../scripts/build/temp-dir.ts";
+import { withLock } from "./build-lock.ts";
 
 const SITE = resolve(ROOT, "apps/site");
 const ASTRO = resolve(ROOT, "node_modules/.bin/astro");
 const run = promisify(execFile);
+/** Held while the site builds: test files build it one at a time (`withLock`). */
+const BUILD_LOCK = resolve(ROOT, ".vitest/site-build.lock");
 
 /** The site, built into a temp dir and served there. */
 export interface BuiltSite {
@@ -22,7 +25,7 @@ export interface BuiltSite {
 export async function buildAndServeSite(env: Record<string, string>): Promise<BuiltSite> {
   const dir = newTempDir("site", join(ROOT, ".vitest"));
   try {
-    await buildSite(dir, env);
+    await withLock(BUILD_LOCK, () => buildSite(dir, env));
     const server = await serve(dir);
     return {
       url: server.resolvedUrls?.local[0] ?? "",

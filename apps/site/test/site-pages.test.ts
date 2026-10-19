@@ -1,0 +1,224 @@
+import { setTimeout as pause } from "node:timers/promises";
+import { type Browser, chromium, type Page } from "playwright";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
+import { packageManifest, readRootFile } from "../../../scripts/build/package.ts";
+import {
+  CHANGELOG_FILE,
+  isListLine,
+  isVersionHeading,
+  listLines,
+  untilNextHeading,
+} from "../../../scripts/checks/changelog-lines.ts";
+import { repositoryPageFor } from "../../../scripts/release/repository.ts";
+import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
+import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
+import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
+import { PRIVACY_CONTACT_EMAIL } from "../src/site/site-owner.ts";
+import { GOOGLE_MAPS, THIRD_PARTIES, thirdPartyOf } from "../src/site/third-parties.ts";
+import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
+import { firstMap, placeholder, type Visitor, visitor as visitorOf } from "./visitor.ts";
+
+/**
+ * Long enough for a map scrolled into view to be released and ask for Maps JS, were it to: what a
+ * test waits before saying nothing was asked.
+ */
+const SETTLE_MS = 500;
+
+/** How long a released map may take to ask for Maps JS, on a busy machine. */
+const ASKED = { timeout: 10_000 };
+
+/** The site's pages that show no map. */
+const PAGES_WITHOUT_MAPS = [
+  PRIVACY_PAGE.route,
+  CHANGELOG_PAGE.route,
+  ...REPO_DOCS.map(({ id }) => docRoute(id)),
+];
+
+let site: BuiltSite;
+let browser: Browser;
+
+beforeAll(async () => {
+  [site, browser] = await Promise.all([
+    buildAndServeSite({ SITE_MAPS_KEY: "not-a-real-key" }),
+    chromium.launch(),
+  ]);
+}, 120_000);
+
+afterAll(async () => {
+  await browser?.close();
+  await site?.close();
+});
+
+/** A fresh visitor on the site's page at `route`. */
+async function openPage(route: string): Promise<Visitor> {
+  const visit = await visitorOf(browser, site.url);
+  await visit.page.goto(new URL(route, site.url).href);
+  return visit;
+}
+
+const article = (page: Page) => page.locator("article");
+
+/** The footer's links: each one's text, where it goes and whether it is the page shown. */
+const footerLinks = (page: Page) =>
+  page
+    .getByRole("contentinfo")
+    .locator("a")
+    .evaluateAll((links) =>
+      links.map((link) => ({
+        label: link.textContent,
+        href: link.getAttribute("href"),
+        current: link.getAttribute("aria-current"),
+      })),
+    );
+
+describe("the changelog page", () => {
+  const changelog = readRootFile(CHANGELOG_FILE);
+
+  it("shows every line of CHANGELOG.md under its version, dated", async () => {
+    const { page, context } = await openPage(CHANGELOG_PAGE.route);
+    const lines = changelog.split("\n");
+    const unreleased = untilNextHeading(lines).some(isListLine) ? ["Unreleased"] : [];
+    const versions = lines.filter(isVersionHeading).map((line) => line.slice(3));
+    expect(await article(page).locator("time[datetime]").count()).toBe(listLines(changelog).length);
+    expect(await article(page).locator("h2").allTextContents()).toEqual([
+      ...unreleased,
+      ...versions,
+    ]);
+    await context.close();
+  }, 30_000);
+
+  it("links its issues to GitHub and its repo links to the site or the repo", async () => {
+    const { page, context } = await openPage(CHANGELOG_PAGE.route);
+    const issue = `${repositoryPageFor(packageManifest())}/issues/147`;
+    expect(await article(page).locator(`a[href="${issue}"]`).count()).toBe(1);
+    const hrefs = await article(page)
+      .locator("a")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href") ?? ""));
+    expect(hrefs.filter((href) => !/^(?:https:|\/|#)/.test(href))).toEqual([]);
+    await context.close();
+  }, 30_000);
+});
+
+describe("the footer", () => {
+  const routes = [
+    "/",
+    ...FOOTER_PAGES.map(({ route }) => route),
+    ...REPO_DOCS.map(({ id }) => docRoute(id)),
+  ];
+
+  it("links Privacy and Changelog from every page, marking the one shown", async () => {
+    for (const route of routes) {
+      const { page, context } = await openPage(route);
+      const expected = FOOTER_PAGES.map(({ route: href, label }) => ({
+        label,
+        href,
+        current: href === route ? "page" : null,
+      }));
+      expect(await footerLinks(page), route).toEqual(expect.arrayContaining(expected));
+      await context.close();
+    }
+  }, 60_000);
+
+  it("reaches each page it links", async () => {
+    for (const { route, label } of FOOTER_PAGES) {
+      const { page, context } = await openPage("/");
+      await page.getByRole("contentinfo").getByRole("link", { name: label, exact: true }).click();
+      await page.waitForURL(new URL(route, site.url).href);
+      expect(await page.locator("h1").textContent()).toBe(label);
+      await context.close();
+    }
+  }, 30_000);
+});
+
+describe("the privacy page", () => {
+  it("has a section for every third party the site's pages contact", async () => {
+    const { page, context } = await openPage(PRIVACY_PAGE.route);
+    for (const { id, name, terms } of THIRD_PARTIES) {
+      expect(await page.locator(`h2#${id}`).allTextContents()).toEqual([name]);
+      for (const { url } of terms) {
+        expect(await page.locator(`a[href="${url}"]`).count(), url).toBe(1);
+      }
+    }
+    await context.close();
+  }, 30_000);
+
+  it("says what the site keeps in the browser, and how to reach who runs it", async () => {
+    const { page, context } = await openPage(PRIVACY_PAGE.route);
+    const text = await page.locator("main").textContent();
+    expect(text).toContain(CONSENT_KEY);
+    expect(text).toContain(CONSENT_GRANTED);
+    const contact = page.locator(`a[href="mailto:${PRIVACY_CONTACT_EMAIL}"]`);
+    expect(await contact.allTextContents()).toEqual([PRIVACY_CONTACT_EMAIL]);
+    await context.close();
+  }, 30_000);
+});
+
+describe("the consent placeholder", () => {
+  it("links each map's placeholder to what loading it sends to Google", async () => {
+    const { page, context } = await openPage("/");
+    const placeholders = await page.getByRole("button", { name: "Load Google Maps" }).count();
+    const href = `${PRIVACY_PAGE.route}#${GOOGLE_MAPS.id}`;
+    expect(placeholders).toBeGreaterThan(0);
+    expect(await page.locator(`a[href="${href}"]`).count()).toBe(placeholders);
+    await context.close();
+  }, 30_000);
+});
+
+describe("what the site sends where", () => {
+  /**
+   * Opens every page without maps at once in `visit`'s context, as long as a map would take: each
+   * page's `<html data-maps>`, `on` once the visitor has consented.
+   */
+  async function visitPagesWithoutMaps({ context }: Visitor): Promise<(string | null)[]> {
+    const pages = await Promise.all(
+      PAGES_WITHOUT_MAPS.map(async (route) => {
+        const page = await context.newPage();
+        await page.goto(new URL(route, site.url).href);
+        return page;
+      }),
+    );
+    await pause(SETTLE_MS);
+    const maps = await Promise.all(
+      pages.map((page) => page.locator("html").getAttribute("data-maps")),
+    );
+    await Promise.all(pages.map((page) => page.close()));
+    return maps;
+  }
+
+  /** The same `<html data-maps>` on every page without maps. */
+  const onEveryPage = (setting: string) => PAGES_WITHOUT_MAPS.map(() => setting);
+
+  async function grantConsent({ page }: Visitor): Promise<void> {
+    await page.goto(site.url);
+    await firstMap(page).scrollIntoViewIfNeeded();
+    await placeholder(page).click();
+  }
+
+  it("a page without maps asks nothing off the site, before consent or after", async () => {
+    const visit = await visitorOf(browser, site.url);
+    expect(await visitPagesWithoutMaps(visit)).toEqual(onEveryPage("off"));
+    expect(visit.offsite()).toEqual([]);
+    await grantConsent(visit);
+    await visit.page.close();
+    const before = visit.offsite().length;
+    expect(await visitPagesWithoutMaps(visit)).toEqual(onEveryPage("on"));
+    expect(visit.offsite().slice(before)).toEqual([]);
+    await visit.context.close();
+  }, 60_000);
+
+  it("once Google Maps is on, every request its pages make off the site goes to a third party the privacy page names", async () => {
+    const visit = await visitorOf(browser, site.url);
+    const { page, offsite, context } = visit;
+    await grantConsent(visit);
+    await expect
+      .poll(() => offsite().some((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)), ASKED)
+      .toBe(true);
+    for (const map of await page.locator("section.example maplace-map").all()) {
+      await map.scrollIntoViewIfNeeded();
+    }
+    await pause(SETTLE_MS);
+    expect(offsite().filter((url) => thirdPartyOf(url) === undefined)).toEqual([]);
+    await context.close();
+  }, 30_000);
+});
