@@ -27,7 +27,7 @@ The store, the list view, the adapter contract and the types. Side-effect-free.
 | `MaplaceError`, `MaplaceErrorDetails` | class, type | [Errors](#errors) |
 | `ErrorCode`, `MisuseCode`, `RuntimeCode` | types | [Misuse codes](#misuse-codes), [runtime failures](#runtime-failures) |
 | `Capability` | type | [Capabilities](#capabilities) |
-| `ControlPosition` | type | A corner of the map: [`<MapControl>`](react.md#mapcontrol) |
+| `ControlPosition` | type | A corner of the map: [`<MapControl>`](react.md#mapcontrol), [`<LocationList>`](react.md#locationlist)'s `position` |
 | `Adapter`, `AdapterHost`, `MountContext`, `LocationDiff`, `PresentationState`, `Drawable`, `ResolvedPopupOptions`, `ResolvedView` | types | The adapter contract, for a new provider: [RFC §3 Shape](../rfc-1.0.md#shape) |
 
 ## `maplace/google`

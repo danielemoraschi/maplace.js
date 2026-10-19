@@ -61,6 +61,9 @@ export const instance = <MaplaceMap createAdapter={adapter} />;
 // @ts-expect-error an entry's content is React content, rendered by a function
 export const staticContent = <LocationList>{"Shops"}</LocationList>;
 export const headed = <LocationList heading="Choose a location:" />;
+export const onTheMap = <LocationList position="top-right" />;
+// @ts-expect-error a position is one of the map's corners
+export const notACorner = <LocationList position="middle" />;
 // @ts-expect-error a heading is text
 export const headingNode = <LocationList heading={<h2>Shops</h2>} />;
 

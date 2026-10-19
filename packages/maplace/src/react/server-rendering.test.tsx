@@ -19,6 +19,7 @@ describe("maplace/react on a server", () => {
           <MapControl position="top-right">
             <LocationList as="select" />
           </MapControl>
+          <LocationList position="top-left" />
         </MaplaceMap>
         <LocationList>{({ location }) => location.id}</LocationList>
       </MaplaceProvider>,

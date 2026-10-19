@@ -75,7 +75,7 @@ Renders a div you size and attaches a fresh adapter to it on mount, detaching on
 | `className` | Size the map through it: a map fills its container |
 | `popupContent` | `(location) => ReactNode`: a popup's content as React content |
 | `markerIcon` | `(location, state) => ReactNode`: a marker's icon as React content |
-| `children` | What goes on the map: `<MapControl>`s, rendered beside the map's div, never in it |
+| `children` | What goes on the map: `<MapControl>`s and `<LocationList position>`s, rendered beside the map's div, never in it |
 
 `popupContent` and `markerIcon` render through a portal into one host per location (an icon's host carries `data-selected` and `data-hovered`, as core icons do), with the provider's context, keeping their state. Returning nothing (`null`, `undefined`, a boolean) leaves the location's own `content` or `icon`. Whether either is given is read on mount. Content that throws is an `invalid-input` error event naming the field, and renders nothing.
 
@@ -91,10 +91,11 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `label` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | A visible heading above the entries |
 | `children` | For `as: "list"`, a function rendering an entry's content: plain content, since the entry itself is the option |
+| `position` | A corner, inside a `<MaplaceMap>`: the list itself goes on the map there while the map is attached, as the element's `list-position`, so its panel hides with it and its entries scroll under its heading. Without a `<MaplaceMap>` it is misuse |
 
 ## `<MapControl>`
 
-Inside a `<MaplaceMap>`, puts its children on the map in a corner, through the adapter's `mountControl`, while the map is attached. They keep the provider's context, so a `<LocationList>` goes on the map this way. Outside a `<MaplaceMap>` it is misuse; on a server it renders nothing.
+Inside a `<MaplaceMap>`, puts its children on the map in a corner, through the adapter's `mountControl`, while the map is attached. They keep the provider's context, and show as the page gives them: for the page's own content. Maplace's list goes on the map with [`<LocationList position>`](#locationlist). Outside a `<MaplaceMap>` it is misuse; on a server it renders nothing.
 
 | Prop | What |
 |---|---|

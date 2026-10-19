@@ -1,6 +1,6 @@
 import type { LatLng, Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { LocationList, MapControl, MaplaceMap, MaplaceProvider } from "maplace/react";
+import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -67,9 +67,7 @@ function Markers() {
         popupContent={popupContent}
         markerIcon={markerIcon}
       >
-        <MapControl position="top-right">
-          <LocationList heading="Choose a location:" />
-        </MapControl>
+        <LocationList heading="Choose a location:" position="top-right" />
       </MaplaceMap>
     </MaplaceProvider>
   );

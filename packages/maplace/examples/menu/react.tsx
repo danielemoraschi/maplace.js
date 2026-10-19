@@ -1,6 +1,6 @@
 import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { LocationList, MapControl, MaplaceMap, MaplaceProvider } from "maplace/react";
+import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -25,9 +25,7 @@ function Menu() {
         North only
       </label>
       <MaplaceMap createAdapter={createAdapter} className="map">
-        <MapControl position="top-right">
-          <LocationList as="select" fitAllLabel="All cities" />
-        </MapControl>
+        <LocationList as="select" fitAllLabel="All cities" position="top-right" />
       </MaplaceMap>
     </MaplaceProvider>
   );

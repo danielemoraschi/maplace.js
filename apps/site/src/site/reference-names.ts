@@ -186,6 +186,7 @@ export const REACT_PROPS = {
     label: true,
     heading: true,
     children: true,
+    position: true,
   }),
   control: everyName<keyof MapControlProps>({ position: true, children: true }),
 } as const;

@@ -19,7 +19,10 @@ export interface MaplaceMapProps<Data = unknown> extends ContentRenders<Data> {
   readonly createAdapter: () => Adapter;
   /** Size the map through it: a map fills its container. */
   readonly className?: string | undefined;
-  /** What goes on the map: `<MapControl>`s. Rendered beside the map's div, never in it. */
+  /**
+   * What goes on the map: `<MapControl>`s and `<LocationList position>`s. Rendered beside the
+   * map's div, never in it.
+   */
   readonly children?: ReactNode;
 }
 
@@ -27,8 +30,8 @@ export interface MaplaceMapProps<Data = unknown> extends ContentRenders<Data> {
  * Attaches a fresh adapter on mount and detaches on unmount, so StrictMode and `<Activity>`
  * just work. The adapter owns what is inside the div, so it never has React children; React
  * content for popups and markers (`popupContent`, `markerIcon`, whether given read on mount)
- * goes there through portals, and its children (`<MapControl>`s) onto the map through the
- * adapter's `mountControl`.
+ * goes there through portals, and its children (`<MapControl>`s, `<LocationList position>`s) onto
+ * the map through the adapter's `mountControl`.
  */
 export function MaplaceMap<Data>(props: MaplaceMapProps<Data>): ReactNode {
   const store = useMaplace<Data>();

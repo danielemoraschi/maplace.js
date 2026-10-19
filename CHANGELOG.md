@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-19 Added `<LocationList position>`: maplace's list on the map from React, its panel hiding with an empty list and its entries scrolling under its heading
 - 2026-10-19 Fixed a map opening on a selected marker without a zoom: it showed the whole world; it now opens on that place, fitted as one place is (centred at zoom 15 at most)
 - 2026-10-19 Changed the tabs example: drawn as tabs, the chosen tab's details in a panel right below them and above the map, in all three versions
 - 2026-10-19 Changed the tabs example to start on its first place with its details shown and the chosen tab drawn as a tab, and the custom-list example to sit top right

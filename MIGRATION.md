@@ -87,7 +87,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | 0.2 option | 1.0 |
 |---|---|
 | `map_div` | the container passed to `attach`, or `<maplace-map>` itself |
-| `controls_div`, `controls_on_map`, `controls_position` | element `list-position` (a corner, or `outside`); in code, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
+| `controls_div`, `controls_on_map`, `controls_position` | element `list-position` (a corner, or `outside`), React's `<LocationList position>`; in code, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
 | `generate_controls`, `force_generate_controls` | a list exists only when asked for, at any number of locations |
 | `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'`, element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
 | `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win (on a Google map, the panel is `.maplace-control`) |
