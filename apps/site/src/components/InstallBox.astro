@@ -5,50 +5,22 @@ import { docRoute } from "../site/repo-docs.ts";
 const entry = await getEntry("install", "element");
 if (entry === undefined) throw new Error("the install collection has no element entry");
 const { version, snippet } = entry.data;
+const HEADING = "mx-0 mt-0 mb-2 text-xl";
+const COMMAND = "mx-0 mt-0 mb-2 overflow-x-auto border-2 border-ink px-4 py-3 break-all whitespace-pre-wrap";
 ---
 
-<div class="install">
+<div
+  class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-6 border-t-3 border-ink pt-4 max-[720px]:grid-cols-[minmax(0,1fr)]"
+>
   <div>
-    <h2>Install</h2>
-    <pre><code id="npm-install">npm install maplace</code></pre>
+    <h2 class={HEADING}>Install</h2>
+    <pre class={COMMAND}><code id="npm-install">npm install maplace</code></pre>
     <button type="button" class="button-plain" data-copy="npm-install">Copy</button>
   </div>
   <div>
-    <h2>Or pin the CDN script</h2>
-    <pre><code id="pinned-script">{snippet}</code></pre>
+    <h2 class={HEADING}>Or pin the CDN script</h2>
+    <pre class={COMMAND}><code id="pinned-script">{snippet}</code></pre>
     <button type="button" class="button-plain" data-copy="pinned-script">Copy</button>
-    <p>maplace {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
+    <p class="mx-0 mt-2 mb-0 text-sm text-muted">maplace {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
   </div>
 </div>
-
-<style>
-  .install {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    gap: 1.5rem;
-    border-top: var(--rule);
-    padding-top: 1rem;
-  }
-  @media (max-width: 720px) {
-    .install {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-  h2 {
-    margin: 0 0 0.5rem;
-    font-size: 1.25rem;
-  }
-  pre {
-    margin: 0 0 0.5rem;
-    padding: 0.75rem 1rem;
-    overflow-x: auto;
-    border: var(--hairline);
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-  p {
-    margin: 0.5rem 0 0;
-    font-size: 0.875rem;
-    color: var(--muted);
-  }
-</style>

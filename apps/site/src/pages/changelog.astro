@@ -19,22 +19,5 @@ const { Content } = await render(changelog);
     Every change to maplace a reader would notice, newest first, with the issue it closed if any.
     Written in <a href={changelog.data.source}>CHANGELOG.md</a> with each change.
   </Fragment>
-  <div class="entries"><Content /></div>
+  <div class="changelog-entries"><Content /></div>
 </ProsePage>
-
-<style>
-  .entries :global(ul) {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .entries :global(li) {
-    margin: 0 0 0.875rem;
-  }
-  .entries :global(time) {
-    margin-right: 0.5rem;
-    color: var(--muted);
-    font-family: var(--font-code);
-    font-size: 0.875rem;
-  }
-</style>

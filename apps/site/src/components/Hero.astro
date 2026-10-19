@@ -3,62 +3,22 @@ import quickStart from "../../../../packages/maplace/examples/quick-start/page.h
 import SourceCode from "./SourceCode.astro";
 ---
 
-<div class="hero">
-  <svg class="route" viewBox="0 0 320 180" aria-hidden="true">
+<div class="relative pt-10 pb-4">
+  <svg
+    class="absolute top-0 right-0 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[640px]:hidden"
+    viewBox="0 0 320 180"
+    aria-hidden="true"
+  >
     <path d="M0 48 H170 L214 92 H320" />
-    <path class="ink" d="M90 180 V126 L134 82 H320" />
-    <circle cx="170" cy="48" r="11" />
+    <path class="stroke-ink" d="M90 180 V126 L134 82 H320" />
+    <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
   </svg>
-  <h1>Places in.<br />Map and list,<br />in sync.</h1>
-  <p class="pitch">
+  <h1 class="relative m-0 text-hero leading-[0.95]">Places in.<br />Map and list,<br />in sync.</h1>
+  <p class="relative mt-4 mb-6 max-w-[34rem] text-lg">
     Click a marker and the list follows. Pick a place in the list and the map pans to it. One
     element, no build step.
   </p>
-  <div class="snippet">
+  <div class="overflow-x-auto">
     <SourceCode code={quickStart} lang="html" />
   </div>
 </div>
-
-<style>
-  .hero {
-    position: relative;
-    padding-block: 2.5rem 1rem;
-  }
-  .route {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: min(42vw, 20rem);
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 12;
-  }
-  @media (max-width: 640px) {
-    .route {
-      display: none;
-    }
-  }
-  .route .ink {
-    stroke: var(--ink);
-  }
-  .route circle {
-    fill: var(--paper);
-    stroke: var(--ink);
-    stroke-width: 5;
-  }
-  h1 {
-    position: relative;
-    margin: 0;
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
-    line-height: 0.95;
-  }
-  .pitch {
-    position: relative;
-    max-width: 34rem;
-    margin: 1rem 0 1.5rem;
-    font-size: 1.125rem;
-  }
-  .snippet {
-    overflow-x: auto;
-  }
-</style>

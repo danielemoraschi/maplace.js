@@ -14,20 +14,9 @@ const { name, files } = Astro.props;
 
 {
   files.map(({ file, code, lang }) => (
-    <figure class="file">
+    <figure class="mx-0 mt-0 mb-4">
       <SourceCode code={code} lang={lang} />
-      <figcaption>examples/{name}/{file}, as the tests run it</figcaption>
+      <figcaption class="mx-0 mt-2 mb-0 text-xs text-muted">examples/{name}/{file}, as the tests run it</figcaption>
     </figure>
   ))
 }
-
-<style>
-  .file {
-    margin: 0 0 1rem;
-  }
-  figcaption {
-    margin: 0.5rem 0 0;
-    font-size: 0.8125rem;
-    color: var(--muted);
-  }
-</style>

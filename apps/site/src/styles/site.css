@@ -1,0 +1,17 @@
+/*
+ * The site's styles (D26). Tailwind's theme and utilities, without its preflight: preflight would
+ * strip the browser's defaults from every node, an example's own included (route's numbered list,
+ * mixed's buttons), and the site shows an example as the page a reader copies does.
+ */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "./theme.css";
+@import "./utilities.css";
+@import "./base.css";
+@import "./code.css";
+@import "./content.css";
+
+/* Only the site's markup: a word in a module or an example (`hidden`, `container`) is no class. */
+@source "../**/*.astro";

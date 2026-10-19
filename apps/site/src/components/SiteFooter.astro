@@ -5,17 +5,25 @@ import { REPOSITORY_URL } from "../site/repo-docs.ts";
 const here = Astro.url.pathname;
 ---
 
-<footer class="site-footer">
-  <div class="wrap bar">
+<footer class="mt-16 bg-ink text-sm text-paper">
+  <div class="wrap flex flex-wrap justify-between gap-x-6 gap-y-2 py-4">
     <span>maplace · MIT licence</span>
-    <span class="links">
-      <button type="button" class="toggle" data-maps-toggle>
-        <span class="when-off">Google Maps: off · turn on</span>
-        <span class="when-on">Google Maps: on · turn off</span>
+    <span class="flex flex-wrap gap-x-5 gap-y-2">
+      <button
+        type="button"
+        class="border-0 bg-transparent p-0 underline decoration-2 underline-offset-3"
+        data-maps-toggle
+      >
+        <span class="in-data-[maps=on]:hidden">Google Maps: off · turn on</span>
+        <span class="not-in-data-[maps=on]:hidden">Google Maps: on · turn off</span>
       </button>
       {
         FOOTER_PAGES.map(({ route, label }) => (
-          <a href={route} aria-current={here === route ? "page" : undefined}>
+          <a
+            href={route}
+            aria-current={here === route ? "page" : undefined}
+            class="aria-[current=page]:decoration-accent"
+          >
             {label}
           </a>
         ))
@@ -24,39 +32,3 @@ const here = Astro.url.pathname;
     </span>
   </div>
 </footer>
-
-<style>
-  .site-footer {
-    margin-top: 4rem;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.875rem;
-  }
-  .bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    justify-content: space-between;
-    padding-block: 1rem;
-  }
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-  }
-  .links a[aria-current="page"] {
-    text-decoration-color: var(--accent);
-  }
-  :global(html[data-maps="on"]) .when-off,
-  :global(html:not([data-maps="on"])) .when-on {
-    display: none;
-  }
-  .toggle {
-    border: 0;
-    padding: 0;
-    background: none;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
-</style>

@@ -9,11 +9,14 @@ interface Props {
 const { name } = Astro.props;
 ---
 
-<fieldset class="version-switch" data-version-switch={name}>
-  <legend>Run the map from</legend>
+<fieldset
+  class="mx-0 mt-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm"
+  data-version-switch={name}
+>
+  <legend class="float-left p-0 text-muted">Run the map from</legend>
   {
     exampleCode(name).map(({ kind, label }, index) => (
-      <label>
+      <label class="inline-flex items-center gap-1">
         <input
           type="radio"
           name={`${name}-version`}
@@ -26,26 +29,3 @@ const { name } = Astro.props;
     ))
   }
 </fieldset>
-
-<style>
-  .version-switch {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 0.875rem;
-    margin: 0 0 0.5rem;
-    padding: 0;
-    border: 0;
-    font-size: 0.875rem;
-  }
-  legend {
-    float: left;
-    padding: 0;
-    color: var(--muted);
-  }
-  label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-</style>

@@ -1,0 +1,16 @@
+/* Shiki's css-variables theme (`SourceCode.astro`, the docs' Markdown): code is ink on dark. */
+@layer base {
+  :root {
+    --astro-code-foreground: var(--color-code-ink);
+    --astro-code-background: var(--color-code-paper);
+    --astro-code-token-constant: #9ecbff;
+    --astro-code-token-string: #f2c879;
+    --astro-code-token-comment: #8a8a82;
+    --astro-code-token-keyword: #ff8a80;
+    --astro-code-token-parameter: #f2f2ec;
+    --astro-code-token-function: #ffffff;
+    --astro-code-token-string-expression: #f2c879;
+    --astro-code-token-punctuation: #b5b5ad;
+    --astro-code-token-link: #9ecbff;
+  }
+}

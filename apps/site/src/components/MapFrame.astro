@@ -10,13 +10,16 @@ interface Props {
 
 const { name } = Astro.props;
 const versions = liveVersions(name, SITE_MAPS_KEY);
+const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-1 text-sm";
 ---
 
-<div class="map-frame" data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
+<div
+  class="map-frame relative flex h-[clamp(18rem,50vh,28rem)] flex-col border-2 border-ink bg-wash"
+  data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
   {
     versions.map(({ kind, markup }) => (
       <div
-        class="version"
+        class="version flex min-h-0 flex-[1_1_0] flex-col"
         data-live-version={kind}
         data-example={name}
         data-live-page={kind === "html" ? "" : undefined}
@@ -27,73 +30,7 @@ const versions = liveVersions(name, SITE_MAPS_KEY);
     ))
   }
   {callsSave(name) && <p class="strip" data-saved hidden />}
-  <p class="map-note loading">Loading the map…</p>
-  <p class="map-note failed" data-map-failure>The map couldn't load.</p>
+  <p class={`map-note loading ${NOTE}`}>Loading the map…</p>
+  <p class={`map-note failed ${NOTE}`} data-map-failure>The map couldn't load.</p>
   <ConsentPlaceholder />
 </div>
-
-<style>
-  .map-frame {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: clamp(18rem, 50vh, 28rem);
-    border: var(--hairline);
-    background: var(--wash);
-  }
-  /* A box, not `display: contents`: a version starts once it comes into view. */
-  .version,
-  .version > :global([id$="-react-root"]) {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0;
-    min-height: 0;
-  }
-  .version[hidden] {
-    display: none;
-  }
-  /* The version's map fills what its other nodes leave: a zero basis wins over a host's height. */
-  .version > :global(maplace-map),
-  .version > :global([id$="-vanilla-map"]),
-  .version :global([id$="-react-root"] > .map) {
-    flex: 1 1 0;
-    min-height: 0;
-  }
-  /* The version's own nodes, laid out in the frame: tabs' details, a list, route's distance. */
-  .strip,
-  .version > :global(:not(maplace-map, script, style, [id$="-vanilla-map"], [id$="-react-root"])),
-  .version :global([id$="-react-root"] > :not(.map)) {
-    flex: none;
-    max-height: 8rem;
-    overflow: auto;
-    margin: 0;
-    padding: 0.5rem 0.75rem;
-    border-top: var(--hairline);
-    background: var(--paper);
-    font-size: 0.875rem;
-  }
-  .version > :global(:empty:not(maplace-map, [id$="-vanilla-map"], [id$="-react-root"])),
-  .version :global([id$="-react-root"] > :empty:not(.map)) {
-    display: none;
-  }
-  .map-note {
-    display: none;
-    position: absolute;
-    inset: auto auto 0.75rem 0.75rem;
-    margin: 0;
-    padding: 0.25rem 0.5rem;
-    background: var(--paper);
-    border: var(--hairline);
-    font-size: 0.875rem;
-  }
-  /* Notes for the version shown only. */
-  .map-frame:has(.version[data-failed]:not([hidden])) .failed,
-  .map-frame:has(.version[data-starting]:not([hidden])) .loading {
-    display: block;
-  }
-  .map-frame.script-failed:has([data-live-version="html"]:not([hidden])) .failed,
-  .map-frame:has(.version:not([hidden]) :global(maplace-map:state(error))) .failed,
-  .map-frame:has(.version:not([hidden]) :global(maplace-map:state(loading))) .loading {
-    display: block;
-  }
-</style>

@@ -2,53 +2,27 @@
 import { docRoute, REPO_DOCS, REPOSITORY_URL } from "../site/repo-docs.ts";
 
 const here = Astro.url.pathname;
+const NAV_LINK = "border-b-3 border-transparent no-underline aria-[current=page]:border-accent";
 ---
 
-<header class="site-header">
-  <div class="wrap bar">
-    <a class="brand" href="/">maplace</a>
-    <nav aria-label="Documentation">
+<header class="border-b-3 border-ink">
+  <div class="wrap flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 py-3.5">
+    <a class="font-display text-2xl leading-none font-extrabold tracking-[-0.03em] no-underline" href="/">
+      maplace
+    </a>
+    <nav aria-label="Documentation" class="flex flex-wrap gap-x-5 gap-y-1 text-md font-medium">
       {
         REPO_DOCS.map(({ id, label }) => (
-          <a href={docRoute(id)} aria-current={here === docRoute(id) ? "page" : undefined}>
+          <a
+            href={docRoute(id)}
+            aria-current={here === docRoute(id) ? "page" : undefined}
+            class={NAV_LINK}
+          >
             {label}
           </a>
         ))
       }
-      <a href={REPOSITORY_URL}>GitHub</a>
+      <a href={REPOSITORY_URL} class={NAV_LINK}>GitHub</a>
     </nav>
   </div>
 </header>
-
-<style>
-  .site-header {
-    border-bottom: var(--rule);
-  }
-  .bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    align-items: baseline;
-    justify-content: space-between;
-    padding-block: 0.875rem;
-  }
-  .brand {
-    font: 800 1.5rem/1 var(--font-display);
-    letter-spacing: -0.03em;
-    text-decoration: none;
-  }
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1.25rem;
-    font-weight: 500;
-    font-size: 0.9375rem;
-  }
-  nav a {
-    text-decoration: none;
-    border-bottom: 3px solid transparent;
-  }
-  nav a[aria-current="page"] {
-    border-bottom-color: var(--accent);
-  }
-</style>

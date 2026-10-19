@@ -1,0 +1,115 @@
+/*
+ * Markup the site doesn't write, so no utility can reach it: Shiki's code blocks, rendered
+ * Markdown, and the nodes of an example's version in its frame.
+ */
+@layer components {
+  pre.astro-code {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .prose-page h2 {
+    font-size: var(--text-2xl);
+    margin: 2.5rem 0 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 3px solid var(--color-ink);
+  }
+
+  .doc-content {
+    & h2 {
+      font-size: var(--text-3xl);
+      margin: 2.5rem 0 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 3px solid var(--color-ink);
+    }
+    & h3 {
+      font-size: var(--text-xl);
+      margin: 2rem 0 0.5rem;
+    }
+    & pre {
+      overflow-x: auto;
+    }
+    & table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-md);
+      display: block;
+      overflow-x: auto;
+    }
+    & th,
+    & td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.5rem 0.75rem 0.5rem 0;
+      border-bottom: 1px solid var(--color-muted);
+    }
+    & th {
+      border-bottom: 2px solid var(--color-ink);
+    }
+  }
+
+  .changelog-entries {
+    & ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      margin: 0 0 0.875rem;
+    }
+    & time {
+      margin-right: 0.5rem;
+      color: var(--color-muted);
+      font-family: var(--font-code);
+      font-size: var(--text-sm);
+    }
+  }
+
+  /* A box, not `display: contents`: a version starts once it comes into view. */
+  .version > [id$="-react-root"] {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  /* The version's map fills what its other nodes leave: a zero basis wins over a host's height. */
+  .version > maplace-map,
+  .version > [id$="-vanilla-map"],
+  .version [id$="-react-root"] > .map {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  /* The version's own nodes, laid out in the frame: tabs' details, a list, route's distance. */
+  .map-frame .strip,
+  .version > :not(maplace-map, script, style, [id$="-vanilla-map"], [id$="-react-root"]),
+  .version [id$="-react-root"] > :not(.map) {
+    flex: none;
+    max-height: 8rem;
+    overflow: auto;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-top: 2px solid var(--color-ink);
+    background: var(--color-paper);
+    font-size: var(--text-sm);
+  }
+  .version > :empty:not(maplace-map, [id$="-vanilla-map"], [id$="-react-root"]),
+  .version [id$="-react-root"] > :empty:not(.map) {
+    display: none;
+  }
+
+  /* Notes for the version shown only. */
+  .map-note {
+    display: none;
+  }
+  .map-frame:has(.version[data-failed]:not([hidden])) .failed,
+  .map-frame:has(.version[data-starting]:not([hidden])) .loading,
+  .map-frame.script-failed:has([data-live-version="html"]:not([hidden])) .failed {
+    display: block;
+  }
+  /* Apart: a browser without `:state()` drops the whole rule. */
+  .map-frame:has(.version:not([hidden]) maplace-map:state(error)) .failed,
+  .map-frame:has(.version:not([hidden]) maplace-map:state(loading)) .loading {
+    display: block;
+  }
+}

@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 import { defaultClientConditions } from "vite";
 import { exampleModulesRun } from "./src/site/example-modules-run.ts";
@@ -18,7 +19,7 @@ export default defineConfig({
   markdown: { shikiConfig: { theme: "css-variables" } },
   // maplace resolved to its source, as the tests and the examples' type-check do.
   vite: {
-    plugins: [exampleModulesRun()],
+    plugins: [tailwindcss(), exampleModulesRun()],
     resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
     // The Google adapter imports the clusterer on demand, and a React version React when it
     // starts: found that late, the dev server re-optimizes and refuses the import it had already

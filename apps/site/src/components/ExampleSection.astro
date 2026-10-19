@@ -22,20 +22,29 @@ const tabs = [
 const panel = (tab: string) => `example-${name}-${tab}`;
 ---
 
-<section class="example" id={name} aria-labelledby={`${name}-title`}>
-  <div class="head">
-    <h2 id={`${name}-title`}>
-      <span class="number">{String(number).padStart(2, "0")}</span>
+<section
+  class="example mt-12 border-t-3 border-ink pt-4"
+  id={name}
+  aria-labelledby={`${name}-title`}
+>
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h2 class="m-0 text-3xl" id={`${name}-title`}>
+      <span class="mr-1 text-accent">{String(number).padStart(2, "0")}</span>
       {title}
     </h2>
-    <p>{summary}</p>
+    <p class="m-0 text-muted">{summary}</p>
   </div>
-  <div class="tabs" role="tablist" aria-label={`${title}: the map and its code`}>
+  <div
+    class="mx-0 mt-4 mb-3 flex flex-wrap"
+    role="tablist"
+    aria-label={`${title}: the map and its code`}
+  >
     {
       tabs.map(({ tab, label }, index) => (
         <button
           type="button"
           role="tab"
+          class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper"
           id={`${panel(tab)}-tab`}
           aria-controls={panel(tab)}
           aria-selected={index === 0 ? "true" : "false"}
@@ -58,45 +67,3 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     ))
   }
 </section>
-
-<style>
-  .example {
-    border-top: var(--rule);
-    padding-top: 1rem;
-    margin-top: 3rem;
-  }
-  .head {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1rem;
-    align-items: baseline;
-  }
-  h2 {
-    margin: 0;
-    font-size: 1.75rem;
-  }
-  .number {
-    color: var(--accent);
-    margin-right: 0.25rem;
-  }
-  .head p {
-    margin: 0;
-    color: var(--muted);
-  }
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 1rem 0 0.75rem;
-  }
-  [role="tab"] {
-    border: 0;
-    background: none;
-    padding: 0.25rem 0.875rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-  }
-  [role="tab"][aria-selected="true"] {
-    background: var(--ink);
-    color: var(--paper);
-  }
-</style>
