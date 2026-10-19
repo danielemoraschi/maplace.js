@@ -1,7 +1,10 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Adapter, ControlPosition } from "../adapter";
+import { adoptStyles } from "../adopted-styles";
 import { googlePosition } from "./control-positions";
+import { CONTROL_CLASS, CONTROL_STYLES } from "./control-styles";
 import type { MapPart, MountedMap } from "./mounted-map";
+import type { ColorScheme } from "./options";
 
 /** The adapter's controls: a part on the open map, `mountControl`, and `release` on destroy. */
 export interface Controls extends Pick<Adapter, "mountControl"> {
@@ -13,20 +16,21 @@ export interface Controls extends Pick<Adapter, "mountControl"> {
   release(): void;
 }
 
-/** A page's node on the map: the element Google holds it in, and its corner. */
+/** A page's node on the map: the panel Google holds it in, and its corner. */
 interface MountedControl {
-  readonly holder: HTMLElement;
+  readonly panel: HTMLElement;
   readonly position: ControlPosition;
 }
 
 /**
  * `Adapter.mountControl` on Google. Google writes its layout on what it is given (inline
  * `position`, `left`, `top`, and leaves some behind when it lets go, on Maps JS 3.66), so it is
- * given an element of maplace's own holding the page's node, never the node. Taking every control
- * off as the map closes matters for the page's own map, which stays on the page. Google keeps a
- * control's keys, wheel and drags from the map by itself (measured on 3.66), so nothing here does.
+ * given an element of maplace's own holding the page's node, never the node: the control's panel
+ * (`control-styles.ts`), in the map's colour scheme. Taking every control off as the map closes
+ * matters for the page's own map, which stays on the page. Google keeps a control's keys, wheel
+ * and drags from the map by itself (measured on 3.66), so nothing here does.
  */
-export function createControls(): Controls {
+export function createControls(colorScheme: ColorScheme = "light"): Controls {
   const byNode = new Map<HTMLElement, MountedControl>();
   let openMap: MountedMap | undefined;
   let destroyed = false;
@@ -39,13 +43,16 @@ export function createControls(): Controls {
   }
 
   function place(control: MountedControl): void {
-    corner(control)?.push(control.holder);
+    const held = corner(control);
+    if (held === undefined) return;
+    adoptStyles(control.panel.ownerDocument, CONTROL_STYLES);
+    held.push(control.panel);
   }
 
   function takeOff(control: MountedControl, from = openMap): void {
     const held = corner(control, from);
     if (held === undefined) return;
-    const index = held.getArray().indexOf(control.holder);
+    const index = held.getArray().indexOf(control.panel);
     if (index >= 0) held.removeAt(index);
   }
 
@@ -75,7 +82,7 @@ export function createControls(): Controls {
       if (destroyed) return () => {};
       const previous = byNode.get(node);
       if (previous) takeOff(previous);
-      const control = { holder: holderOf(node), position };
+      const control = { panel: panelFor(node, colorScheme), position };
       byNode.set(node, control);
       place(control);
       return () => remove(node, control);
@@ -83,9 +90,11 @@ export function createControls(): Controls {
   };
 }
 
-/** A new element of maplace's own holding `node`, which Google may lay out as it likes. */
-function holderOf(node: HTMLElement): HTMLElement {
-  const holder = node.ownerDocument.createElement("div");
-  holder.append(node);
-  return holder;
+/** The panel Google lays out as it likes: an element of maplace's own holding `node` unchanged. */
+function panelFor(node: HTMLElement, colorScheme: ColorScheme): HTMLElement {
+  const panel = node.ownerDocument.createElement("div");
+  panel.className = CONTROL_CLASS;
+  panel.dataset.colorScheme = colorScheme;
+  panel.append(node);
+  return panel;
 }

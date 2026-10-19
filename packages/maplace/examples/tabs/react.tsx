@@ -1,7 +1,7 @@
 import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
-import { StrictMode, useState } from "react";
+import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
+import { StrictMode, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
@@ -14,16 +14,24 @@ const notes: Readonly<Record<string, string>> = {
   milan: "Finance and fashion.",
 };
 
+const noteOf = (id: string | undefined) => (id === undefined ? "" : (notes[id] ?? ""));
+
+/** The chosen place's note, read from the store: the selection it starts on, and every one after. */
+function TabDetails() {
+  const maplace = useMaplace();
+  const selectedId = useSyncExternalStore(
+    maplace.subscribe,
+    () => maplace.getSnapshot().selectedId,
+  );
+  return <aside>{noteOf(selectedId)}</aside>;
+}
+
 function Tabs() {
-  const [note, setNote] = useState("");
   return (
-    <MaplaceProvider
-      locations={cities}
-      onSelectionChange={({ id }) => setNote(id === undefined ? "" : (notes[id] ?? ""))}
-    >
+    <MaplaceProvider locations={cities} defaultSelectedId="rome">
       <LocationList />
       <MaplaceMap createAdapter={createAdapter} className="map" />
-      <aside>{note}</aside>
+      <TabDetails />
     </MaplaceProvider>
   );
 }

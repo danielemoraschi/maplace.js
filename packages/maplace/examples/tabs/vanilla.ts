@@ -6,6 +6,7 @@ const notes: Readonly<Record<string, string>> = {
   milan: "Finance and fashion.",
 };
 const maplace = createMaplace({
+  selectedId: "rome",
   locations: [
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
     { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
@@ -17,6 +18,8 @@ const list = document.getElementById("tabs-vanilla-list") as HTMLElement;
 list.append(createListView(maplace).element);
 
 const details = document.getElementById("tabs-vanilla-details") as HTMLElement;
-maplace.on("selectionChange", ({ id }) => {
+function showNote(id: string | undefined): void {
   details.textContent = id === undefined ? "" : (notes[id] ?? "");
-});
+}
+showNote(maplace.getSnapshot().selectedId);
+maplace.on("selectionChange", ({ id }) => showNote(id));

@@ -1,8 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { adoptStyles } from "./adopted-styles";
-
-const cssOf = (sheet: CSSStyleSheet) => Array.from(sheet.cssRules, (rule) => rule.cssText).join("");
+import { cssTextOf } from "./testing/selectors";
 
 describe("adoptStyles", () => {
   it("adds a stylesheet before the page's own, so a page's rule wins", () => {
@@ -10,7 +9,7 @@ describe("adoptStyles", () => {
     page.replaceSync("b { color: red; }");
     document.adoptedStyleSheets = [page];
     adoptStyles(document, ":where(a) { color: blue; }");
-    expect(document.adoptedStyleSheets.map(cssOf)).toEqual([
+    expect(document.adoptedStyleSheets.map(cssTextOf)).toEqual([
       expect.stringContaining(":where(a)"),
       expect.stringContaining("b {"),
     ]);

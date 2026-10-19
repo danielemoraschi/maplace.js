@@ -49,6 +49,11 @@ describe("a map maplace creates", () => {
     expect(Array.from(container.children)).toEqual([pageContent]);
   });
 
+  it("opens in an element panels on the map stay within", () => {
+    const { map } = mapSourceFor({ mapId: "id" }).open(containerWith(), libraries);
+    expect((map as unknown as StubMap).element.className).toBe("maplace-google-map");
+  });
+
   it("leaves the container as it was when Google refuses the map", () => {
     const refusing = class {
       constructor() {
@@ -74,6 +79,7 @@ describe("the page's own map", () => {
     const container = containerWith(element);
     const { map, release } = mapSourceFor(options).open(container, libraries);
     expect(map).toBe(pageMap);
+    expect(element.className).toBe("");
     release();
     expect(element.parentElement).toBe(container);
   });

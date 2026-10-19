@@ -6,13 +6,17 @@ import { sizedContainer } from "../../testing/container";
 import { assembleGoogleAdapter } from "../assemble";
 import { latLngOf } from "../lat-lng";
 import { createMapState } from "../map-state";
-import { checkGoogleOptions } from "../options";
+import { type ColorScheme, checkGoogleOptions } from "../options";
 import { TEST_OPTIONS } from "./subject";
 
-/** Where a test's store draws: the page's own map, or a container of its own (sized by default). */
+/**
+ * Where a test's store draws: the page's own map, or a container of its own (sized by default),
+ * and the colour scheme of a map maplace creates there.
+ */
 interface StoreSite {
   readonly map?: google.maps.Map | undefined;
   readonly container?: HTMLElement | undefined;
+  readonly colorScheme?: ColorScheme | undefined;
 }
 
 /** A store as far as attaching it goes (this layer doesn't see the store's own types). */
@@ -31,7 +35,7 @@ interface Attachable {
  */
 export function attachedToGoogle<Store extends Attachable>(
   maplace: Store,
-  { map, container }: StoreSite = {},
+  { map, container, colorScheme }: StoreSite = {},
 ) {
   const holder = container ?? (map?.getDiv().parentElement as HTMLElement) ?? sizedContainer();
   const errors: unknown[] = [];
@@ -40,7 +44,7 @@ export function attachedToGoogle<Store extends Attachable>(
     () => "ready",
     (error: unknown) => error,
   );
-  const options = { ...TEST_OPTIONS, map };
+  const options = { ...TEST_OPTIONS, map, colorScheme };
   checkGoogleOptions(options);
   const state = createMapState();
   const adapter = assembleGoogleAdapter(options, state);

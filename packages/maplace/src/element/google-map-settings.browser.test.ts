@@ -104,4 +104,12 @@ describe("the map settings of a Google <maplace-map>", () => {
     await expect.poll(() => created.length).toBe(2);
     expect(map.loadState).not.toBe("error");
   });
+
+  it("puts the on-map list in a panel in the map's colour scheme", async () => {
+    mapWith('color-scheme="dark" list list-position="top-left"');
+    const panels = () => created[0]?.controls.flatMap((corner) => corner.getArray()) ?? [];
+    await expect.poll(() => panels().length).toBe(1);
+    expect(panels()[0]?.classList.contains("maplace-control")).toBe(true);
+    expect(panels()[0]?.dataset.colorScheme).toBe("dark");
+  });
 });

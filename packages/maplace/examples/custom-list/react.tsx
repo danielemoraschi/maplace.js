@@ -50,7 +50,7 @@ function CustomList() {
   return (
     <MaplaceProvider locations={cities}>
       <MaplaceMap createAdapter={createAdapter} className="map">
-        <MapControl position="top-left">
+        <MapControl position="top-right">
           <ChecksMenu heading="Choose a location:" />
         </MapControl>
       </MaplaceMap>

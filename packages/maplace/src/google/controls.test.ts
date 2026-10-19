@@ -1,15 +1,17 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import type { ControlPosition } from "../adapter";
+import { cssTextOf } from "../testing/selectors";
 import { type Controls, createControls } from "./controls";
+import type { ColorScheme } from "./options";
 import { STUB_CONTROL_POSITIONS, type StubMap } from "./testing/stub-libraries";
 import { stubMounted } from "./testing/stub-site";
 
 /** Controls on a stub map, before it opens; `corner` lists the page nodes Google holds there. */
-function controlsOnStubs() {
+function controlsOnStubs(colorScheme?: ColorScheme) {
   const { mounted, close } = stubMounted();
   const map = mounted.map as unknown as StubMap;
-  const controls = createControls();
+  const controls = createControls(colorScheme);
   const corner = (position: keyof typeof STUB_CONTROL_POSITIONS) =>
     map.controls[STUB_CONTROL_POSITIONS[position]]
       ?.getArray()
@@ -22,6 +24,9 @@ function controlsOnStubs() {
 }
 
 const button = () => document.createElement("button");
+
+/** The element Google holds in the top-left corner: the control's panel. */
+const panelTopLeft = (map: StubMap) => map.controls[STUB_CONTROL_POSITIONS.TOP_LEFT]?.getArray()[0];
 
 function mount(controls: Controls, position: ControlPosition) {
   const node = button();
@@ -36,6 +41,44 @@ describe("the Google adapter's controls", () => {
     open();
     expect(corner("BOTTOM_RIGHT")).toEqual([node]);
     expect(map.controls[STUB_CONTROL_POSITIONS.BOTTOM_RIGHT]?.getArray()[0]).not.toBe(node);
+  });
+
+  it("holds each control in a panel of maplace's own, in the map's colour scheme", () => {
+    const { controls, open, map } = controlsOnStubs("dark");
+    open();
+    const { node } = mount(controls, "top-left");
+    const panel = panelTopLeft(map);
+    expect(panel?.classList.contains("maplace-control")).toBe(true);
+    expect(panel?.dataset.colorScheme).toBe("dark");
+    expect(panel?.firstElementChild).toBe(node);
+  });
+
+  it("takes the light scheme, Google's own, when none is given", () => {
+    const { controls, open, map } = controlsOnStubs();
+    open();
+    mount(controls, "top-left");
+    expect(panelTopLeft(map)?.dataset.colorScheme).toBe("light");
+  });
+
+  it("leaves the page's node as it was given", () => {
+    const { controls, open } = controlsOnStubs();
+    open();
+    const node = button();
+    node.className = "pages";
+    node.textContent = "Mine";
+    const given = node.outerHTML;
+    controls.mountControl(node, "top-left");
+    expect(node.outerHTML).toBe(given);
+  });
+
+  it("gives the control's document the panel's styles once the control is on the map", () => {
+    const { controls, open } = controlsOnStubs();
+    const page = document.implementation.createHTMLDocument();
+    const sheets = () => page.adoptedStyleSheets.map(cssTextOf);
+    controls.mountControl(page.createElement("button"), "top-left");
+    expect(sheets()).toEqual([]);
+    open();
+    expect(sheets()).toContainEqual(expect.stringContaining(".maplace-control"));
   });
 
   it("takes a control off when removed, safely twice, and out of the page", () => {

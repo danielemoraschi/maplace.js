@@ -9,17 +9,14 @@ import { optionsIn } from "../testing/lists";
 import { controlsPlaced, laidOut } from "./testing/controls-placed";
 import { QUIET_MS, wait } from "./testing/map-waits";
 import { centreOf } from "./testing/page-input";
+import { queried } from "./testing/panels";
+import { places } from "./testing/places";
 import { centerOf, fitted, onGoogle } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
 /** Enough places that the list scrolls; all within one fit. */
-const PLACES = Array.from({ length: 30 }, (_, index) => ({
-  id: `p${index}`,
-  lat: 40 + (index % 6),
-  lng: 5 + Math.floor(index / 6) * 2,
-  title: `Place ${index}`,
-}));
+const PLACES = places(30);
 
 /** The page's map with a store fitted on it, and its list view mounted in the top-left corner. */
 async function listOnMap(options: ListViewOptions = {}) {
@@ -68,8 +65,8 @@ describeWithMaps("lists on a Google map", () => {
     expect(document.activeElement?.getAttribute("role")).toBe("option");
     await userEvent.keyboard("{End}");
     await wait(QUIET_MS);
-    const listbox = list.element.querySelector('[role="listbox"]') as HTMLElement;
-    const heading = list.element.querySelector(".maplace-list-heading") as HTMLElement;
+    const listbox = queried(list.element, '[role="listbox"]');
+    const heading = queried(list.element, ".maplace-list-heading");
     expect(listbox.scrollTop).toBeGreaterThan(0);
     expect(heading.getBoundingClientRect().top).toBeGreaterThanOrEqual(
       list.element.getBoundingClientRect().top,

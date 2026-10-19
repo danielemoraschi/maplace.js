@@ -1,3 +1,8 @@
+/** The text of every rule in `sheet`, as the DOM writes it back. */
+export function cssTextOf(sheet: CSSStyleSheet): string {
+  return Array.from(sheet.cssRules, (rule) => rule.cssText).join("");
+}
+
 /** Each rule's selector text in `css`, as the DOM parses it. */
 export function selectorsOf(css: string): string[] {
   const sheet = new CSSStyleSheet();

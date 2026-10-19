@@ -90,7 +90,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `controls_div`, `controls_on_map`, `controls_position` | element `list-position` (a corner, or `outside`); in code, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
 | `generate_controls`, `force_generate_controls` | a list exists only when asked for, at any number of locations |
 | `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'`, element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
-| `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win |
+| `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win (on a Google map, the panel is `.maplace-control`) |
 | `controls_title` | list view `heading` (element `list-heading`, `<LocationList heading>`), shown above the list on the map or beside it |
 | `type` (one per map) | `type` per location, so one map mixes markers and shapes |
 | `type: 'directions'` | `setRoute({ stops })` through your own locations |

@@ -11,7 +11,7 @@ function choiceIn(root: Element, text: string): HTMLInputElement {
 
 /** 0.2's "checks" menu, built by the page: a radio per listed location, and one to fit all. */
 export const customList: ExampleBehaviour = async ({ store, adapter, root }) => {
-  expect(controlPositions(adapter)).toEqual(["top-left"]);
+  expect(controlPositions(adapter)).toEqual(["top-right"]);
   await expect
     .poll(() => root.querySelector("fieldset legend")?.textContent)
     .toBe("Choose a location:");

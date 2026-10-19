@@ -39,7 +39,7 @@ export function assembleGoogleAdapter(
   const popup = createPopup(state);
   const camera = createCamera(state, drawing);
   const routing = createRouting(state, drawing);
-  const controls = createControls();
+  const controls = createControls(options.colorScheme);
   const parts = [
     mapClicks,
     viewportReports,

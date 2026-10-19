@@ -1,4 +1,5 @@
 /// <reference types="google.maps" preserve="true" />
+import { GOOGLE_MAP_CLASS } from "./control-styles";
 import type { GoogleLibraries } from "./libraries";
 import { GOOGLE_COLOR_SCHEMES, type GoogleAdapterOptions } from "./options";
 
@@ -45,12 +46,16 @@ function createdMapSource(options: GoogleAdapterOptions): MapSource {
   };
 }
 
-/** Opens a map in a new element filling the container; nothing stays if Google refuses it. */
+/**
+ * Opens a map in a new element filling the container; nothing stays if Google refuses it. The
+ * element is maplace's own, so it carries the class the panels on the map stay within.
+ */
 function openIn(
   container: HTMLElement,
   create: (element: HTMLElement) => google.maps.Map,
 ): MapInUse {
   const element = elementFilling(container);
+  element.classList.add(GOOGLE_MAP_CLASS);
   try {
     return { map: create(element), release: () => element.remove() };
   } catch (error) {
