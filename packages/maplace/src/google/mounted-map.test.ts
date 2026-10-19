@@ -10,13 +10,15 @@ const libraries = {} as GoogleLibraries;
 function opened(controller = new AbortController()) {
   const released: string[] = [];
   const context = { host, signal: controller.signal, cluster: true, popup: {} } as MountContext;
-  const inUse = { map: {} as google.maps.Map, release: () => released.push("map") };
-  return { released, ...mountMap({ inUse, libraries, context, markerLayer: directMarkers }) };
+  const map = {} as google.maps.Map;
+  const inUse = { map, release: () => released.push("map") };
+  return { map, released, ...mountMap({ inUse, libraries, context, markerLayer: directMarkers }) };
 }
 
 describe("mountMap", () => {
   it("gives parts the map and the libraries", () => {
-    const { mounted } = opened();
+    const { mounted, map } = opened();
+    expect(mounted.map).toBe(map);
     expect(mounted.libraries).toBe(libraries);
   });
 

@@ -4,21 +4,10 @@ import { adding, markerDrawable, ORIGIN } from "../testing/conformance/fixtures"
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { frames } from "./frames";
-import type { GoogleMapState } from "./map-state";
-import { clickHoldPassed } from "./testing/map-waits";
+import { clickHoldPassed, drawnMarker } from "./testing/map-waits";
 import { centreOf, tabTo } from "./testing/page-input";
 import { mountedGoogle, pageMapIn, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
-
-/** The marker Google drew for `id`, once it is on the page and has a size. */
-async function drawnMarker(state: GoogleMapState, id: string): Promise<HTMLElement> {
-  const marker = () => {
-    const placed = state.placed.get(id);
-    return placed && "marker" in placed ? placed.marker : undefined;
-  };
-  await expect.poll(() => (marker()?.getBoundingClientRect().width ?? 0) > 0).toBe(true);
-  return marker() as HTMLElement;
-}
 
 /** A map the page made, on the page, removed after the test. */
 function pageMap(): google.maps.Map {
@@ -42,7 +31,14 @@ describeWithMaps("Google markers under real input", () => {
     expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     await clickHoldPassed();
     expect(host.reportsOf("reportMapClick")).toEqual([]);
-    // The click focuses the marker too, but only keyboard focus hovers it.
+  });
+
+  it("leaves a clicked marker unhovered once the pointer goes: a click's focus never hovers it", async () => {
+    const { adapter, state, host } = await mountedGoogle();
+    await adapter.apply(adding(markerDrawable("a")));
+    const marker = await drawnMarker(state, "a");
+    await userEvent.click(marker);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     await userEvent.unhover(marker);
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
   });

@@ -19,7 +19,10 @@ export interface MountedMap {
   onDestroy(teardown: () => void): void;
 }
 
-/** What a tracker row adds to the map once it opens; it never edits mount or destroy. */
+/**
+ * One part of the adapter, opened on the map once it opens: behaviour comes as a part, and never
+ * as an edit to mount or destroy.
+ */
 export interface MapPart {
   open(mounted: MountedMap): void;
 }
@@ -30,7 +33,7 @@ export interface MapPart {
  */
 export type MapVerdict = (mounted: MountedMap) => Promise<void>;
 
-export interface OpenedMap {
+interface MapToMount {
   readonly inUse: MapInUse;
   readonly libraries: GoogleLibraries;
   readonly context: MountContext;
@@ -55,7 +58,7 @@ export interface OpenMap {
  * teardowns, last added first. A map maplace created is off the page by then, where Google takes
  * markers off it for free (on the page, each costs more the more markers it holds).
  */
-export function mountMap({ inUse, libraries, context, markerLayer }: OpenedMap): OpenMap {
+export function mountMap({ inUse, libraries, context, markerLayer }: MapToMount): OpenMap {
   const markers = markerLayer(inUse.map, libraries);
   // The layer lets go of its markers last, once every part has removed its own.
   const teardowns: (() => void)[] = [() => markers.release()];

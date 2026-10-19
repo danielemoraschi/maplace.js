@@ -107,7 +107,10 @@ export function createRouting(
     removeLine();
   }
 
-  /** Lets go of the line before asking Google, which may have disabled the map (G9). */
+  /**
+   * Forgets the line, then takes it off the map: on a map Google disabled (it refused the key)
+   * taking it off throws, and the line is forgotten all the same.
+   */
   function removeLine(): void {
     const removing = line;
     line = undefined;

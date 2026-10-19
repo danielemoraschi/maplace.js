@@ -14,7 +14,7 @@ export interface ShownGooglePopup {
   readonly shown: boolean;
 }
 
-/** What the adapter has on the map, shared with its probe; each row adds what it draws. */
+/** What the adapter has on the map, shared with its probe; each part adds what it draws. */
 export interface GoogleMapState {
   /** The open map: undefined before mount and once destroyed. */
   mounted: MountedMap | undefined;

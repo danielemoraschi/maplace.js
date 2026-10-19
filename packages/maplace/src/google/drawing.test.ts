@@ -19,7 +19,6 @@ function recordingPlacers() {
   const log: string[] = [];
   const placeRecorded = (drawable: Drawable): PlacedLocation =>
     ({
-      kind: "marker",
       update: () => log.push(`update ${drawable.id}`),
       present: () => {},
       remove: () => log.push(`remove ${drawable.id}`),

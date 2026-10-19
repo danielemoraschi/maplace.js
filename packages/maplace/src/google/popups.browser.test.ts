@@ -12,6 +12,7 @@ import type { MountSettings } from "../testing/conformance/harness";
 import { unmountAll } from "../testing/conformance/harness";
 import type { GoogleMapState } from "./map-state";
 import { cameraAt } from "./testing/camera-at";
+import { drawnMarker } from "./testing/map-waits";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -28,16 +29,6 @@ async function drawn(drawables: Drawable[], settings?: MountSettings) {
   mounted.container.after(outside);
   outside.focus();
   return { ...mounted, outside };
-}
-
-/** The marker Google drew for `id`, once it has a size on the page. */
-async function drawnMarker(state: GoogleMapState, id: string): Promise<HTMLElement> {
-  const marker = () => {
-    const placed = state.placed.get(id);
-    return placed && "marker" in placed ? placed.marker : undefined;
-  };
-  await expect.poll(() => (marker()?.getBoundingClientRect().width ?? 0) > 0).toBe(true);
-  return marker() as HTMLElement;
 }
 
 /** The popup's element once its content is reported in the DOM. */

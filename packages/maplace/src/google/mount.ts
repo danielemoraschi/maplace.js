@@ -11,7 +11,7 @@ import { keyRefusedError } from "./page-auth";
 export interface MapLifecycleParts {
   readonly source: MapSource;
   readonly state: GoogleMapState;
-  /** What each tracker row adds to the open map, opened in this order. */
+  /** What each part of the adapter adds to the open map, opened in this order. */
   readonly parts: readonly MapPart[];
   /** What Google must answer, once the parts are open, before the mount resolves. */
   readonly verdict: MapVerdict;
@@ -20,11 +20,18 @@ export interface MapLifecycleParts {
 }
 
 /**
- * Loads the libraries, and the marker layer the store's `cluster` asks for, then opens the map in the container unless the load was cancelled or the
- * adapter destroyed meanwhile, and opens each part on it, then waits for Google's verdict;
- * destroying closes it once. Measured on Maps JS 3.66: once Google refuses the key, its maps stop
- * working (`addListener` gives nothing, markers throw), so no map opens after a refusal, and an
- * open one is abandoned at it, left on the page with Google's message until destroyed.
+ * The map's life, from mount to destroy:
+ * 1. the libraries load, and the marker layer the store's `cluster` asks for;
+ * 2. the map opens in the container, unless the load was cancelled, the adapter destroyed
+ *    meanwhile or the key refused;
+ * 3. a refusal of the key from then on abandons it;
+ * 4. each part opens on it;
+ * 5. the mount waits for Google's verdict;
+ * 6. destroying closes it, once.
+ *
+ * Measured on Maps JS 3.66: once Google refuses the key, its maps stop working (`addListener`
+ * gives nothing, markers throw), so no map opens after a refusal, and an open one is abandoned at
+ * it, left on the page with Google's message until destroyed.
  */
 export function createMapLifecycle({
   source,

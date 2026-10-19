@@ -1,4 +1,4 @@
-import { expect, vi } from "vitest";
+import { vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { frames } from "../frames";
 import type { ViewportPoint } from "./mouse-commands";
@@ -45,10 +45,25 @@ function isHitAt(element: Element, { x, y }: ViewportPoint): boolean {
   return hit !== null && element.contains(hit);
 }
 
+/** Presses of Tab that cross any test page and a map's own stops. */
+const MAX_TABS = 50;
+
 /** Tabs through the page until `element` has keyboard focus. */
-export async function tabTo(element: HTMLElement): Promise<void> {
-  for (let presses = 0; presses < 50 && document.activeElement !== element; presses++) {
+export function tabTo(element: HTMLElement): Promise<void> {
+  return tabUntil(() => document.activeElement === element);
+}
+
+/** Tabs through the page until `isReached`; fails, saying where the focus is, if it never is. */
+export async function tabUntil(isReached: () => boolean): Promise<void> {
+  for (let presses = 0; presses < MAX_TABS; presses++) {
+    if (isReached()) return;
     await userEvent.keyboard("{Tab}");
   }
-  expect(document.activeElement).toBe(element);
+  if (!isReached()) throw focusNeverCame();
+}
+
+function focusNeverCame(): Error {
+  const focused = document.activeElement;
+  const where = focused === null ? "nothing" : `<${focused.localName}>`;
+  return new Error(`Tab never reached it in ${MAX_TABS} presses: the focus is on ${where}`);
 }

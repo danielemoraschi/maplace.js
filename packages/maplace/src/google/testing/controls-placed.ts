@@ -5,15 +5,13 @@ import { TILES_TIMEOUT_MS } from "./store-on-google";
 /** Frames a control's box holds still, on the page, before it counts as settled. */
 const STILL_FRAMES = 5;
 
-/*
- * Google draws a control pushed to a corner late, its own controls with it: just after the map's
- * next `tilesloaded`, 0.3 to 2.2 s after the push under the test runner (Maps JS 3.66, measured
- * frame by frame), then moves it once more. It takes a control out at once on removal.
- */
-
 /**
  * Resolves once every control in `map`'s corners is in the page; at once for a map with no box,
  * where Google draws no corner. Fails past `TILES_TIMEOUT_MS`.
+ *
+ * Google draws a control pushed to a corner late, its own controls with it: just after the map's
+ * next `tilesloaded`, 0.3 to 2.2 s after the push under the test runner (Maps JS 3.66, measured
+ * frame by frame). It takes a control out at once on removal, so only adding is waited for.
  */
 export async function controlsPlaced(map: google.maps.Map): Promise<void> {
   if (!isOnPage(map.getDiv())) return;
@@ -32,7 +30,7 @@ function allConnected(map: google.maps.Map): boolean {
 
 /**
  * Waits until a control that shows is drawn and positioned on the map: on the page, its box the
- * same for a few frames. A box off the page is empty and still too, so frames off the page count
+ * same for a few frames, since Google moves a control once more after drawing it. A box off the page is empty and still too, so frames off the page count
  * for nothing; a hidden control never settles. Fails, saying what it saw, past `timeoutMs`.
  */
 export async function settledOnMap(

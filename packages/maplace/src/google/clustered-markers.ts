@@ -34,9 +34,9 @@ class ClusteringAlgorithm extends SuperClusterAlgorithm {
  * not: so a hidden marker leaves it, and the selected one leaves it to stand on the map alone
  * (`placementOf`). The clusterer is given its markers and renders at most once per diff or
  * presentation, when what it clusters changed (`flush`): measured on Maps JS 3.66 with 4,000,
- * one render takes 66–76 ms. A render takes off
- * the map a marker it last drew on its own and no longer clusters, so the one standing alone is
- * put back after each, the clusterer's own on `idle` too.
+ * one render takes 66–76 ms. A render takes off the map a marker it last drew on its own and no
+ * longer clusters, so the one standing alone is put back after each, the clusterer's own on
+ * `idle` too.
  */
 export const clusteredMarkers: MarkerLayerFactory = (map, libraries) => {
   const algorithm = new ClusteringAlgorithm({});

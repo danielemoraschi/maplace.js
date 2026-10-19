@@ -64,7 +64,6 @@ interface ProbeSources {
   readonly camera: () => CameraWatch | undefined;
 }
 
-/** A user can reach only a location on a map and not hidden; Google adds it to the page later. */
 function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapProbe {
   let pointedAt: ProbeTarget | undefined;
   let clickHeld: Promise<void> = Promise.resolve();
@@ -72,6 +71,7 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
     const target = targets.get(id);
     return target?.onMap() ? target : undefined;
   };
+  /** A user can reach only a location on a map and not hidden; Google adds it to the page later. */
   const reachable = (id: string) => {
     const target = onMap(id);
     return target?.shown() ? target : undefined;

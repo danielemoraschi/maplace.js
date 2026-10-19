@@ -1,7 +1,6 @@
 /// <reference types="google.maps" />
-import type { LatLng } from "../../geometry";
 import type { PlacedMarker } from "../placed-location";
-import type { ProbeTarget } from "./probe-target";
+import { type ProbeTarget, probedPoint } from "./probe-target";
 
 type Marker = PlacedMarker["marker"];
 
@@ -18,7 +17,7 @@ export function markerTarget(marker: Marker, onMap: () => boolean): ProbeTarget 
     onMap,
     shown,
     read: () => ({
-      geometry: { type: "marker", ...latLngOf(marker.position) },
+      geometry: { type: "marker", ...probedPoint(marker.position) },
       title: marker.title || undefined,
       visible: shown(),
       icon: marker.firstChild ?? undefined,
@@ -35,10 +34,4 @@ export function markerTarget(marker: Marker, onMap: () => boolean): ProbeTarget 
       dispatch("gmp-dragend");
     },
   };
-}
-
-function latLngOf(position: Marker["position"]): LatLng {
-  if (position == null) return { lat: Number.NaN, lng: Number.NaN };
-  if (position instanceof google.maps.LatLng) return position.toJSON();
-  return { lat: position.lat, lng: position.lng };
 }

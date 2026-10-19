@@ -13,14 +13,14 @@ import { TEST_OPTIONS } from "./subject";
  * Where a test's store draws: the page's own map, or a container of its own (sized by default),
  * and the colour scheme of a map maplace creates there.
  */
-interface StoreSite {
+export interface StoreSite {
   readonly map?: google.maps.Map | undefined;
   readonly container?: HTMLElement | undefined;
   readonly colorScheme?: ColorScheme | undefined;
 }
 
 /** A store as far as attaching it goes (this layer doesn't see the store's own types). */
-interface Attachable {
+export interface Attachable {
   attach(adapter: Adapter, container: HTMLElement): () => void;
   whenReady(): Promise<void>;
   on(name: "error", listener: (payload: { error: unknown }) => void): () => void;

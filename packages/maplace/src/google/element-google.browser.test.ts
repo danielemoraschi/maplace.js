@@ -117,12 +117,11 @@ describeWithKey("<maplace-map> loading Google Maps itself", (key) => {
       }
       return { element, destroy: () => element.remove() };
     });
-    const map = mapWith(
+    const map = ownMapWith(
       `${settings} list="plain-checks" list-position="top-left" list-heading="Choose a location:"`,
     );
     // Google puts controls on a map only once it is in view; the file's earlier maps push this one below.
     map.scrollIntoView();
-    onTestFinished(() => map.remove());
     await ready(map);
     const pane = map.querySelector(".maplace-map-pane");
     await expect

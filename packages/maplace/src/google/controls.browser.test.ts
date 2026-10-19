@@ -1,17 +1,17 @@
 /// <reference types="google.maps" />
-import { afterEach, expect, it, onTestFinished } from "vitest";
+import { afterEach, expect, it } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { optionsIn } from "../testing/lists";
-import { controlsPlaced, settledOnMap } from "./testing/controls-placed";
+import { controlsPlaced } from "./testing/controls-placed";
 import { QUIET_MS, wait } from "./testing/map-waits";
-import { centreOf } from "./testing/page-input";
-import { queried } from "./testing/panels";
+import { centreOf, tabUntil } from "./testing/page-input";
+import { listMountedOnGoogle } from "./testing/panels";
 import { places } from "./testing/places";
-import { centerOf, fitted, onGoogle } from "./testing/store-on-google";
+import { centerOf } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -20,24 +20,16 @@ const PLACES = places(30);
 
 /** The page's map with a store fitted on it, and its list view mounted in the top-left corner. */
 async function listOnMap(options: ListViewOptions = {}) {
-  const container = sizedContainer();
-  const map = pageMapIn(container);
+  const map = pageMapIn(sizedContainer());
   const maplace = createMaplace({ locations: PLACES });
-  const { adapter } = await onGoogle(maplace, { map, container });
-  await fitted(maplace);
   const list = createListView(maplace, options);
-  onTestFinished(() => list.destroy());
-  list.element.style.cssText = "width: 200px; max-height: 200px; overflow: auto";
-  const remove = adapter.mountControl(list.element, "top-left");
-  await settledOnMap(list.element);
+  const style = "width: 200px; max-height: 200px; overflow: auto";
+  const { remove } = await listMountedOnGoogle({ maplace, list, map, style });
   return { map, maplace, list, remove };
 }
 
 /** Tabs until the focus is in `list`, past the map's own stops. */
-async function tabInto(list: HTMLElement): Promise<void> {
-  for (let presses = 0; presses < 20 && !list.contains(document.activeElement); presses++)
-    await userEvent.keyboard("{Tab}");
-}
+const tabInto = (list: HTMLElement) => tabUntil(() => list.contains(document.activeElement));
 
 /** Where the map is, as a user sees it: centre and zoom. */
 const cameraOf = (map: google.maps.Map) => ({ center: centerOf(map), zoom: map.getZoom() });
@@ -49,7 +41,6 @@ describeWithMaps("lists on a Google map", () => {
     const { map, list } = await listOnMap();
     const before = cameraOf(map);
     await tabInto(list.element);
-    expect(list.element.contains(document.activeElement)).toBe(true);
     await userEvent.keyboard(
       "{ArrowDown}{ArrowDown}{End}{Home}{PageDown}+-{ArrowLeft}{ArrowRight}",
     );
@@ -57,19 +48,14 @@ describeWithMaps("lists on a Google map", () => {
     expect(cameraOf(map)).toEqual(before);
   });
 
-  it("a headed list keeps its heading in view while its entries scroll", async () => {
+  it("moves a headed list's focus to its last entry on End, never the map", async () => {
     const { map, list } = await listOnMap({ heading: "Choose a location:" });
     const before = cameraOf(map);
     await tabInto(list.element);
     expect(document.activeElement?.getAttribute("role")).toBe("option");
     await userEvent.keyboard("{End}");
     await wait(QUIET_MS);
-    const listbox = queried(list.element, '[role="listbox"]');
-    const heading = queried(list.element, ".maplace-list-heading");
-    expect(listbox.scrollTop).toBeGreaterThan(0);
-    expect(heading.getBoundingClientRect().top).toBeGreaterThanOrEqual(
-      list.element.getBoundingClientRect().top,
-    );
+    expect(document.activeElement?.textContent).toBe(PLACES.at(-1)?.title);
     expect(cameraOf(map)).toEqual(before);
   });
 

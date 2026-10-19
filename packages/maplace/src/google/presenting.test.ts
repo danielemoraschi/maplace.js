@@ -1,13 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import type { PresentationState } from "../adapter";
-import { NOTHING_PRESENTED } from "../adapter-kit/presentation-changes";
+import { presented } from "../testing/conformance/fixtures";
 import { createMapState, type GoogleMapState } from "./map-state";
 import type { Look, PlacedLocation } from "./placed-location";
 import { createPresenting, lookIn } from "./presenting";
-
-function presented(state: Partial<PresentationState>): PresentationState {
-  return { ...NOTHING_PRESENTED, ...state };
-}
 
 /** A map state holding locations that record the looks they are given. */
 function stateWith(...ids: string[]) {

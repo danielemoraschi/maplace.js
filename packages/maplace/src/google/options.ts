@@ -35,7 +35,7 @@ export type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
 export type CreatedMapOptions = NonNullable<GoogleAdapterOptions["mapOptions"]>;
 
 /** Where the caller takes a map ID and a colour scheme instead of map options, as told the page. */
-export type OwnSettingRemarks = Readonly<Record<"mapId" | "colorScheme", string>>;
+type OwnSettingRemarks = Readonly<Record<"mapId" | "colorScheme", string>>;
 
 /** maplace's colour scheme names, as Google spells them. */
 export const GOOGLE_COLOR_SCHEMES: Readonly<Record<ColorScheme, google.maps.ColorSchemeString>> = {

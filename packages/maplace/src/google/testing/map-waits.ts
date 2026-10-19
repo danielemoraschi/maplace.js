@@ -1,6 +1,8 @@
 /// <reference types="google.maps" />
+import { expect } from "vitest";
 import { frames } from "../frames";
 import { DOUBLE_CLICK_WAIT_MS } from "../map-clicks";
+import type { GoogleMapState } from "../map-state";
 
 /**
  * Google's next `idle` on `map`. Listen before what moves the map: one already idle, or a move
@@ -31,4 +33,14 @@ export async function clickHoldPassed(): Promise<void> {
   await frames(2);
   await wait(DOUBLE_CLICK_WAIT_MS);
   await frames(2);
+}
+
+/** The marker Google drew for `id`, once it is on the page and has a size. */
+export async function drawnMarker(state: GoogleMapState, id: string): Promise<HTMLElement> {
+  const marker = () => {
+    const placed = state.placed.get(id);
+    return placed && "marker" in placed ? placed.marker : undefined;
+  };
+  await expect.poll(() => (marker()?.getBoundingClientRect().width ?? 0) > 0).toBe(true);
+  return marker() as HTMLElement;
 }

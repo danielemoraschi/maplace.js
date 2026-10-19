@@ -2,7 +2,7 @@
 import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
 import type { ShapeStyle } from "../../style";
 import type { GoogleShape } from "../placed-location";
-import type { ProbeTarget } from "./probe-target";
+import { type ProbeTarget, probedPoint } from "./probe-target";
 
 type Path = google.maps.MVCArray<google.maps.LatLng>;
 
@@ -56,9 +56,9 @@ function styleOf(shape: GoogleShape): ShapeStyle {
 
 function geometryOf(shape: GoogleShape): Geometry {
   if (shape instanceof google.maps.Circle) {
-    return { type: "circle", center: toLatLng(shape.getCenter()), radius: shape.getRadius() };
+    return { type: "circle", center: probedPoint(shape.getCenter()), radius: shape.getRadius() };
   }
-  const [path = [], ...holes] = ringsOf(shape).map((ring) => ring.getArray().map(toLatLng));
+  const [path = [], ...holes] = ringsOf(shape).map((ring) => ring.getArray().map(probedPoint));
   if (shape instanceof google.maps.Polyline) return { type: "polyline", path };
   return { type: "polygon", path, holes: holes.length > 0 ? holes : undefined };
 }
@@ -83,7 +83,7 @@ function edit(shape: GoogleShape, geometry: Geometry): void {
 }
 
 function editCircle(circle: google.maps.Circle, geometry: CircleGeometry): void {
-  const { lat, lng } = toLatLng(circle.getCenter());
+  const { lat, lng } = probedPoint(circle.getCenter());
   if (lat !== geometry.center.lat || lng !== geometry.center.lng) circle.setCenter(geometry.center);
   if (circle.getRadius() !== geometry.radius) circle.setRadius(geometry.radius);
 }
@@ -98,8 +98,4 @@ function editRings(rings: Path[], targets: readonly (readonly LatLng[])[]): void
       if (lat !== point.lat || lng !== point.lng) ring.setAt(at, new google.maps.LatLng(point));
     });
   });
-}
-
-function toLatLng(point: google.maps.LatLng | null | undefined): LatLng {
-  return point ? point.toJSON() : { lat: Number.NaN, lng: Number.NaN };
 }

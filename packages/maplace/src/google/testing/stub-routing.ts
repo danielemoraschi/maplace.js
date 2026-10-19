@@ -18,8 +18,7 @@ export const tick = () => wait(0);
 /**
  * Routing on a stub map, before it opens, with stops `a` and `b` placed and every diff drawn;
  * `place` and `move` put a location on the map as a drawn diff would, `answer` gives Google's
- * answer, and `routed`
- * opens the map with the route through `a` and `b` asked.
+ * answer, and `routed` opens the map with the route through `a` and `b` asked.
  */
 export function routingOnStubs() {
   const routes = routesOnPage();
