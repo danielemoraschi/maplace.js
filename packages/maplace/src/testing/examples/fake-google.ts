@@ -2,19 +2,14 @@ import {
   googleMapWith,
   type createGoogleMap as realCreateGoogleMap,
 } from "../../google/google-map";
-import { createFakeAdapter, type FakeAdapter } from "../fake-adapter";
+import type { FakeAdapters } from "../fake/adapters";
 
 /**
- * `maplace/google` on the fake adapter, as the example runners mock it: each adapter made is
- * pushed to `made`, `createGoogleMap`'s too.
+ * `maplace/google` on the fake adapter, as the example runners mock it: every adapter it makes,
+ * `createGoogleMap`'s too, is among `adapters.made`.
  */
-export function fakeGoogleEntry(made: FakeAdapter[]) {
-  const createGoogleAdapter = () => {
-    const adapter = createFakeAdapter();
-    made.push(adapter);
-    return adapter;
-  };
+export function fakeGoogleEntry({ createAdapter }: FakeAdapters) {
   const createGoogleMap: typeof realCreateGoogleMap = (container, options) =>
-    googleMapWith(createGoogleAdapter, container, options);
-  return { createGoogleAdapter, createGoogleMap };
+    googleMapWith(createAdapter, container, options);
+  return { createGoogleAdapter: createAdapter, createGoogleMap };
 }

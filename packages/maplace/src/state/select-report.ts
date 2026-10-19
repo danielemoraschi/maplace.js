@@ -2,7 +2,7 @@ import type { Snapshot } from "../store";
 import { child, root } from "../validate/fail";
 import { checkString } from "../validate/values";
 import { type Change, NO_CHANGE } from "./change";
-import { isHiddenId } from "./lookup";
+import { isUnselectableId } from "./lookup";
 import { selectShown } from "./selection";
 
 const ID = child(root("reportSelectionChange"), "id");
@@ -14,5 +14,5 @@ const ID = child(root("reportSelectionChange"), "id");
  */
 export function selectReported<Data>(snapshot: Snapshot<Data>, id: string): Change<Data> {
   checkString(id, ID);
-  return isHiddenId(snapshot, id) ? NO_CHANGE : selectShown(snapshot, id);
+  return isUnselectableId(snapshot, id) ? NO_CHANGE : selectShown(snapshot, id);
 }

@@ -1,11 +1,11 @@
 import { expect, vi } from "vitest";
 import type { Maplace } from "../../index";
-import type { Location } from "../../location";
 import type { FakeAdapter } from "../fake-adapter";
 import { EXAMPLE_BEHAVIOURS } from "./example-behaviours";
+import { parse } from "./example-dom";
 import { EXAMPLE_PAGES, type ExampleHost } from "./example-files";
 import { openHost } from "./example-hosts";
-import { parse, recordErrors } from "./example-page";
+import { recordErrors } from "./page-errors";
 import { recordedStoreCount, shownIds, sortedIds, storeAttachedSince } from "./recorded-stores";
 
 /**
@@ -35,7 +35,7 @@ export function adapterInside(root: Element, adapters: readonly FakeAdapter[]): 
       !destroyed && mounted !== undefined && root.contains(mounted.container),
   );
   if (inside.length !== 1) {
-    throw new Error(`${inside.length} live maps inside ${describe(root)}, expected 1`);
+    throw new Error(`${inside.length} live maps inside ${describeRoot(root)}, expected 1`);
   }
   return inside[0] as FakeAdapter;
 }
@@ -82,22 +82,6 @@ export async function expectDrawsItsStore({ store, adapter }: ExampleRun): Promi
   await expect.poll(() => sortedIds(adapter.probe().locationIds())).toEqual(shownIds(store));
 }
 
-/**
- * What makes two versions of an example the same map: every location field but how its popup
- * and marker are given (`content`, `icon`, and React's own fields in `data`, which the
- * behaviours check by what they draw), its route, filter and selection.
- */
-export function comparableSnapshot(store: Maplace): unknown {
-  const { locations, route, filter, selectedId } = store.getSnapshot();
-  return { locations: locations.map(withoutPresentation), route, filter, selectedId };
-}
-
-const PRESENTATION: ReadonlySet<string> = new Set(["content", "icon", "data"]);
-
-function withoutPresentation(location: Location): Partial<Location> {
-  return Object.fromEntries(Object.entries(location).filter(([key]) => !PRESENTATION.has(key)));
-}
-
 /** Whether a list, as listbox, select or a page's own fieldset of radios, is inside `root`. */
 export function hasList(root: Element): boolean {
   return root.querySelector("[role=listbox], select, fieldset:has(input[type=radio])") !== null;
@@ -111,7 +95,7 @@ function pageShowsList(example: string): boolean {
 }
 
 /** A root named by the first id inside it, for a failure's message. */
-function describe(root: Element): string {
+function describeRoot(root: Element): string {
   const named = root.querySelector("[id]");
   return named ? `the root holding #${named.id}` : "a root with no id inside";
 }

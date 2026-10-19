@@ -17,7 +17,7 @@ const LAYERS = {
   // The data types, and pure helpers on them that every layer may share.
   data: {
     files:
-      /^(geometry|style|location|location-state|longitude-arc|options|route|viewport|popup|drawable|errors|events|adopted-styles)$/,
+      /^(geometry|style|location|location-state|location-index|longitude-arc|options|route|viewport|popup|drawable|errors|events|adopted-styles)$/,
   },
   validation: { files: /^validate\//, imports: ["data"] },
   diff: { files: /^diff\//, imports: ["data", "contract", "validation"] },
@@ -65,7 +65,8 @@ const LAYERS = {
   "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },
   view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
   entry: { files: /^index$/, imports: ["data", "contract", "store", "view", "maplace"] },
-  // The element uses the core through its entry, the public API only.
+  // The element makes stores and list views through the core's entry, as a page does; it reads
+  // the data rules, and the adapter contract, store and list view for their types and constants.
   element: {
     files: /^element\/(?!google(-|$)|testing\/)/,
     imports: ["data", "contract", "store", "view", "entry"],

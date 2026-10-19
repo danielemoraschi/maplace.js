@@ -35,7 +35,7 @@ const shapes: Location[] = [
 const fitAll: View = { kind: "fit-all", padding: 24 };
 
 describe("resolveView", () => {
-  it("passes every view but fit-all through as it is", () => {
+  it("passes a center view through as it is", () => {
     const view: View = { kind: "center", center: { lat: 1, lng: 2 }, zoom: 5 };
     expect(resolveView(view, { locations, filter: undefined })).toBe(view);
   });
@@ -97,7 +97,7 @@ describe("resolveView", () => {
 });
 
 describe("createViewSender", () => {
-  it("sends a view when it changes", () => {
+  it("sends a view once, not again while it stays the same", () => {
     const adapter = createFakeAdapter();
     const send = createViewSender(adapter);
     const first: Snapshot = initialSnapshot({ locations });

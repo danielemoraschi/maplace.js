@@ -1,4 +1,9 @@
 import type { MaplaceMapElement } from "../../element/index";
+import { importedNodes, parse, rootOf, runScript, withKey } from "./example-dom";
+import { recordErrors } from "./page-errors";
+
+// Transitional, until the Google example tests import it from page-errors.
+export { recordErrors } from "./page-errors";
 
 /** A page opened in the test document: its map, and what went wrong on it. */
 export interface OpenedPage {
@@ -13,11 +18,6 @@ interface PageOptions {
   /** Replaces the pages' `YOUR_KEY`, for a run on real Google Maps. */
   readonly apiKey?: string;
 }
-
-/** Script types a browser runs; any other (`application/json`) is data. */
-const EXECUTABLE = new Set(["", "module", "text/javascript"]);
-
-let stopRecording: (() => void) | undefined;
 
 /** The one CDN script a page loads, by file name. */
 export function cdnScriptOf(html: string): string {
@@ -64,57 +64,4 @@ export function openPages(htmls: readonly string[], { apiKey }: PageOptions = {}
     throw new Error(`${htmls.length} pages opened ${maps.length} maps: each page has one`);
   }
   return { maps, roots, errors };
-}
-
-/** `html` with `YOUR_KEY` replaced, when a key is given. */
-export function withKey(html: string, apiKey: string | undefined): string {
-  return apiKey === undefined ? html : html.replaceAll("YOUR_KEY", apiKey);
-}
-
-export function parse(html: string): Document {
-  return new DOMParser().parseFromString(html, "text/html");
-}
-
-/**
- * A parsed document's nodes, imported into the test document: its head's nodes that match
- * `headSelector` (the parser puts a leading `<style>` or `<script>` there), then its body's.
- */
-export function importedNodes(page: Document, headSelector: string): Node[] {
-  const head = [...page.head.children].filter((node) => node.matches(headSelector));
-  return [...head, ...page.body.childNodes].map((node) => document.importNode(node, true));
-}
-
-/** A `<div>` holding `nodes`. */
-export function rootOf(nodes: readonly Node[]): HTMLElement {
-  const root = document.createElement("div");
-  root.append(...nodes);
-  return root;
-}
-
-/** A script imported from another document never runs: a fresh one in its place does. */
-export function runScript(imported: HTMLScriptElement): void {
-  if (!EXECUTABLE.has(imported.type)) return;
-  const script = document.createElement("script");
-  script.type = imported.type;
-  script.textContent = imported.textContent;
-  imported.replaceWith(script);
-}
-
-/** Records what goes wrong on the page from now until the next call: errors and `maplace-error`s. */
-export function recordErrors(): unknown[] {
-  stopRecording?.();
-  const errors: unknown[] = [];
-  const record = (event: Event) => errors.push(detailOf(event));
-  const events = ["error", "unhandledrejection", "maplace-error"] as const;
-  for (const name of events) globalThis.addEventListener(name, record);
-  stopRecording = () => {
-    for (const name of events) globalThis.removeEventListener(name, record);
-  };
-  return errors;
-}
-
-function detailOf(event: Event): unknown {
-  if (event instanceof ErrorEvent) return event.error ?? event.message;
-  if (event instanceof PromiseRejectionEvent) return event.reason;
-  return (event as CustomEvent).detail;
 }

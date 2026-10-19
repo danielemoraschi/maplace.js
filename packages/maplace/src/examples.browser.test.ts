@@ -5,11 +5,12 @@ import { bootstrapOf, moduleScriptOf } from "./testing/examples/example-hosts";
 import { expectVersionRuns } from "./testing/examples/example-runs";
 import { serveExampleData } from "./testing/examples/example-surroundings";
 import { recordingCreateMaplace } from "./testing/examples/recorded-stores";
-import type { FakeAdapter } from "./testing/fake-adapter";
 
 // The vanilla examples, each run as written on the HTML beside it, on the fake adapter instead
 // of Google's.
-const adapters: FakeAdapter[] = [];
+const adapters = await vi.hoisted(async () =>
+  (await import("./testing/fake/adapters")).fakeAdapters(),
+);
 vi.mock("maplace/google", async () => {
   const { fakeGoogleEntry } = await import("./testing/examples/fake-google");
   return fakeGoogleEntry(adapters);
@@ -29,5 +30,5 @@ describe.each(VANILLA_HOSTS)("the $example vanilla version", (host) => {
   });
 
   it("draws its store on the map it mounts on, with its page's list, and does what it says", () =>
-    expectVersionRuns(host, adapters));
+    expectVersionRuns(host, adapters.made));
 });

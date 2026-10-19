@@ -16,9 +16,9 @@ export function frozenList<Data>(locations: readonly Location<Data>[]): readonly
 }
 
 /**
- * An id that is set but names no shown location. In a report from the map, it is a race with a
- * diff still being drawn.
+ * An id that is set but names no shown location: unknown, hidden or filtered out. In a report from
+ * the map, it is a race with a diff still being drawn.
  */
-export function isHiddenId(scope: Scope, id: string | undefined): boolean {
+export function isUnselectableId(scope: Scope, id: string | undefined): boolean {
   return id !== undefined && !isSelectable(scope, id);
 }

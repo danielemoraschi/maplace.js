@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type * as Core from "../index";
 import { EXAMPLE_BEHAVIOURS } from "../testing/examples/example-behaviours";
+import { parse } from "../testing/examples/example-dom";
 import { EXAMPLE_PAGES, EXAMPLES, type Example } from "../testing/examples/example-files";
 import { openHost } from "../testing/examples/example-hosts";
-import { openPages, parse } from "../testing/examples/example-page";
+import { openPages } from "../testing/examples/example-page";
 import {
   adapterInside,
-  comparableSnapshot,
   type ExampleRun,
   exampleRun,
   expectDrawsItsStore,
@@ -15,14 +15,16 @@ import {
 } from "../testing/examples/example-runs";
 import { serveExampleData } from "../testing/examples/example-surroundings";
 import { recordingCreateMaplace } from "../testing/examples/recorded-stores";
-import type { FakeAdapter } from "../testing/fake-adapter";
+import { comparableSnapshot } from "../testing/examples/version-sameness";
 import type { MaplaceMapElement } from "./index";
 import { adaptersMade } from "./testing/fake-maps";
 
 // Every version of every example on one page, as the site shows them and as a reader may put two
 // of them together: no id is shared, each map and script works as it does alone, and an example's
 // page, vanilla and React versions are the same map.
-const moduleAdapters: FakeAdapter[] = [];
+const moduleAdapters = await vi.hoisted(async () =>
+  (await import("../testing/fake/adapters")).fakeAdapters(),
+);
 vi.mock("maplace/google", async () => {
   const { fakeGoogleEntry } = await import("../testing/examples/fake-google");
   return fakeGoogleEntry(moduleAdapters);
@@ -65,8 +67,8 @@ describe("every example version, all on one page", () => {
     // One after another: the stores made since a module ran are that module's.
     const runs: (readonly [Example, ExampleRuns])[] = [];
     for (const [example, vanillaRoot, reactRoot] of opened) {
-      const vanilla = await runHost(example.vanilla, vanillaRoot, moduleAdapters);
-      const react = await runHost(example.react, reactRoot, moduleAdapters);
+      const vanilla = await runHost(example.vanilla, vanillaRoot, moduleAdapters.made);
+      const react = await runHost(example.react, reactRoot, moduleAdapters.made);
       runs.push([example, [pages.runOf(example), vanilla, react]]);
     }
     for (const [example, versions] of runs) await expectSameMap(example, versions);

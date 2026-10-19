@@ -1,7 +1,7 @@
 import type { ResolvedPopupOptions } from "../popup";
 import type { Snapshot } from "../store";
 import { andThen, type Change, NO_CHANGE } from "./change";
-import { isHiddenId } from "./lookup";
+import { isUnselectableId } from "./lookup";
 import { deselect } from "./selection";
 
 /** What the map reports once a popup's content is in the DOM. */
@@ -15,7 +15,7 @@ export function popupOpened<Data>(
   snapshot: Snapshot<Data>,
   { id, element }: PopupOpenReport,
 ): Change<Data> {
-  if (isHiddenId(snapshot, id)) return NO_CHANGE;
+  if (isUnselectableId(snapshot, id)) return NO_CHANGE;
   return { patch: {}, events: [{ name: "popupOpen", payload: { id, element } }] };
 }
 

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Location } from "./location";
-import { changedIds, isListed, isShown, locationById, sameState, stateIn } from "./location-state";
+import { changedIds, isListed, isShown, sameState, stateIn } from "./location-state";
 
 describe("stateIn", () => {
   it("reads one location's selection and hover", () => {
@@ -68,14 +67,5 @@ describe("isListed", () => {
   it("never lists a location that isn't shown, whatever listed says", () => {
     expect(isListed({ id: "a", ...at, visible: false, listed: true }, undefined)).toBe(false);
     expect(isListed({ id: "a", ...at, group: "S", listed: true }, ["N"])).toBe(false);
-  });
-});
-
-describe("locationById", () => {
-  it("finds a location by id, or undefined", () => {
-    const b: Location = { id: "b", lat: 0, lng: 0 };
-    const locations = Object.freeze([{ id: "a", lat: 0, lng: 0 }, b]);
-    expect(locationById(locations, "b")).toBe(b);
-    expect(locationById(locations, "c")).toBeUndefined();
   });
 });

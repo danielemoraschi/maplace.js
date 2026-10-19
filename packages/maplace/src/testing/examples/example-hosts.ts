@@ -1,4 +1,4 @@
-import { importedNodes, parse, rootOf, runScript, withKey } from "./example-page";
+import { importedNodes, parse, rootOf, runScript, withKey } from "./example-dom";
 
 interface HostOptions {
   /**

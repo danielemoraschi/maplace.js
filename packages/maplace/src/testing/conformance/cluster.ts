@@ -24,35 +24,32 @@ async function clusteredSubject(subject: ConformanceSubject) {
 }
 
 export function clusterChecks(subject: ConformanceSubject, supports: Supports): void {
-  describe("cluster", () => {
-    it.runIf(supports.has("cluster"))("still draws every location when clustering", async () => {
+  describe.runIf(supports.has("cluster"))("cluster", () => {
+    it("still draws every location when clustering", async () => {
       const { probe } = await clusteredSubject(subject);
       expect([...probe.locationIds()].sort((a, b) => a.localeCompare(b))).toEqual(["a", "b", "c"]);
     });
 
-    it.runIf(supports.has("cluster"))("shows the selected location on its own", async () => {
+    it("shows the selected location on its own", async () => {
       const { adapter, probe } = await clusteredSubject(subject);
       adapter.present(presented({ selectedId: "b" }));
       await probe.settle();
       expect(probe.location("b")?.visible).toBe(true);
     });
 
-    it.runIf(supports.has("cluster"))("lets a removed location go (#54)", async () => {
+    it("lets a removed location go (#54)", async () => {
       const { adapter, probe } = await clusteredSubject(subject);
       await adapter.apply(removing("b"));
       await probe.settle();
       expect([...probe.locationIds()].sort((a, b) => a.localeCompare(b))).toEqual(["a", "c"]);
     });
 
-    it.runIf(supports.has("cluster"))(
-      "draws a replaced location where it now is (#54)",
-      async () => {
-        const { adapter, probe } = await clusteredSubject(subject);
-        const moved = { lat: 40.7, lng: -74 };
-        await adapter.apply(updating(markerDrawable("b", moved)));
-        await probe.settle();
-        expect(probe.location("b")?.geometry).toEqual({ type: "marker", ...moved });
-      },
-    );
+    it("draws a replaced location where it now is (#54)", async () => {
+      const { adapter, probe } = await clusteredSubject(subject);
+      const moved = { lat: 40.7, lng: -74 };
+      await adapter.apply(updating(markerDrawable("b", moved)));
+      await probe.settle();
+      expect(probe.location("b")?.geometry).toEqual({ type: "marker", ...moved });
+    });
   });
 }
