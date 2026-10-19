@@ -10,8 +10,8 @@
     box-sizing: border-box;
   }
 
-  /* A display utility would otherwise win over the browser's own `[hidden]`. */
   [hidden]:where(:not([hidden="until-found"])) {
+    /* biome-ignore lint/complexity/noImportantStyles: a display utility would otherwise win over the browser's own `[hidden]`. */
     display: none !important;
   }
 

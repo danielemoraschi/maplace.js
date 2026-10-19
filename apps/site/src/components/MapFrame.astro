@@ -13,13 +13,11 @@ const versions = liveVersions(name, SITE_MAPS_KEY);
 const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-1 text-sm";
 ---
 
-<div
-  class="map-frame relative flex h-[clamp(18rem,50vh,28rem)] flex-col border-2 border-ink bg-wash"
-  data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
+<div class="map-frame relative" data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
   {
     versions.map(({ kind, markup }) => (
       <div
-        class="version flex min-h-0 flex-[1_1_0] flex-col"
+        class="version min-h-map"
         data-live-version={kind}
         data-example={name}
         data-live-page={kind === "html" ? "" : undefined}
@@ -29,7 +27,11 @@ const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-
       </div>
     ))
   }
-  {callsSave(name) && <p class="strip" data-saved hidden />}
+  {
+    callsSave(name) && (
+      <p class="m-0 border-t-2 border-ink bg-paper px-3 py-2 text-sm" data-saved hidden />
+    )
+  }
   <p class={`map-note loading ${NOTE}`}>Loading the map…</p>
   <p class={`map-note failed ${NOTE}`} data-map-failure>The map couldn't load.</p>
   <ConsentPlaceholder />
