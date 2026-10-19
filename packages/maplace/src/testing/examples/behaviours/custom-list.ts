@@ -9,12 +9,20 @@ function choiceIn(root: Element, text: string): HTMLInputElement {
   return radio;
 }
 
+/** `fieldset` without the browser's groove and padding, inside the map's panel. */
+function expectBorderless(fieldset: Element | null): void {
+  if (fieldset === null) throw new Error("no fieldset");
+  const style = getComputedStyle(fieldset);
+  expect([style.borderStyle, style.padding]).toEqual(["none", "0px"]);
+}
+
 /** 0.2's "checks" menu, built by the page: a radio per listed location, and one to fit all. */
 export const customList: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(controlPositions(adapter)).toEqual(["top-right"]);
   await expect
     .poll(() => root.querySelector("fieldset legend")?.textContent)
     .toBe("Choose a location:");
+  expectBorderless(root.querySelector("fieldset"));
   const radios = root.querySelectorAll("fieldset input[type=radio]");
   const { locations, filter } = store.getSnapshot();
   const listed = locations.filter((location) => isListed(location, filter));

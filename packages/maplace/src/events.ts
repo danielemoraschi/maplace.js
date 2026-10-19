@@ -29,7 +29,11 @@ export interface MaplaceEvents<Data = unknown> {
   readonly viewportChange: { readonly viewport: Viewport };
   /** A route was computed, or cleared (`result` undefined). */
   readonly routeChange: { readonly result: RouteResult | undefined };
-  /** A runtime failure (load, auth, routing). Misuse throws instead. */
+  /**
+   * A runtime failure (load, auth, routing), or `invalid-input` when the page's own code throws or
+   * returns something other than a Node while the map draws (an `icon` or `content` function,
+   * `sanitize`, React's `popupContent` or `markerIcon`). Other misuse throws from the call that caused it.
+   */
   readonly error: { readonly error: MaplaceError };
 }
 

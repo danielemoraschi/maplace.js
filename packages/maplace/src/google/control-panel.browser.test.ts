@@ -50,6 +50,15 @@ function radios(): HTMLElement {
   return fieldset;
 }
 
+/** A page's own control whose suggestions hang below it, positioned out of its box. */
+function withDropdown(): HTMLElement {
+  const control = document.createElement("div");
+  control.style.position = "relative";
+  control.innerHTML =
+    '<input aria-label="Search"><ul style="position: absolute; top: 100%; margin: 0; height: 60px"><li>Rome</li></ul>';
+  return control;
+}
+
 describe("the panel of a control on a Google map, in the map's colour scheme", () => {
   it("puts a list on a light map in a white panel with dark text, on a dark page", async () => {
     darkPage();
@@ -132,6 +141,25 @@ describe("what goes on a Google map, laid out in its panel", () => {
     expect(
       queried(view, ".maplace-list-heading").getBoundingClientRect().top,
     ).toBeGreaterThanOrEqual(panel.top);
+  });
+
+  it("lets a page's own control draw outside its panel, as a dropdown does", async () => {
+    const { mount } = await mapOnStubs();
+    const dropdown = mount(withDropdown());
+    const below = queried(dropdown, "ul").getBoundingClientRect();
+    const outside = below.bottom - 5;
+    expect(outside).toBeGreaterThan(panelOf(dropdown).getBoundingClientRect().bottom);
+    const hit = document.elementFromPoint(below.left + 5, outside);
+    expect(dropdown.contains(hit)).toBe(true);
+  });
+
+  it("keeps a long list without a heading within the map's height, its entries scrolling", async () => {
+    const { list, map } = await mapOnStubs({ count: 30 });
+    const listbox = list();
+    expect(panelOf(listbox).getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      map.getDiv().getBoundingClientRect().bottom - 10,
+    );
+    expect(listbox.scrollHeight).toBeGreaterThan(listbox.clientHeight);
   });
 
   it("hides the panel with the list", async () => {
