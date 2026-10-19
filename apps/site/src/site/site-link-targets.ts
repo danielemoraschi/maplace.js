@@ -13,8 +13,6 @@ const SITE_LINK = /\]\(([/#][^)\s]*)(?:\s+"[^"]*")?\)/g;
 const NOT_IN_SLUG = /[^\p{L}\p{N} _-]/gu;
 // An ATX heading's opening: up to three spaces, one to six `#`, then a space or the line's end.
 const ATX_HEADING = /^ {0,3}#{1,6}(?:[ \t]+|$)/;
-// A link in a heading, `[text](target)`: only its text is in the heading's id.
-const LINK = /\[([^\]]*)\]\([^)]*\)/g;
 
 interface SiteLink {
   readonly target: string;
@@ -36,11 +34,32 @@ export function brokenSiteLinks(pages: readonly DocPage[]): string[] {
 
 /** The id a heading gets on the site: github-slugger's slug, which Astro uses. */
 export function headingSlug(heading: string): string {
-  return withoutClosingHashes(heading.replace(ATX_HEADING, ""))
-    .replaceAll(LINK, "$1")
+  return linkTextsOnly(withoutClosingHashes(heading.replace(ATX_HEADING, "")))
     .toLowerCase()
     .replaceAll(NOT_IN_SLUG, "")
     .replaceAll(" ", "-");
+}
+
+/**
+ * `text` with each link, `[text](target)`, as its text alone: only a link's text is in a heading's
+ * id. A scan, not a regex: one over unclosed `[`s would take quadratic time.
+ */
+function linkTextsOnly(text: string): string {
+  let kept = "";
+  let from = 0;
+  for (;;) {
+    const open = text.indexOf("[", from);
+    const close = open < 0 ? -1 : text.indexOf("]", open + 1);
+    if (close < 0) break;
+    const end = text[close + 1] === "(" ? text.indexOf(")", close + 2) : close;
+    if (end < 0) break;
+    kept +=
+      end === close
+        ? text.slice(from, close + 1)
+        : text.slice(from, open) + text.slice(open + 1, close);
+    from = end + 1;
+  }
+  return kept + text.slice(from);
 }
 
 /** A heading's text without its optional closing `#`s, which follow a space: `Foo ##` → `Foo`. */

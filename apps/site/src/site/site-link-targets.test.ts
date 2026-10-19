@@ -69,8 +69,20 @@ describe("headingSlug", () => {
     ["## Closed ##  ", "closed"],
     ["## The [store](/store/#options)", "the-store"],
     ["## Closed heading ##", "closed-heading"],
+    ["## [a[b](/x) and [c] (d) [e](f", "ab-and-c-d-ef"],
+    ["## [only] [text]", "only-text"],
   ])("gives %s the id the site gives it: %s", (heading, slug) => {
     expect(headingSlug(heading)).toBe(slug);
+  });
+
+  it.each([
+    ["unclosed brackets", `## ${"[".repeat(100_000)}`],
+    ["links never closed", `## ${"[a](".repeat(30_000)}`],
+  ])("reads a heading of %s in linear time", (_, heading) => {
+    const started = performance.now();
+    headingSlug(heading);
+    // Linear takes a few milliseconds; the quadratic regex this replaced took seconds.
+    expect(performance.now() - started).toBeLessThan(1000);
   });
 });
 
