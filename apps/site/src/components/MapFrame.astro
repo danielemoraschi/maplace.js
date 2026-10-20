@@ -1,4 +1,5 @@
 ---
+import { SITE_MAPS_MAP_ID } from "astro:env/client";
 import { SITE_MAPS_KEY } from "astro:env/server";
 import { callsSave, liveVersions } from "../examples/live-versions.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
@@ -9,11 +10,12 @@ interface Props {
 }
 
 const { name } = Astro.props;
-const versions = liveVersions(name, SITE_MAPS_KEY);
+const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
+const versions = liveVersions(name, settings);
 const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-1 text-sm";
 ---
 
-<div class="map-frame relative" data-maps-key-missing={SITE_MAPS_KEY === undefined ? "" : undefined}>
+<div class="map-frame relative" data-maps-key-missing={settings.apiKey === undefined ? "" : undefined}>
   {
     versions.map(({ kind, markup }) => (
       <div

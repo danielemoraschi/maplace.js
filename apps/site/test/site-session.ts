@@ -15,20 +15,25 @@ export const ASKED = { timeout: 10_000 };
 /** The built site a test file visits, and its visitors' browser. */
 interface SiteSession {
   readonly url: string;
+  /** Where the site was built. */
+  readonly dir: string;
   /** A fresh visitor of the site (`visitor`). */
   visitor(options?: VisitorOptions): Promise<Visitor>;
 }
 
+/** The map ID the site is built with. */
+export const SITE_MAP_ID = "site-map-id";
+
 /**
- * The site built with a key (never a real one) and a browser to visit it, ready before the test
- * file's tests run, closed after them.
+ * The site built with a key (never a real one) and a map ID, and a browser to visit it, ready
+ * before the test file's tests run, closed after them.
  */
 export function siteBuiltBeforeTests(): SiteSession {
   let site: BuiltSite | undefined;
   let browser: Browser | undefined;
   beforeAll(async () => {
     [site, browser] = await Promise.all([
-      buildAndServeSite({ SITE_MAPS_KEY: "not-a-real-key" }),
+      buildAndServeSite({ SITE_MAPS_KEY: "not-a-real-key", SITE_MAPS_MAP_ID: SITE_MAP_ID }),
       chromium.launch(),
     ]);
   }, 120_000);
@@ -43,6 +48,9 @@ export function siteBuiltBeforeTests(): SiteSession {
   return {
     get url() {
       return started().site.url;
+    },
+    get dir() {
+      return started().site.dir;
     },
     visitor(options) {
       const { site, browser } = started();

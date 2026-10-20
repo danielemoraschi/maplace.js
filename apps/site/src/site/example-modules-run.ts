@@ -7,7 +7,7 @@ const MODULE_FILE_PATTERNS = Object.values(VERSION_MODULES).map((file) =>
 );
 
 /** A version module of an example, which the site imports to run. */
-const VERSION_MODULE = new RegExp(
+export const VERSION_MODULE = new RegExp(
   `/packages/maplace/examples/[^/]+/(${MODULE_FILE_PATTERNS.join("|")})$`,
 );
 

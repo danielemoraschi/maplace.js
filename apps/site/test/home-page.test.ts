@@ -1,7 +1,10 @@
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
 import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
-import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
+import { recordAnimations } from "./recorded-animations.ts";
+import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
 
 /** One section per example on the home page (D23). */
@@ -181,23 +184,6 @@ describe("the home page's examples", () => {
   }, 30_000);
 });
 
-/**
- * The ids of the elements the page animated, recorded as each animation starts: a 600 ms fade can
- * end before a test's next look at the page, on a busy machine.
- */
-async function recordAnimations(page: Page): Promise<() => Promise<string[]>> {
-  await page.addInitScript(() => {
-    const animated: string[] = [];
-    const animate = Element.prototype.animate;
-    Element.prototype.animate = function (this: Element, ...args) {
-      animated.push(this.id);
-      return animate.apply(this, args);
-    };
-    Object.assign(globalThis, { animated });
-  });
-  return () => page.evaluate(() => (globalThis as unknown as { animated: string[] }).animated);
-}
-
 describe("the home page's code tabs", () => {
   it("shows a host's Google loader as one closed line, opened on a click", async () => {
     const { page, context } = await site.visitor();
@@ -224,4 +210,28 @@ describe("the home page's code tabs", () => {
     expect(await animated()).toEqual(["example-simple-html"]);
     await context.close();
   }, 30_000);
+});
+
+describe("the site's map ID", () => {
+  it("is every example page's map ID, but where the page sets its own", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url, { waitUntil: "domcontentloaded" });
+    const mapIds = await page
+      .locator("section.example maplace-map")
+      .evaluateAll((maps) => maps.map((map) => map.getAttribute("map-id")));
+    const styled = await page.locator("section#styled maplace-map").getAttribute("map-id");
+    expect(styled).toBe("DEMO_MAP_ID");
+    expect(mapIds.filter((id) => id !== SITE_MAP_ID)).toEqual(["DEMO_MAP_ID"]);
+    await context.close();
+  }, 30_000);
+
+  it("is in the scripts the vanilla and React versions run on", async () => {
+    const scripts = await readdir(join(site.dir, "_astro"));
+    const texts = await Promise.all(
+      scripts
+        .filter((file) => file.endsWith(".js"))
+        .map((file) => readFile(join(site.dir, "_astro", file), "utf8")),
+    );
+    expect(texts.some((text) => text.includes(SITE_MAP_ID))).toBe(true);
+  });
 });

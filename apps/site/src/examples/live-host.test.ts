@@ -20,7 +20,7 @@ const HOST = `<!doctype html>
 
 describe("liveHost", () => {
   it("is the host's style and nodes in order, its bootstrap inert with the site's key", () => {
-    expect(liveHost(HOST, "site-key")).toBe(`<script type="${INERT_SCRIPT_TYPE}">
+    expect(liveHost(HOST, { apiKey: "site-key" })).toBe(`<script type="${INERT_SCRIPT_TYPE}">
   ${BOOTSTRAP.replace('"YOUR_KEY"', '"site-key"')}
 </script>
 <style>
@@ -31,23 +31,25 @@ describe("liveHost", () => {
   });
 
   it("writes the key as a script's string, whatever it holds", () => {
-    expect(liveHost(HOST, 'a"b</script>')).toContain('key: "a\\"b\\x3c/script>"');
+    expect(liveHost(HOST, { apiKey: 'a"b</script>' })).toContain('key: "a\\"b\\x3c/script>"');
   });
 
   it("keeps the placeholder when the site has no key: the frame says so", () => {
-    expect(liveHost(HOST, undefined)).toContain('key: "YOUR_KEY"');
+    expect(liveHost(HOST, { apiKey: undefined })).toContain('key: "YOUR_KEY"');
   });
 
   it("refuses a host without exactly one module script", () => {
     const withoutModule = HOST.replace(/<script type="module"[^\n]+\n/, "");
-    expect(() => liveHost(withoutModule, "k")).toThrow(/one module script/);
-    expect(() => liveHost(`${HOST}<script type="module" src="./b.ts"></script>`, "k")).toThrow(
-      /one module script/,
-    );
+    expect(() => liveHost(withoutModule, { apiKey: "k" })).toThrow(/one module script/);
+    expect(() =>
+      liveHost(`${HOST}<script type="module" src="./b.ts"></script>`, { apiKey: "k" }),
+    ).toThrow(/one module script/);
   });
 
   it("refuses a host without the placeholder key once, or with any other script", () => {
-    expect(() => liveHost(HOST.replace("YOUR_KEY", "k"), "k")).toThrow(/YOUR_KEY/);
-    expect(() => liveHost(`${HOST}<script src="/other.js"></script>`, "k")).toThrow(/script/);
+    expect(() => liveHost(HOST.replace("YOUR_KEY", "k"), { apiKey: "k" })).toThrow(/YOUR_KEY/);
+    expect(() => liveHost(`${HOST}<script src="/other.js"></script>`, { apiKey: "k" })).toThrow(
+      /script/,
+    );
   });
 });

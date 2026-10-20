@@ -18,17 +18,26 @@ function buildEnv(root: string): Env {
 
 /**
  * An Astro integration that warns when a build has no Maps key, since each map would say so
- * once a visitor loads it. Dev usually has none, so it stays quiet there.
+ * once a visitor loads it, or no map ID, since each map would run on Google's demo one and
+ * warn of it. Dev usually has neither, so it stays quiet there.
  */
-export function mapsKeyCheck(env: (root: string) => Env = buildEnv) {
+export function mapsSettingsCheck(env: (root: string) => Env = buildEnv) {
   return {
-    name: "maps-key-check",
+    name: "maps-settings-check",
     hooks: {
       "astro:config:setup"({ command, config, logger }: ConfigSetup): void {
-        if (command !== "build" || env(fileURLToPath(config.root)).SITE_MAPS_KEY) return;
-        logger.warn(
-          "SITE_MAPS_KEY isn't set: once a visitor loads the maps, each will say the site has no key.",
-        );
+        if (command !== "build") return;
+        const { SITE_MAPS_KEY, SITE_MAPS_MAP_ID } = env(fileURLToPath(config.root));
+        if (!SITE_MAPS_KEY) {
+          logger.warn(
+            "SITE_MAPS_KEY isn't set: once a visitor loads the maps, each will say the site has no key.",
+          );
+        }
+        if (!SITE_MAPS_MAP_ID) {
+          logger.warn(
+            "SITE_MAPS_MAP_ID isn't set: the maps will run on Google's DEMO_MAP_ID and warn of it.",
+          );
+        }
       },
     },
   };

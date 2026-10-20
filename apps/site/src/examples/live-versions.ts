@@ -1,6 +1,7 @@
 import { type ExampleCode, type ExampleFile, exampleCode, exampleFile } from "./example-sources.ts";
 import { liveHost } from "./live-host.ts";
 import { livePage } from "./live-page.ts";
+import type { SiteMapSettings } from "./site-map-settings.ts";
 
 /** A version of an example as its frame runs it. */
 export interface LiveVersionMarkup {
@@ -9,11 +10,11 @@ export interface LiveVersionMarkup {
   readonly markup: string;
 }
 
-/** The versions the frame of the example `name` runs, the page first, with the site's key. */
-export function liveVersions(name: string, apiKey: string | undefined): LiveVersionMarkup[] {
+/** The versions the frame of the example `name` runs, the page first, with the site's settings. */
+export function liveVersions(name: string, settings: SiteMapSettings): LiveVersionMarkup[] {
   return exampleCode(name).map(({ kind, files }) => {
     const live = kind === "html" ? livePage : liveHost;
-    return { kind, markup: live(htmlOf(files, `examples/${name}'s ${kind} version`), apiKey) };
+    return { kind, markup: live(htmlOf(files, `examples/${name}'s ${kind} version`), settings) };
   });
 }
 

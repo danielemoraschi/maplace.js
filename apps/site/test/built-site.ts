@@ -15,6 +15,8 @@ const BUILD_LOCK = resolve(ROOT, ".vitest/site-build.lock");
 /** The site, built into a temp dir and served there. */
 export interface BuiltSite {
   readonly url: string;
+  /** Where it was built, to read what a build wrote. */
+  readonly dir: string;
   close(): Promise<void>;
 }
 
@@ -48,6 +50,7 @@ export async function servedSite(
   }
   return {
     url,
+    dir,
     async close() {
       await server.close();
       removeTempDir(dir);
