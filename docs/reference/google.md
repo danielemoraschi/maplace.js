@@ -7,9 +7,9 @@
 | Option | Type | What |
 |---|---|---|
 | `mapId` | `string` | Optional: Google's `DEMO_MAP_ID` by default, for development, with a console warning; your own for production ([key and map ID](setup.md#key-and-map-id)) |
-| `colorScheme` | `"light" \| "dark" \| "follow-system"` | The colour scheme of a map maplace creates |
-| `map` | `google.maps.Map` | Your own map to draw on, instead of one maplace creates |
-| `mapOptions` | `google.maps.MapOptions` | Extra options for a map maplace creates; not `center`, `zoom`, `mapId`, `colorScheme` or `styles` |
+| `colorScheme` | `"light" \| "dark" \| "follow-system"` | The colour scheme of a map maplacejs creates |
+| `map` | `google.maps.Map` | Your own map to draw on, instead of one maplacejs creates |
+| `mapOptions` | `google.maps.MapOptions` | Extra options for a map maplacejs creates; not `center`, `zoom`, `mapId`, `colorScheme` or `styles` |
 
 `center` and `zoom` are left out of `mapOptions` because only the store's `view` sets them, and JSON `styles` because Google ignores them on a map with a map ID ([map ID and styling](#map-id-and-styling)). An option the adapter doesn't know is `invalid-input`.
 
@@ -43,7 +43,7 @@ Its own options, beside the store's:
 | `mapId` | `string` | Optional, as the adapter's |
 | `colorScheme` | `"light" \| "dark" \| "follow-system"` | As the adapter's |
 | `mapOptions` | `google.maps.MapOptions` | As the adapter's |
-| `list` | `true \| GoogleMapList` | maplace's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
+| `list` | `true \| GoogleMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right`, where 0.2 put its controls |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map (0.2's `controls_div`); not with `position` |
 
@@ -53,12 +53,12 @@ Your own map (`map`), a control of your own on the map (`adapter.mountControl`) 
 
 ## Your own map
 
-A map maplace creates is a new element filling the container (so size the container), removed on `destroy`. With `map`, maplace draws on your map and never moves it in the page or removes it; the store's `view` still sets its camera.
+A map maplacejs creates is a new element filling the container (so size the container), removed on `destroy`. With `map`, maplacejs draws on your map and never moves it in the page or removes it; the store's `view` still sets its camera.
 
 - `attach`'s container must be `map.getDiv()` or hold it.
 - `mapOptions` and `colorScheme` are refused: set them on your map.
 - Your map's own map ID applies: keep `mapId` the same. Google shows no markers on a map made without one, so that is `provider-load-failed` with `field: 'mapId'`.
-- `destroy` removes only what maplace added.
+- `destroy` removes only what maplacejs added.
 
 `whenReady` waits for Google to initialise the map, created or yours (at most 2 s, and not while it is hidden).
 
@@ -81,13 +81,13 @@ A change of `color-scheme` or `map-options` opens the map again where it was, ke
 
 ## Loading Maps JS
 
-Nothing reads `google` on import. The adapter calls the global `google.maps.importLibrary`, which works with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) and with `@googlemaps/js-api-loader`, so maplace has no loader dependency. Without `google.maps.importLibrary` (an old or missing Maps JS) loading fails with `provider-load-failed`.
+Nothing reads `google` on import. The adapter calls the global `google.maps.importLibrary`, which works with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) and with `@googlemaps/js-api-loader`, so maplacejs has no loader dependency. Without `google.maps.importLibrary` (an old or missing Maps JS) loading fails with `provider-load-failed`.
 
 Only the element's Google provider adds Maps JS itself: one script per page however many maps, never while the element is held. The page's Maps JS tag, whoever added it, is shared: an element asking it for another `api-key`, `version`, `language` or `region` is misuse (one it leaves out takes the page's). A page that loaded Maps JS without a tag of its own (the bootstrap loader, js-api-loader) is taken as it is. [Setup](setup.md) has both routes.
 
 ## Map ID and styling
 
-maplace draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
+maplacejs draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
 
 ## Routes
 
@@ -95,11 +95,11 @@ Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older 
 
 ## Clustering
 
-The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing maplace's own cluster markers: a count, titled "Cluster of N locations". Circles, lines and polygons are never clustered, and the selected location is drawn on its own. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
+The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing maplacejs's own cluster markers: a count, titled "Cluster of N locations". Circles, lines and polygons are never clustered, and the selected location is drawn on its own. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
 
 ## When Google refuses
 
-Google refusing the key (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is `provider-auth-failed` for every map on the page. Google checks the key as the first map opens, so this can come after `ready`: maplace then stops drawing and leaves the map, with Google's message on it, until `destroy`. Your own `gm_authFailure` still runs. A missing key isn't refused (Google draws the map and logs `ApiProjectMapError`), so it reports nothing.
+Google refusing the key (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is `provider-auth-failed` for every map on the page. Google checks the key as the first map opens, so this can come after `ready`: maplacejs then stops drawing and leaves the map, with Google's message on it, until `destroy`. Your own `gm_authFailure` still runs. A missing key isn't refused (Google draws the map and logs `ApiProjectMapError`), so it reports nothing.
 
 ## Clicks and edits
 

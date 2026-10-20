@@ -1,8 +1,8 @@
-# maplace
+# maplacejs
 
 A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it and opens it.
 
-maplace 1.0 is a rewrite: no jQuery, no global, a small headless store with a Google Maps adapter, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
+maplacejs 1.0 is a rewrite: no jQuery, no global, a small headless store with a Google Maps adapter, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
 
 ## Quick start
 
@@ -19,7 +19,7 @@ One script, no build step:
 
 - `api-key` is your Google Maps JavaScript API key. The element loads Maps JS itself, once per page.
 - `map-id` is optional: without it the map uses Google's `DEMO_MAP_ID`, for development, and warns once in the console; set your own for production ([key and map ID](docs/reference/setup.md#key-and-map-id)).
-- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplace's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, and `list-heading` shows a heading above it (on the map too), naming it for screen readers. The list and popups come with default styles in `:where()`: any rule of yours wins. On a Google map, what goes on it sits in a panel like Google's own controls (`.maplace-control`), in the map's colour scheme.
+- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplacejs's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, and `list-heading` shows a heading above it (on the map too), naming it for screen readers. The list and popups come with default styles in `:where()`: any rule of yours wins. On a Google map, what goes on it sits in a panel like Google's own controls (`.maplace-control`), in the map's colour scheme.
 - `color-scheme` (`light`, `dark` or `follow-system`) and `map-options` (Google's map options as JSON, e.g. `'{"mapTypeControl":false}'`: not centre, zoom, map ID, colour scheme or `styles`) set the map Google creates; change either and the map opens again where it was.
 
 A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
@@ -97,9 +97,9 @@ createGoogleMap("#simple-vanilla-map", {
 });
 ```
 
-`list: true` adds maplace's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
+`list: true` adds maplacejs's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
 
-Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplace's own selected and hovered look fills what they leave unset.
+Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplacejs's own selected and hovered look fills what they leave unset.
 
 For the element from npm, `import "maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider.
 
@@ -186,7 +186,7 @@ export function CityMap() {
 }
 ```
 
-`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelectionChange`. A server component can start the selection with `defaultSelectedId`. Both files are the ones maplace's own test builds with Vite's RSC plugin.
+`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelectionChange`. A server component can start the selection with `defaultSelectedId`. Both files are the ones maplacejs's own test builds with Vite's RSC plugin.
 
 ## What it needs
 

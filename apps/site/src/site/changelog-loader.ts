@@ -1,10 +1,10 @@
 import type { Loader } from "astro/loaders";
-import { headCommit } from "../../../../scripts/build/git.ts";
-import { packageManifest, ROOT, readRootFile } from "../../../../scripts/build/package.ts";
+import { packageManifest, readRootFile } from "../../../../scripts/build/package.ts";
 import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
-import { blobBaseFor, repositoryPageFor } from "../../../../scripts/release/repository.ts";
+import { repositoryPageFor } from "../../../../scripts/release/repository.ts";
 import { type ChangelogLinks, changelogMarkdown } from "./changelog-markdown.ts";
 import { DOC_ROUTES } from "./repo-docs.ts";
+import { siteBlobBase } from "./site-blob-base.ts";
 
 /** The `changelog` collection's one entry: CHANGELOG.md, rendered. */
 export const CHANGELOG_ENTRY = "changelog";
@@ -14,9 +14,8 @@ export function changelogLoader(): Loader {
   return {
     name: "changelog",
     async load({ store, renderMarkdown }) {
-      const manifest = packageManifest();
-      const blobBase = blobBaseFor(manifest, headCommit(ROOT));
-      const links = changelogLinks(blobBase, repositoryPageFor(manifest));
+      const blobBase = siteBlobBase();
+      const links = changelogLinks(blobBase, repositoryPageFor(packageManifest()));
       const markdown = changelogMarkdown(readRootFile(CHANGELOG_FILE), links);
       const rendered = await renderMarkdown(markdown);
       store.clear();

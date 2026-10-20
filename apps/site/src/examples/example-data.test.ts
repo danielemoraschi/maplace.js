@@ -12,8 +12,9 @@ describe("exampleData", () => {
       "mixed-e",
       "points-4k",
     ]);
-    const points = files.find(({ name }) => name === "points-4k")?.json as unknown[];
-    expect(points).toHaveLength(4000);
+    const points = files.find(({ name }) => name === "points-4k");
+    expect(points?.json).toHaveLength(4000);
+    expect(points?.path).toBe("packages/maplace/examples/data/points-4k.json");
   });
 
   it("is each icon the example pages show, by its name, as SVG markup", () => {

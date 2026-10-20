@@ -1,6 +1,6 @@
 # Setup
 
-A maplace map on Google needs Maps JS on the page and an API key; a map ID is optional. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it.
+A maplacejs map on Google needs Maps JS on the page and an API key; a map ID is optional. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it.
 
 ## Key and Map ID
 
@@ -18,7 +18,7 @@ Two different things from Google, easy to mix up:
 - **The map ID** defaults to `DEMO_MAP_ID`, Google's public map ID for development. A map on it warns once in the console that it isn't for production.
 - **For production**, make a map ID of your own (Google's [map IDs](https://developers.google.com/maps/documentation/get-map-id)) and set it. It is also where the map's Cloud styling lives, besides a colour scheme ([map ID and styling](google.md#map-id-and-styling)).
 
-Google checks the key as the first map opens. A key it refuses (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is a `provider-auth-failed` error for every map on the page, and the map shows Google's message. A missing key isn't refused: Google draws the map and logs `ApiProjectMapError`, so maplace reports nothing ([when Google refuses](google.md#when-google-refuses)).
+Google checks the key as the first map opens. A key it refuses (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is a `provider-auth-failed` error for every map on the page, and the map shows Google's message. A missing key isn't refused: Google draws the map and logs `ApiProjectMapError`, so maplacejs reports nothing ([when Google refuses](google.md#when-google-refuses)).
 
 ## With the CDN script
 

@@ -1,11 +1,15 @@
 ---
 import quickStart from "../../../../packages/maplace/examples/quick-start/page.html?raw";
+import { REPOSITORY_URL } from "../site/repo-docs.ts";
 import SourceCode from "./SourceCode.astro";
+
+/** `owner/repo`, as GitHub names it. */
+const REPOSITORY = new URL(REPOSITORY_URL).pathname.slice(1);
 ---
 
 <div class="relative pt-10 pb-4">
   <svg
-    class="absolute top-0 right-0 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[640px]:hidden"
+    class="absolute top-0 right-0 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[70rem]:hidden"
     viewBox="0 0 320 180"
     aria-hidden="true"
   >
@@ -13,10 +17,22 @@ import SourceCode from "./SourceCode.astro";
     <path class="stroke-ink" d="M90 180 V126 L134 82 H320" />
     <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
   </svg>
-  <h1 class="relative m-0 text-hero leading-[0.95]">Places in.<br />Map and list,<br />in sync.</h1>
-  <p class="relative mt-4 mb-6 max-w-[34rem] text-lg">
-    Click a marker and the list follows. Pick a place in the list and the map pans to it. One
-    element, no build step.
+  <h1 class="relative m-0 text-hero leading-[0.95]">
+    A JavaScript library<br />for Google Maps.
+  </h1>
+  <p class="relative mt-4 mb-4 max-w-[34rem] text-lg">
+    maplacejs helps you embed Google Maps in your website: your locations as markers, shapes and
+    routes, and the list or menu that goes with them, in sync with the map. One script tag and a
+    Maps key; npm and React too.
+  </p>
+  <p class="relative mt-0 mb-6 h-7">
+    <a
+      class="github-button"
+      href={REPOSITORY_URL}
+      data-size="large"
+      data-show-count="true"
+      aria-label={`Star ${REPOSITORY} on GitHub`}>Star on GitHub</a
+    >
   </p>
   <div class="overflow-x-auto">
     <SourceCode code={quickStart} lang="html" />

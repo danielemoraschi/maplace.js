@@ -1,6 +1,8 @@
 /** A data file the example pages fetch, as the site serves it: `/<name>.json`. */
 export interface ExampleData {
   readonly name: string;
+  /** Its path in the repo. */
+  readonly path: string;
   readonly json: unknown;
 }
 
@@ -11,10 +13,14 @@ const DATA = import.meta.glob("../../../../packages/maplace/examples/data/*.json
   eager: true,
 });
 
+/** The `../` a glob's path starts with, from here to the repo's root. */
+const UP_TO_ROOT = /^(?:\.\.\/)+/;
+
 /** Each of `packages/maplace/examples/data/*.json`, by its name without `.json`. */
 export function exampleData(): readonly ExampleData[] {
   return Object.entries(DATA).map(([path, json]) => ({
     name: fileNameOf(path, ".json"),
+    path: path.replace(UP_TO_ROOT, ""),
     json,
   }));
 }

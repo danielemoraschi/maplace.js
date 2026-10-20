@@ -2,7 +2,12 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { headCommit } from "../../../scripts/build/git.ts";
+import { ROOT } from "../../../scripts/build/package.ts";
+import { exampleData } from "../src/examples/example-data.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
+import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
+import { thirdPartyOf } from "../src/site/third-parties.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
@@ -28,15 +33,16 @@ const consentKept = (context: BrowserContext) =>
   context.storageState().then(({ origins }) => origins.flatMap(({ localStorage }) => localStorage));
 
 describe("the site's consent to Google Maps", () => {
-  it("asks nothing off the site until the visitor loads the maps, then Google for Maps JS", async () => {
-    const { page, context, offsite, fetched, mapsJsRequests } = await site.visitor();
+  it("asks Google nothing until the visitor loads the maps, then for Maps JS", async () => {
+    const { page, context, offsite, google, fetched, mapsJsRequests } = await site.visitor();
     await openHome(page);
     // A version chosen before consent waits too, as the pages' own scripts wait for their maps:
     // big's 4,000 points aren't fetched by its page or its React version.
     await chooseVersion(page, "route", "Vanilla");
     await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
-    expect(offsite()).toEqual([]);
+    expect(google()).toEqual([]);
+    expect(offsite().filter((url) => !thirdPartyOf(url)?.askedBeforeConsent)).toEqual([]);
     expect(fetched("/points-4k.json")).toBe(false);
     await expect.poll(() => placeholder(page).isVisible()).toBe(true);
     await placeholder(page).click();
@@ -78,6 +84,36 @@ describe("the site's consent to Google Maps", () => {
     await openHome(page);
     await footerToggle(page).click();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
+    await context.close();
+  }, 30_000);
+});
+
+describe("the home page's links", () => {
+  it("has GitHub's star button in place of its link, GitHub's count refused or not", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url);
+    await expect.poll(() => page.locator("a.github-button").count(), ASKED).toBe(0);
+    await context.close();
+  }, 30_000);
+
+  it("links the data an example fetches to the repo, at the commit built, in a new tab", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url, { waitUntil: "domcontentloaded" });
+    const links = await page
+      .locator("section.example")
+      .getByRole("link", { name: /\.json$/ })
+      .evaluateAll((anchors) => anchors.map((a) => a.getAttribute("href")));
+    const targets = await page
+      .locator("section.example")
+      .getByRole("link", { name: /\.json$/ })
+      .evaluateAll((anchors) => anchors.map((a) => a.getAttribute("target")));
+    expect(new Set(targets)).toEqual(new Set(["_blank"]));
+    const blob = `${REPOSITORY_URL}/blob/${headCommit(ROOT)}/`;
+    expect(links.sort()).toEqual(
+      exampleData()
+        .map(({ path }) => `${blob}${path}`)
+        .sort(),
+    );
     await context.close();
   }, 30_000);
 });

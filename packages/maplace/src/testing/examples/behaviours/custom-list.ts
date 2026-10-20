@@ -16,7 +16,7 @@ function expectBorderless(fieldset: Element | null): void {
   expect([style.borderStyle, style.padding]).toEqual(["none", "0px"]);
 }
 
-/** 0.2's "checks" menu, built by the page: a radio per listed location, and one to fit all. */
+/** A list of the page's own: a radio per listed location, and one to fit all. */
 export const customList: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(controlPositions(adapter)).toEqual(["top-right"]);
   await expect

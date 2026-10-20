@@ -8,14 +8,14 @@ import {
   SITE_HOST,
   SITE_MAINTAINER,
 } from "../site/site-owner.ts";
-import { GOOGLE_MAPS } from "../site/third-parties.ts";
+import { GITHUB, GOOGLE_MAPS } from "../site/third-parties.ts";
 
 const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
 ---
 
 <ProsePage
   title={PRIVACY_PAGE.label}
-  description="What maplace's site sends where, and what it keeps in your browser."
+  description="What maplacejs's site sends where, and what it keeps in your browser."
 >
   <Fragment slot="lede">What this site sends where, and what it keeps in your browser.</Fragment>
 
@@ -59,6 +59,19 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     </p>
   </section>
 
+  <section aria-labelledby={GITHUB.id}>
+    <h2 id={GITHUB.id}>{GITHUB.name}</h2>
+    <p>
+      The home page's star button shows how many people starred maplacejs on GitHub. To show it,
+      your browser asks GitHub's API for the repository's count when the page opens, without
+      cookies; with that request GitHub receives your IP address, your browser's user agent and
+      this site's address. Its Privacy Statement says what it does with what it receives:
+    </p>
+    <ul>
+      {GITHUB.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
+    </ul>
+  </section>
+
   <section aria-labelledby="host">
     <h2 id="host">Who serves this site</h2>
     <p>
@@ -73,7 +86,7 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby="contact">
     <h2 id="contact">Who runs it</h2>
     <p>
-      maplace and this site are maintained by {SITE_MAINTAINER}. Questions about this page go to
+      maplacejs and this site are maintained by {SITE_MAINTAINER}. Questions about this page go to
       <a href={`mailto:${contact}`}>{contact}</a>.
     </p>
   </section>

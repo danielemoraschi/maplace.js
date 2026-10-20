@@ -1,13 +1,14 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<!-- A trail to edit (drag a point, or the middle of a segment), with points of interest along it
-     and a list, all from inline JSON. -->
+<!-- A trail to edit (drag a point, or the middle of a segment), Cinque Terre's coastal path, with
+     the villages along it and a list, all from inline JSON. -->
 <maplace-map api-key="YOUR_KEY" list>
   <script type="application/json">
-    [{ "id": "trail", "type": "polyline", "title": "Coast trail", "editable": true,
-       "path": [{ "lat": 44.10, "lng": 9.72 }, { "lat": 44.13, "lng": 9.68 }, { "lat": 44.14, "lng": 9.65 }] },
-     { "id": "lighthouse", "lat": 44.104, "lng": 9.712, "title": "Lighthouse", "content": "A lighthouse on the point." },
-     { "id": "chapel", "lat": 44.128, "lng": 9.685, "title": "Chapel", "content": "A chapel above the sea." },
-     { "id": "lookout", "lat": 44.138, "lng": 9.657, "title": "Lookout", "content": "The view over the bay." }]
+    [{ "id": "trail", "type": "polyline", "title": "Sentiero Azzurro", "editable": true,
+       "path": [{ "lat": 44.0996, "lng": 9.7377 }, { "lat": 44.1066, "lng": 9.7285 }, { "lat": 44.1197, "lng": 9.7103 },
+                { "lat": 44.1348, "lng": 9.6847 }, { "lat": 44.1462, "lng": 9.6548 }] },
+     { "id": "manarola", "lat": 44.1066, "lng": 9.7285, "title": "Manarola", "content": "Its harbour, and the houses above it." },
+     { "id": "corniglia", "lat": 44.1197, "lng": 9.7103, "title": "Corniglia", "content": "The village on the cliff top." },
+     { "id": "vernazza", "lat": 44.1348, "lng": 9.6847, "title": "Vernazza", "content": "A harbour and its castle's tower." }]
   </script>
 </maplace-map>

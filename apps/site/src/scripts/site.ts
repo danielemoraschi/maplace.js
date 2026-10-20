@@ -17,6 +17,7 @@ import {
   startFailureNotes,
 } from "./map-failures.ts";
 import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
+import { startStarButtons } from "./star-buttons.ts";
 import { startTabs } from "./tabs.ts";
 import { versionStarter } from "./version-start.ts";
 import { startVersionSwitches } from "./version-switch.ts";
@@ -63,6 +64,7 @@ provideSave(globalThis, document);
 startTabs(document);
 startVersionSwitches(document);
 startCopyButtons(document);
+void startStarButtons(document);
 startFailureNotes(maps);
 startConsent({
   document,

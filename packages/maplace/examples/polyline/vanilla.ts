@@ -1,23 +1,38 @@
 import type { LatLng, Location } from "maplace";
 import { createGoogleMap } from "maplace/google";
 
+// Cinque Terre's coastal path, Riomaggiore to Monterosso, through the villages between.
 const path: LatLng[] = [
-  { lat: 44.1, lng: 9.72 },
-  { lat: 44.13, lng: 9.68 },
-  { lat: 44.14, lng: 9.65 },
+  { lat: 44.0996, lng: 9.7377 },
+  { lat: 44.1066, lng: 9.7285 },
+  { lat: 44.1197, lng: 9.7103 },
+  { lat: 44.1348, lng: 9.6847 },
+  { lat: 44.1462, lng: 9.6548 },
 ];
 const locations: Location[] = [
   // Editable: drag a point, or the middle of a segment.
-  { id: "trail", type: "polyline", title: "Coast trail", editable: true, path },
+  { id: "trail", type: "polyline", title: "Sentiero Azzurro", editable: true, path },
   {
-    id: "lighthouse",
-    lat: 44.104,
-    lng: 9.712,
-    title: "Lighthouse",
-    content: "A lighthouse on the point.",
+    id: "manarola",
+    lat: 44.1066,
+    lng: 9.7285,
+    title: "Manarola",
+    content: "Its harbour, and the houses above it.",
   },
-  { id: "chapel", lat: 44.128, lng: 9.685, title: "Chapel", content: "A chapel above the sea." },
-  { id: "lookout", lat: 44.138, lng: 9.657, title: "Lookout", content: "The view over the bay." },
+  {
+    id: "corniglia",
+    lat: 44.1197,
+    lng: 9.7103,
+    title: "Corniglia",
+    content: "The village on the cliff top.",
+  },
+  {
+    id: "vernazza",
+    lat: 44.1348,
+    lng: 9.6847,
+    title: "Vernazza",
+    content: "A harbour and its castle's tower.",
+  },
 ];
 createGoogleMap("#polyline-vanilla-map", {
   locations,

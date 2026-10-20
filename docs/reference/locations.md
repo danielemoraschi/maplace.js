@@ -1,6 +1,6 @@
 # Locations
 
-A location is one item of your data: a marker, a circle, a polyline or a polygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (maplace never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
+A location is one item of your data: a marker, a circle, a polyline or a polygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (maplacejs never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
 
 <!-- example: packages/maplace/examples/polygon/vanilla.ts -->
 ```ts
@@ -95,7 +95,7 @@ A style says how a shape or a route line is drawn. Colours are CSS colours and w
 | `fill` | `string` | The fill's colour; not on a polyline |
 | `fillOpacity` | `number` | The fill's opacity, 0 to 1; not on a polyline |
 
-A shape in a state is drawn as maplace's own look for that state, then its `style`, then its state style (`selectedStyle` or `hoveredStyle`), each the location's over the store's ([store options](store.md#options)). Selected wins over hovered. The state style comes last, so a store-wide `selectedStyle` shows on every shape whatever its own colours.
+A shape in a state is drawn as maplacejs's own look for that state, then its `style`, then its state style (`selectedStyle` or `hoveredStyle`), each the location's over the store's ([store options](store.md#options)). Selected wins over hovered. The state style comes last, so a store-wide `selectedStyle` shows on every shape whatever its own colours.
 
 ## Content
 

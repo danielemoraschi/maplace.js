@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mapsScriptUrl } from "../../../../packages/maplace/src/google/maps-script-url.ts";
-import { GOOGLE_MAPS, thirdPartyOf } from "./third-parties.ts";
+import { GITHUB, GOOGLE_MAPS, thirdPartyOf } from "./third-parties.ts";
 
 describe("thirdPartyOf", () => {
   it("Google Maps receives Maps JS and what it fetches", () => {
@@ -16,11 +16,16 @@ describe("thirdPartyOf", () => {
     expect(requests.map(thirdPartyOf)).toEqual(requests.map(() => GOOGLE_MAPS));
   });
 
+  it("GitHub receives the star button's question for the repo's count", () => {
+    expect(thirdPartyOf("https://api.github.com/repos/danielemoraschi/maplace.js")).toBe(GITHUB);
+  });
+
   it("no one receives the site's own requests or a lookalike host", () => {
     const requests = [
       "http://127.0.0.1:4390/privacy/",
       "https://google.com.example.org/x",
       "https://notgoogle.com/x",
+      "https://github.com.example.org/x",
     ];
     expect(requests.map(thirdPartyOf)).toEqual(requests.map(() => undefined));
   });

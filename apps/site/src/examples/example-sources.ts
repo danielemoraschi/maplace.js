@@ -9,7 +9,7 @@ export interface ExampleFile {
   readonly code: string;
 }
 
-/** One way of using maplace an example is written in: its code tab, with every file it needs. */
+/** One way of using maplacejs an example is written in: its code tab, with every file it needs. */
 export interface ExampleCode {
   readonly kind: "html" | LiveVersion;
   readonly label: string;

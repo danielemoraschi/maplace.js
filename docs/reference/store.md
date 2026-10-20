@@ -1,6 +1,6 @@
 # Store and list view
 
-The store is maplace's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
+The store is maplacejs's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
 
 ## Creating a store
 
@@ -131,7 +131,7 @@ The list sets the store's hover from the pointer and keyboard focus, so the map 
 
 ## Listed locations
 
-`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplace's.
+`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's.
 
 ## Adapters
 

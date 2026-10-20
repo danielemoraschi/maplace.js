@@ -11,7 +11,7 @@
 </maplace-map>
 ```
 
-From npm, `import "maplace/element/google"` defines the same elements with the Google provider, and `maplace/element` defines them with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of maplace on the page logs an error and leaves the first in place.
+From npm, `import "maplace/element/google"` defines the same elements with the Google provider, and `maplace/element` defines them with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of maplacejs on the page logs an error and leaves the first in place.
 
 ## Size
 
@@ -116,7 +116,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## List views
 
-`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`), and `listed()`, the locations maplace's own lists show now, to read again on each store change. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is.
+`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is.
 
 A page on the CDN script, which imports nothing, reaches the same function as `customElements.get("maplace-map").defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
 

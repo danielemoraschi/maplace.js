@@ -13,8 +13,8 @@ const cities: Location[] = [
 ];
 
 /**
- * A list of your own, as 0.2's "checks" menu: a radio per location maplace's lists would list,
- * and one to fit them all; the selection is checked.
+ * A list of your own: a radio per location maplace's lists would list, and one to fit them all;
+ * the selection is checked.
  */
 function ChecksMenu({ heading }: { readonly heading: string }) {
   const maplace = useMaplace();

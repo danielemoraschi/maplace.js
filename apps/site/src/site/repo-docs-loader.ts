@@ -1,11 +1,10 @@
 import type { Loader } from "astro/loaders";
 import { type Pin, withPinnedScripts } from "../../../../scripts/build/cdn-pins.ts";
-import { headCommit } from "../../../../scripts/build/git.ts";
-import { packageManifest, ROOT, readRootFile } from "../../../../scripts/build/package.ts";
-import { blobBaseFor } from "../../../../scripts/release/repository.ts";
+import { readRootFile } from "../../../../scripts/build/package.ts";
 import { cdnPin } from "./cdn-pin.ts";
 import { withLinksFromRoot } from "./doc-relative-links.ts";
 import { DOC_ROUTES, REPO_DOCS, type RepoDoc } from "./repo-docs.ts";
+import { siteBlobBase } from "./site-blob-base.ts";
 import { withSiteLinks } from "./site-links.ts";
 
 /** The content loader of the `docs` collection: each repo document, rendered. */
@@ -14,7 +13,7 @@ export function repoDocsLoader(): Loader {
     name: "repo-docs",
     async load({ store, renderMarkdown }) {
       const pin = await cdnPin();
-      const blobBase = blobBaseFor(packageManifest(), headCommit(ROOT));
+      const blobBase = siteBlobBase();
       store.clear();
       for (const doc of REPO_DOCS) {
         const rendered = await renderMarkdown(repoDocMarkdown(doc, { pin, blobBase }));

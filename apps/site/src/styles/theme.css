@@ -25,7 +25,7 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.75rem;
   --text-title: clamp(2.25rem, 5vw, 3.25rem);
-  --text-hero: clamp(2.5rem, 7vw, 4.5rem);
+  --text-hero: clamp(2.125rem, 9vw, 4.5rem);
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
   /* An example's map: the height its hosts give it. */

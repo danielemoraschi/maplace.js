@@ -28,7 +28,7 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
   {
     name: "custom-list",
     title: "Custom list",
-    summary: "A list of your own on the map, as 0.2's checks menu: a radio per place, and fit all.",
+    summary: "A list of your own on the map: a radio per place, and fit all.",
   },
   {
     name: "tabs",
@@ -38,7 +38,7 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
   {
     name: "polyline",
     title: "Polyline",
-    summary: "A trail to edit, with points of interest along it, from inline JSON.",
+    summary: "A trail to edit, with places along it.",
   },
   {
     name: "polygon",
@@ -53,13 +53,12 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
   {
     name: "mixed",
     title: "Mixed",
-    summary:
-      "0.2's five data sets, fetched and swapped in live: markers, a route, an area, a circle.",
+    summary: "Five data sets, fetched and swapped in live: markers, a route, an area, a circle.",
   },
   {
     name: "styled",
     title: "Styled",
     summary: "Google's own look: a light or dark map, and the map-type control.",
   },
-  { name: "big", title: "Big", summary: "4,000 points from 0.2's demo, clustered." },
+  { name: "big", title: "Cluster", summary: "4,000 points, clustered." },
 ];

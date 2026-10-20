@@ -26,7 +26,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "README.md",
     title: "Getting started",
     description:
-      "Install maplace and put a map with a synced list on a page, with one script or a bundler.",
+      "Install maplacejs and put a map with a synced list on a page, with one script or a bundler.",
     label: "Getting started",
     pinsScripts: true,
   },

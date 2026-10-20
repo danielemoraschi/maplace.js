@@ -1,19 +1,23 @@
 ---
+import { getEntry } from "astro:content";
+import { dataFetchedBy, exampleDataLinks } from "../examples/example-data-links.ts";
+import type { ExampleSection } from "../examples/example-sections.ts";
 import { exampleCode } from "../examples/example-sources.ts";
+import { REPO_FILES_ENTRY } from "../site/repo-files-loader.ts";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
 import VersionSwitch from "./VersionSwitch.astro";
 
-interface Props {
+interface Props extends ExampleSection {
   number: number;
-  /** Its folder in `packages/maplace/examples/`. */
-  name: string;
-  title: string;
-  summary: string;
 }
 
 const { number, name, title, summary } = Astro.props;
 const versions = exampleCode(name);
+const repoFiles = await getEntry("repoFiles", REPO_FILES_ENTRY);
+if (repoFiles === undefined) throw new Error("the repoFiles collection has no entry");
+const fetched = dataFetchedBy(versions.flatMap(({ files }) => files.map(({ code }) => code)));
+const dataLinks = exampleDataLinks(fetched, repoFiles.data.blobBase);
 const tabs = [
   { tab: "map", label: "Map" },
   ...versions.map(({ kind, label }) => ({ tab: kind, label })),
@@ -34,6 +38,19 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     </h2>
     <p class="m-0 text-muted">{summary}</p>
   </div>
+  {
+    dataLinks.length > 0 && (
+      <p class="mt-1 mb-0 text-sm text-muted">
+        Fetches{" "}
+        {dataLinks.map(({ file, url }, index) => (
+          <>
+            {index > 0 && ", "}
+            <a href={url} target="_blank" rel="noopener">{file}</a>
+          </>
+        ))}
+      </p>
+    )
+  }
   <div
     class="mt-4 mb-3 flex flex-wrap"
     role="tablist"
