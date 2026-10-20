@@ -49,7 +49,7 @@ const checkCorner = optional((value, field) => checkOneOf(value, field, CORNERS)
 export function checkGoogleMapOptions<Data = unknown>(
   options: unknown,
 ): asserts options is GoogleMapOptions<Data> {
-  checkObject(options, OPTIONS, "an object with a mapId");
+  checkObject(options, OPTIONS, "an object");
   if ("map" in options) {
     reject(child(OPTIONS, "map"), "is for createGoogleAdapter: attach it to a store of your own");
   }

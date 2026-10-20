@@ -7,7 +7,6 @@ import { createRoot } from "react-dom/client";
 /** Your own code, writing an edited location back to your server. */
 declare function save(location: Location): Promise<void>;
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const park: Location[] = [
   {
     id: "park",
@@ -25,7 +24,7 @@ const park: Location[] = [
 function Polygon() {
   return (
     <MaplaceProvider locations={park} onLocationChange={({ location }) => void save(location)}>
-      <MaplaceMap createAdapter={createAdapter} className="map" />
+      <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
     </MaplaceProvider>
   );
 }

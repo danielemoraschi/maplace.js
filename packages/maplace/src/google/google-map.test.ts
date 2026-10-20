@@ -63,6 +63,15 @@ describe("googleMapWith", () => {
     expect(adapters[0]?.mounted?.container).toBe(map);
   });
 
+  it("makes the map with no options at all: no map ID, the store's defaults", () => {
+    const [map] = pageWith("map");
+    const { given, adapters, createAdapter } = made();
+    const maplace = googleMapWith(createAdapter, "#map");
+    expect(given).toEqual([{ mapId: undefined, colorScheme: undefined, mapOptions: undefined }]);
+    expect(adapters[0]?.mounted?.container).toBe(map);
+    expect(maplace.getSnapshot().locations).toEqual([]);
+  });
+
   it("puts no list on the map unless asked", () => {
     pageWith("map");
     const { adapters, createAdapter } = made();

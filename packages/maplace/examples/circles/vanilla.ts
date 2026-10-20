@@ -3,7 +3,6 @@ import { createGoogleMap } from "maplace/google";
 const center = { lat: 41.9028, lng: 12.4964 };
 const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };
 const maplace = createGoogleMap("#circles-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   selectedId: "center",
   locations: [
     {

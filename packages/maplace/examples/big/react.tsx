@@ -4,8 +4,6 @@ import { MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
-
 function Big() {
   const [points, setPoints] = useState<readonly Location[]>([]);
   useEffect(() => {
@@ -15,7 +13,7 @@ function Big() {
   }, []);
   return (
     <MaplaceProvider locations={points} cluster>
-      <MaplaceMap createAdapter={createAdapter} className="map" />
+      <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
     </MaplaceProvider>
   );
 }

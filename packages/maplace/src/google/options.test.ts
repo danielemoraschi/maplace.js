@@ -26,8 +26,8 @@ describe("checkGoogleOptions", () => {
   });
 
   it(
-    "needs an object with a map ID",
-    refusal(undefined, "options", "options must be an object with a mapId, got undefined"),
+    "needs an object of options",
+    refusal(null, "options", "options must be an object of Google adapter options, got null"),
   );
 
   it(

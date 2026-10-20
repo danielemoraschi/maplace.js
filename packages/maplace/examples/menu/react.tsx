@@ -4,7 +4,6 @@ import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const cities: Location[] = [
   { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", group: "Centre" },
   { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", group: "North" },
@@ -26,7 +25,7 @@ function Menu() {
           North only
         </label>
       </p>
-      <MaplaceMap createAdapter={createAdapter} className="map">
+      <MaplaceMap createAdapter={createGoogleAdapter} className="map">
         <LocationList
           as="select"
           heading="Choose a location:"

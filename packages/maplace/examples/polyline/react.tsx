@@ -4,7 +4,6 @@ import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const trail: Location[] = [
   // Editable: drag a point, or the middle of a segment.
   {
@@ -33,7 +32,7 @@ function Polyline() {
   return (
     <MaplaceProvider locations={trail}>
       <div className="map-and-list">
-        <MaplaceMap createAdapter={createAdapter} className="map" />
+        <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
         <LocationList />
       </div>
     </MaplaceProvider>

@@ -28,7 +28,6 @@ const locations: Location[] = [
 ];
 
 const maplace = createGoogleMap("#markers-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations,
   list: { heading: "Choose a location:" },
 });

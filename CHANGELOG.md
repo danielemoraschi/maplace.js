@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-20 Changed the Google map ID to optional: `createGoogleAdapter()`, `createGoogleMap("#map")` and a `<maplace-map>` without `map-id` use Google's `DEMO_MAP_ID` and warn once in the console that it isn't for production; the examples leave it out but for styled
 - 2026-10-20 Changed `<maplace-map>` to be 24rem tall unless the page sets its height (a page sizing it by its layout, `inset: 0` or a grid's row, sets `height: auto`), and its list beside the map to go under it on a screen narrower than 40rem, within that height
 - 2026-10-20 Changed the examples for a phone and a reader's eye: route's directions in a bordered panel apart from the map, its legs' headings kept in view and a shade where there is more; circles' radius and custom-list's choices spaced; tabs' and the beside lists' vanilla and React versions sized as the element is
 - 2026-10-19 Changed the menu, styled and route examples, in all three versions: the menu's select is headed "Choose a location:", menu's checkbox and styled's button sit in a paragraph above the map as mixed's buttons do, the button naming the theme it switches to ("Dark theme", "Light theme") in place of a pressed "Dark", and route's directions scroll within 16rem

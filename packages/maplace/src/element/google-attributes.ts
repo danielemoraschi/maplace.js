@@ -2,7 +2,6 @@ import type { MapsScriptLoad } from "../google/maps-script";
 import type { MapsScriptRequest } from "../google/maps-script-url";
 import type { GoogleAdapterOptions } from "../google/options";
 import { givenAttribute } from "./attribute-values";
-import { elementMisuse } from "./element-error";
 import { createdMapSettingsOf } from "./google-map-attributes";
 
 /** The attribute each Maps JS setting is read from. */
@@ -19,12 +18,11 @@ export interface GoogleSettings {
   readonly script: MapsScriptLoad;
 }
 
-/** The Google settings `element`'s attributes give; a missing `map-id` or a bad value is misuse. */
+/** The Google settings `element`'s attributes give; a bad value is misuse. */
 export function googleSettingsOf(element: Element): GoogleSettings {
-  const mapId = requiredMapId(element);
   const read = (name: string) => givenAttribute(element, name);
   return {
-    adapterOptions: { mapId, ...createdMapSettingsOf(element) },
+    adapterOptions: { mapId: read("map-id"), ...createdMapSettingsOf(element) },
     script: {
       key: read(SCRIPT_ATTRIBUTES.key),
       version: read(SCRIPT_ATTRIBUTES.version),
@@ -33,12 +31,4 @@ export function googleSettingsOf(element: Element): GoogleSettings {
       nonce: read("nonce"),
     },
   };
-}
-
-function requiredMapId(element: Element): string {
-  const mapId = givenAttribute(element, "map-id");
-  if (mapId !== undefined) return mapId;
-  throw elementMisuse(`map-id is required ("DEMO_MAP_ID", Google's demo map ID, for development)`, {
-    field: "map-id",
-  });
 }

@@ -1,7 +1,12 @@
 // Compile-time checks of createGoogleMap's options: each @ts-expect-error must stay an error.
 
 import type { Location, Maplace } from "maplace";
-import { createGoogleMap, type GoogleAdapterOptions, type GoogleMapList } from "maplace/google";
+import {
+  createGoogleAdapter,
+  createGoogleMap,
+  type GoogleAdapterOptions,
+  type GoogleMapList,
+} from "maplace/google";
 import { expectTypeOf } from "vitest";
 
 declare const pageMap: NonNullable<GoogleAdapterOptions["map"]>;
@@ -24,8 +29,12 @@ expectTypeOf<GoogleMapList["position"]>().toEqualTypeOf<
   "top-left" | "top-right" | "bottom-left" | "bottom-right" | undefined
 >();
 
-// @ts-expect-error a map ID is required: Advanced Markers need one
-createGoogleMap("#map", {});
+// No map ID, no options: Google's demo map ID, and the store's defaults.
+createGoogleMap("#map");
+createGoogleMap("#map", { locations: [{ id: "s", lat: 1, lng: 2 }] });
+createGoogleAdapter();
+// @ts-expect-error a map ID is a string
+createGoogleMap("#map", { mapId: 42 });
 // @ts-expect-error the page's own map takes the long form: createGoogleAdapter and attach
 createGoogleMap("#map", { mapId: "id", map: pageMap });
 // @ts-expect-error a list's corner is one of the four

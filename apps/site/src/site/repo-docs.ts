@@ -34,7 +34,8 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     id: "setup",
     file: "docs/reference/setup.md",
     title: "Setup",
-    description: "A Google Maps key, a map ID, and Maps JS on a page, with the element or npm.",
+    description:
+      "A Google Maps key, Maps JS on a page and, for production, a map ID, with the element or npm.",
     label: "Setup",
   },
   {

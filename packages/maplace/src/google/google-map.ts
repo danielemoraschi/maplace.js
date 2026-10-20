@@ -26,7 +26,7 @@ const DEFAULT_CORNER = "top-right";
  */
 export function createGoogleMap<Data = unknown>(
   container: HTMLElement | string,
-  options: GoogleMapOptions<Data>,
+  options: GoogleMapOptions<Data> = {},
 ): Maplace<Data> {
   return googleMapWith(createGoogleAdapter, container, options);
 }
@@ -38,7 +38,7 @@ export function createGoogleMap<Data = unknown>(
 export function googleMapWith<Data>(
   createAdapter: AdapterFactory,
   container: HTMLElement | string,
-  options: GoogleMapOptions<Data>,
+  options: GoogleMapOptions<Data> = {},
 ): Maplace<Data> {
   checkGoogleMapOptions<Data>(options);
   const { storeOptions, adapterOptions, list } = splitGoogleMapOptions(options);

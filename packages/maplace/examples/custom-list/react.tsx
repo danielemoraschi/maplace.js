@@ -4,7 +4,6 @@ import { MapControl, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/rea
 import { StrictMode, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const cities: Location[] = [
   { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
   { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
@@ -49,7 +48,7 @@ function ChecksMenu({ heading }: { readonly heading: string }) {
 function CustomList() {
   return (
     <MaplaceProvider locations={cities}>
-      <MaplaceMap createAdapter={createAdapter} className="map">
+      <MaplaceMap createAdapter={createGoogleAdapter} className="map">
         <MapControl position="top-right">
           <ChecksMenu heading="Choose a location:" />
         </MapControl>

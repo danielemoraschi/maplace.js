@@ -11,14 +11,14 @@ One script, no build step:
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
+<maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
 </maplace-map>
 ```
 
 - `api-key` is your Google Maps JavaScript API key. The element loads Maps JS itself, once per page.
-- `map-id` is required: maplace draws advanced markers, which need a map ID. `DEMO_MAP_ID` is Google's public ID for development.
+- `map-id` is optional: without it the map uses Google's `DEMO_MAP_ID`, for development, and warns once in the console; set your own for production ([key and map ID](docs/reference/setup.md#key-and-map-id)).
 - `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplace's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, and `list-heading` shows a heading above it (on the map too), naming it for screen readers. The list and popups come with default styles in `:where()`: any rule of yours wins. On a Google map, what goes on it sits in a panel like Google's own controls (`.maplace-control`), in the map's colour scheme.
 - `color-scheme` (`light`, `dark` or `follow-system`) and `map-options` (Google's map options as JSON, e.g. `'{"mapTypeControl":false}'`: not centre, zoom, map ID, colour scheme or `styles`) set the map Google creates; change either and the map opens again where it was.
 
@@ -93,7 +93,6 @@ A store on a Google map in one call, `createGoogleMap`, on a page that loads Map
 import { createGoogleMap } from "maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
 });
 ```
@@ -124,13 +123,12 @@ import { MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
 
 function Simple() {
   return (
     <MaplaceProvider locations={rome}>
-      <MaplaceMap createAdapter={createAdapter} className="map" />
+      <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
     </MaplaceProvider>
   );
 }
@@ -183,10 +181,8 @@ import { createGoogleAdapter } from "maplace/google";
 import { MaplaceMap } from "maplace/react";
 
 // Functions can't cross from a server component: the map's adapter is made here, on the client.
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
-
 export function CityMap() {
-  return <MaplaceMap createAdapter={createAdapter} className="map" />;
+  return <MaplaceMap createAdapter={createGoogleAdapter} className="map" />;
 }
 ```
 
@@ -195,7 +191,7 @@ export function CityMap() {
 ## What it needs
 
 - Evergreen browsers (ES2022). The package is ES modules only.
-- Google Maps JavaScript API with a map ID. Routes need Maps JS 3.63 or later.
+- Google Maps JavaScript API (a map ID of your own for production). Routes need Maps JS 3.63 or later.
 
 ## Documentation
 

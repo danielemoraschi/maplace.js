@@ -2,7 +2,6 @@ import type { Location } from "maplace";
 import { createGoogleMap } from "maplace/google";
 
 const maplace = createGoogleMap("#mixed-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   list: { container: "#mixed-vanilla-list" },
 });
 

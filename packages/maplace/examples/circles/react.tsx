@@ -9,7 +9,6 @@ interface Area {
   readonly about: string;
 }
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const center = { lat: 41.9028, lng: 12.4964 };
 const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };
 const circles: Location<Area>[] = [
@@ -72,7 +71,11 @@ function Circles() {
       onLocationChange={({ location }) => showRadius(location.id, location)}
     >
       <div className="map-and-list">
-        <MaplaceMap createAdapter={createAdapter} className="map" popupContent={popupContent} />
+        <MaplaceMap
+          createAdapter={createGoogleAdapter}
+          className="map"
+          popupContent={popupContent}
+        />
         <LocationList />
       </div>
       <p>

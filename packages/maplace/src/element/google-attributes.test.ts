@@ -30,11 +30,12 @@ describe("googleSettingsOf", () => {
     expect(script).toMatchObject({ key: undefined, region: undefined });
   });
 
-  it.each([{}, { "map-id": "" }])("refuses a map without a map ID", (attributes) => {
-    expect(() => googleSettingsOf(elementWith(attributes))).toThrow(
-      expect.objectContaining({ code: "invalid-input", field: "map-id" }),
-    );
-  });
+  it.each([{}, { "map-id": "" }])(
+    "leaves the map ID to the adapter when none is given",
+    (attributes) => {
+      expect(googleSettingsOf(elementWith(attributes)).adapterOptions.mapId).toBeUndefined();
+    },
+  );
 
   it("refuses a bad map setting", () => {
     expect(() => googleSettingsOf(elementWith({ "map-id": "m", "color-scheme": "night" }))).toThrow(

@@ -17,5 +17,5 @@ const locations: Location[] = [
     ],
   },
 ];
-const maplace = createGoogleMap("#polygon-vanilla-map", { mapId: "DEMO_MAP_ID", locations });
+const maplace = createGoogleMap("#polygon-vanilla-map", { locations });
 maplace.on("locationChange", ({ location }) => save(location));

@@ -20,9 +20,13 @@ describe("checkGoogleMapOptions", () => {
     ).not.toThrow();
   });
 
+  it("accepts no map ID: the adapter falls back to Google's demo one", () => {
+    expect(() => checkGoogleMapOptions({ locations: [] })).not.toThrow();
+  });
+
   it("refuses options that aren't an object", () => {
     expect(() => checkGoogleMapOptions("#map")).toThrow(
-      'createGoogleMap: options must be an object with a mapId, got "#map"',
+      'createGoogleMap: options must be an object, got "#map"',
     );
   });
 

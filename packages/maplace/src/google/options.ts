@@ -14,10 +14,10 @@ type SetElsewhere = "mapId" | "colorScheme" | "center" | "zoom" | "styles";
 
 export interface GoogleAdapterOptions {
   /**
-   * Required for Advanced Markers; `DEMO_MAP_ID` works for development. Styling lives in Cloud
-   * Console.
+   * The map ID Advanced Markers need, and Cloud styling hangs on. Left out, a map maplace creates
+   * uses Google's `DEMO_MAP_ID`, for development, and warns once in the console.
    */
-  readonly mapId: string;
+  readonly mapId?: string | undefined;
   /** For a map maplace creates; the page's own `map` keeps its own. */
   readonly colorScheme?: "light" | "dark" | "follow-system" | undefined;
   /**
@@ -99,14 +99,14 @@ function isPageMap(value: unknown): boolean {
 
 const checkOptionFields: Assert<GoogleAdapterOptions> = recordOf<GoogleAdapterOptions>({
   checks: {
-    mapId: checkNonEmptyString,
+    mapId: optional(checkNonEmptyString),
     colorScheme: optional(checkColorScheme),
     map: optional(checkPageMap),
     mapOptions: optional(mapOptionsCheck(ADAPTER_OWN_SETTINGS)),
   },
   unknown: "is not a Google adapter option",
   remarks: { google: "is not an option: Google's map options go in mapOptions" },
-  expected: "an object with a mapId",
+  expected: "an object of Google adapter options",
 });
 
 /** The page's own map keeps the options and colour scheme the page gave it. */

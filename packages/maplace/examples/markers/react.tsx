@@ -10,8 +10,6 @@ interface City {
   readonly starred?: boolean;
 }
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
-
 const cities: Location<City>[] = [
   {
     id: "rome",
@@ -62,7 +60,7 @@ function Markers() {
   return (
     <MaplaceProvider locations={locations} onMapClick={dropPin}>
       <MaplaceMap
-        createAdapter={createAdapter}
+        createAdapter={createGoogleAdapter}
         className="map"
         popupContent={popupContent}
         markerIcon={markerIcon}

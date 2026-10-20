@@ -1,10 +1,18 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { warnOfDemoMapIdOnce } from "./demo-map-id";
 import { createdMapOptions, mapSourceFor } from "./map-source";
 import type { GoogleAdapterOptions } from "./options";
 import { type StubMap, stubLibraries } from "./testing/stub-libraries";
 
+vi.mock("./demo-map-id", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./demo-map-id")>()),
+  warnOfDemoMapIdOnce: vi.fn(),
+}));
+
 const libraries = stubLibraries();
+
+beforeEach(() => vi.mocked(warnOfDemoMapIdOnce).mockClear());
 
 function containerWith(...children: HTMLElement[]) {
   const container = document.createElement("div");
@@ -29,6 +37,10 @@ describe("createdMapOptions", () => {
     ["follow-system", "FOLLOW_SYSTEM"],
   ] as const)("gives Google the %s colour scheme as %s", (colorScheme, google) => {
     expect(createdMapOptions({ mapId: "id", colorScheme }).colorScheme).toBe(google);
+  });
+
+  it("uses Google's demo map ID when the page gives none", () => {
+    expect(createdMapOptions({}).mapId).toBe("DEMO_MAP_ID");
   });
 
   it("leaves Google's own colour scheme when none is given", () => {
@@ -68,6 +80,22 @@ describe("a map maplace creates", () => {
       });
     expect(open).toThrow("bad map options");
     expect(container.children).toHaveLength(0);
+  });
+});
+
+describe("the demo map ID's warning", () => {
+  it("warns when it opens a map with the demo map ID, not when the page gives one", () => {
+    mapSourceFor({ mapId: "id" }).open(containerWith(), libraries);
+    expect(warnOfDemoMapIdOnce).not.toHaveBeenCalled();
+    mapSourceFor({}).open(containerWith(), libraries);
+    expect(warnOfDemoMapIdOnce).toHaveBeenCalledOnce();
+  });
+
+  it("says nothing for the page's own map, which keeps its own map ID", () => {
+    const element = document.createElement("div");
+    const pageMap = { getDiv: () => element } as unknown as google.maps.Map;
+    mapSourceFor({ map: pageMap }).open(containerWith(element), libraries);
+    expect(warnOfDemoMapIdOnce).not.toHaveBeenCalled();
   });
 });
 

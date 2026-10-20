@@ -5,7 +5,6 @@ const notes: Readonly<Record<string, string>> = {
   milan: "Finance and fashion.",
 };
 const maplace = createGoogleMap("#tabs-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   selectedId: "rome",
   locations: [
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },

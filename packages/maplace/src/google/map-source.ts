@@ -1,5 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import { GOOGLE_MAP_CLASS } from "./control-styles";
+import { DEMO_MAP_ID, warnOfDemoMapIdOnce } from "./demo-map-id";
 import type { GoogleLibraries } from "./libraries";
 import { GOOGLE_COLOR_SCHEMES, type GoogleAdapterOptions } from "./options";
 
@@ -30,7 +31,7 @@ export function createdMapOptions({
   return {
     ...mapOptions,
     ...WORLD_VIEW,
-    mapId,
+    mapId: mapId ?? DEMO_MAP_ID,
     ...(colorScheme && { colorScheme: GOOGLE_COLOR_SCHEMES[colorScheme] }),
   };
 }
@@ -41,8 +42,10 @@ export function createdMapOptions({
  */
 function createdMapSource(options: GoogleAdapterOptions): MapSource {
   return {
-    open: (container, { maps }) =>
-      openIn(container, (element) => new maps.Map(element, createdMapOptions(options))),
+    open(container, { maps }) {
+      if (options.mapId === undefined) warnOfDemoMapIdOnce();
+      return openIn(container, (element) => new maps.Map(element, createdMapOptions(options)));
+    },
   };
 }
 

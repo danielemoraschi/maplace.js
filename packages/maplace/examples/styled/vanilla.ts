@@ -10,7 +10,10 @@ const locations: Location[] = [
   { id: "faro", lat: 37.0194, lng: -7.9304, title: "Faro" },
 ];
 
-/** Google's own look: a light or dark map, with the map-type control. */
+/**
+ * Google's own look: a light or dark map, with the map-type control. A map's Cloud styling hangs
+ * on its map ID: put your own in `mapId`.
+ */
 const adapterIn = (colorScheme: ColorScheme) =>
   createGoogleAdapter({ mapId: "DEMO_MAP_ID", colorScheme, mapOptions: { mapTypeControl: true } });
 

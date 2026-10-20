@@ -4,7 +4,6 @@ import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/r
 import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const GROUPS = ["a", "b", "c", "d", "e"];
 
 /** A data set shown, group C with a route through it. */
@@ -56,7 +55,7 @@ function Mixed() {
       </p>
       <FitAllOnSwap locations={shown.locations} />
       <div className="map-and-list">
-        <MaplaceMap createAdapter={createAdapter} className="map" />
+        <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
         <LocationList />
       </div>
     </MaplaceProvider>

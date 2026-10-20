@@ -20,7 +20,6 @@ const locations: Location[] = [
   { id: "lookout", lat: 44.138, lng: 9.657, title: "Lookout", content: "The view over the bay." },
 ];
 createGoogleMap("#polyline-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations,
   list: { container: "#polyline-vanilla-list" },
 });

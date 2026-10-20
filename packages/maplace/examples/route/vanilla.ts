@@ -8,7 +8,6 @@ const locations: Location[] = [
   { id: "munich", lat: 48.1351, lng: 11.582, title: "Munich" },
 ];
 const maplace = createGoogleMap("#route-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations,
   list: { container: "#route-vanilla-list" },
 });

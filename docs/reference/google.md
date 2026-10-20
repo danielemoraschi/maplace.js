@@ -6,7 +6,7 @@
 
 | Option | Type | What |
 |---|---|---|
-| `mapId` | `string` | Required: Google's advanced markers need a map ID. `DEMO_MAP_ID` works for development |
+| `mapId` | `string` | Optional: Google's `DEMO_MAP_ID` by default, for development, with a console warning; your own for production ([key and map ID](setup.md#key-and-map-id)) |
 | `colorScheme` | `"light" \| "dark" \| "follow-system"` | The colour scheme of a map maplace creates |
 | `map` | `google.maps.Map` | Your own map to draw on, instead of one maplace creates |
 | `mapOptions` | `google.maps.MapOptions` | Extra options for a map maplace creates; not `center`, `zoom`, `mapId`, `colorScheme` or `styles` |
@@ -22,7 +22,6 @@
 import { createGoogleMap } from "maplace/google";
 
 const maplace = createGoogleMap("#menu-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations: [
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", group: "Centre" },
     { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", group: "North" },
@@ -41,7 +40,7 @@ Its own options, beside the store's:
 
 | Option | Type | What |
 |---|---|---|
-| `mapId` | `string` | Required, as the adapter's |
+| `mapId` | `string` | Optional, as the adapter's |
 | `colorScheme` | `"light" \| "dark" \| "follow-system"` | As the adapter's |
 | `mapOptions` | `google.maps.MapOptions` | As the adapter's |
 | `list` | `true \| GoogleMapList` | maplace's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
@@ -69,7 +68,7 @@ The element's Google provider reads these attributes of `<maplace-map>` when the
 
 | Attribute | What |
 |---|---|
-| `map-id` | Required: the map ID, as `mapId` |
+| `map-id` | Optional: the map ID, as `mapId` |
 | `nonce` | The nonce of the Maps JS script it adds, for a Content Security Policy |
 | `color-scheme` | `light`, `dark` or `follow-system`, as `colorScheme` |
 | `map-options` | A JSON object of Google's map options, as `mapOptions`, with the same exclusions |
@@ -88,7 +87,7 @@ Only the element's Google provider adds Maps JS itself: one script per page howe
 
 ## Map ID and styling
 
-maplace draws advanced markers only (Google deprecated the legacy `Marker`), so a map ID is required; `DEMO_MAP_ID`, Google's public demo ID, works for development. A map is styled through its map ID's Cloud styling, plus `colorScheme`.
+maplace draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
 
 ## Routes
 

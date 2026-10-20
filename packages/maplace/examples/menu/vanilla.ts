@@ -1,7 +1,6 @@
 import { createGoogleMap } from "maplace/google";
 
 const maplace = createGoogleMap("#menu-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations: [
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", group: "Centre" },
     { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", group: "North" },

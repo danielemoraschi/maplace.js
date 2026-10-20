@@ -1,16 +1,24 @@
 # Setup
 
-A maplace map on Google needs two things from Google, a key and a map ID, and Maps JS on the page. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it.
+A maplace map on Google needs Maps JS on the page and an API key; a map ID is optional. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it.
 
-## A key
+## Key and Map ID
 
-The key is your Google Maps JavaScript API key: Google's [Get an API key](https://developers.google.com/maps/documentation/javascript/get-api-key) says how to make one and restrict it to your site. The element takes it as `api-key`; a page that loads Maps JS itself gives it to Google's loader.
+Two different things from Google, easy to mix up:
+
+| | API key | Map ID |
+|---|---|---|
+| Where | the element's `api-key`, or `key` in Google's loader | the element's `map-id`, the adapter's `mapId` |
+| What it does | lets your site load Maps JS, and bills your Google project | picks the map's configuration: advanced markers, Cloud styling |
+| In the examples | `YOUR_KEY`, a placeholder: nothing loads until you put yours in | left out: the map uses Google's `DEMO_MAP_ID` |
+| Needed | yes, always | no |
+| Kept safe by | restricting it to your site's addresses: it is in your page for anyone to read | nothing: it is public |
+
+- **The key** is your Google Maps JavaScript API key: Google's [Get an API key](https://developers.google.com/maps/documentation/javascript/get-api-key) says how to make one and restrict it to your site.
+- **The map ID** defaults to `DEMO_MAP_ID`, Google's public map ID for development. A map on it warns once in the console that it isn't for production.
+- **For production**, make a map ID of your own (Google's [map IDs](https://developers.google.com/maps/documentation/get-map-id)) and set it. It is also where the map's Cloud styling lives, besides a colour scheme ([map ID and styling](google.md#map-id-and-styling)).
 
 Google checks the key as the first map opens. A key it refuses (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is a `provider-auth-failed` error for every map on the page, and the map shows Google's message. A missing key isn't refused: Google draws the map and logs `ApiProjectMapError`, so maplace reports nothing ([when Google refuses](google.md#when-google-refuses)).
-
-## A map ID
-
-maplace draws Google's advanced markers, which need a map ID: the element's `map-id`, the adapter's `mapId`. `DEMO_MAP_ID`, Google's public demo ID, works for development; for your own, see Google's [map IDs](https://developers.google.com/maps/documentation/get-map-id). A map is styled through its map ID's Cloud styling, plus a colour scheme ([map ID and styling](google.md#map-id-and-styling)).
 
 ## With the CDN script
 
@@ -19,7 +27,7 @@ One script, no build step. The element adds Maps JS to the page itself, once how
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
+<maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
 </maplace-map>
@@ -59,7 +67,6 @@ The module makes the store on a Google map in one call ([`createGoogleMap`](goog
 import { createGoogleMap } from "maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
-  mapId: "DEMO_MAP_ID",
   locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
 });
 ```

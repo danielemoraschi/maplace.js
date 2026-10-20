@@ -14,6 +14,10 @@ describe("maplace/google", () => {
     expect(entry.createGoogleAdapter({ mapId: "DEMO_MAP_ID" }).capabilities).toBeInstanceOf(Set);
   });
 
+  it("makes an adapter with no options", () => {
+    expect(entry.createGoogleAdapter().capabilities).toBeInstanceOf(Set);
+  });
+
   it("throws on misuse when the adapter is made", () => {
     expect(() => entry.createGoogleAdapter({ mapId: "" })).toThrow(
       expect.objectContaining({ code: "invalid-input", field: "options.mapId" }),

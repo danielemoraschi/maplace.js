@@ -9,7 +9,7 @@ maplace 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in the
 - **`lon` is `lng`**, as Google and MapLibre name it, with no alias.
 - **Text is text.** Titles and string content are never inserted as HTML; `html` needs a `sanitize` function you provide (DOMPurify, for one).
 - **One kind of change, after it happened.** The `before…` callbacks are gone; events such as `selectionChange`, `locationChange` and `routeChange` report what changed.
-- **Google Maps needs a map ID**, because maplace draws advanced markers. `DEMO_MAP_ID` works for development.
+- **A map ID, for production**: maplace draws advanced markers, which need a map ID. As in 0.2, a page needs none to start: without one the map uses Google's `DEMO_MAP_ID` and warns once in the console that it is for development ([key and map ID](docs/reference/setup.md#key-and-map-id)).
 
 ## Before and after
 
@@ -37,7 +37,7 @@ In 1.0 the element does the same, loading Google Maps itself:
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
+<maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
 </maplace-map>
@@ -49,7 +49,6 @@ A page that builds the map in code makes the same call 0.2 made, `createGoogleMa
 import { createGoogleMap } from "maplace/google";
 
 createGoogleMap("#gmap", {
-  mapId: "DEMO_MAP_ID",
   locations: [
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
     { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },

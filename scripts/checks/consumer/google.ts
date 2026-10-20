@@ -10,3 +10,4 @@ const maplace = createMaplace({ locations: [{ id: "rome", lat: 41.9, lng: 12.5 }
 maplace.attach(createGoogleAdapter(options), pageMap.getDiv());
 document.createElement("maplace-map").release();
 createGoogleMap("#map", { mapId: "DEMO_MAP_ID", list: { position: "top-left" } }).destroy();
+createGoogleMap("#map").destroy();

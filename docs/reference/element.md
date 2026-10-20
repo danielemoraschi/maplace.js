@@ -5,7 +5,7 @@
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
+<maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
 </maplace-map>
@@ -97,7 +97,7 @@ A map's locations come from the `locations` property once it is set; else from o
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- An editable area; edits are written back and announced. -->
-<maplace-map id="polygon-map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID">
+<maplace-map id="polygon-map" api-key="YOUR_KEY">
   <script type="application/json">
     [{ "id": "park", "type": "polygon", "title": "Park", "editable": true,
        "path": [{ "lat": 41.91, "lng": 12.48 }, { "lat": 41.92, "lng": 12.49 }, { "lat": 41.90, "lng": 12.50 }] }]

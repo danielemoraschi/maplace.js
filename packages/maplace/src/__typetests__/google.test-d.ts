@@ -14,8 +14,11 @@ createGoogleAdapter({
 });
 createGoogleAdapter({ mapId: "id", colorScheme: undefined, map: undefined, mapOptions: undefined });
 
-// @ts-expect-error a map ID is required: Advanced Markers need one
+// No map ID: Google's demo one, with a warning.
+createGoogleAdapter();
 createGoogleAdapter({});
+// @ts-expect-error a map ID is a string
+createGoogleAdapter({ mapId: 42 });
 // @ts-expect-error maplace's colour scheme names, not Google's
 createGoogleAdapter({ mapId: "id", colorScheme: "DARK" });
 // @ts-expect-error the store's view sets the centre
