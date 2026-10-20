@@ -1,7 +1,9 @@
 import type { LocationDiff, PresentationState } from "../../adapter";
 import { inChunks } from "../../adapter-kit/chunks";
-import { createOrderCounter, stackRank } from "../../adapter-kit/stacking";
+import { createOrderCounter, shapeStackRank, stackRank } from "../../adapter-kit/stacking";
 import type { Drawable } from "../../drawable";
+import type { Geometry } from "../../geometry";
+import type { LocationState } from "../../location";
 import { changedIds, stateIn } from "../../location-state";
 import type { MapEntry, MapState } from "./map-state";
 
@@ -35,12 +37,21 @@ export function createDrawing(map: MapState, stopped: () => boolean): Drawing {
     const state = stateIn(map.presented, drawable.id);
     const order = nextOrder();
     const icon = drawable.renderIcon?.(state);
-    return { drawable, geometry: drawable.geometry, icon, order, stack: stackRank(order, state) };
+    return {
+      drawable,
+      geometry: drawable.geometry,
+      icon,
+      order,
+      stack: stackOf(drawable.geometry, order, state),
+    };
   }
 
   /** A new drawable for a drawn location: only what changed is redone, as on a real map. */
   function replace(entry: MapEntry, drawable: Drawable): void {
-    if (drawable.geometry !== entry.drawable.geometry) entry.geometry = drawable.geometry;
+    if (drawable.geometry !== entry.drawable.geometry) {
+      entry.geometry = drawable.geometry;
+      entry.stack = stackOf(drawable.geometry, entry.order, stateIn(map.presented, drawable.id));
+    }
     const iconChanged = drawable.renderIcon !== entry.drawable.renderIcon;
     entry.drawable = drawable;
     if (iconChanged) entry.icon = drawable.renderIcon?.(stateIn(map.presented, drawable.id));
@@ -59,8 +70,13 @@ export function createDrawing(map: MapState, stopped: () => boolean): Drawing {
         if (entry === undefined) continue;
         const state = stateIn(next, id);
         entry.icon = entry.drawable.renderIcon?.(state);
-        entry.stack = stackRank(entry.order, state);
+        entry.stack = stackOf(entry.geometry, entry.order, state);
       }
     },
   };
+}
+
+/** Where a location stacks: a marker by its state and order, a shape by its size and order. */
+function stackOf(geometry: Geometry, order: number, state: LocationState): number {
+  return geometry.type === "marker" ? stackRank(order, state) : shapeStackRank(geometry, order);
 }

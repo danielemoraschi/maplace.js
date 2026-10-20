@@ -145,16 +145,30 @@ describe("shape placers", () => {
     expect(stub.get("fillColor")).toBe("blue");
   });
 
-  it("restack on a state change, hide, and leave the map on remove, unhovered", () => {
+  it("keep their place in the stack on a state change, hide, and leave the map on remove, unhovered", () => {
     const { placed: p, stub, host } = placed(polygonDrawable("p"));
     const plain = stub.get("zIndex") as number;
     stub.trigger("mouseover");
     p.present({ state: { selected: true, hovered: false }, visible: true });
-    expect(stub.get("zIndex")).toBeGreaterThan(plain);
+    expect(stub.get("zIndex")).toBe(plain);
     p.present({ state: { selected: true, hovered: false }, visible: false });
     expect(stub.get("visible")).toBe(false);
     p.remove();
     expect(stub.getMap()).toBeNull();
     expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
+  });
+
+  it("restack behind smaller shapes once reshaped larger", () => {
+    const drawable = polygonDrawable("p");
+    const { placed: p, stub } = placed(drawable);
+    const before = stub.get("zIndex") as number;
+    const larger = [
+      { lat: -5, lng: -5 },
+      { lat: -5, lng: 5 },
+      { lat: 5, lng: 5 },
+      { lat: 5, lng: -5 },
+    ];
+    p.update(reshaped(drawable, { type: "polygon", path: larger }));
+    expect(stub.get("zIndex")).toBeLessThan(before);
   });
 });

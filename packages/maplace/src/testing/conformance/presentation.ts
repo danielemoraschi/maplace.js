@@ -5,11 +5,11 @@ import {
   markerDrawable,
   ORIGIN,
   polygonDrawable,
-  polylineDrawable,
   presented,
   updating,
 } from "./fixtures";
 import { mountSubject } from "./harness";
+import { shapeStackingChecks } from "./shape-stacking";
 import { shapeStateChecks } from "./shape-states";
 import type { ConformanceSubject } from "./subject";
 
@@ -88,7 +88,7 @@ export function presentationChecks(subject: ConformanceSubject): void {
       expect(probe.location("a")?.icon).toBeUndefined();
     });
 
-    it("stacks the hovered location on top, then the selected one, the rest in the order added", async () => {
+    it("stacks the hovered marker on top, then the selected one, the rest in the order added", async () => {
       const { adapter, probe } = await mountSubject(subject);
       await adapter.apply(adding(markerDrawable("a"), markerDrawable("b"), markerDrawable("c")));
       await adapter.apply(adding(markerDrawable("d")));
@@ -99,15 +99,7 @@ export function presentationChecks(subject: ConformanceSubject): void {
       expect(probe.stackOrder()).toEqual(["a", "c", "b"]);
     });
 
-    it("stacks shapes by the same rule, below every marker", async () => {
-      const { adapter, probe } = await mountSubject(subject);
-      const [p, q] = [polygonDrawable("p"), polygonDrawable("q")];
-      await adapter.apply(adding(markerDrawable("a"), p, q, polylineDrawable("r")));
-      expect(probe.stackOrder()).toEqual(["a", "r", "q", "p"]);
-      adapter.present(presented({ selectedId: "p", hoveredId: "q" }));
-      expect(probe.stackOrder()).toEqual(["a", "q", "p", "r"]);
-    });
-
+    shapeStackingChecks(subject);
     shapeStateChecks(subject);
   });
 }

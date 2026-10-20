@@ -15,7 +15,7 @@ const LOCATION_FIELDS_0_2: Readonly<Record<string, string>> = {
   stopover: "list the stop's id in route.via to pass through it",
   stroke_options: "use style",
   circle_options: "use style",
-  zIndex: "leave it out: the selected or hovered location stacks on top",
+  zIndex: "leave it out: markers stack by hover and selection, shapes by size",
   on_menu: "use listed: false",
   pan_on_click: "leave it out: the map always pans to a clicked location",
 };

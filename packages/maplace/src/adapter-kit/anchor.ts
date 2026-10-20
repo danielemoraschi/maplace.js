@@ -3,7 +3,7 @@ import { arcSpan, narrowestArc, wrapLongitude } from "../longitude-arc";
 
 type Path = readonly LatLng[];
 
-const RADIANS_PER_DEGREE = Math.PI / 180;
+export const RADIANS_PER_DEGREE = Math.PI / 180;
 
 /**
  * The point a location's popup points at, on every map alike: a marker's point, a circle's
