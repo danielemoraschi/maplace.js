@@ -1,16 +1,9 @@
-/* The site's own utilities: each is used in several components. */
+/* The site's own looks, shared: `wrap` by its header, footer and main; `button-plain` by its
+ * copy buttons and, in `frame.css`, an example's own buttons. */
 @utility wrap {
   max-width: var(--container-measure);
   margin-inline: auto;
   padding-inline: var(--spacing-gutter);
-}
-
-@utility button {
-  border: 0;
-  padding: 0.5rem 1rem;
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  font-weight: 500;
 }
 
 @utility button-plain {

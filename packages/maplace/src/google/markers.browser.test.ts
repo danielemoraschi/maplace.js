@@ -9,6 +9,12 @@ import { centreOf, tabTo } from "./testing/page-input";
 import { mountedGoogle, pageMapIn, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
+/**
+ * A name for a marker the test points at: userEvent finds an element by its role and name, and a
+ * nameless marker's `button` role matches Google's own buttons once they draw.
+ */
+const NAMED = { title: "Rome" };
+
 /** A map the page made, on the page, removed after the test. */
 function pageMap(): google.maps.Map {
   const container = sizedContainer();
@@ -21,7 +27,7 @@ describeWithMaps("Google markers under real input", () => {
 
   it("reports a click on a marker once, as the marker's and not the map's", async () => {
     const { adapter, state, host } = await mountedGoogle();
-    await adapter.apply(adding(markerDrawable("a")));
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, NAMED)));
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
     // Google dispatches the click after the input, not during it.
@@ -35,7 +41,7 @@ describeWithMaps("Google markers under real input", () => {
 
   it("leaves a clicked marker unhovered once the pointer goes: a click's focus never hovers it", async () => {
     const { adapter, state, host } = await mountedGoogle();
-    await adapter.apply(adding(markerDrawable("a")));
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, NAMED)));
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
@@ -45,7 +51,7 @@ describeWithMaps("Google markers under real input", () => {
 
   it("reports the pointer onto a marker and off it", async () => {
     const { adapter, state, host } = await mountedGoogle();
-    await adapter.apply(adding(markerDrawable("a")));
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, NAMED)));
     const marker = await drawnMarker(state, "a");
     await userEvent.hover(marker);
     await userEvent.unhover(marker);
@@ -65,7 +71,7 @@ describeWithMaps("Google markers under real input", () => {
 
   it("selects an editable marker on a click, and reports it as it is dragged, and the drag once, on release", async () => {
     const { adapter, state, host } = await mountedGoogle();
-    await adapter.apply(adding(markerDrawable("a", ORIGIN, { editable: true })));
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, { ...NAMED, editable: true })));
     const marker = await drawnMarker(state, "a");
     await userEvent.click(marker);
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);

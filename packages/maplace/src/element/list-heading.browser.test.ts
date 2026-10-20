@@ -1,16 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { box, lastAdapter, mapFrom, nextTask, styledPage } from "./testing/fake-maps";
+import { box, lastAdapter, mapFrom, nextTask, places, styledPage } from "./testing/fake-maps";
 
 const HEADING = "Choose a location:";
-
-/** `count` locations as `<maplace-location>` children. */
-function places(count: number): string {
-  return Array.from(
-    { length: count },
-    (_, index) =>
-      `<maplace-location location-id="p${index}" lat="${index / 10}" lng="0" title="Place ${index}"></maplace-location>`,
-  ).join("");
-}
 
 function listboxNamed(root: ParentNode, name: string): HTMLElement | null {
   return root.querySelector(`[role="listbox"][aria-label="${name}"]`);

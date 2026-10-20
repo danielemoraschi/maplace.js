@@ -1,4 +1,4 @@
-import { fadeIn } from "./fade-in.ts";
+import { reveal } from "./reveal.ts";
 
 /** The key that moves the selection, and where to, from the tab at `index` of `count`. */
 const MOVES: Readonly<Record<string, (index: number, count: number) => number>> = {
@@ -38,8 +38,5 @@ function showTab(tab: HTMLElement, shown: boolean): void {
   tab.setAttribute("aria-selected", String(shown));
   tab.tabIndex = shown ? 0 : -1;
   const panel = tab.ownerDocument.getElementById(tab.getAttribute("aria-controls") ?? "");
-  if (!panel) return;
-  const appears = shown && panel.hidden;
-  panel.hidden = !shown;
-  if (appears) fadeIn(panel);
+  if (panel) reveal(panel, shown);
 }

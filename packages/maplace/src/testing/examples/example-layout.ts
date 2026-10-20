@@ -3,12 +3,6 @@ import { expect } from "vitest";
 // What a reader sees of an example version: where its map, list and page controls sit, and how
 // they look. Parts are matched by role and text, never by id, since each version names its own.
 
-/**
- * The hosts' map height, for a page's map: pages leave the height to the reader, so the test
- * gives them the one the site gives them (`.version .maplace-map-pane`).
- */
-export const MAP_HEIGHT_STYLE = ".maplace-map-pane { height: 24rem; }";
-
 /** One part of a version as a reader sees it: its box within the version, and its look. */
 export interface LookPart {
   /** The role and text that match the part across versions, numbered when repeated. */
@@ -18,7 +12,7 @@ export interface LookPart {
 }
 
 /** The list a version shows: maplace's listbox, a native select, or a page's radio group. */
-const LIST = "[role=listbox], select, fieldset:has(input[type=radio])";
+export const LIST_SELECTOR = "[role=listbox], select, fieldset:has(input[type=radio])";
 /** A list's entries, each a location (or "fit all") a reader picks. */
 const ENTRY = "[role=option]";
 /** A page's own controls, readouts and text blocks: what it puts around the map. */
@@ -27,7 +21,10 @@ const SEEN_STYLES = [
   "fontSize",
   "fontWeight",
   "padding",
-  "border",
+  "borderTop",
+  "borderRight",
+  "borderBottom",
+  "borderLeft",
   "backgroundColor",
   "color",
 ] as const;
@@ -35,7 +32,7 @@ const BOX_SIDES = ["x", "y", "width", "height"] as const;
 const WORDS_IN_KEY = 40;
 const TOLERANCE_PX = 1;
 
-/** The parts of the version inside `root` whose map is drawn in `map`, in reading order. */
+/** The parts of the version inside `root` whose map is drawn in `map`, in markup order. */
 export function layoutOf(root: Element, map: Element): LookPart[] {
   const origin = root.getBoundingClientRect();
   const seen = new Map<string, number>();
@@ -50,20 +47,27 @@ export function layoutOf(root: Element, map: Element): LookPart[] {
   });
 }
 
-/** `actual` has the parts of `expected`, each placed within a pixel of it and looking the same. */
+/**
+ * `actual` has the parts of `expected`, each placed within a pixel of it and looking the same.
+ * Parts are matched by key, so a page may place them in another order than its markup's (tabs'
+ * flex `order`).
+ */
 export function expectLooksAlike(actual: readonly LookPart[], expected: readonly LookPart[]): void {
-  expect(actual.map(({ key }) => key)).toEqual(expected.map(({ key }) => key));
-  expected.forEach((part, index) => {
-    const other = actual[index] as LookPart;
+  const keysOf = (parts: readonly LookPart[]) =>
+    parts.map(({ key }) => key).sort((a, b) => a.localeCompare(b));
+  expect(keysOf(actual)).toEqual(keysOf(expected));
+  const actualByKey = new Map(actual.map((part) => [part.key, part]));
+  for (const expectedPart of expected) {
+    const actualPart = actualByKey.get(expectedPart.key) as LookPart;
     for (const side of BOX_SIDES) {
-      const offBy = Math.abs(other.box[side] - part.box[side]);
+      const offBy = Math.abs(actualPart.box[side] - expectedPart.box[side]);
       expect(
         offBy,
-        `${part.key}: ${side} ${other.box[side]}, expected ${part.box[side]}`,
+        `${expectedPart.key}: ${side} ${actualPart.box[side]}, expected ${expectedPart.box[side]}`,
       ).toBeLessThanOrEqual(TOLERANCE_PX);
     }
-    expect(other.style, part.key).toEqual(part.style);
-  });
+    expect(actualPart.style, expectedPart.key).toEqual(expectedPart.style);
+  }
 }
 
 interface Part {
@@ -76,7 +80,7 @@ interface Part {
  * or a list. The map and a list are named by role alone: their words change as they load.
  */
 function partsOf(root: Element, map: Element): Part[] {
-  const lists = [...root.querySelectorAll(LIST)];
+  const lists = [...root.querySelectorAll(LIST_SELECTOR)];
   const entries = [...root.querySelectorAll(ENTRY)];
   const pageParts = [...root.querySelectorAll(PAGE_PART)].filter(
     (element) => !map.contains(element) && !lists.some((list) => list.contains(element)),
@@ -87,9 +91,7 @@ function partsOf(root: Element, map: Element): Part[] {
     ...entries.map((element) => ({ element, name: `option ${wordsOf(element)}` })),
     ...pageParts.map((element) => ({ element, name: `${roleOf(element)} ${wordsOf(element)}` })),
   ];
-  return parts
-    .filter(({ element }) => isShown(element))
-    .sort(({ element: a }, { element: b }) => inReadingOrder(a, b));
+  return parts.filter(({ element }) => isShown(element));
 }
 
 function isShown(element: Element): boolean {
@@ -101,7 +103,7 @@ function roleOf(element: Element): string {
 }
 
 function wordsOf(element: Element): string {
-  return (element.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, WORDS_IN_KEY);
+  return (element.textContent ?? "").replaceAll(/\s+/g, " ").trim().slice(0, WORDS_IN_KEY);
 }
 
 function boxIn(element: Element, origin: DOMRect): LookPart["box"] {
@@ -112,14 +114,4 @@ function boxIn(element: Element, origin: DOMRect): LookPart["box"] {
 function styleOf(element: Element): LookPart["style"] {
   const computed = getComputedStyle(element);
   return Object.fromEntries(SEEN_STYLES.map((name) => [name, computed[name]])) as LookPart["style"];
-}
-
-/**
- * Top to bottom, then left to right, as a reader meets the parts: a page may place them in another
- * order than its markup's (tabs' flex `order`). Parts starting together keep the markup's order.
- */
-function inReadingOrder(a: Element, b: Element): number {
-  const [boxA, boxB] = [a.getBoundingClientRect(), b.getBoundingClientRect()];
-  const across = Math.round(boxA.y) - Math.round(boxB.y) || Math.round(boxA.x) - Math.round(boxB.x);
-  return across || (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
 }

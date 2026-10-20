@@ -7,10 +7,15 @@
   });
 </script>
 <style>
-  #polyline-vanilla-map-and-list { display: flex; }
-  #polyline-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #polyline-vanilla-map-and-list { display: flex; height: 24rem; }
+  #polyline-vanilla-map { flex: 1 1 auto; min-width: 0; }
   #polyline-vanilla-list { display: contents; }
   #polyline-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #polyline-vanilla-map-and-list { flex-direction: column; }
+    #polyline-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
 </style>
 <div id="polyline-vanilla-map-and-list">
   <div id="polyline-vanilla-map"></div>

@@ -13,12 +13,16 @@
 
 From npm, `import "maplace/element/google"` defines the same elements with the Google provider, and `maplace/element` defines them with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of maplace on the page logs an error and leaves the first in place.
 
+## Size
+
+The element is 24rem tall unless the page sets its height (`maplace-map { height: 30rem }`); a page sizing it by its layout instead (`position: absolute; inset: 0`, a grid's row) sets `height: auto`. The map fills it, with its list beside it, or, on a screen narrower than 40rem, under it, at most 40% of the height, scrolling. Its own styles come with the element's script, so a page loading that script late keeps the room with `maplace-map:not(:defined) { display: block; height: 24rem; }`.
+
 ## Map attributes
 
 | Attribute | What |
 |---|---|
 | `list` | Present: a list of the locations; `list="select"`: a native select; `list="<name>"`: a [list view of yours](#list-views). Absent: no list |
-| `list-position` | `outside` (beside the map, the default), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
+| `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
 | `fit-all-label` | The label of a first list entry that clears the selection and fits all locations |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
 | `provider` | The registered provider to draw with; defaults to the only one registered. A change opens the map again on it |

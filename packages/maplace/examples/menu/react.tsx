@@ -16,16 +16,23 @@ function Menu() {
   const [northOnly, setNorthOnly] = useState(false);
   return (
     <MaplaceProvider locations={cities} filter={northOnly ? NORTH : undefined}>
-      <label>
-        <input
-          type="checkbox"
-          checked={northOnly}
-          onChange={(event) => setNorthOnly(event.target.checked)}
-        />{" "}
-        North only
-      </label>
+      <p>
+        <label>
+          <input
+            type="checkbox"
+            checked={northOnly}
+            onChange={(event) => setNorthOnly(event.target.checked)}
+          />{" "}
+          North only
+        </label>
+      </p>
       <MaplaceMap createAdapter={createAdapter} className="map">
-        <LocationList as="select" fitAllLabel="All cities" position="top-right" />
+        <LocationList
+          as="select"
+          heading="Choose a location:"
+          fitAllLabel="All cities"
+          position="top-right"
+        />
       </MaplaceMap>
     </MaplaceProvider>
   );

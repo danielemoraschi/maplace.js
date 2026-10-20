@@ -11,33 +11,28 @@ export interface HostParts {
 }
 
 /** The HTML a live version mounts on: the files that load Maps JS with Google's loader. */
-const HOST_FILES: ReadonlySet<string> = new Set(
+export const HOST_FILES: ReadonlySet<string> = new Set(
   Object.keys(VERSION_MODULES).map((version) => `${version}.html`),
 );
 
 /**
- * Google's loader: an inline `<script>` whose body calls `importLibrary`, never reaching past its
- * own `</script>` into another script.
+ * Google's loader: a host's one inline `<script>`, as the package's example tests hold every host
+ * to (`example-hosts.ts`); its module script has a `src`, so it doesn't match.
  */
-const BOOTSTRAP_SCRIPT =
-  /<script>(?:(?!<\/script>)[\s\S])*importLibrary(?:(?!<\/script>)[\s\S])*<\/script>\n?/g;
+const BOOTSTRAP_SCRIPT = /<script>[\s\S]*?<\/script>\n?/g;
 
 /**
  * `file` of the example `example` split at its bootstrap loader, the parts joined being the file
  * as written; `undefined` for a file that isn't a host (a page, a module). A host must have the
- * loader once.
+ * loader as its one inline script.
  */
 export function foldBootstrap(example: string, file: ExampleFile): HostParts | undefined {
   if (!HOST_FILES.has(file.file)) return undefined;
   const loader = requireOnce(
     file.code,
     BOOTSTRAP_SCRIPT,
-    `examples/${example}/${file.file} has Google's bootstrap loader once`,
+    `examples/${example}/${file.file} has one inline script, Google's bootstrap loader`,
   );
-  const start = file.code.indexOf(loader);
-  return {
-    before: file.code.slice(0, start),
-    loader,
-    after: file.code.slice(start + loader.length),
-  };
+  const [before = "", after = ""] = file.code.split(loader);
+  return { before, loader, after };
 }

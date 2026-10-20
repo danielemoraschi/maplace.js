@@ -10,10 +10,10 @@ const { name } = Astro.props;
 ---
 
 <fieldset
-  class="mx-0 mt-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm"
+  class="m-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm"
   data-version-switch={name}
 >
-  <legend class="float-left p-0 text-muted">Run the map from</legend>
+  <legend class="float-left p-0 text-muted max-[640px]:w-full">Run the map from</legend>
   {
     exampleCode(name).map(({ kind, label }, index) => (
       <label class="inline-flex items-center gap-1">

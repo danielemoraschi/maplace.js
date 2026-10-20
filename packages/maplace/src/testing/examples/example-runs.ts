@@ -5,6 +5,7 @@ import { EXAMPLE_BEHAVIOURS } from "./example-behaviours";
 import { parse } from "./example-dom";
 import { EXAMPLE_PAGES, type ExampleHost } from "./example-files";
 import { openHost } from "./example-hosts";
+import { LIST_SELECTOR } from "./example-layout";
 import { recordErrors } from "./page-errors";
 import { recordedStoreCount, shownIds, sortedIds, storeAttachedSince } from "./recorded-stores";
 
@@ -84,7 +85,7 @@ export async function expectDrawsItsStore({ store, adapter }: ExampleRun): Promi
 
 /** Whether a list, as listbox, select or a page's own fieldset of radios, is inside `root`. */
 export function hasList(root: Element): boolean {
-  return root.querySelector("[role=listbox], select, fieldset:has(input[type=radio])") !== null;
+  return root.querySelector(LIST_SELECTOR) !== null;
 }
 
 /** Whether `example`'s page shows a list: its `<maplace-map>` has `list`, whatever its value. */

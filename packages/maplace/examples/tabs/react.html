@@ -7,7 +7,8 @@
   });
 </script>
 <style>
-  #tabs-react-root .map { height: 24rem; }
+  #tabs-react-root .panel { display: flex; flex-direction: column; height: 24rem; }
+  #tabs-react-root .map { flex: 1 1 auto; min-height: 0; }
   #tabs-react-root [role="listbox"] { display: flex; gap: 0.25rem; padding: 0.5rem 0.75rem 0; border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent); }
   #tabs-react-root [role="option"] { padding: 0.5rem 1rem; margin-bottom: -1px; border: 1px solid transparent; border-bottom: 0; border-radius: 0.5rem 0.5rem 0 0; }
   #tabs-react-root [aria-selected="true"] { position: relative; border-color: color-mix(in srgb, currentColor 25%, transparent); background: Canvas; font-weight: 600; }

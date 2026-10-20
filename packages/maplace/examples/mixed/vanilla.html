@@ -7,10 +7,15 @@
   });
 </script>
 <style>
-  #mixed-vanilla-map-and-list { display: flex; }
-  #mixed-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #mixed-vanilla-map-and-list { display: flex; height: 24rem; }
+  #mixed-vanilla-map { flex: 1 1 auto; min-width: 0; }
   #mixed-vanilla-list { display: contents; }
   #mixed-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #mixed-vanilla-map-and-list { flex-direction: column; }
+    #mixed-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
 </style>
 <p id="mixed-vanilla-groups">
   <button type="button" value="a">Group A</button>

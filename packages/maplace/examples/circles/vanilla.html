@@ -7,14 +7,19 @@
   });
 </script>
 <style>
-  #circles-vanilla-map-and-list { display: flex; }
-  #circles-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #circles-vanilla-map-and-list { display: flex; height: 24rem; }
+  #circles-vanilla-map { flex: 1 1 auto; min-width: 0; }
   #circles-vanilla-list { display: contents; }
   #circles-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #circles-vanilla-map-and-list { flex-direction: column; }
+    #circles-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
 </style>
 <div id="circles-vanilla-map-and-list">
   <div id="circles-vanilla-map"></div>
   <div id="circles-vanilla-list"></div>
 </div>
-<output id="circles-vanilla-radius">Radius: 8.0 km</output>
+<p><output id="circles-vanilla-radius">Radius: 8.0 km</output></p>
 <script type="module" src="./vanilla.ts"></script>

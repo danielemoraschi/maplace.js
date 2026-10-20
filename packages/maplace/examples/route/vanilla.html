@@ -7,10 +7,31 @@
   });
 </script>
 <style>
-  #route-vanilla-map-and-list { display: flex; }
-  #route-vanilla-map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #route-vanilla-map-and-list { display: flex; height: 24rem; }
+  #route-vanilla-map { flex: 1 1 auto; min-width: 0; }
   #route-vanilla-list { display: contents; }
   #route-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #route-vanilla-map-and-list { flex-direction: column; }
+    #route-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+  /* The directions in a panel of their own, below the map: its legs' headings stay in view as
+     their steps scroll, and a shade at the bottom shows there is more, gone at the end. */
+  #route-vanilla-directions:empty { display: none; }
+  #route-vanilla-directions {
+    margin-top: 1rem; max-height: 18rem; overflow: auto; padding: 0 1.25rem 0.5rem;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent); border-radius: 0.5rem;
+    background:
+      linear-gradient(transparent, Canvas 70%) bottom / 100% 1.5rem no-repeat local,
+      linear-gradient(transparent, color-mix(in srgb, currentColor 8%, transparent)) bottom / 100% 0.75rem no-repeat,
+      Canvas;
+  }
+  #route-vanilla-directions h3 {
+    position: sticky; top: 0; margin: 0; padding: 0.75rem 0 0.5rem; background: Canvas;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  }
+  #route-vanilla-directions ol { margin: 0.5rem 0 1rem; line-height: 1.6; }
 </style>
 <div id="route-vanilla-map-and-list">
   <div id="route-vanilla-map"></div>

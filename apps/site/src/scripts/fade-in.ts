@@ -1,5 +1,5 @@
 /** How long a panel fades in: 0.2's `fadeIn('slow')`, jQuery's 600 ms. */
-export const FADE_MS = 600;
+const FADE_MS = 600;
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
@@ -9,10 +9,6 @@ const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
  * the page loads. Nothing moves for a visitor who asks for less motion.
  */
 export function fadeIn(element: HTMLElement): void {
-  if (prefersReducedMotion(element)) return;
+  if (matchMedia(REDUCED_MOTION).matches) return;
   element.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_MS, easing: "ease-out" });
-}
-
-function prefersReducedMotion(element: HTMLElement): boolean {
-  return element.ownerDocument.defaultView?.matchMedia(REDUCED_MOTION).matches ?? false;
 }

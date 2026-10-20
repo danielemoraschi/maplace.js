@@ -32,3 +32,12 @@ export const ROME =
   '<maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome"></maplace-location>';
 export const MILAN =
   '<maplace-location location-id="milan" lat="45.46" lng="9.19" title="Milan"></maplace-location>';
+
+/** `count` locations, `Place 0` to `Place <count - 1>`, along the meridian. */
+export function places(count: number): string {
+  return Array.from(
+    { length: count },
+    (_, index) =>
+      `<maplace-location location-id="p${index}" lat="${index / 10}" lng="0" title="Place ${index}"></maplace-location>`,
+  ).join("");
+}

@@ -44,13 +44,13 @@ function recordMapsMade(): void {
   };
 }
 
-/** "Dark" clicked once `store` is ready: the map made next is dark, and ready too. */
+/** "Dark theme" clicked once `store` is ready: the map made next is dark, and ready too. */
 async function expectDarkOnToggle(store: Maplace, root: Element): Promise<void> {
   const ready = () => store.getSnapshot().loadState;
   await expect.poll(ready, { timeout: TILES_TIMEOUT_MS }).toBe("ready");
   expect(schemesMade.at(-1)).toBe(google.maps.ColorScheme.LIGHT);
   const made = schemesMade.length;
-  clickButton(root, "Dark");
+  clickButton(root, "Dark theme");
   await expect.poll(() => schemesMade.length, { timeout: TILES_TIMEOUT_MS }).toBe(made + 1);
   expect(schemesMade.at(-1)).toBe(google.maps.ColorScheme.DARK);
   await expect.poll(ready, { timeout: TILES_TIMEOUT_MS }).toBe("ready");

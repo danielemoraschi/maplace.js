@@ -1,4 +1,4 @@
-import { fadeIn } from "./fade-in.ts";
+import { reveal } from "./reveal.ts";
 
 /**
  * Every `[data-version-switch]` radio group under `root` chooses which version of its example
@@ -10,17 +10,11 @@ export function startVersionSwitches(root: ParentNode): void {
     const example = group.dataset.versionSwitch ?? "";
     group.addEventListener("change", (event) => {
       const chosen = (event.target as HTMLInputElement).value;
-      for (const version of versionsOf(root, example)) showVersion(version, chosen);
+      for (const version of versionsOf(root, example)) {
+        reveal(version, version.dataset.liveVersion === chosen);
+      }
     });
   }
-}
-
-/** Shows `version` if it is the `chosen` one, fading it in, or hides it at once. */
-function showVersion(version: HTMLElement, chosen: string): void {
-  const shown = version.dataset.liveVersion === chosen;
-  const appears = shown && version.hidden;
-  version.hidden = !shown;
-  if (appears) fadeIn(version);
 }
 
 function versionsOf(root: ParentNode, example: string): NodeListOf<HTMLElement> {

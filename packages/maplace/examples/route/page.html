@@ -1,6 +1,24 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- One route through your own locations, passing through Zurich, with directions from its steps. -->
+<style>
+  /* The directions in a panel of their own, below the map: its legs' headings stay in view as
+     their steps scroll, and a shade at the bottom shows there is more, gone at the end. */
+  #route-directions:empty { display: none; }
+  #route-directions {
+    margin-top: 1rem; max-height: 18rem; overflow: auto; padding: 0 1.25rem 0.5rem;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent); border-radius: 0.5rem;
+    background:
+      linear-gradient(transparent, Canvas 70%) bottom / 100% 1.5rem no-repeat local,
+      linear-gradient(transparent, color-mix(in srgb, currentColor 8%, transparent)) bottom / 100% 0.75rem no-repeat,
+      Canvas;
+  }
+  #route-directions h3 {
+    position: sticky; top: 0; margin: 0; padding: 0.75rem 0 0.5rem; background: Canvas;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  }
+  #route-directions ol { margin: 0.5rem 0 1rem; line-height: 1.6; }
+</style>
 <maplace-map id="route-map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
   <maplace-location location-id="zurich" lat="47.3769" lng="8.5417" title="Zurich"></maplace-location>

@@ -2,7 +2,7 @@ import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
-import { chooseVersion, firstMap, placeholder } from "./visitor.ts";
+import { chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
 
 /** One section per example on the home page (D23). */
 const EXAMPLE_COUNT = EXAMPLE_SECTIONS.length;
@@ -177,6 +177,51 @@ describe("the home page's examples", () => {
     const note = page.locator("section#simple [data-map-failure]");
     expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
     expect(await note.isVisible()).toBe(true);
+    await context.close();
+  }, 30_000);
+});
+
+/**
+ * The ids of the elements the page animated, recorded as each animation starts: a 600 ms fade can
+ * end before a test's next look at the page, on a busy machine.
+ */
+async function recordAnimations(page: Page): Promise<() => Promise<string[]>> {
+  await page.addInitScript(() => {
+    const animated: string[] = [];
+    const animate = Element.prototype.animate;
+    Element.prototype.animate = function (this: Element, ...args) {
+      animated.push(this.id);
+      return animate.apply(this, args);
+    };
+    Object.assign(globalThis, { animated });
+  });
+  return () => page.evaluate(() => (globalThis as unknown as { animated: string[] }).animated);
+}
+
+describe("the home page's code tabs", () => {
+  it("shows a host's Google loader as one closed line, opened on a click", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url);
+    const section = await chooseTab(page, "simple", "Vanilla");
+    const loader = section.getByRole("group").filter({ hasText: "Google's bootstrap loader" });
+    expect(await loader.getAttribute("open")).toBeNull();
+    expect(await loader.getByText("importLibrary").isVisible()).toBe(false);
+    await loader.getByText("Google's bootstrap loader").click();
+    expect(await loader.getByText("importLibrary").isVisible()).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("fades in the panel a tab shows, the one left hidden at once, unless asked for less motion", async () => {
+    const { page, context } = await site.visitor();
+    const animated = await recordAnimations(page);
+    await page.goto(site.url);
+    await chooseTab(page, "simple", "HTML");
+    expect(await animated()).toEqual(["example-simple-html"]);
+    expect(await page.locator("#example-simple-map").isHidden()).toBe(true);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await chooseTab(page, "simple", "React");
+    expect(await page.locator("#example-simple-react").isVisible()).toBe(true);
+    expect(await animated()).toEqual(["example-simple-html"]);
     await context.close();
   }, 30_000);
 });

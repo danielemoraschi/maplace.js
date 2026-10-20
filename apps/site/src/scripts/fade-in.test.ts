@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { FADE_MS, fadeIn } from "./fade-in.ts";
+import { fadeIn } from "./fade-in.ts";
 
 function panelWithAnimate() {
   const panel = document.createElement("div");
@@ -25,9 +25,8 @@ describe("fadeIn", () => {
     prefersReducedMotion(false);
     const { panel, animate } = panelWithAnimate();
     fadeIn(panel);
-    expect(FADE_MS).toBe(600);
     expect(animate).toHaveBeenCalledWith([{ opacity: 0 }, { opacity: 1 }], {
-      duration: FADE_MS,
+      duration: 600,
       easing: "ease-out",
     });
   });

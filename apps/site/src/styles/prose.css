@@ -1,0 +1,64 @@
+/* Text the site doesn't write, so no utility can reach it: Shiki's code, rendered Markdown. */
+@layer components {
+  pre.astro-code {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  /* A host's code around its folded loader reads as one block: `FoldedHost.astro` pads it. */
+  .folded-host pre.astro-code {
+    padding-block: 0;
+  }
+
+  :is(.prose-page, .doc-content) h2 {
+    font-size: var(--text-2xl);
+    margin: 2.5rem 0 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 3px solid var(--color-ink);
+  }
+
+  .doc-content {
+    & h2 {
+      font-size: var(--text-3xl);
+    }
+    & h3 {
+      font-size: var(--text-xl);
+      margin: 2rem 0 0.5rem;
+    }
+    & table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-md);
+      display: block;
+      overflow-x: auto;
+    }
+    & th,
+    & td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.5rem 0.75rem 0.5rem 0;
+      border-bottom: 1px solid var(--color-muted);
+    }
+    & th {
+      border-bottom: 2px solid var(--color-ink);
+    }
+  }
+
+  .changelog-entries {
+    & ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      margin: 0 0 0.875rem;
+    }
+    & time {
+      margin-right: 0.5rem;
+      color: var(--color-muted);
+      font-family: var(--font-code);
+      font-size: var(--text-sm);
+    }
+  }
+}

@@ -47,7 +47,7 @@ describe("startVersionSwitches", () => {
     expect(shown("big")).toEqual(["html"]);
   });
 
-  it("fades in the version it shows, not the ones it hides", () => {
+  it("reveals the version it shows, fading it in", () => {
     choose("route", "vanilla");
     const vanilla = document.querySelector('[data-example="route"][data-live-version="vanilla"]');
     expect(vi.mocked(fadeIn).mock.calls).toEqual([[vanilla]]);

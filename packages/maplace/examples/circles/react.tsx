@@ -75,7 +75,9 @@ function Circles() {
         <MaplaceMap createAdapter={createAdapter} className="map" popupContent={popupContent} />
         <LocationList />
       </div>
-      <output>Radius: {(radius / 1000).toFixed(1)} km</output>
+      <p>
+        <output>Radius: {(radius / 1000).toFixed(1)} km</output>
+      </p>
     </MaplaceProvider>
   );
 }

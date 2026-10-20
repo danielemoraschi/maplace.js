@@ -7,9 +7,14 @@
   });
 </script>
 <style>
-  #circles-react-root .map-and-list { display: flex; }
-  #circles-react-root .map { flex: 1 1 auto; min-width: 0; height: 24rem; }
+  #circles-react-root .map-and-list { display: flex; height: 24rem; }
+  #circles-react-root .map { flex: 1 1 auto; min-width: 0; }
   #circles-react-root [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #circles-react-root .map-and-list { flex-direction: column; }
+    #circles-react-root [role="listbox"] { flex: none; max-height: 40%; }
+  }
 </style>
 <div id="circles-react-root"></div>
 <script type="module" src="./react.tsx"></script>

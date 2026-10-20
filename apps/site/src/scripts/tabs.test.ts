@@ -48,8 +48,7 @@ describe("startTabs", () => {
     expect(shown()).toEqual(["map"]);
   });
 
-  it("fades in the panel it shows, not one already shown", () => {
-    tab("html").click();
+  it("reveals the panel it shows, fading it in", () => {
     tab("html").click();
     expect(vi.mocked(fadeIn).mock.calls).toEqual([[document.getElementById("html")]]);
   });

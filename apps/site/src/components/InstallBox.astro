@@ -5,8 +5,8 @@ import { docRoute } from "../site/repo-docs.ts";
 const entry = await getEntry("install", "element");
 if (entry === undefined) throw new Error("the install collection has no element entry");
 const { version, snippet } = entry.data;
-const HEADING = "mx-0 mt-0 mb-2 text-xl";
-const COMMAND = "mx-0 mt-0 mb-2 overflow-x-auto border-2 border-ink px-4 py-3 break-all whitespace-pre-wrap";
+const HEADING = "mt-0 mb-2 text-xl";
+const COMMAND = "mt-0 mb-2 border-2 border-ink px-4 py-3 break-all whitespace-pre-wrap";
 ---
 
 <div
@@ -21,6 +21,6 @@ const COMMAND = "mx-0 mt-0 mb-2 overflow-x-auto border-2 border-ink px-4 py-3 br
     <h2 class={HEADING}>Or pin the CDN script</h2>
     <pre class={COMMAND}><code id="pinned-script">{snippet}</code></pre>
     <button type="button" class="button-plain" data-copy="pinned-script">Copy</button>
-    <p class="mx-0 mt-2 mb-0 text-sm text-muted">maplace {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
+    <p class="mt-2 mb-0 text-sm text-muted">maplace {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
   </div>
 </div>

@@ -15,7 +15,9 @@ export interface ExampleHost {
   readonly run: () => Promise<unknown>;
 }
 
-type HostKind = "vanilla" | "react";
+/** The versions a host page runs: a module, vanilla or React. */
+export const HOST_KINDS = ["vanilla", "react"] as const;
+type HostKind = (typeof HOST_KINDS)[number];
 
 /** One example, written three ways: the same map in each. */
 export interface Example {

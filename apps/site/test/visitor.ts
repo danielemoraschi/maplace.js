@@ -1,4 +1,4 @@
-import type { Browser, BrowserContext, Page } from "playwright";
+import type { Browser, BrowserContext, Locator, Page } from "playwright";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 
 /** Any of Google's hosts: none may be asked before consent. */
@@ -72,7 +72,20 @@ export const placeholder = (page: Page) =>
 
 /** Runs `example`'s section's map from `version`: the switch above its frame. */
 export async function chooseVersion(page: Page, example: string, version: string): Promise<void> {
+  const section = await sectionOf(page, example);
+  await section.getByRole("radio", { name: version }).check();
+}
+
+/** Chooses `example`'s tab `name` (Map, HTML, Vanilla, React), and gives back its section. */
+export async function chooseTab(page: Page, example: string, name: string): Promise<Locator> {
+  const section = await sectionOf(page, example);
+  await section.getByRole("tab", { name }).click();
+  return section;
+}
+
+/** `example`'s section on the home page, scrolled into view. */
+async function sectionOf(page: Page, example: string): Promise<Locator> {
   const section = page.locator(`section#${example}`);
   await section.scrollIntoViewIfNeeded();
-  await section.getByRole("radio", { name: version }).check();
+  return section;
 }

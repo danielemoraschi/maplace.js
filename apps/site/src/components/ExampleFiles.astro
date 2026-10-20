@@ -17,13 +17,13 @@ const shown = files.map((file) => ({ ...file, host: foldBootstrap(name, file) })
 
 {
   shown.map(({ file, code, lang, host }) => (
-    <figure class="mx-0 mt-0 mb-4">
+    <figure class="m-0 mb-4">
       {host === undefined ? (
         <SourceCode code={code} lang={lang} />
       ) : (
         <FoldedHost parts={host} lang={lang} />
       )}
-      <figcaption class="mx-0 mt-2 mb-0 text-xs text-muted">
+      <figcaption class="mt-2 text-xs text-muted">
         examples/{name}/{file}, as the tests run it
       </figcaption>
     </figure>

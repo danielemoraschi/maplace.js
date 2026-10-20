@@ -17,8 +17,17 @@ const places: Location[] = [
 const adapterIn = (colorScheme: ColorScheme) => () =>
   createGoogleAdapter({ mapId: "DEMO_MAP_ID", colorScheme, mapOptions: { mapTypeControl: true } });
 
-/** "Dark": the store keeps where the map is, for the map opened in the other scheme. */
-function DarkToggle({ dark, onToggle }: { readonly dark: boolean; readonly onToggle: () => void }) {
+/**
+ * The button naming the scheme it switches to: the store keeps where the map is, for the map
+ * opened in the other scheme.
+ */
+function SchemeToggle({
+  dark,
+  onToggle,
+}: {
+  readonly dark: boolean;
+  readonly onToggle: () => void;
+}) {
   const maplace = useMaplace();
   const toggle = () => {
     const { viewport } = maplace.getSnapshot();
@@ -26,8 +35,8 @@ function DarkToggle({ dark, onToggle }: { readonly dark: boolean; readonly onTog
     onToggle();
   };
   return (
-    <button type="button" aria-pressed={dark} onClick={toggle}>
-      Dark
+    <button type="button" onClick={toggle}>
+      {dark ? "Light theme" : "Dark theme"}
     </button>
   );
 }
@@ -37,7 +46,9 @@ function Styled() {
   const scheme = dark ? "dark" : "light";
   return (
     <MaplaceProvider locations={places}>
-      <DarkToggle dark={dark} onToggle={() => setDark(!dark)} />
+      <p>
+        <SchemeToggle dark={dark} onToggle={() => setDark(!dark)} />
+      </p>
       {/* A map's colour scheme is set when it opens: a new key opens a new one. */}
       <MaplaceMap key={scheme} createAdapter={adapterIn(scheme)} className="map" />
     </MaplaceProvider>

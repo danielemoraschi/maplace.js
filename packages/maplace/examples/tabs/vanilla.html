@@ -7,13 +7,16 @@
   });
 </script>
 <style>
-  #tabs-vanilla-map { height: 24rem; }
+  #tabs-vanilla-panel { display: flex; flex-direction: column; height: 24rem; }
+  #tabs-vanilla-map { flex: 1 1 auto; min-height: 0; }
   #tabs-vanilla-list [role="listbox"] { display: flex; gap: 0.25rem; padding: 0.5rem 0.75rem 0; border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent); }
   #tabs-vanilla-list [role="option"] { padding: 0.5rem 1rem; margin-bottom: -1px; border: 1px solid transparent; border-bottom: 0; border-radius: 0.5rem 0.5rem 0 0; }
   #tabs-vanilla-list [aria-selected="true"] { position: relative; border-color: color-mix(in srgb, currentColor 25%, transparent); background: Canvas; font-weight: 600; }
   #tabs-vanilla-details { padding: 0.75rem 1.25rem 1rem; line-height: 1.5; }
 </style>
-<div id="tabs-vanilla-list"></div>
-<aside id="tabs-vanilla-details"></aside>
-<div id="tabs-vanilla-map"></div>
+<div id="tabs-vanilla-panel">
+  <div id="tabs-vanilla-list"></div>
+  <aside id="tabs-vanilla-details"></aside>
+  <div id="tabs-vanilla-map"></div>
+</div>
 <script type="module" src="./vanilla.ts"></script>

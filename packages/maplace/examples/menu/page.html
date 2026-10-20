@@ -1,9 +1,9 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- A native <select> on the map, top right, grouped by region; the checkbox shows the North only. -->
-<label><input type="checkbox" id="menu-north-only" /> North only</label>
+<p><label><input type="checkbox" id="menu-north-only" /> North only</label></p>
 <maplace-map id="menu-map" api-key="YOUR_KEY" map-id="DEMO_MAP_ID" list="select" list-position="top-right"
-  fit-all-label="All cities">
+  list-heading="Choose a location:" fit-all-label="All cities">
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome" group="Centre"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan" group="North"></maplace-location>
   <maplace-location location-id="turin" lat="45.0703" lng="7.6869" title="Turin" group="North"></maplace-location>

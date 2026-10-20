@@ -2,6 +2,10 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-20 Changed `<maplace-map>` to be 24rem tall unless the page sets its height (a page sizing it by its layout, `inset: 0` or a grid's row, sets `height: auto`), and its list beside the map to go under it on a screen narrower than 40rem, within that height
+- 2026-10-20 Changed the examples for a phone and a reader's eye: route's directions in a bordered panel apart from the map, its legs' headings kept in view and a shade where there is more; circles' radius and custom-list's choices spaced; tabs' and the beside lists' vanilla and React versions sized as the element is
+- 2026-10-19 Changed the menu, styled and route examples, in all three versions: the menu's select is headed "Choose a location:", menu's checkbox and styled's button sit in a paragraph above the map as mixed's buttons do, the button naming the theme it switches to ("Dark theme", "Light theme") in place of a pressed "Dark", and route's directions scroll within 16rem
+- 2026-10-19 Changed the circles, polyline, mixed and route examples: their vanilla and React versions put the list beside the map, as their page does, so all three look the same
 - 2026-10-19 Changed the vanilla examples to their shortest form: one `createGoogleMap` call where the map is a store, Google and a list, `attach` with a selector elsewhere, every behaviour kept
 - 2026-10-19 Changed `attach` to take a selector as well as an element: `attach(adapter, "#map")`; a selector matching nothing, or not valid, is `invalid-input`
 - 2026-10-19 Added `createGoogleMap(container, options)` in `maplace/google`: a store on a Google map in one call, as 0.2's `new Maplace(options).Load()`, with maplace's list on the map or in the page through `list`

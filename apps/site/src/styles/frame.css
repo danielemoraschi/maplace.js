@@ -1,0 +1,47 @@
+/*
+ * An example's version in its frame, as its page lays it out, and the notes over it: markup the
+ * site doesn't write, so no utility can reach it. Every rule matches at any depth:
+ * a page's nodes sit in `<maplace-map>`, a vanilla host's in its own wrappers and React's in its
+ * root, so a rule by a node's place would style one version and not the others. In no layer, as
+ * the page's own rules are: the library's defaults are `:where()` rules in no layer, made for any
+ * rule of the page to win over, which a layered rule never does. Each weighs one class at most,
+ * the one that beats the library's defaults (adopted after the page's sheets), so an example's
+ * own rules win over the site's.
+ */
+/*
+ * A map whose element isn't defined yet is as tall as its own styles make it once it is (24rem),
+ * so it comes into view to be released and doesn't move when it is.
+ */
+:where(.version maplace-map:not(:defined)) {
+  display: block;
+  height: var(--spacing-map);
+}
+/* Around the map Google draws, in every version: the lists and controls stay outside it. */
+.version :where(.maplace-google-map) {
+  border: 2px solid var(--color-ink);
+}
+/*
+ * A page's own buttons in the site's look, Google's on the map left alone. All but `.version`
+ * in `:where()`, so the rule weighs one class and any rule of the example's own wins.
+ */
+.version :where(button):where(:not(.maplace-google-map *)) {
+  @apply button-plain;
+}
+
+/* The notes over the frame are the site's own markup: in its layer, as its utilities are. */
+@layer components {
+  /* Notes for the version shown only. */
+  .map-note {
+    display: none;
+  }
+  .map-frame:has(.version[data-failed]:not([hidden])) .failed,
+  .map-frame:has(.version[data-starting]:not([hidden])) .loading,
+  .map-frame.script-failed:has([data-live-version="html"]:not([hidden])) .failed {
+    display: block;
+  }
+  /* Apart: a browser without `:state()` drops the whole rule. */
+  .map-frame:has(.version:not([hidden]) maplace-map:state(error)) .failed,
+  .map-frame:has(.version:not([hidden]) maplace-map:state(loading)) .loading {
+    display: block;
+  }
+}

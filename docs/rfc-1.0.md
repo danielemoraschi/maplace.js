@@ -117,7 +117,7 @@ What the scenarios settled:
 
 - **Data in the element** comes from `<maplace-location>` children, an inline `<script type="application/json">` child, or the `locations` property. The element never fetches; pages load data with `fetch` and assign it.
 - **Shapes are single locations.** In 0.2 a polyline or polygon turned every location into a vertex and listed the vertices. In 1.0 a polyline is one location with a `path`; mark points of interest along it as separate markers if they belong in the list.
-- **The list is the element's own view.** `list` puts a list beside the map, `list="select"` a native select, `list="<name>"` one of yours given to `defineListView`, and `list-position` places it on or outside the map.
+- **The list is the element's own view.** `list` puts a list beside the map (under it on a screen narrower than 40rem), `list="select"` a native select, `list="<name>"` one of yours given to `defineListView`, and `list-position` places it on or outside the map.
 
 ## 3. API
 
@@ -202,7 +202,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 |---|---|
 | Categories and filters (#15, #36, #40, #44, #85, #87, #117, #143) | `group` on a location, `setFilter(groups)` on the store; the list shows group headings |
 | Saving dragged or edited shapes (#48, #49, #64, #107, #155, #164, #178) | The store writes the new geometry back and fires `locationChange`; pages save from the event; `locationEdit` reports the geometry while the drag is under way, for a live readout |
-| Map container sizing and styles (#23, #184) | Nothing maplace draws carries inline styles; default styles (the element's layout, the list's buttons, popup content's dark text on Google's white bubble, a Google map's control panel) are adopted stylesheets with every selector in `:where()`, so pages override them; the page sets the height |
+| Map container sizing and styles (#23, #184) | Nothing maplace draws carries inline styles; default styles (the element's layout, the list's buttons, popup content's dark text on Google's white bubble, a Google map's control panel) are adopted stylesheets with every selector in `:where()`, so pages override them; the element is 24rem tall unless the page sets its height, and a list beside the map goes under it on a screen narrower than 40rem, within that height (at most 40% of it, scrolling) |
 | Popup width and offset (#86, #160, #198) | `popup: { maxWidth, offset }` |
 | Open on hover (#197) | `popup: { openOn: 'hover' }`; default `click` |
 | Different icon when selected (#192) | An `icon` (an image URL, a node or a function), in HTML `<maplace-location icon>` or a `<template data-icon>` child; DOM markers carry `data-selected` / `data-hovered` while in that state, for CSS; an `icon` function receives `(location, LocationState)` and re-runs only when the state changes; shapes are drawn heavier when selected or hovered (stroke width and opacity, fill opacity), wherever their style leaves those unset; their own `selectedStyle` and `hoveredStyle` (and the store's) are drawn over that |

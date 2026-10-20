@@ -29,9 +29,11 @@ function TabDetails() {
 function Tabs() {
   return (
     <MaplaceProvider locations={cities} defaultSelectedId="rome">
-      <LocationList />
-      <TabDetails />
-      <MaplaceMap createAdapter={createAdapter} className="map" />
+      <div className="panel">
+        <LocationList />
+        <TabDetails />
+        <MaplaceMap createAdapter={createAdapter} className="map" />
+      </div>
     </MaplaceProvider>
   );
 }

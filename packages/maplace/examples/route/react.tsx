@@ -52,7 +52,7 @@ function Route() {
         <MaplaceMap createAdapter={createAdapter} className="map" />
         <LocationList />
       </div>
-      <div>
+      <div className="directions">
         {result?.legs.map((leg) => (
           <LegDirections key={`${leg.from}-${leg.to}`} leg={leg} />
         ))}

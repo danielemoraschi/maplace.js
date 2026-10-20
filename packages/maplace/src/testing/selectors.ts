@@ -3,11 +3,19 @@ export function cssTextOf(sheet: CSSStyleSheet): string {
   return Array.from(sheet.cssRules, (rule) => rule.cssText).join("");
 }
 
-/** Each rule's selector text in `css`, as the DOM parses it. */
+/** Each rule's selector text in `css`, as the DOM parses it, the rules in `@media` included. */
 export function selectorsOf(css: string): string[] {
   const sheet = new CSSStyleSheet();
   sheet.replaceSync(css);
-  return Array.from(sheet.cssRules, (rule) => (rule as CSSStyleRule).selectorText);
+  return styleRulesIn(sheet.cssRules).map(({ selectorText }) => selectorText);
+}
+
+/** The style rules in `rules`, those in a group (`@media`) too: read by shape, as DOMs differ. */
+function styleRulesIn(rules: CSSRuleList): CSSStyleRule[] {
+  return Array.from(rules).flatMap((rule) => {
+    if ("selectorText" in rule) return [rule as CSSStyleRule];
+    return "cssRules" in rule ? styleRulesIn((rule as CSSGroupingRule).cssRules) : [];
+  });
 }
 
 /**

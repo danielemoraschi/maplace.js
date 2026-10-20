@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { foldBootstrap, type HostParts } from "./bootstrap-fold.ts";
+import { foldBootstrap, HOST_FILES, type HostParts } from "./bootstrap-fold.ts";
 import { EXAMPLE_SECTIONS } from "./example-sections.ts";
 import { type ExampleFile, exampleCode } from "./example-sources.ts";
 
 const HOSTS = EXAMPLE_SECTIONS.flatMap(({ name: example }) =>
   exampleCode(example)
     .flatMap(({ files }) => files)
-    .filter(({ file }) => file === "vanilla.html" || file === "react.html")
+    .filter(({ file }) => HOST_FILES.has(file))
     .map((file) => ({ example, file })),
 );
 
@@ -39,20 +39,13 @@ describe("foldBootstrap", () => {
     expect(foldBootstrap("simple", vanilla?.files[1] as ExampleFile)).toBeUndefined();
   });
 
-  it("leaves a host's other inline scripts out of the loader", () => {
-    const code = '<script>importLibrary("maps")</script>\n<script>other()</script>\n<div></div>';
-    expect(foldBootstrap("simple", host(code))).toEqual({
-      before: "",
-      loader: '<script>importLibrary("maps")</script>\n',
-      after: "<script>other()</script>\n<div></div>",
-    });
-  });
-
-  it("refuses a host without the loader, or with two, naming the file", () => {
+  it("refuses a host without the loader, or with another inline script, naming the file", () => {
     const loader = "<script>importLibrary()</script>";
     expect(() => foldBootstrap("simple", host("<div></div>"))).toThrow(
-      "examples/simple/vanilla.html has Google's bootstrap loader once: this one has 0",
+      "examples/simple/vanilla.html has one inline script, Google's bootstrap loader: this one has 0",
     );
-    expect(() => foldBootstrap("simple", host(loader + loader))).toThrow(/this one has 2/);
+    expect(() => foldBootstrap("simple", host(`${loader}<script>other()</script>`))).toThrow(
+      /this one has 2/,
+    );
   });
 });

@@ -11,9 +11,9 @@ interface Props {
 const { parts, lang } = Astro.props;
 ---
 
-<div class="folded-host">
+<div class="folded-host bg-code-paper py-4 text-code-ink">
   <SourceCode code={parts.before} lang={lang} />
-  <details class="bg-code-paper text-code-ink">
+  <details>
     <summary class="cursor-pointer px-5 py-1 font-code text-sm">
       Google's bootstrap loader, with your API key: from Google's docs
     </summary>

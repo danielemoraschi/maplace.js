@@ -17,6 +17,20 @@ describe("<maplace-map> on the page", () => {
     expect(box(map.querySelector("maplace-location"))).toEqual({ width: 0, height: 0 });
   });
 
+  it("is 24rem tall when the page gives it no height", async () => {
+    styledPage("maplace-map { width: 600px; }");
+    const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
+    expect(box(map.querySelector(".maplace-map-pane"))).toEqual({ width: 600, height: 384 });
+  });
+
+  it("takes the height its layout gives it when the page sets its height to auto", async () => {
+    styledPage(
+      ".box { position: relative; width: 600px; height: 500px; } maplace-map { position: absolute; inset: 0; height: auto; }",
+    );
+    const map = await mapFrom(`<div class="box"><maplace-map>${ROME}</maplace-map></div>`);
+    expect(box(map.querySelector(".maplace-map-pane"))).toEqual({ width: 600, height: 500 });
+  });
+
   it("puts its list beside the map by default, as tall as the map", async () => {
     styledPage();
     const map = await mapFrom(`<maplace-map list>${ROME}</maplace-map>`);

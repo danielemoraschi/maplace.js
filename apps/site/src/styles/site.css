@@ -11,7 +11,8 @@
 @import "./utilities.css";
 @import "./base.css";
 @import "./code.css";
-@import "./content.css";
+@import "./prose.css";
+@import "./frame.css";
 
 /* Only the site's markup: a word in a module or an example (`hidden`, `container`) is no class. */
 @source "../**/*.astro";
