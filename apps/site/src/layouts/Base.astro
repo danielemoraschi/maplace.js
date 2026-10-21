@@ -3,6 +3,9 @@ import "@fontsource/bricolage-grotesque/800.css";
 import "@fontsource-variable/instrument-sans";
 import "@fontsource-variable/jetbrains-mono";
 import "../styles/site.css";
+// Imported, not in public/: the build names it by its content, so a new icon is a new URL and no
+// browser keeps showing the old one.
+import faviconUrl from "../assets/favicon.svg?no-inline";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
@@ -22,7 +25,7 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={faviconUrl} type="image/svg+xml" />
     {/* Before the first paint, so a returning visitor's placeholders never show. */}
     <script is:inline define:vars={{ key: CONSENT_KEY, granted: CONSENT_GRANTED }}>
       try {

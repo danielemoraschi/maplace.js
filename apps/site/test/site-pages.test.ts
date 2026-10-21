@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { setTimeout as pause } from "node:timers/promises";
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
@@ -48,6 +49,19 @@ const footerLinks = (page: Page) =>
         current: link.getAttribute("aria-current"),
       })),
     );
+
+describe("the site's icon", () => {
+  it("is the repo's favicon at a URL that changes with it, so no browser keeps an old one", async () => {
+    const { page, context } = await openPage("/");
+    const href = (await page.locator('link[rel="icon"]').getAttribute("href")) ?? "";
+    expect(href).toMatch(/^\/_astro\/favicon\.[\w-]+\.svg$/);
+    const served = await page.evaluate(async (url) => (await fetch(url)).text(), href);
+    expect(served).toBe(
+      readFileSync(new URL("../src/assets/favicon.svg", import.meta.url), "utf8"),
+    );
+    await context.close();
+  }, 30_000);
+});
 
 describe("an example's guide", () => {
   it("shows under its example: the custom list's, linking the list views reference", async () => {
