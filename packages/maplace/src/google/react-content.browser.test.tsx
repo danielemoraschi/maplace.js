@@ -63,10 +63,13 @@ function renderApp(onShown: (shown: Shown) => void) {
   return { container, store };
 }
 
-/** The popup was laid out for its content: as tall as it, with nothing to scroll. */
+/** The popup was laid out for its content: as tall as it, its inset aside, with nothing to scroll. */
 function shownIn(element: HTMLElement): Shown {
   const box = element.parentElement as HTMLElement;
-  const fits = element.offsetHeight === CONTENT_HEIGHT && box.scrollHeight <= box.clientHeight;
+  const { paddingTop, paddingBottom } = getComputedStyle(element);
+  const contentHeight =
+    element.offsetHeight - Number.parseFloat(paddingTop) - Number.parseFloat(paddingBottom);
+  const fits = contentHeight === CONTENT_HEIGHT && box.scrollHeight <= box.clientHeight;
   return { text: element.textContent, fits };
 }
 

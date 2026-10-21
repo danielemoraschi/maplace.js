@@ -81,11 +81,15 @@ describeWithMaps("Google shapes under real input", () => {
     await expect.poll(() => host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
   });
 
-  it("gives the click to the selected of two overlapping shapes", async () => {
-    const { adapter, input, host } = await drawnOnMap(polygonDrawable("p"), polygonDrawable("q"));
+  it("gives the click to the smaller of two overlapping shapes, whatever is selected", async () => {
+    // A circle inside the polygon's ring, added first: neither order nor selection lifts the polygon.
+    const small = circleDrawable("q", {
+      geometry: { type: "circle", center: IN_RING, radius: 10_000 },
+    });
+    const { adapter, input, host } = await drawnOnMap(small, polygonDrawable("p"));
     adapter.present(presented({ selectedId: "p" }));
     await input.click(IN_RING);
-    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["q"]]);
     await clickHoldPassed();
     expect(host.reportsOf("reportMapClick")).toEqual([]);
   });
