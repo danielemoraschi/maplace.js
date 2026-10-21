@@ -88,15 +88,24 @@ export async function visitor(
     offsite: () => asked,
     fetched: (path) => onSite.includes(path),
     google: () => asked.filter((url) => GOOGLE.test(url)),
-    mapsJsRequests: () => asked.filter((url) => url.startsWith(MAPS_SCRIPT_ORIGIN)),
+    mapsJsRequests: () => asked.filter(isMapsScript),
     errors: () => errors,
   };
+}
+
+/**
+ * Whether `url` is Maps JS's script, a page's tag or a bootstrap's: its path is exactly the
+ * script's. Maps JS calls Google's services under it too (`/maps/api/js/StaticMapService…`).
+ */
+function isMapsScript(url: string): boolean {
+  const { origin, pathname } = new URL(url);
+  return origin + pathname === MAPS_SCRIPT_ORIGIN;
 }
 
 /** What `url`, off the site, gets: Google itself, the stub, or refused, as `google` says. */
 function offsiteAnswer(url: string, google: GoogleAnswer): "google" | "stub" | "refused" {
   if (google === "reached" && GOOGLE.test(url)) return "google";
-  if (google === "stubbed" && url.startsWith(MAPS_SCRIPT_ORIGIN)) return "stub";
+  if (google === "stubbed" && isMapsScript(url)) return "stub";
   return "refused";
 }
 
