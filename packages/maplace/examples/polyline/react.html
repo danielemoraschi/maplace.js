@@ -9,12 +9,11 @@
 <style>
   #polyline-react-root .map-and-list { display: flex; height: 24rem; }
   #polyline-react-root .map { flex: 1 1 auto; min-width: 0; }
-  /* The list's own element, in the place <LocationList> keeps: the block holding its heading and entries. */
-  #polyline-react-root .map-and-list > :last-child > * { flex: 0 1 16rem; }
+  #polyline-react-root .maplace-list-view { flex: 0 1 16rem; }
   /* On a phone the list goes under the map, as the element's does. */
   @media (width < 40rem) {
     #polyline-react-root .map-and-list { flex-direction: column; }
-    #polyline-react-root .map-and-list > :last-child > * { flex: none; max-height: 40%; }
+    #polyline-react-root .maplace-list-view { flex: none; max-height: 40%; }
   }
 </style>
 <div id="polyline-react-root"></div>

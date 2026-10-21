@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { unstyledPage } from "../testing/unstyled-page";
 import type { ColorScheme } from "./options";
 import { cornersLikeGoogle } from "./testing/corners-like-google";
 import { darkPage } from "./testing/dark-page";
@@ -71,6 +72,20 @@ describe("the panel of a control on a Google map, in the map's colour scheme", (
     ]);
     expect(panel.boxShadow).not.toBe("none");
     expect([panel.borderRadius, panel.marginTop]).toEqual(["2px", "10px"]);
+  });
+
+  it("draws no panel inside the opt-out", async () => {
+    onTestFinished(unstyledPage());
+    const { list } = await mapOnStubs();
+    const panel = panelStyleOf(list());
+    expect([panel.boxShadow, panel.marginTop]).toEqual(["none", "0px"]);
+  });
+
+  it("still hides a panel whose list is hidden, inside the opt-out", async () => {
+    onTestFinished(unstyledPage());
+    const { mount } = await mapOnStubs();
+    const hidden = Object.assign(document.createElement("div"), { hidden: true });
+    expect(panelStyleOf(mount(hidden)).display).toBe("none");
   });
 
   it("draws the panel dark on a dark map, on a light page", async () => {

@@ -127,7 +127,7 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `heading` | `string` | A visible heading above the entries |
 | `render` | `(entry) => Node` | An entry's content, for `as: "list"` only; the view keeps keyboard, focus and ARIA handling |
 
-The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins.
+The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins; its element carries `maplace-list-view`, and [Styling](styling.md) lists its classes and how to turn the defaults off.
 
 ## Listed locations
 

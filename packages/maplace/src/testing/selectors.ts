@@ -1,3 +1,5 @@
+import { OUTSIDE_UNSTYLED } from "../unstyled";
+
 /** The text of every rule in `sheet`, as the DOM writes it back. */
 export function cssTextOf(sheet: CSSStyleSheet): string {
   return Array.from(sheet.cssRules, (rule) => rule.cssText).join("");
@@ -24,6 +26,26 @@ function styleRulesIn(rules: CSSRuleList): CSSStyleRule[] {
  */
 export function weighsNothing(selector: string): boolean {
   return withoutWhereGroups(selector).replaceAll(/[\s>+~,]/g, "") === "";
+}
+
+/** The selectors in `css` the opt-out leaves on: the rules maplace's own markup needs. */
+export function unguardedSelectorsOf(css: string): string[] {
+  return selectorsOf(css).filter((selector) => !isGuarded(selector));
+}
+
+/**
+ * Whether `selector` is a default rule's, written by `outsideUnstyled`: one `:where(…)` group, then
+ * the opt-out's guard, compared without spaces, as DOMs write them back differently.
+ */
+export function isGuarded(selector: string): boolean {
+  const compact = withoutSpaces(selector);
+  const guard = withoutSpaces(`:where(${OUTSIDE_UNSTYLED})`);
+  if (!compact.startsWith(":where(") || !compact.endsWith(guard)) return false;
+  return afterGroup(compact, ":where".length) === compact.length - guard.length;
+}
+
+function withoutSpaces(text: string): string {
+  return text.replaceAll(/\s/g, "");
 }
 
 /** `selector` with each `:where(…)` group taken out, nested parentheses included. */

@@ -14,6 +14,7 @@ export const DOCS = [
   "docs/reference/store.md",
   "docs/reference/google.md",
   "docs/reference/react.md",
+  "docs/reference/styling.md",
   "docs/reference/api.md",
   ...exampleGuideFiles().map(({ file }) => file),
 ] as const;

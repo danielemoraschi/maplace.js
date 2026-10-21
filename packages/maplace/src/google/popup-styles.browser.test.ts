@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { POPUP_CLASS } from "../adapter-kit/popup-content";
+import { unstyledPage } from "../testing/unstyled-page";
 import { POPUP_HEADING_CLASS, POPUP_STYLES } from "./popup-styles";
 
 afterEach(() => document.body.replaceChildren());
@@ -34,6 +35,23 @@ describe("POPUP_STYLES in a browser", () => {
 
   it("does so through one wrapper too, as React's content sits in its portal's element", () => {
     expect(outerMargins(popupHolding("<div><p>One</p><p>Two</p></div>"))).toEqual(["0px", "0px"]);
+  });
+
+  it("turns off inside the opt-out: the page's text colour, no inset", () => {
+    onTestFinished(unstyledPage());
+    document.body.style.color = "red";
+    onTestFinished(() => {
+      document.body.style.color = "";
+    });
+    const popup = popupHolding("<p>One</p>");
+    const heading = document.createElement("span");
+    heading.className = POPUP_HEADING_CLASS;
+    document.body.append(heading);
+    expect([getComputedStyle(popup).color, getComputedStyle(heading).color]).toEqual([
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+    ]);
+    expect(getComputedStyle(popup).padding).toBe("0px");
   });
 
   it("keeps the heading dark on Google's white bubble, whatever the page's text", () => {

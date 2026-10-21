@@ -3,7 +3,7 @@ import { labelOf } from "./model";
 import { createSections } from "./sections";
 import type { ListState, ListVariant } from "./variant";
 
-const SELECT_CLASS = "maplace-select";
+export const SELECT_CLASS = "maplace-select";
 
 /** What a native select is made with: text only, so no `render`. */
 export interface NativeSelectSettings {

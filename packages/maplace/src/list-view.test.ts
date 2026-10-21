@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createListView } from "./list-view";
+import { createListView, LIST_VIEW_CLASS } from "./list-view";
 import { createMaplace } from "./maplace/create";
 import { listed } from "./testing/listed";
 import { optionsIn, titled } from "./testing/lists";
@@ -13,6 +13,17 @@ const locations = titled("a", "b", "c");
 const options = optionsIn;
 
 const listOnMap = (popup?: { openOn: "hover" }) => listed({ locations, ...(popup && { popup }) });
+
+describe("a list view's element", () => {
+  it.each([
+    ["a listbox", {}],
+    ["a native select", { as: "select" }],
+    ["under a heading", { heading: "Places" }],
+  ] as const)("carries the class a page styles it by, as %s", async (_, view) => {
+    const { list } = await listed({ locations }, view);
+    expect(list.element.classList.contains(LIST_VIEW_CLASS)).toBe(true);
+  });
+});
 
 describe("createListView, end to end through the fake adapter", () => {
   it("a click in the list selects and pans the map", async () => {

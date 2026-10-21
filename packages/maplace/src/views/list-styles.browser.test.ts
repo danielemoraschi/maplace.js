@@ -1,6 +1,7 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { listed } from "../testing/listed";
 import { optionsIn } from "../testing/lists";
+import { unstyledPage } from "../testing/unstyled-page";
 
 // The list's default styles as Chromium computes them: buttons on a light page and a dark one,
 // and a page's own rule winning.
@@ -37,6 +38,19 @@ describe("the list's default styles", () => {
     const style = getComputedStyle(headingIn(list.element));
     expect(Number(style.fontWeight)).toBeGreaterThanOrEqual(600);
     expect(style.paddingTop).not.toBe("0px");
+  });
+
+  it("turn off inside the opt-out, and come back when it goes", async () => {
+    const styledAgain = unstyledPage();
+    onTestFinished(styledAgain);
+    const { list } = await listed({ locations });
+    const option = optionTitled(list.element, "Alpha");
+    expect([getComputedStyle(option).paddingTop, getComputedStyle(option).cursor]).toEqual([
+      "0px",
+      "auto",
+    ]);
+    styledAgain();
+    expect(getComputedStyle(option).cursor).toBe("pointer");
   });
 
   it("give way to any rule of the page", async () => {

@@ -76,6 +76,14 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     label: "React",
   },
   {
+    id: "styling",
+    file: "docs/reference/styling.md",
+    title: "Styling",
+    description:
+      "maplacejs's default styles, turning them off, and the classes to style its markup by.",
+    label: "Styling",
+  },
+  {
     id: "api",
     file: "docs/reference/api.md",
     title: "API reference",

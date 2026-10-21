@@ -64,7 +64,7 @@ The store's [events](store.md#events), as DOM events on the element, named in lo
 
 ## Load states
 
-The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles. A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too.
+The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles; its default styles, and how to turn them off, are on [Styling](styling.md). A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too.
 
 ## Location attributes
 

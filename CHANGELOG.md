@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-21 Added `data-maplace-unstyled`: on any element, it turns maplacejs's default styles off inside it, but for what its markup needs, and the Styling reference page lists the classes maplacejs's markup carries, `maplace-list-view` on every list view's element among them
 - 2026-10-21 Changed the mixed, tabs and polyline examples, in all three versions: mixed marks the group shown as a pressed button (`aria-pressed`), the tabs' row no longer overflows into a scrollbar, and polyline's list beside the map has a heading, "Along the trail"
 - 2026-10-20 Changed Google popups to show the location's title as their heading, beside the close button, where Google left an empty row; a popup's content no longer needs the title, and sits 12px in from the bubble's right and bottom as from its left, its first and last child's own margins left out
 - 2026-10-20 Changed how overlapping shapes stack: the smaller in front, so a circle or polygon inside another stays clickable, a line in front of any area, the later added first among shapes of one size, whatever is hovered or selected; markers keep their order, above every shape

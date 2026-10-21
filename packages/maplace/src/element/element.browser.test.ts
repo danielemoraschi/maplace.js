@@ -42,6 +42,25 @@ describe("<maplace-map> on the page", () => {
     expect(box(list).height).toBe(300);
   });
 
+  it("turns its own layout off inside the opt-out, its locations still hidden", async () => {
+    styledPage("maplace-map { width: 600px; }");
+    const map = await mapFrom(`<maplace-map data-maplace-unstyled list>${ROME}</maplace-map>`);
+    const pane = map.querySelector(".maplace-map-pane");
+    expect(box(pane).height).toBe(0);
+    expect(map.querySelector('[role="listbox"]')?.getBoundingClientRect().left).toBe(
+      pane?.getBoundingClientRect().left,
+    );
+    expect(box(map.querySelector("maplace-location"))).toEqual({ width: 0, height: 0 });
+  });
+
+  it("still fills itself with the map the page sizes, inside the opt-out", async () => {
+    styledPage();
+    const map = await mapFrom(
+      `<div data-maplace-unstyled><maplace-map>${ROME}</maplace-map></div>`,
+    );
+    expect(box(map.querySelector(".maplace-map-pane"))).toEqual({ width: 600, height: 300 });
+  });
+
   it("lets the page's styles place its list", async () => {
     styledPage("maplace-map { width: 600px; height: 300px; display: block; }");
     const map = await mapFrom(`<maplace-map list>${ROME}</maplace-map>`);

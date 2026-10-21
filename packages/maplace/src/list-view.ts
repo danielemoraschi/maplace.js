@@ -47,8 +47,8 @@ export interface ListViewOptions<Data = unknown> {
  */
 export interface ListView {
   /**
-   * The listbox or select itself, or with `heading` a block holding the heading above it: place
-   * it with `mountControl`. Label it from the page only without `heading`: the block is no list,
+   * The listbox or select itself, or with `heading` a block holding the heading above it, each
+   * with the class `maplace-list-view`: place it with `mountControl`. Label it from the page only without `heading`: the block is no list,
    * so a label on it names nothing (give `label` instead).
    */
   readonly element: HTMLElement;
@@ -61,6 +61,9 @@ export interface ListView {
 }
 
 const DEFAULT_LABEL = "Locations";
+
+/** The class of every list view's element `createListView` builds, whichever it is: the class a page styles it by. */
+export const LIST_VIEW_CLASS = "maplace-list-view";
 
 const VARIANTS = { list: createListbox, select: createNativeSelect } as const;
 
@@ -99,5 +102,6 @@ export function createListView<Data>(
     stopFollowing();
     variant.destroy();
   };
+  variant.element.classList.add(LIST_VIEW_CLASS);
   return { element: variant.element, destroy };
 }

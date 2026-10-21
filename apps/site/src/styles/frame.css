@@ -22,18 +22,11 @@
 }
 /*
  * A list beside the map, in every version, as a white panel set apart from it, under the map on a
- * phone, as the element puts it: the block holding its heading and entries when it has a heading,
- * else the entries' own; its selected entry on the wash at the text's weight, the hovered one
- * lighter. An example drawing its list its own way (tabs) is marked `data-own-list` and left out.
+ * phone, as the element puts it: its selected entry on the wash at the text's weight, the hovered
+ * one lighter. An example drawing its list its own way (tabs) is marked `data-own-list` and left
+ * out; a list on the map is in Google's panel already.
  */
-.version
-:where(
-  :is(.maplace-list, .maplace-listbox):not(
-    .maplace-list > *,
-    .maplace-google-map *,
-    [data-own-list] *
-  )
-) {
+.version :where(.maplace-list-view):where(:not(.maplace-google-map *, [data-own-list] *)) {
   margin-inline-start: 1rem;
   padding: 0.75rem 0.5rem;
   border-radius: 0.75rem;

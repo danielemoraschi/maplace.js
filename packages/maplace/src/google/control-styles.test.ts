@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { selectorsOf, weighsNothing } from "../testing/selectors";
+import { selectorsOf, unguardedSelectorsOf, weighsNothing } from "../testing/selectors";
 import { LIST_CLASS } from "../views/headed";
 import { LISTBOX_CLASS } from "../views/listbox-nodes";
 import { CONTROL_STYLES } from "./control-styles";
@@ -23,5 +23,10 @@ describe("CONTROL_STYLES", () => {
         new RegExp(`\\.${className}(?![\\w-])`).test(selector),
       );
     expect([named(LIST_CLASS), named(LISTBOX_CLASS)]).toEqual([true, true]);
+  });
+
+  it("turns off inside the opt-out but for hiding a panel whose list is hidden", () => {
+    const required = unguardedSelectorsOf(CONTROL_STYLES);
+    expect(required).toEqual([":where(.maplace-control:has(>[hidden]:only-child))"]);
   });
 });
