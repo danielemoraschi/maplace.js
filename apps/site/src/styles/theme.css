@@ -28,6 +28,8 @@
   --text-hero: clamp(2.125rem, 9vw, 4.5rem);
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
+  /* What the sticky header covers at the top of the screen, a little more than its height. */
+  --spacing-header: 4.5rem;
   /* An example's map: the height its hosts give it. */
   --spacing-map: 24rem;
   --container-measure: 72rem;

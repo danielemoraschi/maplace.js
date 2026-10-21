@@ -32,7 +32,8 @@ const { title, description } = Astro.props;
   </head>
   <body>
     <SiteHeader />
-    <main class="wrap"><slot /></main>
+    {/* Its own stacking context: a map's z-indexes (Google's run to millions) stay under the header. */}
+    <main class="wrap isolate"><slot /></main>
     <SiteFooter />
     <script>
       import "../scripts/site.ts";

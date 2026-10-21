@@ -1,5 +1,5 @@
 ---
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import { dataFetchedBy, exampleDataLinks } from "../examples/example-data-links.ts";
 import type { ExampleSection } from "../examples/example-sections.ts";
 import { exampleCode } from "../examples/example-sources.ts";
@@ -18,6 +18,8 @@ const repoFiles = await getEntry("repoFiles", REPO_FILES_ENTRY);
 if (repoFiles === undefined) throw new Error("the repoFiles collection has no entry");
 const fetched = dataFetchedBy(versions.flatMap(({ files }) => files.map(({ code }) => code)));
 const dataLinks = exampleDataLinks(fetched, repoFiles.data.blobBase);
+const guide = await getEntry("exampleGuides", name);
+const Guide = guide && (await render(guide)).Content;
 const tabs = [
   { tab: "map", label: "Map" },
   ...versions.map(({ kind, label }) => ({ tab: kind, label })),
@@ -49,6 +51,13 @@ const panel = (tab: string) => `example-${name}-${tab}`;
           </>
         ))}
       </p>
+    )
+  }
+  {
+    Guide && (
+      <div class="example-guide mt-3 max-w-text">
+        <Guide />
+      </div>
     )
   }
   <div

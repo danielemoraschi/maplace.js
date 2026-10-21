@@ -2,6 +2,8 @@
 @layer base {
   :root {
     color-scheme: light;
+    /* An anchor's target lands below the sticky header, not under it. */
+    scroll-padding-top: var(--spacing-header);
   }
 
   *,

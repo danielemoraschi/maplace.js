@@ -37,7 +37,15 @@ export interface RepoDocSettings {
 export function repoDocMarkdown(doc: RepoDoc, { pin, blobBase }: RepoDocSettings): string {
   const markdown = readRootFile(doc.file);
   const pinned = doc.pinsScripts ? withPinnedScripts(markdown, pin) : markdown;
-  const fromRoot = withLinksFromRoot(withoutTitle(pinned), doc.file);
+  return siteMarkdownOf(pinned, doc.file, blobBase);
+}
+
+/**
+ * `markdown`, the repo file at `file`, as a page of the site shows it: without its title, which
+ * the page writes, its links to repo documents going to their pages, the rest to GitHub.
+ */
+export function siteMarkdownOf(markdown: string, file: string, blobBase: string): string {
+  const fromRoot = withLinksFromRoot(withoutTitle(markdown), file);
   return withSiteLinks(fromRoot, { routes: DOC_ROUTES, blobBase });
 }
 

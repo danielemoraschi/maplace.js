@@ -49,6 +49,17 @@ const footerLinks = (page: Page) =>
       })),
     );
 
+describe("an example's guide", () => {
+  it("shows under its example: the custom list's, linking the list views reference", async () => {
+    const { page, context } = await openPage("/");
+    const guide = page.locator("section#custom-list .example-guide");
+    expect(await guide.textContent()).toContain("defineListView");
+    const link = guide.getByRole("link", { name: "defineListView(name, factory)" });
+    expect(await link.getAttribute("href")).toBe("/element/#list-views");
+    await context.close();
+  }, 30_000);
+});
+
 describe("the changelog page", () => {
   const changelog = readRootFile(CHANGELOG_FILE);
 

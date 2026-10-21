@@ -14,6 +14,8 @@ const STUB_MAPS_JS =
 export interface VisitorOptions {
   /** Answers the Maps JS request with a stub instead of refusing it, as Google never would. */
   readonly stubMapsJs?: boolean;
+  /** The screen's size in CSS pixels; Playwright's default, 1280 by 720, without one. */
+  readonly viewport?: { readonly width: number; readonly height: number };
 }
 
 /** A visitor of the built site at `siteUrl`, and what they asked for. */
@@ -36,9 +38,9 @@ export interface Visitor {
 export async function visitor(
   browser: Browser,
   siteUrl: string,
-  { stubMapsJs = false }: VisitorOptions = {},
+  { stubMapsJs = false, viewport }: VisitorOptions = {},
 ): Promise<Visitor> {
-  const context = await browser.newContext();
+  const context = await browser.newContext(viewport && { viewport });
   const asked: string[] = [];
   const onSite: string[] = [];
   await context.route("**/*", (route) => {

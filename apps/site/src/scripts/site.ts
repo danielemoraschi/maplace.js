@@ -17,6 +17,7 @@ import {
   startFailureNotes,
 } from "./map-failures.ts";
 import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
+import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
 import { startStarButtons } from "./star-buttons.ts";
 import { startTabs } from "./tabs.ts";
 import { versionStarter } from "./version-start.ts";
@@ -61,6 +62,8 @@ const openPageMaps = gateMaps(maps, { whenVisible, release });
 const openVersions = gateMaps(versions, { whenVisible, release: startVersion });
 
 provideSave(globalThis, document);
+revealCurrentNavLink(document);
+followNavFocus(document);
 startTabs(document);
 startVersionSwitches(document);
 startCopyButtons(document);

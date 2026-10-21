@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { REPO_DOCS } from "./repo-docs.ts";
-import { repoDocMarkdown, withoutTitle } from "./repo-docs-loader.ts";
+import { repoDocMarkdown, siteMarkdownOf, withoutTitle } from "./repo-docs-loader.ts";
 
 const doc = (id: string) => REPO_DOCS.find((each) => each.id === id) as (typeof REPO_DOCS)[number];
 
@@ -16,6 +16,25 @@ describe("withoutTitle", () => {
 
   it("keeps a document without one as it is", () => {
     expect(withoutTitle("A list.\n\n# Later")).toBe("A list.\n\n# Later");
+  });
+});
+
+describe("siteMarkdownOf", () => {
+  const FILE = "packages/maplace/examples/custom-list/guide.md";
+
+  it("sends a link to a repo document to its page on the site, with its anchor", () => {
+    const markdown = "[views](../../../../docs/reference/element.md#list-views)";
+    expect(siteMarkdownOf(markdown, FILE, settings.blobBase)).toBe("[views](/element/#list-views)");
+  });
+
+  it("sends a link to another repo file to GitHub at the commit built", () => {
+    expect(siteMarkdownOf("[code](./vanilla.ts)", FILE, settings.blobBase)).toBe(
+      `[code](${settings.blobBase}packages/maplace/examples/custom-list/vanilla.ts)`,
+    );
+  });
+
+  it("drops the file's title, which the page writes", () => {
+    expect(siteMarkdownOf("# Your own list\n\nA list.", FILE, settings.blobBase)).toBe("A list.");
   });
 });
 

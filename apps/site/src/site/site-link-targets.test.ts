@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { exampleGuides } from "./example-guides-loader.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
-import { repoDocMarkdown } from "./repo-docs-loader.ts";
+import { repoDocMarkdown, siteMarkdownOf } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
 
 const locations: DocPage = {
@@ -93,11 +94,16 @@ describe("the site's doc pages", () => {
     blobBase: "https://github.com/o/r/blob/abc123/",
   };
 
-  it("link only to pages and headings the site has", () => {
+  it("link only to pages and headings the site has, and so do the example guides", () => {
     const pages = REPO_DOCS.map((doc) => ({
       route: docRoute(doc.id),
       markdown: repoDocMarkdown(doc, settings),
     }));
-    expect(brokenSiteLinks(pages)).toEqual([]);
+    // Each guide a page of its own here, so one guide's headings never stand in for another's.
+    const guides = exampleGuides().map(({ name, markdown, file }) => ({
+      route: `/#${name}`,
+      markdown: siteMarkdownOf(markdown, file, settings.blobBase),
+    }));
+    expect(brokenSiteLinks([...pages, ...guides])).toEqual([]);
   });
 });

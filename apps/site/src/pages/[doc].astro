@@ -16,7 +16,7 @@ const sections = headings.filter(({ depth }) => depth === 2);
 <Base title={`${doc.data.title} · maplacejs`} description={doc.data.description}>
   <div class="grid grid-cols-[13rem_minmax(0,1fr)] gap-10 pt-8 max-[800px]:grid-cols-[minmax(0,1fr)]">
     <nav aria-label="On this page" class="max-[800px]:hidden">
-      <ol class="sticky top-6 m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
+      <ol class="sticky top-[calc(var(--spacing-header)+1.5rem)] m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
         {
           sections.map(({ slug, text }) => (
             <li>

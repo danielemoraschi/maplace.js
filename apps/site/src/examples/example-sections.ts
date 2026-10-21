@@ -27,8 +27,8 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
   },
   {
     name: "custom-list",
-    title: "Custom list",
-    summary: "A list of your own on the map: a radio per place, and fit all.",
+    title: "Your own list",
+    summary: "A list you build: a radio per place, and fit all, on the map.",
   },
   {
     name: "tabs",

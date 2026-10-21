@@ -1,4 +1,5 @@
 import { CHANGELOG_FILE } from "../docs/changelog-lines.ts";
+import { exampleGuideFiles } from "../docs/example-guides.ts";
 
 /** The repo's documents: what the doc checks read. */
 export const DOCS = [
@@ -14,4 +15,5 @@ export const DOCS = [
   "docs/reference/google.md",
   "docs/reference/react.md",
   "docs/reference/api.md",
+  ...exampleGuideFiles().map(({ file }) => file),
 ] as const;

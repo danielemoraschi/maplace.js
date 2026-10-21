@@ -136,3 +136,5 @@ The list sets the store's hover from the pointer and keyboard focus, so the map 
 ## Adapters
 
 An adapter is the bridge to a map provider; the store drives it, and it reports back through its host. Writing one is for a new provider: the contract is in [RFC §3 Shape](../rfc-1.0.md#shape).
+
+Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. maplacejs's own lists on the map go there the same way.

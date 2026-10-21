@@ -1,0 +1,105 @@
+import type { Page } from "playwright";
+import { describe, expect, it } from "vitest";
+import { docRoute } from "../src/site/repo-docs.ts";
+import { siteBuiltBeforeTests } from "./site-session.ts";
+
+const site = siteBuiltBeforeTests();
+
+const PHONE = { width: 375, height: 812 };
+const DESKTOP = { width: 1280, height: 900 };
+
+/** A visitor's page at `route`, on a screen of `viewport`. */
+async function opened(route: string, viewport: { width: number; height: number }) {
+  const visit = await site.visitor({ viewport });
+  await visit.page.goto(new URL(route, site.url).href);
+  return visit;
+}
+
+const header = (page: Page) => page.getByRole("banner");
+const docsNav = (page: Page) => page.getByRole("navigation", { name: "Documentation" });
+
+/** Where the nav's links show in full: up to its end fade, as wide as its end padding. */
+async function navClearEnd(page: Page): Promise<number> {
+  return docsNav(page).evaluate((nav) => {
+    const { right } = nav.getBoundingClientRect();
+    return right - Number.parseFloat(getComputedStyle(nav).paddingInlineEnd);
+  });
+}
+
+/** Where the header ends, from the top of the screen. */
+async function headerBottom(page: Page): Promise<number> {
+  const box = await header(page).boundingBox();
+  return (box?.y ?? 0) + (box?.height ?? 0);
+}
+
+describe("the site's header", () => {
+  it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
+    const { page, context } = await opened("/", DESKTOP);
+    await page.mouse.wheel(0, 2500);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
+    expect((await header(page).boundingBox())?.y).toBe(0);
+    const onTop = await header(page).evaluate((banner) => {
+      const { left, top, height } = banner.getBoundingClientRect();
+      return banner.contains(document.elementFromPoint(left + 4, top + height / 2));
+    });
+    expect(onTop).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("keeps to one line on a phone, its links reached by scrolling the nav", async () => {
+    const { page, context } = await opened("/", PHONE);
+    const links = docsNav(page).getByRole("link");
+    const tops = await links.evaluateAll((all) =>
+      all.map((link) => link.getBoundingClientRect().top),
+    );
+    expect(new Set(tops).size).toBe(1);
+    await links.last().scrollIntoViewIfNeeded();
+    const [nav, last] = [await docsNav(page).boundingBox(), await links.last().boundingBox()];
+    expect(last && nav && last.x + last.width <= nav.x + nav.width + 1).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("brings a link tabbed to on a phone clear of the nav's end fade", async () => {
+    const { page, context } = await opened("/", PHONE);
+    const clearEnd = await navClearEnd(page);
+    for (const link of await docsNav(page).getByRole("link").all()) {
+      await link.focus();
+      const box = await link.boundingBox();
+      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(clearEnd + 1);
+    }
+    await context.close();
+  }, 30_000);
+
+  it("shows the current page's own link on a phone", async () => {
+    const { page, context } = await opened(docRoute("migrating"), PHONE);
+    const nav = await docsNav(page).boundingBox();
+    const current = await docsNav(page).locator('[aria-current="page"]').boundingBox();
+    expect(current && nav && current.x >= nav.x - 1).toBe(true);
+    expect((current?.x ?? 0) + (current?.width ?? 0)).toBeLessThanOrEqual(
+      (await navClearEnd(page)) + 1,
+    );
+    await context.close();
+  }, 30_000);
+
+  it("lands an anchor's target below it", async () => {
+    for (const viewport of [DESKTOP, PHONE]) {
+      const { page, context } = await opened("/#markers", viewport);
+      const heading = await page.locator("#markers-title").boundingBox();
+      expect(heading?.y).toBeGreaterThanOrEqual(await headerBottom(page));
+      await context.close();
+    }
+  }, 30_000);
+
+  it("leaves a reference page's contents clear of it as the page scrolls", async () => {
+    const { page, context } = await opened(docRoute("element"), { width: 1024, height: 800 });
+    await page.mouse.wheel(0, 1500);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(1000);
+    const first = await page
+      .getByRole("navigation", { name: "On this page" })
+      .getByRole("link")
+      .first()
+      .boundingBox();
+    expect(first?.y).toBeGreaterThanOrEqual(await headerBottom(page));
+    await context.close();
+  }, 30_000);
+});
