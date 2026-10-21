@@ -31,6 +31,11 @@
       "types": "./dist/google/index.d.ts",
       "default": "./dist/google/index.js"
     },
+    "./maplibre": {
+      "maplace:source": "./src/maplibre/index.ts",
+      "types": "./dist/maplibre/index.d.ts",
+      "default": "./dist/maplibre/index.js"
+    },
     "./element": {
       "maplace:source": "./src/element/index.ts",
       "types": "./dist/element/index.d.ts",
@@ -54,6 +59,7 @@
   "peerDependencies": {
     "@types/google.maps": "^3.66.0",
     "@types/react": "^19.0.0",
+    "maplibre-gl": "^6.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -62,6 +68,9 @@
       "optional": true
     },
     "@types/react": {
+      "optional": true
+    },
+    "maplibre-gl": {
       "optional": true
     },
     "react": {

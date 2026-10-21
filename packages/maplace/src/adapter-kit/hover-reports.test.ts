@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AdapterHost } from "../adapter";
 import { createRecordingHost } from "../testing/conformance/recording-host";
-import { createHoverReports } from "./hover";
+import { createHoverReports } from "./hover-reports";
 
 function reporting() {
   const host = createRecordingHost();

@@ -52,8 +52,11 @@ export default defineConfig({
         resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
         // React pre-bundled from the start: a dependency Vite finds mid-run is optimized and
         // reloaded, and a component holding the old copy breaks the hooks of the new.
+        // maplibre-gl finds its worker beside its own module: pre-bundled, it would look for it in
+        // Vite's cache, where the worker isn't.
         optimizeDeps: {
           include: ["react", "react/jsx-dev-runtime", "react-dom", "react-dom/client"],
+          exclude: ["maplibre-gl"],
         },
         test: {
           name: "browser",

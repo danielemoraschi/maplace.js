@@ -30,10 +30,11 @@ describe("the packed package", () => {
     expect(await typeResolutionProblems(tarball)).toEqual([]);
   }, 30_000);
 
-  it("type-checks for a strict consumer without Google or React, who needs neither's types", () => {
+  it("type-checks for a strict consumer without Google, MapLibre or React, who needs none's types", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "core-and-element");
     expect(errors).toEqual([]);
-    expect(loadedFiles.filter((file) => /\/@types\/(google\.maps|react)\//.test(file))).toEqual([]);
+    const providerTypes = /\/(@types\/(google\.maps|react)|maplibre-gl)\//;
+    expect(loadedFiles.filter((file) => providerTypes.test(file))).toEqual([]);
   }, 30_000);
 
   it("type-checks for a strict consumer in React", () => {
@@ -55,5 +56,11 @@ describe("the packed package", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "google");
     expect(errors).toEqual([]);
     expect(loadedFiles.some((file) => file.includes("/@types/google.maps/"))).toBe(true);
+  }, 30_000);
+
+  it("type-checks for a strict consumer on MapLibre, with the maplibre-gl it installed", () => {
+    const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "maplibre");
+    expect(errors).toEqual([]);
+    expect(loadedFiles.some((file) => file.includes("/maplibre-gl/"))).toBe(true);
   }, 30_000);
 });

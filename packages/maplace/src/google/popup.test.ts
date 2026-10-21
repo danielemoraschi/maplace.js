@@ -52,7 +52,7 @@ function popupsOn(drawables: Drawable[], settings: Partial<ResolvedPopupOptions>
       state.placed.set(drawable.id, PLACERS[drawable.geometry.type](drawable, site));
       popup.sync();
     },
-    window: () => state.popup?.infoWindow as unknown as StubInfoWindow | undefined,
+    window: () => state.popup?.window.infoWindow as unknown as StubInfoWindow | undefined,
     /** Google's `domready`, which the stub fires in a microtask. */
     settled: () => new Promise((resolve) => setTimeout(resolve, 0)),
   };

@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { lookIn } from "../adapter-kit/presentation-changes";
 import { presented } from "../testing/conformance/fixtures";
 import { clusteredMarkers } from "./clustered-markers";
 import { directMarkers, loadMarkerLayer } from "./marker-layer";
-import { lookIn } from "./presenting";
 import { StubMap, StubMarker, stubLibraries } from "./testing/stub-libraries";
 
 afterEach(() => {

@@ -41,6 +41,17 @@ The Google Maps adapter: the only entry that knows `google.maps`.
 | `createGoogleMap` | function | [`createGoogleMap`](google.md#creategooglemap) |
 | `GoogleMapOptions`, `GoogleMapList` | types | [`createGoogleMap`](google.md#creategooglemap) |
 
+## `maplace/maplibre`
+
+The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise: the only entry that knows `maplibre-gl`, which the page installs, with its stylesheet.
+
+| Export | Kind | Explained in |
+|---|---|---|
+| `createMapLibreAdapter` | function | [RFC §3 Shape](../rfc-1.0.md#shape), [loading](../rfc-1.0.md#loading-providers-and-packaging) |
+| `MapLibreAdapterOptions` | type | [RFC §3 Shape](../rfc-1.0.md#shape) |
+| `createMapLibreMap` | function | [RFC §3 Shape](../rfc-1.0.md#shape) |
+| `MapLibreMapOptions`, `MapLibreMapList` | types | [RFC §3 Shape](../rfc-1.0.md#shape) |
+
 ## `maplace/element`
 
 `<maplace-map>` and `<maplace-location>`, defined on import, with no provider registered.

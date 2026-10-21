@@ -10,6 +10,7 @@
   "files": [
     "src/index.ts",
     "src/google/index.ts",
+    "src/maplibre/index.ts",
     "src/element/index.ts",
     "src/element/google.ts",
     "src/react/index.ts"

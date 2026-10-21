@@ -1,38 +1,19 @@
 /// <reference types="google.maps" preserve="true" />
+
+import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
+import { holdsFocus, type PopupWindow, type PopupWindowEvents } from "../adapter-kit/popup-window";
 import type { MountedMap } from "./mounted-map";
 import type { PopupPlace } from "./placed-location";
-import { POPUP_HEADING_CLASS } from "./popup-styles";
-
-/** What the window tells whoever opened it. */
-export interface PopupWindowEvents {
-  /** The content set last is in the DOM: Google's `domready`, after each open or new content. */
-  contentShown(): void;
-  /** The user closed it with its close button; Google has closed it already. */
-  closedByUser(): void;
-}
-
-/** One popup's view: its content's element, where it points, and its title. */
-export interface PopupView {
-  readonly element: HTMLElement;
-  readonly place: PopupPlace;
-  /** Its location's title: the popup's heading, beside the close button, and its name. */
-  readonly title: string | undefined;
-}
 
 /** The map's one Google InfoWindow, reused for every popup. */
-export interface PopupWindow {
+export interface GooglePopupWindow extends PopupWindow<PopupPlace> {
   readonly infoWindow: google.maps.InfoWindow;
-  open(view: PopupView): void;
-  /** New content in the open window, where it is. */
-  refresh(element: HTMLElement): void;
-  /** A new title for the open window's heading and name, its content as it is. */
-  retitle(title: string | undefined): void;
-  /** Keeps up with a point that moved, as a shape's centre after an edit; anchors follow. */
-  follow(place: PopupPlace): void;
-  close(): void;
 }
 
-export function createPopupWindow(mounted: MountedMap, events: PopupWindowEvents): PopupWindow {
+export function createPopupWindow(
+  mounted: MountedMap,
+  events: PopupWindowEvents,
+): GooglePopupWindow {
   const { maps, core } = mounted.libraries;
   const { maxWidth, offset, openOn } = mounted.popup;
   const mapDiv = mounted.map.getDiv();
@@ -74,10 +55,4 @@ export function createPopupWindow(mounted: MountedMap, events: PopupWindowEvents
     follow,
     close: () => infoWindow.close(),
   };
-}
-
-/** Whether focus is inside `element`, in its document or in the shadow root it sits in. */
-function holdsFocus(element: Element): boolean {
-  const root = element.getRootNode() as Document | ShadowRoot;
-  return root.activeElement !== null && element.contains(root.activeElement);
 }

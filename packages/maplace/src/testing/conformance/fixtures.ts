@@ -3,6 +3,7 @@ import { NOTHING_PRESENTED } from "../../adapter-kit/presentation-changes";
 import type { Drawable } from "../../drawable";
 import type { Geometry, LatLng } from "../../geometry";
 import type { LocationState } from "../../location";
+import type { Supports } from "./subject";
 
 /** The number of locations a large diff has (RFC Numbers). */
 export const LARGE_DIFF = 4000;
@@ -47,6 +48,27 @@ export function polylineDrawable(id: string, overrides?: Partial<Drawable>): Dra
     geometry: { type: "polyline", path: [ORIGIN, { lat: 1, lng: 1 }] },
     ...overrides,
   };
+}
+
+/** Metres in a degree of latitude: a square `2r / METRES_PER_DEGREE` degrees across is as wide as a circle of radius `r`. */
+const METRES_PER_DEGREE = 111_320;
+
+/**
+ * An area at the origin `radius` metres from its centre to its side: a circle where the adapter
+ * declares circles, else a square, so checks on areas run on every adapter.
+ */
+export function areaGeometry(supports: Supports, radius: number): Geometry {
+  if (supports.has("circle")) return { type: "circle", center: ORIGIN, radius };
+  return { type: "polygon", path: squareAround(ORIGIN, (2 * radius) / METRES_PER_DEGREE) };
+}
+
+export function areaDrawable(
+  supports: Supports,
+  id: string,
+  radius = 1000,
+  overrides?: Partial<Drawable>,
+): Drawable {
+  return { ...plainDrawable(id), geometry: areaGeometry(supports, radius), ...overrides };
 }
 
 /** A square around the origin with a square hole. */

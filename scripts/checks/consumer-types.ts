@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { TSC } from "../build/package.ts";
 
 /** A page's code using the packed package, one per `<fixture>.json` in `consumer/`. */
-export type ConsumerFixture = "core-and-element" | "google" | "react";
+export type ConsumerFixture = "core-and-element" | "google" | "maplibre" | "react";
 
 const FIXTURES = join(import.meta.dirname, "consumer");
 

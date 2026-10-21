@@ -1,7 +1,8 @@
+import { elementFilling } from "../../adapter-kit/map-element";
 import { type MountSettings, mountSubject } from "../../testing/conformance/harness";
 import type { ConformanceSubject } from "../../testing/conformance/subject";
 import { assembleGoogleAdapter } from "../assemble";
-import { createdMapOptions, elementFilling } from "../map-source";
+import { createdMapOptions } from "../map-source";
 import type { GoogleAdapterOptions } from "../options";
 import { probedMapState } from "./probe";
 

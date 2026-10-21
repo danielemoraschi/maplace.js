@@ -30,6 +30,13 @@ export const SIZE_MEASURES: readonly SizeMeasure[] = [
     beside: PACKAGE_ENTRIES.core,
   },
   {
+    name: "maplace/maplibre",
+    rfcRow: "MapLibre adapter (`maplace/maplibre`)",
+    kind: "esm",
+    entry: PACKAGE_ENTRIES.maplibre,
+    beside: PACKAGE_ENTRIES.core,
+  },
+  {
     name: "maplace/react",
     rfcRow: "React binding (`maplace/react`)",
     kind: "esm",

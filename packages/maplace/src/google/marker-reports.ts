@@ -1,5 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import { editReportsFor } from "../adapter-kit/edit-reports";
+import { reportElementHover } from "../adapter-kit/hover-reports";
 import type { Geometry } from "../geometry";
 import { latLngOf } from "./lat-lng";
 import { reportLocationClick } from "./map-clicks";
@@ -22,13 +23,7 @@ export function reportMarkerInput(
   const edits = editReportsFor(id, mounted.live);
   marker.addEventListener("gmp-drag", () => reportDragged(marker, edits.moving));
   marker.addEventListener("gmp-dragend", () => reportDragged(marker, edits.ended));
-  marker.addEventListener("pointerenter", () => hover.enter("pointer", id));
-  marker.addEventListener("pointerleave", () => hover.leave("pointer", id));
-  // A click focuses the marker as well; only keyboard focus points at it.
-  marker.addEventListener("focusin", () => {
-    if (marker.matches(":focus-visible")) hover.enter("focus", id);
-  });
-  marker.addEventListener("focusout", () => hover.leave("focus", id));
+  reportElementHover(marker, id, hover);
 }
 
 /** Where the marker is, to `report`; nothing while Google gives it no position. */

@@ -1,5 +1,8 @@
 import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
-import { POPUP_CLASS } from "../../../../packages/maplace/src/adapter-kit/popup-content.ts";
+import {
+  POPUP_CLASS,
+  POPUP_HEADING_CLASS,
+} from "../../../../packages/maplace/src/adapter-kit/popup-content.ts";
 import {
   PANE_CLASS,
   PLACED_LIST_CLASS,
@@ -10,7 +13,6 @@ import {
   CONTROL_CLASS,
   GOOGLE_MAP_CLASS,
 } from "../../../../packages/maplace/src/google/control-styles.ts";
-import { POPUP_HEADING_CLASS } from "../../../../packages/maplace/src/google/popup-styles.ts";
 import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
@@ -124,6 +126,7 @@ function tablesOn(page: string, tables: readonly TableOf[]): ReferenceTable[] {
 const ENTRY_NAMES: Readonly<Record<keyof typeof PACKAGE_ENTRIES, string>> = {
   core: "maplace",
   google: "maplace/google",
+  maplibre: "maplace/maplibre",
   element: "maplace/element",
   elementGoogle: "maplace/element/google",
   react: "maplace/react",

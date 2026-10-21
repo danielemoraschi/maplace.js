@@ -1,13 +1,14 @@
 /// <reference types="google.maps" preserve="true" />
 
 import { placementOf } from "../adapter-kit/placement";
+import type { Look } from "../adapter-kit/presentation-changes";
 import { stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
 import type { MarkerGeometry } from "../geometry";
 import type { LocationState } from "../location";
 import { sameState } from "../location-state";
 import { reportMarkerInput } from "./marker-reports";
-import type { Look, PlacedMarker, PlacingSite } from "./placed-location";
+import type { PlacedMarker, PlacingSite } from "./placed-location";
 
 /**
  * One advanced marker: clickable and focusable, titled for screen readers, dragged by the user

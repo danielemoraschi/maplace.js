@@ -1,8 +1,5 @@
-import { POPUP_CLASS } from "../adapter-kit/popup-content";
+import { POPUP_CLASS, POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { outsideUnstyled } from "../unstyled";
-
-/** The class of a popup's heading: its location's title, in the row with Google's close button. */
-export const POPUP_HEADING_CLASS = "maplace-popup-heading";
 
 const CONTENT = `.${POPUP_CLASS}`;
 const TEXT = `${CONTENT},.${POPUP_HEADING_CLASS}`;

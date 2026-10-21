@@ -15,6 +15,7 @@ export const PACKED = `${PACKAGE_DIR}/packed`;
 export const PACKAGE_ENTRIES = {
   core: `${SRC}/index.ts`,
   google: `${SRC}/google/index.ts`,
+  maplibre: `${SRC}/maplibre/index.ts`,
   element: `${SRC}/element/index.ts`,
   elementGoogle: `${SRC}/element/google.ts`,
   react: `${SRC}/react/index.ts`,

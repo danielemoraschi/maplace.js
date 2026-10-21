@@ -1,5 +1,6 @@
 import type { LocationDiff } from "../adapter";
 import { inChunks } from "../adapter-kit/chunks";
+import { createDiffQueue, type DiffQueue } from "../adapter-kit/diff-queue";
 import type { Drawable } from "../drawable";
 import { MaplaceError } from "../errors";
 import type { GoogleMapState } from "./map-state";
@@ -11,12 +12,7 @@ import { createPlacingSite } from "./placing-site";
 const CHUNK_SIZE = 250;
 
 /** The adapter's `apply`, and the part that readies placing on the open map. */
-export interface Drawing {
-  apply(diff: LocationDiff): Promise<void>;
-  /** How many diffs were applied so far. */
-  applied(): number;
-  /** Whether the first `count` diffs applied are drawn: until then, what is placed may be stale. */
-  drawnThrough(count: number): boolean;
+export interface Drawing extends DiffQueue {
   readonly part: MapPart;
 }
 
@@ -26,9 +22,6 @@ export interface Drawing {
  */
 export function createDrawing(state: GoogleMapState, placers: Placers): Drawing {
   let site: PlacingSite | undefined;
-  let queue = Promise.resolve();
-  let applied = 0;
-  let drawn = 0;
 
   async function draw({ added, updated, removed }: LocationDiff): Promise<void> {
     const drawingOn = site;
@@ -71,17 +64,7 @@ export function createDrawing(state: GoogleMapState, placers: Placers): Drawing 
   }
 
   return {
-    // Never rejects: a failure goes to the host, and later diffs still draw.
-    apply(diff) {
-      applied++;
-      queue = queue
-        .then(() => draw(diff))
-        .catch(reportFailure)
-        .finally(() => drawn++);
-      return queue;
-    },
-    applied: () => applied,
-    drawnThrough: (count) => drawn >= count,
+    ...createDiffQueue(draw, reportFailure),
     part: {
       open(mounted) {
         site = createPlacingSite(mounted, state);

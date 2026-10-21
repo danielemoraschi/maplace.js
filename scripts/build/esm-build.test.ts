@@ -66,9 +66,9 @@ describe("the npm ESM build", () => {
     ).toHaveLength(1);
   });
 
-  it("bundles no dependency: it imports the clusterer and React by name", () => {
+  it("bundles no dependency: it imports the clusterer, React and maplibre-gl by name", () => {
     const bare = [...scripts(join(packageDir, "dist")).values()].flatMap(bareImportsOf);
-    expect(new Set(bare.map(packageName))).toEqual(new Set([CLUSTERER, ...REACT]));
+    expect(new Set(bare.map(packageName))).toEqual(new Set([CLUSTERER, ...REACT, "maplibre-gl"]));
   });
 
   it("leaves React to the React entry alone, so no other entry needs it", () => {

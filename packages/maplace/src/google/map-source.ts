@@ -1,4 +1,5 @@
 /// <reference types="google.maps" preserve="true" />
+import { elementFilling } from "../adapter-kit/map-element";
 import { GOOGLE_MAP_CLASS } from "./control-styles";
 import { DEMO_MAP_ID, warnOfDemoMapIdOnce } from "./demo-map-id";
 import type { GoogleLibraries } from "./libraries";
@@ -65,15 +66,6 @@ function openIn(
     element.remove();
     throw error;
   }
-}
-
-/** A new element filling the container, where a map goes. */
-export function elementFilling(container: HTMLElement): HTMLElement {
-  const element = container.ownerDocument.createElement("div");
-  element.style.width = "100%";
-  element.style.height = "100%";
-  container.append(element);
-  return element;
 }
 
 /** The page's own map: drawn on as it is, and given back as the page made it. */

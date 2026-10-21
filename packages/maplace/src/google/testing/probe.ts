@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
+
+import { DOUBLE_CLICK_WAIT_MS } from "../../adapter-kit/click-gesture";
 import { frontFirst, type MapProbe } from "../../testing/map-probe";
-import { DOUBLE_CLICK_WAIT_MS } from "../map-clicks";
 import { createMapState, type GoogleMapState } from "../map-state";
 import type { PlacedLocation } from "../placed-location";
 import { type CameraWatch, watchCamera } from "./camera-watch";
@@ -89,8 +90,8 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
       ),
     shownPopup() {
       const popup = state.popup;
-      if (!popup?.infoWindow.isOpen) return undefined;
-      return { id: popup.id, element: popup.element, heading: headingOf(popup.infoWindow) };
+      if (!popup?.window.infoWindow.isOpen) return undefined;
+      return { id: popup.id, element: popup.element, heading: headingOf(popup.window.infoWindow) };
     },
     click: (id) => reachable(id)?.click(),
     clickMap(at) {
@@ -112,7 +113,7 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
     drag: (id, geometry) => reachable(id)?.drag(geometry),
     closePopup() {
       // As a click on its close button: Google closes the window, then says the user did.
-      const infoWindow = state.popup?.infoWindow;
+      const infoWindow = state.popup?.window.infoWindow;
       infoWindow?.close();
       if (infoWindow) google.maps.event.trigger(infoWindow, "closeclick");
     },
@@ -126,7 +127,7 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
       if (popup === undefined || popup.shown) return;
       // The adapter's own listener came first, so the open is reported by the time this runs.
       await new Promise((resolve) =>
-        google.maps.event.addListenerOnce(popup.infoWindow, "domready", resolve),
+        google.maps.event.addListenerOnce(popup.window.infoWindow, "domready", resolve),
       );
     },
   };

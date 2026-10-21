@@ -1,13 +1,7 @@
 import type { PresentationState } from "../adapter";
-import { visibilityChanges } from "../adapter-kit/presentation-changes";
-import { changedIds, stateIn } from "../location-state";
+import { lookIn, visibilityChanges } from "../adapter-kit/presentation-changes";
+import { changedIds } from "../location-state";
 import type { GoogleMapState } from "./map-state";
-import type { Look } from "./placed-location";
-
-/** How `presented` shows one location. */
-export function lookIn(presented: PresentationState, id: string): Look {
-  return { state: stateIn(presented, id), visible: !presented.hiddenIds.has(id) };
-}
 
 /**
  * The adapter's `present`: keeps the presentation for locations still to be placed, and gives

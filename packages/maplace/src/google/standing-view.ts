@@ -1,14 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
+import type { StandingView } from "../adapter-kit/view-follower";
 import type { ResolvedView } from "../viewport";
-
-/** The view the map was last moved to, while nothing else has moved it. */
-export interface StandingView {
-  /** The camera is being moved to `view`: it stands from now on. */
-  shown(view: ResolvedView): void;
-  /** Undefined once the user moved the map: a resize then keeps what they chose. */
-  standing(): ResolvedView | undefined;
-  stop(): void;
-}
 
 /** What a user moves a map with: a drag or a button, the wheel, the keyboard. */
 const USER_INPUT = ["pointerdown", "wheel", "keydown"] as const;

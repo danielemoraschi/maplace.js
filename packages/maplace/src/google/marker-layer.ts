@@ -1,7 +1,8 @@
 /// <reference types="google.maps" preserve="true" />
+
+import type { Look } from "../adapter-kit/presentation-changes";
 import { MaplaceError } from "../errors";
 import type { GoogleLibraries } from "./libraries";
-import type { Look } from "./placed-location";
 
 type Marker = google.maps.marker.AdvancedMarkerElement;
 

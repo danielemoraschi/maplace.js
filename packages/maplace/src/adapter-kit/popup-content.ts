@@ -3,6 +3,9 @@ import type { Drawable } from "../drawable";
 /** The class of a popup's content element, which the adapters' popup styles name. */
 export const POPUP_CLASS = "maplace-popup";
 
+/** The class of a popup's heading: its location's title, in the row with the close button. */
+export const POPUP_HEADING_CLASS = "maplace-popup-heading";
+
 /** A popup's content in an element of its own, the one `popupOpen` gives. */
 export interface PopupContent {
   readonly element: HTMLElement;

@@ -1,5 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import type { AdapterHost, MountContext } from "../adapter";
+import { createTeardowns } from "../adapter-kit/teardowns";
 import type { ResolvedPopupOptions } from "../popup";
 import type { GoogleLibraries } from "./libraries";
 import type { MapInUse } from "./map-source";
@@ -60,24 +61,18 @@ export interface OpenMap {
  */
 export function mountMap({ inUse, libraries, context, markerLayer }: MapToMount): OpenMap {
   const markers = markerLayer(inUse.map, libraries);
+  const teardowns = createTeardowns();
   // The layer lets go of its markers last, once every part has removed its own.
-  const teardowns: (() => void)[] = [() => markers.release()];
+  teardowns.add(() => markers.release());
   let released = false;
-  let tornDown = false;
   const mounted: MountedMap = {
     map: inUse.map,
     libraries,
     popup: context.popup,
     markers,
-    live: () => (tornDown || context.signal.aborted ? undefined : context.host),
-    onDestroy: (teardown) => teardowns.push(teardown),
+    live: () => (teardowns.done() || context.signal.aborted ? undefined : context.host),
+    onDestroy: teardowns.add,
   };
-
-  function tearDown(run: (teardown: () => void) => void): void {
-    if (tornDown) return;
-    tornDown = true;
-    for (const teardown of teardowns.splice(0).reverse()) run(teardown);
-  }
 
   return {
     mounted,
@@ -86,9 +81,9 @@ export function mountMap({ inUse, libraries, context, markerLayer }: MapToMount)
         released = true;
         inUse.release();
       }
-      tearDown((teardown) => teardown());
+      teardowns.runAll();
     },
-    abandon: () => tearDown(ignoringFailure),
+    abandon: () => teardowns.runAll(ignoringFailure),
   };
 }
 

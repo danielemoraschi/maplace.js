@@ -1,15 +1,10 @@
 /// <reference types="google.maps" preserve="true" />
+
+import type { HoverReports } from "../adapter-kit/hover-reports";
+import type { Look } from "../adapter-kit/presentation-changes";
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng } from "../geometry";
-import type { LocationState } from "../location";
-import type { HoverReports } from "./hover";
 import type { MountedMap } from "./mounted-map";
-
-/** How the store's presentation shows one location. */
-export interface Look {
-  readonly state: LocationState;
-  readonly visible: boolean;
-}
 
 /** Where a location's popup points: at a marker, which it follows, or at a point. */
 export type PopupPlace =

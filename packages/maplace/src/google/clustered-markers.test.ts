@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
+import { lookIn } from "../adapter-kit/presentation-changes";
 import { presented } from "../testing/conformance/fixtures";
 import { clusteredMarkers } from "./clustered-markers";
-import { lookIn } from "./presenting";
 import {
   clusterersMade,
   type MarkerClusterer,

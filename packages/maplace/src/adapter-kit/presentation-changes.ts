@@ -1,4 +1,17 @@
 import type { PresentationState } from "../adapter";
+import type { LocationState } from "../location";
+import { stateIn } from "../location-state";
+
+/** How the store's presentation shows one location. */
+export interface Look {
+  readonly state: LocationState;
+  readonly visible: boolean;
+}
+
+/** How `presented` shows one location. */
+export function lookIn(presented: PresentationState, id: string): Look {
+  return { state: stateIn(presented, id), visible: !presented.hiddenIds.has(id) };
+}
 
 /** A presentation with nothing selected, hovered or hidden: where every map starts. */
 export const NOTHING_PRESENTED: PresentationState = {

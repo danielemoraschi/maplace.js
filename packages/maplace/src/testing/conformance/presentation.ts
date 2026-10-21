@@ -11,9 +11,9 @@ import {
 import { mountSubject } from "./harness";
 import { shapeStackingChecks } from "./shape-stacking";
 import { shapeStateChecks } from "./shape-states";
-import type { ConformanceSubject } from "./subject";
+import type { ConformanceSubject, Supports } from "./subject";
 
-export function presentationChecks(subject: ConformanceSubject): void {
+export function presentationChecks(subject: ConformanceSubject, supports: Supports): void {
   describe("presentation", () => {
     it("hides the hidden ids, and shows them again", async () => {
       const { adapter, probe } = await mountSubject(subject);
@@ -99,7 +99,7 @@ export function presentationChecks(subject: ConformanceSubject): void {
       expect(probe.stackOrder()).toEqual(["a", "c", "b"]);
     });
 
-    shapeStackingChecks(subject);
-    shapeStateChecks(subject);
+    shapeStackingChecks(subject, supports);
+    shapeStateChecks(subject, supports);
   });
 }

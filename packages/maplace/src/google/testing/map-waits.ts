@@ -1,7 +1,7 @@
 /// <reference types="google.maps" />
 import { expect } from "vitest";
+import { DOUBLE_CLICK_WAIT_MS } from "../../adapter-kit/click-gesture";
 import { frames } from "../frames";
-import { DOUBLE_CLICK_WAIT_MS } from "../map-clicks";
 import type { GoogleMapState } from "../map-state";
 
 /**

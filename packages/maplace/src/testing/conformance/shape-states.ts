@@ -2,24 +2,24 @@ import { describe, expect, it } from "vitest";
 import { HOVERED_LOOK, SELECTED_LINE_LOOK, SELECTED_LOOK } from "../../adapter-kit/shape-looks";
 import {
   adding,
-  circleDrawable,
+  areaDrawable,
   polygonDrawable,
   polylineDrawable,
   presented,
   updating,
 } from "./fixtures";
 import { mountSubject } from "./harness";
-import type { ConformanceSubject } from "./subject";
+import type { ConformanceSubject, Supports } from "./subject";
 
 /**
  * How an adapter draws a shape in a state: maplace's look for it, the shape's style over that,
  * and its own state style over both. Colours are lowercase hex, as a provider gives them back.
  */
-export function shapeStateChecks(subject: ConformanceSubject): void {
+export function shapeStateChecks(subject: ConformanceSubject, supports: Supports): void {
   describe("shapes in a state", () => {
     it("draws a selected or hovered shape in its look, and as before once neither", async () => {
       const { adapter, probe } = await mountSubject(subject);
-      await adapter.apply(adding(circleDrawable("c"), polygonDrawable("p")));
+      await adapter.apply(adding(areaDrawable(supports, "c"), polygonDrawable("p")));
       adapter.present(presented({ selectedId: "c", hoveredId: "p" }));
       expect(probe.location("c")?.style).toEqual(SELECTED_LOOK);
       expect(probe.location("p")?.style).toEqual(HOVERED_LOOK);
@@ -44,9 +44,12 @@ export function shapeStateChecks(subject: ConformanceSubject): void {
     it("draws a selected or hovered shape in its own state style, over its style and the look", async () => {
       const { adapter, probe } = await mountSubject(subject);
       const selectedStyle = { stroke: "#ff0000", fill: "#ff0000" };
-      const circle = circleDrawable("c", { style: { stroke: "#0000ff" }, selectedStyle });
+      const area = areaDrawable(supports, "c", 1000, {
+        style: { stroke: "#0000ff" },
+        selectedStyle,
+      });
       const polygon = polygonDrawable("p", { hoveredStyle: { strokeWidth: 3 } });
-      await adapter.apply(adding(circle, polygon));
+      await adapter.apply(adding(area, polygon));
       adapter.present(presented({ selectedId: "c", hoveredId: "p" }));
       expect(probe.location("c")?.style).toEqual({ ...SELECTED_LOOK, ...selectedStyle });
       expect(probe.location("p")?.style).toEqual({ ...HOVERED_LOOK, strokeWidth: 3 });
@@ -59,9 +62,13 @@ export function shapeStateChecks(subject: ConformanceSubject): void {
 
     it("restyles a shape in its state when only its state style changes", async () => {
       const { adapter, probe } = await mountSubject(subject);
-      await adapter.apply(adding(circleDrawable("c", { selectedStyle: { fill: "#ff0000" } })));
+      await adapter.apply(
+        adding(areaDrawable(supports, "c", 1000, { selectedStyle: { fill: "#ff0000" } })),
+      );
       adapter.present(presented({ selectedId: "c" }));
-      await adapter.apply(updating(circleDrawable("c", { selectedStyle: { fill: "#00ff00" } })));
+      await adapter.apply(
+        updating(areaDrawable(supports, "c", 1000, { selectedStyle: { fill: "#00ff00" } })),
+      );
       expect(probe.location("c")?.style).toEqual({ ...SELECTED_LOOK, fill: "#00ff00" });
     });
   });

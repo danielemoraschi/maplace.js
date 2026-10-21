@@ -1,18 +1,13 @@
 /// <reference types="google.maps" preserve="true" />
 import type { PresentationState } from "../adapter";
+import type { SessionPopup } from "../adapter-kit/popup-window";
 import { NOTHING_PRESENTED } from "../adapter-kit/presentation-changes";
 import type { MountedMap } from "./mounted-map";
 import type { PlacedLocation } from "./placed-location";
+import type { GooglePopupWindow } from "./popup-window";
 
 /** The popup open on the map, as the probe reads it. */
-export interface ShownGooglePopup {
-  readonly id: string;
-  /** What holds the content, given to `popupOpen`. */
-  readonly element: HTMLElement;
-  readonly infoWindow: google.maps.InfoWindow;
-  /** Its content was reported in the DOM; until then, Google's `domready` is still to come. */
-  readonly shown: boolean;
-}
+export type ShownGooglePopup = SessionPopup<GooglePopupWindow>;
 
 /** What the adapter has on the map, shared with its probe; each part adds what it draws. */
 export interface GoogleMapState {

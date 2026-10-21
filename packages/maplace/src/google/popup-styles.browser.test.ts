@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, onTestFinished } from "vitest";
-import { POPUP_CLASS } from "../adapter-kit/popup-content";
+import { POPUP_CLASS, POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { unstyledPage } from "../testing/unstyled-page";
-import { POPUP_HEADING_CLASS, POPUP_STYLES } from "./popup-styles";
+import { POPUP_STYLES } from "./popup-styles";
 
 afterEach(() => document.body.replaceChildren());
 

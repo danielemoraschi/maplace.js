@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  checkGoogleMapOptions,
-  listViewOptionsOf,
-  splitGoogleMapOptions,
-} from "./google-map-options";
+import { checkGoogleMapOptions, splitGoogleMapOptions } from "./google-map-options";
 
 function refusal(field: string, message: string) {
   return expect.objectContaining({ code: "invalid-input", field, message });
@@ -93,13 +89,6 @@ describe("splitGoogleMapOptions", () => {
       storeOptions: { selectedId: "rome", cluster: true },
       list,
     });
-    expect(splitGoogleMapOptions({ mapId: "id", list: true }).list).toEqual({});
-  });
-});
-
-describe("listViewOptionsOf", () => {
-  it("gives the list view its own options, without where the list goes", () => {
-    const list = { as: "select", position: "top-left", container: "#side" } as const;
-    expect(listViewOptionsOf(list)).toEqual({ as: "select" });
+    expect(splitGoogleMapOptions({ mapId: "id", list: true }).list).toBe(true);
   });
 });

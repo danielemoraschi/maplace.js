@@ -97,6 +97,12 @@ const LAYERS = {
     imports: ["data", "contract", "entry", "react", "testing", "fake"],
     packages: ["react", "react-dom", "vitest"],
   },
+  // A store on a provider's map in one call, with its list (A9): what each provider's shortcut
+  // makes, through the core's entry, as React does.
+  shortcut: {
+    files: /^shortcut\//,
+    imports: ["data", "contract", "entry", "validation"],
+  },
   // Shares the store's option checks, so its misuse reads the same.
   google: {
     files: /^google\/(?!testing\/|index$|google-map(-options)?$)/,
@@ -107,13 +113,31 @@ const LAYERS = {
   // core through its entry, as React does.
   "google-entry": {
     files: /^google\/(index|google-map(-options)?)$/,
-    imports: ["data", "contract", "entry", "google", "validation"],
+    imports: ["data", "contract", "entry", "google", "shortcut"],
   },
   // The Google adapter's test support: its probe and the Maps JS loader for tests.
   "google-testing": {
     files: /^google\/testing\//,
-    imports: ["data", "contract", "testing", "conformance", "google"],
+    imports: ["data", "contract", "adapter-kit", "testing", "conformance", "google"],
     packages: ["vitest"],
+  },
+  // The MapLibre adapter: maplibre-gl itself is loaded on mount, its types imported anywhere here.
+  maplibre: {
+    files: /^maplibre\/(?!testing\/|index$|maplibre-map(-options)?$)/,
+    imports: ["data", "contract", "adapter-kit", "validation"],
+    packages: ["maplibre-gl"],
+  },
+  // maplace/maplibre: the adapter, and a store on a MapLibre map in one call.
+  "maplibre-entry": {
+    files: /^maplibre\/(index|maplibre-map(-options)?)$/,
+    imports: ["data", "contract", "entry", "maplibre", "shortcut", "validation"],
+    packages: ["maplibre-gl"],
+  },
+  // The MapLibre adapter's test support: its probe, a local style and MapLibre's stylesheet.
+  "maplibre-testing": {
+    files: /^maplibre\/testing\//,
+    imports: ["data", "contract", "adapter-kit", "testing", "conformance", "maplibre"],
+    packages: ["maplibre-gl", "vitest"],
   },
 } satisfies Record<string, LayerRule>;
 

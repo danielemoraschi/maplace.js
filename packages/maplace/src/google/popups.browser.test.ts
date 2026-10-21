@@ -1,5 +1,6 @@
 import { afterEach, expect, it } from "vitest";
 import { page, userEvent } from "vitest/browser";
+import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import type { Drawable } from "../drawable";
 import {
   adding,
@@ -11,7 +12,6 @@ import {
 import type { MountSettings } from "../testing/conformance/harness";
 import { unmountAll } from "../testing/conformance/harness";
 import type { GoogleMapState } from "./map-state";
-import { POPUP_HEADING_CLASS } from "./popup-styles";
 import { cameraAt } from "./testing/camera-at";
 import { drawnMarker } from "./testing/map-waits";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
@@ -139,8 +139,8 @@ describeWithMaps("Google popups under real input", () => {
     const polygon = { ...ALPHA, geometry: polygonDrawable("a").geometry };
     await adapter.apply({ added: [polygon], updated: [], removed: ["a"] });
     await expect.poll(() => host.reportsOf("reportPopupOpen").length).toBe(2);
-    expect(state.popup?.infoWindow.isOpen).toBe(true);
-    expect(state.popup?.infoWindow.getPosition()?.toJSON()).toEqual({ lat: 0, lng: 0 });
+    expect(state.popup?.window.infoWindow.isOpen).toBe(true);
+    expect(state.popup?.window.infoWindow.getPosition()?.toJSON()).toEqual({ lat: 0, lng: 0 });
     expect(host.reportsOf("reportPopupClose")).toEqual([]);
   });
 
@@ -148,6 +148,6 @@ describeWithMaps("Google popups under real input", () => {
     const { adapter, state } = await drawn([withContent(polygonDrawable("p"), "Pi")]);
     adapter.present(presented({ selectedId: "p" }));
     await openedPopup(state);
-    expect(state.popup?.infoWindow.getPosition()?.toJSON()).toEqual({ lat: 0, lng: 0 });
+    expect(state.popup?.window.infoWindow.getPosition()?.toJSON()).toEqual({ lat: 0, lng: 0 });
   });
 });

@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AdapterHost } from "../adapter";
+import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
 import type { LatLng } from "../geometry";
 import { createRecordingHost } from "../testing/conformance/recording-host";
-import { DOUBLE_CLICK_WAIT_MS, mapClicks, reportLocationClick } from "./map-clicks";
+import { mapClicks, reportLocationClick } from "./map-clicks";
 import type { MountedMap } from "./mounted-map";
 import { StubMap } from "./testing/stub-libraries";
 

@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
+import type { LocationDiff } from "../../adapter";
 import { sizeOf } from "../../adapter-kit/map-size";
 import { describeConformance } from "../conformance/describe-conformance";
 import { adding, markerDrawable, presented, withContent } from "../conformance/fixtures";
 import { createRecordingHost } from "../conformance/recording-host";
 import type { ConformanceSubject } from "../conformance/subject";
+import { EVERY_CAPABILITY } from "../contract-values";
 import { createFakeAdapter } from "../fake-adapter";
 
 const fake: ConformanceSubject = {
@@ -17,6 +19,31 @@ const fake: ConformanceSubject = {
 };
 
 describeConformance(fake);
+
+/**
+ * The fake as an adapter that can't draw circles: it declares none, and fails to apply one, which
+ * the fake would draw anyway. The checks open to every adapter must pass on it.
+ */
+const withoutCircles: ConformanceSubject = {
+  name: "fake without circles",
+  groups: ["presentation"],
+  create() {
+    const capabilities = EVERY_CAPABILITY.filter((capability) => capability !== "circle");
+    const adapter = createFakeAdapter({ sizeOf, capabilities });
+    void adapter.finishMount();
+    const apply = (diff: LocationDiff) =>
+      hasCircle(diff)
+        ? Promise.reject(new Error("a circle drawn, though circle isn't declared"))
+        : adapter.apply(diff);
+    return { adapter: { ...adapter, apply }, probe: adapter.probe() };
+  },
+};
+
+function hasCircle({ added, updated }: LocationDiff): boolean {
+  return [...added, ...updated].some(({ geometry }) => geometry.type === "circle");
+}
+
+describeConformance(withoutCircles);
 
 describe("the fake beyond the contract", () => {
   it("reports nothing it does by itself until settled, so store tests see only their own reports", async () => {
