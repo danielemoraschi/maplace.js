@@ -13,7 +13,7 @@ const maplace = createGoogleMap("#circles-vanilla-map", {
       title: "Within 5 km",
       style: { stroke: "#1d4ed8", fill: "#3b82f6" },
       selectedStyle,
-      content: () => popupOf("Within 5 km", "The historic centre, on foot."),
+      content: () => popupOf("The historic centre, on foot."),
     },
     {
       id: "ring",
@@ -23,7 +23,7 @@ const maplace = createGoogleMap("#circles-vanilla-map", {
       title: "Within 15 km",
       style: { stroke: "#15803d", fill: "#22c55e" },
       selectedStyle,
-      content: () => popupOf("Within 15 km", "Inside the ring road, by bike."),
+      content: () => popupOf("Inside the ring road, by bike."),
     },
     {
       id: "resizable",
@@ -52,13 +52,9 @@ function showRadius(id: string, radius: number): void {
     readout.textContent = `Radius: ${(radius / 1000).toFixed(1)} km`;
 }
 
-/** A popup's content: the title in bold, then a line about the area. */
-function popupOf(title: string, about: string): DocumentFragment {
-  const heading = document.createElement("strong");
-  heading.textContent = title;
+/** A popup's content: a line about the area, under its title (the popup's heading). */
+function popupOf(about: string): HTMLParagraphElement {
   const text = document.createElement("p");
   text.textContent = about;
-  const content = document.createDocumentFragment();
-  content.append(heading, text);
-  return content;
+  return text;
 }

@@ -11,12 +11,18 @@ import {
 import type { MountSettings } from "../testing/conformance/harness";
 import { unmountAll } from "../testing/conformance/harness";
 import type { GoogleMapState } from "./map-state";
+import { POPUP_HEADING_CLASS } from "./popup-styles";
 import { cameraAt } from "./testing/camera-at";
 import { drawnMarker } from "./testing/map-waits";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
 const ALPHA = withContent(markerDrawable("a"), "Alpha");
+/** Alpha with a title to head its popup, and a paragraph for content, as a page writes one. */
+const TITLED: Drawable = {
+  ...markerDrawable("a", undefined, { title: "Alpha town" }),
+  renderContent: () => Object.assign(document.createElement("p"), { textContent: "Alpha" }),
+};
 /** Longer than Google takes to start panning an open popup into view. */
 const AUTO_PAN_WAIT_MS = 500;
 
@@ -53,16 +59,36 @@ describeWithMaps("Google popups under real input", () => {
       .toBe(true);
   });
 
-  it("shows its content in dark text on Google's white bubble, on a page whose text is white", async () => {
+  it("shows its heading and content in dark text on Google's white bubble, on a page whose text is white", async () => {
     document.body.style.color = "white";
     try {
-      const { adapter, state } = await drawn([ALPHA]);
+      const { adapter, state } = await drawn([TITLED]);
       adapter.present(presented({ selectedId: "a" }));
       const element = await openedPopup(state);
-      expect(getComputedStyle(element).color).toBe("rgb(31, 31, 31)");
+      const heading = element.closest('[role="dialog"]')?.querySelector(`.${POPUP_HEADING_CLASS}`);
+      expect(heading?.textContent).toBe("Alpha town");
+      expect([element, heading].map((node) => getComputedStyle(node as Element).color)).toEqual([
+        "rgb(31, 31, 31)",
+        "rgb(31, 31, 31)",
+      ]);
     } finally {
       document.body.style.color = "";
     }
+  });
+
+  it("insets its content as far from the bubble's right and bottom as from its left", async () => {
+    const { adapter, state } = await drawn([TITLED]);
+    adapter.present(presented({ selectedId: "a" }));
+    const element = await openedPopup(state);
+    const bubble = element.closest('[role="dialog"]')?.getBoundingClientRect() as DOMRect;
+    const text = (element.firstElementChild as Element).getBoundingClientRect();
+    const [left, right, bottom] = [
+      text.left - bubble.left,
+      bubble.right - text.right,
+      bubble.bottom - text.bottom,
+    ];
+    expect(Math.abs(right - left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(bottom - left)).toBeLessThanOrEqual(1);
   });
 
   it("leaves focus where it was for a popup opened from outside the map", async () => {

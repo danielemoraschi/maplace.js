@@ -44,13 +44,7 @@ const circles: Location<Area>[] = [
 ];
 
 // Outside the component, so a render of the page around it doesn't render every popup again.
-const popupContent = ({ title, data }: Location<Area>) =>
-  data ? (
-    <>
-      <strong>{title}</strong>
-      <p>{data.about}</p>
-    </>
-  ) : null;
+const popupContent = ({ data }: Location<Area>) => (data ? <p>{data.about}</p> : null);
 
 /** A circle's radius; other shapes have none. */
 const radiusOf = (shape: Geometry | Location<Area>) =>

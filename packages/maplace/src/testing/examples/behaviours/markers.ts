@@ -28,8 +28,8 @@ const expectPopups: ExampleBehaviour = async ({ adapter }) => {
   const probe = adapter.probe();
   probe.click("rome");
   await probe.settle();
-  await expect.poll(() => textIn(probe.shownPopup()?.element, "strong")).toBe("Rome");
-  expect(probe.shownPopup()?.element.textContent).toContain("Capital of Italy.");
+  await expect.poll(() => textIn(probe.shownPopup()?.element, "p")).toBe("Capital of Italy.");
+  expect(probe.shownPopup()?.heading).toBe("Rome");
   probe.click("naples");
   await probe.settle();
   await expect.poll(() => probe.shownPopup()).toBeUndefined();

@@ -42,7 +42,7 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
   /** `drawable`'s popup in the layer; none without content or without a DOM. */
   function render(drawable: Drawable): OpenPopup | undefined {
     const content = layer && popupContent(drawable, layer.ownerDocument);
-    return content && { id: drawable.id, ...content };
+    return content && { id: drawable.id, heading: drawable.title, ...content };
   }
 
   function close(): void {
@@ -79,7 +79,7 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
       else if (step === "replace") {
         close();
         if (next) open(next);
-      }
+      } else if (shown && next) shown = { ...shown, heading: next.title };
     },
     closeByUser() {
       if (shown) choice.dismiss(shown.id);

@@ -17,6 +17,9 @@ const withPopups = [
   withContent(markerDrawable("b"), "Beta"),
 ];
 
+/** Alpha's marker with popup content, and `title`. */
+const alphaTitled = (title: string) => withContent(markerDrawable("a", ORIGIN, { title }), "Alpha");
+
 export function popupChecks(subject: ConformanceSubject): void {
   async function mountedWithPopups(settings?: MountSettings) {
     const mounted = await mountSubject(subject, settings);
@@ -36,6 +39,32 @@ export function popupChecks(subject: ConformanceSubject): void {
       expect(opened[0]?.[1].textContent).toContain("Alpha");
       expect(host.reportsOf("reportPopupClose")).toEqual([["a"]]);
       expect(probe.shownPopup()?.id).toBe("b");
+    });
+
+    it("heads the popup with its location's title, and with nothing without one", async () => {
+      const { adapter, probe } = await mountSubject(subject);
+      await adapter.apply(
+        adding(alphaTitled("Alpha town"), withContent(markerDrawable("b"), "Beta")),
+      );
+      adapter.present(presented({ selectedId: "a" }));
+      await probe.settle();
+      expect(probe.shownPopup()?.heading).toBe("Alpha town");
+      adapter.present(presented({ selectedId: "b" }));
+      await probe.settle();
+      expect(probe.shownPopup()?.heading).toBeUndefined();
+    });
+
+    it("renames the open popup's heading with its title alone, reporting no open again", async () => {
+      const { adapter, probe, host } = await mountSubject(subject);
+      const alpha = alphaTitled("Alpha town");
+      await adapter.apply(adding(alpha));
+      adapter.present(presented({ selectedId: "a" }));
+      await probe.settle();
+      // The same content builder: the store keeps it when only the title changed.
+      await adapter.apply(updating({ ...alpha, title: "Alpha city" }));
+      await probe.settle();
+      expect(probe.shownPopup()?.heading).toBe("Alpha city");
+      expect(host.reportsOf("reportPopupOpen")).toHaveLength(1);
     });
 
     it("follows the hover instead with openOn 'hover'", async () => {

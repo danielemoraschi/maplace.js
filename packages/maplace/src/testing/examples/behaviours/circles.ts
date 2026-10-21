@@ -13,10 +13,16 @@ const expectPopups: ExampleBehaviour = async ({ store, adapter }) => {
   const probe = adapter.probe();
   expect(store.getSnapshot().selectedId).toBe("center");
   await probe.settle();
-  await expect.poll(() => textIn(probe.shownPopup()?.element, "strong")).toBe("Within 5 km");
+  await expect
+    .poll(() => textIn(probe.shownPopup()?.element, "p"))
+    .toBe("The historic centre, on foot.");
+  expect(probe.shownPopup()?.heading).toBe("Within 5 km");
   probe.click("ring");
   await probe.settle();
-  await expect.poll(() => textIn(probe.shownPopup()?.element, "strong")).toBe("Within 15 km");
+  await expect
+    .poll(() => textIn(probe.shownPopup()?.element, "p"))
+    .toBe("Inside the ring road, by bike.");
+  expect(probe.shownPopup()?.heading).toBe("Within 15 km");
 };
 
 /** Each circle is fitted when selected, drawn in its own colours, the selected one heavier. */

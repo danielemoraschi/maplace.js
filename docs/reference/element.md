@@ -72,7 +72,7 @@ The element's `loadState` is shown as the custom state `:state(idle)` (also `loa
 |---|---|
 | `location-id` | The location's `id` (not `id`, which must be unique on the page) |
 | `lat`, `lng` | A marker's position, or a circle's centre |
-| `title` | Its `title`: the list label and the accessible name on the map |
+| `title` | Its `title`: the list label, the accessible name on the map and its popup's heading |
 | `type` | `marker` (the default) or `circle`; a polyline or polygon needs a `path`, so it goes in the map's inline JSON ([data](#data)) |
 | `group` | Its `group` |
 | `radius` | A circle's radius, in metres |

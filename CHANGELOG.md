@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-20 Changed Google popups to show the location's title as their heading, beside the close button, where Google left an empty row; a popup's content no longer needs the title, and sits 12px in from the bubble's right and bottom as from its left, its first and last child's own margins left out
 - 2026-10-20 Changed how overlapping shapes stack: the smaller in front, so a circle or polygon inside another stays clickable, a line in front of any area, the later added first among shapes of one size, whatever is hovered or selected; markers keep their order, above every shape
 - 2026-10-20 Changed the Google map ID to optional: `createGoogleAdapter()`, `createGoogleMap("#map")` and a `<maplace-map>` without `map-id` use Google's `DEMO_MAP_ID` and warn once in the console that it isn't for production; the examples leave it out but for styled
 - 2026-10-20 Changed `<maplace-map>` to be 24rem tall unless the page sets its height (a page sizing it by its layout, `inset: 0` or a grid's row, sets `height: auto`), and its list beside the map to go under it on a screen narrower than 40rem, within that height

@@ -34,13 +34,7 @@ const cities: Location<City>[] = [
 ];
 
 // Outside the component, so a render of the page around it doesn't render every marker again.
-const popupContent = ({ title, data }: Location<City>) =>
-  data?.about ? (
-    <>
-      <strong>{title}</strong>
-      <p>{data.about}</p>
-    </>
-  ) : null;
+const popupContent = ({ data }: Location<City>) => (data?.about ? <p>{data.about}</p> : null);
 
 const markerIcon = ({ data }: Location<City>) => (data?.starred ? <span>★</span> : null);
 

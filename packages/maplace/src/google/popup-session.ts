@@ -21,11 +21,12 @@ export interface PopupSession {
   end(): void;
 }
 
-/** The open popup, the placed location it shows, and the geometry it last pointed at. */
+/** The open popup, the placed location it shows, the geometry it last pointed at and its heading. */
 interface OpenPopup extends ShownGooglePopup, PopupContent {
   readonly placed: PlacedLocation;
   shown: boolean;
   followed: Geometry;
+  heading: string | undefined;
 }
 
 /**
@@ -47,8 +48,11 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
     const step = stepTo(placed);
     if (open === undefined || placed === undefined || step === "replace") replace(placed);
     else if (step === "reopen") reopen(placed);
-    else if (step === "refresh") refresh(placed);
-    else follow(open, placed);
+    else {
+      retitle(open, placed);
+      if (step === "refresh") refresh(placed);
+      else follow(open, placed);
+    }
   }
 
   function wantedLocation(): PlacedLocation | undefined {
@@ -77,6 +81,14 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
     window.follow(placed.popupPlace());
   }
 
+  /** A new title alone heads and names the popup anew: its content stays, unreported. */
+  function retitle(current: OpenPopup, placed: PlacedLocation): void {
+    const { title } = placed.drawable();
+    if (title === current.heading) return;
+    current.heading = title;
+    window.retitle(title);
+  }
+
   /** New content where the popup is: Google reports it in the DOM again. */
   function refresh(placed: PlacedLocation): void {
     const next = render(placed);
@@ -97,11 +109,7 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
   function show(next: OpenPopup): void {
     track(next);
     const { placed } = next;
-    window.open({
-      element: next.element,
-      place: placed.popupPlace(),
-      title: placed.drawable().title,
-    });
+    window.open({ element: next.element, place: placed.popupPlace(), title: next.heading });
   }
 
   function close(): void {
@@ -141,7 +149,8 @@ export function startPopupSession(state: GoogleMapState, mounted: MountedMap): P
     if (content === undefined) return undefined;
     const { infoWindow } = window;
     const followed = drawable.geometry;
-    return { id: drawable.id, ...content, infoWindow, placed, shown: false, followed };
+    const heading = drawable.title;
+    return { id: drawable.id, ...content, infoWindow, placed, shown: false, followed, heading };
   }
 
   return {

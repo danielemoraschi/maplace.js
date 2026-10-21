@@ -35,7 +35,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 |---|---|---|---|
 | `id` | `string` | Stable identity: updates, selection and routes refer to it. Required, unique | `location-id` |
 | `type` | `"marker" \| "circle" \| "polyline" \| "polygon"` | Which shape it is; a marker when left out | `type` |
-| `title` | `string` | Plain text: the list label and the accessible name on the map | `title` |
+| `title` | `string` | Plain text: the list label, the accessible name on the map and its popup's heading | `title` |
 | `content` | [`Content`](#content) | The popup's content | a `<template>` child |
 | `html` | `string` | Untrusted HTML for the popup instead of `content`, rendered only through the store's `sanitize` | |
 | `group` | `string` | Grouping key for list headings and `setFilter` | `group` |

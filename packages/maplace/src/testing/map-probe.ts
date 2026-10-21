@@ -23,6 +23,8 @@ export interface LocationOnMap {
 export interface ShownPopup {
   readonly id: string;
   readonly element: HTMLElement;
+  /** The heading it shows above its content: its location's title, if it has one. */
+  readonly heading: string | undefined;
 }
 
 /**

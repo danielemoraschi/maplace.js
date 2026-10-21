@@ -11,7 +11,7 @@ const locations: Location[] = [
     lng: 12.4964,
     title: "Rome",
     icon: "/icons/a.svg",
-    content: () => popupOf("Rome", "Capital of Italy."),
+    content: () => popupOf("Capital of Italy."),
   },
   {
     id: "milan",
@@ -20,7 +20,7 @@ const locations: Location[] = [
     title: "Milan",
     icon: "/icons/b.svg",
     zoom: 8,
-    content: () => popupOf("Milan", "Finance and fashion."),
+    content: () => popupOf("Finance and fashion."),
   },
   { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples", icon: "/icons/c.svg" },
   { id: "venice", lat: 45.4408, lng: 12.3155, title: "Venice", icon: star },
@@ -42,13 +42,9 @@ function dropMarkerAt(position: LatLng): void {
   maplace.setLocations([...maplace.getSnapshot().locations, marker]);
 }
 
-/** A popup's content: the title in bold, then a line about the place. */
-function popupOf(title: string, about: string): DocumentFragment {
-  const heading = document.createElement("strong");
-  heading.textContent = title;
+/** A popup's content: a line about the place, under its title (the popup's heading). */
+function popupOf(about: string): HTMLParagraphElement {
   const text = document.createElement("p");
   text.textContent = about;
-  const content = document.createDocumentFragment();
-  content.append(heading, text);
-  return content;
+  return text;
 }

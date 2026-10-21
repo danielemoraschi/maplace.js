@@ -13,6 +13,7 @@ import { createMapState } from "./map-state";
 import { PLACERS } from "./placers";
 import { createPlacingSite } from "./placing-site";
 import { createPopup } from "./popup";
+import { headingOf } from "./testing/popup-heading";
 import type { StubInfoWindow } from "./testing/stub-popups";
 import { stubMounted } from "./testing/stub-site";
 
@@ -64,6 +65,23 @@ const opened = (host: ReturnType<typeof popupsOn>["host"]) =>
   host.reportsOf("reportPopupOpen").map(([id, element]) => [id, element.textContent]);
 
 describe("createPopup", () => {
+  it("heads the popup with its location's title, beside the close button", () => {
+    const popups = popupsOn([{ ...ALPHA, title: "Alpha town" }, BETA]);
+    popups.present({ selectedId: "a" });
+    expect(headingOf(popups.window())).toBe("Alpha town");
+    popups.present({ selectedId: "b" });
+    expect(headingOf(popups.window())).toBeUndefined();
+  });
+
+  it("renames the heading of the open popup whose location's title alone changed", () => {
+    const alpha = { ...ALPHA, title: "Alpha town" };
+    const popups = popupsOn([alpha]);
+    popups.present({ selectedId: "a" });
+    popups.update({ ...alpha, title: "Alpha city" });
+    expect(headingOf(popups.window())).toBe("Alpha city");
+    expect(popups.window()?.get("ariaLabel")).toBe("Alpha city");
+  });
+
   it("reports the selection's popup open once its content is in the DOM, in its own element", async () => {
     const popups = popupsOn([ALPHA]);
     popups.present({ selectedId: "a" });

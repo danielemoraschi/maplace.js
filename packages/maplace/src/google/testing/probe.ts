@@ -7,6 +7,7 @@ import { type CameraWatch, watchCamera } from "./camera-watch";
 import { controlsPlaced } from "./controls-placed";
 import { wait } from "./map-waits";
 import { markerTarget } from "./marker-target";
+import { headingOf } from "./popup-heading";
 import type { ProbeTarget } from "./probe-target";
 import { shapeTarget } from "./shape-target";
 
@@ -88,7 +89,8 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
       ),
     shownPopup() {
       const popup = state.popup;
-      return popup?.infoWindow.isOpen ? { id: popup.id, element: popup.element } : undefined;
+      if (!popup?.infoWindow.isOpen) return undefined;
+      return { id: popup.id, element: popup.element, heading: headingOf(popup.infoWindow) };
     },
     click: (id) => reachable(id)?.click(),
     clickMap(at) {
