@@ -2,9 +2,10 @@ import type { Page } from "playwright";
 import { describe, it } from "vitest";
 import { describeWithKey } from "../../../packages/maplace/src/google/testing/with-key.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
-import { VERSION_LABELS, type VersionKind } from "../src/examples/example-versions.ts";
+import { VERSION_LABELS } from "../src/examples/example-versions.ts";
 import {
   googleRefused,
+  markersDrawn,
   pageMapState,
   settledMarkers,
   tilesDrawn,
@@ -15,6 +16,9 @@ import { addedByBootstrap, chooseVersion, sectionOf } from "./visitor.ts";
 
 /** A version as the section's switch offers it. */
 type VersionChoice = (typeof VERSION_LABELS)[number];
+
+/** The versions the site runs from its own bundle, beside the page's. */
+const LIVE_VERSIONS = VERSION_LABELS.filter(({ kind }) => kind !== "html");
 
 /**
  * Each section with its versions in the order the test opens them: the first loads Maps JS for
@@ -55,8 +59,8 @@ describeWithKey("the site's examples on Google Maps", (key) => {
         await leaveOnlySection(page, name);
         const section = await sectionOf(page, name);
 
-        /** Waits for `kind`'s map to be drawn on Google and unrefused; gives its markers. */
-        async function drawnOnGoogle({ kind, label }: VersionChoice): Promise<number> {
+        /** Waits for `kind`'s map to be drawn on Google, unrefused. */
+        async function drawnOnGoogle({ kind, label }: VersionChoice): Promise<void> {
           const drawn = `${name}'s ${label} version`;
           const version = versionIn(section, kind);
           if (kind === "html") {
@@ -68,18 +72,27 @@ describeWithKey("the site's examples on Google Maps", (key) => {
             .poll(() => tilesDrawn(version), { ...ON_GOOGLE, message: `${drawn}: tiles` })
             .toBeGreaterThan(0);
           expect(await googleRefused(version).count(), `${drawn}: refused`).toBe(0);
-          return settledMarkers(version);
         }
 
         await chooseVersion(page, name, loader.label);
         await section.getByRole("button", { name: "Load Google Maps" }).click();
-        const markers: Partial<Record<VersionKind, number>> = {};
         for (const version of order) {
           await chooseVersion(page, name, version.label);
-          markers[version.kind] = await drawnOnGoogle(version);
+          await drawnOnGoogle(version);
         }
-        const { html } = markers;
-        expect(markers, `${name}'s markers`).toEqual({ html, vanilla: html, react: html });
+        // The page's markers, once settled, then each live version shown again until it draws as
+        // many: a version's markers (a clusterer's, after Google's first idle) may come late.
+        await chooseVersion(page, name, "HTML");
+        const markers = await settledMarkers(versionIn(section, "html"));
+        for (const { kind, label } of LIVE_VERSIONS) {
+          await chooseVersion(page, name, label);
+          await expect
+            .poll(() => markersDrawn(versionIn(section, kind)), {
+              ...ON_GOOGLE,
+              message: `${name}'s ${label} version: markers`,
+            })
+            .toBe(markers);
+        }
         expect(await section.locator("[data-map-failure]").isVisible()).toBe(false);
         expect(errors()).toEqual([]);
         expect(mapsJsRequests().map(addedByBootstrap), "Maps JS by a bootstrap").toEqual([
