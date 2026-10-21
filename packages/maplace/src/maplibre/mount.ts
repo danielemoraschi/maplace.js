@@ -59,8 +59,9 @@ export function createMapLifecycle({
 
 /**
  * Routes the map's errors for its life: a style failing before it loaded fails the mount (the
- * promise returned rejects with it); after, a style failing (a page restyling its map) or one of
- * maplace's sources failing is reported.
+ * promise returned rejects with it); after, one of maplace's sources failing is reported, and so is
+ * a style failing while the map has none (a page replacing its style with `diff: false`; a diffed
+ * restyle keeps the old style, so its failure is the page's own, logged or left to its listener).
  */
 function routeErrors(mounted: MountedMapLibre, styleIsLoaded: () => boolean): Promise<never> {
   let failMount: (error: MaplaceError) => void = () => {};

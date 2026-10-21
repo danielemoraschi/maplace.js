@@ -13,7 +13,7 @@ import type { MapPart } from "./mounted-map";
 export const viewportReports: MapPart = {
   open(mounted) {
     const { map } = mounted;
-    let moved = false;
+    let moved = true;
     const report = () => {
       const viewport = viewportOf(map);
       if (viewport === undefined) return;
@@ -32,7 +32,6 @@ export const viewportReports: MapPart = {
       map.off("moveend", markMoved);
       map.off("idle", settled);
     });
-    markMoved();
     if (!map.isMoving()) report();
   },
 };

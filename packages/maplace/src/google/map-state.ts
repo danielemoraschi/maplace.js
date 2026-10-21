@@ -7,7 +7,7 @@ import type { PlacedLocation } from "./placed-location";
 import type { GooglePopupWindow } from "./popup-window";
 
 /** The popup open on the map, as the probe reads it. */
-export type ShownGooglePopup = SessionPopup<GooglePopupWindow>;
+type ShownGooglePopup = SessionPopup<GooglePopupWindow>;
 
 /** What the adapter has on the map, shared with its probe; each part adds what it draws. */
 export interface GoogleMapState {

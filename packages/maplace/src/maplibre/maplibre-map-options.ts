@@ -36,7 +36,7 @@ export function checkMapLibreMapOptions<Data = unknown>(
   options: unknown,
 ): asserts options is MapLibreMapOptions<Data> {
   checkShortcutOptions<Data>(options, MAPLIBRE_MAP_NAMES);
-  if (typeof (options as { style?: unknown }).style === "string") {
+  if (typeof options.style === "string") {
     const field = child(optionsField(MAPLIBRE_MAP_NAMES), "style");
     reject(field, "is the shapes' default style: the map's style URL is mapStyle");
   }

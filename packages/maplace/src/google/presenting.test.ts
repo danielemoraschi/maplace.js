@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Look } from "../adapter-kit/presentation-changes";
-import { lookIn } from "../adapter-kit/presentation-changes";
 import { presented } from "../testing/conformance/fixtures";
 import { createMapState, type GoogleMapState } from "./map-state";
 import type { PlacedLocation } from "./placed-location";
@@ -16,15 +15,6 @@ function stateWith(...ids: string[]) {
   }
   return { state, looks, present: createPresenting(state) };
 }
-
-describe("lookIn", () => {
-  it("reads a location's state and whether it is shown", () => {
-    expect(lookIn(presented({ selectedId: "a", hiddenIds: new Set(["a"]) }), "a")).toEqual({
-      state: { selected: true, hovered: false },
-      visible: false,
-    });
-  });
-});
 
 describe("createPresenting", () => {
   it("gives a new look only to the locations whose look changed", () => {

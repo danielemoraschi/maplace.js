@@ -9,17 +9,15 @@ import type { ProbeTarget, TargetSite } from "./probe-target";
 
 /**
  * A polyline or polygon as a user reaches it: on the canvas, at a point on its line or inside its
- * area. It reads the feature MapLibre was given, with its rings opened again, never through the
- * adapter's conversions, and the shape source still on the map, so a shape left after destroy
- * shows.
+ * area. It reads the feature as the shape source on the map was sent it, with its rings opened
+ * again, never through the adapter's conversions, so a shape left after destroy shows.
  */
 export function shapeTarget(
   placed: PlacedShape,
-  { map, features, stillPlaced }: TargetSite,
+  { map, sent, stillPlaced }: TargetSite,
 ): ProbeTarget {
   const sourceOnMap = () => map.getSource(SHAPE_SOURCE) !== undefined;
-  const feature = () =>
-    sourceOnMap() ? features.shapes.featureOf(placed.drawable().id) : undefined;
+  const feature = () => sent.featureOf(SHAPE_SOURCE, placed.drawable().id);
   const shown = () => feature() !== undefined;
   const point = () => ({ at: pointOn(placed.drawable().geometry) });
   return {
@@ -36,7 +34,7 @@ export function shapeTarget(
         style: drawn ? styleOf(drawn) : {},
       };
     },
-    stack: () => placed.rank(),
+    stack: () => feature()?.properties.rank ?? 0,
     click: () => clickCanvas(map, point()),
     pointerOver: () => moveOverCanvas(map, point()),
     pointerOut: () => leaveCanvas(map),

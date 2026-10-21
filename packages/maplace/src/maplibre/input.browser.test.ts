@@ -1,7 +1,8 @@
-import { Marker as MapLibreMarker } from "maplibre-gl";
+import { type Map as MapLibreMap, Marker as MapLibreMarker } from "maplibre-gl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
 import {
+  AWAY,
   adding,
   markerDrawable,
   ORIGIN,
@@ -10,8 +11,10 @@ import {
   squareAround,
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
+import { wait } from "./testing/map-settle";
 import { mountedMapLibre, mountedOnPageMap } from "./testing/mounted";
 import { clickCanvas } from "./testing/pointer";
+import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { removePageMaps } from "./testing/subject";
 
 afterEach(() => {
@@ -19,7 +22,10 @@ afterEach(() => {
   removePageMaps();
 });
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+/** Waits for MapLibre to render `ids`' pins: a busy run can take longer than apply waits for. */
+async function pinsRendered(map: MapLibreMap, ...ids: string[]): Promise<void> {
+  await vi.waitFor(() => expect(renderedIds(map, ["maplace-pins"])).toEqual(ids), RENDER_WAIT);
+}
 
 describe("input on MapLibre", () => {
   it("takes a click on a DOM marker for the location's, never a click on the map", async () => {
@@ -44,36 +50,35 @@ describe("input on MapLibre", () => {
   });
 
   it("reports one hover moving from a pin onto a DOM marker", async () => {
-    const { state, adapter, probe, host } = await mountedMapLibre();
+    const { map, adapter, probe, host } = await mountedMapLibre();
     const icon = document.createElement("span");
-    const far = { lat: 10, lng: 20 };
     await adapter.apply(
-      adding(markerDrawable("pin"), markerDrawable("dom", far, { renderIcon: () => icon })),
+      adding(markerDrawable("pin"), markerDrawable("dom", AWAY, { renderIcon: () => icon })),
     );
-    // Pointed at once drawn: a busy run can take longer than apply waits for.
-    await vi.waitFor(() => {
-      const drawn = state.mounted?.map.queryRenderedFeatures({ layers: ["maplace-pins"] });
-      expect(drawn).toHaveLength(1);
-    });
+    await pinsRendered(map, "pin");
     probe.pointerOver("pin");
     probe.pointerOver("dom");
     expect(host.reportsOf("reportHoverChange")).toEqual([["pin"], ["dom"]]);
   });
 
   it("doesn't take a pin hidden this tick for a click on it", async () => {
-    const { state, adapter, probe, host } = await mountedMapLibre();
+    const { map, adapter, host } = await mountedMapLibre();
     await adapter.apply(adding(markerDrawable("a")));
-    await probe.settle();
-    const map = state.mounted?.map;
-    if (map === undefined) throw new Error("the map is open");
+    await pinsRendered(map, "a");
+    const onPin = { at: ORIGIN, up: 30 };
+    clickCanvas(map, onPin);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     adapter.present(presented({ hiddenIds: new Set(["a"]) }));
     // MapLibre still draws the pin until its next frame: a click there now is on the map.
-    clickCanvas(map, { at: ORIGIN, up: 30 });
-    expect(host.reportsOf("reportSelectionChange")).toEqual([]);
+    expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
+    clickCanvas(map, onPin);
+    await wait(DOUBLE_CLICK_WAIT_MS * 2);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
+    expect(host.reportsOf("reportMapClick")).toHaveLength(1);
   });
 
   it("selects the smaller polygon where a bigger one's outline, drawn above it, crosses it", async () => {
-    const { state, adapter, probe, host } = await mountedMapLibre();
+    const { map, adapter, probe, host } = await mountedMapLibre();
     const big = polygonDrawable("big", {
       geometry: { type: "polygon", path: squareAround(ORIGIN, 4) },
     });
@@ -84,27 +89,25 @@ describe("input on MapLibre", () => {
     await adapter.apply(adding(big, small));
     adapter.setView({ kind: "center", center: onBigEdge, zoom: 7 });
     await probe.settle();
-    const map = state.mounted?.map;
-    if (map === undefined) throw new Error("the map is open");
     clickCanvas(map, { at: { lat: 0.2, lng: 2 } });
     expect(host.reportsOf("reportSelectionChange")).toEqual([["small"]]);
   });
 
   it("keeps the hover of a pin that becomes its DOM marker under the pointer", async () => {
-    const { adapter, probe, host, container } = await mountedMapLibre();
+    const { map, adapter, probe, host } = await mountedMapLibre();
     const icon = document.createElement("span");
     const iconWhenHovered = (state: { readonly hovered: boolean }) =>
       state.hovered ? icon : undefined;
     await adapter.apply(adding(markerDrawable("a", undefined, { renderIcon: iconWhenHovered })));
-    await vi.waitFor(() => expect(container.querySelector("canvas")).not.toBeNull());
+    await pinsRendered(map, "a");
     probe.pointerOver("a");
     adapter.present(presented({ hoveredId: "a" }));
     const marker = icon.parentElement;
     if (marker === null) throw new Error("the hovered pin is its DOM marker");
-    const canvas = container.querySelector("canvas");
     // The pointer, now over the marker: it enters it, leaves the canvas for it, moves on it.
     marker.dispatchEvent(new PointerEvent("pointerenter"));
-    canvas?.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: marker }));
+    const leavingForMarker = new MouseEvent("mouseout", { bubbles: true, relatedTarget: marker });
+    map.getCanvas().dispatchEvent(leavingForMarker);
     marker.dispatchEvent(new MouseEvent("mousemove", { bubbles: true }));
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"]]);
   });
@@ -112,11 +115,9 @@ describe("input on MapLibre", () => {
   it("ends a pin's hover when the pointer moves onto one of the page's own markers", async () => {
     const { map, adapter, probe, host } = await mountedOnPageMap();
     await adapter.apply(adding(markerDrawable("a")));
-    await vi.waitFor(() =>
-      expect(map.queryRenderedFeatures({ layers: ["maplace-pins"] })).toHaveLength(1),
-    );
+    await pinsRendered(map, "a");
     const own = document.createElement("div");
-    new MapLibreMarker({ element: own }).setLngLat([20, 10]).addTo(map);
+    new MapLibreMarker({ element: own }).setLngLat(AWAY).addTo(map);
     probe.pointerOver("a");
     own.dispatchEvent(new MouseEvent("mousemove", { bubbles: true }));
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);

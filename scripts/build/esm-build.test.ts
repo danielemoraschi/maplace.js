@@ -54,6 +54,7 @@ describe("the npm ESM build", () => {
         "element/index.js",
         "element/google.js",
         "react/index.js",
+        "maplibre/index.js",
       ]),
     );
     for (const entry of entries) expect(built.has(entry), entry).toBe(true);
@@ -76,6 +77,13 @@ describe("the npm ESM build", () => {
       bareImportsOf(text).some((path) => REACT.includes(packageName(path))),
     );
     expect(usingReact.map(([file]) => file)).toEqual(["react/index.js"]);
+  });
+
+  it("leaves maplibre-gl to the MapLibre entry alone, so no other entry needs it", () => {
+    const usingMapLibre = [...scripts(join(packageDir, "dist"))].filter(([, text]) =>
+      bareImportsOf(text).some((path) => packageName(path) === "maplibre-gl"),
+    );
+    expect(usingMapLibre.map(([file]) => file)).toEqual(["maplibre/index.js"]);
   });
 
   it('opens the React entry, and only it, with "use client", for server components', () => {

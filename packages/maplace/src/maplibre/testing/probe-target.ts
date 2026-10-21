@@ -1,16 +1,16 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
 import type { LocationOnMap } from "../../testing/map-probe";
-import type { FeatureSets } from "../feature-set";
+import type { SentFeatures } from "./sent-features";
 
-/** Where a target is: the map it was placed on, what MapLibre was given, and whether it still is. */
+/** Where a target is: the map it was placed on, what MapLibre was sent, and whether it still is. */
 export interface TargetSite {
   readonly map: MapLibreMap;
-  readonly features: FeatureSets;
+  readonly sent: SentFeatures;
   /** The adapter still has it placed: a hidden location is on the map, though not drawn. */
   stillPlaced(): boolean;
 }
 
-/** One placed location as the probe sees and drives it, through what MapLibre was given. */
+/** One placed location as the probe sees and drives it, through what MapLibre was sent. */
 export interface ProbeTarget {
   readonly isMarker: boolean;
   onMap(): boolean;

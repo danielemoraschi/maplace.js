@@ -23,11 +23,10 @@ export function createCamera(
 
   function open({ map, onDestroy }: MountedMapLibre): void {
     const standing = createStandingView(map);
-    const resized = () => follower.resized();
-    map.on("resize", resized);
+    map.on("resize", follower.resized);
     onDestroy(() => {
       follower.close();
-      map.off("resize", resized);
+      map.off("resize", follower.resized);
       standing.stop();
     });
     follower.open({

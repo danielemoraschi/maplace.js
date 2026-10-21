@@ -9,19 +9,22 @@ import type { ProbeTarget, TargetSite } from "./probe-target";
 /** Where on a pin a user points: the middle of its head, above its tip. */
 const PIN_HEAD = PIN_SIZE.height - PIN_SIZE.width / 2;
 
+/** Above every pin in the canvas: what is in the DOM (an icon, a selected or hovered pin). */
+const IN_DOM = 2 ** 31;
+
 /**
  * A marker as a user reaches it: a DOM marker by its element, a pin by the canvas where it is
- * drawn. It reads what MapLibre was given (the marker's element and point, the pin's feature),
- * and a pin's source still on the map, so a pin left after destroy shows.
+ * drawn. It reads what MapLibre has (the marker's element and point, the pin's feature as its
+ * source was sent it), so a pin left after destroy shows.
  */
 export function markerTarget(
   placed: PlacedMarker,
-  { map, features, stillPlaced }: TargetSite,
+  { map, sent, stillPlaced }: TargetSite,
 ): ProbeTarget {
   const dom = () => placed.domMarker();
+  const pinFeature = () => sent.featureOf(PIN_SOURCE, placed.drawable().id);
   const pinPoint = (): LatLng | undefined => {
-    if (map.getSource(PIN_SOURCE) === undefined) return undefined;
-    const coordinates = features.pins.featureOf(placed.drawable().id)?.geometry;
+    const coordinates = pinFeature()?.geometry;
     if (coordinates?.type !== "Point") return undefined;
     const [lng = Number.NaN, lat = Number.NaN] = coordinates.coordinates;
     return { lat, lng };
@@ -46,8 +49,13 @@ export function markerTarget(
         style: undefined,
       };
     },
-    // What is in the DOM (an icon, a selected or hovered pin) is above the canvas's pins.
-    stack: () => (placed.isInDom() ? 2 ** 31 : 0) + placed.rank(),
+    stack() {
+      const target = element();
+      if (target) return IN_DOM + Number(target.style.zIndex);
+      // A front pin is MapLibre's marker, out of the probe's reach: stacked by its rank.
+      if (placed.isInDom()) return IN_DOM + placed.rank();
+      return pinFeature()?.properties.rank ?? 0;
+    },
     click() {
       const target = element();
       if (target) target.click();

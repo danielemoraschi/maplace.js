@@ -3,7 +3,9 @@ import type { AdapterHost } from "../adapter";
 import { adding, markerDrawable, presented, withContent } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { createRecordingHost } from "../testing/conformance/recording-host";
+import { sizedContainer } from "../testing/container";
 import type { MountedMapLibre } from "./mounted-map";
+import { wait } from "./testing/map-settle";
 import { mountedMapLibre } from "./testing/mounted";
 import { pageMapIn, removePageMaps } from "./testing/subject";
 import { viewportReports } from "./viewport-reports";
@@ -12,8 +14,6 @@ afterEach(() => {
   unmountAll();
   removePageMaps();
 });
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("MapLibre's viewport reports", () => {
   it("report nothing while the map is hidden, though MapLibre draws it at 400 by 300", async () => {
@@ -28,9 +28,7 @@ describe("MapLibre's viewport reports", () => {
   });
 
   it("report the view of a page's map already still when the adapter opens on it", async () => {
-    const container = document.createElement("div");
-    container.style.cssText = "width: 256px; height: 256px";
-    document.body.append(container);
+    const container = sizedContainer();
     const map = pageMapIn(container);
     await map.once("idle");
     const host = createRecordingHost();
@@ -49,12 +47,10 @@ describe("MapLibre's popups", () => {
   /** A marker near the map's top edge, whose popup opens above it, out of the map. */
   async function popupNearTheTop(openOn: "click" | "hover") {
     const mounted = await mountedMapLibre(undefined, { openOn });
-    const map = mounted.state.mounted?.map;
-    if (map === undefined) throw new Error("the map is open");
-    const { lat, lng } = map.unproject([256, 40]);
+    const { lat, lng } = mounted.map.unproject([256, 40]);
     await mounted.adapter.apply(adding(withContent(markerDrawable("a", { lat, lng }), "Alpha")));
     await mounted.probe.settle();
-    return { ...mounted, map };
+    return mounted;
   }
 
   it("open on a click, out of the map, pan the map to bring it in", async () => {
@@ -80,16 +76,15 @@ describe("MapLibre's popups", () => {
   });
 
   it("stack above every marker, below the map's controls and the page's overlays", async () => {
-    const { adapter, probe, state } = await popupNearTheTop("click");
-    const map = state.mounted?.map;
+    const { adapter, probe, state, map } = await popupNearTheTop("click");
     adapter.present(presented({ selectedId: "a" }));
     await probe.settle();
     const popup = state.popup?.window.popup.getElement();
-    const markers = map?.getCanvasContainer();
+    const markers = map.getCanvasContainer();
     // Markers stack by rank among themselves only: the popup, after them, is drawn over them all.
-    expect(markers?.style.isolation).toBe("isolate");
-    expect(popup?.parentElement).toBe(map?.getContainer());
-    expect(popup && markers?.compareDocumentPosition(popup)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(markers.style.isolation).toBe("isolate");
+    expect(popup?.parentElement).toBe(map.getContainer());
+    expect(popup && markers.compareDocumentPosition(popup)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(popup?.style.zIndex).toBe("");
   });
 });

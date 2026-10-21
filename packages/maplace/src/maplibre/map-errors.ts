@@ -19,19 +19,33 @@ const REFUSED = new Set([401, 403]);
 /**
  * Routes every error the map fires until the returned function stops it. MapLibre logs an error
  * only while nothing listens, so this one listener answers for all of them: one on maplace's own
- * sources is the store's to hear; another source's, or a tile's, is logged as MapLibre would; any
- * other before the style document has loaded is the style's; the rest (a sprite) is logged.
+ * sources is the store's to hear; any other before the style document has loaded is the style's;
+ * the rest (another source's, a tile's, a sprite's) is logged, as MapLibre would, unless the page
+ * listens too, on its own map.
  */
 export function routeMapErrors(map: MapLibreMap, routes: ErrorRoutes): () => void {
+  let routing = true;
   const listener = ({ error, sourceId }: MapErrorEvent) => {
-    if (sourceId !== undefined) {
-      if (isOwnSource(sourceId)) routes.sourceFailed(drawFailure(error));
-      else console.error(error);
-    } else if (map.getStyle() === undefined) routes.styleFailed(styleErrorOf(error));
-    else console.error(error);
+    // MapLibre still calls a listener taken off by one before it, for the same error.
+    if (!routing) return;
+    if (sourceId !== undefined && isOwnSource(sourceId)) routes.sourceFailed(drawFailure(error));
+    else if (sourceId === undefined && map.getStyle() === undefined) {
+      routes.styleFailed(styleErrorOf(error));
+    } else if (!othersListen(map, listener)) console.error(error);
   };
   map.on("error", listener);
-  return () => map.off("error", listener);
+  return () => {
+    routing = false;
+    map.off("error", listener);
+  };
+}
+
+/** Whether anything besides `own` listens to the map's errors: the page, on its own map. */
+function othersListen(map: MapLibreMap, own: (event: MapErrorEvent) => void): boolean {
+  map.off("error", own);
+  const listened = map.listens("error");
+  map.on("error", own);
+  return listened;
 }
 
 /** maplace's locations failed to draw: what the store asked for didn't reach the map. */

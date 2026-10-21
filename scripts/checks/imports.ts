@@ -24,7 +24,8 @@ const LAYERS = {
   state: { files: /^state\//, imports: ["data", "store", "validation", "diff"] },
   contract: { files: /^adapter$/, imports: ["data"] },
   store: { files: /^store$/, imports: ["data", "contract"] },
-  // What every adapter draws with: diffs worked in chunks, visibility changes, the stacking rank.
+  // What every adapter draws with: diffs queued and worked in chunks, looks and the stacking rank,
+  // clicks and hover told apart, the popup session, the view follower.
   "adapter-kit": { files: /^adapter-kit\//, imports: ["data", "contract"] },
   maplace: {
     files: /^maplace\//,

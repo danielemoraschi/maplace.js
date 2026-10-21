@@ -5,7 +5,10 @@ import type { MapPart } from "./mounted-map";
 /** The adapter's on-map controls: a part on the open map, and `mountControl`. */
 export interface Controls extends Pick<Adapter, "mountControl"> {
   readonly part: MapPart;
-  /** The adapter is destroyed: controls still queued are dropped. */
+  /**
+   * The adapter is destroyed: controls still queued are dropped, and later ones leave the page's
+   * node where it is, as nothing will show them.
+   */
   release(): void;
 }
 
@@ -23,6 +26,7 @@ interface QueuedControl {
 export function createControls(): Controls {
   const controls = new Set<QueuedControl>();
   let map: MapLibreMap | undefined;
+  let destroyed = false;
 
   return {
     part: {
@@ -37,6 +41,7 @@ export function createControls(): Controls {
       },
     },
     mountControl(node, position) {
+      if (destroyed) return () => {};
       const entry = { control: controlHolding(node), position };
       controls.add(entry);
       map?.addControl(entry.control, position);
@@ -46,6 +51,7 @@ export function createControls(): Controls {
       };
     },
     release() {
+      destroyed = true;
       controls.clear();
     },
   };

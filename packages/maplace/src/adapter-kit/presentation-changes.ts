@@ -1,6 +1,6 @@
 import type { PresentationState } from "../adapter";
 import type { LocationState } from "../location";
-import { stateIn } from "../location-state";
+import { changedIds, stateIn } from "../location-state";
 
 /** How the store's presentation shows one location. */
 export interface Look {
@@ -11,6 +11,11 @@ export interface Look {
 /** How `presented` shows one location. */
 export function lookIn(presented: PresentationState, id: string): Look {
   return { state: stateIn(presented, id), visible: !presented.hiddenIds.has(id) };
+}
+
+/** The ids whose look changed: in state, or hidden or shown again. */
+export function lookChanges(previous: PresentationState, next: PresentationState): Set<string> {
+  return new Set([...changedIds(previous, next), ...visibilityChanges(previous, next)]);
 }
 
 /** A presentation with nothing selected, hovered or hidden: where every map starts. */

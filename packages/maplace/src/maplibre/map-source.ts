@@ -30,7 +30,7 @@ const WORLD_ZOOM = 0;
 const FLAT: Partial<MapOptions> = { dragRotate: false, pitchWithRotate: false, touchPitch: false };
 
 /** The options of a map maplace creates, in `element`. */
-export function createdMapOptions(
+function createdMapOptions(
   { mapStyle, mapOptions }: MapLibreAdapterOptions,
   element: HTMLElement,
 ): MapOptions {

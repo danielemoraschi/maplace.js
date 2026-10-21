@@ -2,14 +2,19 @@ import { type MountSettings, mountSubject, startMount } from "../../testing/conf
 import type { MapLibreAdapterOptions } from "../options";
 import { maplibreParts, pageMapIn, TEST_OPTIONS } from "./subject";
 
-/** A MapLibre adapter mounted as the store would, taken down after the test (`unmountAll`). */
+/**
+ * A MapLibre adapter mounted as the store would, with the map it opened, taken down after the
+ * test (`unmountAll`).
+ */
 export async function mountedMapLibre(
   options: MapLibreAdapterOptions = TEST_OPTIONS,
   settings?: MountSettings,
 ) {
   const parts = maplibreParts(options);
   const mounted = await mountSubject({ name: "maplibre", create: () => parts }, settings);
-  return { state: parts.state, ...mounted };
+  const map = parts.state.mounted?.map;
+  if (map === undefined) throw new Error("the mount opened no map");
+  return { state: parts.state, map, ...mounted };
 }
 
 /** A MapLibre adapter starting to mount, not waited for: a load that may fail. */

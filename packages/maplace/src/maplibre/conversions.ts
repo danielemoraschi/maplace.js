@@ -19,13 +19,7 @@ export function wrappedLongitude(lng: number): number {
 }
 
 /** A point MapLibre gives, as maplace's, its longitude wrapped. */
-export function wrappedLatLng({
-  lat,
-  lng,
-}: {
-  readonly lat: number;
-  readonly lng: number;
-}): LatLng {
+export function wrappedLatLng({ lat, lng }: LatLng): LatLng {
   return { lat, lng: wrappedLongitude(lng) };
 }
 

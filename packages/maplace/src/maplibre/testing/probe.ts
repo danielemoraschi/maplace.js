@@ -2,25 +2,25 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { DOUBLE_CLICK_WAIT_MS } from "../../adapter-kit/click-gesture";
 import { POPUP_HEADING_CLASS } from "../../adapter-kit/popup-content";
 import { frontFirst, type MapProbe } from "../../testing/map-probe";
-import type { FeatureSets } from "../feature-set";
 import { createMapState, type MapLibreState } from "../map-state";
 import type { PlacedLocation } from "../placed-location";
 import { type MapWatch, wait, watchMap } from "./map-settle";
 import { markerTarget } from "./marker-target";
 import type { ProbeTarget } from "./probe-target";
+import { recordSentFeatures, type SentFeatures } from "./sent-features";
 import { shapeTarget } from "./shape-target";
 
 /**
  * A map state for one adapter, and a probe that sees and drives its map through what MapLibre
- * was given. The state remembers every location placed in it, the map it opened and the features
- * it sent, so the probe still finds them after the adapter lets go: a location left on a map
- * after destroy shows.
+ * has. The state remembers every location placed in it, the map it opened and what that map's
+ * sources were sent, so the probe still finds them after the adapter lets go: a location left on
+ * a map after destroy shows.
  */
 export function probedMapState(): { state: MapLibreState; probe: MapProbe } {
   const state = createMapState();
   const placed = new Map<string, PlacedLocation>();
   let map: MapLibreMap | undefined;
-  let features: FeatureSets | undefined;
+  let sent: SentFeatures | undefined;
   let watch: MapWatch | undefined;
   const place = state.placed.set.bind(state.placed);
   state.placed.set = (id, location) => {
@@ -28,29 +28,24 @@ export function probedMapState(): { state: MapLibreState; probe: MapProbe } {
     return place(id, location);
   };
   let mounted = state.mounted;
-  let sent = state.features;
-  Object.defineProperties(state, {
-    mounted: {
-      get: () => mounted,
-      set(next: MapLibreState["mounted"]) {
-        mounted = next;
-        map = next?.map ?? map;
-        watch?.stop();
-        watch = next && watchMap(next.map);
-      },
-    },
-    features: {
-      get: () => sent,
-      set(next: FeatureSets | undefined) {
-        sent = next;
-        features = next ?? features;
-      },
+  Object.defineProperty(state, "mounted", {
+    get: () => mounted,
+    set(next: MapLibreState["mounted"]) {
+      mounted = next;
+      watch?.stop();
+      watch = next && watchMap(next.map);
+      // Recorded from before the adapter's parts open; once it lets the map go, its sources still
+      // are, so a send after destroy shows, and the map's `getSource` is the map's own again.
+      sent?.stop();
+      if (next === undefined) return;
+      map = next.map;
+      sent = recordSentFeatures(next.map);
     },
   });
   const targetOf = (id: string): ProbeTarget | undefined => {
     const location = placed.get(id);
-    if (location === undefined || map === undefined || features === undefined) return undefined;
-    const on = { map, features, stillPlaced: () => state.placed.get(id) === location };
+    if (location === undefined || map === undefined || sent === undefined) return undefined;
+    const on = { map, sent, stillPlaced: () => state.placed.get(id) === location };
     return location.geometryType === "marker"
       ? markerTarget(location, on)
       : shapeTarget(location, on);

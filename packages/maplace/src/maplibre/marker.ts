@@ -38,8 +38,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     dom?.remove();
     dom = undefined;
     if (!look.visible) {
-      pins.remove(id);
-      frontPins.hide(id);
+      hidePin();
       return;
     }
     if (moved || pins.featureOf(id) === undefined) pins.put(pinFeature(drawn, order));
@@ -48,8 +47,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   }
 
   function showIcon(built: Node): void {
-    pins.remove(id);
-    frontPins.hide(id);
+    hidePin();
     if (dom === undefined)
       dom = createDomMarker(drawn, pointOf(drawn), site, { rank: rank(), icon: built });
     else {
@@ -57,6 +55,12 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       dom.restack(rank());
     }
     dom.setVisible(look.visible);
+  }
+
+  /** Takes its pin out of the pin layer, and from in front of it. */
+  function hidePin(): void {
+    pins.remove(id);
+    frontPins.hide(id);
   }
 
   return {
@@ -84,8 +88,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     },
     remove() {
       dom?.remove();
-      pins.remove(id);
-      frontPins.hide(id);
+      hidePin();
       site.hover.gone(id);
     },
   };

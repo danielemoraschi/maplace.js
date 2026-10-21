@@ -111,8 +111,12 @@ export function addLayers(map: MapLibreMap): void {
   for (const layer of LAYERS) if (map.getLayer(layer.id) === undefined) map.addLayer(layer);
 }
 
-/** Takes off what `addLayers` added, as a page's own map was before. */
+/**
+ * Takes off what `addLayers` added, as a page's own map was before; nothing once the map has no
+ * style loaded (a page removing its map first leaves it none).
+ */
 export function removeLayers(map: MapLibreMap): void {
+  if (map.getStyle() === undefined) return;
   for (const id of LOCATION_LAYERS) if (map.getLayer(id) !== undefined) map.removeLayer(id);
   for (const id of OWN_SOURCES) if (map.getSource(id) !== undefined) map.removeSource(id);
   if (map.hasImage(PIN_IMAGE)) map.removeImage(PIN_IMAGE);

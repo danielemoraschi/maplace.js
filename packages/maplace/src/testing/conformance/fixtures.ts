@@ -50,7 +50,10 @@ export function polylineDrawable(id: string, overrides?: Partial<Drawable>): Dra
   };
 }
 
-/** Metres in a degree of latitude: a square `2r / METRES_PER_DEGREE` degrees across is as wide as a circle of radius `r`. */
+/**
+ * Metres in a degree of latitude: a square `2r / METRES_PER_DEGREE` degrees across is as wide as
+ * a circle of radius `r`.
+ */
 const METRES_PER_DEGREE = 111_320;
 
 /**
