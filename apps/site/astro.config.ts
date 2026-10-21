@@ -4,6 +4,7 @@ import { defaultClientConditions } from "vite";
 import { exampleMapId } from "./src/site/example-map-id.ts";
 import { exampleModulesRun } from "./src/site/example-modules-run.ts";
 import { mapsSettingsCheck } from "./src/site/maps-settings-check.ts";
+import { PREBUNDLED_DEPS } from "./src/site/prebundled-deps.ts";
 
 export default defineConfig({
   site: "https://maplacejs.com",
@@ -26,17 +27,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss(), exampleModulesRun(), exampleMapId()],
     resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
-    // The Google adapter imports the clusterer on demand, and a React version React when it
-    // starts: found that late, the dev server re-optimizes and refuses the import it had already
-    // handed out (`big` failed to cluster).
-    optimizeDeps: {
-      include: [
-        "@googlemaps/markerclusterer",
-        "react",
-        "react/jsx-runtime",
-        "react/jsx-dev-runtime",
-        "react-dom/client",
-      ],
-    },
+    optimizeDeps: { include: [...PREBUNDLED_DEPS] },
   },
 });
