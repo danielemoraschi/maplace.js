@@ -4,6 +4,8 @@ export interface ExampleSection {
   readonly name: string;
   readonly title: string;
   readonly summary: string;
+  /** Its list drawn its own way (as tabs), not in the site's panel beside the map. */
+  readonly drawsOwnList?: true;
 }
 
 /** The examples, in RFC §2's order (D23). */
@@ -34,6 +36,7 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
     name: "tabs",
     title: "Tabs",
     summary: "The list outside the map; a details panel follows the selection.",
+    drawsOwnList: true,
   },
   {
     name: "polyline",

@@ -17,9 +17,13 @@ const EDITED = {
 export const polyline: ExampleBehaviour = async ({ store, adapter, root }) => {
   const probe = adapter.probe();
   for (const id of POINTS_OF_INTEREST) expect(probe.location(id), id).toBeDefined();
-  for (const title of ["Manarola", "Corniglia", "Vernazza", "Sentiero Azzurro"]) {
-    expect(listIn(root)?.textContent).toContain(title);
+  const listed = listIn(root)?.textContent;
+  for (const text of ["Along the trail", "Manarola", "Corniglia", "Vernazza", "Sentiero Azzurro"]) {
+    expect(listed).toContain(text);
   }
+  // The heading names the list.
+  const list = root.querySelector('[role="listbox"]');
+  expect(list?.getAttribute("aria-label")).toBe("Along the trail");
   probe.click("corniglia");
   await probe.settle();
   await expect

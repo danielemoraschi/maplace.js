@@ -12,7 +12,7 @@ interface Props extends ExampleSection {
   number: number;
 }
 
-const { number, name, title, summary } = Astro.props;
+const { number, name, title, summary, drawsOwnList } = Astro.props;
 const versions = exampleCode(name);
 const repoFiles = await getEntry("repoFiles", REPO_FILES_ENTRY);
 if (repoFiles === undefined) throw new Error("the repoFiles collection has no entry");
@@ -83,7 +83,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
     <VersionSwitch name={name} />
-    <MapFrame name={name} />
+    <MapFrame name={name} drawsOwnList={drawsOwnList} />
   </div>
   {
     versions.map(({ kind, files }) => (

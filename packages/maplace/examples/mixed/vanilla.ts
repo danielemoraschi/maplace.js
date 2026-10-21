@@ -19,6 +19,8 @@ await showGroup("a");
  */
 async function showGroup(letter: string): Promise<void> {
   latestGroup = letter;
+  for (const button of buttons)
+    button.setAttribute("aria-pressed", String(button.value === letter));
   const response = await fetch(`/mixed-${letter}.json`);
   const locations: Location[] = await response.json();
   if (letter !== latestGroup) return;

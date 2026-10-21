@@ -47,7 +47,7 @@ function Mixed() {
         {/* A space after each button, as between buttons written in HTML. */}
         {GROUPS.map((letter) => (
           <Fragment key={letter}>
-            <button type="button" onClick={() => setGroup(letter)}>
+            <button type="button" aria-pressed={letter === group} onClick={() => setGroup(letter)}>
               Group {letter.toUpperCase()}
             </button>{" "}
           </Fragment>

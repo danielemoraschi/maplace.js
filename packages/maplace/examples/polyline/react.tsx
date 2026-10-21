@@ -48,7 +48,7 @@ function Polyline() {
     <MaplaceProvider locations={trail}>
       <div className="map-and-list">
         <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
-        <LocationList />
+        <LocationList heading="Along the trail" />
       </div>
     </MaplaceProvider>
   );

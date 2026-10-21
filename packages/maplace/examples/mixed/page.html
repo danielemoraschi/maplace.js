@@ -2,6 +2,9 @@
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- Five data sets, each fetched by the page and swapped in live: markers, markers with a route
      through them, an area and a circle; leaving C takes its route with it. -->
+<style>
+  #mixed-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
+</style>
 <p id="mixed-groups">
   <button type="button" value="a">Group A</button>
   <button type="button" value="b">Group B</button>
@@ -12,11 +15,13 @@
 <maplace-map id="mixed-map" api-key="YOUR_KEY" list></maplace-map>
 <script type="module">
   const map = document.getElementById('mixed-map');
+  const buttons = document.querySelectorAll('#mixed-groups button');
   let latestGroup;
 
   /** Swaps in the group last asked for: a slower answer to an earlier click is dropped. */
   async function showGroup(letter) {
     latestGroup = letter;
+    for (const button of buttons) button.setAttribute('aria-pressed', String(button.value === letter));
     const response = await fetch(`/mixed-${letter}.json`);
     const locations = await response.json();
     if (letter !== latestGroup) return;
@@ -25,7 +30,7 @@
     map.maplace.fitAll();
   }
 
-  for (const button of document.querySelectorAll('#mixed-groups button')) {
+  for (const button of buttons) {
     button.addEventListener('click', () => showGroup(button.value));
   }
   await showGroup('a');

@@ -7,15 +7,21 @@ import ConsentPlaceholder from "./ConsentPlaceholder.astro";
 interface Props {
   /** Its example's folder in `packages/maplace/examples/`. */
   name: string;
+  /** Its list drawn its own way, kept out of the site's panel (`frame.css`). */
+  drawsOwnList?: true | undefined;
 }
 
-const { name } = Astro.props;
+const { name, drawsOwnList } = Astro.props;
 const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
 const versions = liveVersions(name, settings);
 const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-1 text-sm";
 ---
 
-<div class="map-frame relative" data-maps-key-missing={settings.apiKey === undefined ? "" : undefined}>
+<div
+  class="map-frame relative"
+  data-maps-key-missing={settings.apiKey === undefined ? "" : undefined}
+  data-own-list={drawsOwnList ? "" : undefined}
+>
   {
     versions.map(({ kind, markup }) => (
       <div

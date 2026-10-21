@@ -36,5 +36,5 @@ const locations: Location[] = [
 ];
 createGoogleMap("#polyline-vanilla-map", {
   locations,
-  list: { container: "#polyline-vanilla-list" },
+  list: { container: "#polyline-vanilla-list", heading: "Along the trail" },
 });
