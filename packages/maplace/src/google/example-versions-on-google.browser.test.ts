@@ -11,7 +11,7 @@ import {
 } from "../testing/examples/recorded-stores";
 import { canImportLibraries } from "./libraries";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
-import { describeWithKey } from "./testing/with-maps";
+import { describeWithKey } from "./testing/with-key";
 
 vi.mock("maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();

@@ -1,4 +1,4 @@
-import { type LiveVersion, VERSION_MODULES } from "./example-versions.ts";
+import { VERSION_LABELS, VERSION_MODULES, type VersionKind } from "./example-versions.ts";
 
 /** One of an example's files, as a reader copies it. */
 export interface ExampleFile {
@@ -11,7 +11,7 @@ export interface ExampleFile {
 
 /** One way of using maplacejs an example is written in: its code tab, with every file it needs. */
 export interface ExampleCode {
-  readonly kind: "html" | LiveVersion;
+  readonly kind: VersionKind;
   readonly label: string;
   readonly files: readonly ExampleFile[];
 }
@@ -26,17 +26,22 @@ const FILES = import.meta.glob<string>("../../../../packages/maplace/examples/*/
   eager: true,
 });
 
-const VERSIONS: readonly (Omit<ExampleCode, "files"> & { readonly files: readonly string[] })[] = [
-  { kind: "html", label: "HTML", files: ["page.html"] },
-  { kind: "vanilla", label: "Vanilla", files: ["vanilla.html", VERSION_MODULES.vanilla] },
-  { kind: "react", label: "React", files: ["react.html", VERSION_MODULES.react] },
-];
+/** Each version's files: the HTML it runs on first. */
+const VERSION_FILES: Readonly<Record<VersionKind, readonly string[]>> = {
+  html: ["page.html"],
+  vanilla: ["vanilla.html", VERSION_MODULES.vanilla],
+  react: ["react.html", VERSION_MODULES.react],
+};
 
 /** The code of the example in `packages/maplace/examples/<name>/`: page, vanilla, React. */
 export function exampleCode(name: string): readonly ExampleCode[] {
-  return VERSIONS.map(({ files, ...version }) => ({
+  return VERSION_LABELS.map((version) => ({
     ...version,
-    files: files.map((file) => ({ file, lang: langOf(file), code: exampleFile(name, file) })),
+    files: VERSION_FILES[version.kind].map((file) => ({
+      file,
+      lang: langOf(file),
+      code: exampleFile(name, file),
+    })),
   }));
 }
 

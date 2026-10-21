@@ -5,7 +5,7 @@ import { errorsOn } from "../element/testing/dom";
 import { MAPS_SCRIPT_ORIGIN } from "./maps-script-url";
 import { MAPS_JS_VERSION } from "./testing/maps-loader";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
-import { describeWithKey } from "./testing/with-maps";
+import { describeWithKey } from "./testing/with-key";
 
 const LOCATIONS =
   '<maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>' +

@@ -10,16 +10,10 @@ import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import { thirdPartyOf } from "../src/site/third-parties.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
+import { addedByBootstrap, chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
 
 /** One section per example on the home page (D23). */
 const EXAMPLE_COUNT = EXAMPLE_SECTIONS.length;
-
-/**
- * The callback Google's bootstrap loader names in the Maps tag it adds
- * (`callback=google.maps.__ib__`): a tag without it is the element's own.
- */
-const BOOTSTRAP_CALLBACK = "__ib__";
 
 const site = siteBuiltBeforeTests();
 
@@ -166,7 +160,7 @@ describe("the home page's examples", () => {
   }, 30_000);
 
   it("runs the chosen version once consented, its map in a box", async () => {
-    const { page, context, fetched } = await site.visitor({ stubMapsJs: true });
+    const { page, context, fetched } = await site.visitor({ google: "stubbed" });
     await openHome(page);
     // Chosen before consent, so big's page map, hidden, is never released: only its React
     // version can fetch the points.
@@ -201,7 +195,7 @@ describe("the home page's examples", () => {
     await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
     const mapsTags = mapsJsRequests();
     expect(mapsTags.length).toBeGreaterThan(0);
-    expect(mapsTags.filter((url) => !url.includes(BOOTSTRAP_CALLBACK))).toEqual([]);
+    expect(mapsTags.filter((url) => !addedByBootstrap(url))).toEqual([]);
     await context.close();
   }, 30_000);
 

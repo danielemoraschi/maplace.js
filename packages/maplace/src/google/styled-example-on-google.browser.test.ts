@@ -9,7 +9,7 @@ import { openPage } from "../testing/examples/example-page";
 import { recordErrors } from "../testing/examples/page-errors";
 import { recordedStoreCount, storeAttachedSince } from "../testing/examples/recorded-stores";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
-import { describeWithKey } from "./testing/with-maps";
+import { describeWithKey } from "./testing/with-key";
 
 // The recorder loaded by the factory itself: the element's import of the entry runs it before
 // this file's own imports are in.

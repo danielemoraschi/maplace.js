@@ -13,13 +13,17 @@ export const SETTLE_MS = 500;
 export const ASKED = { timeout: 10_000 };
 
 /** The built site a test file visits, and its visitors' browser. */
-interface SiteSession {
+export interface SiteSession {
+  /** Where its visitors find the site. */
   readonly url: string;
   /** Where the site was built. */
   readonly dir: string;
   /** A fresh visitor of the site (`visitor`). */
   visitor(options?: VisitorOptions): Promise<Visitor>;
 }
+
+/** How a session's visitors see the site, unless a test says otherwise. */
+export type SeenSite = Pick<VisitorOptions, "google" | "seenAt">;
 
 /** The map ID the site is built with. */
 export const SITE_MAP_ID = "site-map-id";
@@ -29,13 +33,18 @@ export const SITE_MAP_ID = "site-map-id";
  * before the test file's tests run, closed after them.
  */
 export function siteBuiltBeforeTests(): SiteSession {
+  return builtSiteSession({ SITE_MAPS_KEY: "not-a-real-key", SITE_MAPS_MAP_ID: SITE_MAP_ID });
+}
+
+/**
+ * The site built with `env` added, and a browser whose visitors see it as `seen` says, ready
+ * before the tests of the file or `describe` that calls this run, closed after them.
+ */
+export function builtSiteSession(env: Record<string, string>, seen: SeenSite = {}): SiteSession {
   let site: BuiltSite | undefined;
   let browser: Browser | undefined;
   beforeAll(async () => {
-    [site, browser] = await Promise.all([
-      buildAndServeSite({ SITE_MAPS_KEY: "not-a-real-key", SITE_MAPS_MAP_ID: SITE_MAP_ID }),
-      chromium.launch(),
-    ]);
+    [site, browser] = await Promise.all([buildAndServeSite(env), chromium.launch()]);
   }, 120_000);
   afterAll(async () => {
     await browser?.close();
@@ -47,14 +56,14 @@ export function siteBuiltBeforeTests(): SiteSession {
   };
   return {
     get url() {
-      return started().site.url;
+      return seen.seenAt ?? started().site.url;
     },
     get dir() {
       return started().site.dir;
     },
     visitor(options) {
       const { site, browser } = started();
-      return visitor(browser, site.url, options);
+      return visitor(browser, site.url, { ...seen, ...options });
     },
   };
 }

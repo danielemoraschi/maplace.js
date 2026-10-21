@@ -4,7 +4,7 @@ import { EXAMPLE_PAGES } from "../testing/examples/example-files";
 import { openPage } from "../testing/examples/example-page";
 import { serveExampleData } from "../testing/examples/example-surroundings";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
-import { describeWithKey } from "./testing/with-maps";
+import { describeWithKey } from "./testing/with-key";
 
 /** A reader's stylesheet gives the map its size; the pages leave that to them. */
 const PAGE_STYLE = "maplace-map { display: block; height: 240px; }";
