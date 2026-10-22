@@ -15,10 +15,10 @@ import { routeChecks } from "./route";
 import type { CheckGroup, ConformanceGroup, ConformanceSubject } from "./subject";
 
 /**
- * The adapter contract as checks (T9): one suite every adapter runs, the fake and Google in a
- * browser, later MapLibre. It drives an adapter as the store would, on a host that only records,
- * and reads the map through the subject's probe. It never imports an adapter, so no check can
- * lean on one adapter's code.
+ * The adapter contract as checks (T9): one suite every adapter runs in a browser: the fake, Google
+ * and MapLibre. It drives an adapter as the store would, on a host that only records, and reads
+ * the map through the subject's probe. It never imports an adapter, so no check can lean on one
+ * adapter's code.
  */
 export function describeConformance(subject: ConformanceSubject): void {
   // Read once, when the checks register: a capability check runs only where it applies.

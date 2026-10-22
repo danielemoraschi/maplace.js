@@ -1,7 +1,17 @@
 import { afterAll, beforeAll, describe, it, vi } from "vitest";
 import type * as Core from "../index";
-import { runEveryVersion, type VersionRuns } from "../testing/examples/every-version";
-import { EXAMPLES, type Example, HOST_KINDS } from "../testing/examples/example-files";
+import {
+  runEveryVersion,
+  type VersionRuns,
+  versionRunsOf,
+} from "../testing/examples/every-version";
+import {
+  EXAMPLES,
+  type Example,
+  googleTwinOf,
+  HOST_KINDS,
+  onProvider,
+} from "../testing/examples/example-files";
 import { expectLooksAlike, type LookPart, layoutOf } from "../testing/examples/example-layout";
 import type { ExampleRun } from "../testing/examples/example-runs";
 import { serveExampleData } from "../testing/examples/example-surroundings";
@@ -10,15 +20,20 @@ import type { FakeAdapter } from "../testing/fake-adapter";
 import { adaptersMade } from "./testing/fake-maps";
 import { restoreScreen, showOnPhone } from "./testing/screens";
 
-// An example's three versions look the same to a reader: switching between them on the site
-// leaves the map, its list and the page's controls where they were, looking as they did. The fake
-// draws a corner's controls in the map's flow, so corners are compared on real Maps instead.
+// An example's versions look the same to a reader: switching between them, or between providers,
+// on the site leaves the map, its list and the page's controls where they were, looking as they
+// did. The fake draws a corner's controls in the map's flow, so corners are compared on real Maps
+// instead.
 const moduleAdapters = await vi.hoisted(async () =>
   (await import("../testing/fake/adapters")).fakeAdapters(),
 );
 vi.mock("maplace/google", async () => {
   const { fakeGoogleEntry } = await import("../testing/examples/fake-google");
   return fakeGoogleEntry(moduleAdapters);
+});
+vi.mock("maplace/maplibre", async () => {
+  const { fakeMapLibreEntry } = await import("../testing/examples/fake-maplibre");
+  return fakeMapLibreEntry(moduleAdapters);
 });
 vi.mock("maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
@@ -40,30 +55,38 @@ beforeAll(async () => {
 
 afterAll(() => vi.unstubAllGlobals());
 
-describe.each(EXAMPLES)("the $name example", (example) => {
-  it.each(HOST_KINDS)("looks in its %s version as on its page", (kind) =>
-    expectVersionLooksAsPage(example, kind),
-  );
-});
+describeLookAlike();
 
 describe("on a phone", () => {
   beforeAll(showOnPhone);
   afterAll(restoreScreen);
 
-  describe.each(EXAMPLES)("the $name example", (example) => {
-    it.each(HOST_KINDS)("looks in its %s version as on its page", (kind) =>
-      expectVersionLooksAsPage(example, kind),
-    );
-  });
+  describeLookAlike();
 });
 
-async function expectVersionLooksAsPage(
-  example: Example,
-  kind: (typeof HOST_KINDS)[number],
-): Promise<void> {
-  const versions = runs.get(example);
-  if (versions === undefined) throw new Error(`${example.name} wasn't opened`);
-  await vi.waitFor(() => expectLooksAlike(lookOf(versions[kind]), lookOf(versions.page)));
+/** Each version looks as its page, and each MapLibre page as its Google twin's. */
+function describeLookAlike(): void {
+  describe.each(EXAMPLES)("the $name example ($provider)", (example) => {
+    it.each(HOST_KINDS)("looks in its %s version as on its page", (kind) =>
+      expectRunLooksAs(runsOf(example)[kind], runsOf(example).page),
+    );
+  });
+
+  describe.each(EXAMPLES.filter(onProvider("maplibre")))(
+    "the $name example on MapLibre",
+    (example) => {
+      it("looks on its page as on Google's page", () =>
+        expectRunLooksAs(runsOf(example).page, runsOf(googleTwinOf(example)).page));
+    },
+  );
+}
+
+function runsOf(example: Example): VersionRuns {
+  return versionRunsOf(runs, example);
+}
+
+async function expectRunLooksAs(actual: ExampleRun, expected: ExampleRun): Promise<void> {
+  await vi.waitFor(() => expectLooksAlike(lookOf(actual), lookOf(expected)));
 }
 
 /** What a reader sees of a run's version, its map drawn by the adapter live now. */

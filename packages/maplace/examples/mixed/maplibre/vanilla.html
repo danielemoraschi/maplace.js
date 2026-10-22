@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #mixed-maplibre-vanilla-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
+  #mixed-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #mixed-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #mixed-maplibre-vanilla-list { display: contents; }
+  #mixed-maplibre-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #mixed-maplibre-vanilla-map-and-list { flex-direction: column; }
+    #mixed-maplibre-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+</style>
+<p id="mixed-maplibre-vanilla-groups">
+  <button type="button" value="a">Group A</button>
+  <button type="button" value="b">Group B</button>
+  <button type="button" value="c">Group C</button>
+  <button type="button" value="d">Group D</button>
+  <button type="button" value="e">Group E</button>
+</p>
+<div id="mixed-maplibre-vanilla-map-and-list">
+  <div id="mixed-maplibre-vanilla-map"></div>
+  <div id="mixed-maplibre-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

@@ -1,6 +1,9 @@
 /// <reference types="vite/client" />
 import { vi } from "vitest";
 
+/** Where a MapLibre version finds its style unless it names another: OpenFreeMap's. */
+export const OPENFREEMAP_STYLES = "https://tiles.openfreemap.org/styles/";
+
 /** The data the example pages fetch, by path: `examples/data/mixed-a.json` is `/mixed-a.json`. */
 const EXAMPLE_DATA: Readonly<Record<string, unknown>> = Object.fromEntries(
   Object.entries(
@@ -13,15 +16,42 @@ const EXAMPLE_DATA: Readonly<Record<string, unknown>> = Object.fromEntries(
  * Undone by `vi.unstubAllGlobals()`.
  */
 export function serveExampleData(): void {
+  stubFetch(() => undefined);
+}
+
+/** The offsite URLs a page asked for, in order: a copy each call. */
+export interface OffsiteLog {
+  asked(): readonly string[];
+}
+
+/**
+ * The examples served with nothing leaving the machine: their data, and OpenFreeMap's styles
+ * answered with `localStyle`; every offsite URL asked is logged. Undone by `vi.unstubAllGlobals()`.
+ */
+export function serveExamplesOffline(localStyle: object): OffsiteLog {
+  const log: string[] = [];
+  stubFetch((url) => {
+    log.push(url.href);
+    return url.href.startsWith(OPENFREEMAP_STYLES) ? localStyle : undefined;
+  });
+  return { asked: () => [...log] };
+}
+
+/**
+ * `fetch` answering the page's own origin from the examples' data, and another origin with
+ * `answerOffsite`; anything unanswered is a 404.
+ */
+function stubFetch(answerOffsite: (url: URL) => unknown): void {
   const fetchFromPage = async (input: RequestInfo | URL): Promise<Response> => {
-    const data = EXAMPLE_DATA[pathOf(input)];
+    const url = urlOf(input);
+    const data = url.origin === location.origin ? EXAMPLE_DATA[url.pathname] : answerOffsite(url);
     return data === undefined ? new Response(null, { status: 404 }) : Response.json(data);
   };
   vi.stubGlobal("fetch", fetchFromPage);
 }
 
-/** The path a script fetched: `/mixed-a.json` from a string, a URL or a request. */
-function pathOf(input: RequestInfo | URL): string {
-  if (typeof input === "string") return input;
-  return input instanceof URL ? input.pathname : new URL(input.url).pathname;
+/** The URL a script fetched: `/mixed-a.json` resolved against the page, a URL, or a request's. */
+function urlOf(input: RequestInfo | URL): URL {
+  if (input instanceof URL) return input;
+  return new URL(typeof input === "string" ? input : input.url, location.href);
 }

@@ -1,0 +1,12 @@
+<!doctype html>
+<!-- The page react.tsx renders into: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #tabs-maplibre-react-root .panel { display: flex; flex-direction: column; height: 24rem; }
+  #tabs-maplibre-react-root .map { flex: 1 1 auto; min-height: 0; }
+  #tabs-maplibre-react-root [role="listbox"] { display: flex; gap: 0.25rem; padding: 0.5rem 0.75rem 0; box-shadow: inset 0 -1px color-mix(in srgb, currentColor 25%, transparent); }
+  #tabs-maplibre-react-root [role="option"] { padding: 0.5rem 1rem; border: 1px solid transparent; border-bottom: 0; border-radius: 0.5rem 0.5rem 0 0; }
+  #tabs-maplibre-react-root [aria-selected="true"] { position: relative; border-color: color-mix(in srgb, currentColor 25%, transparent); background: Canvas; font-weight: 600; }
+  #tabs-maplibre-react-root aside { padding: 0.75rem 1.25rem 1rem; line-height: 1.5; }
+</style>
+<div id="tabs-maplibre-react-root"></div>
+<script type="module" src="./react.tsx"></script>

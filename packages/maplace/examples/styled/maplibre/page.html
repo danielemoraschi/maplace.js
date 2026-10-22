@@ -1,0 +1,22 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<!-- MapLibre's own look: a light or dark style, here OpenFreeMap's, and MapLibre's map options (here
+     a compact attribution). The button opens the map again in the other style, where it was, and
+     names the one it switches to. Any style URL works in map-style: MapTiler's, Stadia's, your own. -->
+<p><button type="button" id="styled-maplibre-scheme">Dark theme</button></p>
+<maplace-map id="styled-maplibre-map" map-style="https://tiles.openfreemap.org/styles/liberty"
+  map-options='{"attributionControl":{"compact":true}}'>
+  <maplace-location location-id="lisbon" lat="38.7223" lng="-9.1393" title="Lisbon"></maplace-location>
+  <maplace-location location-id="porto" lat="41.1579" lng="-8.6291" title="Porto"></maplace-location>
+  <maplace-location location-id="coimbra" lat="40.2033" lng="-8.4103" title="Coimbra"></maplace-location>
+  <maplace-location location-id="faro" lat="37.0194" lng="-7.9304" title="Faro"></maplace-location>
+</maplace-map>
+<script>
+  document.getElementById('styled-maplibre-scheme').addEventListener('click', (event) => {
+    const styles = { light: 'https://tiles.openfreemap.org/styles/liberty', dark: 'https://tiles.openfreemap.org/styles/dark' };
+    const map = document.getElementById('styled-maplibre-map');
+    const dark = map.getAttribute('map-style') !== styles.dark;
+    map.setAttribute('map-style', dark ? styles.dark : styles.light);
+    event.currentTarget.textContent = dark ? 'Light theme' : 'Dark theme';
+  });
+</script>
