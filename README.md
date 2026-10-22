@@ -123,7 +123,28 @@ createGoogleMap("#simple-vanilla-map", {
 
 `list: true` adds maplacejs's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
 
-On MapLibre, `createMapLibreMap` from `maplace/maplibre` makes the same store in one call, with `mapStyle` and `mapOptions` for the map ([MapLibre adapter](docs/reference/maplibre.md#createmaplibremap)). The page installs `maplibre-gl` too (`npm install maplace maplibre-gl`), imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module, and needs no loader script and no key. Its parts are `createMaplace`, `createMapLibreAdapter` and `attach`. The simple example's MapLibre version, `packages/maplace/examples/simple/maplibre/vanilla.html` and its `vanilla.ts`, is the whole page.
+On MapLibre, `createMapLibreMap` from `maplace/maplibre` makes the same store in one call, with `mapStyle` and `mapOptions` for the map ([MapLibre adapter](docs/reference/maplibre.md#createmaplibremap)). The page installs `maplibre-gl` too (`npm install maplace maplibre-gl`), imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module, and needs no loader script and no key. Its parts are `createMaplace`, `createMapLibreAdapter` and `attach`. The simple example's MapLibre version is the whole page:
+
+<!-- example: packages/maplace/examples/simple/maplibre/vanilla.html -->
+```html
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #simple-maplibre-vanilla-map { height: 24rem; }
+</style>
+<div id="simple-maplibre-vanilla-map"></div>
+<script type="module" src="./vanilla.ts"></script>
+```
+
+<!-- example: packages/maplace/examples/simple/maplibre/vanilla.ts -->
+```ts
+import "maplibre-gl/dist/maplibre-gl.css";
+import { createMapLibreMap } from "maplace/maplibre";
+
+createMapLibreMap("#simple-maplibre-vanilla-map", {
+  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+});
+```
 
 Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplacejs's own selected and hovered look fills what they leave unset.
 

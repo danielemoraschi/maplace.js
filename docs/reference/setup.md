@@ -92,7 +92,28 @@ createGoogleMap("#simple-vanilla-map", {
 
 For the element from npm, `import "maplace/element/google"` defines it with the Google provider; it adds Maps JS itself as on the CDN, or takes the page's when the page loaded it first. With React: [React](react.md). Routes are Google's, and need Maps JS 3.63 or later. Every entry and what it gives: [API reference](api.md).
 
-On MapLibre, the page installs maplibre-gl beside maplacejs (`npm install maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `maplace/maplibre` makes the store in one call, and `import "maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version, `packages/maplace/examples/simple/maplibre/vanilla.html` with its `vanilla.ts`, is the whole page.
+On MapLibre, the page installs maplibre-gl beside maplacejs (`npm install maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `maplace/maplibre` makes the store in one call, and `import "maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version is the whole page:
+
+<!-- example: packages/maplace/examples/simple/maplibre/vanilla.html -->
+```html
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #simple-maplibre-vanilla-map { height: 24rem; }
+</style>
+<div id="simple-maplibre-vanilla-map"></div>
+<script type="module" src="./vanilla.ts"></script>
+```
+
+<!-- example: packages/maplace/examples/simple/maplibre/vanilla.ts -->
+```ts
+import "maplibre-gl/dist/maplibre-gl.css";
+import { createMapLibreMap } from "maplace/maplibre";
+
+createMapLibreMap("#simple-maplibre-vanilla-map", {
+  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+});
+```
 
 ## Content Security Policy
 

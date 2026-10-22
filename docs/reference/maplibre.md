@@ -16,7 +16,27 @@ An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOp
 
 ## `createMapLibreMap`
 
-`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version, `packages/maplace/examples/menu/maplibre/vanilla.ts`, is one.
+`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one:
+
+<!-- example: packages/maplace/examples/menu/maplibre/vanilla.ts -->
+```ts
+import "maplibre-gl/dist/maplibre-gl.css";
+import { createMapLibreMap } from "maplace/maplibre";
+
+const maplace = createMapLibreMap("#menu-maplibre-vanilla-map", {
+  locations: [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", group: "Centre" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", group: "North" },
+    { id: "turin", lat: 45.0703, lng: 7.6869, title: "Turin", group: "North" },
+  ],
+  list: { as: "select", heading: "Choose a location:", fitAllLabel: "All cities" },
+});
+
+const northOnly = document.querySelector<HTMLInputElement>("#menu-maplibre-vanilla-north-only");
+northOnly?.addEventListener("change", () => {
+  maplace.setFilter(northOnly.checked ? ["North"] : undefined);
+});
+```
 
 Its own options, beside the store's:
 
@@ -124,4 +144,30 @@ maplacejs's lists scroll within the height of a map it creates. A bottom-right l
 
 ## React
 
-`<MaplaceMap createAdapter={createMapLibreAdapter} className="map" />` draws on MapLibre. With options, pass a function: `createAdapter={() => createMapLibreAdapter({ mapStyle })}`. The page installs maplibre-gl and imports its stylesheet. Popups' and icons' React content, `<LocationList position>` and `<MapControl>` work as on Google ([React](react.md)). The simple example's MapLibre version, `packages/maplace/examples/simple/maplibre/react.tsx`, is one.
+`<MaplaceMap createAdapter={createMapLibreAdapter} className="map" />` draws on MapLibre. With options, pass a function: `createAdapter={() => createMapLibreAdapter({ mapStyle })}`. The page installs maplibre-gl and imports its stylesheet. Popups' and icons' React content, `<LocationList position>` and `<MapControl>` work as on Google ([React](react.md)). The simple example's MapLibre version is one:
+
+<!-- example: packages/maplace/examples/simple/maplibre/react.tsx -->
+```tsx
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { Location } from "maplace";
+import { createMapLibreAdapter } from "maplace/maplibre";
+import { MaplaceMap, MaplaceProvider } from "maplace/react";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+
+const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
+
+function Simple() {
+  return (
+    <MaplaceProvider locations={rome}>
+      <MaplaceMap createAdapter={createMapLibreAdapter} className="map" />
+    </MaplaceProvider>
+  );
+}
+
+createRoot(document.getElementById("simple-maplibre-react-root") as HTMLElement).render(
+  <StrictMode>
+    <Simple />
+  </StrictMode>,
+);
+```
