@@ -3,6 +3,7 @@ import type { HoverReports } from "../adapter-kit/hover-reports";
 import type { Look } from "../adapter-kit/presentation-changes";
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng } from "../geometry";
+import type { EditHandle } from "./edit-handles";
 import type { FeatureSets } from "./feature-set";
 import type { FrontPins } from "./front-pins";
 import type { MountedMapLibre } from "./mounted-map";
@@ -36,6 +37,8 @@ export interface PlacedMarker extends Placed {
 
 export interface PlacedShape extends Placed {
   readonly geometryType: Exclude<Geometry["type"], "marker">;
+  /** The handles a user drags to edit it: none unless it is editable and shown. */
+  editHandles(): readonly EditHandle[];
 }
 
 /** One location on the MapLibre map. */
@@ -57,5 +60,5 @@ export interface PlacingSite {
 /** Puts one location on the map. */
 export type Placer = (drawable: Drawable, site: PlacingSite) => PlacedLocation;
 
-/** A placer for every geometry type maplace draws on MapLibre so far: circles come with M2. */
-export type Placers = Readonly<Record<Exclude<Geometry["type"], "circle">, Placer>>;
+/** A placer for every geometry type. */
+export type Placers = Readonly<Record<Geometry["type"], Placer>>;

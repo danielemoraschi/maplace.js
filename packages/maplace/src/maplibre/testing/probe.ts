@@ -117,7 +117,7 @@ function createMapLibreProbe(state: MapLibreState, sources: ProbeSources): MapPr
       pointedAt?.pointerOut();
       pointedAt = undefined;
     },
-    drag() {},
+    drag: (id, geometry) => reachable(id)?.drag?.(geometry),
     closePopup() {
       const element = state.popup?.window.popup.getElement();
       element?.querySelector<HTMLElement>(".maplibregl-popup-close-button")?.click();

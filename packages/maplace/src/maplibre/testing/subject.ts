@@ -15,6 +15,7 @@ const M1_GROUPS: readonly ConformanceGroup[] = [
   "declarations",
   "lifecycle",
   "drawing",
+  "editing",
   "presentation",
   "popups",
   "camera",
