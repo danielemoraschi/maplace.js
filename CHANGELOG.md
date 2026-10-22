@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-22 Added the MapLibre adapter's reference page, and MapLibre throughout the docs: README's quick start, CDN scripts (the MapLibre one pinned for production), bundler and React sections, Setup's MapLibre path (a style URL, no key or map ID, `worker-src blob:`), MIGRATION, and the site's hero, title and install box naming both providers
 - 2026-10-22 Added MapLibre versions of the examples: every one but route (Google only: MapLibre has no routing) as a page on the MapLibre CDN script and vanilla and React versions on maplace/maplibre, in examples/<name>/maplibre/, each the same map as on Google; on MapLibre, mixed's group C has no route and styled switches between OpenFreeMap's light and dark styles.
 - 2026-10-22 Fixed on MapLibre: popup content is dark text on the white bubble on a page with light text, as on Google.
 - 2026-10-22 Fixed on MapLibre: a page's own cursor on its map is given back once the pointer leaves a location and on destroy, no longer wiped; clusters and clickable markers show a pointer, as on Google.

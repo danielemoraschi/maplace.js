@@ -21,3 +21,9 @@ export const GOOGLE_PROVIDER_ATTRIBUTES: readonly string[] = [
   MAP_SETTING_ATTRIBUTES.mapOptions,
   ...Object.values(SCRIPT_ATTRIBUTES),
 ];
+
+/** The attributes the element's MapLibre provider reads, when the map opens; a change re-opens it. */
+export const MAPLIBRE_PROVIDER_ATTRIBUTES: readonly string[] = [
+  MAP_SETTING_ATTRIBUTES.mapStyle,
+  MAP_SETTING_ATTRIBUTES.mapOptions,
+];

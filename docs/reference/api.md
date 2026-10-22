@@ -47,10 +47,10 @@ The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise
 
 | Export | Kind | Explained in |
 |---|---|---|
-| `createMapLibreAdapter` | function | [RFC §3 Shape](../rfc-1.0.md#shape), [loading](../rfc-1.0.md#loading-providers-and-packaging) |
-| `MapLibreAdapterOptions` | type | [RFC §3 Shape](../rfc-1.0.md#shape) |
-| `createMapLibreMap` | function | [RFC §3 Shape](../rfc-1.0.md#shape) |
-| `MapLibreMapOptions`, `MapLibreMapList` | types | [RFC §3 Shape](../rfc-1.0.md#shape) |
+| `createMapLibreAdapter` | function | [MapLibre adapter](maplibre.md) |
+| `MapLibreAdapterOptions` | type | [Options](maplibre.md#options) |
+| `createMapLibreMap` | function | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
+| `MapLibreMapOptions`, `MapLibreMapList` | types | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
 
 ## `maplace/element`
 
@@ -79,7 +79,7 @@ The element with the MapLibre provider registered; the MapLibre CDN script is th
 
 | Export | Kind | Explained in |
 |---|---|---|
-| `MaplaceMapElement` | type | [Properties and methods](element.md#properties-and-methods), [provider attributes](../rfc-1.0.md#loading-providers-and-packaging) |
+| `MaplaceMapElement` | type | [Properties and methods](element.md#properties-and-methods), [provider attributes](maplibre.md#provider-attributes) |
 
 ## `maplace/react`
 
@@ -116,15 +116,15 @@ Before `attach` the store skips capability checks; `attach` checks the current s
 
 | Code | When |
 |---|---|
-| `provider-load-failed` | The provider, or a part it loads (the clusterer), failed to load; on Google also your own map made without a map ID |
-| `provider-auth-failed` | The provider refused the key |
+| `provider-load-failed` | The provider, or a part it loads (maplibre-gl, a style, the clusterer), failed to load; on Google also your own map made without a map ID |
+| `provider-auth-failed` | The provider refused the key: Google's, or a style's server (HTTP 401 or 403) |
 | `route-failed` | A route couldn't be computed |
 
 For the first two, `loadState` becomes `error` and `whenReady()` rejects; one that comes after `ready` moves `loadState` from `ready` to `error`. An `icon`, `content` or `sanitize` function of yours that fails while the map draws is an `invalid-input` error event naming the location and the field: the map stays ready.
 
 ## Capabilities
 
-A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all four; MapLibre all but `route`, as it has no routing.
+A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all four; MapLibre all but `route`, as it has no routing ([routes](maplibre.md#routes)).
 
 | Capability | What it allows |
 |---|---|

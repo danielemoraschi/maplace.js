@@ -27,7 +27,11 @@ import {
 } from "../../../../packages/maplace/src/views/listbox-nodes.ts";
 import { SELECT_CLASS } from "../../../../packages/maplace/src/views/native-select.ts";
 import { PACKAGE_ENTRIES, readRootFile } from "../../../../scripts/build/package.ts";
-import { GOOGLE_PROVIDER_ATTRIBUTES, MAP_ATTRIBUTES } from "./element-attributes.ts";
+import {
+  GOOGLE_PROVIDER_ATTRIBUTES,
+  MAP_ATTRIBUTES,
+  MAPLIBRE_PROVIDER_ATTRIBUTES,
+} from "./element-attributes.ts";
 import { exportedNames } from "./entry-exports.ts";
 import type { ReferenceTable } from "./reference-check.ts";
 import { LOCATION_FIELDS, SHAPE_STYLE_FIELDS, STORE_NAMES } from "./reference-names.ts";
@@ -35,6 +39,8 @@ import {
   GOOGLE_MAP_OPTIONS,
   GOOGLE_OPTIONS,
   MAP_ELEMENT_PROPERTIES,
+  MAPLIBRE_MAP_OPTIONS,
+  MAPLIBRE_OPTIONS,
   REACT_PROPS,
 } from "./reference-names-bindings.ts";
 
@@ -97,6 +103,15 @@ export function referenceTables(): ReferenceTable[] {
         "## Provider attributes",
         GOOGLE_PROVIDER_ATTRIBUTES,
         "the attributes the Google provider reads",
+      ],
+    ]),
+    ...tablesOn("maplibre.md", [
+      ["## Options", MAPLIBRE_OPTIONS, "MapLibreAdapterOptions"],
+      ["## `createMapLibreMap`", MAPLIBRE_MAP_OPTIONS, "MapLibreMapOptions and MapLibreMapList"],
+      [
+        "## Provider attributes",
+        MAPLIBRE_PROVIDER_ATTRIBUTES,
+        "the attributes the MapLibre provider reads",
       ],
     ]),
     ...tablesOn("react.md", [

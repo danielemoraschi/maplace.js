@@ -8,9 +8,9 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
-- **Popups:** on Google's white bubble, dark text inset as Google insets its left side.
+- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its left side; on MapLibre, the heading on a line of its own, clear of the close button.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
-- **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint.
+- **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint ([MapLibre adapter](maplibre.md#on-map-controls)).
 
 Every selector is wrapped in `:where()` and weighs nothing, so any rule of the page wins: `.maplace-option { padding: 0 }` is enough to change the entries' padding.
 
@@ -24,11 +24,11 @@ Every selector is wrapped in `:where()` and weighs nothing, so any rule of the p
 <maplace-map data-maplace-unstyled api-key="YOUR_KEY" list></maplace-map>
 ```
 
-Put it on `<html>` for the whole page, on `<maplace-map>` for one map, on the element a vanilla map is drawn in, or, with React, on an element around `<MaplaceMap>` and its `<LocationList>` (`<MaplaceMap>` passes no attributes to its own element). A list in a container of its own (`createGoogleMap`'s `list: { container }`) needs the marker there, or above both. A map's popups and on-map panels are drawn inside the map, so a marker on the map or above it reaches them; one on a list placed on the map leaves the panel around that list styled.
+Put it on `<html>` for the whole page, on `<maplace-map>` for one map, on the element a vanilla map is drawn in, or, with React, on an element around `<MaplaceMap>` and its `<LocationList>` (`<MaplaceMap>` passes no attributes to its own element). A list in a container of its own (`createGoogleMap`'s or `createMapLibreMap`'s `list: { container }`) needs the marker there, or above both. A map's popups and on-map panels are drawn inside the map, so a marker on the map or above it reaches them; one on a list placed on the map leaves the panel around that list styled.
 
 What maplacejs's own markup needs stays: a `<maplace-location>` stays hidden (its children are popup content), `<maplace-map>` stays a block, and its map fills it. An on-map panel whose list is hidden stays hidden too.
 
-Without the defaults, the page sizes the map (it has no height of its own) and lays out a list beside it. Popup text takes the page's colour on Google's bubble, which stays white: on a dark page, give `.maplace-popup` a dark colour.
+Without the defaults, the page sizes the map (it has no height of its own) and lays out a list beside it. Popup text takes the page's colour on Google's and MapLibre's bubbles, which stay white: on a dark page, give `.maplace-popup` a dark colour.
 
 ## Classes
 

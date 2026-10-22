@@ -1,6 +1,6 @@
 # Google adapter
 
-`createGoogleAdapter(options)` from `maplace/google` draws a store on Google Maps; `maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store.
+`createGoogleAdapter(options)` from `maplace/google` draws a store on Google Maps; `maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store. On MapLibre: [MapLibre adapter](maplibre.md).
 
 ## Options
 

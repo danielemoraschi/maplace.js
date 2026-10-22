@@ -1,6 +1,6 @@
 # The element
 
-`<maplace-map>` is a map with an optional list, and `<maplace-location>` one location inside it. They are the whole API of a page with no build step: one script from the CDN defines both, with the Google provider.
+`<maplace-map>` is a map with an optional list, and `<maplace-location>` one location inside it. They are the whole API of a page with no build step: one script from the CDN defines both, with the Google provider, or, the MapLibre script, with MapLibre's.
 
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
@@ -11,7 +11,7 @@
 </maplace-map>
 ```
 
-From npm, `import "maplace/element/google"` defines the same elements with the Google provider, and `maplace/element` defines them with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of maplacejs on the page logs an error and leaves the first in place.
+From npm, `import "maplace/element/google"` defines the same elements with the Google provider, `import "maplace/element/maplibre"` with the MapLibre provider, and `maplace/element` with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of maplacejs on the page logs an error and leaves the first in place.
 
 ## Size
 
@@ -25,12 +25,12 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
 | `fit-all-label` | The label of a first list entry that clears the selection and fits all locations |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
-| `provider` | The registered provider to draw with; defaults to the only one registered. A change opens the map again on it |
-| `cluster` | Clusters markers (a CDN page needs the cluster script); can't change once the store exists |
+| `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
+| `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists |
 | `hold` | Stays idle, with no provider request and no list built, until `release()` |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace` |
 
-`list`, `list-position`, `fit-all-label` and `list-heading` are live: a change builds the list again. The Google provider reads its own attributes, such as `api-key` and `map-id`, when the map opens; a change of `color-scheme` or `map-options`, the map's settings, opens it again where it was: [provider attributes](google.md#provider-attributes).
+`list`, `list-position`, `fit-all-label` and `list-heading` are live: a change builds the list again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
 
 ## Properties and methods
 
@@ -112,7 +112,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## Providers
 
-`defineProvider(name, factory)` registers a provider for `provider="<name>"`: the factory gets the element and returns an adapter. `maplace/element/google` registers `google`. A map naming a provider not registered yet opens once it is.
+`defineProvider(name, factory)` registers a provider for `provider="<name>"`: the factory gets the element and returns an adapter. `maplace/element/google` registers `google`, and `maplace/element/maplibre` registers `maplibre`. With both registered (both element entries imported from npm), each map names one with `provider`, else the map is misuse naming `provider` (`several providers are registered ("google", "maplibre"): set provider`). A map naming a provider not registered yet opens once it is.
 
 ## List views
 
