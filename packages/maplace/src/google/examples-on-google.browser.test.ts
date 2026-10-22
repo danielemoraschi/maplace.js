@@ -1,6 +1,6 @@
 import { afterAll, expect, it, vi } from "vitest";
 import "../element/google";
-import { EXAMPLE_PAGES, onProvider } from "../testing/examples/example-files";
+import { EXAMPLE_PAGES, isPageOnly, onProvider } from "../testing/examples/example-files";
 import { openPage } from "../testing/examples/example-page";
 import { serveExampleData } from "../testing/examples/example-surroundings";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
@@ -11,15 +11,21 @@ const PAGE_STYLE = "maplace-map { display: block; height: 240px; }";
 
 afterAll(() => vi.unstubAllGlobals());
 
-// The example pages on real Google Maps, one after another in one document: the first page's
-// Maps JS is the page's for every later one, as on a site.
-describeWithKey("the example pages on Google Maps", (key) => {
+// The page-only examples (quick-start) on real Google Maps. Every other example runs on real
+// Google on the built site, each of its versions (the site's `examples-on-google.test.ts`;
+// `example-sections.test.ts` holds every one but quick-start to a section), so its pages aren't
+// drawn twice, each map billed.
+const PAGE_ONLY_PAGES = EXAMPLE_PAGES.filter(onProvider("google")).filter(({ name }) =>
+  isPageOnly(name),
+);
+
+describeWithKey("the page-only example pages on Google Maps", (key) => {
   const style = document.createElement("style");
   style.textContent = PAGE_STYLE;
   document.head.append(style);
   serveExampleData();
 
-  it.each(EXAMPLE_PAGES.filter(onProvider("google")))(
+  it.each(PAGE_ONLY_PAGES)(
     "opens the $name page on Google",
     async ({ html }) => {
       const page = openPage(html, { apiKey: key });

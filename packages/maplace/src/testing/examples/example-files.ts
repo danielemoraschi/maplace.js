@@ -39,6 +39,11 @@ export interface Example {
 /** Examples with a page only: `quick-start` is the docs' first snippet, not a site section. */
 const PAGE_ONLY: ReadonlySet<string> = new Set(["quick-start"]);
 
+/** Whether the example `name` is a page alone, with no vanilla or React version (quick-start). */
+export function isPageOnly(name: string): boolean {
+  return PAGE_ONLY.has(name);
+}
+
 /** Drawn on Google only: MapLibre has no routing. */
 const GOOGLE_ONLY: ReadonlySet<string> = new Set(["route"]);
 
@@ -76,7 +81,7 @@ export const EXAMPLE_PAGES: readonly ExamplePage[] = Object.entries(FILES)
 /** The examples, named by their Google pages: every provider's versions are checked by these. */
 const NAMES = EXAMPLE_PAGES.filter(onProvider("google"))
   .map(({ name }) => name)
-  .filter((name) => !PAGE_ONLY.has(name));
+  .filter((name) => !isPageOnly(name));
 
 /**
  * Every example but the page-only ones, on each provider it is drawn on: a missing file throws

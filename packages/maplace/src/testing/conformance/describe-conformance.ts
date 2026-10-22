@@ -12,7 +12,12 @@ import { popupChecks } from "./popups";
 import { presentationChecks } from "./presentation";
 import { reportChecks } from "./reports";
 import { routeChecks } from "./route";
-import type { CheckGroup, ConformanceGroup, ConformanceSubject } from "./subject";
+import {
+  type CheckGroup,
+  type ConformanceGroup,
+  type ConformanceSubject,
+  skipReasonOf,
+} from "./subject";
 
 /**
  * The adapter contract as checks (T9): one suite every adapter runs in a browser: the fake, Google
@@ -26,9 +31,9 @@ export function describeConformance(subject: ConformanceSubject): void {
   describe(`${subject.name} conformance`, () => {
     afterEach(unmountAll);
     for (const [name, checks] of Object.entries(GROUPS)) {
-      // A group the adapter isn't built for yet shows as skipped, never as missing.
-      if (isBuiltFor(subject, name as ConformanceGroup)) checks(subject, supports);
-      else describe.skip(`${name} (not built yet)`, () => checks(subject, supports));
+      const skipReason = skipReasonOf(subject, name as ConformanceGroup);
+      if (skipReason === undefined) checks(subject, supports);
+      else describe.skip(`${name} (${skipReason})`, () => checks(subject, supports));
     }
   });
 }
@@ -48,7 +53,3 @@ const GROUPS: Readonly<Record<ConformanceGroup, CheckGroup>> = {
   cluster: clusterChecks,
   controls: controlChecks,
 };
-
-function isBuiltFor({ groups }: ConformanceSubject, group: ConformanceGroup): boolean {
-  return groups === undefined || groups.includes(group);
-}
