@@ -1,6 +1,6 @@
 import { afterAll, expect, it, vi } from "vitest";
 import type * as Core from "../index";
-import { REACT_HOSTS, VANILLA_HOSTS } from "../testing/examples/example-files";
+import { onProvider, REACT_HOSTS, VANILLA_HOSTS } from "../testing/examples/example-files";
 import { openHost } from "../testing/examples/example-hosts";
 import { serveExampleData } from "../testing/examples/example-surroundings";
 import { recordErrors } from "../testing/examples/page-errors";
@@ -25,7 +25,7 @@ afterAll(() => vi.unstubAllGlobals());
 describeWithKey("the example versions on Google Maps", (key) => {
   serveExampleData();
 
-  it.each([...VANILLA_HOSTS, ...REACT_HOSTS])(
+  it.each([...VANILLA_HOSTS, ...REACT_HOSTS].filter(onProvider("google")))(
     "draws the $example $kind version on Google",
     async ({ html, run }) => {
       openHost(html, { apiKey: canImportLibraries() ? undefined : key });

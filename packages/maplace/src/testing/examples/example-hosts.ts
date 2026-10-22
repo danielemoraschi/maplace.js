@@ -11,16 +11,19 @@ interface HostOptions {
 /** The module script a host loads, which the test runs itself. */
 const MODULE_SCRIPT = "script[type=module][src]";
 
+/** What tells Google's bootstrap loader from any other inline script: it defines this. */
+const BOOTSTRAP_CALL = "importLibrary";
+
 /**
  * A vanilla or React host's nodes, in a fresh `<div>` appended to the test document (never
  * replacing what is there: a React root already rendered would be orphaned): its styles and
  * the nodes its module mounts on. Its module script is left out, for the test to run, and its
- * bootstrap too unless a key is given, since the fake needs no Maps JS.
+ * bootstrap too, where it has one, unless a key is given, since the fake needs no Maps JS.
  */
 export function openHost(html: string, { apiKey }: HostOptions = {}): HTMLElement {
   const host = parse(withKey(html, apiKey));
   for (const script of host.querySelectorAll(MODULE_SCRIPT)) script.remove();
-  if (apiKey === undefined) bootstrapScript(host).remove();
+  if (apiKey === undefined) bootstrapIn(host)?.remove();
   const root = rootOf(importedNodes(host, "script, style"));
   document.body.append(root);
   for (const script of root.querySelectorAll("script")) runScript(script);
@@ -34,16 +37,29 @@ export function moduleScriptOf(html: string): string {
   return scripts[0]?.getAttribute("src") ?? "";
 }
 
-/** The source of a host's one inline script: Google's bootstrap loader. */
-export function bootstrapOf(html: string): string {
-  return bootstrapScript(parse(html)).textContent ?? "";
+/** How a MapLibre version's module brings maplibre-gl's stylesheet (contract 1). */
+export const MAPLIBRE_STYLESHEET_IMPORT = 'import "maplibre-gl/dist/maplibre-gl.css";';
+
+/** The text of each inline script a host carries. */
+export function inlineScriptsOf(html: string): string[] {
+  return inlineScripts(parse(html)).map((script) => script.textContent ?? "");
 }
 
-function bootstrapScript(host: Document): HTMLScriptElement {
-  const inline = [...host.querySelectorAll("script:not([src])")];
-  const script = inline[0];
-  if (inline.length !== 1 || !script?.textContent?.includes("importLibrary")) {
-    throw new Error("a host's one inline script is Google's bootstrap loader");
+/** The source of a Google host's one inline script: Google's bootstrap loader. */
+export function bootstrapOf(html: string): string {
+  const host = parse(html);
+  const bootstrap = bootstrapIn(host);
+  if (inlineScripts(host).length !== 1 || bootstrap === undefined) {
+    throw new Error("a Google host's one inline script is Google's bootstrap loader");
   }
-  return script as HTMLScriptElement;
+  return bootstrap.textContent ?? "";
+}
+
+/** Google's bootstrap loader, where the host has one. */
+function bootstrapIn(host: Document): HTMLScriptElement | undefined {
+  return inlineScripts(host).find((script) => script.textContent?.includes(BOOTSTRAP_CALL));
+}
+
+function inlineScripts(host: Document): HTMLScriptElement[] {
+  return [...host.querySelectorAll<HTMLScriptElement>("script:not([src])")];
 }

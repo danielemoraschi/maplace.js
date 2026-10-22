@@ -56,10 +56,19 @@ const LAYERS = {
   },
   // Running the examples as readers copy them: the HTML around them, the stores they make (T5),
   // what each does on its fake map (W13), read through the fake's types and looks, and
-  // maplace/google on the fake (A9).
+  // maplace/google and maplace/maplibre on the fake (A9).
   examples: {
     files: /^testing\/examples\//,
-    imports: ["data", "testing", "entry", "element", "fake", "adapter-kit", "google-entry"],
+    imports: [
+      "data",
+      "testing",
+      "entry",
+      "element",
+      "fake",
+      "adapter-kit",
+      "google-entry",
+      "maplibre-entry",
+    ],
     packages: ["vitest"],
   },
   // Test support for the list views: plain data and the view's own types.

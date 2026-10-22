@@ -1,9 +1,9 @@
 import { expect, vi } from "vitest";
 import type { Maplace } from "../../index";
 import type { FakeAdapter } from "../fake-adapter";
-import { EXAMPLE_BEHAVIOURS } from "./example-behaviours";
+import { behaviourOf } from "./example-behaviours";
 import { parse } from "./example-dom";
-import { EXAMPLE_PAGES, type ExampleHost } from "./example-files";
+import { type ExampleHost, pageOf } from "./example-files";
 import { openHost } from "./example-hosts";
 import { LIST_SELECTOR } from "./example-layout";
 import { recordErrors } from "./page-errors";
@@ -72,8 +72,8 @@ export async function expectVersionRuns(
   const errors = recordErrors();
   const run = await runHost(host, root, adapters);
   await expectDrawsItsStore(run);
-  await expect.poll(() => hasList(root)).toBe(pageShowsList(host.example));
-  await EXAMPLE_BEHAVIOURS[host.example]?.(run);
+  await expect.poll(() => hasList(root)).toBe(pageShowsList(host));
+  await behaviourOf(host.provider, host.example)?.(run);
   expect(errors).toEqual([]);
 }
 
@@ -88,11 +88,9 @@ export function hasList(root: Element): boolean {
   return root.querySelector(LIST_SELECTOR) !== null;
 }
 
-/** Whether `example`'s page shows a list: its `<maplace-map>` has `list`, whatever its value. */
-function pageShowsList(example: string): boolean {
-  const page = EXAMPLE_PAGES.find(({ name }) => name === example);
-  if (page === undefined) throw new Error(`${example} has no page`);
-  return parse(page.html).querySelector("maplace-map[list]") !== null;
+/** Whether `host`'s page shows a list: its `<maplace-map>` has `list`, whatever its value. */
+function pageShowsList({ example, provider }: ExampleHost): boolean {
+  return parse(pageOf(example, provider).html).querySelector("maplace-map[list]") !== null;
 }
 
 /** A root named by the first id inside it, for a failure's message. */

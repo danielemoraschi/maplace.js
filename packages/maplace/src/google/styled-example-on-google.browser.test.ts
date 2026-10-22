@@ -3,7 +3,7 @@ import "../element/google";
 import type * as Core from "../index";
 import type { Maplace } from "../index";
 import { clickButton } from "../testing/examples/behaviours/reading";
-import { EXAMPLES } from "../testing/examples/example-files";
+import { EXAMPLES, onProvider } from "../testing/examples/example-files";
 import { openHost } from "../testing/examples/example-hosts";
 import { openPage } from "../testing/examples/example-page";
 import { recordErrors } from "../testing/examples/page-errors";
@@ -21,7 +21,7 @@ vi.mock("maplace", async (importOriginal) => {
 
 afterAll(() => vi.unstubAllGlobals());
 
-const styled = EXAMPLES.find(({ name }) => name === "styled");
+const styled = EXAMPLES.filter(onProvider("google")).find(({ name }) => name === "styled");
 if (styled === undefined) throw new Error("no styled example");
 
 /** The colour scheme each Google map was created with, in order: Google has no getter for it. */

@@ -1,0 +1,30 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<!-- Circles in their own colours, with popups, the centre selected at start; drag the third
+     circle's edge and its radius shows below the map. -->
+<maplace-map id="circles-maplibre-map" list selected-id="center">
+  <maplace-location location-id="center" type="circle" lat="41.9028" lng="12.4964" radius="5000" title="Within 5 km"
+    shape-style='{"stroke":"#1d4ed8","fill":"#3b82f6"}' selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>
+    <template><p>The historic centre, on foot.</p></template>
+  </maplace-location>
+  <maplace-location location-id="ring" type="circle" lat="41.9028" lng="12.4964" radius="15000" title="Within 15 km"
+    shape-style='{"stroke":"#15803d","fill":"#22c55e"}' selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>
+    <template><p>Inside the ring road, by bike.</p></template>
+  </maplace-location>
+  <maplace-location location-id="resizable" type="circle" lat="41.8" lng="12.75" radius="8000" title="Change my size"
+    editable shape-style='{"stroke":"#7c3aed","fill":"#a78bfa"}'></maplace-location>
+</maplace-map>
+<p><output id="circles-maplibre-radius">Radius: 8.0 km</output></p>
+<script>
+  function showCirclesMapLibreRadius(id, radius) {
+    if (id !== 'resizable') return;
+    document.getElementById('circles-maplibre-radius').textContent = `Radius: ${(radius / 1000).toFixed(1)} km`;
+  }
+  const circlesMapLibreMap = document.getElementById('circles-maplibre-map');
+  circlesMapLibreMap.addEventListener('maplace-locationedit', (event) => {
+    showCirclesMapLibreRadius(event.detail.location.id, event.detail.geometry.radius);
+  });
+  circlesMapLibreMap.addEventListener('maplace-locationchange', (event) => {
+    showCirclesMapLibreRadius(event.detail.location.id, event.detail.location.radius);
+  });
+</script>

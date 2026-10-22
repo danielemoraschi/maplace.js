@@ -43,7 +43,10 @@ export interface VersionRuns {
   readonly react: ExampleRun;
 }
 
-/** Where the adapters come from: the element's, and the one `maplace/google`'s mock makes. */
+/**
+ * Where the adapters come from: the element's, and the ones `maplace/google`'s and
+ * `maplace/maplibre`'s mocks make.
+ */
 export interface VersionAdapters {
   readonly pageAdapters: readonly FakeAdapter[];
   readonly moduleAdapters: readonly FakeAdapter[];
@@ -76,4 +79,14 @@ export async function runEveryVersion(
     runs.set(example, { page: pages.runOf(example), vanilla, react });
   }
   return { runs, errors: pages.errors };
+}
+
+/** `example`'s runs among `runs`, failing when it wasn't opened. */
+export function versionRunsOf(
+  runs: ReadonlyMap<Example, VersionRuns>,
+  example: Example,
+): VersionRuns {
+  const versions = runs.get(example);
+  if (versions === undefined) throw new Error(`${example.name} wasn't opened`);
+  return versions;
 }

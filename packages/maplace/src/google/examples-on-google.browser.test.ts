@@ -1,6 +1,6 @@
 import { afterAll, expect, it, vi } from "vitest";
 import "../element/google";
-import { EXAMPLE_PAGES } from "../testing/examples/example-files";
+import { EXAMPLE_PAGES, onProvider } from "../testing/examples/example-files";
 import { openPage } from "../testing/examples/example-page";
 import { serveExampleData } from "../testing/examples/example-surroundings";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
@@ -19,7 +19,7 @@ describeWithKey("the example pages on Google Maps", (key) => {
   document.head.append(style);
   serveExampleData();
 
-  it.each(EXAMPLE_PAGES)(
+  it.each(EXAMPLE_PAGES.filter(onProvider("google")))(
     "opens the $name page on Google",
     async ({ html }) => {
       const page = openPage(html, { apiKey: key });

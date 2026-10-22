@@ -1,0 +1,19 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #circles-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #circles-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #circles-maplibre-vanilla-list { display: contents; }
+  #circles-maplibre-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #circles-maplibre-vanilla-map-and-list { flex-direction: column; }
+    #circles-maplibre-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+</style>
+<div id="circles-maplibre-vanilla-map-and-list">
+  <div id="circles-maplibre-vanilla-map"></div>
+  <div id="circles-maplibre-vanilla-list"></div>
+</div>
+<p><output id="circles-maplibre-vanilla-radius">Radius: 8.0 km</output></p>
+<script type="module" src="./vanilla.ts"></script>
