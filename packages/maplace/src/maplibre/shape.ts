@@ -19,7 +19,7 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
   const order = site.nextOrder();
   const { shapes } = site.features;
   let drawn = drawable;
-  /** The geometry the store has: a drag draws another until the store takes it. */
+  /** The geometry the store has: a drag under way draws another. */
   let stored = drawable.geometry;
   let look = site.lookOf(drawable.id);
   let rank = shapeStackRank(drawable.geometry, order);
@@ -58,9 +58,14 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
     void shapes.flush();
   }
 
-  /** Whether `geometry` is a new shape: not the store's copy of an edit, nor what it had before. */
+  /**
+   * Whether `geometry` is drawn anew: not the store's copy of an edit, nor, while a drag is under
+   * way, what the store had before it. Once no drag is, the store's geometry is drawn again, as
+   * Google's is, though the page never took the edit.
+   */
   function isReshape(geometry: Geometry): boolean {
-    return ![drawn.geometry, stored].some((now) => sameGeometry(geometry, now));
+    if (sameGeometry(geometry, drawn.geometry)) return false;
+    return !(editing?.isDragging() === true && sameGeometry(geometry, stored));
   }
 
   return {

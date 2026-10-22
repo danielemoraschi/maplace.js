@@ -18,6 +18,8 @@ export interface ShapeEditing {
   follow(geometry: Geometry): void;
   /** The handles on the map now. */
   handles(): readonly EditHandle[];
+  /** A drag is under way: a handle has moved and not been let go. */
+  isDragging(): boolean;
   /** Takes every handle off, and a drag under way back to where it started. */
   stop(): void;
 }
@@ -111,6 +113,7 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
       showHandles(handlePlacesOf(next));
     },
     handles: () => handles,
+    isDragging: () => dragging,
     stop() {
       removeAll();
       // A drag cut short (the shape hidden or no longer editable) never ended: it edits nothing.

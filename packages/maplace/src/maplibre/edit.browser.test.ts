@@ -61,14 +61,15 @@ function expectNear(point: LatLng | undefined, to: LatLng): void {
 const changesOf = (host: { reportsOf(kind: "reportLocationChange"): unknown[][] }) =>
   host.reportsOf("reportLocationChange").map(([, geometry]) => geometry as Geometry);
 
-/** Holds the shape's third handle, a corner, moved to `to`: a drag not let go. */
-function startDrag(state: MapLibreState, id: string, to: LatLng): void {
+/** Holds the shape's third handle, a corner, moved to `to`: a drag not let go, until `drop`. */
+function startDrag(state: MapLibreState, id: string, to: LatLng) {
   const placed = state.placed.get(id);
   const corner = placed?.geometryType === "marker" ? undefined : placed?.editHandles()[2];
   if (corner === undefined) throw new Error(`${id} has no handles`);
   corner.marker.setLngLat([to.lng, to.lat]);
   corner.marker.fire("dragstart");
   corner.marker.fire("drag");
+  return { drop: () => corner.marker.fire("dragend") };
 }
 
 describe("editing shapes on MapLibre", () => {
@@ -185,6 +186,15 @@ describe("editing shapes on MapLibre", () => {
     await adapter.apply(updating({ ...polygon, title: "renamed" }));
     expect(probe.location("p")?.geometry).toEqual(edited);
     expect(edited).not.toEqual(polygon.geometry);
+  });
+
+  it("draws the store's geometry again on its next update after an edit it didn't take", async () => {
+    const polygon = editable(polygonDrawable("p"));
+    const { adapter, probe, state } = await editing(polygon);
+    startDrag(state, "p", { lat: 1.5, lng: 1.5 }).drop();
+    // The page never writes the edit back: its next update carries the geometry it has, as Google redraws.
+    await adapter.apply(updating({ ...polygon, title: "renamed" }));
+    expect(probe.location("p")?.geometry).toEqual(polygon.geometry);
   });
 
   it("shows no handles on a shape that isn't editable", async () => {
