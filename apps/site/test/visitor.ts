@@ -180,7 +180,7 @@ export function chooseVersion(page: Page, example: string, version: string): Pro
   return checkRadio(page, example, version);
 }
 
-/** Runs `example`'s section's map on `provider` (its label): the switch above its frame. */
+/** Runs `example`'s section's map on `provider` (its label): the switch in its heading row. */
 export function chooseProvider(page: Page, example: string, provider: string): Promise<void> {
   return checkRadio(page, example, provider);
 }

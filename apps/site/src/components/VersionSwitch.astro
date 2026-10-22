@@ -1,61 +1,28 @@
 ---
-import { FIRST_PROVIDER, PROVIDER_LABELS } from "../examples/example-providers.ts";
-import { exampleProviders } from "../examples/example-sources.ts";
 import { FIRST_VERSION, VERSION_LABELS } from "../examples/example-versions.ts";
 
 interface Props {
   /** Its example's folder in `packages/maplace/examples/`. */
   name: string;
-  /** Why the example runs on Google only, said as the "Run on" group's description. */
-  googleOnlyBecause?: string | undefined;
 }
 
-const { name, googleOnlyBecause } = Astro.props;
-const providers = exampleProviders(name);
-// `example-` keeps the site's ids apart from the pages' own.
-const reasonId = `example-${name}-provider-reason`;
-const GROUP = "m-0 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0";
-const CHOICE = "inline-flex items-center gap-1 has-disabled:text-muted";
+const { name } = Astro.props;
 ---
 
-<div
-  class="mb-2 flex flex-wrap items-baseline gap-x-8 gap-y-1 text-sm"
-  data-version-switch={name}
->
-  <fieldset class={`${GROUP} max-[640px]:w-full`}>
-    <legend class="float-left p-0 text-muted max-[640px]:w-full">Run the map from</legend>
-    {
-      VERSION_LABELS.map(({ kind, label }) => (
-        <label class={CHOICE}>
-          <input
-            type="radio"
-            name={`${name}-version`}
-            value={kind}
-            checked={kind === FIRST_VERSION}
-            autocomplete="off"
-          />
-          {label}
-        </label>
-      ))
-    }
-  </fieldset>
-  <fieldset class={GROUP} aria-describedby={googleOnlyBecause && reasonId}>
-    <legend class="float-left p-0 text-muted">Run on</legend>
-    {
-      PROVIDER_LABELS.map(({ provider, label }) => (
-        <label class={CHOICE}>
-          <input
-            type="radio"
-            name={`${name}-provider`}
-            value={provider}
-            checked={provider === FIRST_PROVIDER}
-            disabled={!providers.includes(provider)}
-            autocomplete="off"
-          />
-          {label}
-        </label>
-      ))
-    }
-    {googleOnlyBecause && <span class="text-muted" id={reasonId}>{googleOnlyBecause}</span>}
-  </fieldset>
-</div>
+<fieldset class="m-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm">
+  <legend class="float-left p-0 text-muted max-[640px]:w-full">Run the map from</legend>
+  {
+    VERSION_LABELS.map(({ kind, label }) => (
+      <label class="inline-flex items-center gap-1">
+        <input
+          type="radio"
+          name={`${name}-version`}
+          value={kind}
+          checked={kind === FIRST_VERSION}
+          autocomplete="off"
+        />
+        {label}
+      </label>
+    ))
+  }
+</fieldset>

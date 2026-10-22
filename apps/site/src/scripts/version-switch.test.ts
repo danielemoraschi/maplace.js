@@ -19,11 +19,11 @@ function section(name: string): string {
   };
   const files = (provider: string) =>
     `<div data-provider-files="${provider}" data-example="${name}"${provider === "google" ? "" : " hidden"}></div>`;
-  return `<section>
-    <div data-version-switch="${name}">
-      <fieldset>${radios("version", VERSIONS)}</fieldset>
-      <fieldset>${radios("provider", PROVIDERS)}</fieldset>
-    </div>
+  // As the site's sections are: the switch's two groups apart, the example's own input between.
+  return `<section data-version-switch="${name}">
+    <fieldset>${radios("provider", PROVIDERS)}</fieldset>
+    <fieldset>${radios("version", VERSIONS)}</fieldset>
+    <label><input type="checkbox" data-own-input /> North only</label>
     <div class="map-frame"><p data-map-failure></p><p data-saved hidden></p>${PROVIDERS.flatMap((provider) => VERSIONS.map((kind) => version(kind, provider))).join("")}</div>
     <div role="tabpanel">${PROVIDERS.map(files).join("")}</div>
     <div role="tabpanel">${PROVIDERS.map(files).join("")}</div>
@@ -102,5 +102,13 @@ describe("startVersionSwitches", () => {
     saved.hidden = false;
     choose("simple", "provider", "maplibre");
     expect(saved.hidden).toBe(true);
+  });
+
+  it("leaves the shown map and its note alone when the example's own input changes", () => {
+    const saved = document.querySelector<HTMLElement>("[data-saved]") as HTMLElement;
+    saved.hidden = false;
+    document.querySelector<HTMLInputElement>("[data-own-input]")?.click();
+    expect(saved.hidden).toBe(false);
+    expect(shown("simple")).toEqual(["google html"]);
   });
 });

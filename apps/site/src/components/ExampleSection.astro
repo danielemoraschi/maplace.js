@@ -7,6 +7,7 @@ import { codeTabsOf } from "../examples/example-sources.ts";
 import { REPO_FILES_ENTRY } from "../site/repo-files-loader.ts";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
+import ProviderSwitch from "./ProviderSwitch.astro";
 import VersionSwitch from "./VersionSwitch.astro";
 
 interface Props extends ExampleSection {
@@ -38,13 +39,20 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   class="example mt-12 border-t-3 border-ink pt-4"
   id={name}
   aria-labelledby={`${name}-title`}
+  data-version-switch={name}
 >
-  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-    <h2 class="m-0 text-3xl" id={`${name}-title`}>
-      <span class="mr-1 text-accent">{String(number).padStart(2, "0")}</span>
-      {title}
-    </h2>
-    <p class="m-0 text-muted">{summary}</p>
+  <div class="flex items-start gap-x-6 gap-y-2 max-[640px]:flex-col">
+    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      <h2 class="m-0 text-3xl" id={`${name}-title`}>
+        <span class="mr-1 text-accent">{String(number).padStart(2, "0")}</span>
+        {title}
+      </h2>
+      <p class="m-0 text-muted">{summary}</p>
+    </div>
+    {/* Level with the title's line, however far the summary wraps beside it. */}
+    <div class="ml-auto shrink-0 max-[640px]:ml-0">
+      <ProviderSwitch name={name} googleOnlyBecause={googleOnlyBecause} />
+    </div>
   </div>
   {
     dataLinks.length > 0 && (
@@ -88,7 +96,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     }
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <VersionSwitch name={name} googleOnlyBecause={googleOnlyBecause} />
+    <VersionSwitch name={name} />
     <MapFrame name={name} drawsOwnList={drawsOwnList} />
   </div>
   {

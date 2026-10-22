@@ -124,6 +124,41 @@ describe("the site's examples on MapLibre", () => {
 });
 
 describe("the provider switch", () => {
+  it("sits at the right end of the section's heading row, in reach from every tab", async () => {
+    const { page, context, section } = await visitSection("simple");
+    const group = section.getByRole("group", { name: "Run on" });
+    const [title, box, frame] = await Promise.all([
+      section.getByRole("heading", { level: 2 }).boundingBox(),
+      group.boundingBox(),
+      section.boundingBox(),
+    ]);
+    if (title === null || box === null || frame === null) throw new Error("nothing laid out");
+    expect(box.y).toBeLessThan(title.y + title.height);
+    expect(box.y + box.height).toBeGreaterThan(title.y);
+    expect(Math.round(box.x + box.width)).toBe(Math.round(frame.x + frame.width));
+    await section.getByRole("tab", { name: "HTML" }).click();
+    await chooseProvider(page, "simple", "MapLibre");
+    const html = section.getByRole("tabpanel").filter({ visible: true });
+    expect(await html.getByText("examples/simple/maplibre/page.html").isVisible()).toBe(true);
+    // The chosen segment's ground slides under it.
+    const ground = group.locator("span[aria-hidden]");
+    const chosen = await group.locator("label").filter({ hasText: "MapLibre" }).boundingBox();
+    await expect.poll(async () => (await ground.boundingBox())?.x).toBe(chosen?.x);
+    expect((await ground.boundingBox())?.width).toBe(chosen?.width);
+    await context.close();
+  }, 30_000);
+
+  it("stays level with the title beside a summary that wraps, at 1024 px", async () => {
+    const { page, context } = await site.visitor({ viewport: { width: 1024, height: 800 } });
+    await page.goto(site.url);
+    const section = await sectionOf(page, "markers");
+    const title = await section.getByRole("heading", { level: 2 }).boundingBox();
+    const box = await section.getByRole("group", { name: "Run on" }).boundingBox();
+    if (title === null || box === null) throw new Error("nothing laid out");
+    expect(box.y).toBeLessThan(title.y + title.height);
+    await context.close();
+  }, 30_000);
+
   it("shows MapLibre's version once chosen, keeping the version", async () => {
     const { page, context, section } = await visitSection("simple");
     await chooseVersion(page, "simple", "Vanilla");
@@ -206,7 +241,7 @@ describe("the provider switch", () => {
     const { page, context } = await site.visitor({ viewport: { width: 375, height: 812 } });
     await page.goto(site.url);
     const overflowing = await page
-      .locator("[data-version-switch]")
+      .getByRole("group", { name: "Run on" })
       .evaluateAll(
         (switches) =>
           switches.filter(({ scrollWidth, clientWidth }) => scrollWidth > clientWidth).length,

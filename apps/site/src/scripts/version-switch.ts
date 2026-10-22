@@ -11,7 +11,8 @@ interface Choice {
 }
 
 /**
- * Every `[data-version-switch]` under `root` chooses which version of its example the section's
+ * Every `[data-version-switch]` under `root` (a section, its provider and version radios apart,
+ * the example's own inputs left alone) chooses which version of its example the section's
  * frame shows, and on which provider: the `[data-live-version]` of both values, faded in, the
  * others hidden at once; its failure note, if it has one, in the frame's, and the note of what
  * the map shown before saved hidden; and in each code tab, the chosen provider's files. The page
@@ -20,7 +21,8 @@ interface Choice {
 export function startVersionSwitches(root: ParentNode): void {
   for (const group of root.querySelectorAll<HTMLElement>("[data-version-switch]")) {
     const example = group.dataset.versionSwitch ?? "";
-    group.addEventListener("change", () => {
+    group.addEventListener("change", ({ target }) => {
+      if (!isSwitchRadio(target, example)) return;
       const { version, provider } = chosenIn(group, example);
       showVersion(root, example, version, provider);
       showProviderFiles(root, example, provider);
@@ -55,6 +57,12 @@ function showProviderFiles(root: ParentNode, example: string, provider: string):
   for (const files of ofExample(root, "[data-provider-files]", example)) {
     files.hidden = files.dataset.providerFiles !== provider;
   }
+}
+
+/** Whether `target` is one of `example`'s switch radios, not an input of the example's own. */
+function isSwitchRadio(target: EventTarget | null, example: string): boolean {
+  const names = [`${example}-version`, `${example}-provider`];
+  return target instanceof HTMLInputElement && names.includes(target.name);
 }
 
 /** The value of the radio named `name` checked in `group`, if any. */
