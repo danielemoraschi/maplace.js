@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-22 Added circles and editable shapes on MapLibre: circles drawn in metres, stacked and styled as Google's, shapes reshaped by dragging their handles with edits reported as on Google, and polylines and polygons across ±180 drawn the short way
 - 2026-10-21 Added `maplace/maplibre`, maplace on MapLibre GL JS: `createMapLibreAdapter` and `createMapLibreMap`, on OpenFreeMap's tiles unless `mapStyle` names another style, drawing markers (a pin, or the page's icon), polylines and polygons in their styles, popups headed by their title, the store's views, and clicks, hover and the viewport reported; `maplibre-gl` and its stylesheet are the page's to install
 - 2026-10-21 Added `data-maplace-unstyled`: on any element, it turns maplacejs's default styles off inside it, but for what its markup needs, and the Styling reference page lists the classes maplacejs's markup carries, `maplace-list-view` on every list view's element among them
 - 2026-10-21 Changed the mixed, tabs and polyline examples, in all three versions: mixed marks the group shown as a pressed button (`aria-pressed`), the tabs' row no longer overflows into a scrollbar, and polyline's list beside the map has a heading, "Along the trail"

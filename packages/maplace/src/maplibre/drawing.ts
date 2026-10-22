@@ -121,6 +121,5 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
 
 /** The placer for the drawable's type: the store never sends a type the adapter doesn't declare. */
 function placerFor({ geometry }: Drawable, placers: Placers): Placer {
-  if (geometry.type === "circle") throw new Error("circles aren't drawn on MapLibre yet");
   return placers[geometry.type];
 }

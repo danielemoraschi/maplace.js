@@ -3,7 +3,7 @@ import { wrapLongitude } from "../longitude-arc";
 import { RADIANS_PER_DEGREE } from "./anchor";
 
 /** The earth's mean radius, in metres. */
-const EARTH_RADIUS = 6_371_008.8;
+export const EARTH_RADIUS = 6_371_008.8;
 
 /**
  * How much of the map `geometry` covers within its outline, in square metres: a polygon's holes

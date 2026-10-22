@@ -1,4 +1,5 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
+import type { Geometry } from "../../geometry";
 import type { LocationOnMap } from "../../testing/map-probe";
 import type { SentFeatures } from "./sent-features";
 
@@ -22,4 +23,6 @@ export interface ProbeTarget {
   click(): void;
   pointerOver(): void;
   pointerOut(): void;
+  /** Absent where the map doesn't let it be edited. */
+  drag?(geometry: Geometry): void;
 }
