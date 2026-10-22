@@ -52,7 +52,9 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
       each: (drawable) => place(drawable, drawingOn),
       stopped,
     });
-    if (!stopped()) unrendered = flushAll(drawingOn.features) ?? unrendered;
+    if (stopped()) return;
+    drawingOn.mounted.clustering.flush();
+    unrendered = flushAll(drawingOn.features) ?? unrendered;
   }
 
   function place(drawable: Drawable, on: PlacingSite): void {

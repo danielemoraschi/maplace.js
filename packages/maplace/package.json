@@ -61,7 +61,8 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@googlemaps/markerclusterer": "2.6.2"
+    "@googlemaps/markerclusterer": "2.6.2",
+    "supercluster": "8.0.1"
   },
   "peerDependencies": {
     "@types/google.maps": "^3.66.0",

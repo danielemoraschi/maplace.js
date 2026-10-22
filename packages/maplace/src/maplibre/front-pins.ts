@@ -1,8 +1,8 @@
 import type { Marker } from "maplibre-gl";
 import type { LatLng } from "../geometry";
 import { lngLatOf } from "./conversions";
+import { createPinIcon } from "./dom-marker";
 import type { MountedMapLibre } from "./mounted-map";
-import { PIN_SIZE, pinImageUrl } from "./pin-image";
 
 /**
  * The selected and hovered pins, drawn again in the DOM over the pin layer: they stack above every
@@ -47,13 +47,9 @@ export function createFrontPins({ map, maplibre }: MountedMapLibre): FrontPins {
   };
 }
 
-/** The pin's image, sized as the layer draws it, letting the pointer through to the layer. */
+/** The pin's image, letting the pointer through to the pin under it in the layer. */
 function pinElement(document: Document): HTMLElement {
-  const image = document.createElement("img");
-  image.src = pinImageUrl(document);
-  image.alt = "";
-  image.width = PIN_SIZE.width;
-  image.height = PIN_SIZE.height;
+  const image = createPinIcon(document);
   image.style.pointerEvents = "none";
   return image;
 }

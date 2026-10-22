@@ -129,11 +129,12 @@ const LAYERS = {
     imports: ["data", "contract", "adapter-kit", "testing", "conformance", "google"],
     packages: ["vitest"],
   },
-  // The MapLibre adapter: maplibre-gl itself is loaded on mount, its types imported anywhere here.
+  // The MapLibre adapter: maplibre-gl itself is loaded on mount, its types imported anywhere here;
+  // supercluster by the clustering, loaded only by a map that clusters.
   maplibre: {
     files: /^maplibre\/(?!testing\/|index$|maplibre-map(-options)?$)/,
     imports: ["data", "contract", "adapter-kit", "validation"],
-    packages: ["maplibre-gl"],
+    packages: ["maplibre-gl", "supercluster"],
   },
   // maplace/maplibre: the adapter, and a store on a MapLibre map in one call.
   "maplibre-entry": {

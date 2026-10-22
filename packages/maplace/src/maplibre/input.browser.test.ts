@@ -13,7 +13,7 @@ import {
 import { unmountAll } from "../testing/conformance/harness";
 import { wait } from "./testing/map-settle";
 import { mountedMapLibre, mountedOnPageMap } from "./testing/mounted";
-import { clickCanvas } from "./testing/pointer";
+import { clickCanvas, moveOverCanvas } from "./testing/pointer";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { removePageMaps } from "./testing/subject";
 
@@ -75,6 +75,28 @@ describe("input on MapLibre", () => {
     await wait(DOUBLE_CLICK_WAIT_MS * 2);
     expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     expect(host.reportsOf("reportMapClick")).toHaveLength(1);
+  });
+
+  it("doesn't take a pin folded into a cluster this tick for a click on it", async () => {
+    const { map, adapter, host } = await mountedMapLibre(undefined, { cluster: true });
+    adapter.present(presented({ selectedId: "b" }));
+    await adapter.apply(adding(markerDrawable("a"), markerDrawable("b")));
+    await pinsRendered(map, "a", "b");
+    adapter.present(presented({}));
+    // Both fold into one cluster, though MapLibre still draws their pins until its next frame.
+    expect(renderedIds(map, ["maplace-pins"])).toEqual(["a", "b"]);
+    clickCanvas(map, { at: ORIGIN, up: 30 });
+    await wait(DOUBLE_CLICK_WAIT_MS * 2);
+    expect(host.reportsOf("reportSelectionChange")).toEqual([]);
+    expect(host.reportsOf("reportMapClick")).toHaveLength(1);
+  });
+
+  it("leaves the cursor a page sets on its own map while the pointer is on no location", async () => {
+    const { map } = await mountedOnPageMap();
+    map.getCanvas().style.cursor = "crosshair";
+    moveOverCanvas(map, { at: AWAY });
+    moveOverCanvas(map, { at: AWAY });
+    expect(map.getCanvas().style.cursor).toBe("crosshair");
   });
 
   it("selects the smaller polygon where a bigger one's outline, drawn above it, crosses it", async () => {

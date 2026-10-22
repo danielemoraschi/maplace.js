@@ -20,13 +20,17 @@ export function layerHover(
       const { map } = mounted;
       const canvas = map.getCanvas();
       let pointed: string | undefined;
+      // Entered again while it stays pointed at: one hidden or folded under the pointer was let go
+      // (`hover.gone`), and is hovered anew once drawn there again. A repeat reports nothing, and
+      // the cursor is set only on a change, so a page's own cursor on its map's canvas stays.
       const pointAt = (id: string | undefined) => {
-        if (id === pointed) return;
         const hover = hoverOf();
-        if (pointed !== undefined) hover?.leave("pointer", pointed);
+        if (id !== pointed) {
+          if (pointed !== undefined) hover?.leave("pointer", pointed);
+          pointed = id;
+          canvas.style.cursor = id === undefined ? "" : "pointer";
+        }
         if (id !== undefined) hover?.enter("pointer", id);
-        pointed = id;
-        canvas.style.cursor = id === undefined ? "" : "pointer";
       };
       const onMove = (event: MapMouseEvent) => {
         if (isOnCanvas(event, canvas)) pointAt(locationAt(event));
