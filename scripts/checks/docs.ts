@@ -13,6 +13,7 @@ export const DOCS = [
   "docs/reference/locations.md",
   "docs/reference/store.md",
   "docs/reference/google.md",
+  "docs/reference/maplibre.md",
   "docs/reference/react.md",
   "docs/reference/styling.md",
   "docs/reference/api.md",

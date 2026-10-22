@@ -1,10 +1,10 @@
 # Store and list view
 
-The store is maplacejs's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
+The store is maplacejs's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md) or [MapLibre](maplibre.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
 
 ## Creating a store
 
-`createMaplace(options?)` returns a store. `attach(adapter, container)` connects it to a map, `container` being an element or a selector the page matches (one matching nothing is `invalid-input`; an element in a shadow root is passed as the element). On Google, [`createGoogleMap`](google.md#creategooglemap) does both in one call:
+`createMaplace(options?)` returns a store. `attach(adapter, container)` connects it to a map, `container` being an element or a selector the page matches (one matching nothing is `invalid-input`; an element in a shadow root is passed as the element). On Google, [`createGoogleMap`](google.md#creategooglemap) does both in one call, and on MapLibre [`createMapLibreMap`](maplibre.md#createmaplibremap):
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
@@ -103,7 +103,7 @@ On the element the same events are DOM events ([the element's events](element.md
 
 ## Routes
 
-A route is one path through your own locations, in order; it needs the `route` capability.
+A route is one path through your own locations, in order; it needs the `route` capability, which Google has and MapLibre lacks ([routes](maplibre.md#routes)).
 
 | Field | Type | What |
 |---|---|---|

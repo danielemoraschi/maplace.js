@@ -5,11 +5,12 @@ maplacejs 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in t
 ## What changed
 
 - **No jQuery and no global.** One CDN script defines the `<maplace-map>` element, or you import ES modules from npm.
+- **Google Maps or MapLibre.** 0.2 drew on Google only. 1.0 draws the same locations, list and events on either, and MapLibre on OpenFreeMap's tiles needs no key ([MapLibre adapter](docs/reference/maplibre.md)).
 - **Locations have an `id`.** Selection, events and updates name a location by its id, not its position in the array.
 - **`lon` is `lng`**, as Google and MapLibre name it, with no alias.
 - **Text is text.** Titles and string content are never inserted as HTML; `html` needs a `sanitize` function you provide (DOMPurify, for one).
 - **One kind of change, after it happened.** The `before…` callbacks are gone; events such as `selectionChange`, `locationChange` and `routeChange` report what changed.
-- **A map ID, for production**: maplacejs draws advanced markers, which need a map ID. As in 0.2, a page needs none to start: without one the map uses Google's `DEMO_MAP_ID` and warns once in the console that it is for development ([key and map ID](docs/reference/setup.md#key-and-map-id)).
+- **On Google, a map ID for production**: maplacejs draws advanced markers, which need a map ID. As in 0.2, a page needs none to start: without one the map uses Google's `DEMO_MAP_ID` and warns once in the console that it is for development ([key and map ID](docs/reference/setup.md#key-and-map-id)).
 
 ## Before and after
 
@@ -43,6 +44,8 @@ In 1.0 the element does the same, loading Google Maps itself:
 </maplace-map>
 ```
 
+On MapLibre, the same page loads `maplace-element-maplibre.iife.js` and drops `api-key` ([quick start](README.md#quick-start)).
+
 A page that builds the map in code makes the same call 0.2 made, `createGoogleMap` from npm, on a page that loads Maps JS with Google's bootstrap loader ([README](README.md#with-a-bundler)); the list goes where 0.2's `controls_div` put it:
 
 ```ts
@@ -56,6 +59,8 @@ createGoogleMap("#gmap", {
   list: { container: "#controls" },
 });
 ```
+
+On MapLibre, `createMapLibreMap` from `maplace/maplibre` takes the same options, on a page that installs `maplibre-gl` and imports its stylesheet instead of loading Maps JS ([README](README.md#with-a-bundler)).
 
 ## Converting your locations
 
@@ -98,14 +103,14 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 
 | 0.2 option | 1.0 |
 |---|---|
-| `map_div` | `createGoogleMap('#map', …)`'s container (an element or a selector), the container passed to `attach`, or `<maplace-map>` itself |
-| `controls_div`, `controls_on_map`, `controls_position` | `createGoogleMap`'s `list: { position }` (a corner, default top right) or `list: { container }` (an element or a selector, as `controls_div`), element `list-position` (a corner, or `outside`), React's `<LocationList position>`; with the parts, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
+| `map_div` | `createGoogleMap('#map', …)`'s (or `createMapLibreMap`'s) container (an element or a selector), the container passed to `attach`, or `<maplace-map>` itself |
+| `controls_div`, `controls_on_map`, `controls_position` | `createGoogleMap`'s (or `createMapLibreMap`'s) `list: { position }` (a corner, default top right) or `list: { container }` (an element or a selector, as `controls_div`), element `list-position` (a corner, or `outside`), React's `<LocationList position>`; with the parts, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
 | `generate_controls`, `force_generate_controls` | a list exists only when asked for, at any number of locations |
-| `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'` (`createGoogleMap`'s `list: { as }`), element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
-| `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win, and `controls_applycss: false` is `data-maplace-unstyled` on an element holding the map and its list (the map then needs a height of yours, as in 0.2); the classes to style are on [Styling](docs/reference/styling.md) (on a Google map, the panel is `.maplace-control`) |
-| `controls_title` | list view `heading` (`createGoogleMap`'s `list: { heading }`, element `list-heading`, `<LocationList heading>`), shown above the list on the map or beside it |
+| `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'` (`createGoogleMap`'s (or `createMapLibreMap`'s) `list: { as }`), element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
+| `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win, and `controls_applycss: false` is `data-maplace-unstyled` on an element holding the map and its list (the map then needs a height of yours, as in 0.2); the classes to style are on [Styling](docs/reference/styling.md) (on a Google or MapLibre map, the panel is `.maplace-control`) |
+| `controls_title` | list view `heading` (`createGoogleMap`'s (or `createMapLibreMap`'s) `list: { heading }`, element `list-heading`, `<LocationList heading>`), shown above the list on the map or beside it |
 | `type` (one per map) | `type` per location, so one map mixes markers and shapes |
-| `type: 'directions'` | `setRoute({ stops })` through your own locations |
+| `type: 'directions'` | `setRoute({ stops })` through your own locations, on Google (MapLibre has no routing) |
 | `type: 'fusion'`, `fusion_options` | dropped: Google shut down Fusion Tables in 2019 |
 | `view_all`, `view_all_text` | `fitAllLabel` (element `fit-all-label`); no entry unless set |
 | `start` | `selectedId` (element `selected-id`, React `defaultSelectedId`) |
@@ -113,8 +118,8 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
 | `show_infowindows`, `infowindow_type` | a location opens a popup only when it has `content` (or `html`): leave it out for none; there is only one kind of popup |
-| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on the element `map-options` (JSON); centre and zoom through `view` |
-| `styles` | map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)) |
+| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on MapLibre `createMapLibreAdapter({ mapOptions })` (MapLibre's own options), on the element `map-options` (JSON); centre and zoom through `view` |
+| `styles` | on Google, a map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)); on MapLibre, the map's style (`mapStyle`, the element's `map-style`), any provider's style URL |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
 | `directions_options.avoidHighways`, `avoidTolls` | dropped |
@@ -122,7 +127,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
 | `directions_panel` | dropped: render each leg's `steps` from the `routeChange` event |
 | `draggable`, `editable` (map-wide) | `editable` per location, for markers and shapes alike; dragging the route itself is gone |
-| `listeners` | the `mapClick` event (`{ position }`) for a click on the map; for any other map event, pass your own map (`createGoogleAdapter({ map })`) and add listeners to it |
+| `listeners` | the `mapClick` event (`{ position }`) for a click on the map; for any other map event, pass your own map (`createGoogleAdapter({ map })` or `createMapLibreAdapter({ map })`) and add listeners to it |
 | `pan_on_click` | `select(id, { pan: false })` from code; the map always brings a clicked location into view (a marker panned to, a shape fitted) |
 | `debug` | the `error` event and `MaplaceError`; nothing is logged or silent |
 | `visualRefresh` | dropped: Google removed the flag |
@@ -151,13 +156,13 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `on_menu` | `listed: false` (element `listed="false"`): on the map and selectable there, left out of every list view |
 | `pan_on_click` | dropped per location |
 | `draggable` | `editable`: one word for dragging markers and reshaping shapes |
-| any other field, including Google marker options | your fields go in `data`; Google options belong on your own map |
+| any other field, including Google marker options | your fields go in `data`; provider options belong on your own map |
 
 ### Methods
 
 | 0.2 method | 1.0 |
 |---|---|
-| `new Maplace(options).Load()` | `createGoogleMap('#map', options)`, or its parts `createMaplace(options)` then `attach(adapter, '#map')`, or `<maplace-map>` |
+| `new Maplace(options).Load()` | `createGoogleMap('#map', options)` or `createMapLibreMap('#map', options)`, or their parts `createMaplace(options)` then `attach(adapter, '#map')`, or `<maplace-map>` |
 | `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
 | `Load(true)` (rebuild) | `detach()`, then `attach()` with a new adapter |
 | `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |
@@ -190,8 +195,8 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 - Locations are identified by `id`, not by their 1-based position.
 - Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
-- No jQuery and no `Maplace` global: ES modules or one CDN script. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap); in code, the page loads it and the adapter imports what it needs.
+- No jQuery and no `Maplace` global: ES modules or one CDN script. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap), and the MapLibre script bundles MapLibre; in code, the page loads Maps JS, or installs maplibre-gl, and the adapter imports what it needs.
 - The menu's inline styles are replaced by a stylesheet you can override.
 - Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in [RFC §3, decisions from the 0.2 issues](docs/rfc-1.0.md#decisions-from-the-02-issues).
 
-Never released (the unmerged `develop` branch): `onPolylineClick` is `selectionChange`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions.gestureHandling`.
+Never released (the unmerged `develop` branch): `onPolylineClick` is `selectionChange`; the documented manual resize trigger is unnecessary; the `FreezeZoom` / `UnFreezeZoom` stubs are `mapOptions` (Google's `gestureHandling`, MapLibre's `scrollZoom` and its like).

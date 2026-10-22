@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { CDN_SCRIPTS } from "./cdn-builds.ts";
 import { pinnedScriptsIn, pinnedSnippetOf, withPinnedScripts } from "./cdn-pins.ts";
+import { readRootFile } from "./package.ts";
 
 const PINNED = (file: string) =>
   `<script src="https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/${file}"\n  integrity="sha384-…" crossorigin="anonymous"></script>`;
 
-const README = `# maplace\n\n${PINNED("maplace-element.iife.js")}\n\nor\n\n${PINNED("maplace-element-cluster.iife.js")}\n`;
+const README = `# maplace\n\n${PINNED("maplace-element.iife.js")}\n\nor\n\n${PINNED("maplace-element-cluster.iife.js")}\n\nor, on MapLibre:\n\n${PINNED("maplace-element-maplibre.iife.js")}\n`;
 
 const integrityOf = (file: string) => `sha384-${file.length}`;
 
@@ -48,7 +50,14 @@ describe("pinnedScriptsIn", () => {
     expect(pinnedScriptsIn(README)).toEqual([
       "maplace-element.iife.js",
       "maplace-element-cluster.iife.js",
+      "maplace-element-maplibre.iife.js",
     ]);
+  });
+});
+
+describe("the repo's README", () => {
+  it("pins every CDN script, Google's two and MapLibre's, for staging to fill in", () => {
+    expect(pinnedScriptsIn(readRootFile("README.md"))).toEqual(Object.values(CDN_SCRIPTS));
   });
 });
 

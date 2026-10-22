@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-22 Added the MapLibre adapter's reference page, and MapLibre throughout the docs: README's quick start, CDN scripts (the MapLibre one pinned for production), bundler and React sections, Setup's MapLibre path (a style URL, no key or map ID, `worker-src blob:`), MIGRATION, and the site's hero, title and install box naming both providers
 - 2026-10-22 Fixed on MapLibre: a page's own cursor on its map is given back once the pointer leaves a location and on destroy, no longer wiped; clusters and clickable markers show a pointer, as on Google.
 - 2026-10-22 Added clustering on MapLibre: `cluster: true` groups `maplace/maplibre`'s markers as on Google, into the same clusters at the same view, the selected location on its own and hidden ones in none; a cluster, a button titled "Cluster of N locations", zooms in when clicked or on Enter; an `editable` marker is dragged, as on Google
 - 2026-10-22 Added circles and editable shapes on MapLibre: circles drawn in metres, stacked and styled as Google's, shapes reshaped by dragging their handles with edits reported as on Google, and polylines and polygons across ±180 drawn the short way

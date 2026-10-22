@@ -1,6 +1,7 @@
 import type { ListViewOptions, MaplaceOptions } from "maplace";
 import type { MaplaceMapElement } from "maplace/element";
 import type { GoogleAdapterOptions, GoogleMapList, GoogleMapOptions } from "maplace/google";
+import type { MapLibreAdapterOptions, MapLibreMapList, MapLibreMapOptions } from "maplace/maplibre";
 import type {
   LocationListProps,
   MapControlProps,
@@ -10,7 +11,7 @@ import type {
 } from "maplace/react";
 import { everyName } from "./reference-names.ts";
 
-// The names of the entries beyond the core: the Google adapter, the element and React.
+// The names of the entries beyond the core: the Google and MapLibre adapters, the element and React.
 
 export const GOOGLE_OPTIONS = everyName<keyof GoogleAdapterOptions>({
   mapId: true,
@@ -31,6 +32,25 @@ export const GOOGLE_MAP_OPTIONS = [
     list: true,
   }),
   ...everyName<Exclude<keyof GoogleMapList, keyof ListViewOptions>>({
+    position: true,
+    container: true,
+  }).map((name) => `list.${name}`),
+];
+
+export const MAPLIBRE_OPTIONS = everyName<keyof MapLibreAdapterOptions>({
+  mapStyle: true,
+  map: true,
+  mapOptions: true,
+});
+
+/** `createMapLibreMap`'s own options, as `GOOGLE_MAP_OPTIONS` lists `createGoogleMap`'s. */
+export const MAPLIBRE_MAP_OPTIONS = [
+  ...everyName<Exclude<keyof MapLibreMapOptions, keyof MaplaceOptions>>({
+    mapStyle: true,
+    mapOptions: true,
+    list: true,
+  }),
+  ...everyName<Exclude<keyof MapLibreMapList, keyof ListViewOptions>>({
     position: true,
     container: true,
   }).map((name) => `list.${name}`),

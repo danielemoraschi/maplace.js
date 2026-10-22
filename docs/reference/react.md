@@ -70,7 +70,7 @@ Renders a div you size and attaches a fresh adapter to it on mount, detaching on
 
 | Prop | What |
 |---|---|
-| `createAdapter` | Required. Called once per mount: an adapter drives one map |
+| `createAdapter` | Required. Called once per mount: an adapter drives one map. `createGoogleAdapter`, `createMapLibreAdapter` ([MapLibre](maplibre.md#react)), or a function making one with options |
 | `className` | Size the map through it: a map fills its container |
 | `popupContent` | `(location) => ReactNode`: a popup's content as React content |
 | `markerIcon` | `(location, state) => ReactNode`: a marker's icon as React content |

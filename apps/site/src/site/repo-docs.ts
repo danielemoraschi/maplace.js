@@ -35,7 +35,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/setup.md",
     title: "Setup",
     description:
-      "A Google Maps key, Maps JS on a page and, for production, a map ID, with the element or npm.",
+      "What a map needs: on Google a key, Maps JS and, for production, a map ID; on MapLibre maplibre-gl and a style, OpenFreeMap's by default, with no key. With the element or npm.",
     label: "Setup",
   },
   {
@@ -67,6 +67,14 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     description:
       "The Google Maps adapter: options, your own map, loading Maps JS, map IDs, routes and clustering.",
     label: "Google",
+  },
+  {
+    id: "maplibre",
+    file: "docs/reference/maplibre.md",
+    title: "MapLibre adapter",
+    description:
+      "The MapLibre adapter: options, your own map, styles and tiles, loading maplibre-gl, zoom, clustering, and what differs from Google.",
+    label: "MapLibre",
   },
   {
     id: "react",

@@ -4,7 +4,7 @@ import { docRoute } from "../site/repo-docs.ts";
 
 const entry = await getEntry("install", "element");
 if (entry === undefined) throw new Error("the install collection has no element entry");
-const { version, snippet } = entry.data;
+const { version, scripts } = entry.data;
 const HEADING = "mt-0 mb-2 text-xl";
 const COMMAND = "mt-0 mb-2 border-2 border-ink px-4 py-3 break-all whitespace-pre-wrap";
 ---
@@ -19,8 +19,25 @@ const COMMAND = "mt-0 mb-2 border-2 border-ink px-4 py-3 break-all whitespace-pr
   </div>
   <div>
     <h2 class={HEADING}>Or pin the CDN script</h2>
-    <pre class={COMMAND}><code id="pinned-script">{snippet}</code></pre>
-    <button type="button" class="button-plain" data-copy="pinned-script">Copy</button>
+    {
+      scripts.map(({ provider, label, snippet }) => {
+        const snippetId = `pinned-script-${provider}`;
+        return (
+          <div class="mb-4">
+            <h3 id={`${snippetId}-label`} class="mt-0 mb-1 text-sm font-medium">{label}</h3>
+            <pre class={COMMAND}><code id={snippetId}>{snippet}</code></pre>
+            <button
+              type="button"
+              class="button-plain"
+              data-copy={snippetId}
+              aria-describedby={`${snippetId}-label`}
+            >
+              Copy
+            </button>
+          </div>
+        );
+      })
+    }
     <p class="mt-2 mb-0 text-sm text-muted">maplacejs {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
   </div>
 </div>

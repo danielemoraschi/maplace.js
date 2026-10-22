@@ -11,7 +11,7 @@ Appendix A: 0.2 issue triage
 
 ## 1. Positioning
 
-A list of your locations becomes a map with a synced list, in about five lines. Google Maps today, MapLibre next.
+A list of your locations becomes a map with a synced list, in about five lines, on Google Maps or MapLibre.
 
 ### The five-line promise
 
@@ -24,29 +24,41 @@ A list of your locations becomes a map with a synced list, in about five lines. 
 </maplace-map>
 ```
 
-A map with two markers, a list beside it, and selection kept in sync: click a marker and the list highlights it; pick it in the list and the map pans and opens it.
+On MapLibre, its own script and no key:
+
+<!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
+```html
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<maplace-map list>
+  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
+</maplace-map>
+```
+
+Either is a map with two markers, a list beside it, and selection kept in sync: click a marker and the list highlights it; pick it in the list and the map pans and opens it.
 
 ### Who it is for
 
 1. **Pages with a list of places**: offices, venues, events, trips, stores, built with a `<script>` tag on a CMS or static site. This is the audience 0.2 still serves: about 839k jsDelivr hits a year against about 1.9k npm installs (Appendix A).
-2. **Developers in any framework** who want a small headless store (locations keyed by id, selection, viewport) and a map adapter, without adopting a map toolkit.
+2. **Developers in any framework** who want a small headless store (locations keyed by id, selection, viewport) and a map adapter, Google Maps or MapLibre, without adopting a map toolkit.
 3. **React users**, through `maplace/react`: a provider, a map and a list, with the selection controlled or not. `<maplace-map>` also works in React 19 as a custom element.
 
 ### What it does
 
+- Draws on Google Maps or on MapLibre GL JS (any style; OpenFreeMap's by default, with no key), behind one API.
 - Takes your data as HTML children, JSON or JS objects, each location with a stable `id`.
 - Shows it as a map plus a list or a native select, with selection, hover and viewport kept in sync both ways.
-- Location types: markers, circles, polylines, polygons; one route through your own locations.
+- Location types: markers, circles, polylines, polygons; one route through your own locations (on Google).
 - Clustering for large lists.
 - Accessible list controls (keyboard, ARIA, native `<select>`).
 - Typed events for selection, edits, routes and errors.
-- Consent-friendly loading: with `hold`, the element stays idle, with no request to the map provider, until the page calls `release()`.
+- Consent-friendly loading: with `hold`, the element stays idle, with no request to the map provider (Google, or the style's servers), until the page calls `release()`.
 - Many maps per page, no globals, no framework required.
 
 ### Principles
 
 - **Your data, not a provider's.** maplace renders the locations you own; provider services are optional extras.
-- **Provider behind an adapter.** No provider types leak into the core or the public API, so MapLibre is a new adapter, not a rewrite (§3 Loading).
+- **Provider behind an adapter.** No provider types leak into the core or the public API, so MapLibre is a second adapter, not a rewrite (§3 Loading).
 - **Nothing global.** Every map is independent; the only shared thing is the provider's own script.
 - **Safe by default.** Strings render as text; HTML needs an explicit sanitizer.
 - **Accessible.** The list is the accessible way into the map, not an afterthought.
@@ -71,7 +83,7 @@ A map with two markers, a list beside it, and selection kept in sync: click a ma
 
 | | What it is | Framework | Provider | Your data as list + map, selection synced | Pick it when |
 |---|---|---|---|---|---|
-| **maplace** | Data list → map + list, headless core + adapters | None (element, JS); React bindings | Google; MapLibre next | Yes, the core job | You have a list of places and want map and list in sync with little code |
+| **maplace** | Data list → map + list, headless core + adapters | None (element, JS); React bindings | Google, MapLibre | Yes, the core job | You have a list of places and want map and list in sync with little code |
 | `<gmp-map>` / `<gmp-advanced-marker>` | Google's HTML map and marker elements | None | Google | No: map and markers only, no list, selection or update diffing | You only need a map with a few fixed markers |
 | `@vis.gl/react-google-maps` | React components for the Maps JS API (map, markers, shapes, 3D) | React | Google | No: building blocks, you write list and selection | You're in React and want full control of a Google map |
 | `<gmpx-store-locator>` (Extended Component Library) | Ready-made store locator for your listings | None (element), React wrapper | Google | Partly: list + map of your listings, fixed store-locator UX, markers only | You want a classic "find the nearest store" page with Google place details |
@@ -90,13 +102,17 @@ Places integration (search box that adds locations, place details as content); l
 
 ### How we'll know it worked
 
-- The five-line snippet runs from a blank HTML file with only an API key.
+- The five-line snippet runs from a blank HTML file with only an API key on Google, and with nothing else on MapLibre.
 - A typical 0.2 page migrates by following [MIGRATION.md](../MIGRATION.md) in under 30 minutes.
 - None of the "pick it when" cases above is something maplace does half-way.
 
 ## 2. Use cases
 
-Twelve scenarios, each written three ways against the API: an HTML page using `<maplace-map>`, vanilla TypeScript, and React. They live in [`packages/maplace/examples/`](../packages/maplace/examples/); CI type-checks them and runs all three on a fake map, and all three on Google Maps too. Each vanilla version opens with `createGoogleMap` (custom-list and styled, which need the adapter, with the parts it composes); each vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`: Maps JS from Google's bootstrap loader), the same map as its page, which a test holds them to. Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
+Twelve scenarios, each written three ways against the API: an HTML page using `<maplace-map>`, vanilla TypeScript, and React. They live in [`packages/maplace/examples/`](../packages/maplace/examples/); CI type-checks them and runs every version on a fake map, Google's on Google Maps too. Each vanilla version opens with `createGoogleMap` (custom-list and styled, which need the adapter, with the parts it composes); each vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`: Maps JS from Google's bootstrap loader), the same map as its page, which a test holds them to.
+
+Every scenario but `route` is written for MapLibre too, in a `maplibre/` folder beside it (MapLibre has no routing): `page.html` on the MapLibre CDN script, with no key, on OpenFreeMap's style; `vanilla.ts` on `createMapLibreMap` (custom-list and styled, as on Google, with the parts) and `react.tsx` on `createMapLibreAdapter`, each importing maplibre-gl's stylesheet, with the `vanilla.html` and `react.html` they mount on; the same map as the Google versions. CI runs them on a fake map and on MapLibre with a local style.
+
+Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
 
 | Scenario | Shows | 0.2 equivalent | 0.2 issues it answers |
 |---|---|---|---|
@@ -109,8 +125,8 @@ Twelve scenarios, each written three ways against the API: an HTML page using `<
 | [polyline](../packages/maplace/examples/polyline/) | An editable polyline with points of interest along it, popups and a list, inline JSON data | polyline | #178 |
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `locationChange` event | polygon | #64, #164 |
 | [route](../packages/maplace/examples/route/) | One route through ordered stops, passing through one (`via`), directions by leg from its steps and the distance, from the `routeChange` event | directions | #121, #147 |
-| [mixed](../packages/maplace/examples/mixed/) | 0.2's five data sets fetched by the page and swapped in live: markers, markers with a route through them, a polygon, a circle | mixed (ajax) | #43, #134, #179, #193 |
-| [styled](../packages/maplace/examples/styled/) | Google's own look: a light or dark map (`color-scheme`), Google's map options (the map-type control), a toggle opening the map again in the other scheme where it was | styled | — |
+| [mixed](../packages/maplace/examples/mixed/) | 0.2's five data sets fetched by the page and swapped in live: markers, markers with a route through them, a polygon, a circle; on MapLibre, the route's data set without its route | mixed (ajax) | #43, #134, #179, #193 |
+| [styled](../packages/maplace/examples/styled/) | Google's own look: a light or dark map (`color-scheme`), Google's map options (the map-type control), a toggle opening the map again in the other scheme where it was; on MapLibre, a toggle between OpenFreeMap's `liberty` and dark styles (`map-style`) | styled | — |
 | [big](../packages/maplace/examples/big/) | 4,000 locations with clustering | big | #3, #54, #174, #182 |
 
 What the scenarios settled:
@@ -136,7 +152,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 | popup | The bubble that opens on a location (Google's InfoWindow, MapLibre's Popup), headed by the location's title when it has one. It follows the selection (or the hover with `openOn: 'hover'`); with `openOn: 'click'`, closing it deselects. On a shape it points at a centre point: a circle's centre, the centre of a polygon's bounds, halfway along a polyline. New content refreshes an open popup where it is |
 | route | One path through your own locations, in order; each stop ends a leg unless the route passes through it (`via`), and each leg has its turn-by-turn steps |
 | filter | The groups currently shown; locations without a group hide while a filter is set, and hiding the selected location deselects it |
-| adapter | The bridge to a map provider (Google now, MapLibre next) |
+| adapter | The bridge to a map provider: Google Maps (`maplace/google`) or MapLibre (`maplace/maplibre`) |
 | list view | The UI that renders locations as a list or select and asks the store for changes |
 | capability | A feature an adapter may or may not support: route, cluster, circle, edit |
 | geometry | Where a location is: a point, a circle, a path or a polygon; what a drag or edit changes |
@@ -204,7 +220,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 |---|---|
 | Categories and filters (#15, #36, #40, #44, #85, #87, #117, #143) | `group` on a location, `setFilter(groups)` on the store; the list shows group headings |
 | Saving dragged or edited shapes (#48, #49, #64, #107, #155, #164, #178) | The store writes the new geometry back and fires `locationChange`; pages save from the event; `locationEdit` reports the geometry while the drag is under way, for a live readout |
-| Map container sizing and styles (#23, #184) | Nothing maplace draws carries inline styles; default styles (the element's layout, the list's buttons, popup content's dark text on Google's white bubble, a Google map's control panel) are adopted stylesheets with every selector in `:where()`, so pages override them, and `data-maplace-unstyled` on any ancestor turns them off inside it (as 0.2's `controls_applycss: false`), but for what maplace's own markup needs (a `<maplace-location>` hidden, the element a block and its pane filling it, an on-map panel whose list is hidden hidden too); the classes maplace's markup carries are documented to style it by ([Styling](reference/styling.md)); the element is 24rem tall unless the page sets its height, and a list beside the map goes under it on a screen narrower than 40rem, within that height (at most 40% of it, scrolling) |
+| Map container sizing and styles (#23, #184) | Nothing maplace draws carries inline styles; default styles (the element's layout, the list's buttons, popup content's dark text on Google's white bubble, a popup's heading on MapLibre's, the panel holding what goes on a Google or MapLibre map) are adopted stylesheets with every selector in `:where()`, so pages override them, and `data-maplace-unstyled` on any ancestor turns them off inside it (as 0.2's `controls_applycss: false`), but for what maplace's own markup needs (a `<maplace-location>` hidden, the element a block and its pane filling it, an on-map panel whose list is hidden hidden too); the classes maplace's markup carries are documented to style it by ([Styling](reference/styling.md)); the element is 24rem tall unless the page sets its height, and a list beside the map goes under it on a screen narrower than 40rem, within that height (at most 40% of it, scrolling) |
 | Popup width and offset (#86, #160, #198) | `popup: { maxWidth, offset }` |
 | Open on hover (#197) | `popup: { openOn: 'hover' }`; default `click` |
 | Different icon when selected (#192) | An `icon` (an image URL, a node or a function), in HTML `<maplace-location icon>` or a `<template data-icon>` child; DOM markers carry `data-selected` / `data-hovered` while in that state, for CSS; an `icon` function receives `(location, LocationState)` and re-runs only when the state changes; shapes are drawn heavier when selected or hovered (stroke width and opacity, fill opacity), wherever their style leaves those unset; their own `selectedStyle` and `hoveredStyle` (and the store's) are drawn over that |
