@@ -17,9 +17,9 @@ function buildEnv(root: string): Env {
 }
 
 /**
- * An Astro integration that warns when a build has no Maps key, since each map would say so
- * once a visitor loads it, or no map ID, since each map would run on Google's demo one and
- * warn of it. Dev usually has neither, so it stays quiet there.
+ * An Astro integration that warns when a build has no Maps key, since each Google map would say
+ * so once a visitor loads it, or no map ID, since each Google map would run on Google's demo one
+ * and warn of it. MapLibre's maps need neither. Dev usually has neither, so it stays quiet there.
  */
 export function mapsSettingsCheck(env: (root: string) => Env = buildEnv) {
   return {
@@ -30,7 +30,7 @@ export function mapsSettingsCheck(env: (root: string) => Env = buildEnv) {
         const { SITE_MAPS_KEY, SITE_MAPS_MAP_ID } = env(fileURLToPath(config.root));
         if (!SITE_MAPS_KEY) {
           logger.warn(
-            "SITE_MAPS_KEY isn't set: once a visitor loads the maps, each will say the site has no key.",
+            "SITE_MAPS_KEY isn't set: once a visitor loads the maps, each Google map will say the site has no key.",
           );
         }
         if (!SITE_MAPS_MAP_ID) {

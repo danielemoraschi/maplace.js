@@ -5,17 +5,31 @@ import { describe, expect, it } from "vitest";
 import { headCommit } from "../../../scripts/build/git.ts";
 import { ROOT } from "../../../scripts/build/package.ts";
 import { exampleData } from "../src/examples/example-data.ts";
+import type { Provider } from "../src/examples/example-providers.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
+import { exampleProviders } from "../src/examples/example-sources.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import { mayAskBeforeConsent } from "../src/site/third-parties.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { addedByBootstrap, chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
 
-/** One section per example on the home page (D23). */
-const EXAMPLE_COUNT = EXAMPLE_SECTIONS.length;
+/** One page map per example on the home page (D23) on each of its providers. */
+const PAGE_MAP_COUNT = EXAMPLE_SECTIONS.flatMap(({ name }) => exampleProviders(name)).length;
+
+/** The heights of the maps on `provider` shown in the examples' sections. */
+const shownMapHeights = (page: Page, provider: Provider) =>
+  page
+    .locator(
+      `section.example [data-live-version]:not([hidden]) maplace-map[provider="${provider}"]`,
+    )
+    .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
 
 const site = siteBuiltBeforeTests();
+
+/** simple's vanilla version on Google. */
+const SIMPLE_GOOGLE_VANILLA =
+  '[data-example="simple"][data-live-version="vanilla"][data-provider="google"]';
 
 async function openHome(page: Page): Promise<void> {
   await page.goto(site.url);
@@ -113,20 +127,28 @@ describe("the home page's links", () => {
 });
 
 describe("the home page's examples", () => {
-  it("shows every example's map, held", async () => {
+  it("shows every example's map on each of its providers, held", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url);
-    expect(await page.locator("section.example maplace-map[hold]").count()).toBe(EXAMPLE_COUNT);
+    expect(await page.locator("section.example maplace-map[hold]").count()).toBe(PAGE_MAP_COUNT);
     await context.close();
   }, 30_000);
 
   it("gives every map a box, as a map without one never comes into view to be released", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url);
-    const heights = await page
-      .locator("section.example maplace-map")
-      .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
-    expect(heights.filter((height) => height === 0)).toEqual([]);
+    const onGoogle = await shownMapHeights(page, "google");
+    // Clicked, not set: setting `checked` fires no `change`, and the switch would reveal nothing.
+    await page.evaluate(() => {
+      for (const radio of document.querySelectorAll<HTMLInputElement>(
+        'input[value="maplibre"]:not(:disabled)',
+      )) {
+        radio.click();
+      }
+    });
+    const onMapLibre = await shownMapHeights(page, "maplibre");
+    expect(onGoogle.length + onMapLibre.length).toBe(PAGE_MAP_COUNT);
+    expect([...onGoogle, ...onMapLibre].filter((height) => height === 0)).toEqual([]);
     await context.close();
   }, 30_000);
 
@@ -191,7 +213,7 @@ describe("the home page's examples", () => {
     await chooseVersion(page, "simple", "Vanilla");
     await footerToggle(page).click();
     await page.locator("#simple-vanilla-map").scrollIntoViewIfNeeded();
-    const vanilla = page.locator('[data-example="simple"][data-live-version="vanilla"]');
+    const vanilla = page.locator(SIMPLE_GOOGLE_VANILLA);
     await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
     const mapsTags = mapsJsRequests();
     expect(mapsTags.length).toBeGreaterThan(0);
@@ -205,7 +227,7 @@ describe("the home page's examples", () => {
     await placeholder(page).click();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
     await chooseVersion(page, "simple", "Vanilla");
-    const vanilla = page.locator('[data-example="simple"][data-live-version="vanilla"]');
+    const vanilla = page.locator(SIMPLE_GOOGLE_VANILLA);
     await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
     const note = page.locator("section#simple [data-map-failure]");
     expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
@@ -247,9 +269,11 @@ describe("the site's map ID", () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url, { waitUntil: "domcontentloaded" });
     const mapIds = await page
-      .locator("section.example maplace-map")
+      .locator('section.example maplace-map[provider="google"]')
       .evaluateAll((maps) => maps.map((map) => map.getAttribute("map-id")));
-    const styled = await page.locator("section#styled maplace-map").getAttribute("map-id");
+    const styled = await page
+      .locator('section#styled maplace-map[provider="google"]')
+      .getAttribute("map-id");
     expect(styled).toBe("DEMO_MAP_ID");
     expect(mapIds.filter((id) => id !== SITE_MAP_ID)).toEqual(["DEMO_MAP_ID"]);
     await context.close();

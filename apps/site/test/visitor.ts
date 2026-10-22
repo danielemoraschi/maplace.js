@@ -1,6 +1,14 @@
 import type { Browser, BrowserContext, ConsoleMessage, Locator, Page } from "playwright";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
-import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
+import { TEST_STYLE } from "../../../packages/maplace/src/maplibre/testing/test-style.ts";
+import type { Provider } from "../src/examples/example-providers.ts";
+import type { VersionKind } from "../src/examples/example-versions.ts";
+import {
+  GOOGLE_MAPS,
+  goesToMapProvider,
+  OPENFREEMAP,
+  thirdPartyOf,
+} from "../src/site/third-parties.ts";
 
 /**
  * Maps JS as far as a version waits for it: `importLibrary` there, its libraries never coming.
@@ -11,13 +19,23 @@ const STUB_MAPS_JS =
 
 /**
  * What a visitor's requests to Google Maps get: refused, as by default; Maps JS answered with a
- * stub (`STUB_MAPS_JS`), as Google never would, the rest refused; or Google itself. Requests to
- * the other map providers are refused under every answer.
+ * stub (`STUB_MAPS_JS`), as Google never would, the rest refused; or Google itself.
  */
 export type GoogleAnswer = "refused" | "stubbed" | "reached";
 
+/**
+ * What a visitor's requests to OpenFreeMap get: refused, as by default; or its styles answered
+ * from the machine with the package's test style (`TEST_STYLE`: no tiles, fonts or icons to ask
+ * for), anything else refused.
+ */
+export type OpenFreeMapAnswer = "refused" | "local";
+
+/** Where OpenFreeMap serves its styles (`…/styles/liberty`, `…/styles/dark`). */
+export const OPENFREEMAP_STYLES = `https://${OPENFREEMAP.domains[0]}/styles/`;
+
 export interface VisitorOptions {
   readonly google?: GoogleAnswer;
+  readonly openFreeMap?: OpenFreeMapAnswer;
   /**
    * The origin the visitor's browser finds the site at, answered from where the site is served:
    * a page there is what Google sees as the referrer. The served URL itself without one.
@@ -31,7 +49,7 @@ export interface VisitorOptions {
 export interface Visitor {
   readonly context: BrowserContext;
   readonly page: Page;
-  /** Every request off the site: refused, stubbed, or Google's, when Google is reached. */
+  /** Every request off the site: refused, stubbed, answered locally, or Google's when reached. */
   offsite(): readonly string[];
   /** Whether the site was asked for `path`. */
   fetched(path: string): boolean;
@@ -48,13 +66,13 @@ export interface Visitor {
 
 /**
  * A visitor of the site served at `siteUrl`: their own storage, every request off the site
- * recorded, then refused unless `google` lets it through, and every request to the site recorded
- * too.
+ * recorded, then refused unless `google` or `openFreeMap` answers it, and every request to the
+ * site recorded too.
  */
 export async function visitor(
   browser: Browser,
   siteUrl: string,
-  { google = "refused", seenAt = siteUrl, viewport }: VisitorOptions = {},
+  { google = "refused", openFreeMap = "refused", seenAt = siteUrl, viewport }: VisitorOptions = {},
 ): Promise<Visitor> {
   const context = await browser.newContext(viewport && { viewport });
   const asked: string[] = [];
@@ -72,11 +90,12 @@ export async function visitor(
       return route.fulfill({ response: await route.fetch({ url: served }) });
     }
     asked.push(requested);
-    const answer = offsiteAnswer(requested, google);
+    const answer = offsiteAnswer(requested, { google, openFreeMap });
     if (answer === "google") return route.continue();
     if (answer === "stub") {
       return route.fulfill({ contentType: "text/javascript", body: STUB_MAPS_JS });
     }
+    if (answer === "local-style") return route.fulfill(LOCAL_STYLE);
     refused.add(requested);
     return route.abort();
   });
@@ -102,10 +121,27 @@ function isMapsScript(url: string): boolean {
   return origin + pathname === MAPS_SCRIPT_ORIGIN;
 }
 
-/** What `url`, off the site, gets: Google itself, the stub, or refused, as `google` says. */
-function offsiteAnswer(url: string, google: GoogleAnswer): "google" | "stub" | "refused" {
+/**
+ * OpenFreeMap's style as the visitor gets it locally: the test style, which a map fetches across
+ * origins, so it says any origin may read it.
+ */
+const LOCAL_STYLE = {
+  contentType: "application/json",
+  headers: { "access-control-allow-origin": "*" },
+  body: JSON.stringify(TEST_STYLE),
+};
+
+/**
+ * What `url`, off the site, gets: Google itself, the stub, the local style, or refused, as the
+ * answers say.
+ */
+function offsiteAnswer(
+  url: string,
+  { google, openFreeMap }: Required<Pick<VisitorOptions, "google" | "openFreeMap">>,
+): "google" | "stub" | "local-style" | "refused" {
   if (google === "reached" && thirdPartyOf(url) === GOOGLE_MAPS) return "google";
   if (google === "stubbed" && isMapsScript(url)) return "stub";
+  if (openFreeMap === "local" && url.startsWith(OPENFREEMAP_STYLES)) return "local-style";
   return "refused";
 }
 
@@ -139,10 +175,40 @@ export const loadMapsButtons = (scope: Page | Locator) =>
 /** The page's first "Load maps" button. */
 export const placeholder = (page: Page) => loadMapsButtons(page).first();
 
-/** Runs `example`'s section's map from `version`: the switch above its frame. */
-export async function chooseVersion(page: Page, example: string, version: string): Promise<void> {
+/** Runs `example`'s section's map from `version` (its label): the switch above its frame. */
+export function chooseVersion(page: Page, example: string, version: string): Promise<void> {
+  return checkRadio(page, example, version);
+}
+
+/** Runs `example`'s section's map on `provider` (its label): the switch above its frame. */
+export function chooseProvider(page: Page, example: string, provider: string): Promise<void> {
+  return checkRadio(page, example, provider);
+}
+
+async function checkRadio(page: Page, example: string, label: string): Promise<void> {
   const section = await sectionOf(page, example);
-  await section.getByRole("radio", { name: version }).check();
+  await section.getByRole("radio", { name: label, exact: true }).check();
+}
+
+/** `kind`'s version on `provider` of the example in `section`. */
+export function providerVersionIn(
+  section: Locator,
+  provider: Provider,
+  kind: VersionKind,
+): Locator {
+  return section.locator(`[data-live-version="${kind}"][data-provider="${provider}"]`);
+}
+
+/**
+ * Takes every other example's section off the page: consent releases each map that comes near
+ * the screen, and a neighbour's (about 190px away) would load too, unchecked.
+ */
+export function leaveOnlySection(page: Page, name: string): Promise<void> {
+  return page.evaluate((own) => {
+    for (const section of document.querySelectorAll("section:has(.map-frame)")) {
+      if (section.id !== own) section.remove();
+    }
+  }, name);
 }
 
 /** Chooses `example`'s tab `name` (Map, HTML, Vanilla, React), and gives back its section. */

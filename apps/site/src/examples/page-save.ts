@@ -19,6 +19,15 @@ export function provideSave(pageGlobals: object, document: Document): void {
   });
 }
 
+/**
+ * Hides the `[data-saved]` note of the frame `version` is in: what it says was saved by the map
+ * shown before, not by `version`'s.
+ */
+export function hideSavedNote(version: Element): void {
+  const note = version.closest(".map-frame")?.querySelector<HTMLElement>("[data-saved]");
+  if (note) note.hidden = true;
+}
+
 /** `Park, 3 points`, or the id of a location without a title. */
 function savedName({ id, title, path }: SavedLocation): string {
   const name = title ?? id;

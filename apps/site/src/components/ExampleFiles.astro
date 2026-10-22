@@ -1,22 +1,19 @@
 ---
-import { foldBootstrap } from "../examples/bootstrap-fold.ts";
-import type { ExampleFile } from "../examples/example-sources.ts";
+import { filesAsShown } from "../examples/bootstrap-fold.ts";
+import type { ExampleCode } from "../examples/example-sources.ts";
 import FoldedHost from "./FoldedHost.astro";
 import SourceCode from "./SourceCode.astro";
 
 interface Props {
-  /** Its folder in `packages/maplace/examples/`. */
-  name: string;
-  /** The files of one of its versions, in the order a reader reads them. */
-  files: readonly ExampleFile[];
+  /** One version's code on one provider: its files, in the order a reader reads them. */
+  version: ExampleCode;
 }
 
-const { name, files } = Astro.props;
-const shown = files.map((file) => ({ ...file, host: foldBootstrap(name, file) }));
+const { version } = Astro.props;
 ---
 
 {
-  shown.map(({ file, code, lang, host }) => (
+  filesAsShown(version).map(({ file, code, lang, host }) => (
     <figure class="m-0 mb-4">
       {host === undefined ? (
         <SourceCode code={code} lang={lang} />
@@ -24,7 +21,7 @@ const shown = files.map((file) => ({ ...file, host: foldBootstrap(name, file) })
         <FoldedHost parts={host} lang={lang} />
       )}
       <figcaption class="mt-2 text-xs text-muted">
-        examples/{name}/{file}, as the tests run it
+        examples/{version.folder}/{file}, as the tests run it
       </figcaption>
     </figure>
   ))

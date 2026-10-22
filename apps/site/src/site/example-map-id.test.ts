@@ -32,6 +32,10 @@ describe("exampleMapId", () => {
     expect(resolved("maplace", `${ROOT}/simple/vanilla.ts`)).toBeUndefined();
   });
 
+  it("leaves a MapLibre module's maplace/maplibre alone", () => {
+    expect(resolved("maplace/maplibre", `${ROOT}/simple/maplibre/vanilla.ts`)).toBeUndefined();
+  });
+
   it("writes the site's maplace/google, its calls defaulting to SITE_MAPS_MAP_ID", () => {
     const code = loaded();
     expect(code).toContain('import { SITE_MAPS_MAP_ID } from "astro:env/client";');

@@ -2,14 +2,9 @@ import { describe, expect, it } from "vitest";
 import { liveHost } from "./live-host.ts";
 import { INERT_SCRIPT_TYPE } from "./page-scripts.ts";
 
-const BOOTSTRAP = `(g=>{/* Google's loader */})({
-    key: "YOUR_KEY",
-    v: "weekly",
-  });`;
-
 const HOST = `<!doctype html>
 <script>
-  ${BOOTSTRAP}
+  bootstrap();
 </script>
 <style>
   #m { height: 24rem; }
@@ -19,9 +14,9 @@ const HOST = `<!doctype html>
 `;
 
 describe("liveHost", () => {
-  it("is the host's style and nodes in order, its bootstrap inert with the site's key", () => {
-    expect(liveHost(HOST, { apiKey: "site-key" })).toBe(`<script type="${INERT_SCRIPT_TYPE}">
-  ${BOOTSTRAP.replace('"YOUR_KEY"', '"site-key"')}
+  it("drops the module script and doctype, keeps styles and nodes, any inline script inert", () => {
+    expect(liveHost(HOST)).toBe(`<script type="${INERT_SCRIPT_TYPE}">
+  bootstrap();
 </script>
 <style>
   #m { height: 24rem; }
@@ -30,26 +25,15 @@ describe("liveHost", () => {
 `);
   });
 
-  it("writes the key as a script's string, whatever it holds", () => {
-    expect(liveHost(HOST, { apiKey: 'a"b</script>' })).toContain('key: "a\\"b\\x3c/script>"');
-  });
-
-  it("keeps the placeholder when the site has no key: the frame says so", () => {
-    expect(liveHost(HOST, { apiKey: undefined })).toContain('key: "YOUR_KEY"');
-  });
-
   it("refuses a host without exactly one module script", () => {
     const withoutModule = HOST.replace(/<script type="module"[^\n]+\n/, "");
-    expect(() => liveHost(withoutModule, { apiKey: "k" })).toThrow(/one module script/);
-    expect(() =>
-      liveHost(`${HOST}<script type="module" src="./b.ts"></script>`, { apiKey: "k" }),
-    ).toThrow(/one module script/);
+    expect(() => liveHost(withoutModule)).toThrow(/one module script/);
+    expect(() => liveHost(`${HOST}<script type="module" src="./b.ts"></script>`)).toThrow(
+      /one module script/,
+    );
   });
 
-  it("refuses a host without the placeholder key once, or with any other script", () => {
-    expect(() => liveHost(HOST.replace("YOUR_KEY", "k"), { apiKey: "k" })).toThrow(/YOUR_KEY/);
-    expect(() => liveHost(`${HOST}<script src="/other.js"></script>`, { apiKey: "k" })).toThrow(
-      /script/,
-    );
+  it("refuses a host with any other script", () => {
+    expect(() => liveHost(`${HOST}<script src="/other.js"></script>`)).toThrow(/script/);
   });
 });

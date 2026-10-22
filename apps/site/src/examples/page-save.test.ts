@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { provideSave } from "./page-save.ts";
+import { hideSavedNote, provideSave } from "./page-save.ts";
 
 /** The page's save(), given by `provideSave` to a page with an empty, hidden note. */
 function savingPage(): (location: unknown) => void {
@@ -22,5 +22,14 @@ describe("provideSave", () => {
   it("names an untitled location by its id", () => {
     savingPage()({ id: "pin", lat: 1, lng: 2 });
     expect(document.querySelector("[data-saved]")?.textContent).toBe("Saved: pin.");
+  });
+});
+
+describe("hideSavedNote", () => {
+  it("hides the saved note of a version's frame", () => {
+    document.body.innerHTML =
+      '<div class="map-frame"><p data-saved>Saved: Park.</p><div data-live-version="html"></div></div>';
+    hideSavedNote(document.querySelector("[data-live-version]") as Element);
+    expect(document.querySelector<HTMLElement>("[data-saved]")?.hidden).toBe(true);
   });
 });

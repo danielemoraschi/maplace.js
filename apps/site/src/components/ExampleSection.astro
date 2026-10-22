@@ -1,8 +1,9 @@
 ---
 import { getEntry, render } from "astro:content";
 import { dataFetchedBy, exampleDataLinks } from "../examples/example-data-links.ts";
+import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import type { ExampleSection } from "../examples/example-sections.ts";
-import { exampleCode } from "../examples/example-sources.ts";
+import { codeTabsOf } from "../examples/example-sources.ts";
 import { REPO_FILES_ENTRY } from "../site/repo-files-loader.ts";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
@@ -12,17 +13,22 @@ interface Props extends ExampleSection {
   number: number;
 }
 
-const { number, name, title, summary, drawsOwnList } = Astro.props;
-const versions = exampleCode(name);
+const { number, name, title, summary, drawsOwnList, googleOnlyBecause } = Astro.props;
+const codeTabs = codeTabsOf(name);
 const repoFiles = await getEntry("repoFiles", REPO_FILES_ENTRY);
 if (repoFiles === undefined) throw new Error("the repoFiles collection has no entry");
-const fetched = dataFetchedBy(versions.flatMap(({ files }) => files.map(({ code }) => code)));
+const fetched = dataFetchedBy(
+  codeTabs
+    .flatMap(({ codes }) => codes)
+    .flatMap(({ files }) => files)
+    .map(({ code }) => code),
+);
 const dataLinks = exampleDataLinks(fetched, repoFiles.data.blobBase);
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;
 const tabs = [
   { tab: "map", label: "Map" },
-  ...versions.map(({ kind, label }) => ({ tab: kind, label })),
+  ...codeTabs.map(({ kind, label }) => ({ tab: kind, label })),
 ];
 // `example-` keeps the site's ids apart from the pages' own (`route-map`).
 const panel = (tab: string) => `example-${name}-${tab}`;
@@ -82,13 +88,21 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     }
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <VersionSwitch name={name} />
+    <VersionSwitch name={name} googleOnlyBecause={googleOnlyBecause} />
     <MapFrame name={name} drawsOwnList={drawsOwnList} />
   </div>
   {
-    versions.map(({ kind, files }) => (
+    codeTabs.map(({ kind, codes }) => (
       <div role="tabpanel" id={panel(kind)} aria-labelledby={`${panel(kind)}-tab`} hidden>
-        <ExampleFiles name={name} files={files} />
+        {codes.map((code) => (
+          <div
+            data-provider-files={code.provider}
+            data-example={name}
+            hidden={code.provider !== FIRST_PROVIDER}
+          >
+            <ExampleFiles version={code} />
+          </div>
+        ))}
       </div>
     ))
   }

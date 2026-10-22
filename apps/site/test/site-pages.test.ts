@@ -232,7 +232,8 @@ describe("what the site sends where", () => {
     const { page, offsite, mapsJsRequests, context } = visit;
     await grantConsent(visit);
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
-    for (const map of await page.locator("section.example maplace-map").all()) {
+    const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
+    for (const map of await shownMaps.all()) {
       await map.scrollIntoViewIfNeeded();
     }
     await pause(SETTLE_MS);

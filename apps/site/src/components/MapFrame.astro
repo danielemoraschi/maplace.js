@@ -1,7 +1,12 @@
 ---
 import { SITE_MAPS_MAP_ID } from "astro:env/client";
 import { SITE_MAPS_KEY } from "astro:env/server";
-import { callsSave, liveVersions } from "../examples/live-versions.ts";
+import {
+  callsSave,
+  type LiveVersionMarkup,
+  liveVersions,
+  shownFirst,
+} from "../examples/live-versions.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
 
 interface Props {
@@ -14,24 +19,28 @@ interface Props {
 const { name, drawsOwnList } = Astro.props;
 const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
 const versions = liveVersions(name, settings);
+/** Whether `version` runs on Google, which the site has no key for. */
+const keyMissing = ({ provider }: LiveVersionMarkup) =>
+  provider === "google" && settings.apiKey === undefined;
 const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-1 text-sm";
 ---
 
 <div
   class="map-frame relative"
-  data-maps-key-missing={settings.apiKey === undefined ? "" : undefined}
   data-own-list={drawsOwnList ? "" : undefined}
 >
   {
-    versions.map(({ kind, markup }) => (
+    versions.map((version) => (
       <div
         class="version min-h-map"
-        data-live-version={kind}
+        data-live-version={version.kind}
+        data-provider={version.provider}
+        data-maps-key-missing={keyMissing(version) ? "" : undefined}
         data-example={name}
-        data-live-page={kind === "html" ? "" : undefined}
-        hidden={kind !== "html"}
+        data-live-page={version.kind === "html" ? "" : undefined}
+        hidden={!shownFirst(version)}
       >
-        <Fragment set:html={markup} />
+        <Fragment set:html={version.markup} />
       </div>
     ))
   }
