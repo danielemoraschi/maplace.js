@@ -1,12 +1,17 @@
 import type { Marker } from "maplibre-gl";
+import { editReportsFor } from "../adapter-kit/edit-reports";
 import { reportElementHover } from "../adapter-kit/hover-reports";
 import type { Drawable } from "../drawable";
-import type { LatLng } from "../geometry";
-import { lngLatOf } from "./conversions";
+import type { LatLng, MarkerGeometry } from "../geometry";
+import { lngLatOf, wrappedLatLng } from "./conversions";
 import { selectLocation } from "./map-clicks";
+import { PIN_SIZE, pinImageUrl } from "./pin-image";
 import type { PlacingSite } from "./placed-location";
 
-/** A marker showing the page's icon, in the DOM: maplace's element around the icon. */
+/**
+ * A marker in the DOM: maplace's element around the page's icon, or around the pin while the
+ * marker can be dragged.
+ */
 export interface DomMarker {
   readonly marker: Marker;
   /** Shows `icon` as the only child; an icon already there stays, so its CSS transition runs. */
@@ -15,6 +20,7 @@ export interface DomMarker {
   retitle(title: string | undefined): void;
   restack(rank: number): void;
   setVisible(visible: boolean): void;
+  setDraggable(draggable: boolean): void;
   /** How tall it is drawn, for a popup pointing at its top. */
   height(): number;
   remove(): void;
@@ -23,36 +29,73 @@ export interface DomMarker {
 /** maplace's own DOM markers' elements: a page's own markers on its map carry MapLibre's class too. */
 const ownMarkers = new WeakSet<Element>();
 
+/** Counts `element`, a marker's MapLibre moves, as maplace's own: it reports its own hover. */
+export function markAsOwnMarker(element: HTMLElement): void {
+  ownMarkers.add(element);
+}
+
 /** Whether `target` is in one of maplace's DOM markers, which reports its own hover. */
 export function isInOwnMarker(target: EventTarget | null): boolean {
   const marker = target instanceof Element ? target.closest(".maplibregl-marker") : null;
   return marker !== null && ownMarkers.has(marker);
 }
 
-/** Keys that press a focused marker, as a button. */
+/** Keys that press a focused marker or cluster, as a button. */
 const PRESSING_KEYS = new Set(["Enter", " "]);
 
 /**
- * A DOM marker at the drawable's point, its bottom middle there as Google's pin's tip: focusable,
- * named by its title, pressed by a click or a key, stacked by `rank`, reporting its input while
- * the map is live. Its click is its own: the map never sees it.
+ * maplace's element for something on the map a user presses, as a button: reached with Tab,
+ * stacked by `rank`, pressed by a click, Enter or Space. Its click is its own: the map never sees it.
+ */
+export function pressableElement(
+  document: Document,
+  rank: number,
+  press: (event: Event) => void,
+): HTMLElement {
+  const element = document.createElement("div");
+  element.tabIndex = 0;
+  element.setAttribute("role", "button");
+  element.style.zIndex = String(rank);
+  element.addEventListener("click", (event) => {
+    event.stopPropagation();
+    press(event);
+  });
+  element.addEventListener("keydown", (event) => {
+    if (!PRESSING_KEYS.has(event.key)) return;
+    event.preventDefault();
+    press(event);
+  });
+  return element;
+}
+
+/** How a DOM marker is drawn: where it stacks, what it shows, and whether a user can drag it. */
+export interface DomMarkerLook {
+  readonly rank: number;
+  readonly icon: Node;
+  readonly draggable: boolean;
+}
+
+/**
+ * A DOM marker at the drawable's point, its bottom middle there as Google's pin's tip: a pressable
+ * element named by its title, selecting the location when pressed, dragged while `draggable`,
+ * reporting its input while the map is live.
  */
 export function createDomMarker(
   drawable: Drawable,
   at: LatLng,
   site: PlacingSite,
-  { rank, icon }: { readonly rank: number; readonly icon: Node },
+  { rank, icon, draggable }: DomMarkerLook,
 ): DomMarker {
-  const { map, maplibre } = site.mounted;
-  const element = map.getContainer().ownerDocument.createElement("div");
-  ownMarkers.add(element);
-  element.tabIndex = 0;
-  element.setAttribute("role", "button");
-  element.style.zIndex = String(rank);
+  const { mounted } = site;
+  const { map, maplibre } = mounted;
+  const select = () => selectLocation(mounted, drawable.id);
+  const element = pressableElement(map.getContainer().ownerDocument, rank, select);
+  markAsOwnMarker(element);
   element.append(icon);
   setTitle(element, drawable.title);
-  reportInput(element, drawable.id, site);
-  const marker = new maplibre.Marker({ element, anchor: "bottom" }).setLngLat(lngLatOf(at));
+  const marker = new maplibre.Marker({ element, anchor: "bottom", draggable });
+  marker.setLngLat(lngLatOf(at));
+  reportInput(element, marker, drawable.id, site);
   let shown = false;
 
   function setVisible(visible: boolean): void {
@@ -74,6 +117,7 @@ export function createDomMarker(
       element.style.zIndex = String(next);
     },
     setVisible,
+    setDraggable: (next) => marker.setDraggable(next),
     height: () => element.offsetHeight,
     remove: () => setVisible(false),
   };
@@ -85,19 +129,32 @@ function setTitle(element: HTMLElement, title: string | undefined): void {
 }
 
 /**
- * A press selects it; the pointer over it, or keyboard focus shown on it, hovers it. Its click
- * stops here, so the map doesn't take it for a click on the map.
+ * The pointer over it, or keyboard focus shown on it, hovers it. MapLibre fires `drag` as a user
+ * drags it and `dragend` once, on release, so a drag reports its edits as it goes and its change
+ * once; while dragged, the element lets the pointer through, so the release's click lands on
+ * neither it nor the map's canvas, selecting nothing and clicking nothing on the map.
  */
-function reportInput(element: HTMLElement, id: string, site: PlacingSite): void {
-  const { hover, mounted } = site;
-  element.addEventListener("click", (event) => {
-    event.stopPropagation();
-    selectLocation(mounted, id);
-  });
-  element.addEventListener("keydown", (event) => {
-    if (!PRESSING_KEYS.has(event.key)) return;
-    event.preventDefault();
-    selectLocation(mounted, id);
-  });
-  reportElementHover(element, id, hover);
+function reportInput(element: HTMLElement, marker: Marker, id: string, site: PlacingSite): void {
+  const edits = editReportsFor(id, site.mounted.live);
+  marker.on("drag", () => edits.moving(markerGeometryOf(marker)));
+  marker.on("dragend", () => edits.ended(markerGeometryOf(marker)));
+  reportElementHover(element, id, site.hover);
+}
+
+function markerGeometryOf(marker: Marker): MarkerGeometry {
+  return { type: "marker", ...wrappedLatLng(marker.getLngLat()) };
+}
+
+/**
+ * The default pin as an image, sized as the layer draws it, its tip at the bottom middle: a block,
+ * so it sits on its point rather than on a line of text above it.
+ */
+export function createPinIcon(document: Document): HTMLElement {
+  const image = document.createElement("img");
+  image.src = pinImageUrl(document);
+  image.alt = "";
+  image.width = PIN_SIZE.width;
+  image.height = PIN_SIZE.height;
+  image.style.display = "block";
+  return image;
 }

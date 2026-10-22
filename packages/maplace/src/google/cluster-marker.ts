@@ -1,5 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Cluster, Renderer } from "@googlemaps/markerclusterer";
+import { clusterLabel, countBadge } from "../adapter-kit/cluster-badge";
 import { CLUSTER_RANK } from "../adapter-kit/stacking";
 import type { GoogleLibraries } from "./libraries";
 
@@ -14,11 +15,11 @@ export function clusterRenderer({ marker }: GoogleLibraries): Renderer {
     render(cluster, _stats, map) {
       const shown = new marker.AdvancedMarkerElement({
         position: cluster.position,
-        title: `Cluster of ${cluster.count} locations`,
+        title: clusterLabel(cluster.count),
         gmpClickable: true,
         zIndex: CLUSTER_RANK,
       });
-      shown.append(countBadge(cluster.count));
+      shown.append(countBadge(document, cluster.count));
       shown.addEventListener("gmp-click", () => zoomInto(cluster, map));
       return shown;
     },
@@ -28,23 +29,4 @@ export function clusterRenderer({ marker }: GoogleLibraries): Renderer {
 function zoomInto(cluster: Cluster, map: google.maps.Map): void {
   const { bounds } = cluster;
   if (bounds) map.fitBounds(bounds);
-}
-
-/** The number of locations, in a round badge. */
-function countBadge(count: number): HTMLElement {
-  const badge = document.createElement("div");
-  badge.textContent = String(count);
-  Object.assign(badge.style, {
-    minWidth: "32px",
-    height: "32px",
-    padding: "0 6px",
-    boxSizing: "border-box",
-    borderRadius: "16px",
-    border: "2px solid #fff",
-    background: "#1a73e8",
-    color: "#fff",
-    font: "600 13px/28px system-ui, sans-serif",
-    textAlign: "center",
-  });
-  return badge;
 }

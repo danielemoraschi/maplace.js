@@ -1,5 +1,5 @@
 import type { MapGeoJSONFeature, PointLike } from "maplibre-gl";
-import { LOCATION_LAYERS } from "./layers";
+import { LOCATION_LAYERS, PIN_SOURCE } from "./layers";
 import type { MapLibreState } from "./map-state";
 import type { PlacedLocation } from "./placed-location";
 
@@ -7,8 +7,8 @@ import type { PlacedLocation } from "./placed-location";
  * The location drawn in maplace's layers at `point`, as a user pointing there means it: of the
  * locations hit and shown now, a marker before any shape, then the one stacked in front by
  * maplace's own order (a small polygon's fill over a big one's outline, though MapLibre draws
- * every outline above every fill). A location hidden or removed since MapLibre last drew is
- * skipped: its feature may still be on screen for a frame.
+ * every outline above every fill). A location hidden, removed or folded into a cluster since
+ * MapLibre last drew is skipped: its feature may still be on screen for a frame.
  */
 export function locationAt(state: MapLibreState, point: PointLike): string | undefined {
   const map = state.mounted?.map;
@@ -23,8 +23,14 @@ export function locationAt(state: MapLibreState, point: PointLike): string | und
 function shownPlaced(state: MapLibreState, feature: MapGeoJSONFeature): PlacedLocation[] {
   const id = feature.properties.id;
   if (typeof id !== "string" || state.presented.hiddenIds.has(id)) return [];
+  if (isPinTakenOff(state, feature, id)) return [];
   const placed = state.placed.get(id);
   return placed === undefined ? [] : [placed];
+}
+
+/** A pin MapLibre still draws though maplace took it off since: folded, or drawn in the DOM. */
+function isPinTakenOff(state: MapLibreState, { source }: MapGeoJSONFeature, id: string): boolean {
+  return source === PIN_SOURCE && state.features?.pins.featureOf(id) === undefined;
 }
 
 function frontFirst(a: PlacedLocation, b: PlacedLocation): number {

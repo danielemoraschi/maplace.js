@@ -12,6 +12,7 @@ export function createPresenting(state: MapLibreState): (next: PresentationState
     const previous = state.presented;
     state.presented = next;
     for (const id of lookChanges(previous, next)) state.placed.get(id)?.present(lookIn(next, id));
+    state.mounted?.clustering.flush();
     if (state.features) void flushAll(state.features);
   };
 }

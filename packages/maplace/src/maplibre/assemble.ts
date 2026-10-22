@@ -1,6 +1,7 @@
 import type { MapMouseEvent } from "maplibre-gl";
 import type { Adapter, Capability } from "../adapter";
 import { createCamera } from "./camera";
+import { clusterRegrouping } from "./cluster-regrouping";
 import { createControls } from "./controls";
 import { createDrawing } from "./drawing";
 import { layerHover } from "./layer-hover";
@@ -18,10 +19,9 @@ import { viewportReports } from "./viewport-reports";
 
 /**
  * What the adapter draws beyond the contract's core. A capability is declared only once the
- * adapter draws it: circles and editing come with M2, clustering with M3; routes never, MapLibre
- * has no routing.
+ * adapter draws it: circles and editing come with M2; routes never, MapLibre has no routing.
  */
-const CAPABILITIES: readonly Capability[] = [];
+const CAPABILITIES: readonly Capability[] = ["cluster"];
 
 /**
  * One MapLibre adapter from its parts, drawing into `state`, which its test probe reads too. The
@@ -41,6 +41,7 @@ export function assembleMapLibreAdapter(
   const pointedAt = (event: MapMouseEvent) => locationAt(state, event.point);
   const parts = [
     drawing.part,
+    clusterRegrouping(state),
     markerStacking,
     mapClicks(pointedAt),
     layerHover(pointedAt, drawing.hover),

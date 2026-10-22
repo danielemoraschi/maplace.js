@@ -1,5 +1,6 @@
 import type { Adapter } from "../adapter";
 import type { MaplaceError } from "../errors";
+import { loadClustering } from "./clustering";
 import { loadMapLibre } from "./library";
 import { routeMapErrors } from "./map-errors";
 import type { MapSource } from "./map-source";
@@ -18,7 +19,7 @@ export interface MapLifecycleSetup {
 
 /**
  * The map's life, from mount to destroy:
- * 1. maplibre-gl loads;
+ * 1. maplibre-gl loads, and the clustering when the store clusters;
  * 2. the map opens in the container, unless the load was cancelled or the adapter destroyed
  *    meanwhile;
  * 3. the mount waits for its style, whose failure fails it, its errors routed from now on;
@@ -35,9 +36,13 @@ export function createMapLifecycle({
 
   return {
     async mount(context) {
-      const maplibre = await loadMapLibre();
+      const [maplibre, clustering] = await Promise.all([
+        loadMapLibre(),
+        loadClustering(context.cluster),
+      ]);
       if (destroyed || context.signal.aborted) return;
-      open = mountMap({ inUse: source.open(context.container, maplibre), maplibre, context });
+      const inUse = source.open(context.container, maplibre);
+      open = mountMap({ inUse, maplibre, context, clustering });
       const { mounted } = open;
       let loaded = false;
       const styleFailure = routeErrors(mounted, () => loaded);

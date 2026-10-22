@@ -14,7 +14,8 @@ const IN_DOM = 2 ** 31;
 
 /**
  * A marker as a user reaches it: a DOM marker by its element, a pin by the canvas where it is
- * drawn. It reads what MapLibre has (the marker's element and point, the pin's feature as its
+ * drawn; a draggable one dragged as MapLibre's `Marker` reports a user's drag, as Google's probe
+ * drags. It reads what MapLibre has (the marker's element and point, the pin's feature as its
  * source was sent it), so a pin left after destroy shows.
  */
 export function markerTarget(
@@ -70,6 +71,13 @@ export function markerTarget(
       const target = element();
       if (target) target.dispatchEvent(new PointerEvent("pointerleave"));
       else leaveCanvas(map);
+    },
+    drag(geometry) {
+      const marker = dom();
+      if (marker === undefined || !marker.isDraggable() || geometry.type !== "marker") return;
+      marker.setLngLat([geometry.lng, geometry.lat]);
+      marker.fire("drag");
+      marker.fire("dragend");
     },
   };
 }

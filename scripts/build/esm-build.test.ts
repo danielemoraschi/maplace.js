@@ -1,5 +1,5 @@
 import { globSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { buildSync } from "esbuild";
 import { describe, expect, it } from "vitest";
 import { importsOf, packageName } from "../checks/imports.ts";
@@ -7,6 +7,7 @@ import { ROOT } from "./package.ts";
 import { stagedBeforeTests } from "./staged-test-package.ts";
 
 const CLUSTERER = "@googlemaps/markerclusterer";
+const SUPERCLUSTER = "supercluster";
 const REACT = ["react", "react-dom"];
 
 const { consumerDir, packageDir, manifest: stagedManifest } = stagedBeforeTests("esm");
@@ -15,6 +16,13 @@ const { consumerDir, packageDir, manifest: stagedManifest } = stagedBeforeTests(
 function scripts(dir: string): Map<string, string> {
   const files = globSync("**/*.js", { cwd: dir });
   return new Map(files.map((file) => [file, readFileSync(join(dir, file), "utf8")]));
+}
+
+/** The modules `text` imports on demand, with `import()`. */
+function dynamicImportsOf(text: string): string[] {
+  return [...text.matchAll(/\bimport\(\s*["']([^"']+)["']\s*\)/g)].flatMap(
+    ([, path]) => path ?? [],
+  );
 }
 
 function bareImportsOf(text: string): string[] {
@@ -67,9 +75,11 @@ describe("the npm ESM build", () => {
     ).toHaveLength(1);
   });
 
-  it("bundles no dependency: it imports the clusterer, React and maplibre-gl by name", () => {
+  it("bundles no dependency: it imports the clusterers, React and maplibre-gl by name", () => {
     const bare = [...scripts(join(packageDir, "dist")).values()].flatMap(bareImportsOf);
-    expect(new Set(bare.map(packageName))).toEqual(new Set([CLUSTERER, ...REACT, "maplibre-gl"]));
+    expect(new Set(bare.map(packageName))).toEqual(
+      new Set([CLUSTERER, SUPERCLUSTER, ...REACT, "maplibre-gl"]),
+    );
   });
 
   it("leaves React to the React entry alone, so no other entry needs it", () => {
@@ -84,6 +94,20 @@ describe("the npm ESM build", () => {
       bareImportsOf(text).some((path) => packageName(path) === "maplibre-gl"),
     );
     expect(usingMapLibre.map(([file]) => file)).toEqual(["maplibre/index.js"]);
+  });
+
+  it("loads supercluster only with MapLibre's clustering, on demand", () => {
+    const built = [...scripts(join(packageDir, "dist"))];
+    const clustering = built.filter(([, text]) => bareImportsOf(text).includes(SUPERCLUSTER));
+    expect(clustering.map(([file]) => file)).toHaveLength(1);
+    const [[chunk]] = clustering as [[string, string]];
+    // Each import of the chunk, by the file making it: every one with `import()`, by the entry.
+    const importsOfChunk = (imports: (text: string) => string[]) =>
+      built.flatMap(([file, text]) =>
+        imports(text).flatMap((path) => (join(dirname(file), path) === chunk ? [file] : [])),
+      );
+    expect(importsOfChunk(dynamicImportsOf)).toEqual(["maplibre/index.js"]);
+    expect(importsOfChunk(importsOf)).toEqual(["maplibre/index.js"]);
   });
 
   it('opens the React entry, and only it, with "use client", for server components', () => {
