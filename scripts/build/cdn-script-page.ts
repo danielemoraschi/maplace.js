@@ -31,12 +31,12 @@ export interface CdnScriptPage {
   close(): Promise<void>;
 }
 
-/** Makes each `Worker` the page creates leave a record in `window.recordedWorkers`. */
+/** Makes each `Worker` the page creates leave a record in `globalThis.recordedWorkers`. */
 function recordWorkers(): void {
-  const NativeWorker = window.Worker;
+  const NativeWorker = globalThis.Worker;
   const records: object[] = [];
-  Object.assign(window, { recordedWorkers: records });
-  window.Worker = class extends NativeWorker {
+  Object.assign(globalThis, { recordedWorkers: records });
+  globalThis.Worker = class extends NativeWorker {
     constructor(url: string | URL, options?: WorkerOptions) {
       super(url, options);
       const record = {
@@ -74,7 +74,7 @@ export async function openCdnScriptPage(
     page,
     workers: () =>
       page.evaluate(
-        () => (window as unknown as { recordedWorkers: RecordedWorker[] }).recordedWorkers,
+        () => (globalThis as unknown as { recordedWorkers: RecordedWorker[] }).recordedWorkers,
       ),
     offsite: () => offsite,
     logged: () => logged,
