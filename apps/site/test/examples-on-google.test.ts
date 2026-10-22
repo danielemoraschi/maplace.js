@@ -12,7 +12,7 @@ import {
   versionIn,
 } from "./drawn-on-google.ts";
 import { ON_GOOGLE, SECTION_MS, siteOnGoogleBeforeTests } from "./google-session.ts";
-import { addedByBootstrap, chooseVersion, sectionOf } from "./visitor.ts";
+import { addedByBootstrap, chooseVersion, loadMapsButtons, sectionOf } from "./visitor.ts";
 
 /** A version as the section's switch offers it. */
 type VersionChoice = (typeof VERSION_LABELS)[number];
@@ -75,7 +75,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
         }
 
         await chooseVersion(page, name, loader.label);
-        await section.getByRole("button", { name: "Load Google Maps" }).click();
+        await loadMapsButtons(section).click();
         for (const version of order) {
           await chooseVersion(page, name, version.label);
           await drawnOnGoogle(version);

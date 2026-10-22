@@ -15,9 +15,14 @@ import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
-import { GOOGLE_MAPS, THIRD_PARTIES, thirdPartyOf } from "../src/site/third-parties.ts";
+import {
+  MAP_PROVIDERS,
+  MAP_PROVIDERS_SECTION,
+  THIRD_PARTIES,
+  thirdPartyOf,
+} from "../src/site/third-parties.ts";
 import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
-import { firstMap, placeholder, type Visitor } from "./visitor.ts";
+import { firstMap, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
 
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
@@ -155,15 +160,27 @@ describe("the privacy page", () => {
     expect(await contact.allTextContents()).toEqual([PRIVACY_CONTACT_EMAIL]);
     await context.close();
   }, 30_000);
+
+  it("explains the one consent the maps wait for: its button, and a link to each provider's section", async () => {
+    const { page, context } = await openPage(PRIVACY_PAGE.route);
+    const section = page.locator(`section[aria-labelledby="${MAP_PROVIDERS_SECTION}"]`);
+    expect(await section.textContent()).toContain("“Load maps”");
+    for (const { id, name } of MAP_PROVIDERS) {
+      expect(await section.locator(`a[href="#${id}"]`).allTextContents()).toEqual([name]);
+    }
+    await context.close();
+  }, 30_000);
 });
 
 describe("the consent placeholder", () => {
-  it("links each map's placeholder to what loading it sends to Google", async () => {
+  it("links each map's placeholder to the privacy page's section on the maps, naming every provider", async () => {
     const { page, context } = await openPage("/");
-    const placeholders = await page.getByRole("button", { name: "Load Google Maps" }).count();
-    const href = `${PRIVACY_PAGE.route}#${GOOGLE_MAPS.id}`;
+    const placeholders = await loadMapsButtons(page).count();
+    const href = `${PRIVACY_PAGE.route}#${MAP_PROVIDERS_SECTION}`;
     expect(placeholders).toBeGreaterThan(0);
     expect(await page.locator(`a[href="${href}"]`).count()).toBe(placeholders);
+    const copy = await placeholder(page).locator("..").textContent();
+    for (const { name } of MAP_PROVIDERS) expect(copy).toContain(name);
     await context.close();
   }, 30_000);
 });
@@ -210,7 +227,7 @@ describe("what the site sends where", () => {
     await visit.context.close();
   }, 60_000);
 
-  it("once Google Maps is on, every request its pages make off the site goes to a third party the privacy page names", async () => {
+  it("once the maps are on, every request its pages make off the site goes to a third party the privacy page names", async () => {
     const visit = await site.visitor();
     const { page, offsite, mapsJsRequests, context } = visit;
     await grantConsent(visit);

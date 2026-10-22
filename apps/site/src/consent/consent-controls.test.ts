@@ -7,7 +7,7 @@ import { createConsentStore } from "./consent-store.ts";
 function page({ granted = false, headRan = true } = {}) {
   document.documentElement.dataset.maps = granted && headRan ? "on" : "off";
   document.body.innerHTML = `
-    <button data-maps-grant>Load Google Maps</button>
+    <button data-maps-grant>Load maps</button>
     <footer><button data-maps-toggle></button></footer>`;
   const store = createConsentStore(() => localStorage);
   if (granted) store.grant();

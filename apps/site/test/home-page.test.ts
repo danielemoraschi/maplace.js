@@ -7,7 +7,7 @@ import { ROOT } from "../../../scripts/build/package.ts";
 import { exampleData } from "../src/examples/example-data.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { thirdPartyOf } from "../src/site/third-parties.ts";
+import { mayAskBeforeConsent } from "../src/site/third-parties.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { addedByBootstrap, chooseTab, chooseVersion, firstMap, placeholder } from "./visitor.ts";
@@ -26,17 +26,17 @@ const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
 const consentKept = (context: BrowserContext) =>
   context.storageState().then(({ origins }) => origins.flatMap(({ localStorage }) => localStorage));
 
-describe("the site's consent to Google Maps", () => {
-  it("asks Google nothing until the visitor loads the maps, then for Maps JS", async () => {
-    const { page, context, offsite, google, fetched, mapsJsRequests } = await site.visitor();
+describe("the site's consent to its maps", () => {
+  it("asks no map provider anything until the visitor loads the maps, then Google for Maps JS", async () => {
+    const { page, context, offsite, mapProviders, fetched, mapsJsRequests } = await site.visitor();
     await openHome(page);
     // A version chosen before consent waits too, as the pages' own scripts wait for their maps:
     // big's 4,000 points aren't fetched by its page or its React version.
     await chooseVersion(page, "route", "Vanilla");
     await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
-    expect(google()).toEqual([]);
-    expect(offsite().filter((url) => !thirdPartyOf(url)?.askedBeforeConsent)).toEqual([]);
+    expect(mapProviders()).toEqual([]);
+    expect(offsite().filter((url) => !mayAskBeforeConsent(url))).toEqual([]);
     expect(fetched("/points-4k.json")).toBe(false);
     await expect.poll(() => placeholder(page).isVisible()).toBe(true);
     await placeholder(page).click();
@@ -46,28 +46,28 @@ describe("the site's consent to Google Maps", () => {
   }, 30_000);
 
   it("remembers consent: the next visit loads the maps with no placeholder shown", async () => {
-    const { page, context, google } = await site.visitor();
+    const { page, context, mapProviders } = await site.visitor();
     await openHome(page);
     await placeholder(page).click();
     const next = await context.newPage();
     await next.goto(site.url, { waitUntil: "domcontentloaded" });
     expect(await placeholder(next).isVisible()).toBe(false);
-    const before = google().length;
+    const before = mapProviders().length;
     await firstMap(next).scrollIntoViewIfNeeded();
-    await expect.poll(() => google().length, ASKED).toBeGreaterThan(before);
+    await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(before);
     await context.close();
   }, 30_000);
 
   it("forgets consent from the footer: the page reloads with the maps off", async () => {
-    const { page, context, google } = await site.visitor();
+    const { page, context, mapProviders } = await site.visitor();
     await openHome(page);
     await placeholder(page).click();
-    await expect.poll(() => google().length, ASKED).toBeGreaterThan(0);
-    const asked = google().length;
+    await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
+    const asked = mapProviders().length;
     await Promise.all([page.waitForEvent("load"), footerToggle(page).click()]);
     await firstMap(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(SETTLE_MS);
-    expect(google()).toHaveLength(asked);
+    expect(mapProviders()).toHaveLength(asked);
     expect(await placeholder(page).isVisible()).toBe(true);
     expect(await consentKept(context)).toEqual([]);
     await context.close();

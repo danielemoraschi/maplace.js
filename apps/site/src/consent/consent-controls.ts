@@ -10,7 +10,7 @@ export interface ConsentControls {
 }
 
 /**
- * The site's consent to Google Maps, on the page: every placeholder's "Load Google Maps" and the
+ * The site's one consent to its maps, on the page: every placeholder's "Load maps" and the
  * footer's toggle. `<html data-maps>` says which, `on` or `off`, for the styles: the page's head
  * sets it from the kept consent before first paint, and this sets it again whenever the maps open,
  * so they never load under their placeholders. Turning maps off reloads the page.

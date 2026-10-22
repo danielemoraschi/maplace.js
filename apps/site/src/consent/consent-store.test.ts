@@ -24,6 +24,11 @@ describe("createConsentStore", () => {
     expect(createConsentStore(() => localStorage).isGranted()).toBe(false);
   });
 
+  it("keeps consent under maplace-site:maps, the key the privacy page names", () => {
+    createConsentStore(() => localStorage).grant();
+    expect(localStorage.getItem("maplace-site:maps")).toBe("granted");
+  });
+
   it("keeps consent for the page when the browser keeps no site data", () => {
     const store = createConsentStore(blocked);
     expect(store.isGranted()).toBe(false);

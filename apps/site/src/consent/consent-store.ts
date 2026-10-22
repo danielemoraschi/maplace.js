@@ -1,10 +1,10 @@
-/** Where the visitor's consent to Google Maps is kept, for the whole site. */
-export const CONSENT_KEY = "maplace-site:google-maps";
+/** Where the visitor's consent to the maps (Google Maps and OpenFreeMap) is kept, site-wide. */
+export const CONSENT_KEY = "maplace-site:maps";
 
 /** The kept value meaning consent. */
 export const CONSENT_GRANTED = "granted";
 
-/** The visitor's consent to load Google Maps, site-wide (D12). */
+/** The visitor's consent to load the site's maps, site-wide (D12). */
 export interface ConsentStore {
   isGranted(): boolean;
   grant(): void;

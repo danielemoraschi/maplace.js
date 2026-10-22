@@ -8,7 +8,7 @@ import {
   SITE_HOST,
   SITE_MAINTAINER,
 } from "../site/site-owner.ts";
-import { GITHUB, GOOGLE_MAPS } from "../site/third-parties.ts";
+import { GITHUB, GOOGLE_MAPS, MAP_PROVIDERS_SECTION, OPENFREEMAP } from "../site/third-parties.ts";
 
 const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
 ---
@@ -22,29 +22,40 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby="in-your-browser">
     <h2 id="in-your-browser">In your browser</h2>
     <p>
-      This site's pages set no cookies of their own. Once you choose to load Google Maps, the
-      site keeps one entry in your browser's local storage, <code>{CONSENT_KEY}</code> set to
+      This site's pages set no cookies of their own. Once you choose to load the maps, the site
+      keeps one entry in your browser's local storage, <code>{CONSENT_KEY}</code> set to
       <code>{CONSENT_GRANTED}</code>, so later visits show the maps without asking again. Turning
-      Google Maps off removes it. If your browser keeps no site data, your choice lasts for the
-      page you made it on.
+      the maps off removes it. If your browser keeps no site data, your choice lasts for the page
+      you made it on.
+    </p>
+  </section>
+
+  <section aria-labelledby={MAP_PROVIDERS_SECTION}>
+    <h2 id={MAP_PROVIDERS_SECTION}>The maps</h2>
+    <p>
+      The maps on this site come from two services:
+      <a href={`#${GOOGLE_MAPS.id}`}>{GOOGLE_MAPS.name}</a> draws the examples you run on Google,
+      and <a href={`#${OPENFREEMAP.id}`}>{OPENFREEMAP.name}</a> the map under the examples you run
+      on MapLibre. Every map waits behind a placeholder, and nothing is asked of either until you
+      choose “Load maps” on one of them or turn the maps on in the footer. That one choice covers
+      both: from then on, each map loads as it scrolls into view, on this visit and later ones,
+      until you turn the maps off. Pages without a map load neither.
+    </p>
+    <p>
+      The maps switch in the footer of every page turns them off: it forgets your choice and
+      reloads the page, since a loaded map can't be removed from an open page.
     </p>
   </section>
 
   <section aria-labelledby={GOOGLE_MAPS.id}>
     <h2 id={GOOGLE_MAPS.id}>{GOOGLE_MAPS.name}</h2>
     <p>
-      Every map on this site waits behind a placeholder, and nothing is asked of Google until you
-      choose “Load Google Maps” on one of them or turn Google Maps on in the footer. From then on,
-      each map loads as it scrolls into view, on this visit and later ones, until you turn Google
-      Maps off. Pages without a map never load Google Maps.
-    </p>
-    <p>
-      Once a map loads, your browser fetches Google's Maps JavaScript API, then the map's tiles,
-      images and fonts as you look around. With each request Google receives your IP address,
-      what your browser says about itself (its user agent), the address of the page the map is
-      on, and which part of the map you're viewing. The examples with a route also ask Google's
-      Routes service for directions between their own stops. The site never asks for your
-      location.
+      Once a map on Google loads, your browser fetches Google's Maps JavaScript API, then the
+      map's tiles, images and fonts as you look around. With each request Google receives your IP
+      address, what your browser says about itself (its user agent), the address of the page the
+      map is on, and which part of the map you're viewing. The examples with a route also ask
+      Google's Routes service for directions between their own stops. The site never asks for
+      your location.
     </p>
     <p>
       Google may use its own cookies under its terms, and its Privacy Policy says what it does
@@ -53,10 +64,22 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     <ul>
       {GOOGLE_MAPS.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
     </ul>
+  </section>
+
+  <section aria-labelledby={OPENFREEMAP.id}>
+    <h2 id={OPENFREEMAP.id}>{OPENFREEMAP.name}</h2>
     <p>
-      The Google Maps switch in the footer of every page turns the maps off: it forgets your
-      choice and reloads the page, since a loaded map can't be removed from an open page.
+      Once a map on MapLibre loads, your browser fetches its style, tiles, fonts and icons from
+      OpenFreeMap, at {OPENFREEMAP.domains.map((domain) => <code>{domain}</code>)}. With each
+      request OpenFreeMap receives your IP address, what your browser says about itself (its user
+      agent), the address of the page the map is on, and which part of the map you're viewing.
+      OpenFreeMap may serve them through Cloudflare's network, which then receives the same
+      requests under its own privacy policy (linked under <a href="#host">Who serves this site</a>).
+      OpenFreeMap sets no cookies, and its Privacy Policy says what it keeps and for how long:
     </p>
+    <ul>
+      {OPENFREEMAP.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
+    </ul>
   </section>
 
   <section aria-labelledby={GITHUB.id}>

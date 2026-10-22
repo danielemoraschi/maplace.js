@@ -1,8 +1,6 @@
 import type { Browser, BrowserContext, ConsoleMessage, Locator, Page } from "playwright";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
-
-/** Any of Google's hosts: none may be asked before consent. */
-const GOOGLE = /^https?:\/\/[^/]*\b(google|googleapis|gstatic)\.com\//;
+import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 
 /**
  * Maps JS as far as a version waits for it: `importLibrary` there, its libraries never coming.
@@ -12,8 +10,9 @@ const STUB_MAPS_JS =
   "globalThis.google = { maps: { importLibrary: () => new Promise(() => {}) } };";
 
 /**
- * What a visitor's requests to Google get: refused, as by default; Maps JS answered with a stub
- * (`STUB_MAPS_JS`), as Google never would, the rest refused; or Google itself.
+ * What a visitor's requests to Google Maps get: refused, as by default; Maps JS answered with a
+ * stub (`STUB_MAPS_JS`), as Google never would, the rest refused; or Google itself. Requests to
+ * the other map providers are refused under every answer.
  */
 export type GoogleAnswer = "refused" | "stubbed" | "reached";
 
@@ -36,7 +35,8 @@ export interface Visitor {
   offsite(): readonly string[];
   /** Whether the site was asked for `path`. */
   fetched(path: string): boolean;
-  google(): readonly string[];
+  /** What the maps' providers were asked (`MAP_PROVIDERS`): nothing before consent. */
+  mapProviders(): readonly string[];
   /** What Google was asked for Maps JS: its script, by the page or the bootstrap. */
   mapsJsRequests(): readonly string[];
   /**
@@ -87,7 +87,7 @@ export async function visitor(
     page,
     offsite: () => asked,
     fetched: (path) => onSite.includes(path),
-    google: () => asked.filter((url) => GOOGLE.test(url)),
+    mapProviders: () => asked.filter(goesToMapProvider),
     mapsJsRequests: () => asked.filter(isMapsScript),
     errors: () => errors,
   };
@@ -104,7 +104,7 @@ function isMapsScript(url: string): boolean {
 
 /** What `url`, off the site, gets: Google itself, the stub, or refused, as `google` says. */
 function offsiteAnswer(url: string, google: GoogleAnswer): "google" | "stub" | "refused" {
-  if (google === "reached" && GOOGLE.test(url)) return "google";
+  if (google === "reached" && thirdPartyOf(url) === GOOGLE_MAPS) return "google";
   if (google === "stubbed" && isMapsScript(url)) return "stub";
   return "refused";
 }
@@ -132,8 +132,12 @@ export const addedByBootstrap = (url: string) => url.includes("__ib__");
 /** The page's first map: every section has one, so a locator for all would match them all. */
 export const firstMap = (page: Page) => page.locator("maplace-map").first();
 
-export const placeholder = (page: Page) =>
-  page.getByRole("button", { name: "Load Google Maps" }).first();
+/** The consent placeholders' "Load maps" buttons within `scope`. */
+export const loadMapsButtons = (scope: Page | Locator) =>
+  scope.getByRole("button", { name: "Load maps", exact: true });
+
+/** The page's first "Load maps" button. */
+export const placeholder = (page: Page) => loadMapsButtons(page).first();
 
 /** Runs `example`'s section's map from `version`: the switch above its frame. */
 export async function chooseVersion(page: Page, example: string, version: string): Promise<void> {
