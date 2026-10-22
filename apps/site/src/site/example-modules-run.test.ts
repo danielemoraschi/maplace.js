@@ -19,7 +19,17 @@ describe("exampleModulesRun", () => {
     expect(transformed(`${ROOT}/route/react.tsx`)).toMatchObject({ moduleSideEffects: true });
   });
 
+  it("keeps a MapLibre version module's statements", () => {
+    expect(transformed(`${ROOT}/simple/maplibre/vanilla.ts`)).toMatchObject({
+      moduleSideEffects: true,
+    });
+    expect(transformed(`${ROOT}/simple/maplibre/react.tsx`)).toMatchObject({
+      moduleSideEffects: true,
+    });
+  });
+
   it("leaves every other module to the bundler", () => {
+    expect(transformed(`${ROOT}/simple/maplibre/page.html`)).toBeUndefined();
     expect(transformed(`${ROOT}/migrate/from-0.2.ts`)).toBeUndefined();
     expect(transformed("/repo/packages/maplace/src/index.ts")).toBeUndefined();
   });

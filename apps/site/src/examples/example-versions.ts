@@ -4,12 +4,20 @@ export type LiveVersion = "vanilla" | "react";
 /** Each way an example is written: its page (`html`, the element's), vanilla or React. */
 export type VersionKind = "html" | LiveVersion;
 
+interface VersionLabel {
+  readonly kind: VersionKind;
+  readonly label: string;
+}
+
 /** An example's versions, in the order the site shows them, each with its name there. */
-export const VERSION_LABELS: readonly { readonly kind: VersionKind; readonly label: string }[] = [
+export const VERSION_LABELS: readonly [VersionLabel, ...VersionLabel[]] = [
   { kind: "html", label: "HTML" },
   { kind: "vanilla", label: "Vanilla" },
   { kind: "react", label: "React" },
 ];
+
+/** The version a section shows until the visitor chooses another: its page. */
+export const FIRST_VERSION: VersionKind = VERSION_LABELS[0].kind;
 
 /**
  * The module that runs each live version, in an example's folder. Kept apart from

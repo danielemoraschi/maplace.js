@@ -16,17 +16,23 @@
   display: block;
   height: var(--spacing-map);
 }
-/* Around the map Google draws, in every version: the lists and controls stay outside it. */
-.version :where(.maplace-google-map) {
+/*
+ * Around the map Google or MapLibre draws, in every version: the lists and controls stay outside
+ * it.
+ */
+.version :where(.maplace-google-map, .maplace-maplibre-map) {
   border: 2px solid var(--color-ink);
 }
 /*
  * A list beside the map, in every version, as a white panel set apart from it, under the map on a
  * phone, as the element puts it: its selected entry on the wash at the text's weight, the hovered
  * one lighter. An example drawing its list its own way (tabs) is marked `data-own-list` and left
- * out; a list on the map is in Google's panel already.
+ * out; a list on the map is in the map's own panel already.
  */
-.version :where(.maplace-list-view):where(:not(.maplace-google-map *, [data-own-list] *)) {
+.version
+:where(.maplace-list-view):where(
+  :not(.maplace-google-map *, .maplace-maplibre-map *, [data-own-list] *)
+) {
   margin-inline-start: 1rem;
   padding: 0.75rem 0.5rem;
   border-radius: 0.75rem;
@@ -59,10 +65,11 @@
 }
 
 /*
- * A page's own buttons in the site's look, Google's on the map left alone. All but `.version`
- * in `:where()`, so the rule weighs one class and any rule of the example's own wins.
+ * A page's own buttons in the site's look, the map's own (Google's or MapLibre's) left alone. All
+ * but `.version` in `:where()`, so the rule weighs one class and any rule of the example's own
+ * wins.
  */
-.version :where(button):where(:not(.maplace-google-map *)) {
+.version :where(button):where(:not(.maplace-google-map *, .maplace-maplibre-map *)) {
   @apply button-plain;
 }
 
@@ -73,8 +80,7 @@
     display: none;
   }
   .map-frame:has(.version[data-failed]:not([hidden])) .failed,
-  .map-frame:has(.version[data-starting]:not([hidden])) .loading,
-  .map-frame.script-failed:has([data-live-version="html"]:not([hidden])) .failed {
+  .map-frame:has(.version[data-starting]:not([hidden])) .loading {
     display: block;
   }
   /* Apart: a browser without `:state()` drops the whole rule. */

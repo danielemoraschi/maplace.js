@@ -1,95 +1,90 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
-import { type VersionStarting, versionStarter } from "./version-start.ts";
+import { VersionStartFailure, type VersionStarting, versionStarter } from "./version-start.ts";
 
-function version(keyMissing = false): HTMLElement {
-  document.body.innerHTML = `<div class="map-frame"${keyMissing ? " data-maps-key-missing" : ""}>
-    <div data-live-version="vanilla" data-example="route"></div>
+function version(): HTMLElement {
+  document.body.innerHTML = `<div class="map-frame">
+    <div data-live-version="vanilla" data-provider="maplibre" data-example="simple"></div>
   </div>`;
   return document.querySelector("[data-live-version]") as HTMLElement;
 }
 
 function deferred() {
   let resolve: () => void = () => {};
-  let reject: (reason: unknown) => void = () => {};
-  const promise = new Promise<void>((done, fail) => {
+  const promise = new Promise<void>((done) => {
     resolve = done;
-    reject = fail;
   });
-  return { promise, resolve, reject };
+  return { promise, resolve };
 }
 
 function setup(overrides: Partial<VersionStarting> = {}) {
-  const maps = deferred();
+  const readied = deferred();
   const steps: string[] = [];
   const starting: VersionStarting = {
+    ready: vi.fn(async () => {
+      steps.push("ready");
+      await readied.promise;
+    }),
     load: vi.fn(async () => {
       steps.push("load");
     }),
-    runBootstrap: vi.fn(() => {
-      steps.push("bootstrap");
-    }),
-    mapsJsOnPage: () => false,
-    mapsImportable: () => maps.promise,
     failed: vi.fn(),
     ...overrides,
   };
-  return { starting, start: versionStarter(starting), maps, steps };
+  return { starting, start: versionStarter(starting), readied, steps };
 }
 
 describe("versionStarter", () => {
-  it("runs the version's bootstrap, waits for Maps JS, then imports its module", async () => {
-    const { start, maps, steps } = setup();
+  it("readies the version, then imports its module, marking each stage", async () => {
+    const { start, readied, steps } = setup();
     const target = version();
     const started = start(target);
-    expect(steps).toEqual(["bootstrap"]);
+    expect(steps).toEqual(["ready"]);
     expect(target.hasAttribute("data-starting")).toBe(true);
-    maps.resolve();
+    readied.resolve();
     await started;
-    expect(steps).toEqual(["bootstrap", "load"]);
+    expect(steps).toEqual(["ready", "load"]);
     expect(target.hasAttribute("data-starting")).toBe(false);
     expect(target.hasAttribute("data-started")).toBe(true);
   });
 
-  it("runs no bootstrap when Maps JS is on the page already", async () => {
-    const { start, maps, steps } = setup({ mapsJsOnPage: () => true });
-    maps.resolve();
-    await start(version());
-    expect(steps).toEqual(["load"]);
+  it("says why when it can't be readied, importing nothing", async () => {
+    const ready = () => Promise.reject(new VersionStartFailure("no-key"));
+    const { start, starting, steps } = setup({ ready });
+    const target = version();
+    await start(target);
+    expect(starting.failed).toHaveBeenCalledWith(target, "no-key");
+    expect(steps).toEqual([]);
+    expect(target.hasAttribute("data-starting")).toBe(false);
+    expect(target.hasAttribute("data-started")).toBe(false);
+  });
+
+  it("says the script didn't load when readying or the import fails otherwise", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const offline = () => Promise.reject(new Error("offline"));
+    for (const overrides of [{ ready: offline }, { load: offline }]) {
+      const { start, starting } = setup({ ready: async () => {}, ...overrides });
+      const target = version();
+      await start(target);
+      expect(starting.failed).toHaveBeenCalledWith(target, "script");
+    }
+    expect(console.error).toHaveBeenCalledTimes(2);
   });
 
   it("starts a version once", async () => {
-    const { start, maps, starting } = setup();
+    const { start, readied, starting } = setup();
     const target = version();
-    maps.resolve();
+    readied.resolve();
     await Promise.all([start(target), start(target)]);
     expect(starting.load).toHaveBeenCalledOnce();
   });
 
-  it("says the site has no key, running nothing, when it has none", async () => {
-    const { start, starting, steps } = setup();
-    const target = version(true);
-    await start(target);
-    expect(starting.failed).toHaveBeenCalledWith(target, "no-key");
-    expect(steps).toEqual([]);
-  });
-
-  it("says Maps JS didn't load when the wait fails, importing nothing", async () => {
-    const { start, maps, starting, steps } = setup();
+  it("runs a version ready at once, with no key or Maps JS to wait for: MapLibre's", async () => {
+    const { start, starting } = setup({ ready: async () => {} });
     const target = version();
-    maps.reject(new Error("a Maps tag failed"));
     await start(target);
-    expect(starting.failed).toHaveBeenCalledWith(target, "maps-js");
-    expect(steps).toEqual(["bootstrap"]);
-    expect(target.hasAttribute("data-starting")).toBe(false);
-  });
-
-  it("says the version's script didn't load when its import fails", async () => {
-    const load = () => Promise.reject(new Error("offline"));
-    const { start, maps, starting } = setup({ load });
-    const target = version();
-    maps.resolve();
-    await start(target);
-    expect(starting.failed).toHaveBeenCalledWith(target, "script");
+    expect(starting.failed).not.toHaveBeenCalled();
+    expect(starting.load).toHaveBeenCalledWith(target);
+    expect(target.hasAttribute("data-started")).toBe(true);
   });
 });

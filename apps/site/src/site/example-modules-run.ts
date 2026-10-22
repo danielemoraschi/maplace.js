@@ -6,9 +6,9 @@ const MODULE_FILE_PATTERNS = Object.values(VERSION_MODULES).map((file) =>
   file.replaceAll(".", String.raw`\.`),
 );
 
-/** A version module of an example, which the site imports to run. */
+/** A version module of an example, on either provider, which the site imports to run. */
 export const VERSION_MODULE = new RegExp(
-  `/packages/maplace/examples/[^/]+/(${MODULE_FILE_PATTERNS.join("|")})$`,
+  `/packages/maplace/examples/[^/]+/(?:maplibre/)?(${MODULE_FILE_PATTERNS.join("|")})$`,
 );
 
 /**

@@ -1,58 +1,59 @@
-import type { MaplaceMapElement } from "maplace/element/google";
+import type { MaplaceMapElement } from "maplace/element";
 import { startConsent } from "../consent/consent-controls.ts";
 import { createConsentStore } from "../consent/consent-store.ts";
 import { gateMaps } from "../consent/map-gate.ts";
 import { whenVisible } from "../consent/when-visible.ts";
 import { versionModule } from "../examples/example-modules.ts";
+import { exampleFolder } from "../examples/example-providers.ts";
 import type { LiveVersion } from "../examples/example-versions.ts";
 import { provideSave } from "../examples/page-save.ts";
 import { runPageScripts } from "../examples/page-scripts.ts";
+import { byProvider, providerOf } from "./by-provider.ts";
 import { startCopyButtons } from "./copy-buttons.ts";
-import { releaseOnceDefined } from "./element-loader.ts";
-import {
-  clearScriptFailure,
-  noteMapsJsFailure,
-  noteScriptFailure,
-  noteVersionFailure,
-  startFailureNotes,
-} from "./map-failures.ts";
+import { googleVersionReady } from "./google-version-ready.ts";
+import { noteMapsJsFailure, noteVersionFailure, startFailureNotes } from "./map-failures.ts";
 import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
+import { pageMapRelease } from "./page-map-release.ts";
+import { ELEMENT_LOADERS, readyMapLibre } from "./provider-loaders.ts";
 import { startStarButtons } from "./star-buttons.ts";
 import { startTabs } from "./tabs.ts";
 import { versionStarter } from "./version-start.ts";
 import { startVersionSwitches } from "./version-switch.ts";
 
-// Every map on the site is held (`<maplace-map hold>`): nothing from Google loads until the
-// visitor consents, then each map as it comes into view. The element itself loads with the
-// first map released, so a page without maps, or a visitor who never consents, never fetches it;
-// a map's page scripts run when it is released, once the element is defined, as the CDN script
-// would have it. A vanilla or React version, once chosen, starts the same way: consented and in
-// view, its bootstrap and module run then.
+// Every map on the site is held (`<maplace-map hold>`): nothing from Google Maps or OpenFreeMap
+// loads until the visitor consents, then each map as it comes into view. A provider's element
+// loads with the first of its maps released, so a page without maps, or a visitor who never
+// consents, never fetches it, and maplibre-gl comes only with a MapLibre map; a map's page scripts
+// run when it is released, once the element is defined, as the CDN script would have it. A
+// vanilla or React version, once chosen, starts the same way: consented and in view, its provider
+// readied (on Google, its bootstrap and Maps JS; on MapLibre, its worker), then its module run.
 const mapsJs = watchMapsJs(document);
 const maps = [...document.querySelectorAll<MaplaceMapElement>("maplace-map[hold]")];
 const versions = [
   ...document.querySelectorAll<HTMLElement>('[data-live-version]:not([data-live-version="html"])'),
 ];
 
-const release = releaseOnceDefined<MaplaceMapElement>({
-  load: () => import("maplace/element/google"),
-  release(map) {
-    runPageScripts(map.closest("[data-live-page]") ?? map);
-    map.release();
-  },
-  failed(map, error) {
-    console.error("maplace: the map element's script didn't load", error);
-    noteScriptFailure(map);
-  },
-  recovered: clearScriptFailure,
-});
+const release = pageMapRelease(ELEMENT_LOADERS);
+
+/** Imports the module of `version`, which runs it. */
+function loadVersion(version: HTMLElement): Promise<unknown> {
+  const { example, liveVersion } = version.dataset;
+  if (example === undefined) throw new Error("a live version has no data-example");
+  const folder = exampleFolder(example, providerOf(version));
+  return versionModule(folder, liveVersion as LiveVersion)();
+}
 
 const startVersion = versionStarter({
-  load: ({ dataset }) => versionModule(dataset.example ?? "", dataset.liveVersion as LiveVersion)(),
-  runBootstrap: runPageScripts,
-  mapsJsOnPage: () => mapsJsOnPage(document),
-  mapsImportable: mapsJs.importable,
+  ready: byProvider({
+    google: googleVersionReady({
+      runBootstrap: runPageScripts,
+      mapsJsOnPage: () => mapsJsOnPage(document),
+      mapsImportable: mapsJs.importable,
+    }),
+    maplibre: readyMapLibre,
+  }),
+  load: loadVersion,
   failed: noteVersionFailure,
 });
 

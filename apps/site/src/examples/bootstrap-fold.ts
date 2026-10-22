@@ -1,4 +1,4 @@
-import type { ExampleFile } from "./example-sources.ts";
+import type { ExampleCode, ExampleFile } from "./example-sources.ts";
 import { VERSION_MODULES } from "./example-versions.ts";
 import { requireOnce } from "./page-markup.ts";
 
@@ -10,7 +10,10 @@ export interface HostParts {
   readonly after: string;
 }
 
-/** The HTML a live version mounts on: the files that load Maps JS with Google's loader. */
+/** A file as a code tab shows it: a Google host with its loader split out to fold. */
+export type ShownFile = ExampleFile & { readonly host?: HostParts | undefined };
+
+/** The HTML a live version mounts on: on Google, the files that load Maps JS with its loader. */
 export const HOST_FILES: ReadonlySet<string> = new Set(
   Object.keys(VERSION_MODULES).map((version) => `${version}.html`),
 );
@@ -22,16 +25,25 @@ export const HOST_FILES: ReadonlySet<string> = new Set(
 const BOOTSTRAP_SCRIPT = /<script>[\s\S]*?<\/script>\n?/g;
 
 /**
- * `file` of the example `example` split at its bootstrap loader, the parts joined being the file
- * as written; `undefined` for a file that isn't a host (a page, a module). A host must have the
- * loader as its one inline script.
+ * `code`'s files as its tab shows them: Google's hosts with their loader to fold; every MapLibre
+ * file whole, since its hosts load no Maps JS.
  */
-export function foldBootstrap(example: string, file: ExampleFile): HostParts | undefined {
+export function filesAsShown({ provider, folder, files }: ExampleCode): readonly ShownFile[] {
+  if (provider !== "google") return files;
+  return files.map((file) => ({ ...file, host: foldBootstrap(folder, file) }));
+}
+
+/**
+ * `file`, in `folder` under `packages/maplace/examples/`, split at its bootstrap loader, the parts
+ * joined being the file as written; `undefined` for a file that isn't a host (a page, a module).
+ * A Google host must have the loader as its one inline script.
+ */
+export function foldBootstrap(folder: string, file: ExampleFile): HostParts | undefined {
   if (!HOST_FILES.has(file.file)) return undefined;
   const loader = requireOnce(
     file.code,
     BOOTSTRAP_SCRIPT,
-    `examples/${example}/${file.file} has one inline script, Google's bootstrap loader`,
+    `examples/${folder}/${file.file} has one inline script, Google's bootstrap loader`,
   );
   const [before = "", after = ""] = file.code.split(loader);
   return { before, loader, after };

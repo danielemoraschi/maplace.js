@@ -6,6 +6,8 @@ export interface ExampleSection {
   readonly summary: string;
   /** Its list drawn its own way (as tabs), not in the site's panel beside the map. */
   readonly drawsOwnList?: true;
+  /** Why it runs on Google only, said beside the MapLibre choice. */
+  readonly googleOnlyBecause?: string;
 }
 
 /** The examples, in RFC §2's order (D23). */
@@ -52,16 +54,18 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
     name: "route",
     title: "Route",
     summary: "A drive through your own places, passing through one, with directions by leg.",
+    googleOnlyBecause: "MapLibre has no routing.",
   },
   {
     name: "mixed",
     title: "Mixed",
-    summary: "Five data sets, fetched and swapped in live: markers, a route, an area, a circle.",
+    summary:
+      "Five data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
   },
   {
     name: "styled",
     title: "Styled",
-    summary: "Google's own look: a light or dark map, and the map-type control.",
+    summary: "The provider's own look: a light or dark map, and on Google the map-type control.",
   },
   { name: "big", title: "Cluster", summary: "4,000 points, clustered." },
 ];

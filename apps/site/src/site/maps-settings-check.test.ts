@@ -11,7 +11,7 @@ describe("mapsSettingsCheck", () => {
 
   it("warns on a build without a key, or with an empty one", () => {
     expect(warningsOf("build", { SITE_MAPS_MAP_ID: "m" })).toEqual([
-      expect.stringMatching(/SITE_MAPS_KEY/),
+      expect.stringMatching(/SITE_MAPS_KEY.*each Google map/),
     ]);
     expect(warningsOf("build", { SITE_MAPS_KEY: "", SITE_MAPS_MAP_ID: "m" })).toHaveLength(1);
   });
