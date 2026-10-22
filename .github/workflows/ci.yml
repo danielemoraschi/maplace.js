@@ -3,9 +3,12 @@ name: CI
 on:
   push:
   pull_request:
+  # On next, runs the real Google Maps tests whatever changed.
+  workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read # the last CI run passed on next, for scripts/real-maps.ts
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -14,7 +17,7 @@ concurrency:
 jobs:
   verify:
     # Same-repo PRs are already covered by their branch's push run; only fork PRs run here.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -30,15 +33,30 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npx --no playwright install --with-deps --only-shell chromium
-      # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed.
-      # Without the key the Maps tests would only skip, so a missing secret fails instead.
-      - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+      # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed, so
+      # only when next changed more than prose or MapLibre's own files since the last commit CI
+      # passed on it (scripts/real-maps.ts; a cancelled run's changes count too), or on a run
+      # started by hand. Without the key the Maps tests would only skip, so a missing secret fails.
+      - id: real-maps
+        if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BY_HAND: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          base=""
+          if [ "$BY_HAND" != "true" ]; then
+            base=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch next \
+              --status success --limit 20 --json headSha,event \
+              --jq 'map(select(.event != "pull_request"))[0].headSha // ""') || base=""
+          fi
+          node scripts/real-maps.ts "$base" >> "$GITHUB_OUTPUT"
+      - if: steps.real-maps.outputs.run == 'true'
         env:
           VITE_MAPS_KEY: ${{ secrets.MAPS_KEY }}
         run: test -n "$VITE_MAPS_KEY" || { echo "::error::the MAPS_KEY secret is not set"; exit 1; }
       - run: npm test
         env:
-          VITE_MAPS_KEY: ${{ github.ref == 'refs/heads/next' && !github.event.repository.fork && secrets.MAPS_KEY || '' }}
+          VITE_MAPS_KEY: ${{ steps.real-maps.outputs.run == 'true' && secrets.MAPS_KEY || '' }}
       - run: npm run coverage
       - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
