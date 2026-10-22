@@ -22,6 +22,7 @@ const M1_GROUPS: readonly ConformanceGroup[] = [
   "container",
   "route",
   "cluster",
+  "controls",
 ];
 
 /** A new MapLibre adapter, its probe, and the map state the adapter draws into. */

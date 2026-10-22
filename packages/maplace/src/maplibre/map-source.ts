@@ -1,6 +1,7 @@
 import type { Map as MapLibreMap, MapOptions } from "maplibre-gl";
 import { elementFilling } from "../adapter-kit/map-element";
 import { MaplaceError } from "../errors";
+import { MAPLIBRE_MAP_CLASS } from "./control-styles";
 import type { MapLibre } from "./library";
 import type { MapLibreAdapterOptions } from "./options";
 
@@ -53,6 +54,7 @@ function createdMapSource(options: MapLibreAdapterOptions): MapSource {
   return {
     open(container, maplibre) {
       const element = elementFilling(container);
+      element.classList.add(MAPLIBRE_MAP_CLASS);
       try {
         const map = new maplibre.Map(createdMapOptions(options, element));
         if (options.mapOptions?.dragRotate !== true) withoutRotation(map);

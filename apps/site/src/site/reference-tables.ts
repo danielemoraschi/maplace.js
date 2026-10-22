@@ -14,6 +14,7 @@ import {
   GOOGLE_MAP_CLASS,
 } from "../../../../packages/maplace/src/google/control-styles.ts";
 import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
+import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/control-styles.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
 import { LIST_CLASS, LIST_HEADING_CLASS } from "../../../../packages/maplace/src/views/headed.ts";
@@ -57,6 +58,7 @@ export const STYLING_CLASSES = [
   POPUP_HEADING_CLASS,
   CONTROL_CLASS,
   GOOGLE_MAP_CLASS,
+  MAPLIBRE_MAP_CLASS,
 ];
 
 /** A table of a page: its heading, the names it lists, and where they come from. */

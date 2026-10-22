@@ -15,15 +15,16 @@ const PANEL = `.${CONTROL_CLASS}`;
  * padding (`cqh`, the map holding a panel being the size container), their entries scrolling; the
  * panel itself clips nothing, so a page's control can draw outside it. An empty list hides it,
  * inside the opt-out (`unstyled.ts`) too, where the rest is off. Every selector in `:where()`, so
- * any rule of the page wins.
+ * any rule of the page wins. The look and the lists' height are kept to Google's panels, each
+ * carrying its scheme, so another provider's panels keep theirs on the same page.
  */
 export const CONTROL_STYLES = `
 ${outsideUnstyled(`.${GOOGLE_MAP_CLASS}:has(${PANEL})`)}{container-type:size}
-${outsideUnstyled(PANEL)}{margin:10px;padding:4px;border-radius:2px;box-shadow:0 1px 4px -1px #0000004d;background:light-dark(#fff,#444);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
+${outsideUnstyled(`${PANEL}[data-color-scheme]`)}{margin:10px;padding:4px;border-radius:2px;box-shadow:0 1px 4px -1px #0000004d;background:light-dark(#fff,#444);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
 ${outsideUnstyled(`${PANEL}[data-color-scheme=dark]`)}{color-scheme:dark}
 ${outsideUnstyled(`${PANEL}[data-color-scheme=follow-system]`)}{color-scheme:light dark}
 :where(${PANEL}:has(>[hidden]:only-child)){display:none}
-${outsideUnstyled(`${PANEL} :is(.maplace-list,.maplace-listbox)`)}{box-sizing:border-box;max-height:calc(100cqh - 28px)}
+${outsideUnstyled(`${PANEL}[data-color-scheme] :is(.maplace-list,.maplace-listbox)`)}{box-sizing:border-box;max-height:calc(100cqh - 28px)}
 ${outsideUnstyled(`${PANEL} :is(select,input,button)`)}{font:inherit}
 ${outsideUnstyled(`${PANEL} select`)}{min-height:2.25em}
 ${outsideUnstyled(`${PANEL} :is([type=radio],[type=checkbox])`)}{width:1.15em;height:1.15em;margin:.4em}
