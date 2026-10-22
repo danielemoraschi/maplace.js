@@ -123,7 +123,7 @@ function lineOf(path: readonly LatLng[]): Geometry {
   return { type: "polyline", path };
 }
 
-/** A square `half` degrees each way from the equator at ±180, its corners as the store has them. */
+/** A square `half` degrees each way round the equator at ±180, its corners as stored. */
 function squareAcross(half: number): LatLng[] {
   return [
     { lat: -half, lng: 180 - half },

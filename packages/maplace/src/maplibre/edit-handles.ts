@@ -1,10 +1,9 @@
 import type { Marker } from "maplibre-gl";
 import { type HoverReports, reportElementHover } from "../adapter-kit/hover-reports";
 import type { LatLng } from "../geometry";
-import { lngLatOf } from "./conversions";
+import { lngLatOf, nearestLongitude } from "./conversions";
 import { markAsOwnMarker } from "./dom-marker";
 import type { HandlePlace, HandleRole } from "./edit-geometry";
-import { nearestLongitude } from "./location-features";
 import type { MountedMapLibre } from "./mounted-map";
 
 /** One handle a user drags to edit a shape: a draggable MapLibre marker. */

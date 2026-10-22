@@ -6,6 +6,7 @@ import type { Location } from "../location";
 import { createMaplace } from "../maplace/create";
 import { LARGE_DIFF, manyMarkers } from "../testing/conformance/fixtures";
 import { sizedContainer } from "../testing/container";
+import { longestTaskDuring } from "../testing/long-tasks";
 import type { View } from "../viewport";
 import { frames } from "./frames";
 import { steadyPoint, tabTo } from "./testing/page-input";
@@ -84,18 +85,6 @@ function clusterSize(element: HTMLElement): number | undefined {
 /** The markers drawing location `id` on its own. */
 function drawnAlone(map: google.maps.Map, id: string): HTMLElement[] {
   return shownOn(map).elements.filter((element) => element.title === id);
-}
-
-/** The longest tasks the browser reports while `work` runs. */
-async function longestTaskDuring(work: () => Promise<void>): Promise<number> {
-  const tasks: number[] = [];
-  const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) tasks.push(entry.duration);
-  });
-  observer.observe({ type: "longtask" });
-  await work();
-  observer.disconnect();
-  return Math.round(Math.max(0, ...tasks));
 }
 
 describeWithMaps("clustering on Google", () => {

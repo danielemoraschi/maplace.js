@@ -2,6 +2,7 @@ import type { Drawable } from "../drawable";
 import type { Geometry, LatLng, MarkerGeometry } from "../geometry";
 import type { ShapeStyle } from "../style";
 import { circleRing } from "./circle-sphere";
+import { nearestLongitude } from "./conversions";
 import type { LocationFeature, LocationProperties } from "./feature-set";
 import { SHAPE_DEFAULTS } from "./layers";
 
@@ -19,8 +20,8 @@ export function pinFeature(drawable: Drawable, rank: number): LocationFeature {
 }
 
 /**
- * A shape's feature (a circle, polyline or polygon): its geometry, its style in its state (the fields it sets,
- * the layers' defaults for the rest) and where it stacks.
+ * A shape's feature (a circle, polyline or polygon): its geometry, its style in its state (the
+ * fields it sets, the layers' defaults for the rest) and where it stacks.
  */
 export function shapeFeature(
   drawable: Drawable,
@@ -76,16 +77,6 @@ function continuousFrom(start: number, path: readonly LatLng[]): GeoJSON.Positio
     previous = nearestLongitude(lng, previous);
     return [previous, lat];
   });
-}
-
-/**
- * The copy of `lng` within 180° of `of`: `nearestLongitude(lng, 0)` is `lng` in −180..180. It is
- * `lng` itself unless that copy is another world's, so a longitude that needs no turn is kept
- * exact, where a modulo would add float error (0.6 read back as 0.6000000000000227).
- */
-export function nearestLongitude(lng: number, of: number): number {
-  const worlds = Math.round((of - lng) / 360);
-  return worlds === 0 ? lng : lng + 360 * worlds;
 }
 
 function startOf(path: readonly LatLng[]): number {

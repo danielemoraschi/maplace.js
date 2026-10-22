@@ -27,6 +27,19 @@ async function pinsRendered(map: MapLibreMap, ...ids: string[]): Promise<void> {
   await vi.waitFor(() => expect(renderedIds(map, ["maplace-pins"])).toEqual(ids), RENDER_WAIT);
 }
 
+/** Over the pin of a marker at `ORIGIN`, above its tip. */
+const ON_PIN = { at: ORIGIN, up: 30 };
+
+/** A page's own map with marker "a" at `ORIGIN`, its pin rendered. */
+async function pageMapWithPin() {
+  const mounted = await mountedOnPageMap();
+  mounted.adapter.setView({ kind: "center", center: ORIGIN, zoom: 6 });
+  await mounted.adapter.apply(adding(markerDrawable("a")));
+  await mounted.probe.settle();
+  await pinsRendered(mounted.map, "a");
+  return mounted;
+}
+
 describe("input on MapLibre", () => {
   it("takes a click on a DOM marker for the location's, never a click on the map", async () => {
     const { adapter, probe, host } = await mountedMapLibre();
@@ -65,13 +78,12 @@ describe("input on MapLibre", () => {
     const { map, adapter, host } = await mountedMapLibre();
     await adapter.apply(adding(markerDrawable("a")));
     await pinsRendered(map, "a");
-    const onPin = { at: ORIGIN, up: 30 };
-    clickCanvas(map, onPin);
+    clickCanvas(map, ON_PIN);
     expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     adapter.present(presented({ hiddenIds: new Set(["a"]) }));
     // MapLibre still draws the pin until its next frame: a click there now is on the map.
     expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
-    clickCanvas(map, onPin);
+    clickCanvas(map, ON_PIN);
     await wait(DOUBLE_CLICK_WAIT_MS * 2);
     expect(host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     expect(host.reportsOf("reportMapClick")).toHaveLength(1);
@@ -85,7 +97,7 @@ describe("input on MapLibre", () => {
     adapter.present(presented({}));
     // Both fold into one cluster, though MapLibre still draws their pins until its next frame.
     expect(renderedIds(map, ["maplace-pins"])).toEqual(["a", "b"]);
-    clickCanvas(map, { at: ORIGIN, up: 30 });
+    clickCanvas(map, ON_PIN);
     await wait(DOUBLE_CLICK_WAIT_MS * 2);
     expect(host.reportsOf("reportSelectionChange")).toEqual([]);
     expect(host.reportsOf("reportMapClick")).toHaveLength(1);
@@ -97,6 +109,28 @@ describe("input on MapLibre", () => {
     moveOverCanvas(map, { at: AWAY });
     moveOverCanvas(map, { at: AWAY });
     expect(map.getCanvas().style.cursor).toBe("crosshair");
+  });
+
+  it("gives the page's own cursor back once the pointer leaves a location, and on destroy", async () => {
+    const { map, destroy } = await pageMapWithPin();
+    const canvas = map.getCanvas();
+    canvas.style.cursor = "crosshair";
+    moveOverCanvas(map, ON_PIN);
+    expect(canvas.style.cursor).toBe("pointer");
+    moveOverCanvas(map, { at: AWAY });
+    expect(canvas.style.cursor).toBe("crosshair");
+    moveOverCanvas(map, ON_PIN);
+    destroy();
+    expect(canvas.style.cursor).toBe("crosshair");
+  });
+
+  it("keeps a cursor the page sets while the pointer is on a location", async () => {
+    const { map } = await pageMapWithPin();
+    const canvas = map.getCanvas();
+    moveOverCanvas(map, ON_PIN);
+    canvas.style.cursor = "wait";
+    moveOverCanvas(map, { at: AWAY });
+    expect(canvas.style.cursor).toBe("wait");
   });
 
   it("selects the smaller polygon where a bigger one's outline, drawn above it, crosses it", async () => {

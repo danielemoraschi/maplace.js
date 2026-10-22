@@ -19,28 +19,29 @@ export function layerHover(
     open(mounted) {
       const { map } = mounted;
       const canvas = map.getCanvas();
+      const cursor = pointerCursor(canvas);
       let pointed: string | undefined;
+      const setPointed = (id: string | undefined) => {
+        if (pointed === undefined && id !== undefined) cursor.point();
+        else if (pointed !== undefined && id === undefined) cursor.giveBack();
+        pointed = id;
+      };
       // Entered again while it stays pointed at: one hidden or folded under the pointer was let go
-      // (`hover.gone`), and is hovered anew once drawn there again. A repeat reports nothing, and
-      // the cursor is set only on a change, so a page's own cursor on its map's canvas stays.
+      // (`hover.gone`), and is hovered anew once drawn there again. A repeat reports nothing.
       const pointAt = (id: string | undefined) => {
         const hover = hoverOf();
         if (id !== pointed) {
           if (pointed !== undefined) hover?.leave("pointer", pointed);
-          pointed = id;
-          canvas.style.cursor = id === undefined ? "" : "pointer";
+          setPointed(id);
         }
         if (id !== undefined) hover?.enter("pointer", id);
       };
+      /** A DOM marker the pointer moved onto reports its own hover: the layer lets go, quietly. */
+      const handOver = () => setPointed(undefined);
       const onMove = (event: MapMouseEvent) => {
         if (isOnCanvas(event, canvas)) pointAt(locationAt(event));
         else if (isInOwnMarker(event.originalEvent.target)) handOver();
         else pointAt(undefined);
-      };
-      /** A DOM marker the pointer moved onto reports its own hover: the layer lets go, quietly. */
-      const handOver = () => {
-        pointed = undefined;
-        canvas.style.cursor = "";
       };
       const onOut = (event: MapMouseEvent) => {
         if (isInOwnMarker(event.originalEvent.relatedTarget)) handOver();
@@ -51,8 +52,27 @@ export function layerHover(
       mounted.onDestroy(() => {
         map.off("mousemove", onMove);
         map.off("mouseout", onOut);
-        canvas.style.cursor = "";
+        setPointed(undefined);
       });
+    },
+  };
+}
+
+const POINTER = "pointer";
+
+/**
+ * The pointer cursor on the canvas while a location is pointed at, and the page's own cursor given
+ * back after it, unless the page set another meanwhile.
+ */
+function pointerCursor(canvas: HTMLElement) {
+  let pageCursor = "";
+  return {
+    point() {
+      pageCursor = canvas.style.cursor;
+      canvas.style.cursor = POINTER;
+    },
+    giveBack() {
+      if (canvas.style.cursor === POINTER) canvas.style.cursor = pageCursor;
     },
   };
 }

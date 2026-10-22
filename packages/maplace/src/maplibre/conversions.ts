@@ -18,6 +18,16 @@ export function wrappedLongitude(lng: number): number {
   return wrapped === -180 && lng > 0 ? 180 : wrapped;
 }
 
+/**
+ * The copy of `lng` within 180° of `of`: `nearestLongitude(lng, 0)` is `lng` in −180..180. It is
+ * `lng` itself unless that copy is another world's, so a longitude that needs no turn is kept
+ * exact, where a modulo would add float error (0.6 read back as 0.6000000000000227).
+ */
+export function nearestLongitude(lng: number, of: number): number {
+  const worlds = Math.round((of - lng) / 360);
+  return worlds === 0 ? lng : lng + 360 * worlds;
+}
+
 /** A point MapLibre gives, as maplace's, its longitude wrapped. */
 export function wrappedLatLng({ lat, lng }: LatLng): LatLng {
   return { lat, lng: wrappedLongitude(lng) };

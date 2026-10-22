@@ -31,15 +31,11 @@ function pageRule(css: string): void {
 
 describe("the panel of a control on a MapLibre map", () => {
   it("matches MapLibre's own control: its background, rounding and ring, 10px from the corner", async () => {
-    const maplace = createMaplace({ locations: places() });
-    const { adapter, map } = await onPageMapLibre(maplace);
+    const { map, panel } = await buttonOn(onPageMapLibre, "top-right");
     map.addControl(new NavigationControl(), "top-right");
-    const node = document.createElement("button");
-    adapter.mountControl(node, "top-right");
     const own = getComputedStyle(
       map.getContainer().querySelector(".maplibregl-ctrl-group") as Element,
     );
-    const panel = getComputedStyle(panelOf(node));
     const look = (style: CSSStyleDeclaration) => [
       style.backgroundColor,
       style.borderRadius,

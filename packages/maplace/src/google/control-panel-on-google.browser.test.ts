@@ -3,10 +3,11 @@ import { afterEach, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { queried } from "../testing/queried";
 import type { ColorScheme } from "./options";
 import { darkPage } from "./testing/dark-page";
 import { tabUntil } from "./testing/page-input";
-import { listMountedOnGoogle, queried } from "./testing/panels";
+import { listMountedOnGoogle } from "./testing/panels";
 import { places } from "./testing/places";
 import { describeWithMaps } from "./testing/with-maps";
 

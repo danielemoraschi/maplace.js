@@ -18,12 +18,13 @@ import { pointAtBearing } from "./circle-sphere";
 import type { MapLibreState } from "./map-state";
 import { wait } from "./testing/map-settle";
 import { mountedMapLibre, mountedOnPageMap } from "./testing/mounted";
+import { holdHandle } from "./testing/shape-target";
 
 afterEach(unmountAll);
 
-/** How close a drag lands to where it aimed: a pixel at zoom 7 is about 0.011°, 1.2 km. */
-const PIXEL_DEGREES = 0.03;
-const PIXEL_METRES = 3000;
+/** How close a drag lands to where it aimed: a few pixels, one at zoom 7 being 0.011°, 1.2 km. */
+const LANDING_DEGREES = 0.03;
+const LANDING_METRES = 3000;
 
 const editable = (drawable: Drawable): Drawable => ({ ...drawable, editable: true });
 
@@ -54,22 +55,21 @@ function onPage(map: MapLibreMap, at: LatLng) {
 }
 
 function expectNear(point: LatLng | undefined, to: LatLng): void {
-  expect(Math.abs((point?.lat ?? Number.NaN) - to.lat)).toBeLessThan(PIXEL_DEGREES);
-  expect(Math.abs((point?.lng ?? Number.NaN) - to.lng)).toBeLessThan(PIXEL_DEGREES);
+  expect(Math.abs((point?.lat ?? Number.NaN) - to.lat)).toBeLessThan(LANDING_DEGREES);
+  expect(Math.abs((point?.lng ?? Number.NaN) - to.lng)).toBeLessThan(LANDING_DEGREES);
 }
+
+/** The point `metres` due east of the origin, where a circle's east radius handle sits. */
+const eastOfOrigin = (metres: number) => pointAtBearing(ORIGIN, metres, 90);
 
 const changesOf = (host: { reportsOf(kind: "reportLocationChange"): unknown[][] }) =>
   host.reportsOf("reportLocationChange").map(([, geometry]) => geometry as Geometry);
 
-/** Holds the shape's third handle, a corner, moved to `to`: a drag not let go, until `drop`. */
+/** Holds the shape's third corner moved to `to`: a drag not let go, until `drop`. */
 function startDrag(state: MapLibreState, id: string, to: LatLng) {
   const placed = state.placed.get(id);
-  const corner = placed?.geometryType === "marker" ? undefined : placed?.editHandles()[2];
-  if (corner === undefined) throw new Error(`${id} has no handles`);
-  corner.marker.setLngLat([to.lng, to.lat]);
-  corner.marker.fire("dragstart");
-  corner.marker.fire("drag");
-  return { drop: () => corner.marker.fire("dragend") };
+  if (placed === undefined || placed.geometryType === "marker") throw new Error(`no shape ${id}`);
+  return holdHandle(placed, { kind: "vertex", ring: 0, index: 2 }, to);
 }
 
 describe("editing shapes on MapLibre", () => {
@@ -109,15 +109,14 @@ describe("editing shapes on MapLibre", () => {
   it("resizes a circle by its radius handle, the radius reported live", async () => {
     const circle = circleOf(50_000);
     const { host, drag } = await editing(editable(circleDrawable("c", { geometry: circle })));
-    const east = (metres: number) => pointAtBearing(ORIGIN, metres, 90);
-    await drag(east(50_000), east(80_000));
+    await drag(eastOfOrigin(50_000), eastOfOrigin(80_000));
     const radii = host
       .reportsOf("reportLocationEdit")
       .map(([, at]) => (at as CircleGeometry).radius);
     expect(radii.length).toBeGreaterThan(1);
     expect(radii).toEqual([...radii].sort((a, b) => a - b));
     const [change] = changesOf(host);
-    expect(Math.abs((change as CircleGeometry).radius - 80_000)).toBeLessThan(PIXEL_METRES);
+    expect(Math.abs((change as CircleGeometry).radius - 80_000)).toBeLessThan(LANDING_METRES);
   });
 
   it("moves a circle by its centre handle", async () => {
@@ -152,8 +151,7 @@ describe("editing shapes on MapLibre", () => {
     const other = circleDrawable("other", { geometry: circleOf(50_000) });
     const { probe, drag } = await editing(grown, other);
     expect(probe.stackOrder()).toEqual(["grown", "other"]);
-    const east = (metres: number) => pointAtBearing(ORIGIN, metres, 90);
-    await drag(east(30_000), east(80_000));
+    await drag(eastOfOrigin(30_000), eastOfOrigin(80_000));
     expect(probe.stackOrder()).toEqual(["other", "grown"]);
   });
 
@@ -203,7 +201,8 @@ describe("editing shapes on MapLibre", () => {
     const polygon = editable(polygonDrawable("p"));
     const { adapter, probe, state } = await editing(polygon);
     startDrag(state, "p", { lat: 1.5, lng: 1.5 }).drop();
-    // The page never writes the edit back: its next update carries the geometry it has, as Google redraws.
+    // The page never writes the edit back: its next update carries the geometry it has, and the
+    // shape is drawn as that again, as Google's is.
     await adapter.apply(updating({ ...polygon, title: "renamed" }));
     expect(probe.location("p")?.geometry).toEqual(polygon.geometry);
   });

@@ -71,4 +71,14 @@ describe("shape features as MapLibre renders them", () => {
     expect(filledAt(map, westInside as LatLng)).toBe(true);
     expect(filledAt(map, eastOutside as LatLng)).toBe(false);
   });
+
+  it("fills a circle round the north pole up to the top edge, past the pole too", async () => {
+    // 22.5° of arc from 75°: past the pole down to 82.5° on its far side, at -170.
+    const radius = 22.5 * METRES_PER_DEGREE;
+    const circle = { type: "circle", center: { lat: 75, lng: 10 }, radius } as const;
+    const farSide = { lat: 84, lng: -165 };
+    const map = await drawnAround(circleDrawable("c", { geometry: circle }), farSide, 2);
+    expect(filledAt(map, { lat: 84, lng: 175 })).toBe(true);
+    expect(filledAt(map, { lat: 70, lng: -165 })).toBe(false);
+  });
 });

@@ -22,8 +22,36 @@ describe("handlePlacesOf", () => {
   it("puts a handle on each polyline point and between each two", () => {
     const places = handlePlacesOf(line);
     expect(kinds(line)).toEqual(["vertex", "vertex", "vertex", "midpoint", "midpoint"]);
-    expect(places[3]?.at).toEqual({ lat: 0.5, lng: 0.5 });
-    expect(places[4]?.at).toEqual({ lat: 1, lng: 2 });
+    expect(places[3]?.at.lat).toBeCloseTo(0.5, 4);
+    expect(places[3]?.at.lng).toBe(0.5);
+    expect(places[4]?.at.lat).toBeCloseTo(1, 9);
+    expect(places[4]?.at.lng).toBe(2);
+  });
+
+  it("puts a midpoint on its edge as drawn, a straight line on the Mercator plane", () => {
+    const north: Geometry = {
+      type: "polyline",
+      path: [
+        { lat: 60, lng: 0 },
+        { lat: 80, lng: 40 },
+      ],
+    };
+    const [, , midpoint] = handlePlacesOf(north);
+    expect(midpoint?.at.lng).toBe(20);
+    // Halfway between the two ends' Mercator y, ln(tan(45° + lat / 2)): not the latitudes' 70.
+    expect(midpoint?.at.lat).toBeCloseTo(72.59, 2);
+  });
+
+  it("puts a midpoint across ±180 on the short way between its ends", () => {
+    const across: Geometry = {
+      type: "polyline",
+      path: [
+        { lat: 0, lng: 179 },
+        { lat: 0, lng: -179 },
+      ],
+    };
+    const [, , midpoint] = handlePlacesOf(across);
+    expect(Math.abs(midpoint?.at.lng ?? 0)).toBe(180);
   });
 
   it("puts a polygon's midpoints on every edge, its closing edge and its holes' included", () => {
@@ -86,18 +114,6 @@ describe("editedBy", () => {
       ...circle,
       radius: 2000,
     });
-  });
-
-  it("takes a midpoint across ±180 the short way", () => {
-    const across: Geometry = {
-      type: "polyline",
-      path: [
-        { lat: 0, lng: 179 },
-        { lat: 0, lng: -179 },
-      ],
-    };
-    const [, , midpoint] = handlePlacesOf(across);
-    expect(Math.abs(midpoint?.at.lng ?? 0)).toBe(180);
   });
 
   it("refuses a vertex handle on a circle, naming both", () => {

@@ -36,12 +36,8 @@ const styled = (style = STYLE) => `map-style='${style}'`;
 
 const LOAD = { timeout: 15_000 };
 
-/** A number within `margin` of `value`. */
-const near = (value: number, margin = 0.05) =>
-  expect.toSatisfy((got: number) => Math.abs(got - value) < margin);
-
 describe("<maplace-map> on MapLibre", () => {
-  it("opens a MapLibre map in its pane with its locations, on the style map-style gives", async () => {
+  it("opens a MapLibre map in its pane, maplibre being the only provider registered", async () => {
     const map = mapWith(styled());
     await map.maplace.whenReady();
     expect(map.loadState).toBe("ready");
@@ -67,7 +63,9 @@ describe("<maplace-map> on MapLibre", () => {
     await map.maplace.whenReady();
     map.maplace.select("milan");
     const center = () => map.maplace.getSnapshot().viewport?.center;
-    await expect.poll(center, LOAD).toEqual({ lat: near(45.46), lng: near(9.19) });
+    await expect
+      .poll(center, LOAD)
+      .toEqual({ lat: expect.closeTo(45.46, 1), lng: expect.closeTo(9.19, 1) });
     const kept = center();
     const first = map.querySelector(".maplibregl-map");
     map.setAttribute("map-style", OTHER_STYLE);
@@ -75,9 +73,10 @@ describe("<maplace-map> on MapLibre", () => {
     await map.maplace.whenReady();
     expect(first?.isConnected).toBe(false);
     expect(map.maplace.getSnapshot().selectedId).toBe("milan");
-    await expect
-      .poll(center, LOAD)
-      .toEqual({ lat: near(kept?.lat ?? 90, 0.01), lng: near(kept?.lng ?? 180, 0.01) });
+    await expect.poll(center, LOAD).toEqual({
+      lat: expect.closeTo(kept?.lat ?? 90, 2),
+      lng: expect.closeTo(kept?.lng ?? 180, 2),
+    });
   });
 
   it("reports bad map-options as misuse naming map-options.center, and opens once corrected", async () => {

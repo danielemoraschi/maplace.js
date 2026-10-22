@@ -157,6 +157,16 @@ describe("dragging MapLibre's markers", () => {
     expect(host.reportsOf("reportLocationChange")).toHaveLength(1);
   });
 
+  it("shows the hand that drags over an editable marker, and a pointer once it only selects", async () => {
+    const icon = document.createElement("span");
+    const { adapter, state } = await withEditableMarker({ renderIcon: () => icon });
+    const element = elementsOf(state, "a").element as HTMLElement;
+    expect(getComputedStyle(element).cursor).toBe("grab");
+    const drawn = placedMarker(state, "a").drawable();
+    await adapter.apply(updating({ ...drawn, editable: false }));
+    expect(getComputedStyle(element).cursor).toBe("pointer");
+  });
+
   it("puts a marker no longer editable back in the pin layer, not draggable", async () => {
     const { adapter, state } = await withEditableMarker();
     await adapter.apply(updating(markerDrawable("a", ORIGIN, { editable: false })));

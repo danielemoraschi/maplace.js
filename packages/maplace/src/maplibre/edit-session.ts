@@ -1,5 +1,5 @@
 import { editReportsFor } from "../adapter-kit/edit-reports";
-import { sameGeometry } from "../adapter-kit/same-geometry";
+import { sameGeometry, sameList } from "../adapter-kit/same-geometry";
 import type { Geometry } from "../geometry";
 import { editedBy, type HandlePlace, handlePlacesOf, sameRole } from "./edit-geometry";
 import {
@@ -14,7 +14,7 @@ import {
 
 /** One shape's editing: its handles, kept on the geometry it shows. */
 export interface ShapeEditing {
-  /** Puts the handles on `geometry`, unless they show it already, as after the store's write-back. */
+  /** Puts the handles on `geometry`, unless they show it already (the store's write-back). */
   follow(geometry: Geometry): void;
   /** The handles on the map now. */
   handles(): readonly EditHandle[];
@@ -67,13 +67,7 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
   }
 
   function fits(places: readonly HandlePlace[]): boolean {
-    return (
-      places.length === handles.length &&
-      places.every((place, index) => {
-        const handle = handles[index];
-        return handle !== undefined && sameRole(place.role, handle.role);
-      })
-    );
+    return sameList<HandlePlace | EditHandle>(places, handles, (a, b) => sameRole(a.role, b.role));
   }
 
   function removeAll(): void {
@@ -81,29 +75,30 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     handles = [];
   }
 
+  // Each step reports last: a page's listener runs inside the report, and may stop the editing
+  // (destroying the map), so nothing is placed after it.
   function moved(handle: EditHandle): void {
     const edited = editedWith(handle);
     dragging = true;
     site.onEdit(edited);
-    if (isEdit(edited) || reportedThisDrag) {
-      reports.moving(edited);
-      reportedThisDrag = true;
-    }
     // A midpoint's drag adds a point: the other handles wait for the drop.
     if (handle.role.kind !== "midpoint") showHandles(handlePlacesOf(edited), handle);
+    if (isEdit(edited) || reportedThisDrag) {
+      reportedThisDrag = true;
+      reports.moving(edited);
+    }
   }
 
   function dropped(handle: EditHandle): void {
     const edited = editedWith(handle);
+    const changed = isEdit(edited);
     dragging = false;
     reportedThisDrag = false;
-    if (isEdit(edited)) {
-      shown = edited;
-      reports.ended(edited);
-    }
+    if (changed) shown = edited;
     site.onEdit(shown);
     // Back on its place too when the drag edited nothing: a radius handle on its bearing.
     showHandles(handlePlacesOf(shown));
+    if (changed) reports.ended(edited);
   }
 
   return {

@@ -10,7 +10,6 @@ import {
   LICENSES_FILE,
   ownCodeBuildOptions,
 } from "./cdn-builds.ts";
-import { esmBuildOptions } from "./esm-build.ts";
 import { leaveOutClustering } from "./leave-out-clustering.ts";
 import { packagesLoadedBy } from "./loaded-by.ts";
 import { PACKAGE_ENTRIES, ROOT, SRC } from "./package.ts";
@@ -21,9 +20,14 @@ const outdir = tempDir("cdn");
 const read = (file: string) => readFileSync(join(outdir, file), "utf8");
 
 let metafiles: Readonly<Record<CdnScript, Metafile>>;
+/** maplace's own code in the MapLibre script, as its budget measures it: every package left out. */
+let ownMapLibreCode: Metafile;
 
 beforeAll(async () => {
-  metafiles = await buildCdnScripts(outdir);
+  [metafiles, { metafile: ownMapLibreCode }] = await Promise.all([
+    buildCdnScripts(outdir),
+    bundleInMemory(ownCodeBuildOptions("maplibre")),
+  ]);
 });
 
 describe("the CDN scripts", () => {
@@ -53,18 +57,18 @@ describe("the CDN scripts", () => {
     }
   });
 
-  it("bundle into the MapLibre script every package its npm entry loads, clustering's included", async () => {
-    const { metafile } = await bundleInMemory(esmBuildOptions());
+  it("bundle into the MapLibre script every package its code loads, clustering's included", () => {
     const bundled = bundledPackages([metafiles.maplibre]).map((dir) =>
       dir.split("node_modules/").at(-1),
     );
-    const loaded = [...packagesLoadedBy(metafile, PACKAGE_ENTRIES.elementMapLibre)];
+    const loaded = [...packagesLoadedBy(ownMapLibreCode, PACKAGE_ENTRIES.elementMapLibre)];
+    expect(loaded).toEqual(expect.arrayContaining(["maplibre-gl", "supercluster"]));
     expect(bundled).toEqual(expect.arrayContaining(loaded));
   });
 
-  it("measure maplace's own code in the MapLibre script without maplibre-gl", async () => {
-    const { metafile } = await bundleInMemory(ownCodeBuildOptions("maplibre"));
-    expect(Object.keys(metafile.inputs).some((input) => input.includes("maplibre-gl"))).toBe(false);
+  it("measure maplace's own code in the MapLibre script without maplibre-gl", () => {
+    const inputs = Object.keys(ownMapLibreCode.inputs);
+    expect(inputs.some((input) => input.includes("maplibre-gl"))).toBe(false);
   });
 
   it("bundle the clusterer only into the cluster script", () => {
@@ -73,7 +77,7 @@ describe("the CDN scripts", () => {
     expect(read(CDN_SCRIPTS.plain)).toContain(CDN_SCRIPTS.cluster);
   });
 
-  it("ship the notices of exactly the packages they bundle: the clusterer and its own", () => {
+  it("ship the notices of exactly the packages they bundle: the clusterers, maplibre-gl and their own", () => {
     const noticed = Array.from(read(LICENSES_FILE).matchAll(/^--- (\S+) /gm), ([, name]) => name);
     expect(noticed).toEqual([
       "@googlemaps/markerclusterer",

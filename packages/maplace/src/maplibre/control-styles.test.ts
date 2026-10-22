@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   CONTROL_CLASS as GOOGLE_CONTROL_CLASS,
   CONTROL_STYLES as GOOGLE_CONTROL_STYLES,
+  GOOGLE_MAP_CLASS,
 } from "../google/control-styles";
 import { selectorsOf, unguardedSelectorsOf, weighsNothing } from "../testing/selectors";
 import { LIST_CLASS } from "../views/headed";
@@ -12,9 +13,12 @@ import { CONTROL_CLASS, CONTROL_STYLES } from "./control-styles";
 /** Each rule in `css` as written, one a line, keeping what a parser drops (`light-dark()`). */
 const rulesOf = (css: string) => css.trim().split("\n");
 
-/** Whether a rule of Google's sheet also matches a panel on MapLibre, which carries neither. */
+/**
+ * Whether a rule of Google's sheet also matches a panel on MapLibre: one keyed to neither the
+ * panel's `data-color-scheme` nor Google's map element, which a MapLibre panel never has.
+ */
 const reachesMapLibrePanels = (rule: string) =>
-  !rule.includes("[data-color-scheme") && !rule.includes(".maplace-google-map");
+  !rule.includes("[data-color-scheme") && !rule.includes(`.${GOOGLE_MAP_CLASS}`);
 
 describe("CONTROL_STYLES on MapLibre", () => {
   it("weighs nothing, so any rule of the page wins", () => {

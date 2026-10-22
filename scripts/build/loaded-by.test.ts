@@ -1,22 +1,23 @@
 import type { Metafile } from "esbuild";
 import { describe, expect, it } from "vitest";
+import type { OutputImport } from "../checks/in-memory-bundle.ts";
 import { outputsLoadedBy, packagesLoadedBy } from "./loaded-by.ts";
 
-type Import = Metafile["outputs"][string]["imports"][number];
-
-const statically = (path: string, external = false): Import => ({
+const statically = (path: string, external = false): OutputImport => ({
   path,
   kind: "import-statement",
   external,
 });
-const onDemand = (path: string, external = false): Import => ({
+const onDemand = (path: string, external = false): OutputImport => ({
   path,
   kind: "dynamic-import",
   external,
 });
 
 /** A metafile of these outputs, each with its entry point (if any) and its imports. */
-function metafileOf(outputs: Record<string, { entryPoint?: string; imports: Import[] }>): Metafile {
+function metafileOf(
+  outputs: Record<string, { entryPoint?: string; imports: OutputImport[] }>,
+): Metafile {
   const entries = Object.entries(outputs).map(([path, { entryPoint, imports }]) => [
     path,
     { bytes: 0, inputs: {}, exports: [], imports, ...(entryPoint ? { entryPoint } : {}) },

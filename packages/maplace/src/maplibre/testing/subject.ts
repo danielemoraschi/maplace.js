@@ -1,7 +1,7 @@
 import "./stylesheet";
 import { Map as MapLibreMap } from "maplibre-gl";
 import { elementFilling } from "../../adapter-kit/map-element";
-import type { ConformanceGroup, ConformanceSubject } from "../../testing/conformance/subject";
+import type { ConformanceSubject } from "../../testing/conformance/subject";
 import { assembleMapLibreAdapter } from "../assemble";
 import type { MapLibreAdapterOptions } from "../options";
 import { probedMapState } from "./probe";
@@ -9,22 +9,6 @@ import { TEST_STYLE } from "./test-style";
 
 /** The tests' MapLibre adapter: on the local test style, so nothing leaves the machine. */
 export const TEST_OPTIONS: MapLibreAdapterOptions = { mapStyle: TEST_STYLE };
-
-/** Every group: `route` skips by capability, as MapLibre has no routing. */
-const MAPLIBRE_GROUPS: readonly ConformanceGroup[] = [
-  "declarations",
-  "lifecycle",
-  "drawing",
-  "editing",
-  "presentation",
-  "popups",
-  "camera",
-  "reports",
-  "container",
-  "route",
-  "cluster",
-  "controls",
-];
 
 /** A new MapLibre adapter, its probe, and the map state the adapter draws into. */
 export function maplibreParts(options = TEST_OPTIONS) {
@@ -35,7 +19,6 @@ export function maplibreParts(options = TEST_OPTIONS) {
 /** MapLibre on a map it creates, for the conformance suite. */
 export const MAPLIBRE_SUBJECT: ConformanceSubject = {
   name: "maplibre",
-  groups: MAPLIBRE_GROUPS,
   create: () => maplibreParts(),
 };
 
@@ -49,7 +32,6 @@ const pageMaps: MapLibreMap[] = [];
  */
 export const PAGE_MAP_SUBJECT: ConformanceSubject = {
   name: "maplibre on the page's map",
-  groups: MAPLIBRE_GROUPS,
   create: (container) =>
     container.isConnected ? maplibreParts({ map: pageMapIn(container) }) : maplibreParts(),
 };

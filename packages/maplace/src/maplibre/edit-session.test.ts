@@ -53,8 +53,8 @@ const CIRCLE = circleDrawable("c").geometry;
 /** A shape's editing on a stub map, with what it reported and drew. */
 function editing(geometry: Geometry) {
   const host = createRecordingHost();
-  const hover = createHoverReports(() => (closed.value ? undefined : host));
   const closed = { value: false };
+  const hover = createHoverReports(() => (closed.value ? undefined : host));
   const container = document.createElement("div");
   const mounted = {
     map: { getContainer: () => container },
@@ -83,6 +83,13 @@ function handleWith(handles: readonly EditHandle[], role: object): StubMarker {
   );
   if (found === undefined) throw new Error(`no handle ${JSON.stringify(role)}`);
   return markerOf(found);
+}
+
+/** Drags `marker` to `to` and holds it there, not let go. */
+function hold(marker: StubMarker, to: LatLng): void {
+  marker.fire("dragstart");
+  marker.setLngLat([to.lng, to.lat]);
+  marker.fire("drag");
 }
 
 /** Drags `marker` through `points`, a `drag` at each, and lets go at the last. */
@@ -135,10 +142,7 @@ describe("a shape's editing session", () => {
 
   it("moves the circle's radius handles with its centre while it is dragged", () => {
     const { session, markers } = editing(CIRCLE);
-    const centre = handleWith(session.handles(), { kind: "center" });
-    centre.fire("dragstart");
-    centre.setLngLat([1, 1]);
-    centre.fire("drag");
+    hold(handleWith(session.handles(), { kind: "center" }), { lat: 1, lng: 1 });
     const north = handleWith(session.handles(), { kind: "radius", bearing: 0 });
     expect(north.lngLat.lng).toBeCloseTo(1, 6);
     expect(north.lngLat.lat).toBeGreaterThan(1);
@@ -177,12 +181,26 @@ describe("a shape's editing session", () => {
 
   it("draws the shape as it was when stopped in the middle of a drag", () => {
     const { session, drawn } = editing(POLYGON);
-    const corner = handleWith(session.handles(), holeCorner);
-    corner.fire("dragstart");
-    corner.setLngLat([MOVED_HOLE_CORNER.lng, MOVED_HOLE_CORNER.lat]);
-    corner.fire("drag");
+    hold(handleWith(session.handles(), holeCorner), MOVED_HOLE_CORNER);
     session.stop();
     expect(drawn.at(-1)).toEqual(POLYGON);
+  });
+
+  // A page's listener runs inside the report: one destroying the map stops the editing there.
+  it("leaves no handle on the map when stopped by the change's listener", () => {
+    const { session, host, markers } = editing(POLYGON);
+    const before = markers();
+    host.reportLocationChange = () => session.stop();
+    drag(handleWith(session.handles(), holeCorner), MOVED_HOLE_CORNER);
+    expect(session.handles()).toEqual([]);
+    expect(before.every((marker) => marker.removed)).toBe(true);
+  });
+
+  it("leaves no handle on the map when stopped by an edit's listener", () => {
+    const { session, host } = editing(POLYGON);
+    host.reportLocationEdit = () => session.stop();
+    hold(handleWith(session.handles(), holeCorner), MOVED_HOLE_CORNER);
+    expect(session.handles()).toEqual([]);
   });
 
   it("takes every handle off when stopped", () => {

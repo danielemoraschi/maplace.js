@@ -9,15 +9,60 @@ import { wrappedLongitude } from "./conversions";
  */
 export const CIRCLE_SEGMENTS = 128;
 
+type Ring = GeoJSON.Position[];
+
 /**
  * The ring a circle is drawn as on the sphere, closed as GeoJSON's are: its longitudes run on
  * from its centre's, past ±180 where it crosses, so MapLibre draws it in one piece.
  */
-export function circleRing({ center, radius }: CircleGeometry): GeoJSON.Position[] {
+export function circleRing(circle: CircleGeometry): Ring {
+  const { center, radius } = circle;
   const ring = Array.from({ length: CIRCLE_SEGMENTS }, (_, index) =>
     offsetPosition(center, radius, (index * 360) / CIRCLE_SEGMENTS),
   );
-  return [...ring, ...ring.slice(0, 1)];
+  const pole = poleWithin(circle);
+  const drawn = pole === undefined ? ring : overPole(ring, circle, pole);
+  return [...drawn, ...drawn.slice(0, 1)];
+}
+
+type Pole = 90 | -90;
+
+/**
+ * The latitude of the pole within `circle`; none when it is round neither, or round both (wider
+ * than a hemisphere).
+ */
+function poleWithin({ center, radius }: CircleGeometry): Pole | undefined {
+  const arc = radius / EARTH_RADIUS;
+  const lat = center.lat * RADIANS_PER_DEGREE;
+  const roundNorth = arc > Math.PI / 2 - lat;
+  const roundSouth = arc > Math.PI / 2 + lat;
+  if (roundNorth === roundSouth) return undefined;
+  return roundNorth ? 90 : -90;
+}
+
+/**
+ * A ring round a pole goes once round the world, its longitudes jumping 360° where it passes the
+ * pole, 180° from its centre's: there it runs on to that meridian, over the pole (the map's edge,
+ * where MapLibre clamps it) and back from the meridian's other side, so the circle is filled up to
+ * the edge it covers.
+ */
+function overPole(ring: Ring, { center, radius }: CircleGeometry, pole: Pole): Ring {
+  const [, past = pole] = offsetPosition(center, radius, pole > 0 ? 0 : 180);
+  const jump = ring.findIndex(
+    ([lng = 0], index) => Math.abs(lng - (ring[index - 1]?.[0] ?? lng)) > 180,
+  );
+  const at = jump === -1 ? ring.length : jump;
+  const meridianBeside = ([lng = 0]: GeoJSON.Position = []) =>
+    center.lng + 180 * Math.sign(lng - center.lng);
+  const from = meridianBeside(ring[at - 1]);
+  const to = meridianBeside(ring[at % ring.length]);
+  const over = [
+    [from, past],
+    [from, pole],
+    [to, pole],
+    [to, past],
+  ];
+  return [...ring.slice(0, at), ...over, ...ring.slice(at)];
 }
 
 /** The point `metres` from `from` heading `bearing` degrees clockwise from north. */
@@ -36,7 +81,11 @@ export function metresBetween(a: LatLng, b: LatLng): number {
   return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(Math.min(1, h)));
 }
 
-/** The destination on the sphere, as `[lng, lat]`, its longitude within 180° of `from`'s. */
+/**
+ * The destination on the sphere, as `[lng, lat]`, its longitude within 180° of `from`'s. The
+ * longitude's step has cos(lat) divided out of both its terms, so it holds at a pole, where they
+ * would both be nought and the ring round it collapse.
+ */
 function offsetPosition(from: LatLng, metres: number, bearing: number): GeoJSON.Position {
   const angle = metres / EARTH_RADIUS;
   const heading = bearing * RADIANS_PER_DEGREE;
@@ -45,8 +94,8 @@ function offsetPosition(from: LatLng, metres: number, bearing: number): GeoJSON.
     Math.sin(lat1) * Math.cos(angle) + Math.cos(lat1) * Math.sin(angle) * Math.cos(heading);
   const lat2 = Math.asin(sinLat2);
   const lngStep = Math.atan2(
-    Math.sin(heading) * Math.sin(angle) * Math.cos(lat1),
-    Math.cos(angle) - Math.sin(lat1) * sinLat2,
+    Math.sin(heading) * Math.sin(angle),
+    Math.cos(lat1) * Math.cos(angle) - Math.sin(lat1) * Math.sin(angle) * Math.cos(heading),
   );
   return [from.lng + lngStep / RADIANS_PER_DEGREE, lat2 / RADIANS_PER_DEGREE];
 }

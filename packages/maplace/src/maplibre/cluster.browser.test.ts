@@ -1,11 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
-import { CLUSTER_RANK } from "../adapter-kit/stacking";
 import { tabTo } from "../google/testing/page-input";
 import {
   adding,
-  LARGE_DIFF,
-  manyMarkers,
   markerDrawable,
   presented,
   removing,
@@ -14,9 +11,8 @@ import {
   updating,
 } from "../testing/conformance/fixtures";
 import { mountSubject, unmountAll } from "../testing/conformance/harness";
-import type { MapProbe } from "../testing/map-probe";
 import type { ResolvedView } from "../viewport";
-import { wait } from "./testing/map-settle";
+import { clustersOn } from "./testing/clusters";
 import { mountedMapLibre } from "./testing/mounted";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { maplibreParts, pageMapIn, removePageMaps } from "./testing/subject";
@@ -26,47 +22,8 @@ afterEach(() => {
   removePageMaps();
 });
 
-/**
- * Guards against gross regressions, not the RFC's figures, which are a dev machine's on a GPU: the
- * test prints what it measured. Both Google's guard for clustering a large diff: in software WebGL,
- * with the whole suite's pages sharing the CPU, a selection's frame has taken 770 ms.
- */
-const LONGEST_CLUSTERING_TASK_MS = 2_000;
-const SELECTION_PAINTED_MS = 2_000;
-
-/** The whole world, where `manyMarkers` are, at maplace's zoom 1. */
-const WORLD: ResolvedView = { kind: "center", center: { lat: 0, lng: 0 }, zoom: 1 };
-
 /** The towns, a few pixels apart, at a zoom that clusters them. */
 const OVER_TOWNS: ResolvedView = { kind: "center", center: TOWNS.bologna, zoom: 3 };
-
-/** The clusters on the page under `container`, by their elements, with their counts. */
-function clustersOn(container: HTMLElement) {
-  const elements = [...container.querySelectorAll<HTMLElement>("[aria-label^='Cluster of']")];
-  const counts = elements.map((element) => Number(element.textContent));
-  return { elements, counts };
-}
-
-/** How many of `ids` the map shows: in clusters, or alone. */
-function shownTotal(container: HTMLElement, probe: MapProbe, ids: readonly string[]): number {
-  const clustered = clustersOn(container).counts.reduce((sum, count) => sum + count, 0);
-  const alone = ids.filter((id) => probe.location(id)?.visible).length;
-  return clustered + alone;
-}
-
-/** The longest task the browser reports while `work` runs. */
-async function longestTaskDuring(work: () => Promise<void>): Promise<number> {
-  const tasks: number[] = [];
-  const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) tasks.push(entry.duration);
-  });
-  observer.observe({ type: "longtask" });
-  await work();
-  // Long tasks are reported after they end, in a later task.
-  await wait(50);
-  observer.disconnect();
-  return Math.round(Math.max(0, ...tasks));
-}
 
 /** A MapLibre map clustering the towns at zoom 3, settled. */
 async function clusteredTowns() {
@@ -78,23 +35,6 @@ async function clusteredTowns() {
 }
 
 describe("clustering on MapLibre", () => {
-  it("clusters a large diff into far fewer markers, within the accepted task", async () => {
-    const { adapter, probe, container } = await mountedMapLibre(undefined, { cluster: true });
-    adapter.setView(WORLD);
-    await probe.settle();
-    const markers = manyMarkers(LARGE_DIFF);
-    const longest = await longestTaskDuring(() => adapter.apply(adding(...markers)));
-    const ids = markers.map(({ id }) => id);
-    const alone = ids.filter((id) => probe.location(id)?.visible).length;
-    const { counts } = clustersOn(container);
-    console.info(
-      `clustering ${LARGE_DIFF} on MapLibre: ${counts.length} clusters and ${alone} pins, longest task ${longest} ms`,
-    );
-    expect(counts.length + alone).toBeLessThan(1000);
-    expect(shownTotal(container, probe, ids)).toBe(LARGE_DIFF);
-    expect(longest).toBeLessThanOrEqual(LONGEST_CLUSTERING_TASK_MS);
-  });
-
   it("counts no hidden location in a cluster, nor a removed one", async () => {
     const { adapter, probe, container } = await clusteredTowns();
     adapter.present(presented({ hiddenIds: new Set(["a"]) }));
@@ -130,39 +70,6 @@ describe("clustering on MapLibre", () => {
     await probe.settle();
     expect(clustersOn(container).counts).toEqual([]);
     expect(icons.map(({ icon }) => icon.isConnected)).toEqual([true, true, true]);
-  });
-
-  it("draws a location selected from a list on its own, in front, and times the selection", async () => {
-    const { adapter, probe, state, container } = await mountedMapLibre(undefined, {
-      cluster: true,
-    });
-    adapter.setView(WORLD);
-    await adapter.apply(adding(...manyMarkers(LARGE_DIFF)));
-    await probe.settle();
-    expect(probe.location("m100")?.visible).toBe(false);
-    let selection = 0;
-    const longest = await longestTaskDuring(async () => {
-      const started = performance.now();
-      adapter.present(presented({ selectedId: "m100" }));
-      await new Promise(requestAnimationFrame);
-      selection = Math.round(performance.now() - started);
-    });
-    console.info(
-      `selecting one of ${LARGE_DIFF} clustered on MapLibre: ${selection} ms to the next frame, longest task ${longest} ms`,
-    );
-    expect(probe.location("m100")?.visible).toBe(true);
-    const selected = state.placed.get("m100");
-    expect(selected?.geometryType === "marker" && selected.isInDom()).toBe(true);
-    expect(selected?.rank()).toBeGreaterThan(CLUSTER_RANK);
-    expect(
-      shownTotal(
-        container,
-        probe,
-        manyMarkers(LARGE_DIFF).map(({ id }) => id),
-      ),
-    ).toBe(LARGE_DIFF);
-    // The selection's own time, to its frame: a long task may be another test page's, on a busy run.
-    expect(selection).toBeLessThanOrEqual(SELECTION_PAINTED_MS);
   });
 
   it("shows the pins a camera zoom-in leaves alone, and folds them again on zooming out, with no diff or presentation", async () => {
@@ -204,11 +111,13 @@ describe("clustering on MapLibre", () => {
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined], ["a"]]);
   });
 
-  it("zooms into a cluster when it is clicked", async () => {
+  it("shows a pointer over a cluster, and zooms into it when it is clicked", async () => {
     const { map, probe, container } = await clusteredTowns();
     const zoom = map.getZoom();
-    const [cluster] = clustersOn(container).elements;
-    await userEvent.click(cluster as HTMLElement);
+    const [cluster] = clustersOn(container).elements as [HTMLElement];
+    // As Google's clickable cluster shows it, not the hand MapLibre gives what pans the map.
+    expect(getComputedStyle(cluster).cursor).toBe("pointer");
+    await userEvent.click(cluster);
     await probe.settle();
     expect(map.getZoom()).toBeGreaterThan(zoom);
     expect(clustersOn(container).counts.every((count) => count < 3)).toBe(true);

@@ -30,6 +30,21 @@ export async function bundleInMemory(options: BuildOptions): Promise<Bundle> {
  * imports on demand (the clustering chunk), nor the packages it leaves to the page (React).
  */
 export function reachableOutputs(metafile: Metafile, entry: string): Set<string> {
+  return outputsReached(metafile, entry, ({ kind }) => kind === "import-statement");
+}
+
+/** An import of a build's output, as esbuild's metafile records it. */
+export type OutputImport = Metafile["outputs"][string]["imports"][number];
+
+/**
+ * The outputs reached from `entry`'s own output through the imports `follows` takes; a package
+ * left to the page (an external import) is never followed.
+ */
+export function outputsReached(
+  metafile: Metafile,
+  entry: string,
+  follows: (imported: OutputImport) => boolean,
+): Set<string> {
   const start = Object.keys(metafile.outputs).find(
     (path) => metafile.outputs[path]?.entryPoint === entry,
   );
@@ -39,8 +54,8 @@ export function reachableOutputs(metafile: Metafile, entry: string): Set<string>
   for (let path = toVisit.pop(); path !== undefined; path = toVisit.pop()) {
     if (reached.has(path)) continue;
     reached.add(path);
-    for (const { path: imported, kind, external } of metafile.outputs[path]?.imports ?? []) {
-      if (kind === "import-statement" && !external) toVisit.push(imported);
+    for (const imported of metafile.outputs[path]?.imports ?? []) {
+      if (!imported.external && follows(imported)) toVisit.push(imported.path);
     }
   }
   return reached;

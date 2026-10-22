@@ -45,7 +45,8 @@ const PRESSING_KEYS = new Set(["Enter", " "]);
 
 /**
  * maplace's element for something on the map a user presses, as a button: reached with Tab,
- * stacked by `rank`, pressed by a click, Enter or Space. Its click is its own: the map never sees it.
+ * stacked by `rank`, pressed by a click, Enter or Space, a pointer over it as over Google's clickable
+ * markers. Its click is its own: the map never sees it.
  */
 export function pressableElement(
   document: Document,
@@ -56,6 +57,7 @@ export function pressableElement(
   element.tabIndex = 0;
   element.setAttribute("role", "button");
   element.style.zIndex = String(rank);
+  element.style.cursor = "pointer";
   element.addEventListener("click", (event) => {
     event.stopPropagation();
     press(event);
@@ -95,6 +97,7 @@ export function createDomMarker(
   setTitle(element, drawable.title);
   const marker = new maplibre.Marker({ element, anchor: "bottom", draggable });
   marker.setLngLat(lngLatOf(at));
+  showDragCursor(element, draggable);
   reportInput(element, marker, drawable.id, site);
   let shown = false;
 
@@ -117,10 +120,18 @@ export function createDomMarker(
       element.style.zIndex = String(next);
     },
     setVisible,
-    setDraggable: (next) => marker.setDraggable(next),
+    setDraggable(next) {
+      marker.setDraggable(next);
+      showDragCursor(element, next);
+    },
     height: () => element.offsetHeight,
     remove: () => setVisible(false),
   };
+}
+
+/** MapLibre's hand over a marker a user drags (its draggable class), else the pressable's pointer. */
+function showDragCursor(element: HTMLElement, draggable: boolean): void {
+  element.style.cursor = draggable ? "" : "pointer";
 }
 
 function setTitle(element: HTMLElement, title: string | undefined): void {

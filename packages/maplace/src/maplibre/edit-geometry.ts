@@ -1,6 +1,7 @@
+import { latOf, yOf } from "../adapter-kit/web-mercator";
 import type { CircleGeometry, Geometry, LatLng } from "../geometry";
 import { metresBetween, pointAtBearing } from "./circle-sphere";
-import { nearestLongitude } from "./location-features";
+import { nearestLongitude } from "./conversions";
 
 /**
  * What one edit handle moves. `ring` 0 is a polyline's path or a polygon's outline, `ring` k its
@@ -95,10 +96,14 @@ function radiusTo(center: LatLng, point: LatLng): number {
   return Math.round(metresBetween(center, point) * MILLIMETRES_PER_METRE) / MILLIMETRES_PER_METRE;
 }
 
-/** Halfway in latitude, and halfway the short way in longitude, across ±180 too. */
+/**
+ * Halfway along the edge as MapLibre draws it, a straight line on the Mercator plane: halfway in
+ * Mercator y, and halfway the short way in longitude, across ±180 too.
+ */
 function midpointOf(from: LatLng, to: LatLng): LatLng {
   const lng = (from.lng + nearestLongitude(to.lng, from.lng)) / 2;
-  return { lat: (from.lat + to.lat) / 2, lng: nearestLongitude(lng, 0) };
+  const y = (yOf(from.lat) + yOf(to.lat)) / 2;
+  return { lat: latOf(y), lng: nearestLongitude(lng, 0) };
 }
 
 /** Each segment of `ring` as its two ends; a closed ring's last runs back to its first point. */

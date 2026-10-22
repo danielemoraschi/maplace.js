@@ -79,10 +79,17 @@ function dragHandles(placed: PlacedShape, geometry: Geometry): void {
 
 /** Puts the handle `role` names at `to`, and lets MapLibre's drag events tell the adapter. */
 function dragHandle(placed: PlacedShape, role: HandleRole, to: LatLng): void {
+  holdHandle(placed, role, to).drop();
+}
+
+/** Drags the handle `role` names to `to` and holds it there, a drag not let go until `drop`. */
+export function holdHandle(placed: PlacedShape, role: HandleRole, to: LatLng) {
   const handle = placed.editHandles().find((each) => sameRole(each.role, role));
   if (handle === undefined) throw new Error(`no ${role.kind} handle to drag`);
   handle.marker.setLngLat([to.lng, to.lat]);
-  for (const type of ["dragstart", "drag", "dragend"] as const) handle.marker.fire(type);
+  handle.marker.fire("dragstart");
+  handle.marker.fire("drag");
+  return { drop: () => handle.marker.fire("dragend") };
 }
 
 /**
@@ -131,9 +138,12 @@ function geometryOf({ geometry }: LocationFeature, placed: PlacedShape): Geometr
   if (geometry.type !== "Polygon") throw new Error(`no shape is drawn as a ${geometry.type}`);
   const [path = [], ...holes] = geometry.coordinates.map((ring) => ring.slice(0, -1).map(latLngOf));
   const shown = placed.drawable().geometry;
-  if (shown.type === "circle") return circleDrawn(path, shown);
+  // A ring round a pole runs over it, by points at ±90° that are not on the circle.
+  if (shown.type === "circle") return circleDrawn(path.filter(offPole), shown);
   return { type: "polygon", path, holes: holes.length > 0 ? holes : undefined };
 }
+
+const offPole = ({ lat }: LatLng) => Math.abs(lat) !== 90;
 
 /** How far a drawn circle's points may be from its radius, as a share of it. */
 const RING_TOLERANCE = 1e-6;

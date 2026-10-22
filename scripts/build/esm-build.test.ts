@@ -14,6 +14,11 @@ const SUPERCLUSTER = "supercluster";
 const REACT = ["react", "react-dom"];
 const MAPLIBRE = "maplibre-gl";
 const ELEMENT_ENTRIES = ["maplace/element", "maplace/element/google", "maplace/element/maplibre"];
+/**
+ * The entries on MapLibre, by name in `PACKAGE_ENTRIES`: they alone load maplibre-gl and
+ * supercluster.
+ */
+const ON_MAPLIBRE = new Set(["maplibre", "elementMapLibre"]);
 
 const { consumerDir, packageDir, manifest: stagedManifest } = stagedBeforeTests("esm");
 
@@ -93,7 +98,7 @@ describe("the npm ESM build", () => {
   it("bundles no dependency: it imports the clusterers, React and maplibre-gl by name", () => {
     const bare = [...scripts(join(packageDir, "dist")).values()].flatMap(bareImportsOf);
     expect(new Set(bare.map(packageName))).toEqual(
-      new Set([CLUSTERER, SUPERCLUSTER, ...REACT, "maplibre-gl"]),
+      new Set([CLUSTERER, SUPERCLUSTER, ...REACT, MAPLIBRE]),
     );
   });
 
@@ -106,9 +111,7 @@ describe("the npm ESM build", () => {
 
   it("keeps maplibre-gl out of everything every other entry may load, on demand too", async () => {
     const metafile = await esmMetafile();
-    const others = Object.entries(PACKAGE_ENTRIES).filter(
-      ([name]) => name !== "maplibre" && name !== "elementMapLibre",
-    );
+    const others = Object.entries(PACKAGE_ENTRIES).filter(([name]) => !ON_MAPLIBRE.has(name));
     for (const [name, entry] of others) {
       expect(packagesLoadedBy(metafile, entry).has(MAPLIBRE), name).toBe(false);
     }
@@ -123,8 +126,7 @@ describe("the npm ESM build", () => {
   it("loads supercluster only with MapLibre's clustering, on demand", async () => {
     const metafile = await esmMetafile();
     for (const [name, entry] of Object.entries(PACKAGE_ENTRIES)) {
-      const isMapLibre = name === "maplibre" || name === "elementMapLibre";
-      expect(packagesLoadedBy(metafile, entry).has(SUPERCLUSTER), name).toBe(isMapLibre);
+      expect(packagesLoadedBy(metafile, entry).has(SUPERCLUSTER), name).toBe(ON_MAPLIBRE.has(name));
     }
     const built = [...scripts(join(packageDir, "dist"))];
     const clustering = built.filter(([, text]) => bareImportsOf(text).includes(SUPERCLUSTER));

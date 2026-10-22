@@ -9,8 +9,8 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
 - **Popups:** on Google's white bubble, dark text inset as Google insets its left side.
-- **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme.
-- **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint.
+- **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
+- **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint.
 
 Every selector is wrapped in `:where()` and weighs nothing, so any rule of the page wins: `.maplace-option { padding: 0 }` is enough to change the entries' padding.
 
