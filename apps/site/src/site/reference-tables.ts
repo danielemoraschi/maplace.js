@@ -129,6 +129,7 @@ const ENTRY_NAMES: Readonly<Record<keyof typeof PACKAGE_ENTRIES, string>> = {
   maplibre: "maplace/maplibre",
   element: "maplace/element",
   elementGoogle: "maplace/element/google",
+  elementMapLibre: "maplace/element/maplibre",
   react: "maplace/react",
 };
 

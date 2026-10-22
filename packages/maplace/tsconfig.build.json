@@ -13,6 +13,7 @@
     "src/maplibre/index.ts",
     "src/element/index.ts",
     "src/element/google.ts",
+    "src/element/maplibre.ts",
     "src/react/index.ts"
   ],
   "include": []

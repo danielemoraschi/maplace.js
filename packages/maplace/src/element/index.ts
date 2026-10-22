@@ -41,9 +41,10 @@ export { defineListView } from "./list-views";
  * Attributes:
  * - `provider`: registered provider name; defaults to the only one registered. A change opens
  *   the map again on it.
- * - `color-scheme`, `map-options`: the map's colour scheme and the provider's map options
- *   (Google: `light`, `dark`, `follow-system`; a JSON object of its map options). A change opens
- *   the map again where it was.
+ * - `color-scheme`, `map-style`, `map-options`: the map's settings (Google: its colour scheme,
+ *   `light`, `dark` or `follow-system`, and a JSON object of its map options; MapLibre: the style
+ *   URL or JSON style object, and a JSON object of its map options). A change opens the map again
+ *   where it was.
  * - `list`: present = list view; `list="select"` = native select; `list="<name>"` = a view given
  *   to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
@@ -54,7 +55,8 @@ export { defineListView } from "./list-views";
  * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `hold`: stay idle, with no provider request and no list built, until `release()`.
- * - provider attributes, such as `api-key` and `map-id` for Google, read when the map opens.
+ * - provider attributes, such as `api-key` and `map-id` for Google, or `map-style` for MapLibre,
+ *   read when the map opens.
  *
  * The store is created when the element first connects (or `maplace`, `locations` or `route` is
  * first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as

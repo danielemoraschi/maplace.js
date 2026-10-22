@@ -3,6 +3,8 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { relativeLinksIn } from "../docs/markdown.ts";
 import { CDN_SCRIPTS } from "./cdn-builds.ts";
+import { pinnedScriptsIn } from "./cdn-pins.ts";
+import { readRootFile } from "./package.ts";
 import { stagedBeforeTests } from "./staged-test-package.ts";
 import { integrityOfFile } from "./subresource-integrity.ts";
 
@@ -15,9 +17,12 @@ describe("the staged package", () => {
     }
   });
 
-  it("ships a README pinning each CDN script to its version and its integrity", () => {
+  it("ships a README pinning each CDN script it names to its version and its integrity", () => {
     const readme = readFileSync(join(packageDir, "README.md"), "utf8");
-    for (const file of Object.values(CDN_SCRIPTS)) {
+    const named = pinnedScriptsIn(readRootFile("README.md"));
+    expect(named.length).toBeGreaterThan(0);
+    for (const file of named) {
+      expect(Object.values(CDN_SCRIPTS)).toContain(file);
       const integrity = integrityOfFile(join(packageDir, "dist", file));
       expect(readme).toContain(
         `maplace@${manifest().version}/dist/${file}"\n  integrity="${integrity}"`,

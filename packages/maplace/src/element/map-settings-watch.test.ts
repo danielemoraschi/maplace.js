@@ -21,6 +21,20 @@ describe("createMapSettingsWatch", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
+  it("calls back once map-style changes", async () => {
+    const { host, onChange } = watched({ "map-style": "https://tiles.example/a.json" });
+    host.setAttribute("map-style", "https://tiles.example/b.json");
+    await nextTask();
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("takes an empty map-style as a missing one", async () => {
+    const { host, onChange } = watched();
+    host.setAttribute("map-style", "");
+    await nextTask();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it("calls back once for both settings changed in one task", async () => {
     const { host, onChange } = watched();
     host.setAttribute("color-scheme", "light");

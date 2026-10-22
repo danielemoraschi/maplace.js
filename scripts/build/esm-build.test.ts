@@ -3,13 +3,26 @@ import { join } from "node:path";
 import { buildSync } from "esbuild";
 import { describe, expect, it } from "vitest";
 import { importsOf, packageName } from "../checks/imports.ts";
-import { ROOT } from "./package.ts";
+import { type Bundle, bundleInMemory } from "../checks/in-memory-bundle.ts";
+import { esmBuildOptions } from "./esm-build.ts";
+import { packagesLoadedBy } from "./loaded-by.ts";
+import { PACKAGE_ENTRIES, ROOT } from "./package.ts";
 import { stagedBeforeTests } from "./staged-test-package.ts";
 
 const CLUSTERER = "@googlemaps/markerclusterer";
 const REACT = ["react", "react-dom"];
+const MAPLIBRE = "maplibre-gl";
+const ELEMENT_ENTRIES = ["maplace/element", "maplace/element/google", "maplace/element/maplibre"];
 
 const { consumerDir, packageDir, manifest: stagedManifest } = stagedBeforeTests("esm");
+
+let esmBuilt: Promise<Bundle> | undefined;
+
+/** The npm ESM build made in memory, once for the tests that read its metafile. */
+async function esmMetafile() {
+  esmBuilt ??= bundleInMemory(esmBuildOptions());
+  return (await esmBuilt).metafile;
+}
 
 /** Every `.js` file under `dir`, by path relative to it, with its text. */
 function scripts(dir: string): Map<string, string> {
@@ -23,7 +36,8 @@ function bareImportsOf(text: string): string[] {
 
 /**
  * What a page's bundler (esbuild here, honouring `sideEffects`) keeps of `code`: against the
- * built package, or against its source as the repo's own tools (the site) resolve it.
+ * built package, or against its source as the repo's own tools (the site) resolve it. maplibre-gl
+ * is the page's own install, resolved by its bundler.
  */
 function bundledPage(code: string, { fromSource = false } = {}): string {
   const result = buildSync({
@@ -32,7 +46,7 @@ function bundledPage(code: string, { fromSource = false } = {}): string {
     bundle: true,
     write: false,
     format: "esm",
-    external: [CLUSTERER],
+    external: [CLUSTERER, MAPLIBRE],
     logLevel: "silent",
   });
   return result.outputFiles[0]?.text ?? "";
@@ -53,6 +67,7 @@ describe("the npm ESM build", () => {
         "google/index.js",
         "element/index.js",
         "element/google.js",
+        "element/maplibre.js",
         "react/index.js",
         "maplibre/index.js",
       ]),
@@ -79,11 +94,20 @@ describe("the npm ESM build", () => {
     expect(usingReact.map(([file]) => file)).toEqual(["react/index.js"]);
   });
 
-  it("leaves maplibre-gl to the MapLibre entry alone, so no other entry needs it", () => {
-    const usingMapLibre = [...scripts(join(packageDir, "dist"))].filter(([, text]) =>
-      bareImportsOf(text).some((path) => packageName(path) === "maplibre-gl"),
+  it("keeps maplibre-gl out of everything every other entry may load, on demand too", async () => {
+    const metafile = await esmMetafile();
+    const others = Object.entries(PACKAGE_ENTRIES).filter(
+      ([name]) => name !== "maplibre" && name !== "elementMapLibre",
     );
-    expect(usingMapLibre.map(([file]) => file)).toEqual(["maplibre/index.js"]);
+    for (const [name, entry] of others) {
+      expect(packagesLoadedBy(metafile, entry).has(MAPLIBRE), name).toBe(false);
+    }
+  });
+
+  it("has the element's MapLibre entry load maplibre-gl, as the adapter's does", async () => {
+    const metafile = await esmMetafile();
+    expect(packagesLoadedBy(metafile, PACKAGE_ENTRIES.elementMapLibre)).toContain(MAPLIBRE);
+    expect(packagesLoadedBy(metafile, PACKAGE_ENTRIES.maplibre)).toContain(MAPLIBRE);
   });
 
   it('opens the React entry, and only it, with "use client", for server components', () => {
@@ -93,18 +117,18 @@ describe("the npm ESM build", () => {
     expect(clientEntries.map(([file]) => file)).toEqual(["react/index.js"]);
   });
 
-  it("keeps the elements' definition in a page's bundle, for either element entry", () => {
-    expect(bundledPage('import "maplace/element";')).toContain("customElements.define");
-    expect(bundledPage('import "maplace/element/google";')).toContain("customElements.define");
+  it.each(ELEMENT_ENTRIES)("keeps the elements' definition in a page's bundle: %s", (entry) => {
+    expect(bundledPage(`import "${entry}";`)).toContain("customElements.define");
   });
 
-  it("keeps them from the source too, for the repo's own pages", () => {
-    const fromSource = { fromSource: true };
-    expect(bundledPage('import "maplace/element";', fromSource)).toContain("customElements.define");
-    expect(bundledPage('import "maplace/element/google";', fromSource)).toContain(
-      "customElements.define",
-    );
-  });
+  it.each(ELEMENT_ENTRIES)(
+    "keeps them from the source too, for the repo's own pages: %s",
+    (entry) => {
+      expect(bundledPage(`import "${entry}";`, { fromSource: true })).toContain(
+        "customElements.define",
+      );
+    },
+  );
 
   it("leaves nothing of the core in a page's bundle that uses none of it", () => {
     expect(bundledPage('import "maplace";').trim()).toBe("");

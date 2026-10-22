@@ -2,6 +2,7 @@
 // (scripts/checks/consumer-types.ts): React's types come from the page's own install.
 import type { Location, LocationState } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
+import { createMapLibreAdapter } from "maplace/maplibre";
 import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
@@ -35,6 +36,18 @@ export function Towns({ onPick }: { readonly onPick: (id: string | undefined) =>
         {({ location }) => `${location.id}: ${location.data?.population ?? 0}`}
       </LocationList>
       <Fit />
+    </MaplaceProvider>
+  );
+}
+
+export function TownsOnMapLibre() {
+  return (
+    <MaplaceProvider locations={towns}>
+      <MaplaceMap<{ population: number }>
+        createAdapter={createMapLibreAdapter}
+        className="map"
+        popupContent={population}
+      />
     </MaplaceProvider>
   );
 }

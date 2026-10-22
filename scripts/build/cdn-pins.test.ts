@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pinnedSnippetOf, withPinnedScripts } from "./cdn-pins.ts";
+import { pinnedScriptsIn, pinnedSnippetOf, withPinnedScripts } from "./cdn-pins.ts";
 
 const PINNED = (file: string) =>
   `<script src="https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/${file}"\n  integrity="sha384-…" crossorigin="anonymous"></script>`;
@@ -40,6 +40,15 @@ describe("withPinnedScripts", () => {
     expect(() => withPinnedScripts("# maplace\n", { version: "1.2.0", integrityOf })).toThrow(
       "README.md has no pinned script (maplace@x.y.z/dist/… with integrity) to fill in",
     );
+  });
+});
+
+describe("pinnedScriptsIn", () => {
+  it("names each script the README pins, in order", () => {
+    expect(pinnedScriptsIn(README)).toEqual([
+      "maplace-element.iife.js",
+      "maplace-element-cluster.iife.js",
+    ]);
   });
 });
 

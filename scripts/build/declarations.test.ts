@@ -21,7 +21,7 @@ describe("the declarations", () => {
     const typed = Object.values(packageManifest().exports).flatMap((target) =>
       typeof target === "string" || target.types === undefined ? [] : [target.types],
     );
-    expect(typed).toHaveLength(6);
+    expect(typed).toHaveLength(7);
     for (const types of typed) {
       expect(existsSync(join(outdir, types.replace("./dist/", "")))).toBe(true);
     }

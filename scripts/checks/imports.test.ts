@@ -10,6 +10,8 @@ describe("layerOf", () => {
     expect(layerOf("location-state")).toBe("data");
     expect(layerOf("adapter")).toBe("contract");
     expect(layerOf("element/google")).toBe("wiring");
+    expect(layerOf("element/maplibre")).toBe("maplibre-wiring");
+    expect(layerOf("element/maplibre-attributes")).toBe("maplibre-wiring");
     expect(layerOf("google/index")).toBe("google-entry");
     expect(layerOf("google/google-map")).toBe("google-entry");
     expect(layerOf("google/create-adapter")).toBe("google");
@@ -62,6 +64,15 @@ describe("problemsIn", () => {
     ).toEqual([
       "element/google.ts: imports ../google (google-entry); wiring may import data, contract, element, google, validation",
     ]);
+  });
+
+  it("keeps the element's MapLibre wiring to maplace/maplibre's entry (contract 5)", () => {
+    const importing = (path: string) =>
+      problemsIn("element/maplibre.ts", `import { createMapLibreAdapter } from "${path}";`);
+    expect(importing("../maplibre/create-adapter")).toEqual([
+      "element/maplibre.ts: imports ../maplibre/create-adapter (maplibre); maplibre-wiring may import data, contract, element, maplibre-entry, validation",
+    ]);
+    expect(importing("../maplibre/index")).toEqual([]);
   });
 
   it("reports a view importing an adapter", () => {
