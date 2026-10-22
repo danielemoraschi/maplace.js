@@ -7,16 +7,19 @@ interface Props {
   name: string;
   /** Why the example runs on Google only, said beside the switch and as its description. */
   googleOnlyBecause?: string | undefined;
+  /** Where its row places it. */
+  class?: string;
 }
 
-const { name, googleOnlyBecause } = Astro.props;
+const { name, googleOnlyBecause, class: placement } = Astro.props;
 const providers = exampleProviders(name);
 // `example-` keeps the site's ids apart from the pages' own.
 const reasonId = `example-${name}-provider-reason`;
 ---
 
-<div class="flex items-center gap-3 text-sm">
+<div class:list={["flex items-center gap-3 text-sm", placement]}>
   <fieldset
+    data-site-switch
     class="group/provider relative m-0 grid shrink-0 grid-cols-2 border-2 border-ink p-0 font-medium"
     aria-describedby={googleOnlyBecause && reasonId}
   >

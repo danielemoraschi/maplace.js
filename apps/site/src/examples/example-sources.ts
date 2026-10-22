@@ -36,7 +36,7 @@ const FILES = import.meta.glob<string>(
 );
 
 /** An example's page in its own folder: its MapLibre page (`<name>/maplibre/`) isn't another. */
-const TOP_LEVEL_PAGE = new RegExp(String.raw`^${EXAMPLES}/([^/]+)/page\.html$`);
+const TOP_LEVEL_PAGE = /\/examples\/([^/]+)\/page\.html$/;
 
 /** Each version's files: the HTML it runs on first. */
 const VERSION_FILES: Readonly<Record<VersionKind, readonly string[]>> = {

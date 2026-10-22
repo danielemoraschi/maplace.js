@@ -1,14 +1,8 @@
 import type { Browser, BrowserContext, ConsoleMessage, Locator, Page } from "playwright";
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 import { TEST_STYLE } from "../../../packages/maplace/src/maplibre/testing/test-style.ts";
-import type { Provider } from "../src/examples/example-providers.ts";
-import type { VersionKind } from "../src/examples/example-versions.ts";
-import {
-  GOOGLE_MAPS,
-  goesToMapProvider,
-  OPENFREEMAP,
-  thirdPartyOf,
-} from "../src/site/third-parties.ts";
+import { OPENFREEMAP_STYLES } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
+import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 
 /**
  * Maps JS as far as a version waits for it: `importLibrary` there, its libraries never coming.
@@ -29,9 +23,6 @@ export type GoogleAnswer = "refused" | "stubbed" | "reached";
  * for), anything else refused.
  */
 export type OpenFreeMapAnswer = "refused" | "local";
-
-/** Where OpenFreeMap serves its styles (`…/styles/liberty`, `…/styles/dark`). */
-export const OPENFREEMAP_STYLES = `https://${OPENFREEMAP.domains[0]}/styles/`;
 
 export interface VisitorOptions {
   readonly google?: GoogleAnswer;
@@ -168,59 +159,18 @@ export const addedByBootstrap = (url: string) => url.includes("__ib__");
 /** The page's first map: every section has one, so a locator for all would match them all. */
 export const firstMap = (page: Page) => page.locator("maplace-map").first();
 
+/** The footer's switch that turns the maps on, or off, on every page. */
+export const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
+
+/** Opens the home page of the site at `siteUrl` and scrolls to its first map. */
+export async function openHome(page: Page, siteUrl: string): Promise<void> {
+  await page.goto(siteUrl);
+  await firstMap(page).scrollIntoViewIfNeeded();
+}
+
 /** The consent placeholders' "Load maps" buttons within `scope`. */
 export const loadMapsButtons = (scope: Page | Locator) =>
   scope.getByRole("button", { name: "Load maps", exact: true });
 
 /** The page's first "Load maps" button. */
 export const placeholder = (page: Page) => loadMapsButtons(page).first();
-
-/** Runs `example`'s section's map from `version` (its label): the switch above its frame. */
-export function chooseVersion(page: Page, example: string, version: string): Promise<void> {
-  return checkRadio(page, example, version);
-}
-
-/** Runs `example`'s section's map on `provider` (its label): the switch in its heading row. */
-export function chooseProvider(page: Page, example: string, provider: string): Promise<void> {
-  return checkRadio(page, example, provider);
-}
-
-async function checkRadio(page: Page, example: string, label: string): Promise<void> {
-  const section = await sectionOf(page, example);
-  await section.getByRole("radio", { name: label, exact: true }).check();
-}
-
-/** `kind`'s version on `provider` of the example in `section`. */
-export function providerVersionIn(
-  section: Locator,
-  provider: Provider,
-  kind: VersionKind,
-): Locator {
-  return section.locator(`[data-live-version="${kind}"][data-provider="${provider}"]`);
-}
-
-/**
- * Takes every other example's section off the page: consent releases each map that comes near
- * the screen, and a neighbour's (about 190px away) would load too, unchecked.
- */
-export function leaveOnlySection(page: Page, name: string): Promise<void> {
-  return page.evaluate((own) => {
-    for (const section of document.querySelectorAll("section:has(.map-frame)")) {
-      if (section.id !== own) section.remove();
-    }
-  }, name);
-}
-
-/** Chooses `example`'s tab `name` (Map, HTML, Vanilla, React), and gives back its section. */
-export async function chooseTab(page: Page, example: string, name: string): Promise<Locator> {
-  const section = await sectionOf(page, example);
-  await section.getByRole("tab", { name }).click();
-  return section;
-}
-
-/** `example`'s section on the home page, scrolled into view. */
-export async function sectionOf(page: Page, example: string): Promise<Locator> {
-  const section = page.locator(`section#${example}`);
-  await section.scrollIntoViewIfNeeded();
-  return section;
-}

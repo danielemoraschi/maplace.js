@@ -50,9 +50,11 @@ const panel = (tab: string) => `example-${name}-${tab}`;
       <p class="m-0 text-muted">{summary}</p>
     </div>
     {/* Level with the title's line, however far the summary wraps beside it. */}
-    <div class="ml-auto shrink-0 max-[640px]:ml-0">
-      <ProviderSwitch name={name} googleOnlyBecause={googleOnlyBecause} />
-    </div>
+    <ProviderSwitch
+      name={name}
+      googleOnlyBecause={googleOnlyBecause}
+      class="ml-auto shrink-0 max-[640px]:ml-0"
+    />
   </div>
   {
     dataLinks.length > 0 && (
@@ -105,7 +107,6 @@ const panel = (tab: string) => `example-${name}-${tab}`;
         {codes.map((code) => (
           <div
             data-provider-files={code.provider}
-            data-example={name}
             hidden={code.provider !== FIRST_PROVIDER}
           >
             <ExampleFiles version={code} />

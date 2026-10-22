@@ -18,11 +18,11 @@ function section(name: string): string {
     return `<div data-live-version="${kind}" data-provider="${provider}" data-example="${name}"${hidden}></div>`;
   };
   const files = (provider: string) =>
-    `<div data-provider-files="${provider}" data-example="${name}"${provider === "google" ? "" : " hidden"}></div>`;
+    `<div data-provider-files="${provider}"${provider === "google" ? "" : " hidden"}></div>`;
   // As the site's sections are: the switch's two groups apart, the example's own input between.
-  return `<section data-version-switch="${name}">
-    <fieldset>${radios("provider", PROVIDERS)}</fieldset>
-    <fieldset>${radios("version", VERSIONS)}</fieldset>
+  return `<section id="${name}" data-version-switch="${name}">
+    <fieldset data-site-switch>${radios("provider", PROVIDERS)}</fieldset>
+    <fieldset data-site-switch>${radios("version", VERSIONS)}</fieldset>
     <label><input type="checkbox" data-own-input /> North only</label>
     <div class="map-frame"><p data-map-failure></p><p data-saved hidden></p>${PROVIDERS.flatMap((provider) => VERSIONS.map((kind) => version(kind, provider))).join("")}</div>
     <div role="tabpanel">${PROVIDERS.map(files).join("")}</div>
@@ -36,7 +36,7 @@ const shown = (name: string) =>
     .map(({ dataset }) => `${dataset.provider} ${dataset.liveVersion}`);
 
 const filesShown = (name: string) =>
-  [...document.querySelectorAll<HTMLElement>(`[data-provider-files][data-example="${name}"]`)]
+  [...document.querySelectorAll<HTMLElement>(`#${name} [data-provider-files]`)]
     .filter((files) => !files.hidden)
     .map(({ dataset }) => dataset.providerFiles);
 

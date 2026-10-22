@@ -1,8 +1,6 @@
 /// <reference types="vite/client" />
 import { vi } from "vitest";
-
-/** Where a MapLibre version finds its style unless it names another: OpenFreeMap's. */
-export const OPENFREEMAP_STYLES = "https://tiles.openfreemap.org/styles/";
+import { OPENFREEMAP_STYLES } from "./openfreemap-styles";
 
 /** The data the example pages fetch, by path: `examples/data/mixed-a.json` is `/mixed-a.json`. */
 const EXAMPLE_DATA: Readonly<Record<string, unknown>> = Object.fromEntries(

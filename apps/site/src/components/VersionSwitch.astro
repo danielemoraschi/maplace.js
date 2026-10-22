@@ -9,7 +9,7 @@ interface Props {
 const { name } = Astro.props;
 ---
 
-<fieldset class="m-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm">
+<fieldset data-site-switch class="m-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm">
   <legend class="float-left p-0 text-muted max-[640px]:w-full">Run the map from</legend>
   {
     VERSION_LABELS.map(({ kind, label }) => (

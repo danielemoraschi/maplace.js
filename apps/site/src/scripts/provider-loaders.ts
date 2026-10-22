@@ -10,7 +10,10 @@ export type ProviderImports = ElementLoaders & {
 
 /** What the site loads on demand for its providers. */
 export interface ProviderLoaders {
-  /** Readies MapLibre before any map of its runs: its stylesheet and its worker, once. */
+  /**
+   * Readies MapLibre before any map of its runs: its stylesheet and its worker. The module loads
+   * once, and pointing maplibre-gl at its worker again changes nothing.
+   */
   readonly readyMapLibre: () => Promise<void>;
   /** Loads each provider's element, MapLibre's with MapLibre readied. */
   readonly elementLoaders: ElementLoaders;
@@ -28,26 +31,13 @@ const SITE_IMPORTS: ProviderImports = {
  * imports maplibre-gl only once a map opens, which waits for the element's load to resolve.
  */
 export function providerLoaders(imports: ProviderImports): ProviderLoaders {
-  const readyMapLibre = onceUnlessFailed(async () => {
-    const assets = await imports.mapLibreAssets();
-    assets.useBuiltWorker();
-  });
-  const loadMapLibre = async () => {
-    const [element] = await Promise.all([imports.maplibre(), readyMapLibre()]);
-    return element;
-  };
-  return { readyMapLibre, elementLoaders: { google: imports.google, maplibre: loadMapLibre } };
-}
-
-/** `run`, run on the first call only, unless it failed: then on the next call again. */
-function onceUnlessFailed(run: () => Promise<void>): () => Promise<void> {
-  let running: Promise<void> | undefined;
-  return () => {
-    running ??= run().catch((error: unknown) => {
-      running = undefined;
-      throw error;
-    });
-    return running;
+  const readyMapLibre = async () => (await imports.mapLibreAssets()).useBuiltWorker();
+  return {
+    readyMapLibre,
+    elementLoaders: {
+      google: imports.google,
+      maplibre: () => Promise.all([imports.maplibre(), readyMapLibre()]),
+    },
   };
 }
 

@@ -1,21 +1,13 @@
 import { setTimeout as pause } from "node:timers/promises";
-import type { MaplaceMapElement } from "maplace/element";
 import type { Locator } from "playwright";
 import type { VersionKind } from "../src/examples/example-versions.ts";
 import { ON_GOOGLE } from "./google-session.ts";
+import { providerVersionIn } from "./home-sections.ts";
 import { SETTLE_MS } from "./site-session.ts";
-import { providerVersionIn } from "./visitor.ts";
 
 /** `kind`'s version on Google of the example in `section`. */
 export function versionIn(section: Locator, kind: VersionKind): Locator {
   return providerVersionIn(section, "google", kind);
-}
-
-/** The page version's map's `loadState`, which says when Google's map is ready. */
-export function pageMapState(section: Locator): Promise<string | undefined> {
-  return versionIn(section, "html")
-    .locator("maplace-map")
-    .evaluate((map) => (map as MaplaceMapElement).loadState);
 }
 
 /**

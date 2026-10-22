@@ -1,7 +1,7 @@
 import type { MaplaceMapElement } from "maplace/element";
 import type { Locator, Page } from "playwright";
 import type { VersionKind } from "../src/examples/example-versions.ts";
-import { providerVersionIn } from "./visitor.ts";
+import { providerVersionIn } from "./home-sections.ts";
 
 /**
  * What maplace warns of on a page that runs MapLibre without its stylesheet: the probe that
@@ -13,11 +13,6 @@ export const MISSING_STYLESHEET = "MapLibre's stylesheet is missing";
 /** `kind`'s version on MapLibre of the example in `section`. */
 export function mapLibreVersionIn(section: Locator, kind: VersionKind): Locator {
   return providerVersionIn(section, "maplibre", kind);
-}
-
-/** The `loadState` of the page map in `version`, which says when its map is ready. */
-export function pageMapState(version: Locator): Promise<string | undefined> {
-  return version.locator("maplace-map").evaluate((map) => (map as MaplaceMapElement).loadState);
 }
 
 /**

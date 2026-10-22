@@ -23,17 +23,20 @@ export interface SiteSession {
 }
 
 /** How a session's visitors see the site, unless a test says otherwise. */
-export type SeenSite = Pick<VisitorOptions, "google" | "seenAt">;
+export type SeenSite = Pick<VisitorOptions, "google" | "openFreeMap" | "seenAt">;
 
 /** The map ID the site is built with. */
 export const SITE_MAP_ID = "site-map-id";
+
+/** The site's build settings as it ships, its key never a real one. */
+export const AS_SHIPPED = { SITE_MAPS_KEY: "not-a-real-key", SITE_MAPS_MAP_ID: SITE_MAP_ID };
 
 /**
  * The site built with a key (never a real one) and a map ID, and a browser to visit it, ready
  * before the test file's tests run, closed after them.
  */
 export function siteBuiltBeforeTests(): SiteSession {
-  return builtSiteSession({ SITE_MAPS_KEY: "not-a-real-key", SITE_MAPS_MAP_ID: SITE_MAP_ID });
+  return builtSiteSession(AS_SHIPPED);
 }
 
 /**

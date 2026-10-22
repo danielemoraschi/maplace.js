@@ -1,4 +1,3 @@
-import type { Page } from "playwright";
 import { describe, it } from "vitest";
 import { describeWithKey } from "../../../packages/maplace/src/google/testing/with-key.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
@@ -6,16 +5,19 @@ import { VERSION_LABELS } from "../src/examples/example-versions.ts";
 import {
   googleRefused,
   markersDrawn,
-  pageMapState,
   settledMarkers,
   tilesDrawn,
   versionIn,
 } from "./drawn-on-google.ts";
 import { ON_GOOGLE, SECTION_MS, siteOnGoogleBeforeTests } from "./google-session.ts";
-import { addedByBootstrap, chooseVersion, loadMapsButtons, sectionOf } from "./visitor.ts";
-
-/** A version as the section's switch offers it. */
-type VersionChoice = (typeof VERSION_LABELS)[number];
+import {
+  chooseVersion,
+  pageMapState,
+  type VersionChoice,
+  versionsInTurn,
+  visitSection,
+} from "./home-sections.ts";
+import { addedByBootstrap, loadMapsButtons } from "./visitor.ts";
 
 /** The versions the site runs from its own bundle, beside the page's. */
 const LIVE_VERSIONS = VERSION_LABELS.filter(({ kind }) => kind !== "html");
@@ -26,22 +28,9 @@ const LIVE_VERSIONS = VERSION_LABELS.filter(({ kind }) => kind !== "html");
  * others find it there.
  */
 const SECTIONS = EXAMPLE_SECTIONS.map(({ name }, index) => {
-  const turn = index % VERSION_LABELS.length;
-  const order = [...VERSION_LABELS.slice(turn), ...VERSION_LABELS.slice(0, turn)];
-  return { name, order, loader: order[0] as VersionChoice };
+  const order = versionsInTurn(index);
+  return { name, order, loader: order[0] };
 });
-
-/**
- * Takes every other example's section off the page: consent releases each map that comes near
- * the screen, and a neighbour's (about 190px away) would load too, billed and unchecked.
- */
-function leaveOnlySection(page: Page, name: string): Promise<void> {
-  return page.evaluate((own) => {
-    for (const section of document.querySelectorAll("section:has(.map-frame)")) {
-      if (section.id !== own) section.remove();
-    }
-  }, name);
-}
 
 // Every section's page, vanilla and React versions on real Google Maps, on the site as built and
 // served, with its key: each drawing Google's tiles, unrefused, the page's map ready, nothing
@@ -54,10 +43,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
       "draws $name on Google, its $loader.label version loading Maps JS",
       { timeout: SECTION_MS },
       async ({ name, order, loader }, { expect }) => {
-        const { page, context, errors, mapsJsRequests } = await site.visitor();
-        await page.goto(new URL(`/#${name}`, site.url).href);
-        await leaveOnlySection(page, name);
-        const section = await sectionOf(page, name);
+        const { page, context, errors, mapsJsRequests, section } = await visitSection(site, name);
 
         /** Waits for `kind`'s map to be drawn on Google, unrefused. */
         async function drawnOnGoogle({ kind, label }: VersionChoice): Promise<void> {
@@ -65,7 +51,10 @@ describeWithKey("the site's examples on Google Maps", (key) => {
           const version = versionIn(section, kind);
           if (kind === "html") {
             await expect
-              .poll(() => pageMapState(section), { ...ON_GOOGLE, message: `${drawn}: state` })
+              .poll(() => pageMapState(version), {
+                ...ON_GOOGLE,
+                message: `${drawn}: state`,
+              })
               .toBe("ready");
           }
           await expect

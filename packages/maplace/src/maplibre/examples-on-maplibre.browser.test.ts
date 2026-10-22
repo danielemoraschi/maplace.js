@@ -12,11 +12,12 @@ import {
 import { openHost } from "../testing/examples/example-hosts";
 import { openPage } from "../testing/examples/example-page";
 import type { ExampleRun } from "../testing/examples/example-runs";
+import { type OffsiteLog, serveExamplesOffline } from "../testing/examples/example-surroundings";
 import {
-  type OffsiteLog,
+  OPENFREEMAP_DARK as DARK,
+  OPENFREEMAP_LIBERTY as LIBERTY,
   OPENFREEMAP_STYLES,
-  serveExamplesOffline,
-} from "../testing/examples/example-surroundings";
+} from "../testing/examples/openfreemap-styles";
 import { recordErrors } from "../testing/examples/page-errors";
 import {
   recordedStoreCount,
@@ -39,8 +40,6 @@ vi.mock("maplace", async (importOriginal) => {
 const LOAD = { timeout: 15_000 };
 /** A reader's stylesheet gives the map its size; the pages leave that to them. */
 const PAGE_STYLE = "maplace-map { display: block; height: 240px; }";
-const LIBERTY = `${OPENFREEMAP_STYLES}liberty`;
-const DARK = `${OPENFREEMAP_STYLES}dark`;
 
 /** A version or page running on real MapLibre: its store, and the element holding it. */
 type RealRun = Pick<ExampleRun, "store" | "root">;
