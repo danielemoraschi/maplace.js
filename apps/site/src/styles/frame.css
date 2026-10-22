@@ -108,6 +108,13 @@
   .map-frame:has(.version[data-starting]:not([hidden])) .loading {
     display: block;
   }
+  /* A failure a reload mends offers one (`data-reload-mends`, `map-failures.ts`). */
+  [data-map-reload] {
+    display: none;
+  }
+  .map-frame:has(.version[data-reload-mends]:not([hidden])) [data-map-reload] {
+    display: block;
+  }
   /* Apart: a browser without `:state()` drops the whole rule. */
   .map-frame:has(.version:not([hidden]) maplace-map:state(error)) .failed,
   .map-frame:has(.version:not([hidden]) maplace-map:state(loading)) .loading {

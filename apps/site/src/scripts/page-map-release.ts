@@ -8,7 +8,8 @@ import type { ElementLoaders } from "./provider-loaders.ts";
 /**
  * What releases a page's map once its provider's element is loaded (`loaders`): each provider's
  * element loads once, with the first of its maps, and a map's page scripts run as it is
- * released, as the CDN script would have it. A failed load is noted on that map and tried again.
+ * released, as the CDN script would have it. A failed load is noted on that map, its note offering
+ * a reload, and tried again where the browser fetches it again (`releaseOnceDefined`).
  */
 export function pageMapRelease(loaders: ElementLoaders): (map: MaplaceMapElement) => Promise<void> {
   return byProvider({

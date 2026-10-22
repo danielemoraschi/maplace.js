@@ -37,7 +37,23 @@ describe("noteVersionFailure", () => {
     expect(note()).toBe(
       "The map couldn't load: Google Maps didn't load. A blocker, or the network?",
     );
-    expect(versionOn("google", "vanilla").hasAttribute("data-failed")).toBe(true);
+    expect(versionOn("google", "vanilla").dataset.failed).toBe("maps-js");
+  });
+
+  it("marks the version with the kind of failure, which says whether a reload can mend it", () => {
+    document.body.innerHTML = frame("vanilla maplibre");
+    noteVersionFailure(versionOn("maplibre", "vanilla"), "script");
+    expect(versionOn("maplibre", "vanilla").dataset.failed).toBe("script");
+    expect(versionOn("maplibre", "vanilla").hasAttribute("data-reload-mends")).toBe(true);
+  });
+
+  it("offers a reload for a script or Maps JS that didn't load, not for a missing key", () => {
+    document.body.innerHTML = frame("vanilla google");
+    const version = versionOn("google", "vanilla");
+    noteVersionFailure(version, "maps-js");
+    expect(version.hasAttribute("data-reload-mends")).toBe(true);
+    noteVersionFailure(version, "no-key");
+    expect(version.hasAttribute("data-reload-mends")).toBe(false);
   });
 
   it("says the site has no key, or the version's script didn't load", () => {
@@ -97,6 +113,7 @@ describe("noteScriptFailure", () => {
     clearScriptFailure(map);
     expect(versionOn("google").hasAttribute("data-failed")).toBe(false);
     expect(versionOn("google").hasAttribute("data-failure-note")).toBe(false);
+    expect(versionOn("google").hasAttribute("data-reload-mends")).toBe(false);
   });
 });
 
@@ -111,6 +128,16 @@ describe("startFailureNotes", () => {
       "The map couldn't load: Google refused this site's key.",
       "The map couldn't load: OpenFreeMap refused the map's style.",
     ]);
+  });
+
+  it("offers a reload for a page map whose provider didn't load, not for a refused key", () => {
+    document.body.innerHTML = frame("html google") + frame("html maplibre");
+    const [google, maplibre] = document.querySelectorAll<HTMLElement>("maplace-map");
+    startFailureNotes([google, maplibre] as HTMLElement[]);
+    fail(google, "provider-load-failed");
+    fail(maplibre, "provider-auth-failed");
+    expect(versionOn("google").hasAttribute("data-reload-mends")).toBe(true);
+    expect(versionOn("maplibre").hasAttribute("data-reload-mends")).toBe(false);
   });
 });
 

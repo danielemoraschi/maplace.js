@@ -44,8 +44,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   <div class="flex items-start gap-x-6 gap-y-2 max-[640px]:flex-col">
     <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
       <h2 class="m-0 text-3xl" id={`${name}-title`}>
-        <span class="mr-1 text-accent">{String(number).padStart(2, "0")}</span>
-        {title}
+        <span class="text-accent">{String(number).padStart(2, "0")}</span>{" "}{title}
       </h2>
       <p class="m-0 text-muted">{summary}</p>
     </div>

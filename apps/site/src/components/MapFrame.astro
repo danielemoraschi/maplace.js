@@ -50,6 +50,9 @@ const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-
     )
   }
   <p class={`map-note loading ${NOTE}`}>Loading the map…</p>
-  <p class={`map-note failed ${NOTE}`} data-map-failure>The map couldn't load.</p>
+  <p class={`map-note failed ${NOTE}`}>
+    <span data-map-failure>The map couldn't load.</span>{" "}
+    <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
+  </p>
   <ConsentPlaceholder />
 </div>

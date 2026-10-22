@@ -12,7 +12,8 @@ export interface ElementLoading<Held> {
 /**
  * The page's one load of the maps' element, shared by every map: each map asks to be released,
  * and is once the element is defined. A failed load is tried again on the next ask, and the maps
- * that waited are released with it.
+ * that waited are released with it: where the browser fetches a failed import again, which
+ * Chromium doesn't (W28), its note's reload then being the way back.
  */
 export function releaseOnceDefined<Held>({
   load,

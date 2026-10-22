@@ -61,7 +61,7 @@ describe("pageMapRelease", () => {
     const release = pageMapRelease(loaders(google));
     const rome = map("rome");
     await release(rome);
-    expect(rome.closest("[data-live-version]")?.hasAttribute("data-failed")).toBe(true);
+    expect(rome.closest<HTMLElement>("[data-live-version]")?.dataset.failed).toBe("script");
     await release(map("milan"));
     expect(released).toEqual(["rome", "milan"]);
     expect(rome.closest("[data-live-version]")?.hasAttribute("data-failed")).toBe(false);

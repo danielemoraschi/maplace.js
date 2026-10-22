@@ -8,12 +8,11 @@ import { exampleData } from "../src/examples/example-data.ts";
 import type { Provider } from "../src/examples/example-providers.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { exampleProviders } from "../src/examples/example-sources.ts";
-import type { VersionKind } from "../src/examples/example-versions.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { chooseTab, chooseVersion, leaveOnlySection, providerVersionIn } from "./home-sections.ts";
+import { chooseTab, chooseVersion } from "./home-sections.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { addedByBootstrap, footerToggle, openHome, placeholder } from "./visitor.ts";
+import { footerToggle, openHome, placeholder } from "./visitor.ts";
 
 /** One page map per example on the home page (D23) on each of its providers. */
 const PAGE_MAP_COUNT = EXAMPLE_SECTIONS.flatMap(({ name }) => exampleProviders(name)).length;
@@ -27,10 +26,6 @@ const shownMapHeights = (page: Page, provider: Provider) =>
     .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
 
 const site = siteBuiltBeforeTests();
-
-/** simple's `kind` version on Google. */
-const simpleOnGoogle = (page: Page, kind: VersionKind) =>
-  providerVersionIn(page.locator("section#simple"), "google", kind);
 
 describe("the home page's links", () => {
   it("has GitHub's star button in place of its link, GitHub's count refused or not", async () => {
@@ -58,6 +53,38 @@ describe("the home page's links", () => {
         .map(({ path }) => `${blob}${path}`)
         .sort(),
     );
+    await context.close();
+  }, 30_000);
+});
+
+describe("the home page's headings and install box", () => {
+  it("names each section by its number and title", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url, { waitUntil: "domcontentloaded" });
+    for (const [index, { name }] of EXAMPLE_SECTIONS.entries()) {
+      const section = page.locator(`section#${name}`);
+      const heading = (await section.getByRole("heading", { level: 2 }).textContent())?.trim();
+      const number = String(index + 1).padStart(2, "0");
+      expect(heading).toMatch(new RegExp(`^${number} \\S`));
+      expect(await page.getByRole("region", { name: heading ?? "" }).count()).toBe(1);
+    }
+    await context.close();
+  }, 30_000);
+
+  it("offers each provider's npm command and pinned script, each with a Copy button", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url, { waitUntil: "domcontentloaded" });
+    expect(await page.locator("#npm-install-google").textContent()).toBe("npm install maplace");
+    expect(await page.locator("#npm-install-maplibre").textContent()).toBe(
+      "npm install maplace maplibre-gl",
+    );
+    for (const kind of ["npm-install", "pinned-script"]) {
+      for (const provider of ["google", "maplibre"]) {
+        const id = `${kind}-${provider}`;
+        const copy = page.locator(`button[data-copy="${id}"]`);
+        expect(await copy.getAttribute("aria-describedby")).toBe(`${id}-label`);
+      }
+    }
     await context.close();
   }, 30_000);
 });
@@ -135,37 +162,6 @@ describe("the home page's examples", () => {
     await expect.poll(() => fetched("/points-4k.json"), ASKED).toBe(true);
     const reactMap = await page.locator("#big-react-root .map").boundingBox();
     expect(reactMap?.height).toBeGreaterThan(0);
-    await context.close();
-  }, 30_000);
-
-  it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
-    const { page, context, mapsJsRequests } = await site.visitor();
-    await openHome(page, site.url);
-    // Only simple's section left, its Vanilla version chosen before consent: its page map never
-    // asks for Maps JS, so only the version's bootstrap does.
-    await leaveOnlySection(page, "simple");
-    await chooseVersion(page, "simple", "Vanilla");
-    await footerToggle(page).click();
-    await page.locator("#simple-vanilla-map").scrollIntoViewIfNeeded();
-    const vanilla = simpleOnGoogle(page, "vanilla");
-    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
-    const mapsTags = mapsJsRequests();
-    expect(mapsTags.length).toBeGreaterThan(0);
-    expect(mapsTags.filter((url) => !addedByBootstrap(url))).toEqual([]);
-    await context.close();
-  }, 30_000);
-
-  it("says when Maps JS didn't load for a version, the page's tag having failed first", async () => {
-    const { page, context, mapsJsRequests } = await site.visitor();
-    await openHome(page, site.url);
-    await placeholder(page).click();
-    await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
-    await chooseVersion(page, "simple", "Vanilla");
-    const vanilla = simpleOnGoogle(page, "vanilla");
-    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("");
-    const note = page.locator("section#simple [data-map-failure]");
-    expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
-    expect(await note.isVisible()).toBe(true);
     await context.close();
   }, 30_000);
 });

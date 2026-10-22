@@ -1,8 +1,9 @@
 /**
  * The packages the dev server bundles before any page asks: each is imported only on demand (the
- * Google adapter's clusterer, MapLibre and its clusterer, a React version's React, the star
- * button's script), and one found that late makes the dev server bundle anew and refuse the
- * modules it had already handed out, as every React version did ("504 Outdated Optimize Dep").
+ * Google adapter's clusterer, MapLibre and its clusterer, a React version's React and React DOM,
+ * whose `createPortal` maplace's binding uses, the star button's script), and one found that late
+ * makes the dev server bundle anew and refuse the modules it had already handed out, as every
+ * React version did ("504 Outdated Optimize Dep").
  * maplace itself is its source.
  *
  * maplibre-gl is pre-bundled here while the root `vitest.config.ts` excludes it: a pre-bundled
@@ -15,6 +16,7 @@ export const PREBUNDLED_DEPS: readonly string[] = [
   "github-buttons",
   "maplibre-gl",
   "react",
+  "react-dom",
   "react/jsx-runtime",
   "react/jsx-dev-runtime",
   "react-dom/client",

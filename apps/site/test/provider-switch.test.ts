@@ -100,7 +100,7 @@ describe("the provider switch", () => {
     await expect.poll(() => onMapLibre.getAttribute("data-started"), ON_MAPLIBRE).toBe("");
     await chooseProvider(page, "simple", "Google");
     const onGoogle = providerVersionIn(section, "google", "vanilla");
-    await expect.poll(() => onGoogle.getAttribute("data-failed"), ASKED).toBe("");
+    await expect.poll(() => onGoogle.getAttribute("data-failed"), ASKED).toBe("maps-js");
     expect(mapsJsRequests().length).toBeGreaterThan(0);
     expect(await onMapLibre.getAttribute("data-failed")).toBeNull();
     await context.close();

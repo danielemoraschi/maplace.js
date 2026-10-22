@@ -16,6 +16,7 @@ import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { ELEMENT_LOADERS, readyMapLibre } from "./provider-loaders.ts";
+import { startReloadButtons } from "./reload-buttons.ts";
 import { startStarButtons } from "./star-buttons.ts";
 import { startTabs } from "./tabs.ts";
 import { versionStarter } from "./version-start.ts";
@@ -28,6 +29,7 @@ import { startVersionSwitches } from "./version-switch.ts";
 // run when it is released, once the element is defined, as the CDN script would have it. A
 // vanilla or React version, once chosen, starts the same way: consented and in view, its provider
 // readied (on Google, its bootstrap and Maps JS; on MapLibre, its worker), then its module run.
+// A map whose failure a reload mends (a script, Maps JS, a provider's map that didn't load) offers one.
 const mapsJs = watchMapsJs(document);
 const maps = [...document.querySelectorAll<MaplaceMapElement>("maplace-map[hold]")];
 const versions = [
@@ -59,6 +61,7 @@ const startVersion = versionStarter({
 
 mapsJs.whenFailed(() => noteMapsJsFailure(document));
 
+const reloadPage = () => location.reload();
 const openPageMaps = gateMaps(maps, { whenVisible, release });
 const openVersions = gateMaps(versions, { whenVisible, release: startVersion });
 
@@ -68,6 +71,7 @@ followNavFocus(document);
 startTabs(document);
 startVersionSwitches(document);
 startCopyButtons(document);
+startReloadButtons(document, reloadPage);
 void startStarButtons(document);
 startFailureNotes(maps);
 startConsent({
@@ -77,5 +81,5 @@ startConsent({
     openPageMaps();
     openVersions();
   },
-  reload: () => location.reload(),
+  reload: reloadPage,
 });

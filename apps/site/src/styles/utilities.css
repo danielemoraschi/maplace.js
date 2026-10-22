@@ -1,5 +1,5 @@
 /* The site's own looks, shared: `wrap` by its header, footer and main; `button-plain` by its
- * copy buttons and, in `frame.css`, an example's own buttons. */
+ * copy buttons, a failure note's reload button and, in `frame.css`, an example's own buttons. */
 @utility wrap {
   max-width: var(--container-measure);
   margin-inline: auto;
