@@ -17,8 +17,10 @@
   "sideEffects": [
     "./dist/element/index.js",
     "./dist/element/google.js",
+    "./dist/element/maplibre.js",
     "./src/element/index.ts",
-    "./src/element/google.ts"
+    "./src/element/google.ts",
+    "./src/element/maplibre.ts"
   ],
   "exports": {
     ".": {
@@ -45,6 +47,11 @@
       "maplace:source": "./src/element/google.ts",
       "types": "./dist/element/google.d.ts",
       "default": "./dist/element/google.js"
+    },
+    "./element/maplibre": {
+      "maplace:source": "./src/element/maplibre.ts",
+      "types": "./dist/element/maplibre.d.ts",
+      "default": "./dist/element/maplibre.js"
     },
     "./react": {
       "maplace:source": "./src/react/index.ts",

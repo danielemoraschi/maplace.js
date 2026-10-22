@@ -33,7 +33,12 @@ describe("providerFor", () => {
   });
 
   it.each([
-    ["none is registered", [], undefined, /no provider is registered/],
+    [
+      "none is registered",
+      [],
+      undefined,
+      /no provider is registered: import maplace\/element\/google or maplace\/element\/maplibre/,
+    ],
     [
       "the one named isn't",
       ["google"],

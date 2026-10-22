@@ -1,8 +1,10 @@
 import { rfcBudgets } from "./checks/rfc-numbers.ts";
-import { measureSizes } from "./checks/sizes.ts";
+import { measureSizes, SIZE_MEASURES } from "./checks/sizes.ts";
+
+const NAME_WIDTH = Math.max(...SIZE_MEASURES.map(({ name }) => name.length)) + 2;
 
 const row = (...cells: string[]) =>
-  cells.map((cell, i) => (i === 0 ? cell.padEnd(28) : cell.padStart(9))).join("");
+  cells.map((cell, i) => (i === 0 ? cell.padEnd(NAME_WIDTH) : cell.padStart(9))).join("");
 
 /** `npm run sizes`: each budget, what it measures now, and how much room is left (gzip kB). */
 async function printSizes(): Promise<void> {

@@ -22,7 +22,7 @@ describe("size budgets", () => {
     ]);
   });
 
-  it("measures every budget on the builds, the clusterer only in the cluster script", async () => {
+  it("measures every budget on the builds, the clusterer only in the cluster script, maplibre-gl only as served", async () => {
     const sizes = new Map(
       (await measureSizes()).map(({ measure, kilobytes }) => [measure.name, kilobytes]),
     );
@@ -31,5 +31,10 @@ describe("size budgets", () => {
       (sizes.get("element CDN with clustering") ?? 0) - (sizes.get("element CDN") ?? 0);
     // The clusterer and maplace's clustered layer.
     expect(clustering).toBeGreaterThan(5);
+    // maplibre-gl, its worker and its stylesheet: they are no part of maplace's own code.
+    const mapLibre =
+      (sizes.get("element CDN on MapLibre, as served") ?? 0) -
+      (sizes.get("element CDN on MapLibre") ?? 0);
+    expect(mapLibre).toBeGreaterThan(400);
   });
 });

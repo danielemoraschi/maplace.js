@@ -13,6 +13,11 @@ export interface Pin {
  */
 const PINNED_SCRIPT = /maplace@x\.y\.z\/dist\/([^"/]+)"(\s+)integrity="sha384-…"/g;
 
+/** The scripts the README pins, by file name, as the repo writes it. */
+export function pinnedScriptsIn(readme: string): string[] {
+  return Array.from(readme.matchAll(PINNED_SCRIPT), ([, file]) => file ?? "");
+}
+
 /** The version as the repo's README writes it, wherever it names one. */
 const ANY_VERSION = "maplace@x.y.z";
 

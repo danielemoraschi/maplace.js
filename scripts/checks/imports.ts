@@ -69,7 +69,7 @@ const LAYERS = {
   // The element makes stores and list views through the core's entry, as a page does; it reads
   // the data rules, and the adapter contract, store and list view for their types and constants.
   element: {
-    files: /^element\/(?!google(-|$)|testing\/)/,
+    files: /^element\/(?!google(-|$)|maplibre(-|$)|testing\/)/,
     imports: ["data", "contract", "store", "view", "entry"],
   },
   // The element's test support: maps on the fake adapter.
@@ -83,6 +83,13 @@ const LAYERS = {
   wiring: {
     files: /^element\/google(-[a-z-]+)?$/,
     imports: ["data", "contract", "element", "google", "validation"],
+  },
+  // The element's MapLibre provider uses maplace/maplibre only through its entry (contract 5), and
+  // maplibre-gl for types only; it checks its attributes with the store's checks.
+  "maplibre-wiring": {
+    files: /^element\/maplibre(-[a-z-]+)?$/,
+    imports: ["data", "contract", "element", "maplibre-entry", "validation"],
+    packages: ["maplibre-gl"],
   },
   // The React binding makes stores and list views through the entry, as the element does, and
   // reads the shared data rules, the store's equality and icon rules, the list view's own helpers

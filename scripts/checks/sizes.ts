@@ -1,4 +1,5 @@
-import { type CdnScript, cdnBuildOptions } from "../build/cdn-builds.ts";
+import type { BuildOptions } from "esbuild";
+import { type CdnScript, cdnBuildOptions, ownCodeBuildOptions } from "../build/cdn-builds.ts";
 import { esmBuildOptions } from "../build/esm-build.ts";
 import { PACKAGE_ENTRIES } from "../build/package.ts";
 import { gzipKilobytes } from "./bundle-size.ts";
@@ -9,7 +10,8 @@ import { rfcBudgets } from "./rfc-numbers.ts";
 
 /**
  * How one budget of RFC §3 Numbers is measured, on the builds `npm run build` makes: what a page
- * loads for an npm `entry`, less what it shares with `beside`; or a CDN script.
+ * loads for an npm `entry`, less what it shares with `beside`; a CDN script as served; or
+ * maplace's own code in one, without the packages it bundles.
  */
 export type SizeMeasure = {
   readonly name: string;
@@ -17,7 +19,7 @@ export type SizeMeasure = {
   readonly rfcRow: string;
 } & (
   | { readonly kind: "esm"; readonly entry: string; readonly beside?: string }
-  | { readonly kind: "cdn"; readonly script: CdnScript }
+  | { readonly kind: "cdn" | "cdn-own"; readonly script: CdnScript }
 );
 
 export const SIZE_MEASURES: readonly SizeMeasure[] = [
@@ -55,6 +57,19 @@ export const SIZE_MEASURES: readonly SizeMeasure[] = [
     kind: "cdn",
     script: "cluster",
   },
+  {
+    name: "element CDN on MapLibre",
+    rfcRow: "Element CDN build on MapLibre (core + MapLibre + list view + element)",
+    kind: "cdn-own",
+    script: "maplibre",
+  },
+  {
+    name: "element CDN on MapLibre, as served",
+    rfcRow:
+      "Element CDN build on MapLibre, as served (maplibre-gl, its worker and stylesheet bundled)",
+    kind: "cdn",
+    script: "maplibre",
+  },
 ];
 
 export interface Measurement {
@@ -65,19 +80,22 @@ export interface Measurement {
 
 /** Every budget measured on the package's builds, made in memory and minified. */
 export async function measureSizes(): Promise<Measurement[]> {
-  const [esm, plain, cluster] = await Promise.all([
-    bundleInMemory(esmBuildOptions()),
-    bundleInMemory(cdnBuildOptions("plain")),
-    bundleInMemory(cdnBuildOptions("cluster")),
-  ]);
-  const scripts: Record<CdnScript, Bundle> = { plain, cluster };
-  return SIZE_MEASURES.map((measure) => {
-    if (measure.kind === "cdn") {
-      const script = scripts[measure.script];
+  const esm = bundleInMemory(esmBuildOptions());
+  return Promise.all(
+    SIZE_MEASURES.map(async (measure) => {
+      if (measure.kind === "esm") {
+        const bundle = await esm;
+        return { measure, kilobytes: gzipKilobytes(bundle, loadedBy(bundle, measure)) };
+      }
+      const script = await bundleInMemory(cdnScriptBuildOptions(measure));
       return { measure, kilobytes: gzipKilobytes(script, scriptsOf(script)) };
-    }
-    return { measure, kilobytes: gzipKilobytes(esm, loadedBy(esm, measure)) };
-  });
+    }),
+  );
+}
+
+/** A CDN measure's build: the script as served, or maplace's own code in it. */
+function cdnScriptBuildOptions({ kind, script }: CdnMeasure): BuildOptions {
+  return kind === "cdn" ? cdnBuildOptions(script) : ownCodeBuildOptions(script);
 }
 
 /** Each entry over its RFC budget, and each budget measured or written in one place only. */
@@ -99,6 +117,7 @@ export async function check(
 }
 
 type EsmMeasure = Extract<SizeMeasure, { kind: "esm" }>;
+type CdnMeasure = Exclude<SizeMeasure, EsmMeasure>;
 
 function loadedBy(esm: Bundle, { entry, beside }: EsmMeasure): string[] {
   const loaded = reachableOutputs(esm.metafile, entry);

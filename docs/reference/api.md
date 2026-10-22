@@ -67,11 +67,19 @@ The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise
 
 ## `maplace/element/google`
 
-The element with the Google provider registered; the CDN scripts are this entry bundled.
+The element with the Google provider registered; the Google CDN scripts are this entry bundled.
 
 | Export | Kind | Explained in |
 |---|---|---|
 | `MaplaceMapElement` | type | [Properties and methods](element.md#properties-and-methods), [provider attributes](google.md#provider-attributes) |
+
+## `maplace/element/maplibre`
+
+The element with the MapLibre provider registered; the MapLibre CDN script is this entry bundled, with maplibre-gl.
+
+| Export | Kind | Explained in |
+|---|---|---|
+| `MaplaceMapElement` | type | [Properties and methods](element.md#properties-and-methods), [provider attributes](../rfc-1.0.md#loading-providers-and-packaging) |
 
 ## `maplace/react`
 

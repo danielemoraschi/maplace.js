@@ -18,6 +18,7 @@ export const PACKAGE_ENTRIES = {
   maplibre: `${SRC}/maplibre/index.ts`,
   element: `${SRC}/element/index.ts`,
   elementGoogle: `${SRC}/element/google.ts`,
+  elementMapLibre: `${SRC}/element/maplibre.ts`,
   react: `${SRC}/react/index.ts`,
 } as const;
 

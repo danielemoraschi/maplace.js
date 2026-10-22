@@ -1,8 +1,12 @@
 import { given, givenAttribute } from "./attribute-values";
 
-/** The attributes a map's provider reads its map settings from; a change opens the map again. */
+/**
+ * The attributes a map's provider reads its map settings from; a change opens the map again.
+ * Google's provider reads `color-scheme`, MapLibre's `map-style`, and both read `map-options`.
+ */
 export const MAP_SETTING_ATTRIBUTES = {
   colorScheme: "color-scheme",
+  mapStyle: "map-style",
   mapOptions: "map-options",
 } as const;
 

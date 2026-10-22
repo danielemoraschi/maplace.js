@@ -17,6 +17,7 @@ export const MAP_ATTRIBUTES: readonly string[] = [...LIST_ATTRIBUTES, ...MAP_REA
 /** The attributes the element's Google provider reads, when the map opens. */
 export const GOOGLE_PROVIDER_ATTRIBUTES: readonly string[] = [
   ...GOOGLE_PROVIDER_READS,
-  ...Object.values(MAP_SETTING_ATTRIBUTES),
+  MAP_SETTING_ATTRIBUTES.colorScheme,
+  MAP_SETTING_ATTRIBUTES.mapOptions,
   ...Object.values(SCRIPT_ATTRIBUTES),
 ];

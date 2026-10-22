@@ -7,6 +7,7 @@ import {
   createMapLibreMap,
   type MapLibreAdapterOptions,
 } from "maplace/maplibre";
+import "maplace/element/maplibre";
 import { Map as MapLibreMap } from "maplibre-gl";
 
 const pageMap = new MapLibreMap({ container: "map" });
@@ -15,3 +16,4 @@ const maplace = createMaplace({ locations: [{ id: "rome", lat: 41.9, lng: 12.5 }
 maplace.attach(createMapLibreAdapter(options), pageMap.getContainer());
 createMapLibreMap("#map", { mapStyle: "https://tiles.example/style.json", list: true }).destroy();
 createMapLibreMap("#map").destroy();
+document.createElement("maplace-map").release();
