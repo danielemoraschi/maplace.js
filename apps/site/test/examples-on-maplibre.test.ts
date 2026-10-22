@@ -237,6 +237,17 @@ describe("the provider switch", () => {
     await context.close();
   }, 30_000);
 
+  it("sets an example's own checkbox apart on a white panel, as its side list, on both providers", async () => {
+    const { context, section } = await visitSection("menu");
+    const grounds = await section
+      .locator(".version label")
+      .filter({ hasText: "North only" })
+      .evaluateAll((labels) => labels.map((label) => getComputedStyle(label).backgroundColor));
+    expect(grounds.length).toBeGreaterThanOrEqual(2);
+    expect(new Set(grounds)).toEqual(new Set(["rgb(255, 255, 255)"]));
+    await context.close();
+  }, 30_000);
+
   it("keeps every section's switch within a 375 px screen, route's reason too", async () => {
     const { page, context } = await site.visitor({ viewport: { width: 375, height: 812 } });
     await page.goto(site.url);

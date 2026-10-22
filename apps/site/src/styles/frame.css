@@ -65,6 +65,31 @@
 }
 
 /*
+ * A page's own checkbox (menu's "North only") on a white panel, as the list beside the map: the
+ * example's control, set apart from the site's own switches above it. The map's own and a list's
+ * are left alone.
+ */
+.version
+:where(label:has(> input[type="checkbox"])):where(
+  :not(.maplace-google-map *, .maplace-maplibre-map *, .maplace-list-view *, [data-own-list] *)
+) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  cursor: pointer;
+  &:where(:hover) {
+    background: color-mix(in srgb, var(--color-wash) 55%, var(--color-surface));
+  }
+  & :where(input) {
+    margin: 0;
+    accent-color: var(--color-ink);
+  }
+}
+
+/*
  * A page's own buttons in the site's look, the map's own (Google's or MapLibre's) left alone. All
  * but `.version` in `:where()`, so the rule weighs one class and any rule of the example's own
  * wins.
