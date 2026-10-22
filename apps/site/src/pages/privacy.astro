@@ -23,7 +23,7 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     <h2 id="in-your-browser">In your browser</h2>
     <p>
       This site's pages set no cookies of their own. Once you choose to load the maps, the site
-      keeps one entry in your browser's local storage, <code>{CONSENT_KEY}</code> set to
+      keeps one entry in your browser's local storage, <code>{CONSENT_KEY}</code> set to{" "}
       <code>{CONSENT_GRANTED}</code>, so later visits show the maps without asking again. Turning
       the maps off removes it. If your browser keeps no site data, your choice lasts for the page
       you made it on.
@@ -33,9 +33,8 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby={MAP_PROVIDERS_SECTION}>
     <h2 id={MAP_PROVIDERS_SECTION}>The maps</h2>
     <p>
-      The maps on this site come from two services: <a href={`#${GOOGLE_MAPS.id}`}
-        >{GOOGLE_MAPS.name}</a
-      > draws the examples you run on Google,
+      The maps on this site come from two services:{" "}
+      <a href={`#${GOOGLE_MAPS.id}`}>{GOOGLE_MAPS.name}</a> draws the examples you run on Google,
       and <a href={`#${OPENFREEMAP.id}`}>{OPENFREEMAP.name}</a> the map under the examples you run
       on MapLibre. Every map waits behind a placeholder, and nothing is asked of either until you
       choose “Load maps” on one of them or turn the maps on in the footer. That one choice covers
@@ -101,8 +100,8 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     <p>
       {SITE_HOST.name} serves this site's pages. As with any website, it receives each request
       your browser makes here: your IP address, your browser's user agent and the page asked for.
-      To tell people from automated traffic, it may set a short-lived security cookie,
-      <code>{SITE_HOST.securityCookie}</code>, which {SITE_HOST.name} keeps, not this site. Its
+      To tell people from automated traffic, it may set a short-lived security cookie,{" "}
+      <code>{SITE_HOST.securityCookie}</code>, which {SITE_HOST.name} keeps, not this site. Its{" "}
       <a href={SITE_HOST.privacyPolicy}>privacy policy</a> says what it does with what it receives.
     </p>
   </section>
@@ -110,7 +109,7 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby="contact">
     <h2 id="contact">Who runs it</h2>
     <p>
-      maplacejs and this site are maintained by {SITE_MAINTAINER}. Questions about this page go to
+      maplacejs and this site are maintained by {SITE_MAINTAINER}. Questions about this page go to{" "}
       <a href={`mailto:${contact}`}>{contact}</a>.
     </p>
   </section>

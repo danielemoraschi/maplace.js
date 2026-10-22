@@ -21,6 +21,7 @@ import {
   THIRD_PARTIES,
   thirdPartyOf,
 } from "../src/site/third-parties.ts";
+import { textGluedToInline } from "./glued-text.ts";
 import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
 import { firstMap, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
 
@@ -172,6 +173,16 @@ describe("the privacy page", () => {
     }
     await context.close();
   }, 30_000);
+});
+
+describe("the site's copy", () => {
+  it("keeps a space between text and the link or code after it, on every page", async () => {
+    for (const route of ["/", ...PAGES_WITHOUT_MAPS]) {
+      const { page, context } = await openPage(route);
+      expect({ route, glued: await textGluedToInline(page) }).toEqual({ route, glued: [] });
+      await context.close();
+    }
+  }, 60_000);
 });
 
 describe("the consent placeholder", () => {
