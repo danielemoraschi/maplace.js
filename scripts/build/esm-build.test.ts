@@ -54,7 +54,7 @@ function bundledPage(code: string, { fromSource = false } = {}): string {
     bundle: true,
     write: false,
     format: "esm",
-    external: [CLUSTERER, MAPLIBRE],
+    external: [CLUSTERER, SUPERCLUSTER, MAPLIBRE],
     logLevel: "silent",
   });
   return result.outputFiles[0]?.text ?? "";
@@ -120,18 +120,23 @@ describe("the npm ESM build", () => {
     expect(packagesLoadedBy(metafile, PACKAGE_ENTRIES.maplibre)).toContain(MAPLIBRE);
   });
 
-  it("loads supercluster only with MapLibre's clustering, on demand", () => {
+  it("loads supercluster only with MapLibre's clustering, on demand", async () => {
+    const metafile = await esmMetafile();
+    for (const [name, entry] of Object.entries(PACKAGE_ENTRIES)) {
+      const isMapLibre = name === "maplibre" || name === "elementMapLibre";
+      expect(packagesLoadedBy(metafile, entry).has(SUPERCLUSTER), name).toBe(isMapLibre);
+    }
     const built = [...scripts(join(packageDir, "dist"))];
     const clustering = built.filter(([, text]) => bareImportsOf(text).includes(SUPERCLUSTER));
     expect(clustering.map(([file]) => file)).toHaveLength(1);
     const [[chunk]] = clustering as [[string, string]];
-    // Each import of the chunk, by the file making it: every one with `import()`, by the entry.
+    // Each import of the chunk, by the file making it: every one with `import()`.
     const importsOfChunk = (imports: (text: string) => string[]) =>
       built.flatMap(([file, text]) =>
         imports(text).flatMap((path) => (join(dirname(file), path) === chunk ? [file] : [])),
       );
-    expect(importsOfChunk(dynamicImportsOf)).toEqual(["maplibre/index.js"]);
-    expect(importsOfChunk(importsOf)).toEqual(["maplibre/index.js"]);
+    expect(importsOfChunk(dynamicImportsOf)).not.toEqual([]);
+    expect(importsOfChunk(importsOf)).toEqual(importsOfChunk(dynamicImportsOf));
   });
 
   it('opens the React entry, and only it, with "use client", for server components', () => {

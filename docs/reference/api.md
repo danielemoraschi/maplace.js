@@ -124,7 +124,7 @@ For the first two, `loadState` becomes `error` and `whenReady()` rejects; one th
 
 ## Capabilities
 
-A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all four.
+A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all four; MapLibre all but `route`, as it has no routing.
 
 | Capability | What it allows |
 |---|---|

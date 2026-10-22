@@ -27,12 +27,12 @@ afterEach(() => {
 });
 
 /**
- * Guards against gross regressions, not the RFC's figures, which are a dev machine's: the test
- * prints what it measured. Google's guard for clustering a large diff, and ten times the RFC's 50 ms
- * for a selection to reach its frame.
+ * Guards against gross regressions, not the RFC's figures, which are a dev machine's on a GPU: the
+ * test prints what it measured. Both Google's guard for clustering a large diff: in software WebGL,
+ * with the whole suite's pages sharing the CPU, a selection's frame has taken 770 ms.
  */
 const LONGEST_CLUSTERING_TASK_MS = 2_000;
-const SELECTION_PAINTED_MS = 500;
+const SELECTION_PAINTED_MS = 2_000;
 
 /** The whole world, where `manyMarkers` are, at maplace's zoom 1. */
 const WORLD: ResolvedView = { kind: "center", center: { lat: 0, lng: 0 }, zoom: 1 };

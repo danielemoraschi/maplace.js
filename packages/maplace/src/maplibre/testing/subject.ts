@@ -10,8 +10,8 @@ import { TEST_STYLE } from "./test-style";
 /** The tests' MapLibre adapter: on the local test style, so nothing leaves the machine. */
 export const TEST_OPTIONS: MapLibreAdapterOptions = { mapStyle: TEST_STYLE };
 
-/** What M1 draws: shapes' editing comes with M2, on-map controls with M4. */
-const M1_GROUPS: readonly ConformanceGroup[] = [
+/** Every group: `route` skips by capability, as MapLibre has no routing. */
+const MAPLIBRE_GROUPS: readonly ConformanceGroup[] = [
   "declarations",
   "lifecycle",
   "drawing",
@@ -35,7 +35,7 @@ export function maplibreParts(options = TEST_OPTIONS) {
 /** MapLibre on a map it creates, for the conformance suite. */
 export const MAPLIBRE_SUBJECT: ConformanceSubject = {
   name: "maplibre",
-  groups: M1_GROUPS,
+  groups: MAPLIBRE_GROUPS,
   create: () => maplibreParts(),
 };
 
@@ -49,7 +49,7 @@ const pageMaps: MapLibreMap[] = [];
  */
 export const PAGE_MAP_SUBJECT: ConformanceSubject = {
   name: "maplibre on the page's map",
-  groups: M1_GROUPS,
+  groups: MAPLIBRE_GROUPS,
   create: (container) =>
     container.isConnected ? maplibreParts({ map: pageMapIn(container) }) : maplibreParts(),
 };

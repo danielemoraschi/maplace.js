@@ -85,6 +85,17 @@ describe("editing shapes on MapLibre", () => {
     expect(edits.at(-1)).toEqual(["p", change]);
   });
 
+  it("keeps a shape hovered while the pointer moves from its fill onto its handle", async () => {
+    const { host, map } = await editing(editable(polygonDrawable("p")));
+    const hovers = () => host.reportsOf("reportHoverChange").map(([id]) => id);
+    await commands.moveMouse(onPage(map, { lat: 0.75, lng: 0.3 }));
+    await expect.poll(() => hovers().at(-1)).toBe("p");
+    const onFill = hovers().length;
+    await commands.moveMouse(onPage(map, { lat: 1, lng: 1 }));
+    await wait(DOUBLE_CLICK_WAIT_MS);
+    expect(hovers().slice(onFill)).not.toContain(undefined);
+  });
+
   it("inserts a point where a polygon's midpoint handle is dragged", async () => {
     const { host, drag } = await editing(editable(polygonDrawable("p")));
     const corner = { lat: -1.5, lng: 0 };

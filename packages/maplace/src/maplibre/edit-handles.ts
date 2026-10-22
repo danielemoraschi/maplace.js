@@ -2,6 +2,7 @@ import type { Marker } from "maplibre-gl";
 import { type HoverReports, reportElementHover } from "../adapter-kit/hover-reports";
 import type { LatLng } from "../geometry";
 import { lngLatOf } from "./conversions";
+import { markAsOwnMarker } from "./dom-marker";
 import type { HandlePlace, HandleRole } from "./edit-geometry";
 import { nearestLongitude } from "./location-features";
 import type { MountedMapLibre } from "./mounted-map";
@@ -51,6 +52,7 @@ export function placeHandle(place: HandlePlace, owner: HandleOwner): EditHandle 
   marker.on("drag", () => owner.drags.moved(handle));
   marker.on("dragend", () => owner.drags.dropped(handle));
   reportElementHover(element, owner.id, owner.hover);
+  markAsOwnMarker(element);
   element.addEventListener("pointerenter", () => pointedAt.add(handle));
   element.addEventListener("pointerleave", () => pointedAt.delete(handle));
   return handle;

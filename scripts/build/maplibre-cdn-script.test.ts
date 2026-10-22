@@ -22,19 +22,25 @@ const BODY = `<maplace-map style="width:600px;height:400px" map-style='${JSON.st
 const READY = { timeout: 30_000 };
 
 let browser: Browser | undefined;
+let script: Uint8Array;
 let opened: CdnScriptPage;
 
-/** One page, its map ready, read by every test: they only look. */
-beforeAll(async () => {
-  const script = await builtCdnScript("maplibre");
-  browser = await chromium.launch();
-  opened = await openCdnScriptPage(browser, { file: CDN_SCRIPTS.maplibre, script, body: BODY });
-  await opened.page.waitForFunction(
+/** Waits until the page's `<maplace-map>` has opened its map. */
+async function untilReady({ page }: CdnScriptPage): Promise<void> {
+  await page.waitForFunction(
     () =>
       document.querySelector<Element & { loadState: string }>("maplace-map")?.loadState === "ready",
     undefined,
     READY,
   );
+}
+
+/** One page, its map ready, read by every test: they only look. */
+beforeAll(async () => {
+  script = await builtCdnScript("maplibre");
+  browser = await chromium.launch();
+  opened = await openCdnScriptPage(browser, { file: CDN_SCRIPTS.maplibre, script, body: BODY });
+  await untilReady(opened);
 }, 120_000);
 
 afterAll(async () => {
@@ -74,5 +80,29 @@ describe("the MapLibre CDN script", { timeout: 60_000 }, () => {
     });
     expect(position).toBe("absolute");
     expect(logged().filter((text) => text.includes("stylesheet"))).toEqual([]);
+  });
+});
+
+describe("the MapLibre CDN script, clustering", { timeout: 60_000 }, () => {
+  it("clusters a <maplace-map cluster> from the same script, fetching nothing else", async () => {
+    const body = BODY.replace("<maplace-map ", "<maplace-map cluster ").replace(
+      "</maplace-map>",
+      '<maplace-location location-id="vatican" lat="41.903" lng="12.454" title="Vatican"></maplace-location></maplace-map>',
+    );
+    const clustered = await openCdnScriptPage(browser as Browser, {
+      file: CDN_SCRIPTS.maplibre,
+      script,
+      body,
+    });
+    try {
+      await untilReady(clustered);
+      const { page, offsite, logged } = clustered;
+      // Fitted to the three, Rome and the Vatican, 4 km apart, fall into one cluster.
+      await page.getByRole("button", { name: "Cluster of 2 locations" }).waitFor(READY);
+      expect(offsite()).toEqual([]);
+      expect(logged()).toEqual([]);
+    } finally {
+      await clustered.close();
+    }
   });
 });
