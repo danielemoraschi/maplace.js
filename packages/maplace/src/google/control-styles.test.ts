@@ -29,4 +29,16 @@ describe("CONTROL_STYLES", () => {
     const required = unguardedSelectorsOf(CONTROL_STYLES);
     expect(required).toEqual([":where(.maplace-control:has(>[hidden]:only-child))"]);
   });
+
+  it("keeps the panel's look and its lists' height to the panels Google holds, each carrying its scheme", () => {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(CONTROL_STYLES);
+    const shadowed = Array.from(sheet.cssRules as Iterable<CSSStyleRule>)
+      .filter((rule) => /box-shadow|max-height/.test(rule.style.cssText))
+      .map((rule) => rule.selectorText);
+    expect(shadowed.length).toBeGreaterThan(0);
+    expect(
+      shadowed.filter((selector) => !selector.includes(".maplace-control[data-color-scheme]")),
+    ).toEqual([]);
+  });
 });

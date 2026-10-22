@@ -10,6 +10,7 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
 - **Popups:** on Google's white bubble, dark text inset as Google insets its left side.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme.
+- **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint.
 
 Every selector is wrapped in `:where()` and weighs nothing, so any rule of the page wins: `.maplace-option { padding: 0 }` is enough to change the entries' padding.
 
@@ -46,8 +47,9 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |
 | `maplace-popup` | A popup's content |
 | `maplace-popup-heading` | A popup's heading, its location's title |
-| `maplace-control` | On a Google map, the panel holding what is placed there |
-| `maplace-google-map` | The element a map maplacejs creates is drawn in |
+| `maplace-control` | The panel holding what is placed on a Google or MapLibre map |
+| `maplace-google-map` | The element a Google map maplacejs creates is drawn in |
+| `maplace-maplibre-map` | The element a MapLibre map maplacejs creates is drawn in |
 
 ## States
 
