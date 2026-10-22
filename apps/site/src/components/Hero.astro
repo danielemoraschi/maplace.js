@@ -8,35 +8,33 @@ import SourceCode from "./SourceCode.astro";
 const REPOSITORY = new URL(REPOSITORY_URL).pathname.slice(1);
 ---
 
-<div class="pt-10 pb-4">
-  <h1 class="m-0 text-hero leading-[0.95]">
-    A JavaScript library<br />for Google Maps and MapLibre.
+<div class="relative pt-10 pb-4">
+  <svg
+    class="absolute top-10 right-0 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[70rem]:hidden"
+    viewBox="0 0 320 180"
+    aria-hidden="true"
+  >
+    <path d="M0 48 H170 L214 92 H320" />
+    <path class="stroke-ink" d="M90 180 V126 L134 82 H320" />
+    <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
+  </svg>
+  <h1 class="relative m-0 text-hero leading-[0.95]">
+    A JavaScript library<br />for Google Maps<br />and MapLibre.
   </h1>
-  <div class="relative mt-4 mb-6">
-    <svg
-      class="absolute top-0 right-0 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[70rem]:hidden"
-      viewBox="0 0 320 180"
-      aria-hidden="true"
+  <p class="relative mt-4 mb-4 text-lg">
+    <strong>maplacejs</strong> puts your locations on Google Maps or MapLibre: markers, shapes and, on Google,
+    routes, and the list or menu that goes with them, in sync with the map. One script tag, with
+    a Maps key on Google and none on MapLibre; npm and React too.
+  </p>
+  <p class="relative mt-0 mb-6 h-7">
+    <a
+      class="github-button"
+      href={REPOSITORY_URL}
+      data-size="large"
+      data-show-count="true"
+      aria-label={`Star ${REPOSITORY} on GitHub`}>Star on GitHub</a
     >
-      <path d="M0 48 H170 L214 92 H320" />
-      <path class="stroke-ink" d="M90 180 V126 L134 82 H320" />
-      <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
-    </svg>
-    <p class="relative mt-0 mb-4 max-w-[34rem] text-lg">
-      maplacejs puts your locations on Google Maps or MapLibre: markers, shapes and, on Google,
-      routes, and the list or menu that goes with them, in sync with the map. One script tag, with
-      a Maps key on Google and none on MapLibre; npm and React too.
-    </p>
-    <p class="relative my-0 h-7">
-      <a
-        class="github-button"
-        href={REPOSITORY_URL}
-        data-size="large"
-        data-show-count="true"
-        aria-label={`Star ${REPOSITORY} on GitHub`}>Star on GitHub</a
-      >
-    </p>
-  </div>
+  </p>
   <div class="overflow-x-auto">
     <p class="mt-0 mb-1 text-sm font-medium">Google Maps</p>
     <SourceCode code={quickStart} lang="html" />

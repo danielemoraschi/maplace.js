@@ -115,6 +115,16 @@ describe("the footer", () => {
     ...REPO_DOCS.map(({ id }) => docRoute(id)),
   ];
 
+  it("stays at the bottom of the screen as a long page scrolls", async () => {
+    const { page, context } = await openPage("/");
+    await page.mouse.wheel(0, 2500);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
+    const box = await page.getByRole("contentinfo").boundingBox();
+    const height = page.viewportSize()?.height ?? 0;
+    expect(Math.round((box?.y ?? 0) + (box?.height ?? 0))).toBe(height);
+    await context.close();
+  }, 30_000);
+
   it("links Privacy and Changelog from every page, marking the one shown", async () => {
     for (const route of routes) {
       const { page, context } = await openPage(route);

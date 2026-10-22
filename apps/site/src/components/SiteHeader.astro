@@ -1,5 +1,5 @@
 ---
-import { docRoute, REPO_DOCS, REPOSITORY_URL } from "../site/repo-docs.ts";
+import { docRoute, REPO_DOCS } from "../site/repo-docs.ts";
 
 const here = Astro.url.pathname;
 // One row whatever the width: it scrolls sideways where it doesn't fit beside the name, its end
@@ -27,7 +27,6 @@ const NAV_LINK = "border-b-3 border-transparent no-underline aria-[current=page]
           </a>
         ))
       }
-      <a href={REPOSITORY_URL} class={NAV_LINK}>GitHub</a>
     </nav>
   </div>
 </header>

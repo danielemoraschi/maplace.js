@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { docRoute } from "../src/site/repo-docs.ts";
+import { docRoute, REPO_DOCS, REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import { siteBuiltBeforeTests } from "./site-session.ts";
 
 const site = siteBuiltBeforeTests();
@@ -33,6 +33,16 @@ async function headerBottom(page: Page): Promise<number> {
 }
 
 describe("the site's header", () => {
+  it("links the reference pages only, the repository from the footer", async () => {
+    const { page, context } = await opened("/", DESKTOP);
+    const labels = await docsNav(page).getByRole("link").allTextContents();
+    expect(labels).toEqual(REPO_DOCS.map(({ label }) => label));
+    const toRepo = `a[href="${REPOSITORY_URL}"]`;
+    expect(await header(page).locator(toRepo).count()).toBe(0);
+    expect(await page.getByRole("contentinfo").locator(toRepo).count()).toBe(1);
+    await context.close();
+  }, 30_000);
+
   it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
     const { page, context } = await opened("/", DESKTOP);
     await page.mouse.wheel(0, 2500);

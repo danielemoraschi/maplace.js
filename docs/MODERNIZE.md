@@ -309,6 +309,6 @@ Full parity with Google where MapLibre can (D21's capabilities say where it can'
 | N9 | Vue/Svelte wrappers | wont | Web Component covers them |
 | N10 | GeoJSON FeatureCollection → locations helper | later | A0: #103, #188 |
 | N11 | "My location" control / route from user position | later | A0: #169 |
-| N12 | Places integration | later | search box / autocomplete that adds locations, place details as `content`, "save a place"; adapter capability (Google Places now; MapLibre would need another geocoder); A0: #41, #98, #152, #165 |
+| N12 | Places integration | later | search box / autocomplete that adds locations, place details as `content`, "save a place"; adapter capability (Google Places now; MapLibre would need another geocoder: MapTiler's geocoding API is one option, noted 2026-10-22, a key in the page and a third party for the consent and privacy page, its free plan's limits and terms to check; its styles, satellite and terrain among them, already work through `map-style` / `mapStyle`); A0: #41, #98, #152, #165 |
 | N13 | Route modifiers | later | avoid tolls, highways, ferries (0.2 `directions_options`); A4 |
 | N14 | Conformance kit for third-party adapters | later | publish `describeConformance` and `MapProbe` (a `maplace/testing` entry with a `vitest` peer) so adapters outside maplace prove the contract; API change, after MapLibre (N3) uses the suite in-repo |
