@@ -31,6 +31,18 @@ export const GOOGLE_MAPS: ThirdParty = {
   ],
 };
 
+export const OPENFREEMAP: ThirdParty = {
+  id: "openfreemap",
+  name: "OpenFreeMap",
+  /** MapLibre's default style, its tiles, fonts and icons: all from this host. */
+  domains: ["tiles.openfreemap.org"],
+  askedBeforeConsent: false,
+  terms: [
+    { label: "OpenFreeMap Privacy Policy", url: "https://openfreemap.org/privacy/" },
+    { label: "OpenFreeMap Terms of Service", url: "https://openfreemap.org/tos/" },
+  ],
+};
+
 export const GITHUB: ThirdParty = {
   id: "github",
   name: "GitHub",
@@ -45,17 +57,40 @@ export const GITHUB: ThirdParty = {
   ],
 };
 
+/** The services the site's maps come from, all behind the one consent ("Load maps"). */
+export const MAP_PROVIDERS: readonly ThirdParty[] = [GOOGLE_MAPS, OPENFREEMAP];
+
 /**
- * Every third party the site's pages contact: the privacy page has a section for each, and
+ * Every third party the site's pages contact: the privacy page has a section for each, and after
+ * consent every request must go to one of these (W10c's allowlist after consent):
  * test/site-pages.test.ts fails when a built page asks a host none of these names (the pages' own
- * requests: that test refuses them, so what Maps JS would fetch next is checked live, W10c).
+ * requests: that test refuses them, so what Maps JS would fetch next is checked live).
  */
-export const THIRD_PARTIES: readonly ThirdParty[] = [GOOGLE_MAPS, GITHUB];
+export const THIRD_PARTIES: readonly ThirdParty[] = [...MAP_PROVIDERS, GITHUB];
+
+/** The map providers by name, for the placeholder: "Google Maps and OpenFreeMap". */
+export const MAP_PROVIDER_NAMES = new Intl.ListFormat("en").format(
+  MAP_PROVIDERS.map(({ name }) => name),
+);
+
+/** The privacy page's section on the maps' one consent, which every placeholder links. */
+export const MAP_PROVIDERS_SECTION = "maps";
 
 /** The third party a request to `url` goes to, if any. */
 export function thirdPartyOf(url: string): ThirdParty | undefined {
   const { hostname } = new URL(url);
   return THIRD_PARTIES.find(({ domains }) => domains.some((domain) => isWithin(hostname, domain)));
+}
+
+/** Whether a page may ask `url` before the visitor consents: W10c's allowlist before consent. */
+export function mayAskBeforeConsent(url: string): boolean {
+  return thirdPartyOf(url)?.askedBeforeConsent === true;
+}
+
+/** Whether `url` goes to one of the maps' providers, which nothing may ask before consent. */
+export function goesToMapProvider(url: string): boolean {
+  const party = thirdPartyOf(url);
+  return party !== undefined && MAP_PROVIDERS.includes(party);
 }
 
 /** `hostname` is `domain` or one of its subdomains. */

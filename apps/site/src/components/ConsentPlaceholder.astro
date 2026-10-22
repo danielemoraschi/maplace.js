@@ -1,14 +1,15 @@
 ---
 import { PRIVACY_PAGE } from "../site/footer-pages.ts";
-import { GOOGLE_MAPS } from "../site/third-parties.ts";
+import { MAP_PROVIDER_NAMES, MAP_PROVIDERS_SECTION } from "../site/third-parties.ts";
 ---
 
 <div
   class="absolute inset-0 grid place-content-center justify-items-center gap-3 bg-wash p-4 text-center in-data-[maps=on]:hidden"
 >
   <p class="m-0 max-w-[26rem] text-md">
-    These maps come from Google, which sees your IP address. They stay off until you say so, once
-    for the whole site. <a href={`${PRIVACY_PAGE.route}#${GOOGLE_MAPS.id}`}>What loading sends to Google</a>
+    These maps come from {MAP_PROVIDER_NAMES}, which see your IP address. They stay off until you
+    say so, once for the whole site.
+    <a href={`${PRIVACY_PAGE.route}#${MAP_PROVIDERS_SECTION}`}>What loading the maps sends</a>
   </p>
-  <button type="button" class="border-0 bg-accent px-4 py-2 font-medium text-on-accent" data-maps-grant>Load Google Maps</button>
+  <button type="button" class="border-0 bg-accent px-4 py-2 font-medium text-on-accent" data-maps-grant>Load maps</button>
 </div>
