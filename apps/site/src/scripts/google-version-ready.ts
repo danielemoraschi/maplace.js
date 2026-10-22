@@ -22,7 +22,7 @@ export function googleVersionReady({
   mapsImportable,
 }: GoogleReadying): (version: HTMLElement) => Promise<void> {
   return async (version) => {
-    if (version.hasAttribute("data-maps-key-missing")) throw new VersionStartFailure("no-key");
+    if (version.dataset.mapsKeyMissing !== undefined) throw new VersionStartFailure("no-key");
     if (!mapsJsOnPage()) runBootstrap(version);
     try {
       await mapsImportable();
