@@ -164,7 +164,9 @@ describe("the privacy page", () => {
   it("explains the one consent the maps wait for: its button, and a link to each provider's section", async () => {
     const { page, context } = await openPage(PRIVACY_PAGE.route);
     const section = page.locator(`section[aria-labelledby="${MAP_PROVIDERS_SECTION}"]`);
-    expect(await section.textContent()).toContain("“Load maps”");
+    const copy = await section.textContent();
+    expect(copy).toContain("“Load maps”");
+    expect(copy).toMatch(/two services: Google Maps/);
     for (const { id, name } of MAP_PROVIDERS) {
       expect(await section.locator(`a[href="#${id}"]`).allTextContents()).toEqual([name]);
     }
@@ -181,6 +183,7 @@ describe("the consent placeholder", () => {
     expect(await page.locator(`a[href="${href}"]`).count()).toBe(placeholders);
     const copy = await placeholder(page).locator("..").textContent();
     for (const { name } of MAP_PROVIDERS) expect(copy).toContain(name);
+    expect(copy).toMatch(/whole site\. What loading/);
     await context.close();
   }, 30_000);
 });

@@ -16,7 +16,7 @@ An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOp
 
 ## `createMapLibreMap`
 
-`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one:
+`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one (its page, `vanilla.html` beside it, sizes the map and holds the North-only checkbox):
 
 <!-- example: packages/maplace/examples/menu/maplibre/vanilla.ts -->
 ```ts
@@ -144,7 +144,7 @@ maplacejs's lists scroll within the height of a map it creates. A bottom-right l
 
 ## React
 
-`<MaplaceMap createAdapter={createMapLibreAdapter} className="map" />` draws on MapLibre. With options, pass a function: `createAdapter={() => createMapLibreAdapter({ mapStyle })}`. The page installs maplibre-gl and imports its stylesheet. Popups' and icons' React content, `<LocationList position>` and `<MapControl>` work as on Google ([React](react.md)). The simple example's MapLibre version is one:
+`<MaplaceMap createAdapter={createMapLibreAdapter} className="map" />` draws on MapLibre. With options, pass a function: `createAdapter={() => createMapLibreAdapter({ mapStyle })}`. The page installs maplibre-gl and imports its stylesheet. Popups' and icons' React content, `<LocationList position>` and `<MapControl>` work as on Google ([React](react.md)). The simple example's MapLibre version is one (its page, `react.html` beside it, gives the map its height):
 
 <!-- example: packages/maplace/examples/simple/maplibre/react.tsx -->
 ```tsx

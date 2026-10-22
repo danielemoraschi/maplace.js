@@ -33,8 +33,9 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby={MAP_PROVIDERS_SECTION}>
     <h2 id={MAP_PROVIDERS_SECTION}>The maps</h2>
     <p>
-      The maps on this site come from two services:
-      <a href={`#${GOOGLE_MAPS.id}`}>{GOOGLE_MAPS.name}</a> draws the examples you run on Google,
+      The maps on this site come from two services: <a href={`#${GOOGLE_MAPS.id}`}
+        >{GOOGLE_MAPS.name}</a
+      > draws the examples you run on Google,
       and <a href={`#${OPENFREEMAP.id}`}>{OPENFREEMAP.name}</a> the map under the examples you run
       on MapLibre. Every map waits behind a placeholder, and nothing is asked of either until you
       choose “Load maps” on one of them or turn the maps on in the footer. That one choice covers
