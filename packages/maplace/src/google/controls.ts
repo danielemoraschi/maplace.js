@@ -42,10 +42,11 @@ export function createControls(colorScheme: ColorScheme = "light"): Controls {
     return on?.map.controls[googlePosition(on.libraries.core, position)];
   }
 
+  /** Places `control`, its panel styled by the map's document, whichever made the node. */
   function place(control: MountedControl): void {
     const held = corner(control);
-    if (held === undefined) return;
-    adoptStyles(control.panel.ownerDocument, CONTROL_STYLES);
+    if (openMap === undefined || held === undefined) return;
+    adoptStyles(openMap.map.getDiv().ownerDocument, CONTROL_STYLES);
     held.push(control.panel);
   }
 

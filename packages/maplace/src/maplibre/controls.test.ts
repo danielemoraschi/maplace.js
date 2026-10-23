@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import type { IControl } from "maplibre-gl";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { frameDocument } from "../testing/iframes";
 import { cssTextOf } from "../testing/selectors";
 import { createControls } from "./controls";
 import { openedControls } from "./testing/control-stub-map";
@@ -8,6 +9,8 @@ import { openedControls } from "./testing/control-stub-map";
 const button = () => document.createElement("button");
 
 describe("the MapLibre adapter's controls", () => {
+  afterEach(() => document.body.replaceChildren());
+
   it("places a control mounted before the map opened once it opens, and takes it off on close", () => {
     const controls = createControls();
     const node = button();
@@ -118,14 +121,15 @@ describe("the MapLibre adapter's controls", () => {
     expect(node.outerHTML).toBe(given);
   });
 
-  it("gives the control's document the panel's styles once the control is on the map", () => {
+  it("gives the map's document the panel's styles, not the node's, once the control is on the map", () => {
+    const [nodes, maps] = [frameDocument(), frameDocument()];
+    const sheetsOf = (page: Document) => page.adoptedStyleSheets.map(cssTextOf);
     const controls = createControls();
-    const page = document.implementation.createHTMLDocument();
-    const sheets = () => page.adoptedStyleSheets.map(cssTextOf);
-    controls.mountControl(page.createElement("button"), "top-left");
-    expect(sheets()).toEqual([]);
-    openedControls(controls);
-    expect(sheets()).toContainEqual(expect.stringContaining(".maplace-control"));
+    const { container } = openedControls(controls);
+    maps.body.append(container);
+    controls.mountControl(nodes.createElement("button"), "top-left");
+    expect(sheetsOf(maps)).toContainEqual(expect.stringContaining(".maplace-control"));
+    expect(sheetsOf(nodes)).toEqual([]);
   });
 
   it("takes its controls off when the map closes, and places none later", () => {

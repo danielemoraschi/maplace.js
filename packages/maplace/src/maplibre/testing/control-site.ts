@@ -6,19 +6,24 @@ import type { MapLibreAdapterOptions } from "../options";
 import { maplibreParts, pageMapIn, removePageMaps, TEST_OPTIONS } from "./subject";
 import { TEST_STYLE } from "./test-style";
 
-/** The test style with a source credited, so MapLibre's attribution shows, as on OpenFreeMap's. */
-export const CREDITED_OPTIONS: MapLibreAdapterOptions = {
-  mapStyle: {
-    ...TEST_STYLE,
-    sources: {
-      credit: {
-        type: "geojson",
-        data: { type: "FeatureCollection", features: [] },
-        attribution: "© A tile provider",
+/**
+ * The test style with a source credited `attribution`, a layer using it so MapLibre's attribution
+ * shows it, as it shows OpenFreeMap's.
+ */
+export function creditedOptions(attribution: string): MapLibreAdapterOptions {
+  return {
+    mapStyle: {
+      ...TEST_STYLE,
+      sources: {
+        credit: { type: "geojson", data: { type: "FeatureCollection", features: [] }, attribution },
       },
+      layers: [...TEST_STYLE.layers, { id: "credited", type: "circle", source: "credit" }],
     },
-  },
-};
+  };
+}
+
+/** The test style credited to a tile provider. */
+export const CREDITED_OPTIONS = creditedOptions("© A tile provider");
 
 /** A store as far as attaching it goes (this layer doesn't see the store's own types). */
 export interface Attachable {
@@ -32,7 +37,11 @@ export interface Attachable {
  * and the map.
  */
 export function onMapLibre(maplace: Attachable, options = TEST_OPTIONS) {
-  const container = sizedContainer();
+  return onMapLibreIn(maplace, sizedContainer(), options);
+}
+
+/** `maplace` attached as `onMapLibre` does, on a map it creates in `container`, removed after. */
+export function onMapLibreIn(maplace: Attachable, container: HTMLElement, options = TEST_OPTIONS) {
   return attachedIn(maplace, container, options, () => container.remove());
 }
 

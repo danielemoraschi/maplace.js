@@ -27,8 +27,8 @@ describe("CONTROL_STYLES on MapLibre", () => {
     expect(selectors.filter((selector) => !weighsNothing(selector))).toEqual([]);
   });
 
-  it("styles only MapLibre's panels by their class, and sizes them against the map maplace creates", () => {
-    const named = /\.maplibregl-ctrl\.maplace-control\b|\.maplace-maplibre-map\b/;
+  it("styles only MapLibre's panels, and the corner holding one, by their class", () => {
+    const named = /\.maplibregl-ctrl\.maplace-control\b/;
     expect(selectorsOf(CONTROL_STYLES).filter((selector) => !named.test(selector))).toEqual([]);
   });
 

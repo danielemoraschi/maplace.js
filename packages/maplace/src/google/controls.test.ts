@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import type { ControlPosition } from "../adapter";
+import { frameDocument } from "../testing/iframes";
 import { cssTextOf } from "../testing/selectors";
 import { type Controls, createControls } from "./controls";
 import type { ColorScheme } from "./options";
@@ -34,6 +35,8 @@ function mount(controls: Controls, position: ControlPosition) {
 }
 
 describe("the Google adapter's controls", () => {
+  afterEach(() => document.body.replaceChildren());
+
   it("puts a control in its corner once the map opens, holding it in an element of its own", () => {
     const { controls, corner, open, map } = controlsOnStubs();
     const { node } = mount(controls, "bottom-right");
@@ -71,14 +74,15 @@ describe("the Google adapter's controls", () => {
     expect(node.outerHTML).toBe(given);
   });
 
-  it("gives the control's document the panel's styles once the control is on the map", () => {
-    const { controls, open } = controlsOnStubs();
-    const page = document.implementation.createHTMLDocument();
-    const sheets = () => page.adoptedStyleSheets.map(cssTextOf);
-    controls.mountControl(page.createElement("button"), "top-left");
-    expect(sheets()).toEqual([]);
+  it("gives the map's document the panel's styles, not the node's, once the control is on the map", () => {
+    const [nodes, maps] = [frameDocument(), frameDocument()];
+    const sheetsOf = (page: Document) => page.adoptedStyleSheets.map(cssTextOf);
+    const { controls, open, map } = controlsOnStubs();
+    maps.body.append(map.getDiv());
     open();
-    expect(sheets()).toContainEqual(expect.stringContaining(".maplace-control"));
+    controls.mountControl(nodes.createElement("button"), "top-left");
+    expect(sheetsOf(maps)).toContainEqual(expect.stringContaining(".maplace-control"));
+    expect(sheetsOf(nodes)).toEqual([]);
   });
 
   it("takes a control off when removed, safely twice, and out of the page", () => {
