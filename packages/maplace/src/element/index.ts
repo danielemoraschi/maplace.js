@@ -43,8 +43,8 @@ export { defineListView } from "./list-views";
  *   the map again on it.
  * - `color-scheme`, `map-style`, `map-options`: the map's settings (Google: its colour scheme,
  *   `light`, `dark` or `follow-system`, and a JSON object of its map options; MapLibre: the style
- *   URL or JSON style object, and a JSON object of its map options). A change opens the map again
- *   where it was.
+ *   URL or JSON style object, and a JSON object of its map options). A change of one its provider
+ *   reads opens the map again where it was.
  * - `list`: present = list view; `list="select"` = native select; `list="<name>"` = a view given
  *   to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.

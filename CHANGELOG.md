@@ -2,6 +2,17 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-23 Fixed MapLibre's control panels running into each other on a crowded map: a list stops short of what the corners below it hold, MapLibre's attribution included, lists sharing a side share its height, and a bottom-left panel sits above the attribution where they would meet (on a phone it covered the panel); on a page's own MapLibre map too
+- 2026-10-23 Fixed a control's panel left unstyled on a map in a frame whose node the page made outside the frame (React's `MapControl` in `react-frame-component`), on Google and MapLibre: the panel's stylesheet goes to the map's document
+- 2026-10-23 Fixed an edit handle or an editable marker let go outside a MapLibre map following the pointer back until the next click: the drag ends where it was let go and reports its change
+- 2026-10-23 Fixed an editable marker on MapLibre lost, with no change reported, when a zoom folded it into a cluster mid-drag: it stays under the pointer until let go, then reports its change
+- 2026-10-23 Fixed a circle's radius handle dropped on its centre on MapLibre leaving a radius of 0, which the store refused: it leaves a millimetre
+- 2026-10-23 Fixed a circle round both poles on MapLibre drawn without them: it covers both
+- 2026-10-23 Fixed MapLibre's pointer cursor and hover staying on a pin folded or hidden under a still pointer: once the map settles they follow what is under the pointer
+- 2026-10-23 Fixed a shape's drag on MapLibre reporting no edits after an earlier drag that left the shape as it was
+- 2026-10-23 Fixed a longitude already in −180..180 read back with float error (0.6 as 0.6000000000000227) in clicks and viewport reports
+- 2026-10-23 Fixed maplace's layers staying on a page's own MapLibre map destroyed during a restyle that kept them (`transformStyle`)
+- 2026-10-23 Fixed `<maplace-map>` reloading its map for a setting its provider doesn't read: a MapLibre map for `color-scheme`, a Google map for `map-style`
 - 2026-10-23 Added `Maplace`, a global the CDN scripts set: what the npm entries `maplace`, the provider's and `maplace/element` export, so a page of its own script makes a map with `Maplace.createGoogleMap(...)` or `Maplace.createMapLibreMap(...)`, as 0.2's `new Maplace(...).Load()` did, with no build step; the MapLibre script's `Maplace.maplibre` is the maplibre-gl it bundles, for a map of the page's own
 - 2026-10-23 Added a script version of every example (`script.html`): the map made from a page's own script on the CDN script's `Maplace`, with no build step; the site's code tabs are HTML, Script, Bundler (formerly Vanilla) and React
 - 2026-10-23 Changed the MapLibre CDN script to run maplibre-gl as it loads, its worker and stylesheet with it, so `Maplace.maplibre` is ready for a page's own map: about 22 ms more on a page whose map hasn't opened yet
