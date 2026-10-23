@@ -1,6 +1,7 @@
 import type { IControl } from "maplibre-gl";
+import { CONTROL_CLASS } from "../adapter-kit/control-styles";
 import { adoptStyles } from "../adopted-styles";
-import { CONTROL_CLASS, CONTROL_STYLES } from "./control-styles";
+import { CONTROL_STYLES } from "./control-styles";
 
 /**
  * The control MapLibre lays out for `node`: a panel of maplace's own (`control-styles.ts`) holding

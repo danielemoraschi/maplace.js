@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createMaplace } from "../maplace/create";
 import { sizedContainerInFrame } from "../testing/iframes";
+import { panelOf } from "../testing/panel-of";
 import { cornersLikeGoogle } from "./testing/corners-like-google";
-import { panelOf } from "./testing/panels";
 import { places } from "./testing/places";
 import { onGoogle } from "./testing/store-on-google";
 import { type StubMap, stubMapsJsRecording } from "./testing/stub-libraries";

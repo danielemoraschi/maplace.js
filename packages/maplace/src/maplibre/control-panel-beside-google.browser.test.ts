@@ -4,7 +4,8 @@ import { CONTROL_STYLES as GOOGLE_CONTROL_STYLES } from "../google/control-style
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
-import { CREDITED_OPTIONS, onMapLibre, panelOf } from "./testing/control-site";
+import { panelOf } from "../testing/panel-of";
+import { CREDITED_OPTIONS, onMapLibre } from "./testing/control-site";
 
 // In a file of its own: its page adopts Google's sheet before MapLibre's, which no other file does.
 it("keeps MapLibre's rounding and ring on a page that adopted Google's panel sheet first", async () => {

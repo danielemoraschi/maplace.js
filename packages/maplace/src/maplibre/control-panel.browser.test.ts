@@ -5,8 +5,9 @@ import { darkPage } from "../google/testing/dark-page";
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { panelOf } from "../testing/panel-of";
 import { unstyledPage } from "../testing/unstyled-page";
-import { onPageMapLibre, panelOf } from "./testing/control-site";
+import { onPageMapLibre } from "./testing/control-site";
 
 afterEach(() => {
   document.body.replaceChildren();

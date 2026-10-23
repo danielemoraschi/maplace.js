@@ -1,10 +1,10 @@
 /// <reference types="google.maps" />
 import { afterEach, expect, it, onTestFinished, vi } from "vitest";
 import { sizedContainer } from "../testing/container";
+import { panelOf } from "../testing/panel-of";
 import { queried } from "../testing/queried";
 import { createGoogleMap } from "./google-map";
 import { settledOnMap } from "./testing/controls-placed";
-import { panelOf } from "./testing/panels";
 import { places } from "./testing/places";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
 import { TEST_OPTIONS } from "./testing/subject";

@@ -1,8 +1,9 @@
 import { onTestFinished } from "vitest";
-import { CONTROL_CLASS } from "../control-styles";
+import type { Attachable } from "../../testing/attachable";
+import { panelOf } from "../../testing/panel-of";
 import { settledOnMap } from "./controls-placed";
 import {
-  type Attachable,
+  type ErrorReporting,
   type Fittable,
   fitted,
   onGoogle,
@@ -16,7 +17,7 @@ interface MountableList {
 }
 
 interface ListOnGoogle extends StoreSite {
-  readonly maplace: Attachable & Fittable;
+  readonly maplace: Attachable & ErrorReporting & Fittable;
   readonly list: MountableList;
 }
 
@@ -32,11 +33,4 @@ export async function listMountedOnGoogle({ maplace, list, ...site }: ListOnGoog
   const remove = adapter.mountControl(list.element, "top-left");
   await settledOnMap(list.element);
   return { container, panel: panelOf(list.element), remove };
-}
-
-/** The panel holding `node` on the map. */
-export function panelOf(node: Element): HTMLElement {
-  const panel = node.closest<HTMLElement>(`.${CONTROL_CLASS}`);
-  if (panel === null) throw new Error("no panel around the node");
-  return panel;
 }
