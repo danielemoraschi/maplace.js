@@ -4,6 +4,7 @@ import type {
   Map as MapLibreMap,
 } from "maplibre-gl";
 import { addPinImage, PIN_IMAGE } from "./pin-image";
+import { whenStyleLoaded } from "./style-load";
 
 /** Where default markers are: a pin each, stacked in the order added. */
 export const PIN_SOURCE = "maplace-pins";
@@ -117,8 +118,7 @@ export function addLayers(map: MapLibreMap): void {
  * and a map the page removed loads none, so nothing is left to do on it.
  */
 export function removeLayers(map: MapLibreMap): void {
-  if (map.getStyle() === undefined) map.once("style.load", () => removeLayers(map));
-  else takeOffLayers(map);
+  whenStyleLoaded(map, () => takeOffLayers(map));
 }
 
 function takeOffLayers(map: MapLibreMap): void {
