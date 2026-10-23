@@ -3,6 +3,7 @@ import { type HoverReports, reportElementHover } from "../adapter-kit/hover-repo
 import type { LatLng } from "../geometry";
 import { lngLatOf, nearestLongitude } from "./conversions";
 import { markAsOwnMarker } from "./dom-marker";
+import { endDragReleasedOutside } from "./drag-release";
 import type { HandlePlace, HandleRole } from "./edit-geometry";
 import type { MountedMapLibre } from "./mounted-map";
 
@@ -50,6 +51,7 @@ export function placeHandle(place: HandlePlace, owner: HandleOwner): EditHandle 
   const handle: EditHandle = { role: place.role, marker };
   marker.on("drag", () => owner.drags.moved(handle));
   marker.on("dragend", () => owner.drags.dropped(handle));
+  endDragReleasedOutside(marker, owner.mounted);
   reportElementHover(element, owner.id, owner.hover);
   markAsOwnMarker(element);
   element.addEventListener("pointerenter", () => pointedAt.add(handle));

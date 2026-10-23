@@ -1,4 +1,3 @@
-import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it } from "vitest";
 import { commands } from "vitest/browser";
 import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
@@ -19,6 +18,7 @@ import type { MapLibreState } from "./map-state";
 import { wait } from "./testing/map-settle";
 import { mountedMapLibre, mountedOnPageMap } from "./testing/mounted";
 import { holdHandle } from "./testing/shape-target";
+import { pagePointOf } from "./testing/user-drags";
 
 afterEach(unmountAll);
 
@@ -42,16 +42,9 @@ async function editing(...drawables: Drawable[]) {
   adapter.setView({ kind: "center", center: ORIGIN, zoom: 7 });
   await probe.settle();
   const drag = (from: LatLng, to: LatLng) =>
-    commands.pressMouse([onPage(map, from), onPage(map, to)]);
+    commands.pressMouse([pagePointOf(map, from), pagePointOf(map, to)]);
   const handleCount = () => mounted.container.querySelectorAll(".maplace-edit-handle").length;
   return { ...mounted, drag, handleCount };
-}
-
-/** Where `at` is drawn on the page. */
-function onPage(map: MapLibreMap, at: LatLng) {
-  const box = map.getContainer().getBoundingClientRect();
-  const { x, y } = map.project([at.lng, at.lat]);
-  return { x: box.left + x, y: box.top + y };
 }
 
 function expectNear(point: LatLng | undefined, to: LatLng): void {
@@ -88,10 +81,10 @@ describe("editing shapes on MapLibre", () => {
   it("keeps a shape hovered while the pointer moves from its fill onto its handle", async () => {
     const { host, map } = await editing(editable(polygonDrawable("p")));
     const hovers = () => host.reportsOf("reportHoverChange").map(([id]) => id);
-    await commands.moveMouse(onPage(map, { lat: 0.75, lng: 0.3 }));
+    await commands.moveMouse(pagePointOf(map, { lat: 0.75, lng: 0.3 }));
     await expect.poll(() => hovers().at(-1)).toBe("p");
     const onFill = hovers().length;
-    await commands.moveMouse(onPage(map, { lat: 1, lng: 1 }));
+    await commands.moveMouse(pagePointOf(map, { lat: 1, lng: 1 }));
     await wait(DOUBLE_CLICK_WAIT_MS);
     expect(hovers().slice(onFill)).not.toContain(undefined);
   });

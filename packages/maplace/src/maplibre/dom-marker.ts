@@ -1,10 +1,11 @@
 import type { Marker } from "maplibre-gl";
-import { editReportsFor } from "../adapter-kit/edit-reports";
 import { reportElementHover } from "../adapter-kit/hover-reports";
 import type { Drawable } from "../drawable";
-import type { LatLng, MarkerGeometry } from "../geometry";
-import { lngLatOf, wrappedLatLng } from "./conversions";
+import type { LatLng } from "../geometry";
+import { lngLatOf } from "./conversions";
+import { endDragReleasedOutside } from "./drag-release";
 import { selectLocation } from "./map-clicks";
+import { reportMarkerDrags } from "./marker-drags";
 import { PIN_SIZE, pinImageUrl } from "./pin-image";
 import type { PlacingSite } from "./placed-location";
 
@@ -98,7 +99,10 @@ export function createDomMarker(
   const marker = new maplibre.Marker({ element, anchor: "bottom", draggable });
   marker.setLngLat(lngLatOf(at));
   showDragCursor(element, draggable);
-  reportInput(element, marker, drawable.id, site);
+  // The pointer over it, or keyboard focus shown on it, hovers it.
+  reportElementHover(element, drawable.id, site.hover);
+  reportMarkerDrags(marker, drawable.id, mounted);
+  endDragReleasedOutside(marker, mounted);
   let shown = false;
 
   function setVisible(visible: boolean): void {
@@ -137,23 +141,6 @@ function showDragCursor(element: HTMLElement, draggable: boolean): void {
 function setTitle(element: HTMLElement, title: string | undefined): void {
   if (title === undefined) element.removeAttribute("aria-label");
   else element.setAttribute("aria-label", title);
-}
-
-/**
- * The pointer over it, or keyboard focus shown on it, hovers it. MapLibre fires `drag` as a user
- * drags it and `dragend` once, on release, so a drag reports its edits as it goes and its change
- * once; while dragged, the element lets the pointer through, so the release's click lands on
- * neither it nor the map's canvas, selecting nothing and clicking nothing on the map.
- */
-function reportInput(element: HTMLElement, marker: Marker, id: string, site: PlacingSite): void {
-  const edits = editReportsFor(id, site.mounted.live);
-  marker.on("drag", () => edits.moving(markerGeometryOf(marker)));
-  marker.on("dragend", () => edits.ended(markerGeometryOf(marker)));
-  reportElementHover(element, id, site.hover);
-}
-
-function markerGeometryOf(marker: Marker): MarkerGeometry {
-  return { type: "marker", ...wrappedLatLng(marker.getLngLat()) };
 }
 
 /**
