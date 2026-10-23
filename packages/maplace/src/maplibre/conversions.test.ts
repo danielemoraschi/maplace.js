@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   boundsOf,
   fromMapLibreZoom,
+  nearestLongitude,
   toMapLibreZoom,
   wrappedLatLng,
   wrappedLongitude,
@@ -30,6 +31,18 @@ describe("wrappedLongitude", () => {
     expect(wrappedLongitude(540)).toBe(180);
     expect(wrappedLongitude(20)).toBe(20);
     expect(wrappedLatLng({ lat: 1, lng: 380 })).toEqual({ lat: 1, lng: 20 });
+  });
+});
+
+describe("nearestLongitude", () => {
+  it("takes the short way across ±180 to the longitude it is near", () => {
+    expect(nearestLongitude(-170, 170)).toBe(190);
+    expect(nearestLongitude(170, -170)).toBe(-190);
+  });
+
+  it("keeps a longitude already within 180° of its neighbour as it is", () => {
+    expect(nearestLongitude(0.6, 0)).toBe(0.6);
+    expect(nearestLongitude(20, 10)).toBe(20);
   });
 });
 
