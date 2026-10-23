@@ -5,6 +5,15 @@ const DOCTYPE = /^\s*<!doctype html>\s*/i;
 /** A script's opening tag, with its attributes. */
 const SCRIPT_TAG = /<script\b([^>]*)>/g;
 
+/** An example's CDN script, which the site's own bundle stands in for. */
+const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]+"><\/script>\s*/g;
+
+/** `html` without the CDN script it loads once: the site's bundle defines the element. */
+export function withoutCdnScript(html: string): string {
+  requireOnce(html, CDN_SCRIPT, "an example loads the CDN script once, before its own code");
+  return html.replaceAll(CDN_SCRIPT, "");
+}
+
 /** `html` without its leading doctype: the site's page has its own. */
 export function withoutDoctype(html: string): string {
   return html.replace(DOCTYPE, "");

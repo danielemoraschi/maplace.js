@@ -6,6 +6,7 @@ import { parse } from "./example-dom";
 import { type ExampleHost, pageOf } from "./example-files";
 import { openHost } from "./example-hosts";
 import { LIST_SELECTOR } from "./example-layout";
+import { type OpenedVersion, openScript, type ScriptVersion } from "./example-scripts";
 import { recordErrors } from "./page-errors";
 import { recordedStoreCount, shownIds, sortedIds, storeAttachedSince } from "./recorded-stores";
 
@@ -42,17 +43,16 @@ export function adapterInside(root: Element, adapters: readonly FakeAdapter[]): 
 }
 
 /**
- * `host`'s module run on its opened nodes in `root`, its map mounted: the store made since is its
- * own, and its adapter the one of `adapters` inside `root` (React attaches in an effect, so both
- * are waited for).
+ * An opened version run on its nodes in `root`, its map mounted: the store made since is its own,
+ * and its adapter the one of `adapters` inside `root` (React attaches in an effect, so both are
+ * waited for).
  */
-export async function runHost(
-  host: ExampleHost,
-  root: Element,
+export async function runVersion(
+  { root, run }: OpenedVersion,
   adapters: readonly FakeAdapter[],
 ): Promise<ExampleRun> {
   const stores = recordedStoreCount();
-  await host.run();
+  await run();
   const store = await vi.waitFor(() => storeAttachedSince(stores));
   const adapter = await vi.waitFor(() => adapterInside(root, adapters));
   await adapter.finishMount();
@@ -65,16 +65,23 @@ export async function runHost(
  * list where its page does, does what its example says, and reports nothing going wrong.
  */
 export async function expectVersionRuns(
-  host: ExampleHost,
+  host: ExampleHost | ScriptVersion,
   adapters: readonly FakeAdapter[],
 ): Promise<void> {
-  const root = openHost(host.html);
+  const opened = openVersion(host);
   const errors = recordErrors();
-  const run = await runHost(host, root, adapters);
+  const run = await runVersion(opened, adapters);
+  const { root } = opened;
   await expectDrawsItsStore(run);
   await expect.poll(() => hasList(root)).toBe(pageShowsList(host));
   await behaviourOf(host.provider, host.example)?.(run);
   expect(errors).toEqual([]);
+}
+
+/** `version` opened on the test document: a host's nodes and module, or a script version's. */
+export function openVersion(version: ExampleHost | ScriptVersion): OpenedVersion {
+  if (version.kind === "script") return openScript(version);
+  return { root: openHost(version.html), run: version.run };
 }
 
 /** The run's map draws what its store shows, at least one location (large diffs come in chunks). */
@@ -89,7 +96,7 @@ export function hasList(root: Element): boolean {
 }
 
 /** Whether `host`'s page shows a list: its `<maplace-map>` has `list`, whatever its value. */
-function pageShowsList({ example, provider }: ExampleHost): boolean {
+function pageShowsList({ example, provider }: ExampleHost | ScriptVersion): boolean {
   return parse(pageOf(example, provider).html).querySelector("maplace-map[list]") !== null;
 }
 

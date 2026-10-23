@@ -48,7 +48,7 @@ let runs: ReadonlyMap<Example, VersionRuns> = new Map();
 beforeAll(async () => {
   serveExampleData();
   ({ runs } = await runEveryVersion(
-    { pageAdapters: adaptersMade, moduleAdapters: moduleAdapters.made },
+    { pageAdapters: adaptersMade, moduleAdapters },
     giveVersionsTheirRoom,
   ));
 });
@@ -67,7 +67,7 @@ describe("on a phone", () => {
 /** Each version looks as its page, and each MapLibre page as its Google twin's. */
 function describeLookAlike(): void {
   describe.each(EXAMPLES)("the $name example ($provider)", (example) => {
-    it.each(HOST_KINDS)("looks in its %s version as on its page", (kind) =>
+    it.each([...HOST_KINDS, "script"] as const)("looks in its %s version as on its page", (kind) =>
       expectRunLooksAs(runsOf(example)[kind], runsOf(example).page),
     );
   });

@@ -105,15 +105,8 @@ describe("<maplace-map> with a list view defined by name", () => {
   });
 });
 
-it("lets a page on the CDN script, which imports nothing, define a view through the element", async () => {
-  const element = customElements.get("maplace-map") as unknown as {
-    defineListView: typeof defineListView;
-  };
-  expect(element.defineListView).toBe(defineListView);
-  const view = checksView();
-  element.defineListView(view.name, view.factory);
-  const map = await mapFrom(`<maplace-map list="${view.name}">${ROME}</maplace-map>`);
-  expect(map.querySelector(".checks")).not.toBeNull();
+it("leaves defining a view to the entry, which a CDN page reaches as Maplace.defineListView", () => {
+  expect(customElements.get("maplace-map")).not.toHaveProperty("defineListView");
 });
 
 describe("<maplace-map> naming a list view not yet defined", () => {

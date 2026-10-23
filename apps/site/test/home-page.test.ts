@@ -149,7 +149,7 @@ describe("the home page's examples", () => {
     await openHome(page, site.url);
     // Chosen before consent, so big's page map, hidden, is never released: only its React
     // version can fetch the points.
-    await chooseVersion(page, "route", "Vanilla");
+    await chooseVersion(page, "route", "Bundler");
     await chooseVersion(page, "big", "React");
     await footerToggle(page).click();
     await page.locator("#route-vanilla-map").scrollIntoViewIfNeeded();
@@ -170,7 +170,7 @@ describe("the home page's code tabs", () => {
   it("shows a host's Google loader as one closed line, opened on a click", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url);
-    const section = await chooseTab(page, "simple", "Vanilla");
+    const section = await chooseTab(page, "simple", "Bundler");
     const loader = section.getByRole("group").filter({ hasText: "Google's bootstrap loader" });
     expect(await loader.getAttribute("open")).toBeNull();
     expect(await loader.getByText("importLibrary").isVisible()).toBe(false);

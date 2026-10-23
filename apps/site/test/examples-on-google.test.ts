@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 import { describeWithKey } from "../../../packages/maplace/src/google/testing/with-key.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
-import { VERSION_LABELS } from "../src/examples/example-versions.ts";
+import { isModuleVersion, VERSION_LABELS } from "../src/examples/example-versions.ts";
 import {
   googleRefused,
   markersDrawn,
@@ -24,17 +24,17 @@ const LIVE_VERSIONS = VERSION_LABELS.filter(({ kind }) => kind !== "html");
 
 /**
  * Each section with its versions in the order the test opens them: the first loads Maps JS for
- * the page, in turn the element's own tag or a vanilla or React version's bootstrap, and the
- * others find it there.
+ * the page, in turn the element's own tag, a script version's adapter's tag, or a vanilla or React
+ * version's bootstrap, and the others find it there.
  */
 const SECTIONS = EXAMPLE_SECTIONS.map(({ name }, index) => {
   const order = versionsInTurn(index);
   return { name, order, loader: order[0] };
 });
 
-// Every section's page, vanilla and React versions on real Google Maps, on the site as built and
-// served, with its key: each drawing Google's tiles, unrefused, the page's map ready, nothing
-// thrown, and the three drawing as many markers (they are the same map).
+// Every section's page, script, vanilla and React versions on real Google Maps, on the site as
+// built and served, with its key: each drawing Google's tiles, unrefused, the page's map ready,
+// nothing thrown, and the live versions drawing as many markers as the page (the same map).
 describeWithKey("the site's examples on Google Maps", (key) => {
   const site = siteOnGoogleBeforeTests(key);
 
@@ -84,8 +84,10 @@ describeWithKey("the site's examples on Google Maps", (key) => {
         }
         expect(await section.locator("[data-map-failure]").isVisible()).toBe(false);
         expect(errors()).toEqual([]);
+        // The page's element and a script version's adapter add Maps JS's own tag; a module
+        // version's HTML, Google's bootstrap.
         expect(mapsJsRequests().map(addedByBootstrap), "Maps JS by a bootstrap").toEqual([
-          loader.kind !== "html",
+          isModuleVersion(loader.kind),
         ]);
         expect(await page.locator(".gm-style").count(), "maps drawn").toBe(VERSION_LABELS.length);
         await context.close();

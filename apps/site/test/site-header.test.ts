@@ -1,12 +1,15 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { docRoute, REPO_DOCS, REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { siteBuiltBeforeTests } from "./site-session.ts";
+import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
 
 const site = siteBuiltBeforeTests();
 
 const PHONE = { width: 375, height: 812 };
 const DESKTOP = { width: 1280, height: 900 };
+
+/** How late the web fonts come in the test of a slow connection. */
+const LATE_FONTS_MS = 1500;
 
 /** A visitor's page at `route`, on a screen of `viewport`. */
 async function opened(route: string, viewport: { width: number; height: number }) {
@@ -82,13 +85,23 @@ describe("the site's header", () => {
 
   it("shows the current page's own link on a phone", async () => {
     const { page, context } = await opened(docRoute("migrating"), PHONE);
-    const nav = await docsNav(page).boundingBox();
-    const current = await docsNav(page).locator('[aria-current="page"]').boundingBox();
-    expect(current && nav && current.x >= nav.x - 1).toBe(true);
-    expect((current?.x ?? 0) + (current?.width ?? 0)).toBeLessThanOrEqual(
-      (await navClearEnd(page)) + 1,
-    );
+    // The page's script scrolls the nav to the link once it runs: on a busy machine, after load.
+    await expect.poll(() => currentLinkInView(page), ASKED).toBe(true);
     await context.close();
+  }, 30_000);
+
+  it("shows the current page's own link on a phone when its fonts come late", async () => {
+    const visit = await site.visitor({ viewport: PHONE });
+    // The web fonts widen the links once they load: the nav scrolled before then would leave the
+    // last link under its end fade.
+    await visit.context.route(/\.woff2?$/, async (route) => {
+      await new Promise((loaded) => setTimeout(loaded, LATE_FONTS_MS));
+      await route.continue();
+    });
+    await visit.page.goto(new URL(docRoute("migrating"), site.url).href);
+    await visit.page.evaluate(() => document.fonts.ready);
+    await expect.poll(() => currentLinkInView(visit.page), ASKED).toBe(true);
+    await visit.context.close();
   }, 30_000);
 
   it("lands an anchor's target below it", async () => {
@@ -113,3 +126,11 @@ describe("the site's header", () => {
     await context.close();
   }, 30_000);
 });
+
+/** Whether the docs nav shows the current page's link whole, clear of its end's fade. */
+async function currentLinkInView(page: Page): Promise<boolean> {
+  const nav = await docsNav(page).boundingBox();
+  const current = await docsNav(page).locator('[aria-current="page"]').boundingBox();
+  if (nav === null || current === null) return false;
+  return current.x >= nav.x - 1 && current.x + current.width <= (await navClearEnd(page)) + 1;
+}

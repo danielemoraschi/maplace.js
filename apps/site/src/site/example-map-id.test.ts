@@ -1,5 +1,6 @@
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { exampleMapId } from "./example-map-id.ts";
+import { exampleMapId, SITE_MAPLACE } from "./example-map-id.ts";
 
 const ROOT = "/repo/packages/maplace/examples";
 const ON_SITE = "\0maplace-google-on-site";
@@ -24,6 +25,11 @@ describe("exampleMapId", () => {
   it("sends an example's import of maplace/google to the site's, the dev server's query aside", () => {
     expect(resolved("maplace/google", `${ROOT}/simple/vanilla.ts`)).toBe(ON_SITE);
     expect(resolved("maplace/google", `${ROOT}/simple/react.tsx?v=1a2b`)).toBe(ON_SITE);
+  });
+
+  it("sends the site's Maplace's import of maplace/google to the site's", () => {
+    expect(existsSync(SITE_MAPLACE), SITE_MAPLACE).toBe(true);
+    expect(resolved("maplace/google", `${SITE_MAPLACE}?v=1a2b`)).toBe(ON_SITE);
   });
 
   it("leaves any other importer's import, and any other import, alone", () => {

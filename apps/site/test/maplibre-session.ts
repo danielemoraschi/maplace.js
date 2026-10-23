@@ -3,8 +3,8 @@ import { AS_SHIPPED, builtSiteSession, type SiteSession } from "./site-session.t
 /** How long a map on MapLibre may take to draw on the local style, on a busy machine. */
 export const ON_MAPLIBRE = { timeout: 20_000 };
 
-/** How long one section's three versions may take on MapLibre, one after another. */
-export const SECTION_MS = 60_000;
+/** How long one section's four versions may take on MapLibre, one after another. */
+export const SECTION_MS = 80_000;
 
 /**
  * The site as it ships, with both providers (built with a key, never a real one, and a map ID,

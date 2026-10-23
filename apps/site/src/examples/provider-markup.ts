@@ -8,6 +8,8 @@ export interface ProviderMarkup {
   readonly holdMap: (map: string) => string;
   /** A vanilla or React version's host, before the site makes it live (`liveHost`). */
   readonly prepareHost: (hostHtml: string) => string;
+  /** A script version, before the site makes it live (`liveScript`). */
+  readonly prepareScript: (scriptHtml: string) => string;
 }
 
 /** The map's own opening tag, whose attributes are the map's: a quoted value may hold a `>`. */
@@ -19,15 +21,13 @@ const MAP_KEY_ATTRIBUTE = / api-key="YOUR_KEY"/g;
 /** A map ID the page's map sets itself. */
 const OWN_MAP_ID_ATTRIBUTE = /\smap-id=/;
 
-/** Where a host's bootstrap has the reader put their key. */
-const BOOTSTRAP_KEY_PLACEHOLDER = /key: "YOUR_KEY"/g;
-
 /**
  * Each provider's rewrite of its examples, with the site's settings:
  * - Google's map gets the site's key, or none when it has none, and the site's map ID when the
  *   page sets none (a page's own `map-id` stays); its hosts' bootstrap gets the key, or keeps the
- *   placeholder when the site has none (the frame then says so before running anything). The
- *   site's map ID reaches the hosts' modules through the site's `maplace/google`
+ *   placeholder when the site has none (the frame then says so before running anything), and so
+ *   does its script versions' `apiKey`. The site's map ID reaches the hosts' modules, and the
+ *   page's `Maplace` the script versions call, through the site's `maplace/google`
  *   (`example-map-id.ts`).
  * - MapLibre's map takes no key or map ID; its hosts load nothing but their module.
  */
@@ -36,11 +36,13 @@ export const PROVIDER_MARKUP: Readonly<
 > = {
   google: (settings) => ({
     holdMap: (map) => heldGoogleMap(map, settings),
-    prepareHost: (hostHtml) => keyedBootstrap(hostHtml, settings),
+    prepareHost: (hostHtml) => withSiteKey(hostHtml, "key", settings.apiKey),
+    prepareScript: (scriptHtml) => withSiteKey(scriptHtml, "apiKey", settings.apiKey),
   }),
   maplibre: () => ({
     holdMap: (map) => heldBy(map, "maplibre"),
     prepareHost: (hostHtml) => hostHtml,
+    prepareScript: (scriptHtml) => scriptHtml,
   }),
 };
 
@@ -66,18 +68,25 @@ function siteMapIdFor(map: string, mapId: string | undefined): string {
   return ` map-id="${attributeValue(mapId)}"`;
 }
 
-function keyedBootstrap(hostHtml: string, { apiKey }: SiteMapSettings): string {
-  requireOnce(
-    hostHtml,
-    BOOTSTRAP_KEY_PLACEHOLDER,
-    `an example's host has the bootstrap's ${BOOTSTRAP_KEY_PLACEHOLDER.source} once`,
-  );
-  if (apiKey === undefined) return hostHtml;
-  return hostHtml.replaceAll(BOOTSTRAP_KEY_PLACEHOLDER, () => keyIn(apiKey));
+/**
+ * Where an example has the reader put their key: a host's bootstrap (`key`) or a script version's
+ * options (`apiKey`).
+ */
+type KeyProperty = "key" | "apiKey";
+
+/**
+ * `html` with the site's key written over its one `<property>: "YOUR_KEY"`, or kept as it is when
+ * the site has none (the frame then says so before running anything).
+ */
+function withSiteKey(html: string, property: KeyProperty, apiKey?: string): string {
+  const placeholder = `${property}: "YOUR_KEY"`;
+  const pattern = new RegExp(placeholder, "g");
+  requireOnce(html, pattern, `an example has ${placeholder} once`);
+  if (apiKey === undefined) return html;
+  return html.replaceAll(pattern, () => `${property}: ${scriptString(apiKey)}`);
 }
 
-/** `key: "<apiKey>"`, a JS string that can't end the script it is in. */
-function keyIn(apiKey: string): string {
-  const scriptSafe = JSON.stringify(apiKey).replaceAll("<", String.raw`\x3c`);
-  return `key: ${scriptSafe}`;
+/** `text` as a JS string that can't end the script it is in. */
+function scriptString(text: string): string {
+  return JSON.stringify(text).replaceAll("<", String.raw`\x3c`);
 }

@@ -44,10 +44,11 @@ const ID = /\sid="([^"]+)"/g;
 afterEach(() => vi.unstubAllGlobals());
 
 describe("every example version, all on one page", () => {
-  it("mounts each vanilla map and React root on the id the site lays out", () => {
+  it("mounts each script and vanilla map and React root on the id the site lays out", () => {
     for (const example of EXAMPLES) {
-      const { vanilla, react } = example;
+      const { script, vanilla, react } = example;
       const prefix = idPrefixOf(example);
+      expect(parse(script.html).getElementById(`${prefix}-script-map`), prefix).not.toBeNull();
       expect(parse(vanilla.html).getElementById(`${prefix}-vanilla-map`), prefix).not.toBeNull();
       expect(parse(react.html).getElementById(`${prefix}-react-root`), prefix).not.toBeNull();
     }
@@ -64,7 +65,7 @@ describe("every example version, all on one page", () => {
   it("names no element with an id another version uses", () => {
     const htmls = [
       ...EXAMPLE_PAGES.map(({ html }) => html),
-      ...EXAMPLES.flatMap(({ vanilla, react }) => [vanilla.html, react.html]),
+      ...EXAMPLES.flatMap(({ script, vanilla, react }) => [script.html, vanilla.html, react.html]),
     ];
     const ids = htmls.flatMap((html) => Array.from(html.matchAll(ID), ([, id]) => id));
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
@@ -74,7 +75,7 @@ describe("every example version, all on one page", () => {
     serveExampleData();
     const { runs, errors } = await runEveryVersion({
       pageAdapters: adaptersMade,
-      moduleAdapters: moduleAdapters.made,
+      moduleAdapters,
     });
     for (const example of EXAMPLES.filter(onProvider("maplibre"))) {
       await expectSameAsGoogle(example, runs);
@@ -106,11 +107,11 @@ async function expectSameAsGoogle(
   await expectShowsAs(maplibre, google, example.name);
 }
 
-/** The three versions show the same map, and behave. */
+/** The four versions show the same map, and behave. */
 async function expectSameMap({ name, provider }: Example, runs: VersionRuns): Promise<void> {
-  const { page, vanilla, react } = runs;
-  for (const version of [vanilla, react]) await expectShowsAs(version, page, name);
-  for (const run of [page, vanilla, react]) {
+  const { page, script, vanilla, react } = runs;
+  for (const version of [script, vanilla, react]) await expectShowsAs(version, page, name);
+  for (const run of [page, script, vanilla, react]) {
     await expectDrawsItsStore(run);
     await behaviourOf(provider, name)?.(run);
   }

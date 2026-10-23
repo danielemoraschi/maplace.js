@@ -13,7 +13,7 @@ const WORKER_SOURCE_MAP_COMMENT = /\n\/\/# sourceMappingURL=\S+\s*$/;
  * pinned file is all a page loads. An IIFE has no `import.meta.url` for MapLibre to find its
  * worker beside its module, so the worker's source is inlined and started from a `blob:` URL (a
  * module worker: it ends `export { … as default }` and imports nothing); the stylesheet is adopted
- * when MapLibre first loads.
+ * as maplibre-gl loads, which, with `Maplace.maplibre` exported, is as the script loads.
  */
 export const bundleMapLibre: Plugin = {
   name: "bundle-maplibre",

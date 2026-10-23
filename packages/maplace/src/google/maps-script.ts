@@ -4,6 +4,7 @@ import { MAPS_SCRIPT_ORIGIN, type MapsScriptRequest, mapsScriptUrl } from "./map
 
 /** Maps JS to add to a page: its settings, and the nonce a content security policy asks for. */
 export interface MapsScriptLoad extends MapsScriptRequest {
+  /** The nonce a content security policy asks the Maps JS tag for. */
   readonly nonce?: string | undefined;
 }
 

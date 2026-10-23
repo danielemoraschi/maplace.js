@@ -12,22 +12,25 @@ export class VersionStartFailure extends Error {
   }
 }
 
-/** What starting a vanilla or React version takes, each effect given (`site.ts` wires them). */
+/**
+ * What starting a script, vanilla or React version takes, each effect given (`site.ts` wires
+ * them).
+ */
 export interface VersionStarting {
   /**
-   * Readies what the version's provider needs before its module runs; rejects with a
+   * Readies what the version's provider needs before the version runs; rejects with a
    * `VersionStartFailure` saying why it can't.
    */
   readonly ready: (version: HTMLElement) => Promise<void>;
-  /** Imports the version's module, which runs it. */
+  /** Runs the version: imports its module, or, for a script version, runs its program. */
   readonly load: (version: HTMLElement) => Promise<unknown>;
   /** Shows why `version` didn't start. */
   readonly failed: (version: HTMLElement, failure: VersionFailure) => void;
 }
 
 /**
- * What starts a version, once, as a page's map is released: its provider readied, then its
- * module imported. `data-starting` marks the wait, `data-started` a version whose module runs;
+ * What starts a version, once, as a page's map is released: its provider readied, then the
+ * version run. `data-starting` marks the wait, `data-started` a version that runs;
  * one that fails says why, any error but a `VersionStartFailure` being its script's.
  */
 export function versionStarter(starting: VersionStarting): (version: HTMLElement) => Promise<void> {

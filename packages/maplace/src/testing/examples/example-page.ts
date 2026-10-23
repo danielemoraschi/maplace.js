@@ -1,5 +1,6 @@
 import type { MaplaceMapElement } from "../../element/index";
 import { importedNodes, parse, rootOf, runScript, withKey } from "./example-dom";
+import type { Provider } from "./example-files";
 import { recordErrors } from "./page-errors";
 
 /** A page opened in the test document: its map, and what went wrong on it. */
@@ -14,6 +15,19 @@ export interface OpenedPage {
 interface PageOptions {
   /** Replaces the pages' `YOUR_KEY`, for a run on real Google Maps. */
   readonly apiKey?: string;
+}
+
+/** The CDN scripts (RFC §3): Google's two, the second for `cluster`, and MapLibre's. */
+const CDN_SCRIPTS = {
+  plain: "maplace-element.iife.js",
+  cluster: "maplace-element-cluster.iife.js",
+  maplibre: "maplace-element-maplibre.iife.js",
+} as const;
+
+/** The CDN script a map on `provider` needs: MapLibre's, which clusters too, or Google's. */
+export function cdnScriptFor(provider: Provider, clusters: boolean): string {
+  if (provider === "maplibre") return CDN_SCRIPTS.maplibre;
+  return clusters ? CDN_SCRIPTS.cluster : CDN_SCRIPTS.plain;
 }
 
 /** The one CDN script a page loads, by file name. */

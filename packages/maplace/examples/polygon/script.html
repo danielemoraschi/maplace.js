@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #polygon-script-map { height: 24rem; }
+</style>
+<div id="polygon-script-map"></div>
+<script type="module">
+  // save(location): your own code, writing an edited location back to your server.
+
+  const locations = [
+    {
+      id: "park",
+      type: "polygon",
+      title: "Park",
+      editable: true,
+      path: [
+        { lat: 41.91, lng: 12.48 },
+        { lat: 41.92, lng: 12.49 },
+        { lat: 41.9, lng: 12.5 },
+      ],
+    },
+  ];
+  const maplace = Maplace.createGoogleMap("#polygon-script-map", { apiKey: "YOUR_KEY", locations });
+  maplace.on("locationChange", ({ location }) => save(location));
+</script>

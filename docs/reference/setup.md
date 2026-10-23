@@ -54,6 +54,49 @@ On MapLibre, its own script, with no key:
 
 It bundles maplibre-gl, its worker and its stylesheet, clustering included; `map-style` and `map-options` are its [provider attributes](maplibre.md#provider-attributes).
 
+## With a script of your own
+
+A page that makes its map in its own script, as 0.2's did, uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`maplace`, the provider's and `maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, maplacejs adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
+
+<!-- example: packages/maplace/examples/simple/script.html -->
+```html
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #simple-script-map { height: 24rem; }
+</style>
+<div id="simple-script-map"></div>
+<script type="module">
+  Maplace.createGoogleMap("#simple-script-map", {
+    apiKey: "YOUR_KEY",
+    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  });
+</script>
+```
+
+`version`, `language`, `region` and `nonce` go beside `apiKey`, as the element's attributes do, choosing the Maps JS it loads: [options](google.md#options). Google fixes them once per page, so every map on it asks for the same.
+
+On MapLibre, the MapLibre script's `Maplace` has `createMapLibreMap` and `createMapLibreAdapter`, and, as `Maplace.maplibre`, the maplibre-gl it bundles, for a map of your own ([loading maplibre-gl](maplibre.md#loading-maplibre-gl)):
+
+<!-- example: packages/maplace/examples/simple/maplibre/script.html -->
+```html
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #simple-maplibre-script-map { height: 24rem; }
+</style>
+<div id="simple-maplibre-script-map"></div>
+<script type="module">
+  Maplace.createMapLibreMap("#simple-maplibre-script-map", {
+    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  });
+</script>
+```
+
+Every example on the site has this version, under its Script tab.
+
 ## With npm
 
 ```sh
@@ -117,7 +160,7 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 
 ## Content Security Policy
 
-The script the element adds carries the `nonce` attribute of its `<maplace-map>`, so a page with a nonce-based policy lets it load. The element never writes inline styles: its default styles are an adopted stylesheet, and a shape's styles are JSON attributes, not `style`.
+The script the element adds carries the `nonce` attribute of its `<maplace-map>`, and the one an adapter given `apiKey` adds carries its `nonce` option, so a page with a nonce-based policy lets it load. The element never writes inline styles: its default styles are an adopted stylesheet, and a shape's styles are JSON attributes, not `style`.
 
 On MapLibre, from the CDN script or npm, a policy allows `img-src data: blob:`, as MapLibre asks: the pin maplacejs draws in front for the selected or hovered location, and on an `editable` marker, is a `data:` image. The MapLibre CDN script also starts maplibre-gl's worker from a `blob:` URL, so its pages allow `worker-src blob:`; its stylesheet is adopted, as the element's own styles are. The map fetches its style, and the tiles, fonts and icons it names, from the style's servers (OpenFreeMap's, by default), which `connect-src` allows.
 

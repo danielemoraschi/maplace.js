@@ -45,7 +45,7 @@ function injectMapsScript(key: string): Promise<void> {
 
 /** The element's URL, pinned, with a callback: tests know when Maps JS arrived. */
 function testScriptUrl(key: string): string {
-  const url = new URL(mapsScriptUrl({ key, version: MAPS_JS_VERSION }));
+  const url = new URL(mapsScriptUrl({ apiKey: key, version: MAPS_JS_VERSION }));
   url.searchParams.set("callback", LOADED_CALLBACK);
   return url.href;
 }

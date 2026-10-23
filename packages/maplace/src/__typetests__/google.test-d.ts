@@ -31,3 +31,10 @@ createGoogleAdapter({ mapId: "id", mapOptions: { mapId: "other" } });
 createGoogleAdapter({ mapId: "id", mapOptions: { styles: [] } });
 // @ts-expect-error Google's options go in mapOptions, not a google object
 createGoogleAdapter({ mapId: "id", google: {} });
+
+// Maps JS's settings, for maplace to add Maps JS itself.
+createGoogleAdapter({ apiKey: "KEY", version: "weekly", language: "it", region: "IT", nonce: "n" });
+// @ts-expect-error a key is a string
+createGoogleAdapter({ apiKey: 1 });
+// @ts-expect-error Google's URL name for the key is not an option
+createGoogleAdapter({ key: "KEY" });

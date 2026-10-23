@@ -8,11 +8,17 @@ import {
   isElement,
   optional,
 } from "../validate/values";
+import {
+  MAPS_JS_CHECKS,
+  MAPS_JS_OPTION_NAMES,
+  type MapsJsOptions,
+  refuseMapsJsWithoutKey,
+} from "./maps-js-options";
 
 /** Google's map options maplace sets elsewhere: kept out of `mapOptions`, by type and by check. */
 type SetElsewhere = "mapId" | "colorScheme" | "center" | "zoom" | "styles";
 
-export interface GoogleAdapterOptions {
+export interface GoogleAdapterOptions extends MapsJsOptions {
   /**
    * The map ID Advanced Markers need, and Cloud styling hangs on. Left out, a map maplace creates
    * uses Google's `DEMO_MAP_ID`, for development, and warns once in the console.
@@ -80,6 +86,7 @@ export function checkGoogleOptions(value: unknown): asserts value is GoogleAdapt
   const field = child(root("createGoogleAdapter"), "options");
   checkOptionFields(value, field);
   if (value.map !== undefined) refuseCreatedMapOptions(value, field);
+  refuseMapsJsWithoutKey(value, field);
 }
 
 /**
@@ -103,17 +110,25 @@ const checkOptionFields: Assert<GoogleAdapterOptions> = recordOf<GoogleAdapterOp
     colorScheme: optional(checkColorScheme),
     map: optional(checkPageMap),
     mapOptions: optional(mapOptionsCheck(ADAPTER_OWN_SETTINGS)),
+    ...MAPS_JS_CHECKS,
   },
   unknown: "is not a Google adapter option",
   remarks: { google: "is not an option: Google's map options go in mapOptions" },
   expected: "an object of Google adapter options",
 });
 
-/** The page's own map keeps the options and colour scheme the page gave it. */
+/**
+ * For a map maplace creates, each group with why: the page's own map has its own options and
+ * colour scheme, and its page loaded Maps JS.
+ */
+const CREATED_MAP_ONLY: readonly (readonly [readonly (keyof GoogleAdapterOptions)[], string])[] = [
+  [["mapOptions", "colorScheme"], "is for a map maplace creates: set it on your own map"],
+  [MAPS_JS_OPTION_NAMES, "is for a map maplace creates: your map's page loaded Maps JS"],
+];
+
+/** The page's own map keeps the options and colour scheme the page gave it, and its Maps JS. */
 function refuseCreatedMapOptions(options: GoogleAdapterOptions, field: Field): void {
-  for (const key of ["mapOptions", "colorScheme"] as const) {
-    if (options[key] !== undefined) {
-      reject(child(field, key), "is for a map maplace creates: set it on your own map");
-    }
+  for (const [keys, remark] of CREATED_MAP_ONLY) {
+    for (const key of keys) if (options[key] !== undefined) reject(child(field, key), remark);
   }
 }

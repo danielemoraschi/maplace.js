@@ -4,7 +4,7 @@ maplacejs 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in t
 
 ## What changed
 
-- **No jQuery and no global.** One CDN script defines the `<maplace-map>` element, or you import ES modules from npm.
+- **No jQuery and no global state.** One CDN script defines the `<maplace-map>` element and sets `Maplace`, a namespace of functions (`Maplace.createGoogleMap(...)` is 0.2's `new Maplace(...).Load()`), or you import ES modules from npm.
 - **Google Maps or MapLibre.** 0.2 drew on Google only. 1.0 draws the same locations, list and events on either, and MapLibre on OpenFreeMap's tiles needs no key ([MapLibre adapter](docs/reference/maplibre.md)).
 - **Locations have an `id`.** Selection, events and updates name a location by its id, not its position in the array.
 - **`lon` is `lng`**, as Google and MapLibre name it, with no alias.
@@ -46,7 +46,25 @@ In 1.0 the element does the same, loading Google Maps itself:
 
 On MapLibre, the same page loads `maplace-element-maplibre.iife.js` and drops `api-key` ([quick start](README.md#quick-start)).
 
-A page that builds the map in code makes the same call 0.2 made, `createGoogleMap` from npm, on a page that loads Maps JS with Google's bootstrap loader ([README](README.md#with-a-bundler)); the list goes where 0.2's `controls_div` put it:
+A page that builds the map in its own script, as 0.2's did, calls `Maplace.createGoogleMap` on the same CDN script, with no build step: `Maplace` is a namespace now, not a constructor, and the key goes in the options, maplacejs loading Google Maps with it:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<div id="gmap" style="height: 24rem"></div>
+<div id="controls"></div>
+<script type="module">
+  Maplace.createGoogleMap("#gmap", {
+    apiKey: "YOUR_KEY",
+    locations: [
+      { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+      { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    ],
+    list: { container: "#controls" },
+  });
+</script>
+```
+
+A page with a bundler makes the same call, `createGoogleMap` from npm, on a page that loads Maps JS with Google's bootstrap loader ([README](README.md#with-a-bundler)); the list goes where 0.2's `controls_div` put it:
 
 ```ts
 import { createGoogleMap } from "maplace/google";
@@ -162,7 +180,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 
 | 0.2 method | 1.0 |
 |---|---|
-| `new Maplace(options).Load()` | `createGoogleMap('#map', options)` or `createMapLibreMap('#map', options)`, or their parts `createMaplace(options)` then `attach(adapter, '#map')`, or `<maplace-map>` |
+| `new Maplace(options).Load()` | `Maplace.createGoogleMap('#map', options)` on the CDN script, `createGoogleMap('#map', options)` or `createMapLibreMap('#map', options)`, or their parts `createMaplace(options)` then `attach(adapter, '#map')`, or `<maplace-map>` |
 | `Load(options)` | the setter for what changed: `setLocations`, `setRoute`, `setFilter`, `setView` |
 | `Load(true)` (rebuild) | `detach()`, then `attach()` with a new adapter |
 | `Loaded()` | `getSnapshot().loadState`, or `await whenReady()` |
@@ -195,7 +213,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 - Locations are identified by `id`, not by their 1-based position.
 - Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
-- No jQuery and no `Maplace` global: ES modules or one CDN script. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap), and the MapLibre script bundles MapLibre; in code, the page loads Maps JS, or installs maplibre-gl, and the adapter imports what it needs.
+- No jQuery, and `Maplace` is no longer a constructor: one CDN script sets it as a namespace of functions, or you import ES modules. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap), and the MapLibre script bundles MapLibre; in code, the page loads Maps JS or gives the adapter `apiKey`; from npm it installs maplibre-gl, which the MapLibre script bundles.
 - The menu's inline styles are replaced by a stylesheet you can override.
 - Bugs and requests from the 0.2 issues (explicit centre overridden by fit, hidden containers, stacking, …) are settled in [RFC §3, decisions from the 0.2 issues](docs/rfc-1.0.md#decisions-from-the-02-issues).
 

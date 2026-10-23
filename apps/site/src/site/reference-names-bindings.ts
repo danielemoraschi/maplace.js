@@ -18,6 +18,11 @@ export const GOOGLE_OPTIONS = everyName<keyof GoogleAdapterOptions>({
   colorScheme: true,
   map: true,
   mapOptions: true,
+  apiKey: true,
+  version: true,
+  language: true,
+  region: true,
+  nonce: true,
 });
 
 /**
@@ -29,6 +34,11 @@ export const GOOGLE_MAP_OPTIONS = [
     mapId: true,
     colorScheme: true,
     mapOptions: true,
+    apiKey: true,
+    version: true,
+    language: true,
+    region: true,
+    nonce: true,
     list: true,
   }),
   ...everyName<Exclude<keyof GoogleMapList, keyof ListViewOptions>>({

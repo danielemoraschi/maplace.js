@@ -12,7 +12,7 @@ afterEach(() => {
 
 describe("addMapsScript", () => {
   it("adds one asynchronous tag with the nonce, which is then the page's", () => {
-    const script = addMapsScript({ key: "k", nonce: "n0" }, document);
+    const script = addMapsScript({ apiKey: "k", nonce: "n0" }, document);
     expect([script.async, script.nonce, script.src]).toEqual([
       true,
       "n0",
@@ -33,7 +33,7 @@ describe("mapsReadyFrom", () => {
   it("resolves once Maps JS can import libraries, which comes some time after the tag", async () => {
     vi.useFakeTimers();
     const ready = vi.fn();
-    void mapsReadyFrom(addMapsScript({ key: "k" }, document)).then(ready);
+    void mapsReadyFrom(addMapsScript({ apiKey: "k" }, document)).then(ready);
     await vi.advanceTimersByTimeAsync(MAPS_READY_POLL_MS * 3);
     expect(ready).not.toHaveBeenCalled();
     stubMapsJs();
@@ -42,7 +42,7 @@ describe("mapsReadyFrom", () => {
   });
 
   it("leaves a failure no map waits for unreported, as the map that waits reports it", async () => {
-    const script = addMapsScript({ key: "k" }, document);
+    const script = addMapsScript({ apiKey: "k" }, document);
     void mapsReadyFrom(script);
     script.dispatchEvent(new Event("error"));
     await new Promise((resolve) => setTimeout(resolve));
@@ -50,12 +50,12 @@ describe("mapsReadyFrom", () => {
   });
 
   it("waits once per tag, however many maps share it", () => {
-    const script = addMapsScript({ key: "k" }, document);
+    const script = addMapsScript({ apiKey: "k" }, document);
     expect(mapsReadyFrom(script)).toBe(mapsReadyFrom(script));
   });
 
   it("rejects with provider-load-failed when the tag fails, and at once for anyone asking later", async () => {
-    const script = addMapsScript({ key: "k" }, document);
+    const script = addMapsScript({ apiKey: "k" }, document);
     const first = mapsReadyFrom(script);
     script.dispatchEvent(new Event("error"));
     await expect(first).rejects.toMatchObject({ code: "provider-load-failed" });

@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { bundleInMemory } from "../checks/in-memory-bundle.ts";
 import {
   buildCdnScripts,
+  CDN_ENTRIES,
   CDN_SCRIPTS,
   type CdnScript,
   LICENSES_FILE,
@@ -12,7 +13,7 @@ import {
 } from "./cdn-builds.ts";
 import { leaveOutClustering } from "./leave-out-clustering.ts";
 import { packagesLoadedBy } from "./loaded-by.ts";
-import { PACKAGE_ENTRIES, ROOT, SRC } from "./package.ts";
+import { ROOT, SRC } from "./package.ts";
 import { tempDir } from "./temp-dir.ts";
 import { bundledPackages } from "./third-party-licenses.ts";
 
@@ -61,7 +62,7 @@ describe("the CDN scripts", () => {
     const bundled = bundledPackages([metafiles.maplibre]).map((dir) =>
       dir.split("node_modules/").at(-1),
     );
-    const loaded = [...packagesLoadedBy(ownMapLibreCode, PACKAGE_ENTRIES.elementMapLibre)];
+    const loaded = [...packagesLoadedBy(ownMapLibreCode, CDN_ENTRIES.maplibre)];
     expect(loaded).toEqual(expect.arrayContaining(["maplibre-gl", "supercluster"]));
     expect(bundled).toEqual(expect.arrayContaining(loaded));
   });

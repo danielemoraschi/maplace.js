@@ -94,6 +94,36 @@ describe("checkGoogleOptions", () => {
       `options.${key} is for a map maplace creates: set it on your own map`,
     )(),
   );
+
+  it("accepts Maps JS's settings with a key", () => {
+    const settings = { apiKey: "k", version: "weekly", language: "it", region: "IT", nonce: "n" };
+    expect(() => checkGoogleOptions(settings)).not.toThrow();
+  });
+
+  it.each(["apiKey", "version", "language", "region", "nonce"])(
+    "refuses Maps JS's %s with the page's own map, whose page loaded Maps JS",
+    (key) =>
+      refusal(
+        { map: pageMap, [key]: "v" },
+        `options.${key}`,
+        `options.${key} is for a map maplace creates: your map's page loaded Maps JS`,
+      )(),
+  );
+
+  it.each(["version", "language", "region", "nonce"])(
+    "refuses %s without apiKey, which maplace would never use",
+    (key) =>
+      refusal(
+        { [key]: "v" },
+        `options.${key}`,
+        `options.${key} is for the Maps JS maplace adds: give apiKey too`,
+      )(),
+  );
+
+  it(
+    "refuses an empty apiKey",
+    refusal({ apiKey: "" }, "options.apiKey", 'options.apiKey must be a non-empty string, got ""'),
+  );
 });
 
 describe("mapOptionsCheck", () => {

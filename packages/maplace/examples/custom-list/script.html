@@ -1,0 +1,66 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace's store and Google adapter, which adds Maps JS with your key, with a list of your own on it. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #custom-list-script-map { height: 24rem; }
+  #custom-list-script-map fieldset { border: 0; padding: 0; }
+  #custom-list-script-map fieldset label { display: inline-block; margin-right: 0.75rem; }
+</style>
+<div id="custom-list-script-map"></div>
+<script type="module">
+  const locations = [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
+    { id: "turin", lat: 45.0703, lng: 7.6869, title: "Turin" },
+    { id: "venice", lat: 45.4408, lng: 12.3155, title: "Venice", listed: false },
+  ];
+
+  /** A radio choosing `id`, or fitting every location when `id` is empty. */
+  function choice(maplace, id, title) {
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "custom-list-script-choice";
+    radio.value = id;
+    radio.addEventListener("change", () => {
+      maplace.select(id || undefined);
+      if (!id) maplace.fitAll();
+    });
+    const label = document.createElement("label");
+    label.append(radio, ` ${title}`);
+    return label;
+  }
+
+  /**
+   * A list of your own: a radio per location maplace's lists would list, and one to fit them all.
+   * The choices are made again when those change; the selection is checked.
+   */
+  function checksMenu(maplace, heading) {
+    const fieldset = document.createElement("fieldset");
+    const legend = document.createElement("legend");
+    legend.textContent = heading;
+    const choices = document.createElement("div");
+    fieldset.append(legend, choices);
+    let listedIds;
+    const render = () => {
+      const listed = Maplace.listedLocations(maplace.getSnapshot());
+      const ids = listed.map(({ id }) => id).join();
+      if (ids !== listedIds) {
+        listedIds = ids;
+        const entries = listed.map(({ id, title }) => choice(maplace, id, title ?? id));
+        choices.replaceChildren(choice(maplace, "", "Fit all"), ...entries);
+      }
+      const selected = maplace.getSnapshot().selectedId ?? "";
+      for (const radio of choices.querySelectorAll("input"))
+        radio.checked = radio.value === selected;
+    };
+    render();
+    maplace.subscribe(render);
+    return fieldset;
+  }
+
+  const maplace = Maplace.createMaplace({ locations });
+  const adapter = Maplace.createGoogleAdapter({ apiKey: "YOUR_KEY" });
+  maplace.attach(adapter, "#custom-list-script-map");
+  adapter.mountControl(checksMenu(maplace, "Choose a location:"), "top-right");
+</script>

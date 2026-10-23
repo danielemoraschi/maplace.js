@@ -63,6 +63,14 @@ describe("googleMapWith", () => {
     expect(adapters[0]?.mounted?.container).toBe(map);
   });
 
+  it("passes Maps JS's settings to the adapter", () => {
+    pageWith("map");
+    const { given, createAdapter } = made();
+    const settings = { apiKey: "k", version: "weekly", language: "it", region: "IT", nonce: "n" };
+    googleMapWith(createAdapter, "#map", { ...settings, locations });
+    expect(given).toEqual([settings]);
+  });
+
   it("makes the map with no options at all: no map ID, the store's defaults", () => {
     const [map] = pageWith("map");
     const { given, adapters, createAdapter } = made();

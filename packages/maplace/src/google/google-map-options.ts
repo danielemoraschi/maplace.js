@@ -5,6 +5,7 @@ import {
   type ShortcutOptions,
   type SplitOptions,
 } from "../shortcut/shortcut-options";
+import type { MapsJsOptions } from "./maps-js-options";
 import type { GoogleAdapterOptions } from "./options";
 
 /** maplace's list on the map, in a corner, or in an element of the page. */
@@ -19,7 +20,7 @@ export interface GoogleMapOptions<Data = unknown>
     Omit<GoogleAdapterOptions, "map"> {}
 
 /** The options `createGoogleMap` hands to `createGoogleAdapter`; the rest go to the store. */
-type AdapterKey = "mapId" | "colorScheme" | "mapOptions";
+type AdapterKey = "mapId" | "colorScheme" | "mapOptions" | keyof MapsJsOptions;
 
 export const GOOGLE_MAP_NAMES: ShortcutNames = {
   shortcut: "createGoogleMap",
@@ -37,7 +38,27 @@ export function checkGoogleMapOptions<Data = unknown>(
 export function splitGoogleMapOptions<Data>(
   options: GoogleMapOptions<Data>,
 ): SplitOptions<Data, Pick<GoogleAdapterOptions, AdapterKey>> {
-  const { mapId, colorScheme, mapOptions, list, ...storeOptions } = options;
-  const adapterOptions = { mapId, colorScheme, mapOptions };
+  const {
+    mapId,
+    colorScheme,
+    mapOptions,
+    list,
+    apiKey,
+    version,
+    language,
+    region,
+    nonce,
+    ...storeOptions
+  } = options;
+  const adapterOptions = {
+    mapId,
+    colorScheme,
+    mapOptions,
+    apiKey,
+    version,
+    language,
+    region,
+    nonce,
+  };
   return { storeOptions, adapterOptions, list };
 }

@@ -26,6 +26,10 @@ function loaders(google = vi.fn(async () => {})) {
   return { google, maplibre: vi.fn(async () => {}) };
 }
 
+/** `pageMapRelease` on these loaders, and a `Maplace` install the test needn't see. */
+const releaseWith = (load = loaders(), installMaplace = vi.fn(async (_provider: string) => {})) =>
+  pageMapRelease(load, installMaplace);
+
 beforeEach(() => {
   released.length = 0;
   document.body.innerHTML =
@@ -35,7 +39,7 @@ beforeEach(() => {
 describe("pageMapRelease", () => {
   it("releases a Google map once Google's element loaded, a MapLibre map once MapLibre's", async () => {
     const load = loaders();
-    const release = pageMapRelease(load);
+    const release = releaseWith(load);
     await release(map("rome"));
     expect(load.google).toHaveBeenCalledOnce();
     expect(load.maplibre).not.toHaveBeenCalled();
@@ -46,7 +50,7 @@ describe("pageMapRelease", () => {
 
   it("loads each provider's element once for many maps", async () => {
     const load = loaders();
-    const release = pageMapRelease(load);
+    const release = releaseWith(load);
     await Promise.all([release(map("rome")), release(map("milan"))]);
     expect(load.google).toHaveBeenCalledOnce();
     expect(released).toEqual(["rome", "milan"]);
@@ -58,7 +62,7 @@ describe("pageMapRelease", () => {
       .fn<() => Promise<void>>()
       .mockRejectedValueOnce(new Error("offline"))
       .mockResolvedValue();
-    const release = pageMapRelease(loaders(google));
+    const release = releaseWith(loaders(google));
     const rome = map("rome");
     await release(rome);
     expect(rome.closest<HTMLElement>("[data-live-version]")?.dataset.failed).toBe("script");
@@ -68,9 +72,20 @@ describe("pageMapRelease", () => {
   });
 
   it("runs the page's scripts as its map is released", async () => {
-    await pageMapRelease(loaders())(map("rome"));
+    await releaseWith()(map("rome"));
     const page = document.getElementById("rome")?.closest("[data-live-page]");
     expect(page?.querySelector(`script[type="${INERT_SCRIPT_TYPE}"]`)).toBeNull();
     expect(page?.querySelector("script")?.textContent).toBe("window.ran = true;");
+  });
+
+  it("puts its provider's Maplace on the page before its scripts run", async () => {
+    const steps: string[] = [];
+    const installMaplace = vi.fn(async (provider: string) => {
+      steps.push(`Maplace on ${provider}`);
+    });
+    const rome = map("rome");
+    rome.release = () => steps.push("released");
+    await releaseWith(loaders(), installMaplace)(rome);
+    expect(steps).toEqual(["Maplace on google", "released"]);
   });
 });

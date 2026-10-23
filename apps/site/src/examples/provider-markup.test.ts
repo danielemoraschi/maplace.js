@@ -108,3 +108,29 @@ describe("every page map on the site", () => {
     expect(new Set(pages.map(({ provider }) => provider))).toEqual(new Set(["google", "maplibre"]));
   });
 });
+
+describe("each provider's script versions", () => {
+  const SCRIPT = `<script type="module">
+  Maplace.createGoogleMap("#m", { apiKey: "YOUR_KEY", locations: [] });
+</script>`;
+
+  it("gives a Google script version the site's key, a JS string that can't end its script", () => {
+    expect(google({ apiKey: "k</script>" }).prepareScript(SCRIPT)).toContain(
+      String.raw`apiKey: "k\x3c/script>"`,
+    );
+  });
+
+  it("keeps the placeholder when the site has no key: the frame says so, and runs nothing", () => {
+    expect(google({}).prepareScript(SCRIPT)).toBe(SCRIPT);
+  });
+
+  it('refuses a Google script version without apiKey: "YOUR_KEY" once', () => {
+    expect(() => google({}).prepareScript(SCRIPT.replace("YOUR_KEY", "mine"))).toThrow(
+      /apiKey: "YOUR_KEY"/,
+    );
+  });
+
+  it("leaves a MapLibre script version as it is", () => {
+    expect(maplibre.prepareScript(SCRIPT)).toBe(SCRIPT);
+  });
+});

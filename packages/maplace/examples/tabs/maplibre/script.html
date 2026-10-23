@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the tabs, their details and the map mount on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #tabs-maplibre-script-panel { display: flex; flex-direction: column; height: 24rem; }
+  #tabs-maplibre-script-map { flex: 1 1 auto; min-height: 0; }
+  #tabs-maplibre-script-list [role="listbox"] { display: flex; gap: 0.25rem; padding: 0.5rem 0.75rem 0; box-shadow: inset 0 -1px color-mix(in srgb, currentColor 25%, transparent); }
+  #tabs-maplibre-script-list [role="option"] { padding: 0.5rem 1rem; border: 1px solid transparent; border-bottom: 0; border-radius: 0.5rem 0.5rem 0 0; }
+  #tabs-maplibre-script-list [aria-selected="true"] { position: relative; border-color: color-mix(in srgb, currentColor 25%, transparent); background: Canvas; font-weight: 600; }
+  #tabs-maplibre-script-details { padding: 0.75rem 1.25rem 1rem; line-height: 1.5; }
+</style>
+<div id="tabs-maplibre-script-panel">
+  <div id="tabs-maplibre-script-list"></div>
+  <aside id="tabs-maplibre-script-details"></aside>
+  <div id="tabs-maplibre-script-map"></div>
+</div>
+<script type="module">
+  const notes = {
+    rome: "Capital since 1871.",
+    milan: "Finance and fashion.",
+  };
+  const maplace = Maplace.createMapLibreMap("#tabs-maplibre-script-map", {
+    selectedId: "rome",
+    locations: [
+      { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+      { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    ],
+    list: { container: "#tabs-maplibre-script-list" },
+  });
+
+  const details = document.querySelector("#tabs-maplibre-script-details");
+  showNote(maplace.getSnapshot().selectedId);
+  maplace.on("selectionChange", ({ id }) => showNote(id));
+
+  /** The chosen tab's details, in the panel below the tabs. */
+  function showNote(id) {
+    if (details) details.textContent = id === undefined ? "" : (notes[id] ?? "");
+  }
+</script>

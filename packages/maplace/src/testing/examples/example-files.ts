@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+import { type ScriptVersion, scriptOf } from "./example-scripts";
 
 /** The map providers an example is drawn on. */
 const PROVIDERS = ["google", "maplibre"] as const;
@@ -27,11 +28,12 @@ export interface ExampleHost {
 export const HOST_KINDS = ["vanilla", "react"] as const;
 type HostKind = (typeof HOST_KINDS)[number];
 
-/** One example on one provider, written three ways: the same map in each. */
+/** One example on one provider, written four ways: the same map in each. */
 export interface Example {
   readonly name: string;
   readonly provider: Provider;
   readonly page: ExamplePage;
+  readonly script: ScriptVersion;
   readonly vanilla: ExampleHost;
   readonly react: ExampleHost;
 }
@@ -91,6 +93,7 @@ export const EXAMPLES: readonly Example[] = PROVIDERS.flatMap((provider) =>
   NAMES.filter((name) => isDrawnOn(name, provider)).map((name) => exampleOf(name, provider)),
 );
 
+export const SCRIPT_VERSIONS: readonly ScriptVersion[] = EXAMPLES.map(({ script }) => script);
 export const VANILLA_HOSTS: readonly ExampleHost[] = EXAMPLES.map(({ vanilla }) => vanilla);
 export const REACT_HOSTS: readonly ExampleHost[] = EXAMPLES.map(({ react }) => react);
 
@@ -116,6 +119,7 @@ function exampleOf(name: string, provider: Provider): Example {
     name,
     provider,
     page: pageOf(name, provider),
+    script: scriptOf(name, provider, fileOf(pathOf(name, provider, "script.html"))),
     vanilla: hostOf(name, provider, "vanilla"),
     react: hostOf(name, provider, "react"),
   };

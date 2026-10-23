@@ -151,6 +151,13 @@ const LAYERS = {
     imports: ["data", "contract", "entry", "maplibre", "shortcut", "validation"],
     packages: ["maplibre-gl"],
   },
+  // What each CDN script sets as the page's `Maplace` (W33): its npm entries' exports, and on
+  // MapLibre the maplibre-gl it bundles.
+  cdn: {
+    files: /^cdn\//,
+    imports: ["entry", "element", "wiring", "maplibre-wiring", "google-entry", "maplibre-entry"],
+    packages: ["maplibre-gl"],
+  },
   // The MapLibre adapter's test support: its probe, a local style and MapLibre's stylesheet.
   "maplibre-testing": {
     files: /^maplibre\/testing\//,

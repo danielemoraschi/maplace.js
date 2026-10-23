@@ -10,12 +10,17 @@
 | `colorScheme` | `"light" \| "dark" \| "follow-system"` | The colour scheme of a map maplacejs creates |
 | `map` | `google.maps.Map` | Your own map to draw on, instead of one maplacejs creates |
 | `mapOptions` | `google.maps.MapOptions` | Extra options for a map maplacejs creates; not `center`, `zoom`, `mapId`, `colorScheme` or `styles` |
+| `apiKey` | `string` | Your Maps API key: maplacejs adds Maps JS to the page with it as the map mounts, unless the page loaded Maps JS already ([loading Maps JS](#loading-maps-js)) |
+| `version` | `string` | Maps JS's version, as Google's `v`; with `apiKey` |
+| `language` | `string` | The language of Google's labels and route instructions; with `apiKey` |
+| `region` | `string` | The region Google biases its answers to; with `apiKey` |
+| `nonce` | `string` | The nonce your content security policy asks the Maps JS tag for; with `apiKey` |
 
 `center` and `zoom` are left out of `mapOptions` because only the store's `view` sets them, and JSON `styles` because Google ignores them on a map with a map ID ([map ID and styling](#map-id-and-styling)). An option the adapter doesn't know is `invalid-input`.
 
 ## `createGoogleMap`
 
-`createGoogleMap(container, options)` is a store on a Google map in one call, as 0.2's `new Maplace(options).Load()` was. It makes the store with the [store's options](store.md#options), the adapter with `mapId`, `colorScheme` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down.
+`createGoogleMap(container, options)` is a store on a Google map in one call, as 0.2's `new Maplace(options).Load()` was. It makes the store with the [store's options](store.md#options), the adapter with `mapId`, `colorScheme`, `mapOptions` and Maps JS's settings, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down.
 
 <!-- example: packages/maplace/examples/menu/vanilla.ts -->
 ```ts
@@ -43,6 +48,8 @@ Its own options, beside the store's:
 | `mapId` | `string` | Optional, as the adapter's |
 | `colorScheme` | `"light" \| "dark" \| "follow-system"` | As the adapter's |
 | `mapOptions` | `google.maps.MapOptions` | As the adapter's |
+| `apiKey` | `string` | As the adapter's: maplacejs adds Maps JS with it |
+| `version`, `language`, `region`, `nonce` | `string` | As the adapter's, with `apiKey` |
 | `list` | `true \| GoogleMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right`, where 0.2 put its controls |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map (0.2's `controls_div`); not with `position` |
@@ -83,7 +90,7 @@ A change of `color-scheme` or `map-options` opens the map again where it was, ke
 
 Nothing reads `google` on import. The adapter calls the global `google.maps.importLibrary`, which works with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) and with `@googlemaps/js-api-loader`, so maplacejs has no loader dependency. Without `google.maps.importLibrary` (an old or missing Maps JS) loading fails with `provider-load-failed`.
 
-Only the element's Google provider adds Maps JS itself: one script per page however many maps, never while the element is held. The page's Maps JS tag, whoever added it, is shared: an element asking it for another `api-key`, `version`, `language` or `region` is misuse (one it leaves out takes the page's). A page that loaded Maps JS without a tag of its own (the bootstrap loader, js-api-loader) is taken as it is. [Setup](setup.md) has both routes.
+The element's Google provider adds Maps JS itself, from `api-key`, and so does an adapter given `apiKey`, as its map mounts: one script per page however many maps, never while the element is held or before the adapter's map mounts. Maps JS's settings, `version`, `language`, `region` and `nonce`, go with the key; without `apiKey`, or with your own `map`, an adapter refuses them (`invalid-input`). The page's Maps JS tag, whoever added it, is shared: an element asking it for another `api-key`, `version`, `language` or `region` is misuse, and an adapter asking for another fails its load with `provider-load-failed`, the option in `field` (one it leaves out takes the page's). A page that loaded Maps JS without a tag of its own (the bootstrap loader, js-api-loader) is taken as it is, an adapter's settings unused. [Setup](setup.md) has both routes.
 
 ## Map ID and styling
 

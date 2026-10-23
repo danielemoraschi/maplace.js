@@ -29,10 +29,10 @@ describe("a map's failure note", () => {
   it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
     const { page, context, mapsJsRequests } = await site.visitor();
     await openHome(page, site.url);
-    // Only simple's section left, its Vanilla version chosen before consent: its page map never
+    // Only simple's section left, its Bundler version chosen before consent: its page map never
     // asks for Maps JS, so only the version's bootstrap does.
     await leaveOnlySection(page, "simple");
-    await chooseVersion(page, "simple", "Vanilla");
+    await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
     await page.locator("#simple-vanilla-map").scrollIntoViewIfNeeded();
     const vanilla = simpleOnGoogle(page, "vanilla");
@@ -51,13 +51,18 @@ describe("a map's failure note", () => {
     const html = simpleOnGoogle(page, "html");
     await expect.poll(() => html.getAttribute("data-reload-mends"), ASKED).toBe("");
     expect(await reloadButton(page).isVisible()).toBe(true);
-    await chooseVersion(page, "simple", "Vanilla");
+    await chooseVersion(page, "simple", "Bundler");
     const vanilla = simpleOnGoogle(page, "vanilla");
     await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("maps-js");
     const note = page.locator("section#simple [data-map-failure]");
     expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
     expect(await note.isVisible()).toBe(true);
     expect(await reloadButton(page).isVisible()).toBe(true);
+    // A script version's adapter would share the page's failed Maps JS: it says so too.
+    await chooseVersion(page, "simple", "Script");
+    const script = simpleOnGoogle(page, "script");
+    await expect.poll(() => script.getAttribute("data-failed"), ASKED).toBe("maps-js");
+    expect(await note.isVisible()).toBe(true);
     await context.close();
   }, 30_000);
 
@@ -72,7 +77,7 @@ describe("a map's failure note", () => {
     await openHome(page, site.url);
     await leaveOnlySection(page, "simple");
     await chooseProvider(page, "simple", "MapLibre");
-    await chooseVersion(page, "simple", "Vanilla");
+    await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
     const section = page.locator("section#simple");
     await section.scrollIntoViewIfNeeded();
@@ -83,7 +88,7 @@ describe("a map's failure note", () => {
     );
     await Promise.all([page.waitForEvent("load"), reloadButton(page).click()]);
     await chooseProvider(page, "simple", "MapLibre");
-    await chooseVersion(page, "simple", "Vanilla");
+    await chooseVersion(page, "simple", "Bundler");
     await section.scrollIntoViewIfNeeded();
     await expect.poll(() => vanilla.getAttribute("data-started"), ON_MAPLIBRE).toBe("");
     await expect.poll(() => mapLibreDrawn(vanilla), ON_MAPLIBRE).toBe(true);

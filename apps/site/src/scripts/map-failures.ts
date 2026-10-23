@@ -52,7 +52,10 @@ export function clearScriptFailure(map: Element): void {
   delete version.dataset.reloadMends;
 }
 
-/** The note for each reason a vanilla or React version didn't start ("no-key", "maps-js": Google's). */
+/**
+ * The note for each reason a script, vanilla or React version didn't start ("no-key", "maps-js":
+ * Google's).
+ */
 const VERSION_FAILURES: Readonly<Record<VersionFailure, string>> = {
   "no-key": failureNote({ code: "invalid-input", field: "api-key" }, "google"),
   "maps-js": failureNote({ code: "provider-load-failed" }, "google"),

@@ -18,7 +18,7 @@ export async function loadLibraries(): Promise<GoogleLibraries> {
     throw new MaplaceError(
       "provider-load-failed",
       "attach: google.maps.importLibrary is missing; load Maps JS (Google's bootstrap or " +
-        "js-api-loader) before attaching",
+        "js-api-loader) before attaching, or give createGoogleAdapter an apiKey to add it",
     );
   }
   const [core, maps, marker] = await Promise.all([

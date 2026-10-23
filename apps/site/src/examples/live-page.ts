@@ -1,10 +1,7 @@
-import { inertScripts, requireOnce, withoutDoctype } from "./page-markup.ts";
+import { inertScripts, requireOnce, withoutCdnScript, withoutDoctype } from "./page-markup.ts";
 
 /** An example page's map, from its opening tag to its closing one. */
 const MAP = /<maplace-map\b[\s\S]*?<\/maplace-map>/g;
-
-/** The page's CDN script, which the site's own bundle stands in for. */
-const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]+"><\/script>\s*/g;
 
 /**
  * An example page as the site runs it, beside the others: its map as its provider holds it
@@ -17,9 +14,4 @@ export function livePage(pageHtml: string, holdMap: (map: string) => string): st
   const [before = "", after = ""] = pageHtml.split(map);
   const head = withoutCdnScript(withoutDoctype(before));
   return `${inertScripts(head)}${holdMap(map)}${inertScripts(after)}`;
-}
-
-function withoutCdnScript(head: string): string {
-  requireOnce(head, CDN_SCRIPT, "an example page loads the CDN script once, before its map");
-  return head.replaceAll(CDN_SCRIPT, "");
 }

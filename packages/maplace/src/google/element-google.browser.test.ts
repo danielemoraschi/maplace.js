@@ -2,18 +2,14 @@ import { expect, it, onTestFinished } from "vitest";
 import "../element/google";
 import { defineListView, type ListViewSetup } from "../element";
 import { errorsOn } from "../element/testing/dom";
-import { MAPS_SCRIPT_ORIGIN } from "./maps-script-url";
 import { MAPS_JS_VERSION } from "./testing/maps-loader";
+import { mapsTags } from "./testing/maps-tags";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
 import { describeWithKey } from "./testing/with-key";
 
 const LOCATIONS =
   '<maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>' +
   '<maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>';
-
-function mapsScripts(): HTMLScriptElement[] {
-  return [...document.querySelectorAll<HTMLScriptElement>(`script[src^="${MAPS_SCRIPT_ORIGIN}"]`)];
-}
 
 /** A `<maplace-map>` with these attributes and two locations, on the page. */
 function mapWith(attributes: string): HTMLElementTagNameMap["maplace-map"] {
@@ -44,16 +40,16 @@ describeWithKey("<maplace-map> loading Google Maps itself", (key) => {
   it("adds no Maps JS while held, then once released, with the page's nonce, and opens", async () => {
     const map = mapWith(`${settings} nonce="n0" hold`);
     await new Promise((resolve) => setTimeout(resolve));
-    expect([mapsScripts(), map.loadState]).toEqual([[], "idle"]);
+    expect([mapsTags(), map.loadState]).toEqual([[], "idle"]);
     map.release();
-    expect(mapsScripts().map(({ nonce }) => nonce)).toEqual(["n0"]);
+    expect(mapsTags().map(({ nonce }) => nonce)).toEqual(["n0"]);
     await ready(map);
   });
 
   it("shares the page's Maps JS with a second map, which needs no key", async () => {
     const map = mapWith(`map-id="DEMO_MAP_ID"`);
     await ready(map);
-    expect(mapsScripts()).toHaveLength(1);
+    expect(mapsTags()).toHaveLength(1);
   });
 
   it("opens a dark map with Google's map options from its attributes", async () => {
@@ -93,7 +89,7 @@ describeWithKey("<maplace-map> loading Google Maps itself", (key) => {
     const errors = errorsOn(map);
     await expect.poll(() => map.loadState).toBe("error");
     expect(errors.map(({ field }) => field)).toEqual(["language"]);
-    expect(mapsScripts()).toHaveLength(1);
+    expect(mapsTags()).toHaveLength(1);
   });
 
   it("draws the README's page: a key, a map ID, a list and its locations", async () => {

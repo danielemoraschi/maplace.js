@@ -6,7 +6,7 @@ import { createdMapSettingsOf } from "./google-map-attributes";
 
 /** The attribute each Maps JS setting is read from. */
 export const SCRIPT_ATTRIBUTES = {
-  key: "api-key",
+  apiKey: "api-key",
   version: "version",
   language: "language",
   region: "region",
@@ -24,7 +24,7 @@ export function googleSettingsOf(element: Element): GoogleSettings {
   return {
     adapterOptions: { mapId: read("map-id"), ...createdMapSettingsOf(element) },
     script: {
-      key: read(SCRIPT_ATTRIBUTES.key),
+      apiKey: read(SCRIPT_ATTRIBUTES.apiKey),
       version: read(SCRIPT_ATTRIBUTES.version),
       language: read(SCRIPT_ATTRIBUTES.language),
       region: read(SCRIPT_ATTRIBUTES.region),

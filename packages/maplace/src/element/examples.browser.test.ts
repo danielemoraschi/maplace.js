@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { behaviourOf } from "../testing/examples/example-behaviours";
 import { parse } from "../testing/examples/example-dom";
 import {
@@ -7,7 +7,7 @@ import {
   isDrawnOn,
   onProvider,
 } from "../testing/examples/example-files";
-import { cdnScriptOf, openPage } from "../testing/examples/example-page";
+import { cdnScriptFor, cdnScriptOf, openPage } from "../testing/examples/example-page";
 import {
   adapterInside,
   exampleRun,
@@ -15,23 +15,24 @@ import {
   hasList,
 } from "../testing/examples/example-runs";
 import { serveExampleData } from "../testing/examples/example-surroundings";
+import { fakeMaplaceGlobal } from "../testing/examples/fake-maplace-global";
+import { fakeAdapters } from "../testing/fake/adapters";
 import { adaptersMade } from "./testing/fake-maps";
 
 // The example pages, as readers copy them, on the fake provider: the only one registered.
 
-/** The CDN scripts (RFC §3): Google's two, the second for `cluster`, and MapLibre's. */
-const PLAIN_SCRIPT = "maplace-element.iife.js";
-const CLUSTER_SCRIPT = "maplace-element-cluster.iife.js";
-const MAPLIBRE_SCRIPT = "maplace-element-maplibre.iife.js";
-
 /** Attributes only Google reads: OpenFreeMap needs no key, and its style sets the colours. */
 const GOOGLE_ATTRIBUTES = "[api-key], [map-id], [color-scheme]";
 
+// A page's own script reaches maplace through the CDN script's `Maplace` (custom-list's list).
+beforeEach(async () => {
+  vi.stubGlobal("Maplace", await fakeMaplaceGlobal(fakeAdapters()));
+});
 afterEach(() => vi.unstubAllGlobals());
 
 describe.each(EXAMPLE_PAGES)("the $name page ($provider)", (page) => {
   it("loads the CDN script its map needs", () => {
-    expect(cdnScriptOf(page.html)).toBe(cdnScriptFor(page));
+    expect(cdnScriptOf(page.html)).toBe(cdnScriptOfPage(page));
   });
 
   it("opens its map with its locations and list, and does what it says", async () => {
@@ -68,12 +69,6 @@ it("has a MapLibre page only for an example drawn on MapLibre: never route, neve
   }
 });
 
-/**
- * The CDN script a page needs (RFC §3): MapLibre's, which clusters too; Google's, or its
- * clustering build for `cluster`.
- */
-function cdnScriptFor({ provider, html }: ExamplePage): string {
-  if (provider === "maplibre") return MAPLIBRE_SCRIPT;
-  const clusters = /<maplace-map[^>]*\scluster[\s>]/.test(html);
-  return clusters ? CLUSTER_SCRIPT : PLAIN_SCRIPT;
-}
+/** The CDN script a page needs: its `<maplace-map>` asks to cluster with `cluster`. */
+const cdnScriptOfPage = ({ provider, html }: ExamplePage) =>
+  cdnScriptFor(provider, /<maplace-map[^>]*\scluster[\s>]/.test(html));

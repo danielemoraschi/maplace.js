@@ -16,7 +16,7 @@ describe("the site's consent to its maps", () => {
     await openHome(page, site.url);
     // A version chosen before consent waits too, as the pages' own scripts wait for their maps:
     // big's 4,000 points aren't fetched by its page or its React version.
-    await chooseVersion(page, "route", "Vanilla");
+    await chooseVersion(page, "route", "Bundler");
     await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
     expect(mapProviders()).toEqual([]);

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { codeTabsOf, exampleCode, exampleFile, exampleProviders } from "./example-sources.ts";
 
 describe("exampleCode", () => {
-  it("is an example's three versions, each with every file a reader copies", () => {
+  it("is an example's four versions, each with every file a reader copies", () => {
     const tabs = exampleCode("simple", "google").map(({ kind, label, files }) => ({
       kind,
       label,
@@ -10,9 +10,10 @@ describe("exampleCode", () => {
     }));
     expect(tabs).toEqual([
       { kind: "html", label: "HTML", files: [["page.html", "html"]] },
+      { kind: "script", label: "Script", files: [["script.html", "html"]] },
       {
         kind: "vanilla",
-        label: "Vanilla",
+        label: "Bundler",
         files: [
           ["vanilla.html", "html"],
           ["vanilla.ts", "ts"],
@@ -30,14 +31,15 @@ describe("exampleCode", () => {
   });
 
   it("reads each file as written", () => {
-    const [html, vanilla, react] = exampleCode("simple", "google");
+    const [html, script, vanilla, react] = exampleCode("simple", "google");
     expect(html?.files[0]?.code).toContain("<maplace-map");
+    expect(script?.files[0]?.code).toContain("Maplace.createGoogleMap(");
     expect(vanilla?.files[1]?.code).toContain("createGoogleMap(");
     expect(react?.files[1]?.code).toContain("<MaplaceProvider");
   });
 
   it("reads each MapLibre file as written, from the example's maplibre folder", () => {
-    const [html, vanilla] = exampleCode("simple", "maplibre");
+    const [html, , vanilla] = exampleCode("simple", "maplibre");
     expect(html?.files[0]?.code).toContain("maplace-element-maplibre.iife.js");
     expect(vanilla?.files[1]?.code).toContain("createMapLibreMap(");
     expect(vanilla).toMatchObject({ provider: "maplibre", folder: "simple/maplibre" });
@@ -81,6 +83,7 @@ describe("codeTabsOf", () => {
     ]);
     expect(tabs).toEqual([
       ["html", ["google simple", "maplibre simple/maplibre"]],
+      ["script", ["google simple", "maplibre simple/maplibre"]],
       ["vanilla", ["google simple", "maplibre simple/maplibre"]],
       ["react", ["google simple", "maplibre simple/maplibre"]],
     ]);
@@ -89,6 +92,6 @@ describe("codeTabsOf", () => {
   it("has Google's code alone for an example on Google only", () => {
     expect(
       codeTabsOf("route").flatMap(({ codes }) => codes.map(({ provider }) => provider)),
-    ).toEqual(["google", "google", "google"]);
+    ).toEqual(["google", "google", "google", "google"]);
   });
 });

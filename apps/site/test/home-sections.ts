@@ -72,7 +72,7 @@ export function leaveOnlySection(page: Page, name: string): Promise<void> {
   }, name);
 }
 
-/** Chooses `example`'s tab `name` (Map, HTML, Vanilla, React), and gives back its section. */
+/** Chooses `example`'s tab `name` (Map, HTML, Script, Bundler, React), and gives back its section. */
 export async function chooseTab(page: Page, example: string, name: string): Promise<Locator> {
   const section = await sectionOf(page, example);
   await section.getByRole("tab", { name }).click();

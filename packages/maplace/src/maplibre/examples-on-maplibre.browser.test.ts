@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import "../element/maplibre";
+import * as cdn from "../cdn/maplibre";
 import type * as Core from "../index";
 import type { Maplace } from "../index";
 import { clickButton } from "../testing/examples/behaviours/reading";
@@ -7,11 +7,11 @@ import {
   EXAMPLE_PAGES,
   onProvider,
   REACT_HOSTS,
+  SCRIPT_VERSIONS,
   VANILLA_HOSTS,
 } from "../testing/examples/example-files";
-import { openHost } from "../testing/examples/example-hosts";
 import { openPage } from "../testing/examples/example-page";
-import type { ExampleRun } from "../testing/examples/example-runs";
+import { type ExampleRun, openVersion } from "../testing/examples/example-runs";
 import { type OffsiteLog, serveExamplesOffline } from "../testing/examples/example-surroundings";
 import {
   OPENFREEMAP_DARK as DARK,
@@ -56,6 +56,8 @@ let offsite: OffsiteLog;
 let opened: Maplace | undefined;
 
 beforeAll(() => {
+  // A page's own script and a script version reach maplace through the CDN script's `Maplace`.
+  vi.stubGlobal("Maplace", cdn);
   const style = document.createElement("style");
   style.textContent = PAGE_STYLE;
   document.head.append(style);
@@ -79,16 +81,16 @@ describe("the example pages on MapLibre", () => {
 });
 
 describe("the example versions on MapLibre", () => {
-  it.each([...VANILLA_HOSTS, ...REACT_HOSTS].filter(onProvider("maplibre")))(
+  it.each([...SCRIPT_VERSIONS, ...VANILLA_HOSTS, ...REACT_HOSTS].filter(onProvider("maplibre")))(
     "draws the $example $kind version on MapLibre",
-    async ({ example, html, run }) => {
+    async (version) => {
       const askedBefore = offsite.asked().length;
-      const root = openHost(html);
+      const { root, run } = openVersion(version);
       const errors = recordErrors();
       const stores = recordedStoreCount();
       await run();
       opened = await vi.waitFor(() => storeAttachedSince(stores));
-      await expectReadyOffline({ store: opened, root }, example, askedBefore);
+      await expectReadyOffline({ store: opened, root }, version.example, askedBefore);
       expect(errors).toEqual([]);
     },
   );

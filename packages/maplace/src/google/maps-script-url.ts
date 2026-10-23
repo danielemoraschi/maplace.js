@@ -3,18 +3,23 @@ export const MAPS_SCRIPT_ORIGIN = "https://maps.googleapis.com/maps/api/js";
 
 /** What the page asks Maps JS for: each setting Google's URL takes, when given. */
 export interface MapsScriptRequest {
-  readonly key?: string | undefined;
+  /** Your Maps API key: maplace adds Maps JS with it, unless the page loaded Maps JS already. */
+  readonly apiKey?: string | undefined;
+  /** Maps JS's version (`v`): `weekly` by Google's default, `quarterly`, or a number. */
   readonly version?: string | undefined;
+  /** The language of Google's map labels and route instructions. */
   readonly language?: string | undefined;
+  /** The region Google biases its map and route answers to. */
   readonly region?: string | undefined;
 }
 
 /** Each setting's name in Google's URL. */
-const PARAMS = { key: "key", version: "v", language: "language", region: "region" } as const;
+const PARAMS = { apiKey: "key", version: "v", language: "language", region: "region" } as const;
 
-type Setting = keyof typeof PARAMS;
+/** A setting the page's Maps JS tag is compared on. */
+export type MapsSetting = keyof typeof PARAMS;
 
-const SETTINGS = Object.keys(PARAMS) as Setting[];
+const SETTINGS = Object.keys(PARAMS) as MapsSetting[];
 
 /** Maps JS's URL for `request`, loaded asynchronously as Google asks. */
 export function mapsScriptUrl(request: MapsScriptRequest): string {
@@ -45,7 +50,7 @@ export function requestIn(src: string): MapsScriptRequest {
 export function conflictingSetting(
   request: MapsScriptRequest,
   loaded: MapsScriptRequest,
-): Setting | undefined {
+): MapsSetting | undefined {
   return SETTINGS.find(
     (setting) => request[setting] !== undefined && request[setting] !== loaded[setting],
   );

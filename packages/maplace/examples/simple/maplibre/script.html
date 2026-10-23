@@ -1,0 +1,12 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #simple-maplibre-script-map { height: 24rem; }
+</style>
+<div id="simple-maplibre-script-map"></div>
+<script type="module">
+  Maplace.createMapLibreMap("#simple-maplibre-script-map", {
+    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  });
+</script>

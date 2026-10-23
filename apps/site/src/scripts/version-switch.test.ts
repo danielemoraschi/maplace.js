@@ -5,7 +5,7 @@ import { startVersionSwitches } from "./version-switch.ts";
 
 vi.mock("./fade-in.ts");
 
-const VERSIONS = ["html", "vanilla", "react"];
+const VERSIONS = ["html", "script", "vanilla", "react"];
 const PROVIDERS = ["google", "maplibre"];
 
 function section(name: string): string {

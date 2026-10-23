@@ -15,7 +15,7 @@
   <maplace-location location-id="venice" lat="45.4408" lng="12.3155" title="Venice" listed="false"></maplace-location>
 </maplace-map>
 <script>
-  customElements.get('maplace-map').defineListView('checks', (maplace, { options, listed }) => {
+  Maplace.defineListView('checks', (maplace, { options, listed }) => {
     const fieldset = document.createElement('fieldset');
     const legend = document.createElement('legend');
     legend.textContent = options.heading ?? 'Locations';

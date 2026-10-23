@@ -106,3 +106,37 @@ describe("the MapLibre CDN script, clustering", { timeout: 60_000 }, () => {
     }
   });
 });
+
+/** A page making its own MapLibre map with `Maplace.maplibre`, and drawing maplace's store on it. */
+const OWN_MAP_BODY = `<div id="own" style="width:600px;height:400px"></div>
+<script type="module">
+  const map = new Maplace.maplibre.Map({ container: "own", style: ${JSON.stringify(STYLE)} });
+  const maplace = Maplace.createMaplace({
+    locations: [{ id: "rome", lat: 41.9, lng: 12.5, title: "Rome" }],
+  });
+  maplace.attach(Maplace.createMapLibreAdapter({ map }), "#own");
+  maplace.whenReady().then(() => document.body.setAttribute("data-ready", ""));
+</script>`;
+
+describe("the MapLibre CDN script's own maplibre-gl", { timeout: 60_000 }, () => {
+  it("makes a page's own map, with the script's worker and stylesheet, that maplace's store opens on", async () => {
+    const own = await openCdnScriptPage(browser as Browser, {
+      file: CDN_SCRIPTS.maplibre,
+      script,
+      body: OWN_MAP_BODY,
+    });
+    try {
+      await own.page.locator("body[data-ready]").waitFor({ state: "attached", ...READY });
+      expect(await own.page.locator("#own .maplibregl-canvas").count()).toBe(1);
+      const made = await own.workers();
+      expect(made.length).toBeGreaterThan(0);
+      for (const worker of made) {
+        expect(worker.url).toMatch(/^blob:https:\/\/page\.maplace\.test\//);
+      }
+      expect(own.offsite()).toEqual([]);
+      expect(own.logged()).toEqual([]);
+    } finally {
+      await own.close();
+    }
+  });
+});

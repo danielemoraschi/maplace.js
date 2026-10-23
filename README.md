@@ -2,7 +2,7 @@
 
 A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it and opens it.
 
-maplacejs 1.0 is a rewrite: no jQuery, no global, a small headless store with adapters for Google Maps and MapLibre, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
+maplacejs 1.0 is a rewrite: no jQuery, no global state, a small headless store with adapters for Google Maps and MapLibre, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
 
 ## Quick start
 
@@ -52,11 +52,11 @@ The CDN has three scripts. Load exactly one of them. Two scripts on one page are
 |---|---|
 | `maplace-element.iife.js` | on Google, everything but clustering |
 | `maplace-element-cluster.iife.js` | on Google, with `cluster` (bundles Google's MarkerClusterer; its licences are in `THIRD-PARTY-LICENSES.txt` beside it) |
-| `maplace-element-maplibre.iife.js` | the element on MapLibre, clustering included: maplibre-gl, its worker and its stylesheet bundled, so one pinned file is all the page loads (about 491 kB gzip; the bundled packages' licences in `THIRD-PARTY-LICENSES.txt` beside it) |
+| `maplace-element-maplibre.iife.js` | the element on MapLibre, clustering included: maplibre-gl, its worker and its stylesheet bundled, so one pinned file is all the page loads (about 501 kB gzip; the bundled packages' licences in `THIRD-PARTY-LICENSES.txt` beside it) |
 
 A map with `cluster` on the first script fails to load and says to use the second.
 
-The scripts set no global: the element is the API. A page on any of them defines its own list view through the element, `customElements.get("maplace-map").defineListView(name, factory)` (after `customElements.whenDefined("maplace-map")` when its script may run first).
+Each script also sets one global, `Maplace`: what the npm entries it stands for export (`maplace`, the provider's and `maplace/element`), so a page of your own script calls `Maplace.createGoogleMap(...)` where npm's would import it, and defines its own list view with `Maplace.defineListView(name, factory)`. The MapLibre script's `Maplace.maplibre` is the maplibre-gl it bundles.
 
 ## Pin it for production
 
@@ -86,6 +86,29 @@ The README published with each version has these filled in for it. unpkg serves 
 ```sh
 curl -s https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js | openssl dgst -sha384 -binary | openssl base64 -A
 ```
+
+## From your own script
+
+A page that makes its map in its own script, as 0.2's did, needs no build step either: the CDN script's `Maplace` holds what the npm entries export. Given `apiKey`, maplacejs adds Maps JS itself, as the element does from `api-key`:
+
+<!-- example: packages/maplace/examples/simple/script.html -->
+```html
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #simple-script-map { height: 24rem; }
+</style>
+<div id="simple-script-map"></div>
+<script type="module">
+  Maplace.createGoogleMap("#simple-script-map", {
+    apiKey: "YOUR_KEY",
+    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  });
+</script>
+```
+
+On MapLibre, `Maplace.createMapLibreMap` on the MapLibre script, with no key; `Maplace.maplibre` is the maplibre-gl it bundles, for a map of your own ([setup](docs/reference/setup.md#with-a-script-of-your-own)).
 
 ## With a bundler
 
@@ -247,7 +270,7 @@ export function CityMap() {
 ## Documentation
 
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): twelve scenarios, each as an HTML page, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
+- [Examples](packages/maplace/examples/): twelve scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 

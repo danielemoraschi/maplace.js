@@ -41,11 +41,12 @@ const TOP_LEVEL_PAGE = /\/examples\/([^/]+)\/page\.html$/;
 /** Each version's files: the HTML it runs on first. */
 const VERSION_FILES: Readonly<Record<VersionKind, readonly string[]>> = {
   html: ["page.html"],
+  script: ["script.html"],
   vanilla: ["vanilla.html", VERSION_MODULES.vanilla],
   react: ["react.html", VERSION_MODULES.react],
 };
 
-/** The code of the example `name` on `provider`: page, vanilla, React. */
+/** The code of the example `name` on `provider`: page, script, vanilla, React. */
 export function exampleCode(name: string, provider: Provider): readonly ExampleCode[] {
   const folder = exampleFolder(name, provider);
   return VERSION_LABELS.map((version) => ({
@@ -67,7 +68,10 @@ export interface CodeTab {
   readonly codes: readonly ExampleCode[];
 }
 
-/** The code tabs of the example `name`: page, vanilla, React, each on every provider it runs on. */
+/**
+ * The code tabs of the example `name`: page, script, vanilla, React, each on every provider it
+ * runs on.
+ */
 export function codeTabsOf(name: string): readonly CodeTab[] {
   const codes = exampleProviders(name).flatMap((provider) => exampleCode(name, provider));
   return VERSION_LABELS.map(({ kind, label }) => ({

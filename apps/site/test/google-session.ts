@@ -5,8 +5,8 @@ import { builtSiteSession, type SiteSession } from "./site-session.ts";
 /** How long a map on Google may take to draw, on a busy machine and a slow network. */
 export const ON_GOOGLE = { timeout: 30_000 };
 
-/** How long one section's three versions may take on Google, one after another. */
-export const SECTION_MS = 120_000;
+/** How long one section's four versions may take on Google, one after another. */
+export const SECTION_MS = 160_000;
 
 /**
  * The site built with the tests' Maps key, on Google's demo map ID, and visited at the one origin

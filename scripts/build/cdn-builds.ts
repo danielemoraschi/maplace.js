@@ -3,7 +3,7 @@ import { basename, join, resolve } from "node:path";
 import { type BuildOptions, build, type Metafile, type Plugin } from "esbuild";
 import { bundleMapLibre } from "./bundle-maplibre.ts";
 import { leaveOutClustering } from "./leave-out-clustering.ts";
-import { DIST, PACKAGE_ENTRIES, packageManifest, ROOT, TARGET } from "./package.ts";
+import { DIST, packageManifest, ROOT, SRC, TARGET } from "./package.ts";
 import { thirdPartyLicenses } from "./third-party-licenses.ts";
 
 /**
@@ -17,6 +17,18 @@ export const CDN_SCRIPTS = {
 } as const;
 
 export type CdnScript = keyof typeof CDN_SCRIPTS;
+
+/**
+ * What each CDN script is built from: its element entry, and what the npm entries it stands for
+ * export, as the page's `Maplace` (W33). Kept out of `PACKAGE_ENTRIES`, which npm publishes.
+ */
+export const CDN_ENTRIES = {
+  google: `${SRC}/cdn/google.ts`,
+  maplibre: `${SRC}/cdn/maplibre.ts`,
+} as const;
+
+/** The global each CDN script sets: 0.2's name, the store being `maplace` in every doc. */
+const CDN_GLOBAL = "Maplace";
 
 /** Beside the scripts: the notices of the packages they bundle. */
 export const LICENSES_FILE = "THIRD-PARTY-LICENSES.txt";
@@ -35,21 +47,21 @@ interface CdnContents {
 
 const CDN_SCRIPT_CONTENTS: Readonly<Record<CdnScript, CdnContents>> = {
   plain: {
-    entry: PACKAGE_ENTRIES.elementGoogle,
+    entry: CDN_ENTRIES.google,
     plugins: [leaveOutClustering],
     assetPlugins: [],
     bundlesThirdParty: false,
     sourcesContent: true,
   },
   cluster: {
-    entry: PACKAGE_ENTRIES.elementGoogle,
+    entry: CDN_ENTRIES.google,
     plugins: [],
     assetPlugins: [],
     bundlesThirdParty: true,
     sourcesContent: true,
   },
   maplibre: {
-    entry: PACKAGE_ENTRIES.elementMapLibre,
+    entry: CDN_ENTRIES.maplibre,
     plugins: [],
     assetPlugins: [bundleMapLibre],
     bundlesThirdParty: true,
@@ -58,9 +70,9 @@ const CDN_SCRIPT_CONTENTS: Readonly<Record<CdnScript, CdnContents>> = {
 };
 
 /**
- * A CDN script: `<maplace-map>` in one minified file, no global. The plain Google script leaves
- * the clusterer out, so `cluster` on it fails the load; the MapLibre one bundles maplibre-gl with
- * its worker and stylesheet.
+ * A CDN script: `<maplace-map>` in one minified file, and the page's `Maplace`. The plain Google
+ * script leaves the clusterer out, so `cluster` on it fails the load; the MapLibre one bundles
+ * maplibre-gl with its worker and stylesheet.
  */
 export function cdnBuildOptions(
   script: CdnScript,
@@ -73,6 +85,7 @@ export function cdnBuildOptions(
     outfile: join(outdir, CDN_SCRIPTS[script]),
     bundle: true,
     format: "iife",
+    globalName: CDN_GLOBAL,
     target: TARGET,
     minify: true,
     sourcemap: "linked",
@@ -86,7 +99,8 @@ export function cdnBuildOptions(
 
 /**
  * Maplace's own code in a CDN script, as a budget measures it: its build without the packages it
- * bundles, so without its asset plugins; those shaping maplace's code still apply.
+ * bundles, so without its asset plugins; those shaping maplace's code still apply. The MapLibre
+ * one keeps an import of maplibre-gl, for `Maplace.maplibre`: measured, never run.
  */
 export function ownCodeBuildOptions(script: CdnScript): BuildOptions & { metafile: true } {
   const plugins = [...CDN_SCRIPT_CONTENTS[script].plugins];

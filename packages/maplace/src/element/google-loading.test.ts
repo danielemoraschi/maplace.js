@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options { "settings": { "handleDisabledFileLoadingAsSuccess": true } }
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MAPS_SCRIPT_ORIGIN } from "../google/maps-script-url";
+import { mapsTags } from "../google/testing/maps-tags";
 import { stubMapsJs } from "../google/testing/stub-libraries";
 import { mapsLoadingFor } from "./google-loading";
 
@@ -10,11 +10,9 @@ afterEach(() => {
   document.head.replaceChildren();
 });
 
-const mapsTags = () => document.querySelectorAll(`script[src^="${MAPS_SCRIPT_ORIGIN}"]`);
-
 describe("mapsLoadingFor", () => {
   it("adds Maps JS once, and a second map without a key shares it", async () => {
-    const first = mapsLoadingFor({ key: "k", language: "it" }, document);
+    const first = mapsLoadingFor({ apiKey: "k", language: "it" }, document);
     const second = mapsLoadingFor({ language: "it" }, document);
     expect(mapsTags()).toHaveLength(1);
     stubMapsJs();
@@ -22,8 +20,8 @@ describe("mapsLoadingFor", () => {
   });
 
   it("refuses a map asking the page's Maps JS for another setting, naming the attribute", () => {
-    void mapsLoadingFor({ key: "k", language: "it" }, document);
-    expect(() => mapsLoadingFor({ key: "k", language: "en" }, document)).toThrow(
+    void mapsLoadingFor({ apiKey: "k", language: "it" }, document);
+    expect(() => mapsLoadingFor({ apiKey: "k", language: "en" }, document)).toThrow(
       expect.objectContaining({ code: "invalid-input", field: "language" }),
     );
   });

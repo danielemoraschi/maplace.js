@@ -1,11 +1,14 @@
 import { afterAll, expect, it, vi } from "vitest";
 import "../element/google";
+import * as cdn from "../cdn/google";
 import type * as Core from "../index";
 import type { Maplace } from "../index";
 import { clickButton } from "../testing/examples/behaviours/reading";
+import { withKey } from "../testing/examples/example-dom";
 import { EXAMPLES, onProvider } from "../testing/examples/example-files";
 import { openHost } from "../testing/examples/example-hosts";
 import { openPage } from "../testing/examples/example-page";
+import { openScript } from "../testing/examples/example-scripts";
 import { recordErrors } from "../testing/examples/page-errors";
 import { recordedStoreCount, storeAttachedSince } from "../testing/examples/recorded-stores";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
@@ -56,8 +59,9 @@ async function expectDarkOnToggle(store: Maplace, root: Element): Promise<void> 
   await expect.poll(ready, { timeout: TILES_TIMEOUT_MS }).toBe("ready");
 }
 
-// The styled example's three versions in one document, as on the site: the vanilla host's
-// bootstrap loads Maps JS, which the React version and the page then share.
+// The styled example's four versions in one document, as on the site: the vanilla host's
+// bootstrap loads Maps JS, which the React version, the page and the script version then share,
+// the script version's adapters (its first map's, its toggle's) finding it on the page.
 describeWithKey("the styled example on Google Maps", (key) => {
   it("opens the vanilla version dark after its toggle", async () => {
     const root = openHost(styled.vanilla.html, { apiKey: key });
@@ -87,5 +91,15 @@ describeWithKey("the styled example on Google Maps", (key) => {
     const page = openPage(styled.page.html, { apiKey: key });
     await expectDarkOnToggle(page.map.maplace, page.root);
     expect(page.errors).toEqual([]);
+  }, 60_000);
+
+  it("opens the script version dark after its toggle", async () => {
+    vi.stubGlobal("Maplace", cdn);
+    const { root, run } = openScript({ ...styled.script, html: withKey(styled.script.html, key) });
+    const errors = recordErrors();
+    const stores = recordedStoreCount();
+    await run();
+    await expectDarkOnToggle(await vi.waitFor(() => storeAttachedSince(stores)), root);
+    expect(errors).toEqual([]);
   }, 60_000);
 });

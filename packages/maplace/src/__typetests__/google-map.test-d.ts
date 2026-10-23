@@ -43,3 +43,8 @@ createGoogleMap("#map", { mapId: "id", list: { position: "top" } });
 createGoogleMap("#map", { mapId: "id", list: false });
 // @ts-expect-error a container is an element or a selector
 createGoogleMap(42, { mapId: "id" });
+
+// Maps JS's settings go to the adapter, so maplace adds Maps JS itself.
+createGoogleMap("#map", { apiKey: "KEY", language: "it", locations: [] });
+// @ts-expect-error a language is a string
+createGoogleMap("#map", { apiKey: "KEY", language: 1 });

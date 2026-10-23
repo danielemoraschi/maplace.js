@@ -81,6 +81,10 @@ The element with the MapLibre provider registered; the MapLibre CDN script is th
 |---|---|---|
 | `MaplaceMapElement` | type | [Properties and methods](element.md#properties-and-methods), [provider attributes](maplibre.md#provider-attributes) |
 
+## The CDN scripts' `Maplace`
+
+Each CDN script also sets one global, `Maplace`: the exports of `maplace`, `maplace/element` and its provider's entry above, so a page's own script calls `Maplace.createGoogleMap(...)` where an npm page imports `createGoogleMap`. The MapLibre script adds `Maplace.maplibre`, the maplibre-gl it bundles. It holds functions, no state: the store a page makes is its own ([with a script of your own](setup.md#with-a-script-of-your-own)).
+
 ## `maplace/react`
 
 The React binding, a client boundary (`"use client"`).

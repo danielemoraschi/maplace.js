@@ -35,7 +35,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/setup.md",
     title: "Setup",
     description:
-      "What a map needs: on Google a key, Maps JS and, for production, a map ID; on MapLibre maplibre-gl and a style, OpenFreeMap's by default, with no key. With the element or npm.",
+      "What a map needs: on Google a key, Maps JS and, for production, a map ID; on MapLibre maplibre-gl and a style, OpenFreeMap's by default, with no key. With the element, a script of your own, or npm.",
     label: "Setup",
   },
   {

@@ -13,6 +13,7 @@ const missingMaps = expect.objectContaining({
 describe("loadLibraries", () => {
   it("fails to load, naming the fix, without Maps JS on the page", async () => {
     await expect(loadLibraries()).rejects.toThrow(missingMaps);
+    await expect(loadLibraries()).rejects.toThrow("give createGoogleAdapter an apiKey");
   });
 
   it("fails to load with a Maps JS too old to import libraries", async () => {

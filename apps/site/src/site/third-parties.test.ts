@@ -15,7 +15,7 @@ import {
 describe("thirdPartyOf", () => {
   it("Google Maps receives Maps JS and what it fetches", () => {
     const requests = [
-      mapsScriptUrl({ key: "k" }),
+      mapsScriptUrl({ apiKey: "k" }),
       "https://maps.gstatic.com/tile.png",
       "https://fonts.gstatic.com/s/roboto.woff2",
       "https://routes.googleapis.com/directions/v2:computeRoutes",
@@ -55,7 +55,7 @@ describe("thirdPartyOf", () => {
 });
 
 describe("the maps' consent", () => {
-  const mapsScript = mapsScriptUrl({ key: "k" });
+  const mapsScript = mapsScriptUrl({ apiKey: "k" });
   const openFreeMapTile = "https://tiles.openfreemap.org/planet";
   const githubApi = "https://api.github.com/repos/x/y";
 

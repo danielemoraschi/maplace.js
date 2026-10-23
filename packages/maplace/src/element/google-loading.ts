@@ -1,41 +1,29 @@
-import { canImportLibraries } from "../google/libraries";
-import {
-  addMapsScript,
-  type MapsScriptLoad,
-  mapsReadyFrom,
-  pageMapsScript,
-} from "../google/maps-script";
-import { conflictingSetting, requestIn } from "../google/maps-script-url";
+import { addedMapsLoading, pageMapsLoading } from "../google/maps-loading";
+import type { MapsScriptLoad } from "../google/maps-script";
+import type { MapsSetting } from "../google/maps-script-url";
 import { elementMisuse } from "./element-error";
 import { SCRIPT_ATTRIBUTES } from "./google-attributes";
 
 /**
- * Maps JS for `script`, once per page however many maps: the page's tag, whoever added it, is
- * shared, and a map asking it for another key, version, language or region is misuse. A page that
- * loaded Maps JS with no tag of its own (Google's inline bootstrap, js-api-loader) is taken as it
- * is. `nonce` is the page's to set on each map, so it is never compared.
+ * Maps JS for `script`, once per page however many maps: the page's, whoever loaded it, is
+ * shared, and a map asking it for another key, version, language or region is misuse. Without
+ * Maps JS on the page, `api-key` is needed to add it.
  */
 export function mapsLoadingFor(script: MapsScriptLoad, document: Document): Promise<void> {
-  const loaded = pageMapsScript(document);
-  if (loaded !== null) {
-    checkSameMaps(script, loaded);
-    return mapsReadyFrom(loaded);
-  }
-  if (canImportLibraries()) return Promise.resolve();
+  const onPage = pageMapsLoading(script, document, mapsJsAttributeConflict);
+  if (onPage !== undefined) return onPage;
   // Google never reports a missing key: the map would draw with Google's warning, and no error.
-  if (script.key === undefined) {
+  if (script.apiKey === undefined) {
     throw elementMisuse("api-key is required to load Google Maps", {
-      field: SCRIPT_ATTRIBUTES.key,
+      field: SCRIPT_ATTRIBUTES.apiKey,
     });
   }
-  return mapsReadyFrom(addMapsScript(script, document));
+  return addedMapsLoading(script, document);
 }
 
-function checkSameMaps(script: MapsScriptLoad, loaded: HTMLScriptElement): void {
-  const setting = conflictingSetting(script, requestIn(loaded.src));
-  if (setting === undefined) return;
+function mapsJsAttributeConflict(setting: MapsSetting) {
   const attribute = SCRIPT_ATTRIBUTES[setting];
-  throw elementMisuse(
+  return elementMisuse(
     `Google Maps is loaded on this page with another ${attribute}: every map shares one`,
     { field: attribute },
   );

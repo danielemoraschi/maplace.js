@@ -52,7 +52,7 @@ describe("the provider switch", () => {
 
   it("shows MapLibre's version once chosen, keeping the version", async () => {
     const { page, context, section } = await visitSection(site, "simple");
-    await chooseVersion(page, "simple", "Vanilla");
+    await chooseVersion(page, "simple", "Bundler");
     await chooseProvider(page, "simple", "MapLibre");
     expect(await mapLibreVersionIn(section, "vanilla").isVisible()).toBe(true);
     expect(await providerVersionIn(section, "google", "vanilla").isHidden()).toBe(true);
@@ -62,7 +62,7 @@ describe("the provider switch", () => {
   it("shows MapLibre's files in the code tabs, with no Google loader", async () => {
     const { page, context } = await visitSection(site, "simple");
     await chooseProvider(page, "simple", "MapLibre");
-    const section = await chooseTab(page, "simple", "Vanilla");
+    const section = await chooseTab(page, "simple", "Bundler");
     const shown = (text: string) =>
       section.getByRole("tabpanel").getByText(text).filter({ visible: true }).count();
     expect(await shown("examples/simple/maplibre/vanilla.ts")).toBe(1);
@@ -94,7 +94,7 @@ describe("the provider switch", () => {
   it("leaves a running MapLibre version alone when Google's Maps JS fails", async () => {
     const { page, context, mapsJsRequests, section } = await visitSection(site, "simple");
     await chooseProvider(page, "simple", "MapLibre");
-    await chooseVersion(page, "simple", "Vanilla");
+    await chooseVersion(page, "simple", "Bundler");
     await loadMapsButtons(section).click();
     const onMapLibre = mapLibreVersionIn(section, "vanilla");
     await expect.poll(() => onMapLibre.getAttribute("data-started"), ON_MAPLIBRE).toBe("");

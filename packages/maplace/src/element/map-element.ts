@@ -5,7 +5,6 @@ import { adoptDefaultStyles, PANE_CLASS } from "./default-styles";
 import { isListAttribute, LIST_ATTRIBUTES } from "./element-list";
 import type { MaplaceMapElement } from "./index";
 import { createListKeeper, type ListKeeper } from "./list-keeper";
-import { defineListView } from "./list-views";
 import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
 import { createMapSettingsWatch } from "./map-settings-watch";
@@ -22,8 +21,6 @@ import { MAPLACE_VERSION } from "./version";
 export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   static readonly maplaceVersion = MAPLACE_VERSION;
   static readonly observedAttributes = [...LIST_ATTRIBUTES, "provider", "cluster"];
-  /** `defineListView`, for a page on the CDN script, which can't import it. */
-  static readonly defineListView = defineListView;
 
   readonly #internals = this.attachInternals();
   readonly #misuse = createStandingMisuse(this, () => this.#showLoadState());

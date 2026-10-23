@@ -1,10 +1,17 @@
 import { expect, vi } from "vitest";
 import type { MaplaceMapElement } from "../../element/index";
+import type { FakeAdapters } from "../fake/adapters";
 import type { FakeAdapter } from "../fake-adapter";
 import { EXAMPLE_PAGES, EXAMPLES, type Example } from "./example-files";
-import { openHost } from "./example-hosts";
 import { openPages } from "./example-page";
-import { adapterInside, type ExampleRun, exampleRun, runHost } from "./example-runs";
+import {
+  adapterInside,
+  type ExampleRun,
+  exampleRun,
+  openVersion,
+  runVersion,
+} from "./example-runs";
+import { fakeMaplaceGlobal } from "./fake-maplace-global";
 
 /** Every example's page open on one document, its map ready and settled. */
 interface EveryPage {
@@ -36,20 +43,21 @@ async function openEveryPage(made: readonly FakeAdapter[]): Promise<EveryPage> {
   return { runOf, errors };
 }
 
-/** An example's three versions, running. */
+/** An example's four versions, running. */
 export interface VersionRuns {
   readonly page: ExampleRun;
+  readonly script: ExampleRun;
   readonly vanilla: ExampleRun;
   readonly react: ExampleRun;
 }
 
 /**
  * Where the adapters come from: the element's, and the ones `maplace/google`'s and
- * `maplace/maplibre`'s mocks make.
+ * `maplace/maplibre`'s mocks and the page's `Maplace` make.
  */
 export interface VersionAdapters {
   readonly pageAdapters: readonly FakeAdapter[];
-  readonly moduleAdapters: readonly FakeAdapter[];
+  readonly moduleAdapters: FakeAdapters;
 }
 
 /** Every example's versions on one document, running, and what the pages' scripts threw. */
@@ -59,24 +67,32 @@ export interface EveryVersion {
 }
 
 /**
- * Opens every example's page and hosts, then runs the hosts' modules one after another, since
- * the stores made since a module ran are that module's. `beforeOpening` lays the versions out
- * before any of them opens, so a page's map mounts in the same room as a module's.
+ * Opens every example's page, script versions and hosts, then runs the hosts' modules and the
+ * script versions' programs one after another, since the stores made since one ran are its own.
+ * `beforeOpening` lays the versions out before any of them opens, so a page's map mounts in the
+ * same room as a module's.
  */
 export async function runEveryVersion(
   { pageAdapters, moduleAdapters }: VersionAdapters,
   beforeOpening: () => void = () => undefined,
 ): Promise<EveryVersion> {
   beforeOpening();
+  vi.stubGlobal("Maplace", await fakeMaplaceGlobal(moduleAdapters));
   const pages = await openEveryPage(pageAdapters);
-  const opened = EXAMPLES.map(
-    (example) => [example, openHost(example.vanilla.html), openHost(example.react.html)] as const,
-  );
+  const opened = EXAMPLES.map((example) => ({
+    example,
+    versions: {
+      script: openVersion(example.script),
+      vanilla: openVersion(example.vanilla),
+      react: openVersion(example.react),
+    },
+  }));
   const runs = new Map<Example, VersionRuns>();
-  for (const [example, vanillaRoot, reactRoot] of opened) {
-    const vanilla = await runHost(example.vanilla, vanillaRoot, moduleAdapters);
-    const react = await runHost(example.react, reactRoot, moduleAdapters);
-    runs.set(example, { page: pages.runOf(example), vanilla, react });
+  for (const { example, versions } of opened) {
+    const vanilla = await runVersion(versions.vanilla, moduleAdapters.made);
+    const react = await runVersion(versions.react, moduleAdapters.made);
+    const script = await runVersion(versions.script, moduleAdapters.made);
+    runs.set(example, { page: pages.runOf(example), script, vanilla, react });
   }
   return { runs, errors: pages.errors };
 }

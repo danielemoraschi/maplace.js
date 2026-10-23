@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map, its list and the radius readout mount on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #circles-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #circles-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #circles-maplibre-script-list { display: contents; }
+  #circles-maplibre-script-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #circles-maplibre-script-map-and-list { flex-direction: column; }
+    #circles-maplibre-script-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+</style>
+<div id="circles-maplibre-script-map-and-list">
+  <div id="circles-maplibre-script-map"></div>
+  <div id="circles-maplibre-script-list"></div>
+</div>
+<p><output id="circles-maplibre-script-radius">Radius: 8.0 km</output></p>
+<script type="module">
+  const center = { lat: 41.9028, lng: 12.4964 };
+  const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };
+  const maplace = Maplace.createMapLibreMap("#circles-maplibre-script-map", {
+    selectedId: "center",
+    locations: [
+      {
+        id: "center",
+        type: "circle",
+        center,
+        radius: 5_000,
+        title: "Within 5 km",
+        style: { stroke: "#1d4ed8", fill: "#3b82f6" },
+        selectedStyle,
+        content: () => popupOf("The historic centre, on foot."),
+      },
+      {
+        id: "ring",
+        type: "circle",
+        center,
+        radius: 15_000,
+        title: "Within 15 km",
+        style: { stroke: "#15803d", fill: "#22c55e" },
+        selectedStyle,
+        content: () => popupOf("Inside the ring road, by bike."),
+      },
+      {
+        id: "resizable",
+        type: "circle",
+        center: { lat: 41.8, lng: 12.75 },
+        radius: 8_000,
+        title: "Change my size",
+        editable: true,
+        style: { stroke: "#7c3aed", fill: "#a78bfa" },
+      },
+    ],
+    list: { container: "#circles-maplibre-script-list" },
+  });
+
+  maplace.on("locationEdit", ({ location, geometry }) => {
+    if (geometry.type === "circle") showRadius(location.id, geometry.radius);
+  });
+  maplace.on("locationChange", ({ location }) => {
+    if (location.type === "circle") showRadius(location.id, location.radius);
+  });
+
+  const readout = document.querySelector("#circles-maplibre-script-radius");
+  /** The editable circle's radius, while it is resized and once it is. */
+  function showRadius(id, radius) {
+    if (readout && id === "resizable")
+      readout.textContent = `Radius: ${(radius / 1000).toFixed(1)} km`;
+  }
+
+  /** A popup's content: a line about the area, under its title (the popup's heading). */
+  function popupOf(about) {
+    const text = document.createElement("p");
+    text.textContent = about;
+    return text;
+  }
+</script>

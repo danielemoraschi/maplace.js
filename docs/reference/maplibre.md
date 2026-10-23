@@ -9,7 +9,7 @@ The store, its list, its events and its errors are the same as on Google; what d
 | Option | Type | What |
 |---|---|---|
 | `mapStyle` | `string \| StyleSpecification` | The map's style: a style URL or a style object; OpenFreeMap's `liberty` when left out ([styles and tiles](#styles-and-tiles)). Named `mapStyle` because the store's `style` is the shapes' default style |
-| `map` | `maplibregl.Map` | Your own map to draw on, instead of one maplacejs creates |
+| `map` | `maplibregl.Map` | Your own map to draw on, instead of one maplacejs creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
 | `mapOptions` | `MapOptions` | Extra options for a map maplacejs creates; not `container`, `style`, `center`, `zoom` or `bounds`, which maplacejs sets. `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
 
 An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` maplacejs sets, saying where it goes (`style` is `mapStyle`).
@@ -77,7 +77,7 @@ A change of either opens the map again where it was, keeping the store's state. 
 
 ## With the CDN script
 
-One script, `maplace-element-maplibre.iife.js`, defines the element with the MapLibre provider. It bundles maplibre-gl, its worker and its stylesheet, so a page loads it alone (about 491 kB gzip; clustering included):
+One script, `maplace-element-maplibre.iife.js`, defines the element with the MapLibre provider. It bundles maplibre-gl, its worker and its stylesheet, so a page loads it alone (about 501 kB gzip; clustering included):
 
 <!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
 ```html
@@ -92,9 +92,9 @@ Nothing is fetched from other origins at runtime but the map's style and what it
 
 ## Loading maplibre-gl
 
-From npm, `maplibre-gl` (6.15 or a later 6.x) is the page's to install: an optional peer, loaded when a MapLibre map mounts, so a page that never mounts one never loads it. Missing, or with the browser giving no WebGL, loading fails with `provider-load-failed`.
+From npm, `maplibre-gl` (6.15 or a later 6.x) is the page's to install: an optional peer, loaded when a MapLibre map mounts, so a page that never mounts one never loads it. The MapLibre CDN script bundles it, and gives it to a page's own script as `Maplace.maplibre`, the copy its maps are drawn with, to use as an npm page uses `import * as maplibregl from "maplibre-gl"` (`const maplibregl = Maplace.maplibre;`), a map of your own for `createMapLibreAdapter({ map })` included: so the script runs maplibre-gl as it loads, not when a map mounts. Missing, or with the browser giving no WebGL, loading fails with `provider-load-failed`.
 
-The page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-gl.css`, as every MapLibre page does: an import in a bundled module, as the examples do, or a `<link>`. Without it, markers and popups are misplaced, and maplacejs warns once in the console.
+From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-gl.css`, as every MapLibre page does (the CDN script adopts it itself): an import in a bundled module, as the examples do, or a `<link>`. Without it, markers and popups are misplaced, and maplacejs warns once in the console.
 
 `import "maplace/element/maplibre"` defines the element with the MapLibre provider from npm, on the page's maplibre-gl and stylesheet.
 

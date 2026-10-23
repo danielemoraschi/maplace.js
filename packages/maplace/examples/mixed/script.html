@@ -1,0 +1,58 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, the group buttons and what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key; its data sets come from mixed-a.json to mixed-e.json. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #mixed-script-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
+  #mixed-script-map-and-list { display: flex; height: 24rem; }
+  #mixed-script-map { flex: 1 1 auto; min-width: 0; }
+  #mixed-script-list { display: contents; }
+  #mixed-script-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #mixed-script-map-and-list { flex-direction: column; }
+    #mixed-script-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+</style>
+<p id="mixed-script-groups">
+  <button type="button" value="a">Group A</button>
+  <button type="button" value="b">Group B</button>
+  <button type="button" value="c">Group C</button>
+  <button type="button" value="d">Group D</button>
+  <button type="button" value="e">Group E</button>
+</p>
+<div id="mixed-script-map-and-list">
+  <div id="mixed-script-map"></div>
+  <div id="mixed-script-list"></div>
+</div>
+<script type="module">
+  const maplace = Maplace.createGoogleMap("#mixed-script-map", {
+    apiKey: "YOUR_KEY",
+    list: { container: "#mixed-script-list" },
+  });
+
+  let latestGroup;
+
+  const buttons = document.querySelectorAll("#mixed-script-groups button");
+  for (const button of buttons) {
+    button.addEventListener("click", () => showGroup(button.value));
+  }
+  await showGroup("a");
+
+  /**
+   * One of the data sets swapped in, group C with a route through it; leaving C takes it away.
+   * Only the group last asked for: a slower answer to an earlier click is dropped.
+   */
+  async function showGroup(letter) {
+    latestGroup = letter;
+    for (const button of buttons)
+      button.setAttribute("aria-pressed", String(button.value === letter));
+    const response = await fetch(`/mixed-${letter}.json`);
+    const locations = await response.json();
+    if (letter !== latestGroup) return;
+    maplace.setLocations(locations);
+    if (letter === "c") {
+      maplace.setRoute({ stops: locations.map(({ id }) => id), travelMode: "driving" });
+    }
+    maplace.fitAll();
+  }
+</script>

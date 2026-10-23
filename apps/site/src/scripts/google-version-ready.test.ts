@@ -1,6 +1,10 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
-import { type GoogleReadying, googleVersionReady } from "./google-version-ready.ts";
+import {
+  type GoogleReadying,
+  googleScriptReady,
+  googleVersionReady,
+} from "./google-version-ready.ts";
 import { VersionStartFailure } from "./version-start.ts";
 
 function version(keyMissing = false): HTMLElement {
@@ -60,5 +64,30 @@ describe("googleVersionReady", () => {
     const mapsImportable = () => Promise.reject(new Error("a Maps tag failed"));
     const { ready } = setup({ mapsImportable });
     expect(await failureOf(ready(version()))).toBe("maps-js");
+  });
+});
+
+describe("googleScriptReady", () => {
+  const readyWith = (overrides: Partial<GoogleReadying>) =>
+    googleScriptReady({
+      mapsJsOnPage: () => false,
+      mapsImportable: async () => {},
+      ...overrides,
+    });
+
+  it("waits for nothing when no Maps JS is on the page: the version's adapter adds it", async () => {
+    const mapsImportable = vi.fn(() => new Promise<void>(() => {}));
+    await expect(readyWith({ mapsImportable })(version())).resolves.toBeUndefined();
+    expect(mapsImportable).not.toHaveBeenCalled();
+  });
+
+  it("fails with maps-js when the page's Maps JS failed, as a module version does", async () => {
+    const mapsImportable = () => Promise.reject(new Error("a Maps tag failed"));
+    const ready = readyWith({ mapsJsOnPage: () => true, mapsImportable });
+    expect(await failureOf(ready(version()))).toBe("maps-js");
+  });
+
+  it("fails with no-key in a version without the site's key", async () => {
+    expect(await failureOf(readyWith({})(version(true)))).toBe("no-key");
   });
 });

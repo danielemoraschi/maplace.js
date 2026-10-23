@@ -1,6 +1,6 @@
 import { createGoogleAdapter } from "../google/create-adapter";
+import { mountAfter } from "../google/mount-after";
 import { defineProvider } from "./define";
-import { adapterAfter } from "./google-after-loading";
 import { googleSettingsOf } from "./google-attributes";
 import { mapsLoadingFor } from "./google-loading";
 import type { ProviderFactory } from "./index";
@@ -21,7 +21,7 @@ import type { ProviderFactory } from "./index";
 const googleProvider: ProviderFactory = (element) => {
   const { adapterOptions, script } = googleSettingsOf(element);
   const loading = mapsLoadingFor(script, element.ownerDocument);
-  return adapterAfter(loading, createGoogleAdapter(adapterOptions));
+  return mountAfter(createGoogleAdapter(adapterOptions), () => loading);
 };
 
 defineProvider("google", googleProvider);
