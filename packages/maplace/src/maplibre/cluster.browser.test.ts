@@ -36,11 +36,14 @@ async function clusteredTowns() {
   return mounted;
 }
 
-/** The towns clustering, seen at zoom 17 on Bologna, where pin `a` is drawn alone. */
+/** Bologna close up, where pin `a` is drawn alone. */
+const ON_BOLOGNA: ResolvedView = { kind: "center", center: TOWNS.bologna, zoom: 17 };
+
+/** The towns clustering, seen on Bologna close up. */
 async function pinAlone() {
   const mounted = await clusteredTowns();
   const { adapter, probe, map } = mounted;
-  adapter.setView({ ...OVER_TOWNS, zoom: 17 });
+  adapter.setView(ON_BOLOGNA);
   await vi.waitFor(async () => {
     await probe.settle();
     expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
@@ -150,7 +153,7 @@ describe("clustering on MapLibre", () => {
     const hovers = host.reportsOf("reportHoverChange").length;
     pressOnBologna(map, "mousedown");
     const center = { lat: TOWNS.bologna.lat, lng: TOWNS.bologna.lng + 0.01 };
-    adapter.setView({ kind: "center", center, zoom: 17 });
+    adapter.setView({ ...ON_BOLOGNA, center });
     await probe.settle();
     expect(host.reportsOf("reportHoverChange")).toHaveLength(hovers);
     expect(map.getCanvas().style.cursor).toBe("pointer");
