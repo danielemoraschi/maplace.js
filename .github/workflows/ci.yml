@@ -19,7 +19,8 @@ jobs:
     # Same-repo PRs are already covered by their branch's push run; only fork PRs run here.
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Room for a run whose Chromium packages come from a slow mirror, the cache cold (T23).
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -32,7 +33,27 @@ jobs:
       - run: npm run check
       - run: npm run typecheck
       - run: npm run build
+      # Chromium's system packages come from Ubuntu's mirror, at times slowly enough to run out the
+      # job's time (T23): apt keeps them between runs and fetches only what changed, the cache
+      # saved before the tests so a run they cut short has warmed it.
+      - id: chromium-packages
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/chromium-packages
+          key: chromium-packages-${{ runner.os }}-${{ hashFiles('node_modules/playwright-core/package.json') }}
+          restore-keys: chromium-packages-${{ runner.os }}-
+      - run: |
+          mkdir -p "$HOME/.cache/chromium-packages/partial"
+          printf 'Dir::Cache::Archives "%s";\nAPT::Keep-Downloaded-Packages "true";\n' \
+            "$HOME/.cache/chromium-packages" | sudo tee /etc/apt/apt.conf.d/99-chromium-packages
       - run: npx --no playwright install --with-deps --only-shell chromium
+      # apt wrote there as root, its lock readable by root alone: the cache is saved as the runner.
+      - run: sudo chown -R "$(id -u):$(id -g)" "$HOME/.cache/chromium-packages"
+      - if: steps.chromium-packages.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/chromium-packages
+          key: ${{ steps.chromium-packages.outputs.cache-primary-key }}
       # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed, so
       # only when next changed more than prose or MapLibre's own files since the last commit CI
       # passed on it (scripts/real-maps.ts; a cancelled run's changes count too), or on a run
