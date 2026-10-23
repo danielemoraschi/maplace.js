@@ -7,13 +7,16 @@ const adopted = new WeakMap<Document, Set<string>>();
  * nonce for.
  */
 export function adoptStyles(document: Document, css: string): void {
-  // A DOM without constructable stylesheets (jsdom, Safari before 16.4) goes without the defaults.
-  if (!("adoptedStyleSheets" in document)) return;
+  // A DOM without constructable stylesheets (jsdom, Safari before 16.4) goes without the defaults,
+  // as does a document with no window (`createHTMLDocument`'s), which shows nothing: a document
+  // adopts only the sheets its own window made, a frame's included.
+  const view = document.defaultView;
+  if (!("adoptedStyleSheets" in document) || view === null) return;
   const sheets = adopted.get(document) ?? new Set<string>();
   if (sheets.has(css)) return;
   sheets.add(css);
   adopted.set(document, sheets);
-  const sheet = new CSSStyleSheet();
+  const sheet = new view.CSSStyleSheet();
   sheet.replaceSync(css);
   document.adoptedStyleSheets = [sheet, ...document.adoptedStyleSheets];
 }

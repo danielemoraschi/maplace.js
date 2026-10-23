@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import type { IControl } from "maplibre-gl";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { frameDocument } from "../testing/iframes";
 import { cssTextOf } from "../testing/selectors";
 import { createControls } from "./controls";
 import { openedControls } from "./testing/control-stub-map";
@@ -8,6 +9,8 @@ import { openedControls } from "./testing/control-stub-map";
 const button = () => document.createElement("button");
 
 describe("the MapLibre adapter's controls", () => {
+  afterEach(() => document.body.replaceChildren());
+
   it("places a control mounted before the map opened once it opens, and takes it off on close", () => {
     const controls = createControls();
     const node = button();
@@ -120,7 +123,7 @@ describe("the MapLibre adapter's controls", () => {
 
   it("gives the control's document the panel's styles once the control is on the map", () => {
     const controls = createControls();
-    const page = document.implementation.createHTMLDocument();
+    const page = frameDocument();
     const sheets = () => page.adoptedStyleSheets.map(cssTextOf);
     controls.mountControl(page.createElement("button"), "top-left");
     expect(sheets()).toEqual([]);

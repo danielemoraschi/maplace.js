@@ -1,9 +1,12 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { adoptStyles } from "./adopted-styles";
+import { frameDocument } from "./testing/iframes";
 import { cssTextOf } from "./testing/selectors";
 
 describe("adoptStyles", () => {
+  afterEach(() => document.body.replaceChildren());
+
   it("adds a stylesheet before the page's own, so a page's rule wins", () => {
     const page = new CSSStyleSheet();
     page.replaceSync("b { color: red; }");
@@ -26,5 +29,17 @@ describe("adoptStyles", () => {
   it("adds nothing, and throws nothing, in a DOM without constructable stylesheets", () => {
     const bare = { title: "jsdom" } as unknown as Document;
     expect(() => adoptStyles(bare, ":where(a) { color: blue; }")).not.toThrow();
+  });
+
+  it("adds a stylesheet to a frame's document, made in the frame's own window", () => {
+    const frame = frameDocument();
+    adoptStyles(frame, ":where(s) { color: blue; }");
+    expect(frame.adoptedStyleSheets.map(cssTextOf)).toEqual([expect.stringContaining(":where(s)")]);
+  });
+
+  it("adds nothing to a document without a window, as a browser would refuse it the sheet", () => {
+    const windowless = document.implementation.createHTMLDocument();
+    expect(() => adoptStyles(windowless, ":where(q) { color: blue; }")).not.toThrow();
+    expect(windowless.adoptedStyleSheets).toEqual([]);
   });
 });
