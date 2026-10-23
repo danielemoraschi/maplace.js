@@ -3,16 +3,17 @@ import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import type { ControlPosition } from "../adapter";
 import { darkPage } from "../google/testing/dark-page";
 import { places } from "../google/testing/places";
+import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { unstyledPage } from "../testing/unstyled-page";
-import { onMapLibre, onPageMapLibre, panelOf } from "./testing/control-site";
+import { onPageMapLibre, panelOf } from "./testing/control-site";
 
 afterEach(() => {
   document.body.replaceChildren();
 });
 
 /** A button of the page's in a corner of a MapLibre map: the page's own, or one maplace creates. */
-async function buttonOn(attach: typeof onMapLibre, position: ControlPosition = "top-left") {
+async function buttonOn(attach: typeof onPageMapLibre, position: ControlPosition = "top-left") {
   const maplace = createMaplace({ locations: places() });
   const site = await attach(maplace);
   const node = document.createElement("button");
@@ -61,14 +62,17 @@ describe("the panel of a control on a MapLibre map", () => {
     expect(panel.backgroundColor).toBe("rgb(68, 68, 68)");
   });
 
-  it("makes only a map maplace creates, once it holds a panel, the size its lists stay within", async () => {
-    const [created, page] = await Promise.all([buttonOn(onMapLibre), buttonOn(onPageMapLibre)]);
-    const element = created.map.getContainer();
-    expect(element.classList.contains("maplace-maplibre-map")).toBe(true);
-    expect(getComputedStyle(element).containerType).toBe("size");
-    expect(getComputedStyle(page.map.getContainer()).containerType).toBe("normal");
-    created.remove();
-    expect(getComputedStyle(element).containerType).toBe("normal");
+  it("keeps a long list within the page's own map, never making it a size container", async () => {
+    const maplace = createMaplace({ locations: places(30) });
+    const { adapter, map } = await onPageMapLibre(maplace);
+    const view = createListView(maplace);
+    onTestFinished(() => view.destroy());
+    adapter.mountControl(view.element, "top-left");
+    const mapBox = map.getContainer().getBoundingClientRect();
+    expect(panelOf(view.element).getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      mapBox.bottom - 10 + 0.5,
+    );
+    expect(getComputedStyle(map.getContainer()).containerType).toBe("normal");
   });
 
   it("lets the page's own rule win", async () => {

@@ -1,6 +1,7 @@
 import type { IControl, Map as MapLibreMap } from "maplibre-gl";
 import type { Adapter, ControlPosition } from "../adapter";
 import { panelControl } from "./control-panel";
+import { type CornerWatch, watchCorners } from "./corner-watch";
 import type { MapPart } from "./mounted-map";
 
 /** The adapter's on-map controls: a part on the open map, and `mountControl`. */
@@ -21,17 +22,22 @@ interface MountedControl {
 
 /**
  * The page's nodes on the map, each in its panel (`control-panel.ts`) through MapLibre's own
- * control mechanism, in the corner asked for (maplace's corner names are MapLibre's). One mounted
- * before the map opens waits for it; a node mounted again moves to its new corner; its remover
- * takes it off the map and out of the page.
+ * control mechanism, in the corner asked for (maplace's corner names are MapLibre's), the panels in
+ * different corners clearing each other (`corner-watch.ts`). One mounted before the map opens
+ * waits for it; a node mounted again moves to its new corner; its remover takes it off the map and
+ * out of the page.
  */
 export function createControls(): Controls {
   const byNode = new Map<HTMLElement, MountedControl>();
   let map: MapLibreMap | undefined;
+  let cornerWatch: CornerWatch | undefined;
   let destroyed = false;
 
   function place({ control, position }: MountedControl): void {
-    map?.addControl(control, position);
+    if (map === undefined) return;
+    map.addControl(control, position);
+    cornerWatch ??= watchCorners(map);
+    cornerWatch.settle();
   }
 
   function takeOff({ control }: MountedControl): void {
@@ -53,6 +59,8 @@ export function createControls(): Controls {
         for (const mounted of byNode.values()) place(mounted);
         opened.onDestroy(() => {
           for (const mounted of byNode.values()) takeOff(mounted);
+          cornerWatch?.stop();
+          cornerWatch = undefined;
           map = undefined;
         });
       },

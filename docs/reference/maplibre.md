@@ -140,7 +140,7 @@ MapLibre has no routing, so `route` isn't among this adapter's capabilities. `se
 
 What goes on the map (`createMapLibreMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like MapLibre's own controls, `.maplace-control`, in MapLibre's corners with their margins. It is light, as MapLibre's controls are, and `.maplace-control { color-scheme: dark }` gives a dark one.
 
-maplacejs's lists scroll within the height of a map it creates. A bottom-right list stays clear of MapLibre's attribution. Classes and how to turn the defaults off: [Styling](styling.md).
+maplacejs's lists scroll within the map, one it creates or the page's own, clear of what the other corners hold, MapLibre's attribution included; on a narrow map the bottom-left corner sits above the attribution. Classes and how to turn the defaults off: [Styling](styling.md).
 
 ## React
 

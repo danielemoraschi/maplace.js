@@ -16,14 +16,12 @@ export interface Held extends Span {
 
 /** What a corner holds, as laid out now. */
 export interface CornerContent extends Span {
-  /** The corner's box, its elements' margins included. */
-  readonly height: number;
+  /** What the corner's box holds besides maplace's lists, its elements' margins included. */
+  readonly fixedHeight: number;
   /** Its shown elements. */
   readonly held: readonly Held[];
   /** Whether a shown maplace panel is among them. */
   readonly holdsPanel: boolean;
-  /** Its maplace lists' heights now, summed. */
-  readonly listHeight: number;
   /** Each of its lists' height with no limit. */
   readonly naturalListHeights: readonly number[];
 }
@@ -69,13 +67,6 @@ export function layoutCorners({ height, corners }: CornersOnMap): CornerLayout {
   };
 }
 
-/** Whether two layouts differ by no more than half a pixel anywhere. */
-export function sameLayout(a: CornerLayout, b: CornerLayout): boolean {
-  const near = (x: number, y: number) => Math.abs(x - y) <= 0.5;
-  const positions = Object.keys(a.listRoom) as ControlPosition[];
-  return near(a.lift, b.lift) && positions.every((p) => near(a.listRoom[p], b.listRoom[p]));
-}
-
 /**
  * The height each list may take of `free`, the lists `naturals` tall without a limit: those that
  * fit in an even share keep their height, the rest share what is left evenly (max-min fairness).
@@ -112,7 +103,7 @@ function columnStack(corner: CornerContent, corners: Corners): readonly CornerCo
  */
 function bottomRoom(corner: CornerContent, corners: Corners, height: number): number {
   const stack = columnStack(corner, corners);
-  const fixed = stack.reduce((sum, each) => sum + fixedHeightOf(each), 0);
+  const fixed = stack.reduce((sum, each) => sum + each.fixedHeight, 0);
   const naturals = stack.flatMap((each) => each.naturalListHeights);
   return fairRoom(height - fixed - CORNER_MARGIN, naturals);
 }
@@ -134,12 +125,7 @@ function floorUnder(corner: CornerContent, below: readonly Placed[], height: num
 
 /** A top corner's list room: down to `floor`, less what else it holds, shared among its lists. */
 function topRoom(corner: CornerContent, floor: number): number {
-  return fairRoom(floor - fixedHeightOf(corner), corner.naturalListHeights);
-}
-
-/** What a corner holds besides maplace's lists, margins included. */
-function fixedHeightOf(corner: CornerContent): number {
-  return corner.height - corner.listHeight;
+  return fairRoom(floor - corner.fixedHeight, corner.naturalListHeights);
 }
 
 /** Whether two spans come within a margin of each other across the map. */

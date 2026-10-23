@@ -7,7 +7,6 @@ import {
   fairRoom,
   type Held,
   layoutCorners,
-  sameLayout,
 } from "./corner-layout";
 
 const HEIGHT = 500;
@@ -17,10 +16,9 @@ function corner(content: Partial<CornerContent> = {}): CornerContent {
   return {
     left: 0,
     right: 0,
-    height: 0,
+    fixedHeight: 0,
     held: [],
     holdsPanel: false,
-    listHeight: 0,
     naturalListHeights: [],
     ...content,
   };
@@ -34,16 +32,13 @@ function listCorner(
   span: Pick<CornerContent, "left" | "right">,
   { listHeight, natural, under }: { listHeight: number; natural: number; under?: Held },
 ): CornerContent {
-  const panel = listHeight + 18;
-  const height = panel + (under?.rise ?? 0);
-  const rise = height;
+  const fixedHeight = 18 + (under?.rise ?? 0);
   return corner({
     ...span,
-    height,
+    fixedHeight,
     holdsPanel: true,
-    listHeight,
     naturalListHeights: [natural],
-    held: [{ ...span, rise }, ...(under ? [under] : [])],
+    held: [{ ...span, rise: listHeight + fixedHeight }, ...(under ? [under] : [])],
   });
 }
 
@@ -53,7 +48,7 @@ function fixedCorner(
   height: number,
   holdsPanel = false,
 ) {
-  return corner({ ...span, height, holdsPanel, held: [{ ...span, rise: height }] });
+  return corner({ ...span, fixedHeight: height, holdsPanel, held: [{ ...span, rise: height }] });
 }
 
 function layout(corners: Partial<Record<ControlPosition, CornerContent>>): CornerLayout {
@@ -72,7 +67,7 @@ const attribution = (left: number, right: number, rise: number): Held => ({ left
 
 describe("layoutCorners", () => {
   it("gives a lone top corner's list the map's height less what else it holds and the corners' margins", () => {
-    const topLeft = corner({ right: 200, height: 130, listHeight: 100, naturalListHeights: [600] });
+    const topLeft = corner({ right: 200, fixedHeight: 30, naturalListHeights: [600] });
     expect(layout({ "top-left": topLeft }).listRoom["top-left"]).toBe(460);
   });
 
@@ -88,7 +83,7 @@ describe("layoutCorners", () => {
     const bottomRight = corner({
       left: 300,
       right: 500,
-      height: 34,
+      fixedHeight: 34,
       held: [attribution(300, 490, 34)],
     });
     const room = layout({ "top-right": topRight, "bottom-right": bottomRight }).listRoom[
@@ -102,7 +97,7 @@ describe("layoutCorners", () => {
     const bottomRight = corner({
       left: 10,
       right: 375,
-      height: 46,
+      fixedHeight: 46,
       held: [attribution(10, 365, 46)],
     });
     const room = layout({ "top-left": topLeft, "bottom-right": bottomRight }).listRoom["top-left"];
@@ -139,7 +134,7 @@ describe("layoutCorners", () => {
 
   it("gives a top-right list its share beside a long bottom-left list that reaches under it on a phone", () => {
     const phoneAttribution = attribution(10, 365, 46);
-    const bottomRight = corner({ left: 10, right: 375, height: 46, held: [phoneAttribution] });
+    const bottomRight = corner({ left: 10, right: 375, fixedHeight: 46, held: [phoneAttribution] });
     const bottomLeft = listCorner({ left: 0, right: 250 }, { listHeight: 204, natural: 600 });
     const topRight = listCorner({ left: 125, right: 375 }, { listHeight: 100, natural: 600 });
     const { listRoom } = layout({
@@ -162,7 +157,7 @@ describe("layoutCorners", () => {
     const { lift, listRoom } = layout({ "bottom-left": bottomLeft, "bottom-right": bottomRight });
     expect(listRoom["bottom-right"]).toBe(settled);
     expect(lift).toBe(settled + 18 + 46);
-    expect(lift + bottomLeft.height + 10).toBeLessThanOrEqual(HEIGHT);
+    expect(lift + bottomLeft.fixedHeight + 10).toBeLessThanOrEqual(HEIGHT);
   });
 
   it("leaves the bottom-left corner down when the bottom-right corner keeps to its side", () => {
@@ -170,7 +165,7 @@ describe("layoutCorners", () => {
     const bottomRight = corner({
       left: 900,
       right: 1280,
-      height: 34,
+      fixedHeight: 34,
       held: [attribution(900, 1270, 34)],
     });
     expect(layout({ "bottom-left": bottomLeft, "bottom-right": bottomRight }).lift).toBe(0);
@@ -181,7 +176,7 @@ describe("layoutCorners", () => {
     const bottomRight = corner({
       left: 10,
       right: 375,
-      height: 46,
+      fixedHeight: 46,
       held: [attribution(10, 365, 46)],
     });
     expect(layout({ "bottom-left": scale, "bottom-right": bottomRight }).lift).toBe(0);
@@ -199,21 +194,5 @@ describe("fairRoom", () => {
 
   it("gives nothing when there is no free height", () => {
     expect(fairRoom(-20, [40])).toBe(0);
-  });
-});
-
-describe("sameLayout", () => {
-  const rooms = (room: number) => ({
-    "top-left": room,
-    "top-right": room,
-    "bottom-left": room,
-    "bottom-right": room,
-  });
-
-  it("tells layouts apart by more than half a pixel", () => {
-    const a = { lift: 10, listRoom: rooms(100) };
-    expect(sameLayout(a, { lift: 10.4, listRoom: rooms(100.3) })).toBe(true);
-    expect(sameLayout(a, { lift: 10, listRoom: rooms(101) })).toBe(false);
-    expect(sameLayout(a, { lift: 11, listRoom: rooms(100) })).toBe(false);
   });
 });
