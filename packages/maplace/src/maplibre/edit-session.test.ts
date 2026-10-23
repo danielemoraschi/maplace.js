@@ -1,10 +1,13 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
+import type { Geometry } from "../geometry";
 import {
   circleDrawable,
   holeCornerMoved,
   MOVED_HOLE_CORNER,
+  ORIGIN,
   polygonDrawable,
+  squareAround,
 } from "../testing/conformance/fixtures";
 import { drag, editingOnStub, handleWith, hold } from "./testing/recording-marker";
 
@@ -12,6 +15,13 @@ const POLYGON = polygonDrawable("p").geometry;
 const CIRCLE = circleDrawable("c").geometry;
 
 const holeCorner = { kind: "vertex", ring: 1, index: 2 };
+
+/** POLYGON with one more outline point: handles of other roles than POLYGON's. */
+const WITH_ONE_MORE_POINT: Geometry = {
+  type: "polygon",
+  path: [...squareAround(ORIGIN, 2), { lat: 1.5, lng: 0 }],
+  holes: [squareAround(ORIGIN, 1)],
+};
 
 describe("a shape's editing session", () => {
   it("places a handle on every point and midpoint of an editable polygon", () => {
@@ -105,6 +115,21 @@ describe("a shape's editing session", () => {
     hold(handleWith(session.handles(), holeCorner), MOVED_HOLE_CORNER);
     session.stop();
     expect(drawn.at(-1)).toEqual(POLYGON);
+  });
+
+  it("ends a drag whose handles the store replaces with others", () => {
+    const { session } = editingOnStub(POLYGON);
+    hold(handleWith(session.handles(), holeCorner), MOVED_HOLE_CORNER);
+    session.follow(WITH_ONE_MORE_POINT);
+    expect(session.isDragging()).toBe(false);
+  });
+
+  it("reports nothing for a step that leaves the shape as it was, after a drag cut short by new handles", () => {
+    const { session, host } = editingOnStub(POLYGON);
+    hold(handleWith(session.handles(), holeCorner), MOVED_HOLE_CORNER);
+    session.follow(WITH_ONE_MORE_POINT);
+    hold(handleWith(session.handles(), holeCorner), { lat: 0.5, lng: 0.5 });
+    expect(host.reportsOf("reportLocationEdit")).toHaveLength(1);
   });
 
   // A page's listener runs inside the report: one destroying the map stops the editing there.

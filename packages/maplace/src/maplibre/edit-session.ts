@@ -62,12 +62,24 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
       });
       return;
     }
+    cutDragShort();
     removeAll();
     handles = places.map((place) => placeHandle(place, owner));
   }
 
   function fits(places: readonly HandlePlace[]): boolean {
     return sameList<HandlePlace | EditHandle>(places, handles, (a, b) => sameRole(a.role, b.role));
+  }
+
+  /**
+   * A drag whose handle is taken off never ends: it edits nothing, and the next drag reports
+   * afresh.
+   */
+  function cutDragShort(): void {
+    if (!dragging) return;
+    dragging = false;
+    reportedThisDrag = false;
+    reports.endedUnchanged();
   }
 
   function removeAll(): void {
@@ -114,7 +126,7 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
       removeAll();
       // A drag cut short (the shape hidden or no longer editable) never ended: it edits nothing.
       if (dragging) site.onEdit(shown);
-      dragging = false;
+      cutDragShort();
     },
   };
 }
