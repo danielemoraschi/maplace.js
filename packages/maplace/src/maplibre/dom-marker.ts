@@ -20,10 +20,12 @@ export interface DomMarker {
   moveTo(at: LatLng): void;
   retitle(title: string | undefined): void;
   restack(rank: number): void;
+  /** Shows or hides it; one being dragged stays until let go. */
   setVisible(visible: boolean): void;
   setDraggable(draggable: boolean): void;
   /** How tall it is drawn, for a popup pointing at its top. */
   height(): number;
+  /** Takes it off the map for good, at once: a drag under way ends there, reporting nothing. */
   remove(): void;
 }
 
@@ -101,16 +103,26 @@ export function createDomMarker(
   showDragCursor(element, draggable);
   // The pointer over it, or keyboard focus shown on it, hovers it.
   reportElementHover(element, drawable.id, site.hover);
-  reportMarkerDrags(marker, drawable.id, mounted);
+  const drags = reportMarkerDrags(marker, drawable.id, mounted);
   endDragReleasedOutside(marker, mounted);
   let shown = false;
+  /** The visibility last asked for: a marker being dragged keeps showing until let go. */
+  let asked = false;
 
   function setVisible(visible: boolean): void {
-    if (visible === shown) return;
-    shown = visible;
-    if (visible) marker.addTo(map);
+    asked = visible;
+    if (!drags.isUnderWay()) showAsAsked();
+  }
+
+  function showAsAsked(): void {
+    if (asked === shown) return;
+    shown = asked;
+    if (shown) marker.addTo(map);
     else marker.remove();
   }
+
+  // After the drag's own `dragend` (registered first): its change is reported before it goes.
+  marker.on("dragend", showAsAsked);
 
   return {
     marker,
@@ -129,7 +141,11 @@ export function createDomMarker(
       showDragCursor(element, next);
     },
     height: () => element.offsetHeight,
-    remove: () => setVisible(false),
+    remove() {
+      asked = false;
+      shown = false;
+      marker.remove();
+    },
   };
 }
 
