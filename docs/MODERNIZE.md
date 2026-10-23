@@ -209,6 +209,7 @@ Full parity with Google where MapLibre can (D21's capabilities say where it can'
 | V21 | One MapLibre options check for the adapter and the element | do | Found 2026-10-22 in the M2–M10 work (M6): `element/maplibre-attributes.ts` repeats the keys `maplibre/options.ts` refuses in `mapOptions` (tied by a type, not shared); a `mapOptionsCheck` exported for both, as Google's |
 | V22 | A list view's sheet in its frame's document | do | Found 2026-10-23 in M16: `list-view.ts` adopts `LIST_STYLES` into the global `document`, so a list view shown in a frame (`<LocationList>` in `react-frame-component`) is unstyled, and inside a MapLibre panel in a frame its listbox lacks `overflow:auto` while the panel's sheet caps its height; `adoptStyles` now works for frames, so adopt into the element's document once it is connected |
 | V23 | The site's map-setting lists from the package | do | Found 2026-10-23 in V20: `apps/site/src/site/element-attributes.ts` hand-copies each provider's map settings (`GOOGLE_PROVIDER_ATTRIBUTES`, `MAPLIBRE_PROVIDER_ATTRIBUTES`) that `GOOGLE_MAP_SETTINGS` and `MAPLIBRE_MAP_SETTINGS` now hold, and `element-attributes.test.ts:44` re-derives `MAP_SETTINGS`; hold them to what the package publishes, not its internals |
+| V24 | The element in Vue and Svelte: docs and template types | do | Found 2026-10-23 (the user's question): no wrappers (N9 stays `wont`, the element covers both), but nothing tells a reader how. A "Vue and Svelte" section in `docs/reference/element.md`: Vue's `compilerOptions.isCustomElement` for `maplace-` tags and `@maplace-select`, Svelte's tags as they are and `onmaplace-select` (5) or `on:maplace-select` (4), JSON attributes as strings, the element's JS API for more; and type declarations, no runtime code, for the element's attributes and `maplace-*` events in Vue's `GlobalComponents` and Svelte's `svelte/elements`, shipped in `maplace/element`'s `.d.ts` and checked by a type test against each framework's types (dev dependencies only) |
 
 ## 6. Tests (alongside 3–5)
 | # | Item | Status | Note |
@@ -316,7 +317,7 @@ Full parity with Google where MapLibre can (D21's capabilities say where it can'
 | N6 | TypeDoc API reference | later | the RFC + examples matter more |
 | N7 | Geocoded address locations | later | adapter capability |
 | N8 | 0.2 options compat shim | wont | MIGRATION.md is enough |
-| N9 | Vue/Svelte wrappers | wont | Web Component covers them |
+| N9 | Vue/Svelte wrappers | wont | Web Component covers them; its docs and template types for both are V24 |
 | N10 | GeoJSON FeatureCollection → locations helper | later | A0: #103, #188 |
 | N11 | "My location" control / route from user position | later | A0: #169 |
 | N12 | Places integration | later | search box / autocomplete that adds locations, place details as `content`, "save a place"; adapter capability (Google Places now; MapLibre would need another geocoder: MapTiler's geocoding API is one option, noted 2026-10-22, a key in the page and a third party for the consent and privacy page, its free plan's limits and terms to check; its styles, satellite and terrain among them, already work through `map-style` / `mapStyle`); A0: #41, #98, #152, #165 |
