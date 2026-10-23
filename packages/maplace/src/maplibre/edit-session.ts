@@ -99,6 +99,7 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     // Back on its place too when the drag edited nothing: a radius handle on its bearing.
     showHandles(handlePlacesOf(shown));
     if (changed) reports.ended(edited);
+    else reports.endedUnchanged();
   }
 
   return {

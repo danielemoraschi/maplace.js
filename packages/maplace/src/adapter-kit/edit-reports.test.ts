@@ -21,6 +21,19 @@ describe("editReportsFor", () => {
     ]);
   });
 
+  it("reports a move that repeats the last one of an edit that ended unchanged", () => {
+    const { host } = recorded();
+    const edits = editReportsFor("a", () => host);
+    edits.moving(at(1));
+    edits.endedUnchanged();
+    edits.moving(at(1));
+    expect(host.reportsOf("reportLocationEdit")).toEqual([
+      ["a", at(1)],
+      ["a", at(1)],
+    ]);
+    expect(host.reportsOf("reportLocationChange")).toEqual([]);
+  });
+
   it("reports each move, and no second edit where the last one already is", () => {
     const { host, editing } = recorded();
     const edits = editReportsFor("a", () => host);

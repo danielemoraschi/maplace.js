@@ -8,6 +8,11 @@ export interface EditReports {
   moving(geometry: Geometry): void;
   /** Where it ended: an edit there, unless the last one already was, then the change. */
   ended(geometry: Geometry): void;
+  /**
+   * It ended leaving the location as it was: no change, and the next edit is reported whatever
+   * this one's last was.
+   */
+  endedUnchanged(): void;
 }
 
 /**
@@ -27,5 +32,8 @@ export function editReportsFor(id: string, host: () => AdapterHost | undefined):
     lastEdit = undefined;
     host()?.reportLocationChange(id, geometry);
   };
-  return { moving, ended };
+  const endedUnchanged = (): void => {
+    lastEdit = undefined;
+  };
+  return { moving, ended, endedUnchanged };
 }
