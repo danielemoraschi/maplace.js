@@ -9,7 +9,9 @@ import { isOnCanvas } from "./pointer-targets";
  * which), reported through the map's one hover, the cursor a pointer over it. Off the map, or over
  * something on it, no layer location is pointed at; onto one of maplace's DOM markers, which reports
  * its own hover (perhaps the same location's, its pin becoming its icon), the layer lets go without
- * a report.
+ * a report. The camera settling under a still pointer (the wheel, the keyboard, the store's view;
+ * not a user's press, which may pan) points again where it is, once MapLibre has drawn the view:
+ * a pin folded meanwhile is skipped (`locationAt`), and its cursor and hover let go.
  */
 export function layerHover(
   locationAt: (event: MapMouseEvent) => string | undefined,
@@ -38,20 +40,44 @@ export function layerHover(
       };
       /** A DOM marker the pointer moved onto reports its own hover: the layer lets go, quietly. */
       const handOver = () => setPointed(undefined);
+      /** The last pointer event on the canvas: where a pointer that hasn't moved since still is. */
+      let lastOnCanvas: MapMouseEvent | undefined;
       const onMove = (event: MapMouseEvent) => {
-        if (isOnCanvas(event, canvas)) pointAt(locationAt(event));
+        lastOnCanvas = isOnCanvas(event, canvas) ? event : undefined;
+        if (lastOnCanvas !== undefined) pointAt(locationAt(lastOnCanvas));
         else if (isInOwnMarker(event.originalEvent.target)) handOver();
         else pointAt(undefined);
       };
       const onOut = (event: MapMouseEvent) => {
+        lastOnCanvas = undefined;
         if (isInOwnMarker(event.originalEvent.relatedTarget)) handOver();
         else pointAt(undefined);
       };
+      // A press may start a pan, which fires no map `mousemove` (MapLibre blocks map events while
+      // it pans): the remembered point would be stale by the pan's delta.
+      const forgetPointer = () => {
+        lastOnCanvas = undefined;
+      };
+      const pointAgain = () => {
+        if (lastOnCanvas !== undefined) pointAt(locationAt(lastOnCanvas));
+      };
+      // MapLibre places pins as it draws: until it is idle, a pin is hit where the last frame put it.
+      const pointAgainOnceDrawn = () => {
+        map.off("idle", pointAgain);
+        map.once("idle", pointAgain);
+      };
       map.on("mousemove", onMove);
       map.on("mouseout", onOut);
+      map.on("moveend", pointAgainOnceDrawn);
+      map.on("mousedown", forgetPointer);
+      map.on("touchstart", forgetPointer);
       mounted.onDestroy(() => {
         map.off("mousemove", onMove);
         map.off("mouseout", onOut);
+        map.off("moveend", pointAgainOnceDrawn);
+        map.off("idle", pointAgain);
+        map.off("mousedown", forgetPointer);
+        map.off("touchstart", forgetPointer);
         setPointed(undefined);
       });
     },

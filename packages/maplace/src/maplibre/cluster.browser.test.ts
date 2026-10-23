@@ -1,3 +1,4 @@
+import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { tabTo } from "../google/testing/page-input";
@@ -12,6 +13,7 @@ import {
 } from "../testing/conformance/fixtures";
 import { mountSubject, unmountAll } from "../testing/conformance/harness";
 import type { ResolvedView } from "../viewport";
+import { PIN_SIZE } from "./pin-image";
 import { clustersOn } from "./testing/clusters";
 import { mountedMapLibre } from "./testing/mounted";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
@@ -32,6 +34,28 @@ async function clusteredTowns() {
   await mounted.adapter.apply(adding(...townMarkers()));
   await mounted.probe.settle();
   return mounted;
+}
+
+/** The towns clustering, seen at zoom 17 on Bologna, where pin `a` is drawn alone. */
+async function pinAlone() {
+  const mounted = await clusteredTowns();
+  const { adapter, probe, map } = mounted;
+  adapter.setView({ ...OVER_TOWNS, zoom: 17 });
+  await vi.waitFor(async () => {
+    await probe.settle();
+    expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
+  }, RENDER_WAIT);
+  return mounted;
+}
+
+/** A user's press of the mouse, or its release, on pin `a`'s head in Bologna. */
+function pressOnBologna(map: MapLibreMap, type: "mousedown" | "mouseup"): void {
+  const canvas = map.getCanvas();
+  const box = canvas.getBoundingClientRect();
+  const { x, y } = map.project([TOWNS.bologna.lng, TOWNS.bologna.lat]);
+  const head = PIN_SIZE.height - PIN_SIZE.width / 2;
+  const at = { clientX: box.left + x, clientY: box.top + y - head };
+  canvas.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, ...at }));
 }
 
 describe("clustering on MapLibre", () => {
@@ -109,6 +133,28 @@ describe("clustering on MapLibre", () => {
     }, RENDER_WAIT);
     probe.pointerOver("a");
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined], ["a"]]);
+  });
+
+  it("gives the cursor back when the pin under a still pointer folds into a cluster", async () => {
+    const { adapter, probe, map } = await pinAlone();
+    probe.pointerOver("a");
+    expect(map.getCanvas().style.cursor).toBe("pointer");
+    adapter.setView(OVER_TOWNS);
+    await probe.settle();
+    expect(map.getCanvas().style.cursor).toBe("");
+  });
+
+  it("keeps the hover of a pin pressed on while the camera moves, as a pan carries it under the pointer", async () => {
+    const { adapter, probe, map, host } = await pinAlone();
+    probe.pointerOver("a");
+    const hovers = host.reportsOf("reportHoverChange").length;
+    pressOnBologna(map, "mousedown");
+    const center = { lat: TOWNS.bologna.lat, lng: TOWNS.bologna.lng + 0.01 };
+    adapter.setView({ kind: "center", center, zoom: 17 });
+    await probe.settle();
+    expect(host.reportsOf("reportHoverChange")).toHaveLength(hovers);
+    expect(map.getCanvas().style.cursor).toBe("pointer");
+    pressOnBologna(map, "mouseup");
   });
 
   it("shows a pointer over a cluster, and zooms into it when it is clicked", async () => {
