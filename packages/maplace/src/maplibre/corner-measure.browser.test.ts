@@ -4,6 +4,7 @@ import { places } from "../google/testing/places";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { queried } from "../testing/queried";
+import { unstyledPage } from "../testing/unstyled-page";
 import { cornerElementsIn, measureCorners } from "./corner-measure";
 import { onMapLibre } from "./testing/control-site";
 
@@ -21,12 +22,9 @@ async function measuredMap(count: number) {
     adapter.mountControl(view.element, "top-left");
     return view.element;
   };
-  const measured = () => {
-    const container = map.getContainer();
-    const corners = cornerElementsIn(container);
-    if (corners === undefined) throw new Error("no corners on the map");
-    return measureCorners(container, corners).corners;
-  };
+  const corners = cornerElementsIn(map.getContainer());
+  if (corners === undefined) throw new Error("no corners on the map");
+  const measured = () => measureCorners(map.getContainer(), corners).corners;
   return { maplace, map, list, measured };
 }
 
@@ -58,5 +56,35 @@ describe("measureCorners", () => {
     expect(bottomLeft.holdsPanel).toBe(false);
     expect(bottomLeft.held).toHaveLength(1);
     expect(bottomLeft.held[0]?.rise).toBeCloseTo(scale.offsetHeight + 10, 0);
+  });
+
+  it("counts no list of the page's own control, which maplace's room never limits", async () => {
+    const { map, maplace, measured } = await measuredMap(30);
+    const view = createListView(maplace);
+    onTestFinished(() => view.destroy());
+    const own = document.createElement("div");
+    own.className = "maplibregl-ctrl";
+    own.append(view.element);
+    map.addControl({ onAdd: () => own, onRemove: () => own.remove() }, "top-left");
+    expect(measured()["top-left"].naturalListHeights).toEqual([]);
+  });
+
+  it("counts no list inside the opt-out, which maplace's room never limits", async () => {
+    onTestFinished(unstyledPage());
+    const { list, measured } = await measuredMap(30);
+    list();
+    expect(measured()["top-left"].naturalListHeights).toEqual([]);
+  });
+
+  it("finds the map's own corners, not a corner drawn on the map before them", async () => {
+    const { map } = await measuredMap(3);
+    const inner = document.createElement("div");
+    inner.className = "maplibregl-ctrl-top-left";
+    queried(map.getContainer(), ".maplibregl-canvas-container").append(inner);
+    const own = queried(
+      map.getContainer(),
+      ".maplibregl-control-container > .maplibregl-ctrl-top-left",
+    );
+    expect(cornerElementsIn(map.getContainer())?.["top-left"]).toBe(own);
   });
 });

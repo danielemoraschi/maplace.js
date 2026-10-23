@@ -65,6 +65,10 @@ function layout(corners: Partial<Record<ControlPosition, CornerContent>>): Corne
 /** MapLibre's attribution at the foot of a bottom-right corner: `rise` tall with its margins. */
 const attribution = (left: number, right: number, rise: number): Held => ({ left, right, rise });
 
+/** A bottom-right corner from `left` to `right` holding only MapLibre's attribution. */
+const attributionCorner = (left: number, right: number, rise: number) =>
+  corner({ left, right, fixedHeight: rise, held: [attribution(left, right - 10, rise)] });
+
 describe("layoutCorners", () => {
   it("gives a lone top corner's list the map's height less what else it holds and the corners' margins", () => {
     const topLeft = corner({ right: 200, fixedHeight: 30, naturalListHeights: [600] });
@@ -80,12 +84,7 @@ describe("layoutCorners", () => {
 
   it("stops a top-right list above MapLibre's attribution beneath it", () => {
     const topRight = listCorner({ left: 300, right: 500 }, { listHeight: 100, natural: 600 });
-    const bottomRight = corner({
-      left: 300,
-      right: 500,
-      fixedHeight: 34,
-      held: [attribution(300, 490, 34)],
-    });
+    const bottomRight = attributionCorner(300, 500, 34);
     const room = layout({ "top-right": topRight, "bottom-right": bottomRight }).listRoom[
       "top-right"
     ];
@@ -94,12 +93,7 @@ describe("layoutCorners", () => {
 
   it("stops a top-left list above a bottom-right element that reaches under it, as a phone's attribution does", () => {
     const topLeft = listCorner({ left: 0, right: 200 }, { listHeight: 100, natural: 600 });
-    const bottomRight = corner({
-      left: 10,
-      right: 375,
-      fixedHeight: 46,
-      held: [attribution(10, 365, 46)],
-    });
+    const bottomRight = attributionCorner(10, 375, 46);
     const room = layout({ "top-left": topLeft, "bottom-right": bottomRight }).listRoom["top-left"];
     expect(room).toBe(HEIGHT - 46 - 10 - 18);
   });
@@ -162,23 +156,13 @@ describe("layoutCorners", () => {
 
   it("leaves the bottom-left corner down when the bottom-right corner keeps to its side", () => {
     const bottomLeft = fixedCorner({ left: 0, right: 200 }, 60, true);
-    const bottomRight = corner({
-      left: 900,
-      right: 1280,
-      fixedHeight: 34,
-      held: [attribution(900, 1270, 34)],
-    });
+    const bottomRight = attributionCorner(900, 1280, 34);
     expect(layout({ "bottom-left": bottomLeft, "bottom-right": bottomRight }).lift).toBe(0);
   });
 
   it("lifts nothing when the bottom-left holds only the page's own controls", () => {
     const scale = fixedCorner({ left: 0, right: 150 }, 30);
-    const bottomRight = corner({
-      left: 10,
-      right: 375,
-      fixedHeight: 46,
-      held: [attribution(10, 365, 46)],
-    });
+    const bottomRight = attributionCorner(10, 375, 46);
     expect(layout({ "bottom-left": scale, "bottom-right": bottomRight }).lift).toBe(0);
   });
 });

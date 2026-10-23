@@ -1,27 +1,33 @@
 import { CONTROL_POSITIONS, type ControlPosition } from "../adapter";
+import { OUTSIDE_UNSTYLED } from "../unstyled";
 import { MAPLACE_LISTS, PANEL_SELECTOR } from "./control-styles";
 import type { CornerContent, CornersOnMap, Held, Span } from "./corner-layout";
 
 /** MapLibre's four corner elements on a map, by maplace's names for them (MapLibre's own). */
 export type CornerElements = Readonly<Record<ControlPosition, HTMLElement>>;
 
-/** The corner elements MapLibre made in `container`, or undefined where any is missing. */
+/** The corners MapLibre made for the map in `container`; undefined where any is missing. */
 export function cornerElementsIn(container: HTMLElement): CornerElements | undefined {
   const corners: Partial<Record<ControlPosition, HTMLElement>> = {};
   for (const position of Object.keys(CONTROL_POSITIONS) as ControlPosition[]) {
-    const corner = container.querySelector<HTMLElement>(`.maplibregl-ctrl-${position}`);
+    const corner = container.querySelector<HTMLElement>(
+      `:scope>.maplibregl-control-container>.maplibregl-ctrl-${position}`,
+    );
     if (corner === null) return undefined;
     corners[position] = corner;
   }
   return corners as CornerElements;
 }
 
-/** The map's height and what each corner holds, as laid out now. */
+/**
+ * The map's height inside its border, where MapLibre's corners sit, and what each corner holds, as
+ * laid out now.
+ */
 export function measureCorners(container: HTMLElement, corners: CornerElements): CornersOnMap {
   const mapBox = container.getBoundingClientRect();
   const contentOf = (corner: HTMLElement) => cornerContentOf(corner, mapBox);
   return {
-    height: mapBox.height,
+    height: container.clientHeight,
     corners: {
       "top-left": contentOf(corners["top-left"]),
       "top-right": contentOf(corners["top-right"]),
@@ -54,9 +60,15 @@ function spanOf(box: DOMRect, mapBox: DOMRect): Span {
   return { left: box.left - mapBox.left, right: box.right - mapBox.left };
 }
 
-/** The shown maplace lists in `corner` not inside another, so a headed list counts once. */
+/**
+ * The shown maplace lists in `corner`'s maplace panels, outside the opt-out, which their room
+ * limits, not inside another, so a headed list counts once.
+ */
 function outermostLists(corner: HTMLElement): HTMLElement[] {
-  return Array.from(corner.querySelectorAll<HTMLElement>(MAPLACE_LISTS)).filter(
+  const lists = corner.querySelectorAll<HTMLElement>(
+    `${PANEL_SELECTOR} ${MAPLACE_LISTS}${OUTSIDE_UNSTYLED}`,
+  );
+  return Array.from(lists).filter(
     (list) => isShown(list) && !list.parentElement?.closest(MAPLACE_LISTS),
   );
 }

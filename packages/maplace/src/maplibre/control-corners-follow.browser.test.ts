@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, onTestFinished } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import type { ControlPosition } from "../adapter";
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
@@ -6,15 +6,19 @@ import { createMaplace } from "../maplace/create";
 import { cornerElementsIn } from "./corner-measure";
 import { onPageMapLibre, panelOf } from "./testing/control-site";
 import { mapOfWidthIn } from "./testing/map-of-width";
+import { wait } from "./testing/map-settle";
 
 afterEach(() => {
   document.body.replaceChildren();
 });
 
-/** A store of `count` places on a phone-wide map: `list` and `button` place a panel's node. */
-async function phoneMap(count = 30) {
+/**
+ * A store of `count` places on a map `width` px wide, a phone's unless asked: `list` and `button`
+ * place a panel's node.
+ */
+async function phoneMap(count = 30, width = 375) {
   const maplace = createMaplace({ locations: places(count) });
-  const site = await mapOfWidthIn(maplace, 375);
+  const site = await mapOfWidthIn(maplace, width);
   const list = (corner: ControlPosition) => {
     const view = createListView(maplace);
     onTestFinished(() => view.destroy());
@@ -30,6 +34,9 @@ async function phoneMap(count = 30) {
   return { ...site, maplace, list, button, mapBox };
 }
 
+/** Long enough for the corners to be laid out again after a change. */
+const SETTLE_MS = 200;
+
 /** The window's error events while `act` runs and the corners settle after it. */
 async function errorsDuring(act: () => Promise<void>): Promise<string[]> {
   const errors: string[] = [];
@@ -42,8 +49,6 @@ async function errorsDuring(act: () => Promise<void>): Promise<string[]> {
   }
   return errors;
 }
-
-const settled = () => new Promise((resolve) => setTimeout(resolve, 200));
 
 describe("the corners of a MapLibre map following it", () => {
   it("brings the bottom-left panel back down once MapLibre folds its attribution", async () => {
@@ -78,9 +83,9 @@ describe("the corners of a MapLibre map following it", () => {
     button("bottom-left");
     const errors = await errorsDuring(async () => {
       container.style.height = "400px";
-      await settled();
+      await wait(SETTLE_MS);
       map.fire("drag");
-      await settled();
+      await wait(SETTLE_MS);
     });
     expect(errors).toEqual([]);
   });
@@ -97,4 +102,40 @@ describe("the corners of a MapLibre map following it", () => {
     maplace.destroy();
     expect(written().filter((name) => name.startsWith("--maplace-"))).toEqual([]);
   });
+
+  it("stops watching the corners once the last panel is taken off", async () => {
+    const { adapter, map } = await phoneMap();
+    const remove = adapter.mountControl(document.createElement("button"), "bottom-left");
+    const disconnected = vi.spyOn(ResizeObserver.prototype, "disconnect");
+    onTestFinished(() => disconnected.mockRestore());
+    remove();
+    expect(disconnected).toHaveBeenCalled();
+    const corners = Object.values(cornerElementsIn(map.getContainer()) ?? {});
+    const written = corners.flatMap((corner) => Array.from(corner.style));
+    expect(written.filter((name) => name.startsWith("--maplace-"))).toEqual([]);
+  });
+
+  it.each([375, 1280])(
+    "gives a short list kept to its height its share once its entries grow, %i px wide",
+    async (width) => {
+      const { adapter, list } = await phoneMap(30, width);
+      const entries = Object.assign(document.createElement("div"), {
+        className: "maplace-listbox",
+      });
+      // As with overlay scrollbars (macOS, phones): its overflowing resizes nothing.
+      entries.style.cssText = "scrollbar-width: none; width: 150px";
+      const addEntries = (count: number) => {
+        for (let entry = 0; entry < count; entry += 1) {
+          entries.append(Object.assign(document.createElement("div"), { style: "height: 30px" }));
+        }
+      };
+      addEntries(2);
+      adapter.mountControl(entries, "top-left");
+      list("bottom-left");
+      await wait(SETTLE_MS);
+      const shortHeight = entries.offsetHeight;
+      addEntries(20);
+      await expect.poll(() => entries.offsetHeight).toBeGreaterThan(shortHeight * 2);
+    },
+  );
 });

@@ -1,9 +1,7 @@
 import { onTestFinished } from "vitest";
 import { page } from "vitest/browser";
 import { queried } from "../../testing/queried";
-import type { MapLibreAdapterOptions } from "../options";
-import { type Attachable, onMapLibreIn } from "./control-site";
-import { TEST_STYLE } from "./test-style";
+import { type Attachable, creditedOptions, onMapLibreIn } from "./control-site";
 
 /** The height of the maps `mapOfWidthIn` makes. */
 const MAP_HEIGHT = 600;
@@ -15,20 +13,8 @@ const OPENFREEMAP_CREDIT = [
   'Data from <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
 ].join(" ");
 
-/** The test style with a source credited as OpenFreeMap's are, a layer using it so it shows. */
-export const OPENFREEMAP_CREDITED_OPTIONS: MapLibreAdapterOptions = {
-  mapStyle: {
-    ...TEST_STYLE,
-    sources: {
-      credit: {
-        type: "geojson",
-        data: { type: "FeatureCollection", features: [] },
-        attribution: OPENFREEMAP_CREDIT,
-      },
-    },
-    layers: [...TEST_STYLE.layers, { id: "credited", type: "circle", source: "credit" }],
-  },
-};
+/** The test style credited as OpenFreeMap's are. */
+const OPENFREEMAP_CREDITED_OPTIONS = creditedOptions(OPENFREEMAP_CREDIT);
 
 /**
  * `maplace` attached to MapLibre on a map it creates, `width` px wide and credited as OpenFreeMap,

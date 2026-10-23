@@ -1,7 +1,7 @@
 import type { ControlPosition } from "../adapter";
 
 /** The space MapLibre's stylesheet keeps around its corners' controls, kept between corners too. */
-export const CORNER_MARGIN = 10;
+const CORNER_MARGIN = 10;
 
 /** Where something spans across the map, in px from its left edge. */
 export interface Span {
@@ -9,7 +9,7 @@ export interface Span {
   readonly right: number;
 }
 
-/** An element a corner holds: its span, and how far its top rises above the corner's bottom edge. */
+/** An element a corner holds: its span, and how far its top rises above the corner's foot. */
 export interface Held extends Span {
   readonly rise: number;
 }
@@ -41,11 +41,6 @@ export interface CornerLayout {
   readonly listRoom: Readonly<Record<ControlPosition, number>>;
 }
 
-/** An element of a bottom corner, and where its top is from the map's top edge. */
-interface Placed extends Span {
-  readonly top: number;
-}
-
 /**
  * Where maplace's lists stop and how far the bottom-left corner sits up, for the corners as they
  * are now: lists sharing a column of the map share its height fairly (`fairRoom`), a top corner's
@@ -54,8 +49,11 @@ interface Placed extends Span {
  */
 export function layoutCorners({ height, corners }: CornersOnMap): CornerLayout {
   const lift = liftClearing(corners["bottom-left"], corners["bottom-right"]);
-  const below = bottomRowTops(height, lift, corners);
-  const topRoomOf = (corner: CornerContent) => topRoom(corner, floorUnder(corner, below, height));
+  const topRoomOf = (corner: CornerContent) =>
+    fairRoom(
+      floorUnder(corner, corners, height, lift) - corner.fixedHeight,
+      corner.naturalListHeights,
+    );
   return {
     lift,
     listRoom: {
@@ -83,11 +81,12 @@ export function fairRoom(free: number, naturals: readonly number[]): number {
   return free;
 }
 
-/** The highest element the bottom-right holds in the column of a bottom-left maplace panel. */
+/**
+ * How far the bottom-left corner sits up: as high as the bottom-right's highest element in its
+ * column, when it holds a maplace panel.
+ */
 function liftClearing(bottomLeft: CornerContent, bottomRight: CornerContent): number {
-  if (!bottomLeft.holdsPanel) return 0;
-  const under = bottomRight.held.filter((held) => sharesColumn(held, bottomLeft));
-  return Math.max(0, ...under.map((held) => held.rise));
+  return bottomLeft.holdsPanel ? Math.max(0, highestIn(bottomRight, bottomLeft)) : 0;
 }
 
 /** The corners holding anything in `corner`'s column, `corner` included. */
@@ -108,24 +107,22 @@ function bottomRoom(corner: CornerContent, corners: Corners, height: number): nu
   return fairRoom(height - fixed - CORNER_MARGIN, naturals);
 }
 
-/** Where each element of the bottom corners has its top, the bottom-left `lift` up. */
-function bottomRowTops(height: number, lift: number, corners: Corners): readonly Placed[] {
-  const placed = (base: number) => (held: Held) => ({ ...held, top: base - held.rise });
-  return [
-    ...corners["bottom-left"].held.map(placed(height - lift)),
-    ...corners["bottom-right"].held.map(placed(height)),
-  ];
+/**
+ * How far down a top corner may reach: a margin above the highest element of the bottom corners
+ * in its column, the bottom-left one `lift` up.
+ */
+function floorUnder(corner: CornerContent, corners: Corners, height: number, lift: number): number {
+  const highest = Math.max(
+    0,
+    lift + highestIn(corners["bottom-left"], corner),
+    highestIn(corners["bottom-right"], corner),
+  );
+  return height - highest - CORNER_MARGIN;
 }
 
-/** How far down a top corner may reach: a margin above what is below it in its column. */
-function floorUnder(corner: CornerContent, below: readonly Placed[], height: number): number {
-  const tops = below.filter((placed) => sharesColumn(placed, corner)).map(({ top }) => top);
-  return Math.min(height, ...tops) - CORNER_MARGIN;
-}
-
-/** A top corner's list room: down to `floor`, less what else it holds, shared among its lists. */
-function topRoom(corner: CornerContent, floor: number): number {
-  return fairRoom(floor - corner.fixedHeight, corner.naturalListHeights);
+/** How far the highest element `corner` holds in `span`'s column rises; -Infinity for none. */
+function highestIn({ held }: CornerContent, span: Span): number {
+  return Math.max(...held.filter((each) => sharesColumn(each, span)).map(({ rise }) => rise));
 }
 
 /** Whether two spans come within a margin of each other across the map. */

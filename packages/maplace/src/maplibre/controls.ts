@@ -34,22 +34,35 @@ export function createControls(): Controls {
   let destroyed = false;
 
   function place({ control, position }: MountedControl): void {
-    if (map === undefined) return;
-    map.addControl(control, position);
+    map?.addControl(control, position);
+  }
+
+  /** Lays the corners out for the panels just placed, the first panel starting the watch. */
+  function layOutCorners(): void {
+    if (map === undefined || byNode.size === 0) return;
     cornerWatch ??= watchCorners(map);
     cornerWatch.settle();
+  }
+
+  function stopWatchingCorners(): void {
+    cornerWatch?.stop();
+    cornerWatch = undefined;
   }
 
   function takeOff({ control }: MountedControl): void {
     map?.removeControl(control);
   }
 
-  /** Takes `node`'s control off and out of the page, unless the node was mounted again since. */
+  /**
+   * Takes `node`'s control off and out of the page, unless the node was mounted again since; the
+   * last one stops the corners' watch.
+   */
   function remove(node: HTMLElement, mounted: MountedControl): void {
     if (byNode.get(node) !== mounted) return;
     byNode.delete(node);
     takeOff(mounted);
     node.remove();
+    if (byNode.size === 0) stopWatchingCorners();
   }
 
   return {
@@ -57,10 +70,10 @@ export function createControls(): Controls {
       open(opened) {
         map = opened.map;
         for (const mounted of byNode.values()) place(mounted);
+        layOutCorners();
         opened.onDestroy(() => {
           for (const mounted of byNode.values()) takeOff(mounted);
-          cornerWatch?.stop();
-          cornerWatch = undefined;
+          stopWatchingCorners();
           map = undefined;
         });
       },
@@ -72,6 +85,7 @@ export function createControls(): Controls {
       const mounted = { control: panelControl(node), position };
       byNode.set(node, mounted);
       place(mounted);
+      layOutCorners();
       return () => remove(node, mounted);
     },
     release() {
