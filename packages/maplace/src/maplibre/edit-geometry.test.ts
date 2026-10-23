@@ -51,7 +51,19 @@ describe("handlePlacesOf", () => {
       ],
     };
     const [, , midpoint] = handlePlacesOf(across);
-    expect(Math.abs(midpoint?.at.lng ?? 0)).toBe(180);
+    expect(midpoint?.at.lng).toBe(180);
+  });
+
+  it("puts a midpoint across ±180 from the west at −180, as a click there reports it", () => {
+    const across: Geometry = {
+      type: "polyline",
+      path: [
+        { lat: 0, lng: -179 },
+        { lat: 0, lng: 179 },
+      ],
+    };
+    const [, , midpoint] = handlePlacesOf(across);
+    expect(midpoint?.at.lng).toBe(-180);
   });
 
   it("puts a polygon's midpoints on every edge, its closing edge and its holes' included", () => {

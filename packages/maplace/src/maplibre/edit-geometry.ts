@@ -1,7 +1,7 @@
 import { latOf, yOf } from "../adapter-kit/web-mercator";
 import type { CircleGeometry, Geometry, LatLng } from "../geometry";
 import { metresBetween, pointAtBearing } from "./circle-sphere";
-import { nearestLongitude } from "./conversions";
+import { nearestLongitude, wrappedLongitude } from "./conversions";
 
 /**
  * What one edit handle moves. `ring` 0 is a polyline's path or a polygon's outline, `ring` k its
@@ -109,7 +109,7 @@ function radiusTo(center: LatLng, point: LatLng): number {
 function midpointOf(from: LatLng, to: LatLng): LatLng {
   const lng = (from.lng + nearestLongitude(to.lng, from.lng)) / 2;
   const y = (yOf(from.lat) + yOf(to.lat)) / 2;
-  return { lat: latOf(y), lng: nearestLongitude(lng, 0) };
+  return { lat: latOf(y), lng: wrappedLongitude(lng) };
 }
 
 /** Each segment of `ring` as its two ends; a closed ring's last runs back to its first point. */

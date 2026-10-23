@@ -1,7 +1,7 @@
 import type { Marker } from "maplibre-gl";
 import { type HoverReports, reportElementHover } from "../adapter-kit/hover-reports";
 import type { LatLng } from "../geometry";
-import { lngLatOf, nearestLongitude } from "./conversions";
+import { lngLatOf, wrappedLatLng } from "./conversions";
 import { markAsOwnMarker } from "./dom-marker";
 import { endDragReleasedOutside } from "./drag-release";
 import type { HandlePlace, HandleRole } from "./edit-geometry";
@@ -70,8 +70,7 @@ export function removeHandle(handle: EditHandle, owner: HandleOwner): void {
 
 /** Where the handle is now, as maplace's point, from whichever world copy MapLibre gives. */
 export function handleAt(handle: EditHandle): LatLng {
-  const { lat, lng } = handle.marker.getLngLat();
-  return { lat, lng: nearestLongitude(lng, 0) };
+  return wrappedLatLng(handle.marker.getLngLat());
 }
 
 /** Moves `handle` to `at`, unless it is there already: a marker moved writes to the DOM. */

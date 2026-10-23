@@ -86,6 +86,13 @@ describe("a shape's editing session", () => {
     expect(host.reportsOf("reportLocationChange")).toEqual([["s", { ...CIRCLE, radius: 0.001 }]]);
   });
 
+  it("reports a handle dragged to −180 at −180, as a click there is", () => {
+    const { session, host } = editingOnStub(CIRCLE);
+    const to = { lat: 1, lng: -180 };
+    drag(handleWith(session.handles(), { kind: "center" }), to);
+    expect(host.reportsOf("reportLocationChange")).toEqual([["s", { ...CIRCLE, center: to }]]);
+  });
+
   it("puts a new point's handles in once a midpoint is dropped", () => {
     const { session, markers } = editingOnStub(POLYGON);
     const before = markers();
