@@ -112,11 +112,16 @@ export function addLayers(map: MapLibreMap): void {
 }
 
 /**
- * Takes off what `addLayers` added, as a page's own map was before; nothing once the map has no
- * style loaded (a page removing its map first leaves it none).
+ * Takes off what `addLayers` added, as a page's own map was before. While the map has no style
+ * loaded, once its next one is in: a restyle under way may keep maplace's (`transformStyle`),
+ * and a map the page removed loads none, so nothing is left to do on it.
  */
 export function removeLayers(map: MapLibreMap): void {
-  if (map.getStyle() === undefined) return;
+  if (map.getStyle() === undefined) map.once("style.load", () => removeLayers(map));
+  else takeOffLayers(map);
+}
+
+function takeOffLayers(map: MapLibreMap): void {
   for (const id of LOCATION_LAYERS) if (map.getLayer(id) !== undefined) map.removeLayer(id);
   for (const id of OWN_SOURCES) if (map.getSource(id) !== undefined) map.removeSource(id);
   if (map.hasImage(PIN_IMAGE)) map.removeImage(PIN_IMAGE);

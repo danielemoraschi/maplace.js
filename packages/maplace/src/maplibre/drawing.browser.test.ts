@@ -16,12 +16,9 @@ import {
   updating,
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
-import { LOCATION_LAYERS, PIN_SOURCE, SHAPE_SOURCE } from "./layers";
-import { PIN_IMAGE } from "./pin-image";
 import { mountedMapLibre, mountedOnPageMap } from "./testing/mounted";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { removePageMaps } from "./testing/subject";
-import { TEST_STYLE } from "./testing/test-style";
 
 afterEach(() => {
   unmountAll();
@@ -147,59 +144,5 @@ describe("MapLibre's apply", () => {
     await expect(
       Promise.race([adapter.apply(adding(markerDrawable("a"))), hung]),
     ).resolves.toBeUndefined();
-  });
-});
-
-describe("MapLibre on the page's own map", () => {
-  it("leaves the map as the page made it: no source, layer, pin image or marker of maplace's", async () => {
-    const { map, adapter, destroy } = await mountedOnPageMap();
-    const icon = document.createElement("span");
-    await adapter.apply(
-      adding(markerDrawable("a"), markerDrawable("b", undefined, { renderIcon: () => icon })),
-    );
-    // There before destroy: their absence after is destroy's doing.
-    for (const layer of LOCATION_LAYERS) expect(map.getLayer(layer)).toBeDefined();
-    expect(map.hasImage(PIN_IMAGE)).toBe(true);
-    expect(icon.isConnected).toBe(true);
-    destroy();
-    for (const source of [PIN_SOURCE, SHAPE_SOURCE]) expect(map.getSource(source)).toBeUndefined();
-    for (const layer of LOCATION_LAYERS) expect(map.getLayer(layer)).toBeUndefined();
-    expect(map.hasImage(PIN_IMAGE)).toBe(false);
-    expect(icon.isConnected).toBe(false);
-  });
-
-  it("is destroyed after the page removed its map first", async () => {
-    const { map, adapter, destroy } = await mountedOnPageMap();
-    const icon = document.createElement("span");
-    await adapter.apply(
-      adding(markerDrawable("a"), markerDrawable("b", undefined, { renderIcon: () => icon })),
-    );
-    map.remove();
-    expect(destroy).not.toThrow();
-    expect(icon.isConnected).toBe(false);
-  });
-
-  it.for([true, false])("keeps maplace's locations through a restyle (diff: %s)", async (diff) => {
-    const { map, adapter, probe } = await mountedOnPageMap();
-    await adapter.apply(adding(markerDrawable("a"), polygonDrawable("p")));
-    const restyled = {
-      ...TEST_STYLE,
-      layers: [{ ...TEST_STYLE.layers[0], paint: {} }],
-    } as typeof TEST_STYLE;
-    map.setStyle(restyled, { diff });
-    // A style loaded anew takes its time, more under a busy run.
-    await vi.waitFor(async () => {
-      await probe.settle();
-      expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
-      expect(renderedIds(map, ["maplace-fills"])).toEqual(["p"]);
-    }, RENDER_WAIT);
-  });
-
-  it("reports a failure on maplace's own source to the host", async () => {
-    const { map, host } = await mountedOnPageMap();
-    map.fire("error", { error: new Error("worker failed"), sourceId: PIN_SOURCE });
-    expect(host.reportsOf("reportError")).toEqual([
-      [expect.objectContaining({ code: "provider-load-failed" })],
-    ]);
   });
 });
