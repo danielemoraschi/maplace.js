@@ -2,7 +2,7 @@ import { playwright } from "@vitest/browser-playwright";
 import { defaultClientConditions } from "vite";
 import { configDefaults, defineConfig } from "vitest/config";
 import { MAPS_TEST_PORT } from "./packages/maplace/src/google/testing/maps-origin.ts";
-import { MOUSE_COMMANDS } from "./packages/maplace/src/google/testing/mouse-commands.ts";
+import { MOUSE_COMMANDS } from "./packages/maplace/src/testing/mouse-commands.ts";
 
 // What only a real browser shows: layout, scrolling, focus, trusted input, the accessibility tree.
 const BROWSER_TESTS = "packages/maplace/src/**/*.browser.test.{ts,tsx}";
@@ -61,6 +61,7 @@ export default defineConfig({
         test: {
           name: "browser",
           include: [BROWSER_TESTS],
+          setupFiles: ["packages/maplace/src/testing/parked-pointer.ts"],
           // Real maps wait on Google's tiles, seconds on a busy runner: a test may poll a few
           // times for TILES_TIMEOUT_MS (15 s) and still fail with its own message.
           testTimeout: 60_000,

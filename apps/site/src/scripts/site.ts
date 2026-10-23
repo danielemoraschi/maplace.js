@@ -77,8 +77,6 @@ const openVersions = gateMaps(versions, { whenVisible, release: startVersion });
 
 provideSave(globalThis, document);
 revealCurrentNavLink(document);
-// Again once the web fonts are in: wider than the fallback's, they can move it under the fade.
-document.fonts.ready.then(() => revealCurrentNavLink(document));
 followNavFocus(document);
 startTabs(document);
 startVersionSwitches(document);
@@ -95,3 +93,8 @@ startConsent({
   },
   reload: reloadPage,
 });
+
+// The nav's link again once the web fonts are in, last, so nothing above waits for them: wider
+// than the fallback's, they can move it under the nav's end fade.
+await document.fonts.ready;
+revealCurrentNavLink(document);

@@ -15,6 +15,9 @@ describe("layerOf", () => {
     expect(layerOf("google/index")).toBe("google-entry");
     expect(layerOf("google/google-map")).toBe("google-entry");
     expect(layerOf("google/create-adapter")).toBe("google");
+    expect(layerOf("testing/mouse-commands")).toBe("browser-testing");
+    expect(layerOf("testing/parked-pointer")).toBe("browser-testing");
+    expect(layerOf("testing/container")).toBe("testing");
   });
 
   it("leaves unknown files out", () => {

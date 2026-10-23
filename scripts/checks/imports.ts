@@ -34,7 +34,8 @@ const LAYERS = {
   // Test support at contract level (the probe's types, the recorder); only the scenario helper
   // sees the composed store.
   testing: {
-    files: /^testing\/(?!(mounted|listed|lists|fake-adapter)$|fake\/|conformance\/|examples\/)/,
+    files:
+      /^testing\/(?!(mounted|listed|lists|fake-adapter|mouse-commands|parked-pointer)$|fake\/|conformance\/|examples\/)/,
     imports: ["data", "contract", "adapter-kit"],
   },
   // The fake adapter: an in-memory map, at contract level like any adapter.
@@ -73,6 +74,12 @@ const LAYERS = {
   },
   // Test support for the list views: plain data and the view's own types.
   "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },
+  // Real input in the browser tests, through Playwright, and the pointer parked before each (T17).
+  "browser-testing": {
+    files: /^testing\/(mouse-commands|parked-pointer)$/,
+    imports: [],
+    packages: ["vitest"],
+  },
   view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
   entry: { files: /^index$/, imports: ["data", "contract", "store", "view", "maplace"] },
   // The element makes stores and list views through the core's entry, as a page does; it reads
@@ -135,7 +142,15 @@ const LAYERS = {
   // The Google adapter's test support: its probe and the Maps JS loader for tests.
   "google-testing": {
     files: /^google\/testing\//,
-    imports: ["data", "contract", "adapter-kit", "testing", "conformance", "google"],
+    imports: [
+      "data",
+      "contract",
+      "adapter-kit",
+      "testing",
+      "browser-testing",
+      "conformance",
+      "google",
+    ],
     packages: ["vitest"],
   },
   // The MapLibre adapter: maplibre-gl itself is loaded on mount, its types imported anywhere here;

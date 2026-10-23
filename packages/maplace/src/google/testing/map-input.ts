@@ -2,7 +2,7 @@
 import { expect } from "vitest";
 import { commands } from "vitest/browser";
 import type { LatLng } from "../../geometry";
-import type { ViewportPoint } from "./mouse-commands";
+import type { ViewportPoint } from "../../testing/mouse-commands";
 
 /** A user's mouse on a Google map: trusted input at places given in degrees. */
 export interface MapInput {

@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import { userEvent } from "vitest/browser";
+import type { ViewportPoint } from "../../testing/mouse-commands";
 import { frames } from "../frames";
-import type { ViewportPoint } from "./mouse-commands";
 import { TILES_TIMEOUT_MS } from "./store-on-google";
 
 /** The middle of an element on the page, where a user points at it. */

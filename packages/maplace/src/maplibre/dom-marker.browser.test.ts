@@ -4,7 +4,6 @@ import { commands, userEvent } from "vitest/browser";
 import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
 import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
-import type { ViewportPoint } from "../google/testing/mouse-commands";
 import {
   adding,
   markerDrawable,
@@ -13,6 +12,7 @@ import {
   updating,
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
+import type { ViewportPoint } from "../testing/mouse-commands";
 import type { MapLibreState } from "./map-state";
 import { PIN_SIZE } from "./pin-image";
 import type { PlacedMarker } from "./placed-location";
