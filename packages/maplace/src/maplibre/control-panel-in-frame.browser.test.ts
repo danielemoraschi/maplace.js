@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { places } from "../google/testing/places";
 import { createMaplace } from "../maplace/create";
 import { sizedContainerInFrame } from "../testing/iframes";
-import { onMapLibreIn, panelOf } from "./testing/control-site";
+import { panelOf } from "../testing/panel-of";
+import { onMapLibreIn } from "./testing/control-site";
 
 afterEach(() => {
   document.body.replaceChildren();

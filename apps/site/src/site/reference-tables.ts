@@ -1,4 +1,5 @@
 import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
+import { CONTROL_CLASS } from "../../../../packages/maplace/src/adapter-kit/control-styles.ts";
 import {
   POPUP_CLASS,
   POPUP_HEADING_CLASS,
@@ -9,10 +10,7 @@ import {
 } from "../../../../packages/maplace/src/element/default-styles.ts";
 import { elementEventName } from "../../../../packages/maplace/src/element/event-forwarding.ts";
 import { LOCATION_ATTRIBUTES } from "../../../../packages/maplace/src/element/location-attributes.ts";
-import {
-  CONTROL_CLASS,
-  GOOGLE_MAP_CLASS,
-} from "../../../../packages/maplace/src/google/control-styles.ts";
+import { GOOGLE_MAP_CLASS } from "../../../../packages/maplace/src/google/control-styles.ts";
 import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
 import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/control-styles.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";

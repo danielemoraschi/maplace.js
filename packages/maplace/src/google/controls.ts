@@ -1,8 +1,9 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Adapter, ControlPosition } from "../adapter";
+import { CONTROL_CLASS } from "../adapter-kit/control-styles";
 import { adoptStyles } from "../adopted-styles";
 import { googlePosition } from "./control-positions";
-import { CONTROL_CLASS, CONTROL_STYLES } from "./control-styles";
+import { CONTROL_STYLES } from "./control-styles";
 import type { MapPart, MountedMap } from "./mounted-map";
 import type { ColorScheme } from "./options";
 

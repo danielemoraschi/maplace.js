@@ -4,7 +4,7 @@ import type { ControlPosition } from "../adapter";
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
-import { panelOf } from "./testing/control-site";
+import { panelOf } from "../testing/panel-of";
 import { mapOfWidthIn } from "./testing/map-of-width";
 
 afterEach(() => {

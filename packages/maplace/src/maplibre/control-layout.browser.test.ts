@@ -4,8 +4,9 @@ import { darkPage } from "../google/testing/dark-page";
 import { places } from "../google/testing/places";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { panelOf } from "../testing/panel-of";
 import { queried } from "../testing/queried";
-import { CREDITED_OPTIONS, onMapLibre, panelOf } from "./testing/control-site";
+import { CREDITED_OPTIONS, onMapLibre } from "./testing/control-site";
 
 afterEach(() => {
   document.body.replaceChildren();

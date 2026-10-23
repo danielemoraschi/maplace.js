@@ -1,7 +1,8 @@
 import { onTestFinished } from "vitest";
 import { page } from "vitest/browser";
+import type { Attachable } from "../../testing/attachable";
 import { queried } from "../../testing/queried";
-import { type Attachable, creditedOptions, onMapLibreIn } from "./control-site";
+import { creditedOptions, onMapLibreIn } from "./control-site";
 
 /** The height of the maps `mapOfWidthIn` makes. */
 const MAP_HEIGHT = 600;

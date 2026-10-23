@@ -3,8 +3,9 @@ import type { ControlPosition } from "../adapter";
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { panelOf } from "../testing/panel-of";
 import { cornerElementsIn } from "./corner-measure";
-import { onPageMapLibre, panelOf } from "./testing/control-site";
+import { onPageMapLibre } from "./testing/control-site";
 import { mapOfWidthIn } from "./testing/map-of-width";
 import { wait } from "./testing/map-settle";
 

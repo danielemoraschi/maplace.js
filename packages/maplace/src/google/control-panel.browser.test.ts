@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { panelOf } from "../testing/panel-of";
 import { queried } from "../testing/queried";
 import { unstyledPage } from "../testing/unstyled-page";
 import type { ColorScheme } from "./options";
 import { cornersLikeGoogle } from "./testing/corners-like-google";
 import { darkPage } from "./testing/dark-page";
-import { panelOf } from "./testing/panels";
 import { places } from "./testing/places";
 import { onGoogle } from "./testing/store-on-google";
 import { type StubMap, stubMapsJsRecording } from "./testing/stub-libraries";

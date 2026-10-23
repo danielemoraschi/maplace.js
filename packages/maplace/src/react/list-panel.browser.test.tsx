@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { createGoogleAdapter } from "../google/index";
 import { cornersLikeGoogle } from "../google/testing/corners-like-google";
-import { panelOf } from "../google/testing/panels";
 import { places } from "../google/testing/places";
 import { type StubMap, stubMapsJsRecording } from "../google/testing/stub-libraries";
 import { TEST_OPTIONS } from "../google/testing/subject";
 import type { Location } from "../location";
 import { MAP_SIZE } from "../testing/map-probe";
+import { panelOf } from "../testing/panel-of";
 import { queried } from "../testing/queried";
 import { LocationList } from "./location-list";
 import { MaplaceMap } from "./maplace-map";

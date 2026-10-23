@@ -1,7 +1,7 @@
 /// <reference types="google.maps" />
 import { expect, onTestFinished } from "vitest";
-import type { Adapter } from "../../adapter";
 import type { LatLng } from "../../geometry";
+import type { Attachable } from "../../testing/attachable";
 import { sizedContainer } from "../../testing/container";
 import { assembleGoogleAdapter } from "../assemble";
 import { latLngOf } from "../lat-lng";
@@ -19,10 +19,8 @@ export interface StoreSite {
   readonly colorScheme?: ColorScheme | undefined;
 }
 
-/** A store as far as attaching it goes (this layer doesn't see the store's own types). */
-export interface Attachable {
-  attach(adapter: Adapter, container: HTMLElement): () => void;
-  whenReady(): Promise<void>;
+/** A store as far as reading the errors it emits goes. */
+export interface ErrorReporting {
   on(name: "error", listener: (payload: { error: unknown }) => void): () => void;
 }
 
@@ -33,7 +31,7 @@ export interface Attachable {
  * (`mountControl`), and the Google map it draws on once open, created or the page's own. Built
  * as `createGoogleAdapter` builds it (no probe), with its state kept for the test to read.
  */
-export function attachedToGoogle<Store extends Attachable>(
+export function attachedToGoogle<Store extends Attachable & ErrorReporting>(
   maplace: Store,
   { map, container, colorScheme }: StoreSite = {},
 ) {
@@ -58,7 +56,10 @@ export function attachedToGoogle<Store extends Attachable>(
 }
 
 /** `maplace` attached to Google as `attachedToGoogle` does, once its load is ready. */
-export async function onGoogle<Store extends Attachable>(maplace: Store, site: StoreSite = {}) {
+export async function onGoogle<Store extends Attachable & ErrorReporting>(
+  maplace: Store,
+  site: StoreSite = {},
+) {
   const attached = attachedToGoogle(maplace, site);
   await maplace.whenReady();
   return attached;
