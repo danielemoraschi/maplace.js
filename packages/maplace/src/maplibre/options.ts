@@ -1,7 +1,8 @@
 import type { Map as MapLibreMap, MapOptions, StyleSpecification } from "maplibre-gl";
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { type Assert, recordOf } from "../validate/record";
-import { checkNonEmptyString, checkObject, isElement, optional } from "../validate/values";
+import { refusedKeysCheck } from "../validate/refused-keys";
+import { checkNonEmptyString, isElement, optional } from "../validate/values";
 
 /** MapLibre's map options maplace sets elsewhere: kept out of `mapOptions`, by type and by check. */
 type SetElsewhere = "container" | "style" | "center" | "zoom" | "bounds";
@@ -36,15 +37,11 @@ const SET_BY_MAPLACE: Readonly<Record<SetElsewhere, string>> = {
   bounds: "is set by the store's view",
 };
 
-const REFUSED = Object.entries(SET_BY_MAPLACE);
-
 /** Checks map options for a map maplace creates: an object, none of `SetElsewhere`. */
-const checkCreatedMapOptions: Assert<CreatedMapOptions> = (value, field) => {
-  checkObject(value, field, "an object");
-  for (const [key, remark] of REFUSED) {
-    if (key in value) reject(child(field, key), remark);
-  }
-};
+const checkCreatedMapOptions: Assert<CreatedMapOptions> = refusedKeysCheck(
+  SET_BY_MAPLACE,
+  "an object",
+);
 
 export function checkMapLibreOptions(value: unknown): asserts value is MapLibreAdapterOptions {
   const field = child(root("createMapLibreAdapter"), "options");

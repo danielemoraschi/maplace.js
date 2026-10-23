@@ -1,8 +1,8 @@
 import type { MapOptions } from "maplibre-gl";
 import type { MapLibreAdapterOptions } from "../maplibre/index";
-import { child, mustBe, reject, root } from "../validate/fail";
+import { child, mustBe, root } from "../validate/fail";
 import type { Assert } from "../validate/record";
-import { checkObject } from "../validate/values";
+import { refusedKeysCheck } from "../validate/refused-keys";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
 import { MAP_SETTING_ATTRIBUTES } from "./map-settings-watch";
 
@@ -27,18 +27,14 @@ export const REFUSED_IN_MAP_OPTIONS = {
   bounds: "is set by the store's view",
 } as const satisfies Record<SetByMaplace, string>;
 
-const REFUSED = Object.entries(REFUSED_IN_MAP_OPTIONS);
-
 const ELEMENT = root("<maplace-map>");
 
 const UNPARSED_JSON = /^\s*[[{]/;
 
-const checkMapOptionsAttribute: Assert<MapLibreMapOptionsAttribute> = (value, field) => {
-  checkObject(value, field, "a JSON object");
-  for (const [key, remark] of REFUSED) {
-    if (key in value) reject(child(field, key), remark);
-  }
-};
+const checkMapOptionsAttribute: Assert<MapLibreMapOptionsAttribute> = refusedKeysCheck(
+  REFUSED_IN_MAP_OPTIONS,
+  "a JSON object",
+);
 
 /** `map-style` and `map-options` as `element` writes them; a bad value is misuse naming it. */
 export function mapLibreSettingsOf(element: Element): MapLibreAdapterOptions {
