@@ -22,7 +22,9 @@ const INERT: CornerWatch = { settle() {}, stop() {} };
 /**
  * The layout of `map`'s corners (`corner-layout.ts`) written on MapLibre's corner elements as two
  * custom properties the panel's stylesheet reads (`control-styles.ts`), only while a corner holds a
- * shown maplace panel. A map without MapLibre's corners gets a watch that does nothing.
+ * shown maplace panel, and laid out again on the frame after the map or a corner is resized (the
+ * attribution folding, a list growing). A map without MapLibre's corners gets a watch that does
+ * nothing.
  */
 export function watchCorners(map: MapLibreMap): CornerWatch {
   const container = map.getContainer();
@@ -31,7 +33,10 @@ export function watchCorners(map: MapLibreMap): CornerWatch {
 }
 
 function cornerWatchOn(container: HTMLElement, corners: CornerElements): CornerWatch {
+  let pendingFrame: number | undefined;
+
   function settle(): void {
+    pendingFrame = undefined;
     for (let round = 0; round < SETTLE_ROUNDS; round += 1) {
       const measured = measureCorners(container, corners);
       if (!Object.values(measured.corners).some((corner) => corner.holdsPanel)) {
@@ -42,7 +47,23 @@ function cornerWatchOn(container: HTMLElement, corners: CornerElements): CornerW
     }
   }
 
-  return { settle, stop: () => clearLayout(corners) };
+  // On the next frame, never in the observer's callback: laying out there would resize what it
+  // observes, which Chromium reports as "ResizeObserver loop completed with undelivered
+  // notifications". A settle that changes nothing resizes nothing, so the chain ends.
+  const observer = new ResizeObserver(() => {
+    pendingFrame ??= requestAnimationFrame(settle);
+  });
+  for (const element of [container, ...Object.values(corners)]) observer.observe(element);
+
+  return {
+    settle,
+    stop() {
+      observer.disconnect();
+      if (pendingFrame !== undefined) cancelAnimationFrame(pendingFrame);
+      pendingFrame = undefined;
+      clearLayout(corners);
+    },
+  };
 }
 
 /** Writes `layout` on the corners, and whether that changed any. */
