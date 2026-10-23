@@ -6,6 +6,12 @@ import { checkObject } from "../validate/values";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
 import { MAP_SETTING_ATTRIBUTES } from "./map-settings-watch";
 
+/** The map settings MapLibre's provider reads; `color-scheme` isn't one: the style sets the colours. */
+export const MAPLIBRE_MAP_SETTINGS = [
+  MAP_SETTING_ATTRIBUTES.mapStyle,
+  MAP_SETTING_ATTRIBUTES.mapOptions,
+] as const;
+
 type MapLibreStyle = NonNullable<MapLibreAdapterOptions["mapStyle"]>;
 type MapLibreMapOptionsAttribute = NonNullable<MapLibreAdapterOptions["mapOptions"]>;
 

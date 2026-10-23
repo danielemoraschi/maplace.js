@@ -37,6 +37,16 @@ const styled = (style = STYLE) => `map-style='${style}'`;
 const LOAD = { timeout: 15_000 };
 
 describe("<maplace-map> on MapLibre", () => {
+  it("keeps its map when color-scheme changes, which MapLibre doesn't read", async () => {
+    const map = mapWith(styled());
+    await map.maplace.whenReady();
+    const first = map.querySelector(".maplibregl-map");
+    map.setAttribute("color-scheme", "dark");
+    await nextTask();
+    expect(first?.isConnected).toBe(true);
+    expect(map.querySelector(".maplibregl-map")).toBe(first);
+  });
+
   it("opens a MapLibre map in its pane, maplibre being the only provider registered", async () => {
     const map = mapWith(styled());
     await map.maplace.whenReady();

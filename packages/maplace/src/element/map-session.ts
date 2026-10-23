@@ -1,11 +1,15 @@
 import type { Adapter, Maplace } from "../index";
 import { runPageCode } from "./element-error";
 import type { ElementList } from "./element-list";
-import type { MaplaceMapElement } from "./index";
+import type { MaplaceMapElement, ProviderFactory } from "./index";
+import type { MapSettingAttribute } from "./map-settings-watch";
+import { mapSettingsReadBy } from "./provider-map-settings";
 import { providerFor } from "./providers";
 
 /** One map on the element: its provider's adapter, attached to the store, with the list on it. */
 export interface MapSession {
+  /** The map settings the session's provider reads: a change of one opens the map again. */
+  readonly mapSettings: readonly MapSettingAttribute[];
   /** Shows a list built again on this map. */
   showList(list: ElementList | undefined): void;
   /** Takes the list off and detaches, which returns the store to `idle`. */
@@ -24,7 +28,8 @@ export function openSession(
     readonly list: ElementList | undefined;
   },
 ): MapSession {
-  const adapter = adapterFrom(host);
+  const provider = providerFor(host);
+  const adapter = adapterFrom(provider, host);
   let detach: () => void;
   try {
     detach = parts.store.attach(adapter, parts.pane);
@@ -34,6 +39,7 @@ export function openSession(
   }
   let hideList = parts.list?.showOn(adapter);
   return {
+    mapSettings: mapSettingsReadBy(provider),
     showList(list) {
       hideList?.();
       hideList = list?.showOn(adapter);
@@ -45,9 +51,8 @@ export function openSession(
   };
 }
 
-/** The adapter `host`'s provider builds; any failure of the provider's own is the element's misuse. */
-function adapterFrom(host: MaplaceMapElement): Adapter {
-  const provider = providerFor(host);
+/** The adapter `provider` builds for `host`; any failure of the provider's own is the element's misuse. */
+function adapterFrom(provider: ProviderFactory, host: MaplaceMapElement): Adapter {
   return runPageCode(() => provider(host), "its provider failed to build a map", {
     field: "provider",
   });

@@ -1,7 +1,9 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { createdMapSettingsOf } from "./google-map-attributes";
+import { googleSettingsOf } from "./google-attributes";
+import { createdMapSettingsOf, GOOGLE_MAP_SETTINGS } from "./google-map-attributes";
 import { elementWith } from "./testing/dom";
+import { mapSettingsThatChange } from "./testing/map-setting-values";
 
 function refusal(attributes: Record<string, string>, field: string, problem: string) {
   expect(() => createdMapSettingsOf(elementWith(attributes))).toThrow(
@@ -12,6 +14,12 @@ function refusal(attributes: Record<string, string>, field: string, problem: str
     }),
   );
 }
+
+describe("GOOGLE_MAP_SETTINGS", () => {
+  it("lists exactly the map settings Google's provider reads", () => {
+    expect(new Set(mapSettingsThatChange(googleSettingsOf))).toEqual(new Set(GOOGLE_MAP_SETTINGS));
+  });
+});
 
 describe("createdMapSettingsOf", () => {
   it("reads the colour scheme, and Google's map options as JSON", () => {

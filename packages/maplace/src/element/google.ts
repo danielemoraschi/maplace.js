@@ -1,8 +1,9 @@
 import { createGoogleAdapter } from "../google/create-adapter";
 import { mountAfter } from "../google/mount-after";
-import { defineProvider } from "./define";
+import { defineBuiltInProvider } from "./built-in-provider";
 import { googleSettingsOf } from "./google-attributes";
 import { mapsLoadingFor } from "./google-loading";
+import { GOOGLE_MAP_SETTINGS } from "./google-map-attributes";
 import type { ProviderFactory } from "./index";
 
 /**
@@ -24,6 +25,6 @@ const googleProvider: ProviderFactory = (element) => {
   return mountAfter(createGoogleAdapter(adapterOptions), () => loading);
 };
 
-defineProvider("google", googleProvider);
+defineBuiltInProvider("google", googleProvider, GOOGLE_MAP_SETTINGS);
 
 export type { MaplaceMapElement } from "./index";

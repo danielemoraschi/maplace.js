@@ -1,7 +1,7 @@
 import { createMapLibreAdapter } from "../maplibre/index";
-import { defineProvider } from "./define";
+import { defineBuiltInProvider } from "./built-in-provider";
 import type { ProviderFactory } from "./index";
-import { mapLibreSettingsOf } from "./maplibre-attributes";
+import { MAPLIBRE_MAP_SETTINGS, mapLibreSettingsOf } from "./maplibre-attributes";
 
 /**
  * Registers the `maplibre` provider for `<maplace-map>`; the MapLibre CDN script is this entry
@@ -17,6 +17,6 @@ import { mapLibreSettingsOf } from "./maplibre-attributes";
 const mapLibreProvider: ProviderFactory = (element) =>
   createMapLibreAdapter(mapLibreSettingsOf(element));
 
-defineProvider("maplibre", mapLibreProvider);
+defineBuiltInProvider("maplibre", mapLibreProvider, MAPLIBRE_MAP_SETTINGS);
 
 export type { MaplaceMapElement } from "./index";

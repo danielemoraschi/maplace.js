@@ -1,8 +1,8 @@
 import { given, givenAttribute } from "./attribute-values";
 
 /**
- * The attributes a map's provider reads its map settings from; a change opens the map again.
- * Google's provider reads `color-scheme`, MapLibre's `map-style`, and both read `map-options`.
+ * The attributes a provider may read its map settings from; each provider names those it reads
+ * (`provider-map-settings.ts`).
  */
 export const MAP_SETTING_ATTRIBUTES = {
   colorScheme: "color-scheme",
@@ -10,11 +10,17 @@ export const MAP_SETTING_ATTRIBUTES = {
   mapOptions: "map-options",
 } as const;
 
-const WATCHED = Object.values(MAP_SETTING_ATTRIBUTES);
+/** One of the map-setting attributes. */
+export type MapSettingAttribute =
+  (typeof MAP_SETTING_ATTRIBUTES)[keyof typeof MAP_SETTING_ATTRIBUTES];
 
-/** Calls back once per task in which a map setting changed value, while started. */
+/** Every map-setting attribute. */
+export const MAP_SETTINGS: readonly MapSettingAttribute[] = Object.values(MAP_SETTING_ATTRIBUTES);
+
+/** Calls back once per task in which a watched map setting changed value, while started. */
 export interface MapSettingsWatch {
-  start(): void;
+  /** Watches `settings`, replacing what it watched: a change of one of them calls back. */
+  start(settings: readonly MapSettingAttribute[]): void;
   /** Stops watching, dropping a change not yet called back for. */
   stop(): void;
 }
@@ -25,7 +31,8 @@ export function createMapSettingsWatch(host: Element, onChange: () => void): Map
   });
   return {
     // Observing again replaces the options, so a second start adds nothing.
-    start: () => observer.observe(host, { attributeFilter: WATCHED, attributeOldValue: true }),
+    start: (settings) =>
+      observer.observe(host, { attributeFilter: [...settings], attributeOldValue: true }),
     stop: () => observer.disconnect(),
   };
 }
