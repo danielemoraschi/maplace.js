@@ -14,10 +14,10 @@ import {
 import { unmountAll } from "../testing/conformance/harness";
 import type { MapLibreState } from "./map-state";
 import { PIN_SIZE } from "./pin-image";
-import type { PlacedMarker } from "./placed-location";
 import { wait } from "./testing/map-settle";
 import { markerTarget } from "./testing/marker-target";
 import { mountedMapLibre } from "./testing/mounted";
+import { placedMarker } from "./testing/placed-markers";
 import { removePageMaps } from "./testing/subject";
 import { pagePointOf, pinHeadOf } from "./testing/user-drags";
 
@@ -28,12 +28,6 @@ afterEach(() => {
 
 const editable = (id: string, overrides?: Partial<Drawable>) =>
   markerDrawable(id, ORIGIN, { editable: true, ...overrides });
-
-function placedMarker(state: MapLibreState, id: string): PlacedMarker {
-  const placed = state.placed.get(id);
-  if (placed?.geometryType !== "marker") throw new Error(`${id} is no marker`);
-  return placed;
-}
 
 /** The marker's element MapLibre moves, and the icon in it. */
 function elementsOf(state: MapLibreState, id: string) {

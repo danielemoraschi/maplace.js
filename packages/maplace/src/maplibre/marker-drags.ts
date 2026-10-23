@@ -12,14 +12,15 @@ export interface MarkerDrags {
 
 /**
  * Reports each drag of `marker` as `id`'s edits as it goes and its change once, on release
- * (MapLibre fires `drag` as it moves and `dragend` once). While dragged, the marker's element lets
- * the pointer through, so the release's click lands on neither it nor the map's canvas, selecting
- * nothing and clicking nothing on the map.
+ * (MapLibre fires `drag` as it moves and `dragend` once), then runs `afterEnd`. While dragged, the
+ * marker's element lets the pointer through, so the release's click lands on neither it nor the
+ * map's canvas, selecting nothing and clicking nothing on the map.
  */
 export function reportMarkerDrags(
   marker: Marker,
   id: string,
   mounted: MountedMapLibre,
+  afterEnd: () => void,
 ): MarkerDrags {
   const edits = editReportsFor(id, mounted.live);
   let underWay = false;
@@ -30,6 +31,7 @@ export function reportMarkerDrags(
   marker.on("dragend", () => {
     underWay = false;
     edits.ended(markerGeometryOf(marker));
+    afterEnd();
   });
   return { isUnderWay: () => underWay };
 }

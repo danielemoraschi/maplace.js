@@ -62,7 +62,6 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
       });
       return;
     }
-    cutDragShort();
     removeAll();
     handles = places.map((place) => placeHandle(place, owner));
   }
@@ -82,7 +81,9 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     reports.endedUnchanged();
   }
 
+  /** Takes every handle off: a drag under way is cut short with its handle. */
   function removeAll(): void {
+    cutDragShort();
     for (const handle of handles) removeHandle(handle, owner);
     handles = [];
   }
@@ -123,10 +124,9 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     handles: () => handles,
     isDragging: () => dragging,
     stop() {
-      removeAll();
       // A drag cut short (the shape hidden or no longer editable) never ended: it edits nothing.
       if (dragging) site.onEdit(shown);
-      cutDragShort();
+      removeAll();
     },
   };
 }

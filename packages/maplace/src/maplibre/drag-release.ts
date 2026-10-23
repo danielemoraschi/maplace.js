@@ -1,5 +1,6 @@
-import type { Map as MapLibreMap, Marker } from "maplibre-gl";
+import type { Marker } from "maplibre-gl";
 import type { MountedMapLibre } from "./mounted-map";
+import { isInCanvasContainer } from "./pointer-targets";
 
 /**
  * Ends `marker`'s drag when the mouse is let go outside the map's canvas: MapLibre ends a drag on
@@ -23,14 +24,9 @@ function awaitRelease(marker: Marker, { map, maplibre, closing }: MountedMapLibr
   view?.addEventListener(
     "mouseup",
     (event) => {
-      if (isOverCanvas(event, map) || !marker.getElement().isConnected) return;
+      if (isInCanvasContainer(event, map) || !marker.getElement().isConnected) return;
       map.fire(new maplibre.MapMouseEvent("mouseup", map, event));
     },
     { once: true, capture: true, signal: closing },
   );
-}
-
-/** The release is on the map's canvas or a marker on it, read through any open shadow root. */
-function isOverCanvas(event: MouseEvent, map: MapLibreMap): boolean {
-  return event.composedPath().includes(map.getCanvasContainer());
 }

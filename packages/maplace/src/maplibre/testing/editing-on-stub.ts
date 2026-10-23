@@ -25,7 +25,6 @@ export class RecordingMarker {
   }
   getLngLat = () => this.lngLat;
   getElement = () => this.element;
-  isDraggable = () => true;
   addTo = () => this;
   remove() {
     this.removed = true;

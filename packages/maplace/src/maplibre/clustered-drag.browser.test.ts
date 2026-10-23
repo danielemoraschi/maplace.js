@@ -2,17 +2,13 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { LatLng } from "../geometry";
 import { adding, markerDrawable, TOWNS, townMarkers } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
-import type { ResolvedView } from "../viewport";
 import { clustersOn } from "./testing/clusters";
 import { holdDrag } from "./testing/held-drag";
 import { mountedMapLibre } from "./testing/mounted";
+import { domMarkerOf } from "./testing/placed-markers";
+import { ON_BOLOGNA, OVER_TOWNS } from "./testing/towns";
 
 afterEach(unmountAll);
-
-/** The towns folded into one cluster. */
-const OVER_TOWNS: ResolvedView = { kind: "center", center: TOWNS.bologna, zoom: 3 };
-/** Bologna alone, `a` a draggable pin in the DOM. */
-const ON_BOLOGNA: ResolvedView = { ...OVER_TOWNS, zoom: 17 };
 
 /** How far east of `a` the drag is held: well past MapLibre's click tolerance. */
 const HELD_PIXELS_EAST = 40;
@@ -25,14 +21,7 @@ async function editableTownAlone() {
   mounted.adapter.setView(ON_BOLOGNA);
   await mounted.adapter.apply(adding(a, ...others));
   await mounted.probe.settle();
-  return { ...mounted, element: markerElementOf(mounted.state, "a") };
-}
-
-function markerElementOf(state: Awaited<ReturnType<typeof mountedMapLibre>>["state"], id: string) {
-  const placed = state.placed.get(id);
-  const element = placed?.geometryType === "marker" ? placed.domMarker()?.getElement() : undefined;
-  if (element === undefined) throw new Error(`${id} is no DOM marker`);
-  return element;
+  return { ...mounted, element: domMarkerOf(mounted.state, "a").getElement() };
 }
 
 /** A drag of `a` held east of it while a zoom out folds it into the towns' cluster. */
@@ -45,21 +34,28 @@ async function heldWhileFolded() {
   const drag = holdDrag(map, element, to);
   adapter.setView(OVER_TOWNS);
   await probe.settle();
-  return { ...mounted, element, drag };
+  return { ...mounted, element, drag, to };
 }
 
 describe("a clustered MapLibre marker dragged through a regroup", () => {
   it("keeps a marker being dragged on the map while a zoom folds it into a cluster", async () => {
     const { element, drag } = await heldWhileFolded();
-    expect(element.isConnected).toBe(true);
-    drag.release();
+    try {
+      expect(element.isConnected).toBe(true);
+    } finally {
+      drag.release();
+    }
   });
 
   it("reports the change of a marker let go after a zoom folded it, then folds it", async () => {
-    const { element, drag, host, container } = await heldWhileFolded();
+    const { element, drag, host, container, to } = await heldWhileFolded();
     drag.release();
     const changes = host.reportsOf("reportLocationChange");
     expect(changes.map(([id]) => id)).toEqual(["a"]);
+    const [[, geometry] = []] = changes;
+    expect(geometry).toMatchObject({ type: "marker" });
+    // Where it was let go, east of where it stood: a press keeps its offset from the pin's tip.
+    expect((geometry as LatLng).lng).toBeCloseTo(to.lng, 4);
     expect(element.isConnected).toBe(false);
     expect(clustersOn(container).counts).toEqual([3]);
   });

@@ -103,11 +103,12 @@ export function createDomMarker(
   showDragCursor(element, draggable);
   // The pointer over it, or keyboard focus shown on it, hovers it.
   reportElementHover(element, drawable.id, site.hover);
-  const drags = reportMarkerDrags(marker, drawable.id, mounted);
-  endDragReleasedOutside(marker, mounted);
   let shown = false;
   /** The visibility last asked for: a marker being dragged keeps showing until let go. */
   let asked = false;
+  // Its change is reported before a marker hidden while dragged goes.
+  const drags = reportMarkerDrags(marker, drawable.id, mounted, showAsAsked);
+  endDragReleasedOutside(marker, mounted);
 
   function setVisible(visible: boolean): void {
     asked = visible;
@@ -120,9 +121,6 @@ export function createDomMarker(
     if (shown) marker.addTo(map);
     else marker.remove();
   }
-
-  // After the drag's own `dragend` (registered first): its change is reported before it goes.
-  marker.on("dragend", showAsAsked);
 
   return {
     marker,

@@ -9,7 +9,7 @@ import {
   polygonDrawable,
   squareAround,
 } from "../testing/conformance/fixtures";
-import { drag, editingOnStub, handleWith, hold } from "./testing/recording-marker";
+import { drag, editingOnStub, handleWith, hold } from "./testing/editing-on-stub";
 
 const POLYGON = polygonDrawable("p").geometry;
 const CIRCLE = circleDrawable("c").geometry;
