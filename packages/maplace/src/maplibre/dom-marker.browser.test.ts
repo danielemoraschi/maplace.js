@@ -12,14 +12,14 @@ import {
   updating,
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
-import type { ViewportPoint } from "../testing/mouse-commands";
 import type { MapLibreState } from "./map-state";
 import { PIN_SIZE } from "./pin-image";
-import type { PlacedMarker } from "./placed-location";
 import { wait } from "./testing/map-settle";
 import { markerTarget } from "./testing/marker-target";
 import { mountedMapLibre } from "./testing/mounted";
+import { placedMarker } from "./testing/placed-markers";
 import { removePageMaps } from "./testing/subject";
+import { pagePointOf, pinHeadOf } from "./testing/user-drags";
 
 afterEach(() => {
   unmountAll();
@@ -29,12 +29,6 @@ afterEach(() => {
 const editable = (id: string, overrides?: Partial<Drawable>) =>
   markerDrawable(id, ORIGIN, { editable: true, ...overrides });
 
-function placedMarker(state: MapLibreState, id: string): PlacedMarker {
-  const placed = state.placed.get(id);
-  if (placed?.geometryType !== "marker") throw new Error(`${id} is no marker`);
-  return placed;
-}
-
 /** The marker's element MapLibre moves, and the icon in it. */
 function elementsOf(state: MapLibreState, id: string) {
   const marker = placedMarker(state, id).domMarker();
@@ -42,20 +36,12 @@ function elementsOf(state: MapLibreState, id: string) {
   return { marker, element, icon: element?.firstElementChild ?? undefined };
 }
 
-/** Where `at` is drawn, in the test page's viewport. */
-function pointOf(map: MapLibreMap, at: LatLng): ViewportPoint {
-  const box = map.getCanvas().getBoundingClientRect();
-  const { x, y } = map.project([at.lng, at.lat]);
-  return { x: box.left + x, y: box.top + y };
-}
-
 /** A user's drag of `id`'s pin, by its head, to where `to` is drawn: its tip lands there. */
 async function dragPin(map: MapLibreMap, state: MapLibreState, id: string, to: LatLng) {
   const icon = elementsOf(state, id).icon as Element;
-  const box = icon.getBoundingClientRect();
-  const head = { x: box.left + box.width / 2, y: box.top + box.width / 2 };
-  const tipBelowHead = box.bottom - head.y;
-  const target = pointOf(map, to);
+  const head = pinHeadOf(icon);
+  const tipBelowHead = icon.getBoundingClientRect().bottom - head.y;
+  const target = pagePointOf(map, to);
   await commands.pressMouse([head, { x: target.x, y: target.y - tipBelowHead }]);
 }
 
@@ -83,7 +69,7 @@ describe("dragging MapLibre's markers", () => {
   it("puts the dragged pin's tip on its point, as the layer's pin", async () => {
     const { state, map } = await withEditableMarker();
     const box = (elementsOf(state, "a").icon as Element).getBoundingClientRect();
-    const point = pointOf(map, ORIGIN);
+    const point = pagePointOf(map, ORIGIN);
     expect(box.left + box.width / 2).toBeCloseTo(point.x, 0);
     expect(Math.abs(box.bottom - point.y)).toBeLessThanOrEqual(1);
     expect(placedMarker(state, "a").popupPlace().lift).toBe(PIN_SIZE.height);

@@ -2,14 +2,17 @@ import type { MapMouseEvent } from "maplibre-gl";
 import type { HoverReports } from "../adapter-kit/hover-reports";
 import { isInOwnMarker } from "./dom-marker";
 import type { MapPart } from "./mounted-map";
-import { isOnCanvas } from "./pointer-targets";
+import { stillPointer } from "./still-pointer";
 
 /**
  * Hover on what is drawn in maplace's layers: the location under the pointer (`locationAt` says
  * which), reported through the map's one hover, the cursor a pointer over it. Off the map, or over
  * something on it, no layer location is pointed at; onto one of maplace's DOM markers, which reports
  * its own hover (perhaps the same location's, its pin becoming its icon), the layer lets go without
- * a report.
+ * a report. Each time the map settles drawn under a still pointer (after the wheel, the keyboard,
+ * the store's view or a diff; not while a user's press, which may pan, is held) it points again
+ * where it is: a pin folded or hidden meanwhile is skipped (`locationAt`), and its cursor and
+ * hover let go.
  */
 export function layerHover(
   locationAt: (event: MapMouseEvent) => string | undefined,
@@ -38,20 +41,37 @@ export function layerHover(
       };
       /** A DOM marker the pointer moved onto reports its own hover: the layer lets go, quietly. */
       const handOver = () => setPointed(undefined);
-      const onMove = (event: MapMouseEvent) => {
-        if (isOnCanvas(event, canvas)) pointAt(locationAt(event));
-        else if (isInOwnMarker(event.originalEvent.target)) handOver();
+      const pointer = stillPointer(mounted);
+      /** Points at what is at `event` when `target`, the topmost element there, is the canvas. */
+      const pointThrough = (event: MapMouseEvent, target: EventTarget | null | undefined) => {
+        if (target === canvas) pointAt(locationAt(event));
+        else if (isInOwnMarker(target ?? null)) handOver();
         else pointAt(undefined);
       };
+      const onMove = (event: MapMouseEvent) => {
+        pointer.remember(event);
+        pointThrough(event, event.originalEvent?.target);
+      };
       const onOut = (event: MapMouseEvent) => {
-        if (isInOwnMarker(event.originalEvent.relatedTarget)) handOver();
-        else pointAt(undefined);
+        if (isInOwnMarker(event.originalEvent.relatedTarget)) {
+          handOver();
+        } else {
+          pointer.forget();
+          pointAt(undefined);
+        }
+      };
+      // At `idle`, as MapLibre places pins as it draws: before, a pin is hit where a frame put it.
+      const pointAgain = () => {
+        const now = pointer.now();
+        if (now !== undefined) pointThrough(now.event, now.target);
       };
       map.on("mousemove", onMove);
       map.on("mouseout", onOut);
+      map.on("idle", pointAgain);
       mounted.onDestroy(() => {
         map.off("mousemove", onMove);
         map.off("mouseout", onOut);
+        map.off("idle", pointAgain);
         setPointed(undefined);
       });
     },

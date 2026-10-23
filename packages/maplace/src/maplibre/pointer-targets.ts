@@ -1,4 +1,4 @@
-import type { MapGeoJSONFeature, PointLike } from "maplibre-gl";
+import type { MapGeoJSONFeature, Map as MapLibreMap, PointLike } from "maplibre-gl";
 import { LOCATION_LAYERS, PIN_SOURCE } from "./layers";
 import type { MapLibreState } from "./map-state";
 import type { PlacedLocation } from "./placed-location";
@@ -48,4 +48,12 @@ export function isOnCanvas(
   canvas: HTMLCanvasElement,
 ): boolean {
   return originalEvent?.target === canvas;
+}
+
+/**
+ * Whether `event` happened in the map's canvas container (the canvas or a marker on it), where
+ * MapLibre hears it, read through any open shadow root.
+ */
+export function isInCanvasContainer(event: Event, map: MapLibreMap): boolean {
+  return event.composedPath().includes(map.getCanvasContainer());
 }

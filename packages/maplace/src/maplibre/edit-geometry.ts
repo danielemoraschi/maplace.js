@@ -25,6 +25,11 @@ const RADIUS_BEARINGS = [0, 90, 180, 270];
 
 /** A radius read from a handle is kept to the millimetre: the sphere's float error never shows. */
 const MILLIMETRES_PER_METRE = 1000;
+/**
+ * The smallest radius a handle leaves: a circle's radius is above 0 (the store refuses 0), kept to
+ * the millimetre.
+ */
+const SMALLEST_RADIUS = 1 / MILLIMETRES_PER_METRE;
 
 type Ring = readonly LatLng[];
 
@@ -93,7 +98,8 @@ function circleHandles({ center, radius }: CircleGeometry): HandlePlace[] {
 }
 
 function radiusTo(center: LatLng, point: LatLng): number {
-  return Math.round(metresBetween(center, point) * MILLIMETRES_PER_METRE) / MILLIMETRES_PER_METRE;
+  const millimetres = Math.round(metresBetween(center, point) * MILLIMETRES_PER_METRE);
+  return Math.max(SMALLEST_RADIUS, millimetres / MILLIMETRES_PER_METRE);
 }
 
 /**

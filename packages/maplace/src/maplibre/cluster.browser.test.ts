@@ -6,33 +6,20 @@ import {
   markerDrawable,
   presented,
   removing,
-  TOWNS,
   townMarkers,
   updating,
 } from "../testing/conformance/fixtures";
 import { mountSubject, unmountAll } from "../testing/conformance/harness";
-import type { ResolvedView } from "../viewport";
 import { clustersOn } from "./testing/clusters";
 import { mountedMapLibre } from "./testing/mounted";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { maplibreParts, pageMapIn, removePageMaps } from "./testing/subject";
+import { clusteredTowns, ON_BOLOGNA, OVER_TOWNS } from "./testing/towns";
 
 afterEach(() => {
   unmountAll();
   removePageMaps();
 });
-
-/** The towns, a few pixels apart, at a zoom that clusters them. */
-const OVER_TOWNS: ResolvedView = { kind: "center", center: TOWNS.bologna, zoom: 3 };
-
-/** A MapLibre map clustering the towns at zoom 3, settled. */
-async function clusteredTowns() {
-  const mounted = await mountedMapLibre(undefined, { cluster: true });
-  mounted.adapter.setView(OVER_TOWNS);
-  await mounted.adapter.apply(adding(...townMarkers()));
-  await mounted.probe.settle();
-  return mounted;
-}
 
 describe("clustering on MapLibre", () => {
   it("counts no hidden location in a cluster, nor a removed one", async () => {
@@ -66,7 +53,7 @@ describe("clustering on MapLibre", () => {
     await probe.settle();
     expect(clustersOn(container).counts).toEqual([3]);
     expect(icons.map(({ icon }) => icon.isConnected)).toEqual([false, false, false]);
-    adapter.setView({ ...OVER_TOWNS, zoom: 17 });
+    adapter.setView(ON_BOLOGNA);
     await probe.settle();
     expect(clustersOn(container).counts).toEqual([]);
     expect(icons.map(({ icon }) => icon.isConnected)).toEqual([true, true, true]);
@@ -75,7 +62,7 @@ describe("clustering on MapLibre", () => {
   it("shows the pins a camera zoom-in leaves alone, and folds them again on zooming out, with no diff or presentation", async () => {
     const { adapter, probe, map } = await clusteredTowns();
     expect(probe.location("a")?.visible).toBe(false);
-    adapter.setView({ ...OVER_TOWNS, zoom: 17 });
+    adapter.setView(ON_BOLOGNA);
     await probe.settle();
     expect(probe.location("a")?.visible).toBe(true);
     await vi.waitFor(async () => {
@@ -93,7 +80,7 @@ describe("clustering on MapLibre", () => {
 
   it("hovers a pin again when it unfolds under a pointer that never left it", async () => {
     const { adapter, probe, map, host } = await clusteredTowns();
-    adapter.setView({ ...OVER_TOWNS, zoom: 17 });
+    adapter.setView(ON_BOLOGNA);
     await probe.settle();
     await vi.waitFor(async () => {
       await probe.settle();
@@ -102,7 +89,7 @@ describe("clustering on MapLibre", () => {
     probe.pointerOver("a");
     adapter.setView(OVER_TOWNS);
     await probe.settle();
-    adapter.setView({ ...OVER_TOWNS, zoom: 17 });
+    adapter.setView(ON_BOLOGNA);
     await vi.waitFor(async () => {
       await probe.settle();
       expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);

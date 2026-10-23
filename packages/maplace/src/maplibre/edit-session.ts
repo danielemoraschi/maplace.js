@@ -70,7 +70,20 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     return sameList<HandlePlace | EditHandle>(places, handles, (a, b) => sameRole(a.role, b.role));
   }
 
+  /**
+   * A drag whose handle is taken off never ends: it edits nothing, and the next drag reports
+   * afresh.
+   */
+  function cutDragShort(): void {
+    if (!dragging) return;
+    dragging = false;
+    reportedThisDrag = false;
+    reports.endedUnchanged();
+  }
+
+  /** Takes every handle off: a drag under way is cut short with its handle. */
   function removeAll(): void {
+    cutDragShort();
     for (const handle of handles) removeHandle(handle, owner);
     handles = [];
   }
@@ -99,6 +112,7 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     // Back on its place too when the drag edited nothing: a radius handle on its bearing.
     showHandles(handlePlacesOf(shown));
     if (changed) reports.ended(edited);
+    else reports.endedUnchanged();
   }
 
   return {
@@ -110,10 +124,9 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     handles: () => handles,
     isDragging: () => dragging,
     stop() {
-      removeAll();
       // A drag cut short (the shape hidden or no longer editable) never ended: it edits nothing.
       if (dragging) site.onEdit(shown);
-      dragging = false;
+      removeAll();
     },
   };
 }
