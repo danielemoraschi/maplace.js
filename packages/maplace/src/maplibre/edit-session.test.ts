@@ -80,6 +80,12 @@ describe("a shape's editing session", () => {
     expect(markers()).toHaveLength(5);
   });
 
+  it("reports a circle the store takes when a radius handle is dropped on its centre", () => {
+    const { session, host } = editingOnStub(CIRCLE);
+    drag(handleWith(session.handles(), { kind: "radius", bearing: 90 }), ORIGIN);
+    expect(host.reportsOf("reportLocationChange")).toEqual([["s", { ...CIRCLE, radius: 0.001 }]]);
+  });
+
   it("puts a new point's handles in once a midpoint is dropped", () => {
     const { session, markers } = editingOnStub(POLYGON);
     const before = markers();

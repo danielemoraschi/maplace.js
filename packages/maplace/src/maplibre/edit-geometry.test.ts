@@ -116,6 +116,13 @@ describe("editedBy", () => {
     });
   });
 
+  it("keeps a radius dragged onto the centre at a millimetre, never 0", () => {
+    expect(editedBy(circle, { kind: "radius", bearing: 90 }, ORIGIN)).toEqual({
+      ...circle,
+      radius: 0.001,
+    });
+  });
+
   it("refuses a vertex handle on a circle, naming both", () => {
     expect(() => editedBy(circle, { kind: "vertex", ring: 0, index: 0 }, ORIGIN)).toThrow(
       "a vertex handle doesn't move a circle",
