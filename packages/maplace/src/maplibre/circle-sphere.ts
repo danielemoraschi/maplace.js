@@ -13,47 +13,56 @@ type Ring = GeoJSON.Position[];
 
 /**
  * The ring a circle is drawn as on the sphere, closed as GeoJSON's are: its longitudes run on
- * from its centre's, past ±180 where it crosses, so MapLibre draws it in one piece.
+ * from its centre's, past ±180 where it crosses, so MapLibre draws it in one piece; over a pole
+ * for one round a pole, over both for one round both.
  */
 export function circleRing(circle: CircleGeometry): Ring {
   const { center, radius } = circle;
   const ring = Array.from({ length: CIRCLE_SEGMENTS }, (_, index) =>
     offsetPosition(center, radius, (index * 360) / CIRCLE_SEGMENTS),
   );
-  const pole = poleWithin(circle);
-  const drawn = pole === undefined ? ring : overPole(ring, circle, pole);
+  // From the last jump back, so the indexes of the earlier ones hold.
+  const drawn = jumpsOf(ring).reduceRight((on, at) => overPoleAt(on, at, circle), ring);
   return [...drawn, ...drawn.slice(0, 1)];
 }
 
 type Pole = 90 | -90;
 
+const longitudeOf = ([lng = 0]: GeoJSON.Position = []) => lng;
+
 /**
- * The latitude of the pole within `circle`; none when it is round neither, or round both (wider
- * than a hemisphere).
+ * Where the ring's longitude jumps over 180°: each index `at` (the ring's length for the wrap back
+ * to its first point) whose point is a world away from the one before. Longitudes stay within 180°
+ * of the centre's, so the ring jumps only where it goes round a pole.
  */
-function poleWithin({ center, radius }: CircleGeometry): Pole | undefined {
-  const arc = radius / EARTH_RADIUS;
-  const lat = center.lat * RADIANS_PER_DEGREE;
-  const roundNorth = arc > Math.PI / 2 - lat;
-  const roundSouth = arc > Math.PI / 2 + lat;
-  if (roundNorth === roundSouth) return undefined;
-  return roundNorth ? 90 : -90;
+function jumpsOf(ring: Ring): number[] {
+  return ring
+    .map((_, index) => index + 1)
+    .filter(
+      (at) => Math.abs(longitudeOf(ring[at % ring.length]) - longitudeOf(ring[at - 1])) > 180,
+    );
 }
 
 /**
- * A ring round a pole goes once round the world, its longitudes jumping 360° where it passes the
- * pole, 180° from its centre's: there it runs on to that meridian, over the pole (the map's edge,
- * where MapLibre clamps it) and back from the meridian's other side, so the circle is filled up to
- * the edge it covers.
+ * The pole the jump at `at` goes round: the south for one in the ring's middle half (bearings near
+ * 180), else the north (near 0, at the ring's ends). `at` counts the segments' points alone.
  */
-function overPole(ring: Ring, { center, radius }: CircleGeometry, pole: Pole): Ring {
+function poleOfJump(at: number): Pole {
+  const middle = at > CIRCLE_SEGMENTS / 4 && at <= (3 * CIRCLE_SEGMENTS) / 4;
+  return middle ? -90 : 90;
+}
+
+/**
+ * A ring round a pole goes once round the world, its longitudes jumping 360° at `at`, where it
+ * passes the pole, 180° from its centre's: there it runs on to that meridian, over the pole (the
+ * map's edge, where MapLibre clamps it) and back from the meridian's other side, so the circle is
+ * filled up to the edge it covers.
+ */
+function overPoleAt(ring: Ring, at: number, { center, radius }: CircleGeometry): Ring {
+  const pole = poleOfJump(at);
   const [, past = pole] = offsetPosition(center, radius, pole > 0 ? 0 : 180);
-  const jump = ring.findIndex(
-    ([lng = 0], index) => Math.abs(lng - (ring[index - 1]?.[0] ?? lng)) > 180,
-  );
-  const at = jump === -1 ? ring.length : jump;
-  const meridianBeside = ([lng = 0]: GeoJSON.Position = []) =>
-    center.lng + 180 * Math.sign(lng - center.lng);
+  const meridianBeside = (position?: GeoJSON.Position) =>
+    center.lng + 180 * Math.sign(longitudeOf(position) - center.lng);
   const from = meridianBeside(ring[at - 1]);
   const to = meridianBeside(ring[at % ring.length]);
   const over = [

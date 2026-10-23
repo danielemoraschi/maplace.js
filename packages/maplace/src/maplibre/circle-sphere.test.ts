@@ -48,6 +48,41 @@ describe("circleRing", () => {
     expect(isInside(ring, [10, -50])).toBe(false);
   });
 
+  /** 120° of arc from the equator: round both poles, leaving a cap of 60° round the antipode. */
+  const roundBothPoles = {
+    type: "circle",
+    center: { lat: 0, lng: 10 },
+    radius: METRES_PER_DEGREE * 120,
+  } as const;
+
+  it("covers both poles and leaves the cap round the antipode out, for a circle wider than a hemisphere", () => {
+    const ring = circleRing(roundBothPoles);
+    for (const inside of [
+      [10, 0],
+      [10, 84],
+      [-165, 84],
+      [10, -84],
+      [-100, 0],
+    ])
+      expect(isInside(ring, inside)).toBe(true);
+    for (const outside of [
+      [-160, 0],
+      [-120, 0],
+      [160, 0],
+    ])
+      expect(isInside(ring, outside)).toBe(false);
+  });
+
+  it("puts every point but the poles' radius metres from the centre, for a circle round both", () => {
+    const { center, radius } = roundBothPoles;
+    for (const [lng = 0, lat = 0] of circleRing(roundBothPoles).filter(
+      ([, lat]) => Math.abs(lat ?? 0) !== 90,
+    )) {
+      const metres = metresBetween(center, { lat, lng });
+      expect(Math.abs(metres - radius) / radius).toBeLessThan(1e-6);
+    }
+  });
+
   it("draws a circle centred on a pole as the parallel round it", () => {
     const ring = circleRing(roundPole({ lat: 90, lng: 10 }));
     for (const lng of [10, 55, 100, -35, -125]) expect(isInside(ring, [lng, 70])).toBe(true);
