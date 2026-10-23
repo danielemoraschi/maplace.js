@@ -121,14 +121,15 @@ describe("the MapLibre adapter's controls", () => {
     expect(node.outerHTML).toBe(given);
   });
 
-  it("gives the control's document the panel's styles once the control is on the map", () => {
+  it("gives the map's document the panel's styles, not the node's, once the control is on the map", () => {
+    const [nodes, maps] = [frameDocument(), frameDocument()];
+    const sheetsOf = (page: Document) => page.adoptedStyleSheets.map(cssTextOf);
     const controls = createControls();
-    const page = frameDocument();
-    const sheets = () => page.adoptedStyleSheets.map(cssTextOf);
-    controls.mountControl(page.createElement("button"), "top-left");
-    expect(sheets()).toEqual([]);
-    openedControls(controls);
-    expect(sheets()).toContainEqual(expect.stringContaining(".maplace-control"));
+    const { container } = openedControls(controls);
+    maps.body.append(container);
+    controls.mountControl(nodes.createElement("button"), "top-left");
+    expect(sheetsOf(maps)).toContainEqual(expect.stringContaining(".maplace-control"));
+    expect(sheetsOf(nodes)).toEqual([]);
   });
 
   it("takes its controls off when the map closes, and places none later", () => {

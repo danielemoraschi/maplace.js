@@ -32,7 +32,11 @@ export interface Attachable {
  * and the map.
  */
 export function onMapLibre(maplace: Attachable, options = TEST_OPTIONS) {
-  const container = sizedContainer();
+  return onMapLibreIn(maplace, sizedContainer(), options);
+}
+
+/** `maplace` attached as `onMapLibre` does, on a map it creates in `container`, removed after. */
+export function onMapLibreIn(maplace: Attachable, container: HTMLElement, options = TEST_OPTIONS) {
   return attachedIn(maplace, container, options, () => container.remove());
 }
 
