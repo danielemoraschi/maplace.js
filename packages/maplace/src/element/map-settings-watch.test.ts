@@ -1,15 +1,22 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
 import { nextTask } from "../adapter-kit/chunks";
-import { createMapSettingsWatch } from "./map-settings-watch";
+import {
+  createMapSettingsWatch,
+  MAP_SETTINGS,
+  type MapSettingAttribute,
+} from "./map-settings-watch";
 import { elementWith } from "./testing/dom";
 
-/** A started watch on an element with `attributes`, and how often it has called back. */
-function watched(attributes: Record<string, string> = {}) {
+/** A watch on an element with `attributes`, started with `settings`, and how often it has called back. */
+function watched(
+  attributes: Record<string, string> = {},
+  settings: readonly MapSettingAttribute[] = MAP_SETTINGS,
+) {
   const host = elementWith(attributes);
   const onChange = vi.fn();
   const watch = createMapSettingsWatch(host, onChange);
-  watch.start();
+  watch.start(settings);
   return { host, onChange, watch };
 }
 
@@ -68,13 +75,23 @@ describe("createMapSettingsWatch", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it("ignores a map setting it wasn't started with", async () => {
+    const { host, onChange } = watched({}, ["map-style", "map-options"]);
+    host.setAttribute("color-scheme", "dark");
+    await nextTask();
+    expect(onChange).not.toHaveBeenCalled();
+    host.setAttribute("map-style", "https://tiles.example/a.json");
+    await nextTask();
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
   it("watches only while started, dropping a change pending at stop", async () => {
     const host = elementWith({});
     const onChange = vi.fn();
     const watch = createMapSettingsWatch(host, onChange);
     host.setAttribute("color-scheme", "dark");
     await nextTask();
-    watch.start();
+    watch.start(MAP_SETTINGS);
     host.setAttribute("color-scheme", "light");
     watch.stop();
     await nextTask();
@@ -85,7 +102,7 @@ describe("createMapSettingsWatch", () => {
 
   it("calls back once per change however often it was started", async () => {
     const { host, onChange, watch } = watched();
-    watch.start();
+    watch.start(MAP_SETTINGS);
     host.setAttribute("color-scheme", "dark");
     await nextTask();
     expect(onChange).toHaveBeenCalledTimes(1);

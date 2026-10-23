@@ -1,8 +1,8 @@
 import { samePoint } from "../../adapter-kit/same-geometry";
 import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
-import { wrapLongitude } from "../../longitude-arc";
 import type { ShapeStyle } from "../../style";
 import { pointAtBearing } from "../circle-sphere";
+import { wrappedLongitude } from "../conversions";
 import { type HandleRole, ringsOf, sameRole } from "../edit-geometry";
 import type { LocationFeature } from "../feature-set";
 import { SHAPE_SOURCE } from "../layers";
@@ -178,10 +178,7 @@ function probedMetresBetween(a: LatLng, b: LatLng): number {
   return 2 * PROBE_EARTH_RADIUS * Math.asin(Math.sqrt(Math.min(1, h)));
 }
 
-/**
- * A position MapLibre was sent, as maplace's: a longitude past ±180 back in −180..180, any other
- * as sent, since wrapping it would add float error.
- */
+/** A position MapLibre was sent, as maplace's: its longitude in −180..180, 180 kept east. */
 function latLngOf([lng = Number.NaN, lat = Number.NaN]: GeoJSON.Position): LatLng {
-  return { lat, lng: Math.abs(lng) <= 180 ? lng : wrapLongitude(lng) };
+  return { lat, lng: wrappedLongitude(lng) };
 }

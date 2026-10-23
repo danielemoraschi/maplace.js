@@ -9,6 +9,12 @@ import type { Assert } from "../validate/record";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
 import { MAP_SETTING_ATTRIBUTES } from "./map-settings-watch";
 
+/** The map settings Google's provider reads; Google sets a colour scheme only on a new map. */
+export const GOOGLE_MAP_SETTINGS = [
+  MAP_SETTING_ATTRIBUTES.colorScheme,
+  MAP_SETTING_ATTRIBUTES.mapOptions,
+] as const;
+
 /** The colour scheme and Google's map options for the map the element's provider creates. */
 export interface CreatedMapSettings {
   readonly colorScheme: ColorScheme | undefined;

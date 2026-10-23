@@ -35,6 +35,15 @@ function mapWith(attributes: string): HTMLElementTagNameMap["maplace-map"] {
 }
 
 describe("the map settings of a Google <maplace-map>", () => {
+  it("keeps its map when map-style changes, which Google doesn't read", async () => {
+    const map = mapWith("");
+    await expect.poll(() => created.length).toBe(1);
+    map.setAttribute("map-style", "https://tiles.example/style.json");
+    await nextTask();
+    expect(created[0]?.element.isConnected).toBe(true);
+    expect(created).toHaveLength(1);
+  });
+
   it("creates the map with the colour scheme and Google's map options the attributes give", async () => {
     mapWith(`color-scheme="dark" map-options='{"mapTypeControl":true}'`);
     await expect.poll(() => created.length).toBe(1);

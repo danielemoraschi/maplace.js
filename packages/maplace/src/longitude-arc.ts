@@ -22,7 +22,11 @@ export function arcSpan({ west, east }: { readonly west: number; readonly east: 
   return west > east ? east + 360 - west : east - west;
 }
 
-/** A longitude brought into -180..180. */
+/**
+ * A longitude brought into -180..180, 180 itself as -180. One already in range comes back as it
+ * is: the modulo would add float error (0.6 read back as 0.6000000000000227).
+ */
 export function wrapLongitude(lng: number): number {
+  if (lng >= -180 && lng < 180) return lng;
   return ((((lng + 180) % 360) + 360) % 360) - 180;
 }

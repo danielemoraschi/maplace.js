@@ -1,8 +1,13 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { createMapLibreAdapter } from "../maplibre/index";
-import { mapLibreSettingsOf, REFUSED_IN_MAP_OPTIONS } from "./maplibre-attributes";
+import {
+  MAPLIBRE_MAP_SETTINGS,
+  mapLibreSettingsOf,
+  REFUSED_IN_MAP_OPTIONS,
+} from "./maplibre-attributes";
 import { elementWith } from "./testing/dom";
+import { mapSettingsThatChange } from "./testing/map-setting-values";
 
 function refusal(attributes: Record<string, string>, field: string, problem: string) {
   expect(() => mapLibreSettingsOf(elementWith(attributes))).toThrow(
@@ -13,6 +18,14 @@ function refusal(attributes: Record<string, string>, field: string, problem: str
     }),
   );
 }
+
+describe("MAPLIBRE_MAP_SETTINGS", () => {
+  it("lists exactly the map settings MapLibre's provider reads", () => {
+    expect(new Set(mapSettingsThatChange(mapLibreSettingsOf))).toEqual(
+      new Set(MAPLIBRE_MAP_SETTINGS),
+    );
+  });
+});
 
 describe("mapLibreSettingsOf", () => {
   it("reads map-style as a style URL, or as a style object written as JSON", () => {

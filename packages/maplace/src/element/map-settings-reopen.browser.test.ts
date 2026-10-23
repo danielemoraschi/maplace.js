@@ -25,16 +25,20 @@ async function reopenedFor(map: MaplaceMapElement, scheme = "dark") {
 describe("<maplace-map> on a map setting changed", () => {
   it.each([
     ["color-scheme", "dark"],
+    ["map-style", "https://tiles.example/style.json"],
     ["map-options", "{}"],
-  ])("opens the map again when %s changes, as a provider change does", async (name, value) => {
-    const { map, first } = await openMap();
-    const store = map.maplace;
-    map.setAttribute(name, value);
-    await nextTask();
-    expect(first.destroyed).toBe(true);
-    expect(lastAdapter()).not.toBe(first);
-    expect(map.maplace).toBe(store);
-  });
+  ])(
+    "opens the map again when %s changes, for a provider that names no settings, as a page's own",
+    async (name, value) => {
+      const { map, first } = await openMap();
+      const store = map.maplace;
+      map.setAttribute(name, value);
+      await nextTask();
+      expect(first.destroyed).toBe(true);
+      expect(lastAdapter()).not.toBe(first);
+      expect(map.maplace).toBe(store);
+    },
+  );
 
   it("keeps the store's locations and selection, and opens where the map was", async () => {
     const { map, first } = await openMap();

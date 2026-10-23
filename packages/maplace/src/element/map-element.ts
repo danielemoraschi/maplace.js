@@ -134,7 +134,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
       this.#setupRetry.wait();
     } else {
       this.#setupRetry.stop();
-      this.#settingsWatch.start();
+      this.#settingsWatch.start(this.#session.mapSettings);
     }
   }
 
