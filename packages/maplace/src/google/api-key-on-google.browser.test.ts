@@ -24,7 +24,8 @@ describeWithKey("createGoogleMap given an apiKey", (key) => {
     await expect
       .poll(() => maplace.getSnapshot().loadState, { timeout: TILES_TIMEOUT_MS })
       .toBe("ready");
-    expect(container.querySelector("gmp-advanced-marker")).not.toBeNull();
+    // Markers are drawn once the map is ready, a moment after it says so.
+    await expect.poll(() => container.querySelectorAll("gmp-advanced-marker").length).toBe(1);
     maplace.destroy();
   });
 });
