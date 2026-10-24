@@ -6,13 +6,16 @@ interface ProviderLabel {
   readonly label: string;
 }
 
-/** The providers, in the order the site offers them, each with its name there. */
+/**
+ * The providers, in the order the site offers them, each with its name there: MapLibre first, so a
+ * visit loads no billed Google map unless the visitor asks for one.
+ */
 export const PROVIDER_LABELS: readonly [ProviderLabel, ...ProviderLabel[]] = [
-  { provider: "google", label: "Google" },
   { provider: "maplibre", label: "MapLibre" },
+  { provider: "google", label: "Google" },
 ];
 
-/** The provider a section runs on until the visitor chooses another. */
+/** The provider the examples run on until the visitor chooses another. */
 export const FIRST_PROVIDER: Provider = PROVIDER_LABELS[0].provider;
 
 /** Whether `value` names one of the providers. */

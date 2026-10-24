@@ -197,5 +197,16 @@ export async function openHome(page: Page, siteUrl: string): Promise<void> {
 export const loadMapsButtons = (scope: Page | Locator) =>
   scope.getByRole("button", { name: "Load maps", exact: true });
 
+/** Screens the tests lay the site out on. */
+export const PHONE = { width: 375, height: 812 };
+export const DESKTOP = { width: 1280, height: 900 };
+
+/** Whether what is drawn at `locator`'s centre is `locator` itself, or inside it. */
+export const drawnOnTop = (locator: Locator) =>
+  locator.evaluate((element) => {
+    const { left, top, width, height } = element.getBoundingClientRect();
+    return element.contains(document.elementFromPoint(left + width / 2, top + height / 2));
+  });
+
 /** The page's first "Load maps" button. */
 export const placeholder = (page: Page) => loadMapsButtons(page).first();

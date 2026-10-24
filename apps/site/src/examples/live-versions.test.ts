@@ -1,20 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { callsSave, liveVersions, shownFirst } from "./live-versions.ts";
 
+/** `simple`'s versions on Google, in their order: page, script, vanilla, React. */
+const onGoogle = (settings: { apiKey: string; mapId?: string }) =>
+  liveVersions("simple", settings).filter(({ provider }) => provider === "google");
+
 const versionsOf = (name: string) =>
   liveVersions(name, { apiKey: "k" }).map(({ kind, provider }) => `${provider} ${kind}`);
 
 describe("liveVersions", () => {
-  it("runs Google's page, script, vanilla and React, then MapLibre's", () => {
+  it("runs MapLibre's page, script, vanilla and React, then Google's", () => {
     expect(versionsOf("simple")).toEqual([
-      "google html",
-      "google script",
-      "google vanilla",
-      "google react",
       "maplibre html",
       "maplibre script",
       "maplibre vanilla",
       "maplibre react",
+      "google html",
+      "google script",
+      "google vanilla",
+      "google react",
     ]);
   });
 
@@ -28,12 +32,12 @@ describe("liveVersions", () => {
   });
 
   it("runs Google's page as the site does: its map held, with the site's key", () => {
-    const [page] = liveVersions("simple", { apiKey: "site-key" });
+    const [page] = onGoogle({ apiKey: "site-key" });
     expect(page?.markup).toContain('<maplace-map hold provider="google" api-key="site-key"');
   });
 
   it("runs each Google host from its HTML file, its bootstrap given the site's key", () => {
-    const [, , vanilla, react] = liveVersions("simple", { apiKey: "site-key" });
+    const [, , vanilla, react] = onGoogle({ apiKey: "site-key" });
     expect(vanilla?.markup).toContain('key: "site-key"');
     expect(react?.markup).toContain('key: "site-key"');
   });
@@ -42,13 +46,13 @@ describe("liveVersions", () => {
     const scripts = liveVersions("simple", { apiKey: "site-key" }).filter(
       ({ kind }) => kind === "script",
     );
-    expect(scripts.map(({ provider }) => provider)).toEqual(["google", "maplibre"]);
+    expect(scripts.map(({ provider }) => provider)).toEqual(["maplibre", "google"]);
     for (const { markup } of scripts) expect(markup).not.toContain("cdn.jsdelivr.net");
-    expect(scripts[0]?.markup).toContain('apiKey: "site-key"');
+    expect(scripts[1]?.markup).toContain('apiKey: "site-key"');
   });
 
   it("gives Google's page map the site's map ID, and a host nothing in its HTML", () => {
-    const [page, , vanilla] = liveVersions("simple", { apiKey: "k", mapId: "site-map" });
+    const [page, , vanilla] = onGoogle({ apiKey: "k", mapId: "site-map" });
     expect(page?.markup).toContain(
       '<maplace-map hold provider="google" map-id="site-map" api-key="k"',
     );
@@ -69,10 +73,10 @@ describe("liveVersions", () => {
 });
 
 describe("shownFirst", () => {
-  it("shows Google's page first", () => {
-    expect(shownFirst({ kind: "html", provider: "google" })).toBe(true);
-    expect(shownFirst({ kind: "html", provider: "maplibre" })).toBe(false);
-    expect(shownFirst({ kind: "vanilla", provider: "google" })).toBe(false);
+  it("shows MapLibre's page first", () => {
+    expect(shownFirst({ kind: "html", provider: "maplibre" })).toBe(true);
+    expect(shownFirst({ kind: "html", provider: "google" })).toBe(false);
+    expect(shownFirst({ kind: "vanilla", provider: "maplibre" })).toBe(false);
   });
 });
 

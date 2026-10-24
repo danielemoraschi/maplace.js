@@ -1,22 +1,13 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { docRoute, REPO_DOCS, REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
+import { ASKED, opened, siteBuiltBeforeTests } from "./site-session.ts";
+import { DESKTOP, drawnOnTop, PHONE } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
-const PHONE = { width: 375, height: 812 };
-const DESKTOP = { width: 1280, height: 900 };
-
 /** How late the web fonts come in the test of a slow connection. */
 const LATE_FONTS_MS = 1500;
-
-/** A visitor's page at `route`, on a screen of `viewport`. */
-async function opened(route: string, viewport: { width: number; height: number }) {
-  const visit = await site.visitor({ viewport });
-  await visit.page.goto(new URL(route, site.url).href);
-  return visit;
-}
 
 const header = (page: Page) => page.getByRole("banner");
 const docsNav = (page: Page) => page.getByRole("navigation", { name: "Documentation" });
@@ -37,7 +28,7 @@ async function headerBottom(page: Page): Promise<number> {
 
 describe("the site's header", () => {
   it("links the reference pages only, the repository from the footer", async () => {
-    const { page, context } = await opened("/", DESKTOP);
+    const { page, context } = await opened(site, "/", DESKTOP);
     const labels = await docsNav(page).getByRole("link").allTextContents();
     expect(labels).toEqual(REPO_DOCS.map(({ label }) => label));
     const toRepo = `a[href="${REPOSITORY_URL}"]`;
@@ -47,20 +38,16 @@ describe("the site's header", () => {
   }, 30_000);
 
   it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
-    const { page, context } = await opened("/", DESKTOP);
+    const { page, context } = await opened(site, "/", DESKTOP);
     await page.mouse.wheel(0, 2500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
     expect((await header(page).boundingBox())?.y).toBe(0);
-    const onTop = await header(page).evaluate((banner) => {
-      const { left, top, height } = banner.getBoundingClientRect();
-      return banner.contains(document.elementFromPoint(left + 4, top + height / 2));
-    });
-    expect(onTop).toBe(true);
+    expect(await drawnOnTop(header(page))).toBe(true);
     await context.close();
   }, 30_000);
 
   it("keeps to one line on a phone, its links reached by scrolling the nav", async () => {
-    const { page, context } = await opened("/", PHONE);
+    const { page, context } = await opened(site, "/", PHONE);
     const links = docsNav(page).getByRole("link");
     const tops = await links.evaluateAll((all) =>
       all.map((link) => link.getBoundingClientRect().top),
@@ -73,7 +60,7 @@ describe("the site's header", () => {
   }, 30_000);
 
   it("brings a link tabbed to on a phone clear of the nav's end fade", async () => {
-    const { page, context } = await opened("/", PHONE);
+    const { page, context } = await opened(site, "/", PHONE);
     const clearEnd = await navClearEnd(page);
     for (const link of await docsNav(page).getByRole("link").all()) {
       await link.focus();
@@ -84,7 +71,7 @@ describe("the site's header", () => {
   }, 30_000);
 
   it("shows the current page's own link on a phone", async () => {
-    const { page, context } = await opened(docRoute("migrating"), PHONE);
+    const { page, context } = await opened(site, docRoute("migrating"), PHONE);
     // The page's script scrolls the nav to the link once it runs: on a busy machine, after load.
     await expect.poll(() => currentLinkInView(page), ASKED).toBe(true);
     await context.close();
@@ -106,7 +93,7 @@ describe("the site's header", () => {
 
   it("lands an anchor's target below it", async () => {
     for (const viewport of [DESKTOP, PHONE]) {
-      const { page, context } = await opened("/#markers", viewport);
+      const { page, context } = await opened(site, "/#markers", viewport);
       const heading = await page.locator("#markers-title").boundingBox();
       expect(heading?.y).toBeGreaterThanOrEqual(await headerBottom(page));
       await context.close();
@@ -114,7 +101,7 @@ describe("the site's header", () => {
   }, 30_000);
 
   it("leaves a reference page's contents clear of it as the page scrolls", async () => {
-    const { page, context } = await opened(docRoute("element"), { width: 1024, height: 800 });
+    const { page, context } = await opened(site, docRoute("element"), { width: 1024, height: 800 });
     await page.mouse.wheel(0, 1500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(1000);
     const first = await page

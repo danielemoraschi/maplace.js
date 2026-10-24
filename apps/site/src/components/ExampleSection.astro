@@ -3,11 +3,10 @@ import { getEntry, render } from "astro:content";
 import { dataFetchedBy, exampleDataLinks } from "../examples/example-data-links.ts";
 import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import type { ExampleSection } from "../examples/example-sections.ts";
-import { codeTabsOf } from "../examples/example-sources.ts";
+import { codeTabsOf, exampleProviders } from "../examples/example-sources.ts";
 import { REPO_FILES_ENTRY } from "../site/repo-files-loader.ts";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
-import ProviderSwitch from "./ProviderSwitch.astro";
 import VersionSwitch from "./VersionSwitch.astro";
 
 interface Props extends ExampleSection {
@@ -16,6 +15,11 @@ interface Props extends ExampleSection {
 
 const { number, name, title, summary, drawsOwnList, googleOnlyBecause } = Astro.props;
 const codeTabs = codeTabsOf(name);
+// Its code tabs open on the first provider it has: route's Google, the others' the page's first.
+const [firstProvider] = exampleProviders(name);
+// Without a version on the page's first provider (route on MapLibre), its version radios and code
+// tabs open grayed out, until the visitor shows it on Google (`version-switch.ts`).
+const offered = firstProvider === FIRST_PROVIDER;
 const repoFiles = await getEntry("repoFiles", REPO_FILES_ENTRY);
 if (repoFiles === undefined) throw new Error("the repoFiles collection has no entry");
 const fetched = dataFetchedBy(
@@ -35,25 +39,25 @@ const tabs = [
 const panel = (tab: string) => `example-${name}-${tab}`;
 ---
 
+{/* Its top spacing is `--spacing-toggle-offset` in `theme.css`: change both together. */}
 <section
   class="example mt-12 border-t-3 border-ink pt-4"
   id={name}
   aria-labelledby={`${name}-title`}
   data-version-switch={name}
 >
-  <div class="flex items-start gap-x-6 gap-y-2 max-[640px]:flex-col">
-    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-      <h2 class="m-0 text-3xl" id={`${name}-title`}>
-        <span class="text-accent">{String(number).padStart(2, "0")}</span>{" "}{title}
-      </h2>
-      <p class="m-0 text-muted">{summary}</p>
-    </div>
-    {/* Level with the title's line, however far the summary wraps beside it. */}
-    <ProviderSwitch
-      name={name}
-      googleOnlyBecause={googleOnlyBecause}
-      class="ml-auto shrink-0 max-[640px]:ml-0"
-    />
+  {/* The first section's row leaves room for the page's provider toggle (`index.astro`). */}
+  <div
+    class:list={[
+      "flex flex-wrap items-baseline gap-x-4 gap-y-1",
+      number === 1 && "pe-[calc(var(--spacing-toggle-width)+1rem)]",
+    ]}
+    data-heading-row
+  >
+    <h2 class="m-0 text-3xl" id={`${name}-title`}>
+      <span class="text-accent">{String(number).padStart(2, "0")}</span>{" "}{title}
+    </h2>
+    <p class="m-0 text-muted">{summary}</p>
   </div>
   {
     dataLinks.length > 0 && (
@@ -85,11 +89,12 @@ const panel = (tab: string) => `example-${name}-${tab}`;
         <button
           type="button"
           role="tab"
-          class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper"
+          class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper disabled:cursor-not-allowed disabled:text-muted disabled:opacity-60"
           id={`${panel(tab)}-tab`}
           aria-controls={panel(tab)}
           aria-selected={index === 0 ? "true" : "false"}
           tabindex={index === 0 ? 0 : -1}
+          disabled={index > 0 && !offered}
         >
           {label}
         </button>
@@ -97,8 +102,8 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     }
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <VersionSwitch name={name} />
-    <MapFrame name={name} drawsOwnList={drawsOwnList} />
+    <VersionSwitch name={name} disabled={!offered} />
+    <MapFrame name={name} drawsOwnList={drawsOwnList} googleOnlyBecause={googleOnlyBecause} />
   </div>
   {
     codeTabs.map(({ kind, codes }) => (
@@ -106,7 +111,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
         {codes.map((code) => (
           <div
             data-provider-files={code.provider}
-            hidden={code.provider !== FIRST_PROVIDER}
+            hidden={code.provider !== firstProvider}
           >
             <ExampleFiles version={code} />
           </div>

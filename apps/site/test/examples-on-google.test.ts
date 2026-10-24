@@ -13,6 +13,7 @@ import {
 import { expectNotedInTurn } from "./failure-note-checks.ts";
 import { ON_GOOGLE, SECTION_MS, siteOnGoogleBeforeTests } from "./google-session.ts";
 import {
+  chooseProvider,
   chooseVersion,
   leaveOnlySection,
   pageMapState,
@@ -49,6 +50,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
       { timeout: SECTION_MS },
       async ({ name, order, loader }, { expect }) => {
         const { page, context, errors, mapsJsRequests, section } = await visitSection(site, name);
+        await chooseProvider(page, "Google");
 
         /** Waits for `kind`'s map to be drawn on Google, unrefused. */
         async function drawnOnGoogle({ kind, label }: VersionChoice): Promise<void> {
@@ -108,6 +110,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
       { timeout: 90_000 },
       async (leftAndShown, { expect }) => {
         const { page, context, section, errors } = await visitSection(site, "styled");
+        await chooseProvider(page, "Google");
         await expectLeftOpensAsShown({ page, section, example: "styled" }, leftAndShown, {
           versionIn: (kind) => versionIn(section, kind),
           viewOf: googleView,
@@ -126,6 +129,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
     const { page, context } = await site.visitor({ seenAt });
     await page.goto(new URL("/#simple", seenAt).href);
     await leaveOnlySection(page, "simple");
+    await chooseProvider(page, "Google");
     // The Script version first, before consent: the page map, hidden, never loads.
     await chooseVersion(page, "simple", "Script");
     const section = await sectionOf(page, "simple");

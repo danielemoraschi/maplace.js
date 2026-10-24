@@ -6,6 +6,15 @@
     scroll-padding-top: var(--spacing-header);
   }
 
+  /* On the home page, below the examples' provider toggle held under the header too. */
+  :root:has([data-provider-choice]) {
+    scroll-padding-top: calc(
+      var(--spacing-header) +
+      var(--spacing-toggle-height) +
+      var(--spacing-toggle-inset)
+    );
+  }
+
   *,
   *::before,
   *::after {

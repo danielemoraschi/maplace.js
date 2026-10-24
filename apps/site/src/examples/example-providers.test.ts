@@ -9,8 +9,8 @@ describe("exampleFolder", () => {
 });
 
 describe("FIRST_PROVIDER", () => {
-  it("is Google, offered first", () => {
-    expect(FIRST_PROVIDER).toBe("google");
+  it("is MapLibre, offered first, so a visit loads no billed Google map unless asked", () => {
+    expect(FIRST_PROVIDER).toBe("maplibre");
   });
 });
 

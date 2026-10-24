@@ -10,6 +10,7 @@ import { PIN_SIZE } from "./pin-image";
 import { type Box, MARGIN } from "./popup-shift";
 import { mapOfWidthIn } from "./testing/map-of-width";
 import { wait } from "./testing/map-settle";
+import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { pagePointOf } from "./testing/user-drags";
 
 afterEach(() => {
@@ -130,6 +131,11 @@ async function expectClearOfTheList({ popupBox, panel, mapBox }: PhoneMap) {
 describe("a MapLibre popup panned into view on a phone", () => {
   it("pans a popup opened by a click on the map clear of the list in the top-right corner", async () => {
     const phone = await phoneMapWithList(6);
+    // Clicked once drawn: under a busy run the pins come frames after the map.
+    await vi.waitFor(
+      () => expect(renderedIds(phone.map, ["maplace-pins"])).toContain("p0"),
+      RENDER_WAIT,
+    );
     const tip = pagePointOf(phone.map, P0);
     const head = { x: tip.x, y: tip.y - PIN_HEAD };
     expect(

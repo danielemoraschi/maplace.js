@@ -6,7 +6,7 @@ export interface ExampleSection {
   readonly summary: string;
   /** Its list drawn its own way (as tabs), not in the site's panel beside the map. */
   readonly drawsOwnList?: true;
-  /** Why it runs on Google only, said beside the MapLibre choice. */
+  /** Why it runs on Google only, said in its frame while MapLibre is chosen. */
   readonly googleOnlyBecause?: string;
 }
 

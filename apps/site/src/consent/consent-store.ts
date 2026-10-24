@@ -1,3 +1,5 @@
+import { attempt } from "./site-data.ts";
+
 /** Where the visitor's consent to the maps (Google Maps and OpenFreeMap) is kept, site-wide. */
 export const CONSENT_KEY = "maplace-site:maps";
 
@@ -28,13 +30,4 @@ export function createConsentStore(storage: () => Storage): ConsentStore {
       attempt(() => storage().removeItem(CONSENT_KEY));
     },
   };
-}
-
-/** `access`'s result, or undefined when the browser refuses its site data. */
-function attempt<T>(access: () => T): T | undefined {
-  try {
-    return access();
-  } catch {
-    return undefined;
-  }
 }

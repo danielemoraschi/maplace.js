@@ -12,16 +12,19 @@ import {
 } from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
+import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
 import {
+  GOOGLE_MAPS,
   MAP_PROVIDERS,
   MAP_PROVIDERS_SECTION,
   THIRD_PARTIES,
   thirdPartyOf,
 } from "../src/site/third-parties.ts";
 import { textGluedToInline } from "./glued-text.ts";
+import { chooseProvider } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
 import { firstMap, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
 
@@ -166,6 +169,7 @@ describe("the privacy page", () => {
     const text = await page.locator("main").textContent();
     expect(text).toContain(CONSENT_KEY);
     expect(text).toContain(CONSENT_GRANTED);
+    expect(text).toContain(PROVIDER_CHOICE_KEY);
     expect(text).toContain(SITE_HOST.securityCookie);
     const contact = page.locator(`a[href="mailto:${PRIVACY_CONTACT_EMAIL}"]`);
     expect(await contact.allTextContents()).toEqual([PRIVACY_CONTACT_EMAIL]);
@@ -201,7 +205,10 @@ describe("the consent placeholder", () => {
     const placeholders = await loadMapsButtons(page).count();
     const href = `${PRIVACY_PAGE.route}#${MAP_PROVIDERS_SECTION}`;
     expect(placeholders).toBeGreaterThan(0);
-    expect(await page.locator(`a[href="${href}"]`).count()).toBe(placeholders);
+    // Route's placeholder is hidden while route shows its note, on MapLibre: count the ones shown.
+    expect(await page.locator(`a[href="${href}"]`).filter({ visible: true }).count()).toBe(
+      placeholders,
+    );
     const copy = await placeholder(page).locator("..").textContent();
     for (const { name } of MAP_PROVIDERS) expect(copy).toContain(name);
     expect(copy).toMatch(/whole site\. What loading/);
@@ -253,13 +260,20 @@ describe("what the site sends where", () => {
 
   it("once the maps are on, every request its pages make off the site goes to a third party the privacy page names", async () => {
     const visit = await site.visitor();
-    const { page, offsite, mapsJsRequests, context } = visit;
+    const { page, offsite, mapProviders, mapsJsRequests, context } = visit;
     await grantConsent(visit);
-    await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
     const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
-    for (const map of await shownMaps.all()) {
-      await map.scrollIntoViewIfNeeded();
-    }
+    const scrollPastShownMaps = async () => {
+      for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
+      await pause(SETTLE_MS);
+    };
+    // Every map on MapLibre, the page's first provider: none of it billed by Google.
+    await scrollPastShownMaps();
+    await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
+    expect(mapProviders().filter((url) => thirdPartyOf(url) === GOOGLE_MAPS)).toEqual([]);
+    await chooseProvider(page, "Google");
+    await scrollPastShownMaps();
+    await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
     await pause(SETTLE_MS);
     expect(offsite().filter((url) => thirdPartyOf(url) === undefined)).toEqual([]);
     await context.close();

@@ -48,6 +48,15 @@ describe("startTabs", () => {
     expect(shown()).toEqual(["map"]);
   });
 
+  it("skips a disabled tab with the arrow keys", () => {
+    tab("html").disabled = true;
+    tab("map").focus();
+    press("ArrowRight");
+    expect(selected()).toEqual(["vanilla"]);
+    press("ArrowLeft");
+    expect(selected()).toEqual(["map"]);
+  });
+
   it("reveals the panel it shows, fading it in", () => {
     tab("html").click();
     expect(vi.mocked(fadeIn).mock.calls).toEqual([[document.getElementById("html")]]);

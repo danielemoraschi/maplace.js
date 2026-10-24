@@ -2,6 +2,7 @@
 import ExampleSection from "../components/ExampleSection.astro";
 import Hero from "../components/Hero.astro";
 import InstallBox from "../components/InstallBox.astro";
+import ProviderSwitch from "../components/ProviderSwitch.astro";
 import { EXAMPLE_SECTIONS } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
 ---
@@ -12,5 +13,17 @@ import Base from "../layouts/Base.astro";
 >
   <Hero />
   <InstallBox />
-  {EXAMPLE_SECTIONS.map((section, index) => <ExampleSection number={index + 1} {...section} />)}
+  {/* The examples' one provider toggle: level with the first section's title in flow, then held under the header as the page scrolls, on the right at every width; the first title's row leaves it room. */}
+  <div>
+    <div
+      class="sticky top-[calc(var(--spacing-header)-var(--spacing-toggle-offset))] z-[5] flex h-0 items-start justify-end [container-type:scroll-state]"
+      data-sticky-toggle
+    >
+      {/* Once stuck, the toggle sits on a square white box, reaching past the content's edge so the toggle itself doesn't move. */}
+      <div class="-m-(--spacing-toggle-inset) translate-y-(--spacing-toggle-offset) p-(--spacing-toggle-inset) stuck:bg-surface">
+        <ProviderSwitch />
+      </div>
+    </div>
+    {EXAMPLE_SECTIONS.map((section, index) => <ExampleSection number={index + 1} {...section} />)}
+  </div>
 </Base>

@@ -14,9 +14,11 @@ interface Props {
   name: string;
   /** Its list drawn its own way, kept out of the site's panel (`frame.css`). */
   drawsOwnList?: true | undefined;
+  /** Why it runs on Google only: said, with a button to it, while MapLibre is chosen. */
+  googleOnlyBecause?: string | undefined;
 }
 
-const { name, drawsOwnList } = Astro.props;
+const { name, drawsOwnList, googleOnlyBecause } = Astro.props;
 const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
 const versions = liveVersions(name, settings);
 /** Whether `version` runs on Google, which the site has no key for. */
@@ -28,6 +30,7 @@ const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-
 <div
   class="map-frame relative"
   data-own-list={drawsOwnList ? "" : undefined}
+  data-no-version={versions.some(shownFirst) ? undefined : ""}
 >
   {
     versions.map((version) => (
@@ -43,6 +46,14 @@ const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-
         <Fragment set:html={version.markup} />
       </div>
     ))
+  }
+  {
+    googleOnlyBecause && (
+      <div class="hidden min-h-map place-content-center justify-items-center gap-3 bg-wash p-4 text-center in-data-no-version:grid">
+        <p class="m-0 text-md">{googleOnlyBecause}</p>
+        <button type="button" class="button-plain" data-show-on="google">Show it on Google</button>
+      </div>
+    )
   }
   {
     callsSave(name) && (

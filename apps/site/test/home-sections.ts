@@ -43,10 +43,14 @@ export function chooseVersion(page: Page, example: string, version: string): Pro
   return checkRadio(page, example, version);
 }
 
-/** Runs `example`'s section's map on `provider` (its label): the switch in its heading row. */
-export function chooseProvider(page: Page, example: string, provider: string): Promise<void> {
-  return checkRadio(page, example, provider);
+/** Runs every example on `provider` (its label): the page's one toggle. */
+export function chooseProvider(page: Page, provider: string): Promise<void> {
+  return providerToggle(page).getByRole("radio", { name: provider, exact: true }).check();
 }
+
+/** The page's toggle choosing the examples' provider. */
+export const providerToggle = (page: Page) =>
+  page.getByRole("group", { name: "Run the examples on" });
 
 async function checkRadio(page: Page, example: string, label: string): Promise<void> {
   const section = await sectionOf(page, example);

@@ -42,6 +42,7 @@ describe("a map's failure note", () => {
     // Only simple's section left, its Bundler version chosen before consent: its page map never
     // asks for Maps JS, so only the version's bootstrap does.
     await leaveOnlySection(page, "simple");
+    await chooseProvider(page, "Google");
     await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
     await page.locator("#simple-vanilla-map").scrollIntoViewIfNeeded();
@@ -56,6 +57,7 @@ describe("a map's failure note", () => {
   it("says when Maps JS didn't load for a version, the page's tag having failed first", async () => {
     const { page, context, mapsJsRequests } = await site.visitor();
     await openHome(page, site.url);
+    await chooseProvider(page, "Google");
     await placeholder(page).click();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
     const html = simpleOnGoogle(page, "html");
@@ -86,7 +88,6 @@ describe("a map's failure note", () => {
     });
     await openHome(page, site.url);
     await leaveOnlySection(page, "simple");
-    await chooseProvider(page, "simple", "MapLibre");
     await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
     const section = page.locator("section#simple");
@@ -97,7 +98,6 @@ describe("a map's failure note", () => {
       "The map couldn't load: its script didn't load. The network?",
     );
     await Promise.all([page.waitForEvent("load"), reloadButton(page).click()]);
-    await chooseProvider(page, "simple", "MapLibre");
     await chooseVersion(page, "simple", "Bundler");
     await section.scrollIntoViewIfNeeded();
     await expect.poll(() => vanilla.getAttribute("data-started"), ON_MAPLIBRE).toBe("");
@@ -212,7 +212,7 @@ async function sectionFrom(options: VisitorOptions, opening: Opening) {
   const { page } = visit;
   await openHome(page, site.url);
   await leaveOnlySection(page, example);
-  if (provider === "maplibre") await chooseProvider(page, example, "MapLibre");
+  if (provider === "google") await chooseProvider(page, "Google");
   await chooseVersion(page, example, version);
   await beforeConsent?.(page);
   await footerToggle(page).click();

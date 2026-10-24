@@ -17,7 +17,6 @@ import {
   siteWorkers,
 } from "./drawn-on-maplibre.ts";
 import {
-  chooseProvider,
   chooseVersion,
   pageMapState,
   type VersionChoice,
@@ -71,7 +70,6 @@ describe("the site's examples on MapLibre", () => {
             .toContain(LIBERTY);
         }
 
-        await chooseProvider(page, name, "MapLibre");
         for (const [index, version] of order.entries()) {
           const askedBefore = offsite().length;
           await chooseVersion(page, name, version.label);
@@ -99,8 +97,7 @@ describe("the site's examples on MapLibre", () => {
   });
 
   it("opens styled's page on OpenFreeMap's dark style from its toggle, answered locally", async () => {
-    const { page, context, offsite, errors, section } = await visitSection(site, "styled");
-    await chooseProvider(page, "styled", "MapLibre");
+    const { context, offsite, errors, section } = await visitSection(site, "styled");
     await loadMapsButtons(section).click();
     const version = mapLibreVersionIn(section, "html");
     await expect.poll(() => pageMapState(version), ON_MAPLIBRE).toBe("ready");
@@ -118,8 +115,7 @@ describe("the site's examples on MapLibre", () => {
 
 describe("MapLibre's maps in the site's frame", () => {
   it("frames MapLibre's map as Google's", async () => {
-    const { page, context, section } = await visitSection(site, "simple");
-    await chooseProvider(page, "simple", "MapLibre");
+    const { context, section } = await visitSection(site, "simple");
     await loadMapsButtons(section).click();
     const map = mapLibreVersionIn(section, "html").locator(".maplace-maplibre-map");
     await expect.poll(() => map.count(), ON_MAPLIBRE).toBe(1);
@@ -129,8 +125,7 @@ describe("MapLibre's maps in the site's frame", () => {
   }, 30_000);
 
   it("leaves a list on MapLibre's map out of the site's side panel", async () => {
-    const { page, context, section } = await visitSection(site, "markers");
-    await chooseProvider(page, "markers", "MapLibre");
+    const { context, section } = await visitSection(site, "markers");
     await loadMapsButtons(section).click();
     const list = mapLibreVersionIn(section, "html").locator(".maplace-list-view");
     await expect.poll(() => list.count(), ON_MAPLIBRE).toBe(1);
@@ -165,7 +160,6 @@ describe("a version left while it loads, on MapLibre", () => {
     { timeout: 60_000 },
     async (leftAndShown) => {
       const { page, context, section, errors } = await visitSection(site, "styled");
-      await chooseProvider(page, "styled", "MapLibre");
       await expectLeftOpensAsShown({ page, section, example: "styled" }, leftAndShown, {
         versionIn: (kind) => mapLibreVersionIn(section, kind),
         viewOf: mapLibreView,

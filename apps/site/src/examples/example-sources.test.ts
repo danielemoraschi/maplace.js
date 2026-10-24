@@ -65,8 +65,8 @@ describe("exampleFile", () => {
 });
 
 describe("exampleProviders", () => {
-  it("lists Google, then MapLibre, for an example with both; Google alone for route", () => {
-    expect(exampleProviders("simple")).toEqual(["google", "maplibre"]);
+  it("lists MapLibre, then Google, for an example with both; Google alone for route", () => {
+    expect(exampleProviders("simple")).toEqual(["maplibre", "google"]);
     expect(exampleProviders("route")).toEqual(["google"]);
   });
 
@@ -76,16 +76,16 @@ describe("exampleProviders", () => {
 });
 
 describe("codeTabsOf", () => {
-  it("groups each version's code by provider, Google first", () => {
+  it("groups each version's code by provider, MapLibre first", () => {
     const tabs = codeTabsOf("simple").map(({ kind, codes }) => [
       kind,
       codes.map(({ provider, folder }) => `${provider} ${folder}`),
     ]);
     expect(tabs).toEqual([
-      ["html", ["google simple", "maplibre simple/maplibre"]],
-      ["script", ["google simple", "maplibre simple/maplibre"]],
-      ["vanilla", ["google simple", "maplibre simple/maplibre"]],
-      ["react", ["google simple", "maplibre simple/maplibre"]],
+      ["html", ["maplibre simple/maplibre", "google simple"]],
+      ["script", ["maplibre simple/maplibre", "google simple"]],
+      ["vanilla", ["maplibre simple/maplibre", "google simple"]],
+      ["react", ["maplibre simple/maplibre", "google simple"]],
     ]);
   });
 

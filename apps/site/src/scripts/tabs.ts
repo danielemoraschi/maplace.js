@@ -11,7 +11,7 @@ const MOVES: Readonly<Record<string, (index: number, count: number) => number>> 
 /**
  * Every `role="tablist"` under `root` as ARIA tabs: a click or an arrow key selects a tab and
  * shows its panel (`aria-controls`), fading it in, the others hidden at once; only the selected
- * tab is in the Tab order.
+ * tab is in the Tab order, and the arrow keys pass over a disabled one.
  * The page renders the first tab selected.
  */
 export function startTabs(root: ParentNode): void {
@@ -23,8 +23,7 @@ export function startTabs(root: ParentNode): void {
     for (const [index, tab] of tabs.entries()) {
       tab.addEventListener("click", () => select(tab));
       tab.addEventListener("keydown", (event) => {
-        const move = MOVES[event.key];
-        const next = move && tabs[move(index, tabs.length)];
+        const next = nextTab(tabs, index, MOVES[event.key]);
         if (!next) return;
         event.preventDefault();
         select(next);
@@ -32,6 +31,22 @@ export function startTabs(root: ParentNode): void {
       });
     }
   }
+}
+
+/** The tab `move` reaches from the one at `index`, past any that is disabled. */
+function nextTab(
+  tabs: readonly HTMLElement[],
+  index: number,
+  move: ((index: number, count: number) => number) | undefined,
+): HTMLElement | undefined {
+  if (move === undefined) return undefined;
+  let at = index;
+  for (const _ of tabs) {
+    at = move(at, tabs.length);
+    const tab = tabs[at];
+    if (tab && !(tab as HTMLButtonElement).disabled) return tab;
+  }
+  return undefined;
 }
 
 function showTab(tab: HTMLElement, shown: boolean): void {

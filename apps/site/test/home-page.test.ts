@@ -9,7 +9,7 @@ import type { Provider } from "../src/examples/example-providers.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { exampleProviders } from "../src/examples/example-sources.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { chooseTab, chooseVersion } from "./home-sections.ts";
+import { chooseProvider, chooseTab, chooseVersion } from "./home-sections.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { footerToggle, openHome, placeholder } from "./visitor.ts";
@@ -100,16 +100,9 @@ describe("the home page's examples", () => {
   it("gives every map a box, as a map without one never comes into view to be released", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url);
-    const onGoogle = await shownMapHeights(page, "google");
-    // Clicked, not set: setting `checked` fires no `change`, and the switch would reveal nothing.
-    await page.evaluate(() => {
-      for (const radio of document.querySelectorAll<HTMLInputElement>(
-        'input[value="maplibre"]:not(:disabled)',
-      )) {
-        radio.click();
-      }
-    });
     const onMapLibre = await shownMapHeights(page, "maplibre");
+    await chooseProvider(page, "Google");
+    const onGoogle = await shownMapHeights(page, "google");
     expect(onGoogle.length + onMapLibre.length).toBe(PAGE_MAP_COUNT);
     expect([...onGoogle, ...onMapLibre].filter((height) => height === 0)).toEqual([]);
     await context.close();
@@ -129,6 +122,7 @@ describe("the home page's examples", () => {
     const { page, context, fetched } = await site.visitor();
     await openHome(page, site.url);
     await placeholder(page).click();
+    await chooseProvider(page, "Google");
     await page.locator("#route-map").scrollIntoViewIfNeeded();
     await expect
       .poll(
@@ -149,6 +143,7 @@ describe("the home page's examples", () => {
     await openHome(page, site.url);
     // Chosen before consent, so big's page map, hidden, is never released: only its React
     // version can fetch the points.
+    await chooseProvider(page, "Google");
     await chooseVersion(page, "route", "Bundler");
     await chooseVersion(page, "big", "React");
     await footerToggle(page).click();
@@ -170,6 +165,7 @@ describe("the home page's code tabs", () => {
   it("shows a host's Google loader as one closed line, opened on a click", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url);
+    await chooseProvider(page, "Google");
     const section = await chooseTab(page, "simple", "Bundler");
     const loader = section.getByRole("group").filter({ hasText: "Google's bootstrap loader" });
     expect(await loader.getAttribute("open")).toBeNull();

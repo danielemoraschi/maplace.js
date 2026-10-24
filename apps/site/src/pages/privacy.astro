@@ -1,6 +1,7 @@
 ---
 import ProsePage from "../components/ProsePage.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
+import { PROVIDER_CHOICE_KEY } from "../scripts/provider-choice.ts";
 import { PRIVACY_PAGE } from "../site/footer-pages.ts";
 import {
   contactAddress,
@@ -27,6 +28,11 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       <code>{CONSENT_GRANTED}</code>, so later visits show the maps without asking again. Turning
       the maps off removes it. If your browser keeps no site data, your choice lasts for the page
       you made it on.
+    </p>
+    <p>
+      Choosing Google or MapLibre for the examples keeps one more entry, in session storage,{" "}
+      <code>{PROVIDER_CHOICE_KEY}</code>, so the examples open on it again while the tab stays
+      open; the browser drops it when the session ends.
     </p>
   </section>
 

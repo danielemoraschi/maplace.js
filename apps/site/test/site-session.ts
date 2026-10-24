@@ -43,6 +43,17 @@ export interface SiteSession {
   visitor(options?: VisitorOptions): Promise<Visitor>;
 }
 
+/** A fresh visitor's page at `route` of `site`, on a screen of `viewport`. */
+export async function opened(
+  site: SiteSession,
+  route: string,
+  viewport: { readonly width: number; readonly height: number },
+) {
+  const visit = await site.visitor({ viewport });
+  await visit.page.goto(new URL(route, site.url).href);
+  return visit;
+}
+
 /** How a session's visitors see the site, unless a test says otherwise. */
 export type SeenSite = Pick<VisitorOptions, "google" | "openFreeMap" | "seenAt">;
 

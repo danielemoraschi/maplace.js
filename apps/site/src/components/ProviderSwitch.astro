@@ -1,56 +1,40 @@
 ---
 import { FIRST_PROVIDER, PROVIDER_LABELS } from "../examples/example-providers.ts";
-import { exampleProviders } from "../examples/example-sources.ts";
 
 interface Props {
-  /** Its example's folder in `packages/maplace/examples/`. */
-  name: string;
-  /** Why the example runs on Google only, said beside the switch and as its description. */
-  googleOnlyBecause?: string | undefined;
-  /** Where its row places it. */
+  /** Where the page places it. */
   class?: string;
 }
 
-const { name, googleOnlyBecause, class: placement } = Astro.props;
-const providers = exampleProviders(name);
-// `example-` keeps the site's ids apart from the pages' own.
-const reasonId = `example-${name}-provider-reason`;
+const { class: placement } = Astro.props;
 ---
 
-<div class:list={["flex items-center gap-3 text-sm", placement]}>
-  <fieldset
-    data-site-switch
-    class="group/provider relative m-0 grid shrink-0 grid-cols-2 border-2 border-ink p-0 font-medium"
-    aria-describedby={googleOnlyBecause && reasonId}
-  >
-    <legend class="sr-only">Run on</legend>
-    {/* The chosen provider's ground, sliding under the second segment when that one is checked. */}
-    <span
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-ink transition-transform duration-150 ease-out group-has-[label:last-of-type>input:checked]/provider:translate-x-full motion-reduce:transition-none"
-    ></span>
-    {
-      PROVIDER_LABELS.map(({ provider, label }) => (
-        <label class="relative cursor-pointer px-3.5 py-1 text-center transition-colors duration-150 has-checked:text-paper has-disabled:cursor-not-allowed has-disabled:text-muted has-disabled:opacity-60 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent motion-reduce:transition-none">
-          <input
-            class="absolute inset-0 m-0 cursor-[inherit] appearance-none opacity-0"
-            type="radio"
-            name={`${name}-provider`}
-            value={provider}
-            checked={provider === FIRST_PROVIDER}
-            disabled={!providers.includes(provider)}
-            autocomplete="off"
-          />
-          {label}
-        </label>
-      ))
-    }
-  </fieldset>
+<fieldset
+  data-provider-choice
+  class:list={[
+    "group/provider relative m-0 grid h-(--spacing-toggle-height) w-(--spacing-toggle-width) shrink-0 grid-cols-2 border-2 border-ink bg-paper p-0 text-sm font-medium",
+    placement,
+  ]}
+>
+  <legend class="sr-only">Run the examples on</legend>
+  {/* The chosen provider's ground, sliding under the second segment when that one is checked. */}
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-ink transition-transform duration-150 ease-out group-has-[label:last-of-type>input:checked]/provider:translate-x-full motion-reduce:transition-none"
+  ></span>
   {
-    googleOnlyBecause && (
-      <span class="text-muted min-[641px]:order-first" id={reasonId}>
-        {googleOnlyBecause}
-      </span>
-    )
+    PROVIDER_LABELS.map(({ provider, label }) => (
+      <label class="relative cursor-pointer px-3.5 py-1 text-center transition-colors duration-150 has-checked:text-paper has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent motion-reduce:transition-none">
+        <input
+          class="absolute inset-0 m-0 cursor-[inherit] appearance-none opacity-0"
+          type="radio"
+          name="provider"
+          value={provider}
+          checked={provider === FIRST_PROVIDER}
+          autocomplete="off"
+        />
+        {label}
+      </label>
+    ))
   }
-</div>
+</fieldset>
