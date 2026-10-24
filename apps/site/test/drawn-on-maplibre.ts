@@ -1,5 +1,7 @@
+import { createHash } from "node:crypto";
 import type { MaplaceMapElement } from "maplace/element";
 import type { Locator, Page } from "playwright";
+import { MAPLIBRE_MAP_CLASS } from "../../../packages/maplace/src/maplibre/control-styles.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";
 import { providerVersionIn } from "./home-sections.ts";
 
@@ -61,4 +63,15 @@ export function missingStylesheetWarnings(page: Page): () => readonly string[] {
     if (message.text().includes(MISSING_STYLESHEET)) warnings.push(message.text());
   });
   return () => warnings;
+}
+
+/**
+ * MapLibre's view in `version` as drawn: a digest of its map's pixels, once its canvas has a
+ * width. Its pins are drawn in a layer, not the DOM, so the picture is what shows where they are;
+ * the same locations in the same frame on the same style draw alike on the same view.
+ */
+export async function mapLibreView(version: Locator): Promise<string | undefined> {
+  if (!(await mapLibreDrawn(version))) return undefined;
+  const shot = await version.locator(`.${MAPLIBRE_MAP_CLASS}`).screenshot();
+  return createHash("sha1").update(shot).digest("hex");
 }

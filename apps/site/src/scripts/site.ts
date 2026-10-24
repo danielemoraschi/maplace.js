@@ -12,13 +12,13 @@ import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
 import { startCopyButtons } from "./copy-buttons.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
-import { noteMapsJsFailure, noteVersionFailure, startFailureNotes } from "./map-failures.ts";
+import { noteMapsJsFailure, noteVersionStartFailure, startFailureNotes } from "./map-failures.ts";
 import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { ELEMENT_LOADERS, readyMapLibre } from "./provider-loaders.ts";
 import { startReloadButtons } from "./reload-buttons.ts";
-import { scriptVersionStart } from "./script-version.ts";
+import { importAsModule, scriptVersionStart } from "./script-version.ts";
 import { installMaplace } from "./site-maplace.ts";
 import { startStarButtons } from "./star-buttons.ts";
 import { startTabs } from "./tabs.ts";
@@ -33,7 +33,8 @@ import { startVersionSwitches } from "./version-switch.ts";
 // script would have it. A script, vanilla or React version, once chosen, starts the same way:
 // consented and in view, its provider readied (on MapLibre, its worker; on Google, a module
 // version's bootstrap and Maps JS, a script version's adapter adding Maps JS itself), then a
-// script version's program run on the page's `Maplace`, or a module version's module.
+// script version's program run on the page's `Maplace`, as an imported module, or a module
+// version's module.
 // A map whose failure a reload mends (a script, Maps JS, a provider's map that didn't load) offers one.
 const mapsJs = watchMapsJs(document);
 const maps = [...document.querySelectorAll<MaplaceMapElement>("maplace-map[hold]")];
@@ -65,8 +66,8 @@ const startVersion = versionStarter({
     }),
     maplibre: readyMapLibre,
   }),
-  load: byKind({ script: scriptVersionStart(installMaplace), module: loadVersion }),
-  failed: noteVersionFailure,
+  load: byKind({ script: scriptVersionStart(installMaplace, importAsModule), module: loadVersion }),
+  failed: noteVersionStartFailure,
 });
 
 mapsJs.whenFailed(() => noteMapsJsFailure(document));

@@ -1,3 +1,4 @@
+import { setTimeout as pause } from "node:timers/promises";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll } from "vitest";
 import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
@@ -8,6 +9,26 @@ import { type Visitor, type VisitorOptions, visitor } from "./visitor.ts";
  * test waits before saying nothing was asked.
  */
 export const SETTLE_MS = 500;
+
+/**
+ * What `read` gives once two reads `SETTLE_MS` apart agree, and aren't `undefined`: a map's
+ * markers or view may still change as it opens. Throws, naming `what`, if it hasn't within
+ * `timeout`.
+ */
+export async function settled<Value>(
+  read: () => Promise<Value | undefined>,
+  { timeout, what }: { readonly timeout: number; readonly what: string },
+): Promise<Value> {
+  const giveUpAt = Date.now() + timeout;
+  let last = await read();
+  while (Date.now() < giveUpAt) {
+    await pause(SETTLE_MS);
+    const now = await read();
+    if (now !== undefined && now === last) return now;
+    last = now;
+  }
+  throw new Error(`${what} kept changing for ${timeout} ms, last ${String(last)}`);
+}
 
 /** How long a released map may take to ask for Maps JS, on a busy machine. */
 export const ASKED = { timeout: 10_000 };

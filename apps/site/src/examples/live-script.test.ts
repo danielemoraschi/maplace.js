@@ -38,4 +38,9 @@ describe("liveScript", () => {
     const other = `${SCRIPT_VERSION}<script src="/other.js"></script>`;
     expect(() => liveScript(other, (html) => html)).toThrow(/inline scripts only/);
   });
+
+  it("refuses a script version whose program isn't a module script", () => {
+    const classic = SCRIPT_VERSION.replace('<script type="module">', "<script>");
+    expect(() => liveScript(classic, (html) => html)).toThrow(/must be a module script/);
+  });
 });

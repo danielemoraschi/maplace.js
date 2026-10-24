@@ -3,7 +3,7 @@ import { normalizePath, type Plugin } from "vite";
 import { VERSION_MODULE } from "./example-modules-run.ts";
 
 /** The site's `maplace/google`, which the examples' version modules import instead. */
-const ON_SITE = "\0maplace-google-on-site";
+export const ON_SITE = "\0maplace-google-on-site";
 
 const SITE_GOOGLE = fileURLToPath(new URL("../examples/site-google.ts", import.meta.url));
 
@@ -20,7 +20,8 @@ const ON_SITE_MODULE = [
  * Runs the examples' vanilla and React versions, and the site's `Maplace` its script versions
  * call, on the site's map ID (`SITE_MAPS_MAP_ID`), as the site runs them with its key: their
  * `maplace/google` is one whose calls default to it (`googleWithMapId`), the example files
- * unchanged.
+ * unchanged. The `maplace/google` it wraps is itself the site's, noting failed loads
+ * (`exampleFailureNotes`).
  */
 export function exampleMapId(): Plugin {
   return {
@@ -44,11 +45,11 @@ export const SITE_MAPLACE = normalizePath(
 );
 
 /** Whether `importer` runs maps on the site's map ID: a version module, or the site's `Maplace`. */
-function isOnSiteMapId(importer: string): boolean {
+export function isOnSiteMapId(importer: string): boolean {
   return VERSION_MODULE.test(importer) || importer === SITE_MAPLACE;
 }
 
 /** A module id without the query a dev server adds (`?v=…`). */
-function withoutQuery(id: string): string {
+export function withoutQuery(id: string): string {
   return id.split("?")[0] ?? id;
 }
