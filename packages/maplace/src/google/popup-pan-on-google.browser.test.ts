@@ -42,17 +42,28 @@ function sizedContent(): HTMLElement {
   return content;
 }
 
-/** The box around what `element` shows: its own and its descendants' that have an area. */
-function shownBox(element: Element): Box {
+/** The box around what `element` shows: its own and its descendants' that have an area, if any. */
+function shownBox(element: Element): Box | undefined {
   const boxes = [element, ...element.querySelectorAll("*")]
     .map((each) => each.getBoundingClientRect())
     .filter(({ width, height }) => width > 0 && height > 0);
+  if (boxes.length === 0) return undefined;
   return {
     left: Math.min(...boxes.map(({ left }) => left)),
     top: Math.min(...boxes.map(({ top }) => top)),
     right: Math.max(...boxes.map(({ right }) => right)),
     bottom: Math.max(...boxes.map(({ bottom }) => bottom)),
   };
+}
+
+/** Where a credit of Google's shows, failing if it shows nothing: Google drew it anew elsewhere. */
+function creditBox(credit: Element): Box {
+  const box = shownBox(credit);
+  if (box === undefined)
+    throw new Error(
+      `${credit.getAttribute("href")} shows nothing (on the page: ${credit.isConnected})`,
+    );
+  return box;
 }
 
 /** Google's logo and terms links on the map in `container`, failing unless both are there. */
@@ -128,13 +139,16 @@ async function phoneMapWithList(locations: Location[]) {
   adapter.mountControl(list.element, "top-right");
   await settledOnMap(list.element);
   const map = state.mounted?.map as google.maps.Map;
+  // Here first, so a selector Google no longer matches fails before the checks, with its own message.
+  googlesCredits(container);
   return {
     maplace,
     state,
     map,
     container,
     list,
-    credits: googlesCredits(container),
+    /** Looked up at each check: Google may draw its controls anew as the map moves. */
+    credits: () => googlesCredits(container),
     bubble: () => bubbleIn(container),
     bubblesSettled: bubblesSettled(map, container),
     room: () => (map.getDiv().firstElementChild as Element).getBoundingClientRect(),
@@ -156,13 +170,20 @@ async function expectOverTheListOnceSettled({ bubblesSettled, panel }: PhoneMap)
 }
 
 /** The bubble meets neither the list nor Google's logo and terms, inside the map, and stays so. */
-async function expectClearOfTheCorners({ bubble, panel, credits, room }: PhoneMap) {
+async function expectClearOfTheCorners({ map, container, bubble, panel, credits, room }: PhoneMap) {
+  const corners = await popupCorners();
+  const counted = () => {
+    const dialog = container.querySelector('[role="dialog"]');
+    if (corners === undefined || dialog === null) return "";
+    return `; counted ${corners.measureCorners(map, dialog).controls.map(boxText).join(" ")}`;
+  };
   const clear = () => {
     const box = bubble();
     if (box === undefined) return "no bubble";
-    const covered = [panel(), ...credits.map(shownBox)].filter((other) => boxesMeet(box, other));
-    if (covered.length > 0) return `bubble ${JSON.stringify(box)} meets ${JSON.stringify(covered)}`;
-    return insideOf(box, room()) ? "clear" : `bubble ${JSON.stringify(box)} outside the map`;
+    const covered = [panel(), ...credits().map(creditBox)].filter((other) => boxesMeet(box, other));
+    if (covered.length > 0)
+      return `bubble ${boxText(box)} meets ${covered.map(boxText).join(" ")}${counted()}`;
+    return insideOf(box, room()) ? "clear" : `bubble ${boxText(box)} outside the map${counted()}`;
   };
   await expect.poll(clear, { timeout: TILES_TIMEOUT_MS }).toBe("clear");
   await wait(QUIET_MS);
@@ -177,21 +198,63 @@ async function popupCorners() {
   const load = import.meta.glob<typeof import("./popup-corners")>("./popup-corners.ts")[
     "./popup-corners.ts"
   ];
-  if (load === undefined) throw new Error("popup-corners.ts not found beside this test");
-  return load();
+  return load?.();
 }
 
 /**
- * Google's logo and terms each meet a box the pan stays clear of: the walk of Google's drawing
- * finds Google's own controls, not only the panels pushed to its corners.
+ * What the pan stays clear of is what Google draws over the map, not the map: Google's logo and
+ * terms each meet a box counted, not only the panels pushed to its corners, and no box counted lies
+ * within a marker, which moves with the map. Soft, and checked before the pan's outcome, so a
+ * failure of the pan still shows what the walk saw.
  */
-async function expectGooglesCreditsCounted({ map, container, credits }: PhoneMap) {
-  const { measureCorners } = await popupCorners();
-  const { controls } = measureCorners(map, container.querySelector('[role="dialog"]') as Element);
-  const uncounted = credits.filter(
-    (credit) => !controls.some((box) => boxesMeet(box, shownBox(credit))),
-  );
-  expect(uncounted.map((credit) => credit.getAttribute("href"))).toEqual([]);
+async function expectCountedAsGoogleDrawsThem({ map, state, container, credits }: PhoneMap) {
+  const corners = await popupCorners();
+  if (corners === undefined) {
+    expect.soft(corners, "popup-corners.ts beside this test").toBeDefined();
+    return;
+  }
+  const bubble = container.querySelector('[role="dialog"]') as Element;
+  const { controls } = corners.measureCorners(map, bubble);
+  const markers = [...state.placed.values()].flatMap((placed) => {
+    const box = "marker" in placed ? shownBox(placed.marker) : undefined;
+    return box === undefined ? [] : [box];
+  });
+  // What a failure needs to be read on real Maps: where each element sits, and what was counted.
+  const wrong = [
+    ...credits()
+      .filter((credit) => !controls.some((box) => boxesMeet(box, creditBox(credit))))
+      .map((credit) => ({
+        uncounted: credit.getAttribute("href"),
+        ancestors: ancestorsOf(credit, map.getDiv(), bubble),
+      })),
+    ...controls
+      .filter((box) => markers.some((marker) => insideOf(box, marker)))
+      .map((box) => ({ countedInAMarker: boxText(box) })),
+  ];
+  const seen = {
+    counted: controls.map(boxText),
+    markers: markers.map(boxText),
+    bubble: ancestorsOf(bubble, map.getDiv(), bubble),
+  };
+  expect.soft(wrong.length === 0 ? [] : [...wrong, seen]).toEqual([]);
+}
+
+/** Each of `element`'s ancestors up to `top`, as tag, class, role, box and whether it holds `bubble`. */
+function ancestorsOf(element: Element, top: Element, bubble: Element): string[] {
+  const chain: string[] = [];
+  for (let up = element.parentElement; up !== null && up !== top; up = up.parentElement) {
+    const shown = up.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+    const holds = up.contains(bubble) ? " holds the bubble" : "";
+    const role = up.getAttribute("role") ?? "";
+    chain.push(
+      `${up.tagName}.${up.getAttribute("class") ?? ""}[${role}] ${boxText(up.getBoundingClientRect())}${shown ? "" : " hidden"}${holds}, ${up.childElementCount} children`,
+    );
+  }
+  return chain;
+}
+
+function boxText({ left, top, right, bottom }: Box): string {
+  return `${left},${top}→${right},${bottom}`;
 }
 
 describeWithMaps("a Google popup panned clear of the corners on a phone", () => {
@@ -200,8 +263,8 @@ describeWithMaps("a Google popup panned clear of the corners on a phone", () => 
     await userEvent.click(optionsIn(phone.list.element)[0] as HTMLElement);
     await expect.poll(() => phone.maplace.getSnapshot().selectedId).toBe("p0");
     await expectOverTheListOnceSettled(phone);
+    await expectCountedAsGoogleDrawsThem(phone);
     await expectClearOfTheCorners(phone);
-    await expectGooglesCreditsCounted(phone);
   });
 
   it("pans a popup opened by a click on its marker, panned to, clear of the list", async () => {
@@ -209,6 +272,7 @@ describeWithMaps("a Google popup panned clear of the corners on a phone", () => 
     await userEvent.click(await drawnMarker(phone.state, "p0"));
     await expect.poll(() => phone.maplace.getSnapshot().selectedId).toBe("p0");
     await expectOverTheListOnceSettled(phone);
+    await expectCountedAsGoogleDrawsThem(phone);
     await expectClearOfTheCorners(phone);
   });
 });
