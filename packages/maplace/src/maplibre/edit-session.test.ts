@@ -9,7 +9,13 @@ import {
   polygonDrawable,
   squareAround,
 } from "../testing/conformance/fixtures";
-import { drag, editingOnStub, handleWith, hold } from "./testing/editing-on-stub";
+import {
+  drag,
+  editingOnStub,
+  handleWith,
+  hold,
+  putOnNextWorldCopy,
+} from "./testing/editing-on-stub";
 
 const POLYGON = polygonDrawable("p").geometry;
 const CIRCLE = circleDrawable("c").geometry;
@@ -122,6 +128,22 @@ describe("a shape's editing session", () => {
     expect(markers()).toEqual(before);
     expect(handleWith(session.handles(), holeCorner).lngLat).toEqual(MOVED_HOLE_CORNER);
   });
+
+  it.each([
+    ["on whole degrees", ORIGIN],
+    ["off them, where wrapping adds float error", { lat: 0, lng: 12.3 }],
+  ])(
+    "moves no handle MapLibre keeps on another world copy when the store sends a geometry anew, %s",
+    (_, centre) => {
+      const path = squareAround(centre, 2);
+      const { session } = editingOnStub({ type: "polygon", path });
+      const corner = handleWith(session.handles(), { kind: "vertex", ring: 0, index: 0 });
+      putOnNextWorldCopy(corner);
+      const { moves } = corner;
+      session.follow({ type: "polygon", path: [...path.slice(0, 3), centre] });
+      expect(corner.moves).toBe(moves);
+    },
+  );
 
   it("draws the shape as it was when stopped in the middle of a drag", () => {
     const { session, drawn } = editingOnStub(POLYGON);

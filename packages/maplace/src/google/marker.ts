@@ -7,6 +7,7 @@ import type { Drawable } from "../drawable";
 import type { MarkerGeometry } from "../geometry";
 import type { LocationState } from "../location";
 import { sameState } from "../location-state";
+import { followMarkerDrags } from "./marker-drags";
 import { reportMarkerInput } from "./marker-reports";
 import type { PlacedMarker, PlacingSite } from "./placed-location";
 
@@ -21,6 +22,11 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   let drawn = drawable;
   let look = site.lookOf(drawable.id);
   const marker = newMarker(drawable, site, stackRank(order, look.state));
+  const drags = followMarkerDrags(marker, {
+    id: drawable.id,
+    mounted: site.mounted,
+    isEditable: () => drawn.editable,
+  });
   showIcon(marker, drawable, look.state);
   const { markers } = site.mounted;
   markers.place(marker, look);
@@ -30,7 +36,11 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     drawable: () => drawn,
     popupPlace: () => ({ anchor: marker }),
     update(next) {
-      if (next.geometry !== drawn.geometry) {
+      // A drag the page cuts short, turning `editable` off, ends where the store has the marker
+      // (the RFC's `locationEdit`), wherever Google's dropped drag had left it.
+      const editingEnds = drawn.editable && !next.editable;
+      const dragCut = editingEnds ? drags.cutShort() : false;
+      if (next.geometry !== drawn.geometry || dragCut) {
         marker.position = pointOf(next);
         markers.moved(marker);
       }
@@ -49,6 +59,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       look = next;
     },
     remove() {
+      drags.stop();
       markers.remove(marker);
       site.hover.gone(drawable.id);
     },
