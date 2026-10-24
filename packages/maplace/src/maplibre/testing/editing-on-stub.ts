@@ -74,6 +74,15 @@ export function handleWith(handles: readonly EditHandle[], role: object): Record
   return markerOf(found);
 }
 
+/**
+ * Puts `marker` on the next world copy, as MapLibre's smartWrap does to keep a marker on the copy
+ * nearest the view: its `getLngLat()` then reads 360° on. Not counted as a move.
+ */
+export function putOnNextWorldCopy(marker: RecordingMarker): void {
+  const { lat, lng } = marker.lngLat;
+  marker.lngLat = { lat, lng: lng + 360 };
+}
+
 /** Drags `marker` to `to` and holds it there, not let go. */
 export function hold(marker: RecordingMarker, to: LatLng): void {
   marker.fire("dragstart");

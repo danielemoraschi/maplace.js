@@ -17,6 +17,10 @@ declare module "vitest/browser" {
     multiClickMouse(point: ViewportPoint, count: number): Promise<void>;
     /** Turns the wheel over a point, by `deltaY` pixels (down is positive). */
     wheelMouse(point: ViewportPoint, deltaY: number): Promise<void>;
+    /** Presses the mouse at a point and holds it: `moveMouse` drags, `releaseMouse` lets go. */
+    holdMouse(point: ViewportPoint): Promise<void>;
+    /** Lets go of the mouse button, wherever the pointer is. */
+    releaseMouse(): Promise<void>;
   }
 }
 
@@ -52,6 +56,16 @@ export const MOUSE_COMMANDS = {
     await context.page.mouse.move(onScreen.x, onScreen.y);
     await context.page.mouse.wheel(0, deltaY);
   }) satisfies BrowserCommand<[ViewportPoint, number]>,
+  // Playwright keeps the button down across calls, so `moveMouse`'s stepped moves carry it.
+  holdMouse: (async (context, point) => {
+    const [onScreen] = await onPage(context, [point]);
+    if (onScreen === undefined) return;
+    await context.page.mouse.move(onScreen.x, onScreen.y);
+    await context.page.mouse.down();
+  }) satisfies BrowserCommand<[ViewportPoint]>,
+  releaseMouse: (async (context) => {
+    await context.page.mouse.up();
+  }) satisfies BrowserCommand<[]>,
 };
 
 type CommandContext = Parameters<BrowserCommand<[]>>[0];

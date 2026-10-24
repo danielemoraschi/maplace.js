@@ -7,6 +7,8 @@ import type { ShapeKind } from "./shape-kinds";
 export interface ShownGeometry {
   /** Draws `geometry` unless the shape shows it already, as after the store writes back an edit. */
   show(geometry: Geometry): void;
+  /** Stops watching for edits: a shape taken off reports none Google fires on it after. */
+  stop(): void;
 }
 
 interface Showing {
@@ -47,5 +49,6 @@ export function showGeometry(geometry: Geometry, { kind, shape, edited }: Showin
     show(next) {
       if (!sameGeometry(next, shown)) draw(next);
     },
+    stop: () => stopWatching(),
   };
 }

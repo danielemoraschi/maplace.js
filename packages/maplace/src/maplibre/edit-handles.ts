@@ -1,6 +1,7 @@
 import type { Marker } from "maplibre-gl";
 import { type HoverReports, reportElementHover } from "../adapter-kit/hover-reports";
 import type { LatLng } from "../geometry";
+import { wrapLongitude } from "../longitude-arc";
 import { lngLatOf, wrappedLatLng } from "./conversions";
 import { markAsOwnMarker } from "./dom-marker";
 import { endDragsTheMapMisses } from "./drag-release";
@@ -33,6 +34,9 @@ export interface EditedShape {
 export interface HandleOwner extends EditedShape {
   readonly drags: HandleDrags;
 }
+
+/** Closer than this, about a tenth of a millimetre, a handle is where it is asked to be. */
+const SAME_PLACE_DEGREES = 1e-9;
 
 /** The handles whose element the pointer is on. */
 const pointedAt = new WeakSet<EditHandle>();
@@ -73,10 +77,15 @@ export function handleAt(handle: EditHandle): LatLng {
   return wrappedLatLng(handle.marker.getLngLat());
 }
 
-/** Moves `handle` to `at`, unless it is there already: a marker moved writes to the DOM. */
+/**
+ * Moves `handle` to `at`, unless it is there already on any world copy: a marker moved writes to
+ * the DOM. Longitudes a world apart are compared to within `SAME_PLACE_DEGREES`, since wrapping
+ * one adds float error (371.3 wraps to 11.299999999999955).
+ */
 export function moveHandle(handle: EditHandle, at: LatLng): void {
   const now = handle.marker.getLngLat();
-  if (now.lat !== at.lat || now.lng !== at.lng) handle.marker.setLngLat(lngLatOf(at));
+  const apart = Math.abs(wrapLongitude(now.lng - at.lng));
+  if (now.lat !== at.lat || apart > SAME_PLACE_DEGREES) handle.marker.setLngLat(lngLatOf(at));
 }
 
 /**

@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import { commands } from "vitest/browser";
 import type { LatLng } from "../../geometry";
 import type { ViewportPoint } from "../../testing/mouse-commands";
+import { type HeldMouse, holdMouseAt } from "./held-mouse";
 
 /** A user's mouse on a Google map: trusted input at places given in degrees. */
 export interface MapInput {
@@ -11,6 +12,8 @@ export interface MapInput {
   multiClick(at: LatLng, count: number): Promise<void>;
   pointTo(at: LatLng): Promise<void>;
   drag(move: { readonly from: LatLng; readonly to: LatLng }): Promise<void>;
+  /** Presses at `at` and holds the button, let go after the test if not before. */
+  hold(at: LatLng): Promise<HeldMouse<LatLng>>;
 }
 
 /** Mouse input on `map`, once Google can place points on it. */
@@ -27,6 +30,10 @@ export async function inputOn(map: google.maps.Map): Promise<MapInput> {
     multiClick: (at, count) => commands.multiClickMouse(onScreen(at), count),
     pointTo: (at) => commands.moveMouse(onScreen(at)),
     drag: ({ from, to }) => commands.pressMouse([onScreen(from), onScreen(to)]),
+    async hold(at) {
+      const held = await holdMouseAt(onScreen(at));
+      return { moveTo: (to) => held.moveTo(onScreen(to)), release: held.release };
+    },
   };
 }
 

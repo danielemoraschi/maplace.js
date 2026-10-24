@@ -6,7 +6,8 @@ import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
 import { shapeStackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
 import { sameState } from "../location-state";
-import type { PlacedShape, PlacingSite } from "./placed-location";
+import { cutOnBlur, type GiveBack, takeEditingAway } from "./blur-cuts";
+import type { GoogleShape, PlacedShape, PlacingSite } from "./placed-location";
 import { showGeometry } from "./shape-geometry";
 import { CIRCLE, POLYGON, POLYLINE, type ShapeKind, type ShapeType } from "./shape-kinds";
 import { reportShapeInput } from "./shape-reports";
@@ -35,6 +36,7 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
     let drawn = drawable;
     let look = site.lookOf(id);
     const { shape, geometry } = newShape(kind, { drawable, site, look, order });
+    const stopCutting = cutOnBlur(site.mounted, () => cutHandleDrag(shape, () => drawn.editable));
 
     return {
       shape,
@@ -60,11 +62,22 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
         look = next;
       },
       remove() {
+        stopCutting();
+        geometry.stop();
         shape.setMap(null);
         site.hover.gone(id);
       },
     };
   };
+}
+
+/**
+ * Cuts short a handle's drag the window's blur leaves held: Google says where a handle went only
+ * once let go, which may be anywhere or never, so it can't end where it was (the RFC's
+ * `locationEdit`). Editing off drops it, reporting nothing, the shape as the store has it.
+ */
+function cutHandleDrag(shape: GoogleShape, isEditable: () => boolean): GiveBack | undefined {
+  return takeEditingAway((on) => shape.setValues({ editable: on }), isEditable);
 }
 
 /** What a new shape shows, where, and how it starts: its look and its place in the order. */
