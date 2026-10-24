@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it } from "vitest";
-import { adoptStyles } from "./adopted-styles";
+import { adoptCarriedStyles, adoptStyles, carryStyles } from "./adopted-styles";
 import { frameDocument } from "./testing/iframes";
 import { cssTextOf } from "./testing/selectors";
 
@@ -41,5 +41,25 @@ describe("adoptStyles", () => {
     const windowless = document.implementation.createHTMLDocument();
     expect(() => adoptStyles(windowless, ":where(q) { color: blue; }")).not.toThrow();
     expect(windowless.adoptedStyleSheets).toEqual([]);
+  });
+});
+
+describe("carryStyles", () => {
+  it("adopts a carried sheet into the page's document at once", () => {
+    carryStyles(":where(dl) { color: blue; }");
+    expect(document.adoptedStyleSheets.map(cssTextOf)).toContainEqual(
+      expect.stringContaining(":where(dl)"),
+    );
+  });
+
+  it("adopts every carried sheet into a frame's document, once however often asked", () => {
+    carryStyles(":where(dt) { color: blue; }");
+    carryStyles(":where(dd) { color: blue; }");
+    const frame = frameDocument();
+    adoptCarriedStyles(frame);
+    adoptCarriedStyles(frame);
+    const texts = frame.adoptedStyleSheets.map(cssTextOf);
+    expect(texts.filter((text) => text.includes(":where(dt)"))).toHaveLength(1);
+    expect(texts.filter((text) => text.includes(":where(dd)"))).toHaveLength(1);
   });
 });

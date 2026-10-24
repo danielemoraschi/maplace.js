@@ -25,6 +25,15 @@ function headingOnPage(): HTMLElement {
   return heading;
 }
 
+/** A popup's heading inside MapLibre's popup content, as MapLibre holds it. */
+function headingInMapLibresPopup(): HTMLElement {
+  const content = document.createElement("div");
+  content.className = "maplibregl-popup-content";
+  content.append(headingOnPage());
+  document.body.append(content);
+  return content.firstElementChild as HTMLElement;
+}
+
 describe("POPUP_STYLES in a browser", () => {
   it("keeps the content and heading dark on MapLibre's white bubble, on a dark page", () => {
     darkPage();
@@ -52,7 +61,12 @@ describe("POPUP_STYLES in a browser", () => {
 
   it("keeps the heading on its own line, bold", () => {
     popupHolding("<p>One</p>");
-    const heading = getComputedStyle(headingOnPage());
+    const heading = getComputedStyle(headingInMapLibresPopup());
     expect([heading.display, heading.fontWeight]).toEqual(["block", "600"]);
+  });
+
+  it("styles no heading outside MapLibre's popup: Google's keeps its own look", () => {
+    popupHolding("<p>One</p>");
+    expect(getComputedStyle(headingOnPage()).display).toBe("inline");
   });
 });

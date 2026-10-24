@@ -1,8 +1,10 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { places } from "../google/testing/places";
+import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { sizedContainerInFrame } from "../testing/iframes";
 import { panelOf } from "../testing/panel-of";
+import { queried } from "../testing/queried";
 import { onMapLibreIn } from "./testing/control-site";
 
 afterEach(() => {
@@ -22,5 +24,16 @@ describe("the panel of a control on a MapLibre map in a frame", () => {
       "rgba(0, 0, 0, 0.1) 0px 0px 0px 2px",
       "4px",
     ]);
+  });
+
+  it("styles a list view the page made, in a panel on a MapLibre map in a frame", async () => {
+    const maplace = createMaplace({ locations: places() });
+    const { adapter } = await onMapLibreIn(maplace, sizedContainerInFrame());
+    const list = createListView(maplace, { heading: "Choose a location:" });
+    onTestFinished(() => list.destroy());
+    adapter.mountControl(list.element, "top-left");
+    const listbox = queried(list.element, "[role=listbox]");
+    const style = listbox.ownerDocument.defaultView?.getComputedStyle(listbox);
+    expect([style?.overflowY, style?.paddingTop]).toEqual(["auto", "4px"]);
   });
 });

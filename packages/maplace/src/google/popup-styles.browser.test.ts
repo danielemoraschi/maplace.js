@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { POPUP_CLASS, POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { unstyledPage } from "../testing/unstyled-page";
-import { POPUP_STYLES } from "./popup-styles";
+import { GOOGLE_POPUP_ATTRIBUTE, POPUP_STYLES } from "./popup-styles";
 
 afterEach(() => document.body.replaceChildren());
 
@@ -11,6 +11,7 @@ function popupHolding(html: string): HTMLElement {
   style.textContent = POPUP_STYLES;
   const popup = document.createElement("div");
   popup.className = POPUP_CLASS;
+  popup.setAttribute(GOOGLE_POPUP_ATTRIBUTE, "");
   popup.innerHTML = html;
   document.body.append(style, popup);
   return popup;

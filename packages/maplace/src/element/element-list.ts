@@ -1,4 +1,5 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
+import { adoptCarriedStyles } from "../adopted-styles";
 import { listedLocations, type Maplace } from "../index";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
@@ -43,7 +44,9 @@ export function listFromAttributes(host: HTMLElement, store: Maplace): ElementLi
   const view = buildListView(name, store, setup);
   view.element.classList.add(PLACED_LIST_CLASS);
   const restore = () => {
-    if (position === "outside" && view.element.parentNode !== host) host.append(view.element);
+    if (position !== "outside") return;
+    adoptCarriedStyles(host.ownerDocument);
+    if (view.element.parentNode !== host) host.append(view.element);
   };
   restore();
   return {

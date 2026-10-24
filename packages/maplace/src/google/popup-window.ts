@@ -4,6 +4,7 @@ import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { holdsFocus, type PopupWindow, type PopupWindowEvents } from "../adapter-kit/popup-window";
 import type { MountedMap } from "./mounted-map";
 import type { PopupPlace } from "./placed-location";
+import { GOOGLE_POPUP_ATTRIBUTE } from "./popup-styles";
 
 /** The map's one Google InfoWindow, reused for every popup. */
 export interface GooglePopupWindow extends PopupWindow<PopupPlace> {
@@ -45,14 +46,20 @@ export function createPopupWindow(
   return {
     infoWindow,
     open({ element, place, title }) {
-      infoWindow.setOptions({ content: element, ...headed(title) });
+      infoWindow.setOptions({ content: markedAsGoogles(element), ...headed(title) });
       follow(place);
       const anchor = "anchor" in place ? place.anchor : null;
       infoWindow.open({ map: mounted.map, anchor, shouldFocus: takesFocus() });
     },
-    refresh: (element) => infoWindow.setContent(element),
+    refresh: (element) => infoWindow.setContent(markedAsGoogles(element)),
     retitle: (title) => infoWindow.setOptions(headed(title)),
     follow,
     close: () => infoWindow.close(),
   };
+}
+
+/** `element` marked as Google's popup content, which Google's popup rules alone reach. */
+function markedAsGoogles(element: HTMLElement): HTMLElement {
+  element.setAttribute(GOOGLE_POPUP_ATTRIBUTE, "");
+  return element;
 }

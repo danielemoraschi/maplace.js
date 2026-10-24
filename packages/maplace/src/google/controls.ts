@@ -1,7 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Adapter, ControlPosition } from "../adapter";
 import { CONTROL_CLASS } from "../adapter-kit/control-styles";
-import { adoptStyles } from "../adopted-styles";
+import { adoptCarriedStyles, adoptStyles } from "../adopted-styles";
 import { googlePosition } from "./control-positions";
 import { CONTROL_STYLES } from "./control-styles";
 import type { MapPart, MountedMap } from "./mounted-map";
@@ -43,11 +43,13 @@ export function createControls(colorScheme: ColorScheme = "light"): Controls {
     return on?.map.controls[googlePosition(on.libraries.core, position)];
   }
 
-  /** Places `control`, its panel styled by the map's document, whichever made the node. */
+  /** Places `control`, its panel and what it holds styled by the map's document, whichever made the node. */
   function place(control: MountedControl): void {
     const held = corner(control);
     if (openMap === undefined || held === undefined) return;
-    adoptStyles(openMap.map.getDiv().ownerDocument, CONTROL_STYLES);
+    const mapDocument = openMap.map.getDiv().ownerDocument;
+    adoptStyles(mapDocument, CONTROL_STYLES);
+    adoptCarriedStyles(mapDocument);
     held.push(control.panel);
   }
 
