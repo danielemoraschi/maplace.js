@@ -2,6 +2,11 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-24 Fixed Google's popup inset and margins reaching MapLibre's popups, and MapLibre's popup heading rule reaching Google's, on a page loading both providers
+- 2026-10-24 Fixed a list view shown in a frame without its styles: in a map's panel, inside `<MapControl>`, as `<LocationList>`, in `<maplace-map>` and in a shortcut's `list.container`
+- 2026-10-24 Fixed a MapLibre popup opened by a click or a selection ending under the map's corner controls (a location list on a phone): it pans clear of them once the map's own pan ends, never while the user holds the map, when there is room
+- 2026-10-24 Fixed an editable marker with its own icon on MapLibre dragging on when the page turned its `editable` off mid-drag, its edits refused with errors on the console and the marker left where dropped: the drag is cut short, the marker back where the store has it, with no change reported
+- 2026-10-24 Fixed an edit handle's or an editable marker's drag on MapLibre left hanging when the window lost focus with the button held or the browser cancelled the touch, the marker following the next move until the next release: the drag ends where it was and reports its change
 - 2026-10-24 Fixed MapLibre's edit handles reporting a point dragged to −180 at 180: they report −180, as clicks and the viewport do
 - 2026-10-23 Fixed MapLibre's control panels running into each other on a crowded map: a list stops short of what the corners below it hold, MapLibre's attribution included, lists sharing a side share its height, and a bottom-left panel sits above the attribution where they would meet (on a phone it covered the panel); on a page's own MapLibre map too
 - 2026-10-23 Fixed a control's panel left unstyled on a map in a frame whose node the page made outside the frame (React's `MapControl` in `react-frame-component`), on Google and MapLibre: the panel's stylesheet goes to the map's document

@@ -122,7 +122,7 @@ An `editable` shape gets Google's handles: one on each point and one between eac
 
 ## Popups
 
-A popup is MapLibre's, headed by the location's title. One opened by a click pans the map to show it, and takes focus when the map held it, as Google's does. A hover's popup does neither.
+A popup is MapLibre's, headed by the location's title. One opened by a click pans the map to show it, clear of what the map's corners hold when there is room, and takes focus when the map held it, as Google's does. A hover's popup does neither.
 
 ## Clustering
 

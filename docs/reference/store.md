@@ -91,7 +91,7 @@ The snapshot is immutable and replaced on every change, while unchanged parts ke
 | `selectionChange` | `{ id }` | The selection changed, from the map, a list or `select()`; `id` is `undefined` when cleared |
 | `hoverChange` | `{ id }` | The pointer or focus moved onto a location, or off it |
 | `mapClick` | `{ position }` | A single click on the map itself, not on a location; it clears the selection. A double-click fires nothing |
-| `locationEdit` | `{ location, geometry }` | While the user drags or reshapes: the geometry so far, never written to the store |
+| `locationEdit` | `{ location, geometry }` | While the user drags or reshapes: the geometry so far, never written to the store; a drag the page ends (the location removed, `editable` off) is cut short, with no `locationChange` |
 | `locationChange` | `{ location, previous }` | A drag or edit ended; the store already holds the new value |
 | `popupOpen` | `{ id, element }` | A popup opened and its content is in the DOM; again when an open popup gets new content |
 | `popupClose` | `{ id }` | A popup closed |
