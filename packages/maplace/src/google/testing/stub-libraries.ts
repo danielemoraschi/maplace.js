@@ -19,6 +19,7 @@ export interface StubView {
 export class StubMap extends StubMVCObject {
   readonly moveCamera = vi.fn();
   readonly panTo = vi.fn();
+  readonly panBy = vi.fn();
   readonly fitBounds = vi.fn();
   /** Google's control corners, one array per `ControlPosition` value (up to 24 in Maps JS 3.66). */
   readonly controls = Array.from({ length: 25 }, () => new StubMVCArray<HTMLElement>());

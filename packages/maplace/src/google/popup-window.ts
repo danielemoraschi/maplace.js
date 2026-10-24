@@ -4,6 +4,7 @@ import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { holdsFocus, type PopupWindow, type PopupWindowEvents } from "../adapter-kit/popup-window";
 import type { MountedMap } from "./mounted-map";
 import type { PopupPlace } from "./placed-location";
+import { createPopupPan } from "./popup-pan";
 import { GOOGLE_POPUP_ATTRIBUTE } from "./popup-styles";
 
 /** The map's one Google InfoWindow, reused for every popup. */
@@ -11,6 +12,10 @@ export interface GooglePopupWindow extends PopupWindow<PopupPlace> {
   readonly infoWindow: google.maps.InfoWindow;
 }
 
+/**
+ * One Google InfoWindow per map, reused: one opened by a click pans clear of the map's corners once
+ * the map settles (popup-pan.ts); a hover's never moves the camera.
+ */
 export function createPopupWindow(
   mounted: MountedMap,
   events: PopupWindowEvents,
@@ -25,7 +30,11 @@ export function createPopupWindow(
     disableAutoPan: openOn === "hover",
   });
   infoWindow.addListener("domready", () => events.contentShown());
-  infoWindow.addListener("closeclick", () => events.closedByUser());
+  const pan = createPopupPan(mounted.map, infoWindow);
+  infoWindow.addListener("closeclick", () => {
+    pan.stop();
+    events.closedByUser();
+  });
 
   function follow(place: PopupPlace): void {
     if ("position" in place) infoWindow.setPosition(place.position);
@@ -46,6 +55,7 @@ export function createPopupWindow(
   return {
     infoWindow,
     open({ element, place, title }) {
+      if (openOn === "click") pan.panWhenSettled();
       infoWindow.setOptions({ content: markedAsGoogles(element), ...headed(title) });
       follow(place);
       const anchor = "anchor" in place ? place.anchor : null;
@@ -54,7 +64,10 @@ export function createPopupWindow(
     refresh: (element) => infoWindow.setContent(markedAsGoogles(element)),
     retitle: (title) => infoWindow.setOptions(headed(title)),
     follow,
-    close: () => infoWindow.close(),
+    close() {
+      pan.stop();
+      infoWindow.close();
+    },
   };
 }
 

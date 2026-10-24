@@ -1,13 +1,13 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { commands } from "vitest/browser";
+import { type Box, MARGIN } from "../adapter-kit/popup-shift";
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { optionsIn } from "../testing/lists";
 import { panelOf } from "../testing/panel-of";
 import { PIN_SIZE } from "./pin-image";
-import { type Box, MARGIN } from "./popup-shift";
 import { mapOfWidthIn } from "./testing/map-of-width";
 import { wait } from "./testing/map-settle";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";

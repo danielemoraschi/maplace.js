@@ -38,6 +38,10 @@ export class StubInfoWindow extends StubMVCObject {
     this.setOptions({ content });
   }
 
+  getContent(): unknown {
+    return this.get("content");
+  }
+
   setPosition(position: unknown): void {
     this.set("position", position);
   }

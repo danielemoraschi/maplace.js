@@ -1,6 +1,6 @@
 import type { Map as MapLibreMap, Popup } from "maplibre-gl";
+import { panShift, type ShownControl } from "../adapter-kit/popup-shift";
 import { cornerElementsIn } from "./corner-measure";
-import { panShift, type ShownControl } from "./popup-shift";
 
 /**
  * MapLibre's attribution, which a popup may cover when nothing else leaves it room: on a phone it

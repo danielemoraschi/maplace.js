@@ -57,6 +57,10 @@ describe("shiftClear", () => {
   it("finds no place for a popup larger than the map", () => {
     expect(shiftClear(boxOf(-10, -10, 400, 300), MAP, [])).toBeUndefined();
   });
+
+  it("finds no place on a map with no size, as a hidden one", () => {
+    expect(shiftClear(boxOf(0, 0, 0, 0), boxOf(0, 0, 0, 0), [])).toBeUndefined();
+  });
 });
 
 describe("panShift", () => {
