@@ -1,4 +1,5 @@
 import type { Adapter } from "../adapter";
+import { adoptCarriedStyles } from "../adopted-styles";
 import { createListView, createMaplace, type Maplace } from "../index";
 import { containerOf } from "../validate/attach";
 import {
@@ -63,7 +64,9 @@ function placeList<Data>(
   if (list.container === undefined) {
     adapter.mountControl(view.element, list.position ?? DEFAULT_CORNER);
   } else {
-    containerOf(list.container, listContainerField(names)).append(view.element);
+    const beside = containerOf(list.container, listContainerField(names));
+    beside.append(view.element);
+    adoptCarriedStyles(beside.ownerDocument);
   }
   return view.destroy;
 }

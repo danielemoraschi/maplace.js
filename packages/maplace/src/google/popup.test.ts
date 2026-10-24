@@ -13,6 +13,7 @@ import { createMapState } from "./map-state";
 import { PLACERS } from "./placers";
 import { createPlacingSite } from "./placing-site";
 import { createPopup } from "./popup";
+import { GOOGLE_POPUP_ATTRIBUTE } from "./popup-styles";
 import { headingOf } from "./testing/popup-heading";
 import type { StubInfoWindow } from "./testing/stub-popups";
 import { stubMounted } from "./testing/stub-site";
@@ -116,6 +117,18 @@ describe("createPopup", () => {
     ]);
     expect(popups.host.reportsOf("reportPopupClose")).toEqual([]);
     expect(popups.window()?.opens).toHaveLength(1);
+  });
+
+  it("marks the content it hands Google's window as Google's, after a refresh too", () => {
+    const popups = popupsOn([ALPHA]);
+    const isMarked = () =>
+      (popups.window()?.get("content") as Element | undefined)?.hasAttribute(
+        GOOGLE_POPUP_ATTRIBUTE,
+      );
+    popups.present({ selectedId: "a" });
+    expect(isMarked()).toBe(true);
+    popups.update(withContent(markerDrawable("a"), "Alpha again"));
+    expect(isMarked()).toBe(true);
   });
 
   it("closes, reported, for a location hidden, removed, or whose new content built nothing", async () => {

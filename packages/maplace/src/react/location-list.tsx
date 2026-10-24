@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import type { ControlPosition } from "../adapter";
+import { adoptCarriedStyles } from "../adopted-styles";
 import { createListView, type ListViewOptions } from "../index";
 import type { Maplace } from "../store";
 import { structureChanged } from "../views/follow";
@@ -87,7 +88,7 @@ function useListView<Data>(
     } satisfies Record<keyof ListViewOptions<Data>, unknown>;
     const view = createListView(store, listOptions);
     const takeOff = position && mountControl?.(view.element, position);
-    if (!position) place.current?.append(view.element);
+    if (!position) placeIn(place.current, view.element);
     const stopPruning = portals && pruneOnListChanges(store, portals, view.element);
     return () => {
       stopPruning?.();
@@ -96,6 +97,13 @@ function useListView<Data>(
     };
   }, [store, portals, as, groupHeadings, fitAllLabel, label, heading, position, mountControl]);
   return place;
+}
+
+/** `list` put in `place`, where `<LocationList>` renders, styled in that document: a frame's, say. */
+function placeIn(place: HTMLElement | null, list: HTMLElement): void {
+  if (place === null) return;
+  place.append(list);
+  adoptCarriedStyles(place.ownerDocument);
 }
 
 /** Prunes the entries after the store changes what the list shows: its locations or filter. */

@@ -20,3 +20,17 @@ export function adoptStyles(document: Document, css: string): void {
   sheet.replaceSync(css);
   document.adoptedStyleSheets = [sheet, ...document.adoptedStyleSheets];
 }
+
+/** The sheets that go wherever maplace's nodes go: the page's document, and each a node is inserted into. */
+const carried = new Set<string>();
+
+/** Adopts `css` into the page's document now, and into every document maplace's nodes go into later. */
+export function carryStyles(css: string): void {
+  carried.add(css);
+  adoptCarriedStyles(document);
+}
+
+/** Adopts every carried sheet into `document`, the one a node of maplace's is inserted into. */
+export function adoptCarriedStyles(document: Document): void {
+  for (const css of carried) adoptStyles(document, css);
+}

@@ -1,4 +1,4 @@
-import { adoptStyles } from "./adopted-styles";
+import { carryStyles } from "./adopted-styles";
 import type { Location, LocationState } from "./location";
 import { runSafely } from "./state/safely";
 import type { Maplace } from "./store";
@@ -73,7 +73,7 @@ export function createListView<Data>(
   options?: ListViewOptions<Data>,
 ): ListView {
   checkListViewOptions(options, child(root("createListView"), "options"));
-  adoptStyles(document, LIST_STYLES);
+  carryStyles(LIST_STYLES);
   let destroy: () => void = () => {};
   const actions = listActionsFor(maplace, (error) => {
     destroy();

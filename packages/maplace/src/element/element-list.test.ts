@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { type Adapter, createMaplace, type Maplace } from "../index";
+import { frameDocument } from "../testing/iframes";
+import { cssTextOf } from "../testing/selectors";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { listFromAttributes } from "./element-list";
 import type { ListViewFactory, ListViewSetup } from "./index";
@@ -118,5 +120,32 @@ describe("listFromAttributes with a list view defined by name", () => {
         message: expect.stringMatching(/names no list view/),
       }),
     );
+  });
+});
+
+describe("listFromAttributes in a frame", () => {
+  afterEach(() => document.body.replaceChildren());
+
+  /** Whether `frame` has adopted the list's styles. */
+  const listStyledIn = (frame: Document) =>
+    frame.adoptedStyleSheets.some((sheet) => cssTextOf(sheet).includes(".maplace-listbox"));
+
+  it("styles a list beside the map in a frame's document", () => {
+    const frame = frameDocument();
+    const host = frame.createElement("div");
+    host.setAttribute("list", "");
+    frame.body.append(host);
+    listFromAttributes(host, storeWithGroups());
+    expect(listStyledIn(frame)).toBe(true);
+  });
+
+  it("styles the list of an element moved into a frame, its list still its child", () => {
+    const host = elementWith({ list: "" });
+    document.body.append(host);
+    const list = listFromAttributes(host, storeWithGroups());
+    const frame = frameDocument();
+    frame.body.append(host);
+    list?.restore();
+    expect(listStyledIn(frame)).toBe(true);
   });
 });

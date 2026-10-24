@@ -9,8 +9,9 @@ export class StubSize {
 }
 
 /**
- * Google's InfoWindow as far as the adapter uses one: while open its content is in a box on the
- * page, `domready` follows each open or new content in a microtask, and every close fires `close`.
+ * Google's InfoWindow as far as the adapter uses one: while open its heading and content are in a
+ * box on the page, `domready` follows each open or new content in a microtask, and every close
+ * fires `close`.
  */
 export class StubInfoWindow extends StubMVCObject {
   readonly box = document.createElement("div");
@@ -29,7 +30,8 @@ export class StubInfoWindow extends StubMVCObject {
 
   setOptions(options: object): void {
     this.setValues(options);
-    if ("content" in options) this.#show(options.content as Node);
+    if ("content" in options || "headerContent" in options) this.#draw();
+    if ("content" in options && this.#open) this.#ready();
   }
 
   setContent(content: Node): void {
@@ -61,9 +63,10 @@ export class StubInfoWindow extends StubMVCObject {
     this.trigger("closeclick");
   }
 
-  #show(content: Node): void {
-    this.box.replaceChildren(content);
-    if (this.#open) this.#ready();
+  /** The heading Google draws beside its close button, then the content. */
+  #draw(): void {
+    const parts = [this.get("headerContent"), this.get("content")] as (Node | null | undefined)[];
+    this.box.replaceChildren(...parts.filter((part): part is Node => part != null));
   }
 
   #ready(): void {
