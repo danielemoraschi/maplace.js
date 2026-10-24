@@ -1,16 +1,26 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import type { Provider } from "../src/examples/example-providers.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";
 import { mapLibreDrawn, mapLibreVersionIn } from "./drawn-on-maplibre.ts";
+import { expectNotedInTurn, type InTurn } from "./failure-note-checks.ts";
+import { ON_GOOGLE } from "./google-session.ts";
 import {
   chooseProvider,
   chooseVersion,
   leaveOnlySection,
   providerVersionIn,
+  sectionOf,
 } from "./home-sections.ts";
 import { ON_MAPLIBRE } from "./maplibre-session.ts";
 import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
-import { addedByBootstrap, footerToggle, openHome, placeholder } from "./visitor.ts";
+import {
+  addedByBootstrap,
+  footerToggle,
+  openHome,
+  placeholder,
+  type VisitorOptions,
+} from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -95,4 +105,130 @@ describe("a map's failure note", () => {
     expect(await vanilla.getAttribute("data-failed")).toBeNull();
     await context.close();
   }, 60_000);
+
+  it("says why a MapLibre version's map didn't load: OpenFreeMap blocked", async () => {
+    const { page, context, section } = await sectionFrom({}, simpleFromScript("maplibre"));
+    await expectNotedInTurn(
+      page,
+      section,
+      simpleInTurn("maplibre", ["script", "vanilla", "react"]),
+      {
+        failed: "provider-load-failed",
+        note: "OpenFreeMap's map didn't load. A blocker, or the network?",
+        reload: true,
+      },
+    );
+    await context.close();
+  }, 60_000);
+
+  it("says OpenFreeMap refused a MapLibre version's style", async () => {
+    const visit = await sectionFrom({ openFreeMap: "forbidden" }, simpleFromScript("maplibre"));
+    await expectNotedInTurn(
+      visit.page,
+      visit.section,
+      simpleInTurn("maplibre", ["script", "vanilla", "react"]),
+      {
+        failed: "provider-auth-failed",
+        note: "OpenFreeMap refused the map's style.",
+        reload: false,
+      },
+    );
+    await visit.context.close();
+  }, 60_000);
+
+  it("says why a Google version's map didn't load: its libraries failed", async () => {
+    // The Script version first: its adapter adds Maps JS itself, which the module versions then
+    // find on the page, with no bootstrap to wait on the stub.
+    const visit = await sectionFrom({ google: "failing" }, simpleFromScript("google"));
+    const inTurn = simpleInTurn("google", ["script", "vanilla", "react"]);
+    await expectNotedInTurn(visit.page, visit.section, inTurn, {
+      failed: "provider-load-failed",
+      note: "Google Maps didn't load. A blocker, or the network?",
+      reload: true,
+    });
+    await visit.context.close();
+  }, 60_000);
+
+  it("says when a script version's program throws as it runs", async () => {
+    const { context, section } = await sectionFrom(
+      { openFreeMap: "local" },
+      {
+        ...simpleFromScript("maplibre"),
+        // What its program mounts on gone, its first call throws.
+        beforeConsent: (page) =>
+          page.evaluate(() => document.querySelector("#simple-maplibre-script-map")?.remove()),
+      },
+    );
+    const script = mapLibreVersionIn(section, "script");
+    await expect.poll(() => script.getAttribute("data-failed"), ON_MAPLIBRE).toBe("script");
+    expect(await section.locator("[data-map-failure]").isVisible()).toBe(true);
+    await context.close();
+  }, 60_000);
+
+  it("shows only the failure when a version's map fails while its start still waits", async () => {
+    const { context, section } = await sectionFrom(
+      {},
+      {
+        example: "mixed",
+        provider: "maplibre",
+        version: "Bundler",
+        // mixed's module makes its map, then waits on its first group's data: held, the version
+        // stays starting while OpenFreeMap, refused, fails its map.
+        beforeConsent: (page) => page.route("**/mixed-a.json", () => {}),
+      },
+    );
+    const vanilla = mapLibreVersionIn(section, "vanilla");
+    await expect
+      .poll(() => vanilla.getAttribute("data-failed"), ON_MAPLIBRE)
+      .toBe("provider-load-failed");
+    expect(await vanilla.getAttribute("data-starting")).toBe("");
+    expect(await section.locator("[data-map-failure]").isVisible()).toBe(true);
+    expect(await section.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
+    await context.close();
+  }, 60_000);
+});
+
+/** A section opened on its own, a provider and a version chosen, before consenting. */
+interface Opening {
+  readonly example: string;
+  readonly provider: Provider;
+  /** The version's label, chosen before consent: a hidden page map never loads. */
+  readonly version: string;
+  /** What the test does to the page last before consenting. */
+  readonly beforeConsent?: (page: Page) => Promise<unknown>;
+}
+
+/** simple on `provider`, its Script version chosen before consent. */
+const simpleFromScript = (provider: Provider): Opening => ({
+  example: "simple",
+  provider,
+  version: "Script",
+});
+
+/** A visitor seeing the site as `options` say, on `opening`'s section alone, then consenting. */
+async function sectionFrom(options: VisitorOptions, opening: Opening) {
+  const { example, provider, version, beforeConsent } = opening;
+  const visit = await site.visitor(options);
+  const { page } = visit;
+  await openHome(page, site.url);
+  await leaveOnlySection(page, example);
+  if (provider === "maplibre") await chooseProvider(page, example, "MapLibre");
+  await chooseVersion(page, example, version);
+  await beforeConsent?.(page);
+  await footerToggle(page).click();
+  return { ...visit, section: await sectionOf(page, example) };
+}
+
+/** How long each provider's version may take to fail. */
+const ON_PROVIDER: Readonly<Record<Provider, number>> = {
+  google: ON_GOOGLE.timeout,
+  maplibre: ON_MAPLIBRE.timeout,
+};
+
+/** simple's `kinds` on `provider`, in turn. */
+const simpleInTurn = (provider: Provider, kinds: readonly VersionKind[]): InTurn => ({
+  example: "simple",
+  provider,
+  kinds,
+  timeout: ON_PROVIDER[provider],
 });

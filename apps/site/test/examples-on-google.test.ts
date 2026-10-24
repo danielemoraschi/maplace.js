@@ -4,19 +4,24 @@ import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { isModuleVersion, VERSION_LABELS } from "../src/examples/example-versions.ts";
 import {
   googleRefused,
+  googleView,
   markersDrawn,
   settledMarkers,
   tilesDrawn,
   versionIn,
 } from "./drawn-on-google.ts";
+import { expectNotedInTurn } from "./failure-note-checks.ts";
 import { ON_GOOGLE, SECTION_MS, siteOnGoogleBeforeTests } from "./google-session.ts";
 import {
   chooseVersion,
+  leaveOnlySection,
   pageMapState,
+  sectionOf,
   type VersionChoice,
   versionsInTurn,
   visitSection,
 } from "./home-sections.ts";
+import { expectLeftOpensAsShown, LEFT_WHILE_LOADING } from "./left-while-loading.ts";
 import { addedByBootstrap, loadMapsButtons } from "./visitor.ts";
 
 /** The versions the site runs from its own bundle, beside the page's. */
@@ -94,4 +99,44 @@ describeWithKey("the site's examples on Google Maps", (key) => {
       },
     );
   });
+
+  // W23, as on MapLibre: styled's Google map has its map-type control on every version, so the
+  // frames match.
+  describe("a version left while it loads, on Google", () => {
+    it.for(LEFT_WHILE_LOADING)(
+      "opens $name on the view it would have had",
+      { timeout: 90_000 },
+      async (leftAndShown, { expect }) => {
+        const { page, context, section, errors } = await visitSection(site, "styled");
+        await expectLeftOpensAsShown({ page, section, example: "styled" }, leftAndShown, {
+          versionIn: (kind) => versionIn(section, kind),
+          viewOf: googleView,
+          timeout: ON_GOOGLE.timeout,
+        });
+        expect(errors()).toEqual([]);
+        await context.close();
+      },
+    );
+  });
+
+  // W22: every live version says Google refused the key, as the page map does. Seen at an origin
+  // the key can't allow, answered by routing, so no port is taken; Google draws no map.
+  it("says Google refused the site's key for each live version", async () => {
+    const seenAt = "https://key-refused.invalid";
+    const { page, context } = await site.visitor({ seenAt });
+    await page.goto(new URL("/#simple", seenAt).href);
+    await leaveOnlySection(page, "simple");
+    // The Script version first, before consent: the page map, hidden, never loads.
+    await chooseVersion(page, "simple", "Script");
+    const section = await sectionOf(page, "simple");
+    await loadMapsButtons(section).click();
+    const inTurn = { example: "simple", provider: "google", timeout: ON_GOOGLE.timeout } as const;
+    await expectNotedInTurn(
+      page,
+      section,
+      { ...inTurn, kinds: ["script", "vanilla", "react"] },
+      { failed: "provider-auth-failed", note: "Google refused this site's key.", reload: false },
+    );
+    await context.close();
+  }, 120_000);
 });

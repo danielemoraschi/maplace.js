@@ -6,6 +6,8 @@ import {
   noteMapsJsFailure,
   noteScriptFailure,
   noteVersionFailure,
+  noteVersionMapFailure,
+  noteVersionStartFailure,
   showFailureNoteOf,
   startFailureNotes,
 } from "./map-failures.ts";
@@ -191,5 +193,53 @@ describe("noteMapsJsFailure", () => {
     noteMapsJsFailure(document);
     expect(notes()).toEqual([""]);
     expect(document.querySelector("[data-failed]")).toBeNull();
+  });
+});
+
+describe("noteVersionMapFailure", () => {
+  it("notes a version's map that didn't load in its words, its code kept, a reload offered when it mends", () => {
+    document.body.innerHTML = frame("vanilla maplibre");
+    const version = versionOn("maplibre", "vanilla");
+    noteVersionMapFailure(version, { code: "provider-load-failed" });
+    expect(note()).toBe(
+      "The map couldn't load: OpenFreeMap's map didn't load. A blocker, or the network?",
+    );
+    expect(version.dataset.failed).toBe("provider-load-failed");
+    expect(version.hasAttribute("data-reload-mends")).toBe(true);
+
+    document.body.innerHTML = frame("react maplibre");
+    const refused = versionOn("maplibre", "react");
+    noteVersionMapFailure(refused, { code: "provider-auth-failed" });
+    expect(note()).toBe("The map couldn't load: OpenFreeMap refused the map's style.");
+    expect(refused.dataset.failed).toBe("provider-auth-failed");
+    expect(refused.hasAttribute("data-reload-mends")).toBe(false);
+  });
+
+  it("leaves a version that failed already as it was", () => {
+    document.body.innerHTML = frame("vanilla google");
+    const version = versionOn("google", "vanilla");
+    noteVersionFailure(version, "maps-js");
+    const first = note();
+    noteVersionMapFailure(version, { code: "provider-auth-failed" });
+    expect(version.dataset.failed).toBe("maps-js");
+    expect(note()).toBe(first);
+    expect(version.hasAttribute("data-reload-mends")).toBe(true);
+  });
+});
+
+describe("noteVersionStartFailure", () => {
+  it("says why a version didn't start", () => {
+    document.body.innerHTML = frame("vanilla maplibre");
+    noteVersionStartFailure(versionOn("maplibre", "vanilla"), "script");
+    expect(versionOn("maplibre", "vanilla").dataset.failed).toBe("script");
+  });
+
+  it("leaves a version whose map failed first as it was", () => {
+    document.body.innerHTML = frame("vanilla maplibre");
+    const version = versionOn("maplibre", "vanilla");
+    noteVersionMapFailure(version, { code: "provider-auth-failed" });
+    noteVersionStartFailure(version, "script");
+    expect(version.dataset.failed).toBe("provider-auth-failed");
+    expect(note()).toBe("The map couldn't load: OpenFreeMap refused the map's style.");
   });
 });

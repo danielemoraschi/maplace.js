@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 import { defaultClientConditions } from "vite";
+import { exampleFailureNotes } from "./src/site/example-failure-notes.ts";
 import { exampleMapId } from "./src/site/example-map-id.ts";
 import { exampleModulesRun } from "./src/site/example-modules-run.ts";
 import { mapsSettingsCheck } from "./src/site/maps-settings-check.ts";
@@ -25,7 +26,7 @@ export default defineConfig({
   markdown: { shikiConfig: { theme: "css-variables" } },
   // maplace resolved to its source, as the tests and the examples' type-check do.
   vite: {
-    plugins: [tailwindcss(), exampleModulesRun(), exampleMapId()],
+    plugins: [tailwindcss(), exampleModulesRun(), exampleMapId(), exampleFailureNotes()],
     resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
     optimizeDeps: { include: [...PREBUNDLED_DEPS] },
   },

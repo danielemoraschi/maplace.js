@@ -5,7 +5,7 @@ import { providerOf, versionOf } from "./by-provider.ts";
 import type { VersionFailure } from "./version-start.ts";
 
 /** As much of a map's error as the note reads. */
-type MapFailure = Pick<MaplaceError, "code"> & Partial<Pick<MaplaceError, "field">>;
+export type MapFailure = Pick<MaplaceError, "code"> & Partial<Pick<MaplaceError, "field">>;
 
 const NOTE = "The map couldn't load";
 
@@ -83,6 +83,14 @@ export function noteVersionFailure(version: HTMLElement, failure: VersionFailure
   offerReloadIfMends(version, failure);
 }
 
+/**
+ * Shows why `version` didn't start, unless its map's failure was noted first
+ * (`noteVersionMapFailure`): the first failure is the one that says why.
+ */
+export function noteVersionStartFailure(version: HTMLElement, failure: VersionFailure): void {
+  if (version.dataset.failed === undefined) noteVersionFailure(version, failure);
+}
+
 /** Marks `version` for its note's reload button (`frame.css`) when a reload mends `failure`. */
 function offerReloadIfMends(version: HTMLElement, failure: Failure): void {
   version.toggleAttribute("data-reload-mends", MENDED_BY_RELOAD.has(failure));
@@ -108,11 +116,27 @@ export function startFailureNotes(maps: readonly HTMLElement[]): void {
   for (const map of maps) {
     map.addEventListener("maplace-error", (event) => {
       const { error } = (event as MaplaceElementEventMap["maplace-error"]).detail;
-      const version = versionOf(map);
-      noteFailure(version, failureNote(error, providerOf(map)));
-      offerReloadIfMends(version, error.code);
+      writeMapFailure(versionOf(map), error);
     });
   }
+}
+
+/**
+ * Shows that the map of the version `element` is in didn't load, in that version's note, as a
+ * page map's is; `data-failed` keeps the error's code, which shows it. A version that failed
+ * already keeps its first note.
+ */
+export function noteVersionMapFailure(element: Element, failure: MapFailure): void {
+  const version = versionOf(element);
+  if (version.dataset.failed !== undefined) return;
+  writeMapFailure(version, failure);
+  version.dataset.failed = failure.code;
+}
+
+/** Writes why `version`'s map failed into its note, offering a reload when one mends it. */
+function writeMapFailure(version: HTMLElement, failure: MapFailure): void {
+  noteFailure(version, failureNote(failure, providerOf(version)));
+  offerReloadIfMends(version, failure.code);
 }
 
 /**

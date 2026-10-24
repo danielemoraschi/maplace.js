@@ -12,17 +12,26 @@ const STUB_MAPS_JS =
   "globalThis.google = { maps: { importLibrary: () => new Promise(() => {}) } };";
 
 /**
- * What a visitor's requests to Google Maps get: refused, as by default; Maps JS answered with a
- * stub (`STUB_MAPS_JS`), as Google never would, the rest refused; or Google itself.
+ * Maps JS whose libraries fail to load once its tag has: `importLibrary` rejecting. Served in place
+ * of Google's, so nothing leaves the machine.
  */
-export type GoogleAnswer = "refused" | "stubbed" | "reached";
+const STUB_FAILING_MAPS_JS =
+  "globalThis.google = { maps: { importLibrary: () => Promise.reject(new Error('stubbed Maps JS')) } };";
 
 /**
- * What a visitor's requests to OpenFreeMap get: refused, as by default; or its styles answered
- * from the machine with the package's test style (`TEST_STYLE`: no tiles, fonts or icons to ask
- * for), anything else refused.
+ * What a visitor's requests to Google Maps get: refused, as by default; Maps JS answered with a
+ * stub whose libraries never come (`stubbed`, `STUB_MAPS_JS`) or fail (`failing`,
+ * `STUB_FAILING_MAPS_JS`), as Google never would, the rest refused; or Google itself.
  */
-export type OpenFreeMapAnswer = "refused" | "local";
+export type GoogleAnswer = "refused" | "stubbed" | "failing" | "reached";
+
+/**
+ * What a visitor's requests to OpenFreeMap get: refused, as by default; its styles answered from
+ * the machine with the package's test style (`local`, `TEST_STYLE`: no tiles, fonts or icons to
+ * ask for); or its styles refused with a 403 (`forbidden`), as a server refusing the page, which
+ * may read the refusal across origins. Anything else refused.
+ */
+export type OpenFreeMapAnswer = "refused" | "local" | "forbidden";
 
 export interface VisitorOptions {
   readonly google?: GoogleAnswer;
@@ -83,10 +92,7 @@ export async function visitor(
     asked.push(requested);
     const answer = offsiteAnswer(requested, { google, openFreeMap });
     if (answer === "google") return route.continue();
-    if (answer === "stub") {
-      return route.fulfill({ contentType: "text/javascript", body: STUB_MAPS_JS });
-    }
-    if (answer === "local-style") return route.fulfill(LOCAL_STYLE);
+    if (answer !== "refused") return route.fulfill(FULFILLED[answer]);
     refused.add(requested);
     return route.abort();
   });
@@ -123,16 +129,35 @@ const LOCAL_STYLE = {
 };
 
 /**
- * What `url`, off the site, gets: Google itself, the stub, the local style, or refused, as the
- * answers say.
+ * OpenFreeMap refusing a style: a 403 the page may read across origins, as `LOCAL_STYLE`, so
+ * MapLibre sees the refusal, not a request the browser blocked.
+ */
+const FORBIDDEN_STYLE = { status: 403, headers: { "access-control-allow-origin": "*" } };
+
+/** What answers each request the visitor's browser doesn't send on or refuse. */
+const FULFILLED = {
+  stub: { contentType: "text/javascript", body: STUB_MAPS_JS },
+  "failing-stub": { contentType: "text/javascript", body: STUB_FAILING_MAPS_JS },
+  "local-style": LOCAL_STYLE,
+  forbidden: FORBIDDEN_STYLE,
+} as const;
+
+type OffsiteAnswer = keyof typeof FULFILLED | "google" | "refused";
+
+/**
+ * What `url`, off the site, gets: Google itself, a stub, the local style, a 403, or refused, as
+ * the answers say.
  */
 function offsiteAnswer(
   url: string,
   { google, openFreeMap }: Required<Pick<VisitorOptions, "google" | "openFreeMap">>,
-): "google" | "stub" | "local-style" | "refused" {
+): OffsiteAnswer {
   if (google === "reached" && thirdPartyOf(url) === GOOGLE_MAPS) return "google";
   if (google === "stubbed" && isMapsScript(url)) return "stub";
-  if (openFreeMap === "local" && url.startsWith(OPENFREEMAP_STYLES)) return "local-style";
+  if (google === "failing" && isMapsScript(url)) return "failing-stub";
+  const isStyle = url.startsWith(OPENFREEMAP_STYLES);
+  if (openFreeMap === "local" && isStyle) return "local-style";
+  if (openFreeMap === "forbidden" && isStyle) return "forbidden";
   return "refused";
 }
 

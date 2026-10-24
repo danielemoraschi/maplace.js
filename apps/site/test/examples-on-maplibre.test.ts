@@ -11,6 +11,7 @@ import { mayAskBeforeConsent } from "../src/site/third-parties.ts";
 import {
   mapLibreDrawn,
   mapLibreVersionIn,
+  mapLibreView,
   missingStylesheetWarnings,
   recordLoadStates,
   siteWorkers,
@@ -23,6 +24,7 @@ import {
   versionsInTurn,
   visitSection,
 } from "./home-sections.ts";
+import { expectLeftOpensAsShown, LEFT_WHILE_LOADING } from "./left-while-loading.ts";
 import { ON_MAPLIBRE, SECTION_MS, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { loadMapsButtons } from "./visitor.ts";
 
@@ -153,6 +155,26 @@ describe("MapLibre's maps in the site's frame", () => {
     );
     await context.close();
   }, 30_000);
+});
+
+// W23: a version left while its scripts load is made hidden, in a frame with no size; shown
+// again, it must open on the view it would have had.
+describe("a version left while it loads, on MapLibre", () => {
+  it.for(LEFT_WHILE_LOADING)(
+    "opens $name on the view it would have had",
+    { timeout: 60_000 },
+    async (leftAndShown) => {
+      const { page, context, section, errors } = await visitSection(site, "styled");
+      await chooseProvider(page, "styled", "MapLibre");
+      await expectLeftOpensAsShown({ page, section, example: "styled" }, leftAndShown, {
+        versionIn: (kind) => mapLibreVersionIn(section, kind),
+        viewOf: mapLibreView,
+        timeout: ON_MAPLIBRE.timeout,
+      });
+      expect(errors()).toEqual([]);
+      await context.close();
+    },
+  );
 });
 
 /** A poll's options for `name`'s section on MapLibre, its message saying what it waits for. */

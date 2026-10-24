@@ -8,6 +8,13 @@ import type { Visitor } from "./visitor.ts";
 /** A version as the section's switch offers it. */
 export type VersionChoice = (typeof VERSION_LABELS)[number];
 
+/** The switch's choice for a version of `kind`. */
+export function versionChoice(kind: VersionKind): VersionChoice {
+  const choice = VERSION_LABELS.find((label) => label.kind === kind);
+  if (choice === undefined) throw new Error(`no version of kind ${kind}`);
+  return choice;
+}
+
 /**
  * The versions in the order a section's test opens them, the section at `index` starting one
  * further along than the one before: each version takes its turn at readying the page's provider.

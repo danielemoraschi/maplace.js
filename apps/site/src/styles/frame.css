@@ -100,12 +100,12 @@
 
 /* The notes over the frame are the site's own markup: in its layer, as its utilities are. */
 @layer components {
-  /* Notes for the version shown only. */
+  /* Notes for the version shown only; a version that failed while starting shows its failure alone. */
   .map-note {
     display: none;
   }
   .map-frame:has(.version[data-failed]:not([hidden])) .failed,
-  .map-frame:has(.version[data-starting]:not([hidden])) .loading {
+  .map-frame:has(.version[data-starting]:not([data-failed], [hidden])) .loading {
     display: block;
   }
   /* A failure a reload mends offers one (`data-reload-mends`, `map-failures.ts`). */
