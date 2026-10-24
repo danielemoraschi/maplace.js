@@ -6,8 +6,8 @@ import type { Map as MapLibreMap } from "maplibre-gl";
  * would keep a mount waiting.
  */
 export function whenStyleLoaded(map: MapLibreMap, run: () => void): void {
-  if (map.getStyle() !== undefined) run();
-  else map.once("style.load", () => whenStyleLoaded(map, run));
+  if (map.getStyle() === undefined) map.once("style.load", () => whenStyleLoaded(map, run));
+  else run();
 }
 
 /** `whenStyleLoaded` as a promise, for the mount's race against failure and cancelling. */

@@ -33,4 +33,5 @@ export const LIFT_PROPERTY = "--maplace-bottom-left-lift";
 export const CONTROL_STYLES = `
 ${outsideUnstyled(PANEL_SELECTOR)}{padding:4px;border-radius:4px;box-shadow:0 0 0 2px rgba(0,0,0,.1);background:light-dark(#fff,#444);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
 ${outsideUnstyled(`${PANEL_SELECTOR} ${MAPLACE_LISTS}`)}{box-sizing:border-box;max-height:var(${LIST_ROOM_PROPERTY})}
-${outsideUnstyled(`.maplibregl-ctrl-bottom-left:has(>${PANEL_SELECTOR})`)}{margin-bottom:var(${LIFT_PROPERTY})}${SHARED_CONTROL_STYLES}`;
+${outsideUnstyled(`.maplibregl-ctrl-bottom-left:has(>${PANEL_SELECTOR})`)}{margin-bottom:var(${LIFT_PROPERTY})}
+${SHARED_CONTROL_STYLES}`;

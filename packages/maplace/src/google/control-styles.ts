@@ -22,4 +22,5 @@ ${outsideUnstyled(`.${GOOGLE_MAP_CLASS}:has(${PANEL})`)}{container-type:size}
 ${outsideUnstyled(`${PANEL}[data-color-scheme]`)}{margin:10px;padding:4px;border-radius:2px;box-shadow:0 1px 4px -1px #0000004d;background:light-dark(#fff,#444);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
 ${outsideUnstyled(`${PANEL}[data-color-scheme=dark]`)}{color-scheme:dark}
 ${outsideUnstyled(`${PANEL}[data-color-scheme=follow-system]`)}{color-scheme:light dark}
-${outsideUnstyled(`${PANEL}[data-color-scheme] :is(.maplace-list,.maplace-listbox)`)}{box-sizing:border-box;max-height:calc(100cqh - 28px)}${SHARED_CONTROL_STYLES}`;
+${outsideUnstyled(`${PANEL}[data-color-scheme] :is(.maplace-list,.maplace-listbox)`)}{box-sizing:border-box;max-height:calc(100cqh - 28px)}
+${SHARED_CONTROL_STYLES}`;

@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-24 Fixed MapLibre's edit handles reporting a point dragged to −180 at 180: they report −180, as clicks and the viewport do
 - 2026-10-23 Fixed MapLibre's control panels running into each other on a crowded map: a list stops short of what the corners below it hold, MapLibre's attribution included, lists sharing a side share its height, and a bottom-left panel sits above the attribution where they would meet (on a phone it covered the panel); on a page's own MapLibre map too
 - 2026-10-23 Fixed a control's panel left unstyled on a map in a frame whose node the page made outside the frame (React's `MapControl` in `react-frame-component`), on Google and MapLibre: the panel's stylesheet goes to the map's document
 - 2026-10-23 Fixed an edit handle or an editable marker let go outside a MapLibre map following the pointer back until the next click: the drag ends where it was let go and reports its change
