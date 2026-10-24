@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { warnOfDemoMapIdOnce } from "./demo-map-id";
 import { createdMapOptions, mapSourceFor } from "./map-source";
 import type { GoogleAdapterOptions } from "./options";
-import { type StubMap, stubLibraries } from "./testing/stub-libraries";
+import { StubMap, stubLibraries } from "./testing/stub-libraries";
 
 vi.mock("./demo-map-id", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./demo-map-id")>()),
@@ -79,6 +79,52 @@ describe("a map maplace creates", () => {
         maps: { ...libraries.maps, Map: refusing as never },
       });
     expect(open).toThrow("bad map options");
+    expect(container.children).toHaveLength(0);
+  });
+
+  it("opens and releases a map Google disabled, listening to nothing", () => {
+    // Maps JS 3.66: a map Google disabled has no div, and adding a listener fails.
+    const disabled = class extends StubMap {
+      override getDiv() {
+        return undefined as never;
+      }
+      override addListener(): never {
+        throw new TypeError("Google gave no listener");
+      }
+    };
+    const container = containerWith();
+    const { release } = mapSourceFor({ mapId: "id" }).open(container, {
+      ...libraries,
+      maps: { ...libraries.maps, Map: disabled as never },
+    });
+    expect(release).not.toThrow();
+    expect(container.children).toHaveLength(0);
+  });
+
+  it("releases a map Google disabled once open, its listeners gone with it", () => {
+    // Maps JS 3.66: a key refused after the map opened leaves it with no div.
+    let disabled = false;
+    const disabling = class extends StubMap {
+      override getDiv() {
+        return disabled ? (undefined as never) : super.getDiv();
+      }
+      override addListener(...args: Parameters<StubMap["addListener"]>) {
+        const listener = super.addListener(...args);
+        return {
+          remove: () => {
+            if (disabled) throw new TypeError("Google serves this map no more");
+            listener.remove();
+          },
+        };
+      }
+    };
+    const container = containerWith();
+    const { release } = mapSourceFor({ mapId: "id" }).open(container, {
+      ...libraries,
+      maps: { ...libraries.maps, Map: disabling as never },
+    });
+    disabled = true;
+    expect(release).not.toThrow();
     expect(container.children).toHaveLength(0);
   });
 });

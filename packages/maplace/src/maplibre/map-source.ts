@@ -1,10 +1,11 @@
 import type { Map as MapLibreMap, MapOptions } from "maplibre-gl";
+import { giveBackContextWhileHidden } from "../adapter-kit/hidden-map-context";
 import { elementFilling } from "../adapter-kit/map-element";
 import { MaplaceError } from "../errors";
 import { MAPLIBRE_MAP_CLASS } from "./control-styles";
-import { giveBackContextWhileHidden } from "./hidden-map-context";
 import type { MapLibre } from "./library";
 import type { MapLibreAdapterOptions } from "./options";
+import { whenStyleLoaded } from "./style-load";
 
 /** OpenFreeMap's `liberty` style: free, no key, OpenStreetMap data. */
 const OPENFREEMAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
@@ -50,7 +51,7 @@ function createdMapOptions(
  * A map maplace creates, in an element of its own filling the container: releasing removes the
  * map and that element, leaving the container as it was. MapLibre's constructor throws when the
  * browser gives it no WebGL: a load failure, and nothing stays. While hidden, the map gives its
- * WebGL context back (`hidden-map-context.ts`).
+ * WebGL context back (`adapter-kit/hidden-map-context.ts`).
  */
 function createdMapSource(options: MapLibreAdapterOptions): MapSource {
   return {
@@ -60,12 +61,18 @@ function createdMapSource(options: MapLibreAdapterOptions): MapSource {
       try {
         const map = new maplibre.Map(createdMapOptions(options, element));
         if (options.mapOptions?.dragRotate !== true) withoutRotation(map);
-        const stopGivingBack = giveBackContextWhileHidden(map);
+        const releaseContext = giveBackContextWhileHidden({
+          element,
+          canvas: map.getCanvas(),
+          // MapLibre saves its style at the loss and sets it back: lost before it loads, or while
+          // a restore sets it back, the style would be gone.
+          whenReady: (run) => whenStyleLoaded(map, run),
+        });
         return {
           map,
           release() {
-            stopGivingBack();
             releaseCreated(map, element);
+            releaseContext();
           },
         };
       } catch (cause) {
