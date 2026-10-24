@@ -127,7 +127,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       const moved = next.geometry !== drawn.geometry;
       const newIcon = changesIcon(next);
       if (next.title !== drawn.title) dom?.retitle(next.title);
-      if (next.editable !== drawn.editable) dom?.setDraggable(next.editable);
+      const editableChanged = next.editable !== drawn.editable;
       drawn = next;
       if (newIcon) icon = iconFor(next, look.state);
       if (moved) {
@@ -135,6 +135,9 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
         clustering.moved(member);
       }
       if (newIcon || (moved && dom === undefined)) show({ moved });
+      // After `show`: a DOM marker drawn as a pin again is taken off there, its drag ending with
+      // it; only one that stays, showing the page's icon, has its drag cut short.
+      if (editableChanged) dom?.setDraggable(next.editable);
     },
     present(next: Look) {
       const stateChanged = !sameState(look.state, next.state);

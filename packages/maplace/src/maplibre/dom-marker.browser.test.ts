@@ -2,21 +2,14 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
-import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
-import {
-  adding,
-  markerDrawable,
-  ORIGIN,
-  presented,
-  updating,
-} from "../testing/conformance/fixtures";
+import { markerDrawable, ORIGIN, presented, updating } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import type { MapLibreState } from "./map-state";
 import { PIN_SIZE } from "./pin-image";
+import { withEditableMarker } from "./testing/editable-marker";
 import { wait } from "./testing/map-settle";
 import { markerTarget } from "./testing/marker-target";
-import { mountedMapLibre } from "./testing/mounted";
 import { placedMarker } from "./testing/placed-markers";
 import { removePageMaps } from "./testing/subject";
 import { pagePointOf, pinHeadOf } from "./testing/user-drags";
@@ -25,9 +18,6 @@ afterEach(() => {
   unmountAll();
   removePageMaps();
 });
-
-const editable = (id: string, overrides?: Partial<Drawable>) =>
-  markerDrawable(id, ORIGIN, { editable: true, ...overrides });
 
 /** The marker's element MapLibre moves, and the icon in it. */
 function elementsOf(state: MapLibreState, id: string) {
@@ -45,16 +35,7 @@ async function dragPin(map: MapLibreMap, state: MapLibreState, id: string, to: L
   await commands.pressMouse([head, { x: target.x, y: target.y - tipBelowHead }]);
 }
 
-/** An editable marker at the origin, on a map zoomed in on it. */
-async function withEditableMarker(overrides?: Partial<Drawable>) {
-  const mounted = await mountedMapLibre();
-  mounted.adapter.setView({ kind: "center", center: ORIGIN, zoom: 6 });
-  await mounted.adapter.apply(adding(editable("a", overrides)));
-  await mounted.probe.settle();
-  return mounted;
-}
-
-/** Where `editable("a")` is dragged to. */
+/** Where the editable marker `a` is dragged to. */
 const DRAGGED_TO: LatLng = { lat: 1, lng: 2 };
 
 describe("dragging MapLibre's markers", () => {

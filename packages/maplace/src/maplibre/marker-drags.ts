@@ -12,9 +12,10 @@ export interface MarkerDrags {
 
 /**
  * Reports each drag of `marker` as `id`'s edits as it goes and its change once, on release
- * (MapLibre fires `drag` as it moves and `dragend` once), then runs `afterEnd`. While dragged, the
- * marker's element lets the pointer through, so the release's click lands on neither it nor the
- * map's canvas, selecting nothing and clicking nothing on the map.
+ * (MapLibre fires `drag` as it moves and `dragend` once), then runs `afterEnd`; a drag the page cut
+ * short reports nothing, and the next drag reports afresh. While dragged, the marker's element
+ * lets the pointer through, so the release's click lands on neither it nor the map's canvas,
+ * selecting nothing and clicking nothing on the map.
  */
 export function reportMarkerDrags(
   marker: Marker,
@@ -28,9 +29,12 @@ export function reportMarkerDrags(
     underWay = true;
     edits.moving(markerGeometryOf(marker));
   });
+  /** A drag can end on a marker no longer draggable only when the page cut it short (`DomMarker`). */
+  const wasCutShortByThePage = () => !marker.isDraggable();
   marker.on("dragend", () => {
     underWay = false;
-    edits.ended(markerGeometryOf(marker));
+    if (wasCutShortByThePage()) edits.endedUnchanged();
+    else edits.ended(markerGeometryOf(marker));
     afterEnd();
   });
   return { isUnderWay: () => underWay };
