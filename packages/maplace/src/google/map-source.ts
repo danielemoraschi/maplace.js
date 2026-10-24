@@ -2,6 +2,7 @@
 import { elementFilling } from "../adapter-kit/map-element";
 import { GOOGLE_MAP_CLASS } from "./control-styles";
 import { DEMO_MAP_ID, warnOfDemoMapIdOnce } from "./demo-map-id";
+import { giveBackVectorContextWhileHidden } from "./hidden-map-context";
 import type { GoogleLibraries } from "./libraries";
 import { GOOGLE_COLOR_SCHEMES, type GoogleAdapterOptions } from "./options";
 
@@ -40,12 +41,25 @@ export function createdMapOptions({
 /**
  * A map maplace creates, in an element of its own: Google writes into the element it's given and
  * has no way to unmount, so releasing removes that element and leaves the container as it was.
+ * While hidden, a vector map gives its WebGL context back, and releasing gives it back for good
+ * (`hidden-map-context.ts`).
  */
 function createdMapSource(options: GoogleAdapterOptions): MapSource {
   return {
     open(container, { maps }) {
       if (options.mapId === undefined) warnOfDemoMapIdOnce();
-      return openIn(container, (element) => new maps.Map(element, createdMapOptions(options)));
+      const { map, release: removeElement } = openIn(
+        container,
+        (element) => new maps.Map(element, createdMapOptions(options)),
+      );
+      const releaseContext = giveBackVectorContextWhileHidden(map, maps.RenderingType.VECTOR);
+      return {
+        map,
+        release() {
+          removeElement();
+          releaseContext();
+        },
+      };
     },
   };
 }
