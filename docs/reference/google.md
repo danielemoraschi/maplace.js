@@ -110,4 +110,12 @@ Google refusing the key (an invalid key, a referrer the key doesn't allow, the A
 
 ## Clicks and edits
 
-A click on the map is reported 250 ms after it, unless a double-click comes first, so a double-click zoom neither fires `mapClick` nor clears the selection; a location clicked within those 250 ms drops the map's click. A marker reports its drag as it moves (`locationEdit`); Google says where a shape's handle went only when it is let go, so a shape's `locationEdit` comes once, with its `locationChange`.
+A click on the map is reported 250 ms after it, unless a double-click comes first, so a double-click zoom neither fires `mapClick` nor clears the selection; a location clicked within those 250 ms drops the map's click. A marker reports its drag as it moves (`locationEdit`); Google says where a shape's handle went only when it is let go, so a shape's `locationEdit` comes once, with its `locationChange`. A window losing focus ends a marker's drag where it was, with its `locationChange`; a shape's handle drag is cut short instead, nothing reported and the shape left where the store has it, as Google gives no handle place until it is let go.
+
+## Popups
+
+A popup is Google's InfoWindow, headed by the location's title. One opened by a click or from the list pans the map to show it, once Google's own pan ends, clear of what the map's corners hold when there is room (never over Google's logo or terms; with no room, Google's own pan stands). A hover's popup doesn't pan.
+
+## Hidden maps
+
+A Google map with a map ID draws with WebGL, and a browser keeps about 16 WebGL contexts per page, taking the oldest away past that. So a vector map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab), takes it back once shown, and gives it back when destroyed. A raster map holds none, and your own map (`map`) keeps its context. Checked in Chromium.

@@ -103,7 +103,8 @@ function watchBlurs(mounted: MountedMap): Set<BlurCut> {
  */
 function cutAll(cuts: Set<BlurCut>): GiveBack[] {
   const givingBack: GiveBack[] = [];
-  for (const cut of [...cuts]) {
+  // A snapshot: a set iterated as it changes would run cuts added meanwhile.
+  for (const cut of Array.from(cuts)) {
     const back = cuts.has(cut) ? cut() : undefined;
     if (back) givingBack.push(back);
   }

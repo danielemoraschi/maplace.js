@@ -2,6 +2,13 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-25 Changed the size budget of `maplace/google` to 16.6 kB (was 15.7): Google's popup pan, hidden maps giving back their WebGL context and drags ended by a window losing focus
+- 2026-10-25 Fixed a Google popup opened from the list or by a click, on a narrow map, left under the list or another control in a corner: once Google's own pan ends, the map pans it clear of what the corners show, as on MapLibre, never over Google's logo or terms; with no room for that, Google's own pan stands
+- 2026-10-25 Fixed Google maps keeping their WebGL contexts while hidden, which could blank another map on a page with many: a vector map maplace creates gives its context back while hidden, draws again once shown, and gives it back once destroyed
+- 2026-10-25 Fixed a Google marker dragged when the window loses focus: its drag ends where it was, its locationChange reported there; before, it followed the pointer until the next release, wherever it came
+- 2026-10-25 Fixed a Google shape's handle dragged when the window loses focus: the drag is cut short, nothing reported and the shape left where the store has it; before, it reported wherever the mouse was next let go
+- 2026-10-25 Fixed a Google marker whose `editable` the page turns off mid-drag: drawn back where the store has it; before, it stayed where the drag had got to
+- 2026-10-25 Fixed a MapLibre edit handle on another world copy moved again at every write-back
 - 2026-10-24 Fixed MapLibre maps going blank on a page with many maps (the browser keeps about 16 WebGL contexts and takes the oldest away): a map maplace creates gives its context back while hidden, and draws again once shown
 - 2026-10-24 Fixed Google's popup inset and margins reaching MapLibre's popups, and MapLibre's popup heading rule reaching Google's, on a page loading both providers
 - 2026-10-24 Fixed a list view shown in a frame without its styles: in a map's panel, inside `<MapControl>`, as `<LocationList>`, in `<maplace-map>` and in a shortcut's `list.container`
