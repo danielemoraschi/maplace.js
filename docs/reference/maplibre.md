@@ -106,6 +106,10 @@ A style that fails to load is `provider-load-failed`, or `provider-auth-failed` 
 
 A dark map is a dark style (`map-style`), since MapLibre has no colour scheme option.
 
+## Hidden maps
+
+A browser keeps about 16 WebGL contexts per page, one per MapLibre map, and takes the oldest away past that, leaving that map blank. So a map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and takes it back once shown, drawing again from its style. A map hidden with `visibility` or `opacity` keeps its context, and so does your own map (`map`). More than about 16 maps on show at once is past the browser's limit. Checked in Chromium.
+
 ## Zoom
 
 maplacejs speaks one zoom on every provider: Google's. MapLibre's tiles are 512 pixels, so its zoom is one lower, and the adapter adds one. The same `view`, `select(id, { zoom })`, location `zoom` and viewport zoom show the same area on either map. Only `mapOptions.minZoom` and `maxZoom`, which go to MapLibre as they are, are on MapLibre's scale.

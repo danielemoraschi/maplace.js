@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-24 Fixed MapLibre maps going blank on a page with many maps (the browser keeps about 16 WebGL contexts and takes the oldest away): a map maplace creates gives its context back while hidden, and draws again once shown
 - 2026-10-24 Fixed Google's popup inset and margins reaching MapLibre's popups, and MapLibre's popup heading rule reaching Google's, on a page loading both providers
 - 2026-10-24 Fixed a list view shown in a frame without its styles: in a map's panel, inside `<MapControl>`, as `<LocationList>`, in `<maplace-map>` and in a shortcut's `list.container`
 - 2026-10-24 Fixed a MapLibre popup opened by a click or a selection ending under the map's corner controls (a location list on a phone): it pans clear of them once the map's own pan ends, never while the user holds the map, when there is room

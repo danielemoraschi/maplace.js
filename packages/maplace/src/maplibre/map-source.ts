@@ -2,6 +2,7 @@ import type { Map as MapLibreMap, MapOptions } from "maplibre-gl";
 import { elementFilling } from "../adapter-kit/map-element";
 import { MaplaceError } from "../errors";
 import { MAPLIBRE_MAP_CLASS } from "./control-styles";
+import { giveBackContextWhileHidden } from "./hidden-map-context";
 import type { MapLibre } from "./library";
 import type { MapLibreAdapterOptions } from "./options";
 
@@ -48,7 +49,8 @@ function createdMapOptions(
 /**
  * A map maplace creates, in an element of its own filling the container: releasing removes the
  * map and that element, leaving the container as it was. MapLibre's constructor throws when the
- * browser gives it no WebGL: a load failure, and nothing stays.
+ * browser gives it no WebGL: a load failure, and nothing stays. While hidden, the map gives its
+ * WebGL context back (`hidden-map-context.ts`).
  */
 function createdMapSource(options: MapLibreAdapterOptions): MapSource {
   return {
@@ -58,7 +60,14 @@ function createdMapSource(options: MapLibreAdapterOptions): MapSource {
       try {
         const map = new maplibre.Map(createdMapOptions(options, element));
         if (options.mapOptions?.dragRotate !== true) withoutRotation(map);
-        return { map, release: () => releaseCreated(map, element) };
+        const stopGivingBack = giveBackContextWhileHidden(map);
+        return {
+          map,
+          release() {
+            stopGivingBack();
+            releaseCreated(map, element);
+          },
+        };
       } catch (cause) {
         element.remove();
         const message = "mount: MapLibre couldn't create a map (is WebGL turned off?)";
