@@ -1,4 +1,4 @@
-import type { Map as MapLibreMap } from "maplibre-gl";
+import { type Map as MapLibreMap, MapMouseEvent } from "maplibre-gl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { presented, TOWNS } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
@@ -21,11 +21,16 @@ async function pinAlone() {
   return mounted;
 }
 
-/** A user's press of the mouse, or its release, on pin `a`'s head in Bologna. */
-function pressOnBologna(map: MapLibreMap, type: "mousedown" | "mouseup"): void {
+/** Where pin `a`'s head is drawn in Bologna, as a mouse event's place on the page. */
+function bolognaPinHead(map: MapLibreMap): { clientX: number; clientY: number } {
   const { x, y } = pagePointOf(map, TOWNS.bologna);
   const head = PIN_SIZE.height - PIN_SIZE.width / 2;
-  const at = { clientX: x, clientY: y - head };
+  return { clientX: x, clientY: y - head };
+}
+
+/** A user's press of the mouse, or its release, on pin `a`'s head in Bologna. */
+function pressOnBologna(map: MapLibreMap, type: "mousedown" | "mouseup"): void {
+  const at = bolognaPinHead(map);
   map.getCanvas().dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, ...at }));
 }
 
@@ -54,6 +59,20 @@ describe("MapLibre's hover under a pointer that hasn't moved", () => {
     adapter.setView(OVER_TOWNS);
     await probe.settle();
     expect(map.getCanvas().style.cursor).toBe("");
+  });
+
+  it("points nowhere again from a release fired for a press the map missed", async () => {
+    const { adapter, probe, map, host } = await pinAlone();
+    probe.pointerOver("a");
+    pressOnBologna(map, "mousedown");
+    const missed = new MouseEvent("mouseup", bolognaPinHead(map));
+    map.fire(new MapMouseEvent("mouseup", map, missed));
+    // The pin folds and unfolds: a release taken for a place on the map would hover it again.
+    adapter.setView(OVER_TOWNS);
+    await probe.settle();
+    adapter.setView(ON_BOLOGNA);
+    await probe.settle();
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
   });
 
   it("lets the pin go when the map moves on the page from under a still pointer", async () => {

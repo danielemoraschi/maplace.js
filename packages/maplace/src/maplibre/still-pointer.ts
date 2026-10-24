@@ -32,8 +32,9 @@ export function stillPointer({ map, maplibre, onDestroy }: MountedMapLibre): Sti
   const forget = () => {
     last = undefined;
   };
-  // drag-release fires a release let go outside the map as the map's own: no place on it.
-  // A page's code may fire one with no pointer event under it.
+  // drag-release fires the releases the map missed (let go outside it, a window blur, a drag the
+  // page cut short) as the map's own, dispatched outside the canvas container or nowhere: no place
+  // on it. A page's code may fire one with no pointer event under it.
   const rememberRelease = (event: MapMouseEvent) => {
     const { originalEvent } = event;
     if (originalEvent !== undefined && isInCanvasContainer(originalEvent, map)) remember(event);

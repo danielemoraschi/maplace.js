@@ -3,7 +3,7 @@ import { reportElementHover } from "../adapter-kit/hover-reports";
 import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
 import { lngLatOf } from "./conversions";
-import { endDragReleasedOutside } from "./drag-release";
+import { endDragsTheMapMisses } from "./drag-release";
 import { selectLocation } from "./map-clicks";
 import { reportMarkerDrags } from "./marker-drags";
 import { PIN_SIZE, pinImageUrl } from "./pin-image";
@@ -17,11 +17,16 @@ export interface DomMarker {
   readonly marker: Marker;
   /** Shows `icon` as the only child; an icon already there stays, so its CSS transition runs. */
   showIcon(icon: Node): void;
+  /** Where the page has it. */
   moveTo(at: LatLng): void;
   retitle(title: string | undefined): void;
   restack(rank: number): void;
   /** Shows or hides it; one being dragged stays until let go. */
   setVisible(visible: boolean): void;
+  /**
+   * Turned off while a press is held, the drag is cut short: back where the page put it, reporting
+   * nothing.
+   */
   setDraggable(draggable: boolean): void;
   /** How tall it is drawn, for a popup pointing at its top. */
   height(): number;
@@ -108,7 +113,21 @@ export function createDomMarker(
   let asked = false;
   // Its change is reported before a marker hidden while dragged goes.
   const drags = reportMarkerDrags(marker, drawable.id, mounted, showAsAsked);
-  endDragReleasedOutside(marker, mounted);
+  const press = endDragsTheMapMisses(marker, mounted);
+  /** Where the page has it: a drag the page cuts short goes back there. */
+  let placedAt = at;
+
+  /**
+   * A press held when the page made it undraggable: drawn back where the page has it, its drag
+   * ends reporting nothing, and a hide that waited for it applies (`reportMarkerDrags`). The
+   * release, which a page's listener on its map hears, waits until the update under way has placed
+   * its locations.
+   */
+  function cutDragShort(): void {
+    if (!press.isHeld()) return;
+    marker.setLngLat(lngLatOf(placedAt));
+    queueMicrotask(press.release);
+  }
 
   function setVisible(visible: boolean): void {
     asked = visible;
@@ -128,7 +147,10 @@ export function createDomMarker(
       if (element.firstChild !== next || element.childNodes.length !== 1)
         element.replaceChildren(next);
     },
-    moveTo: (next) => marker.setLngLat(lngLatOf(next)),
+    moveTo(next) {
+      placedAt = next;
+      marker.setLngLat(lngLatOf(next));
+    },
     retitle: (title) => setTitle(element, title),
     restack: (next) => {
       element.style.zIndex = String(next);
@@ -137,6 +159,7 @@ export function createDomMarker(
     setDraggable(next) {
       marker.setDraggable(next);
       showDragCursor(element, next);
+      if (!next) cutDragShort();
     },
     height: () => element.offsetHeight,
     remove() {

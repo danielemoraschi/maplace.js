@@ -19,3 +19,9 @@ export function pinHeadOf(icon: Element): PagePoint {
   const box = icon.getBoundingClientRect();
   return { x: box.left + box.width / 2, y: box.top + box.width / 2 };
 }
+
+/** The middle of `element` on the test page. */
+export function middleOf(element: Element): PagePoint {
+  const box = element.getBoundingClientRect();
+  return { x: box.left + box.width / 2, y: box.top + box.height / 2 };
+}
