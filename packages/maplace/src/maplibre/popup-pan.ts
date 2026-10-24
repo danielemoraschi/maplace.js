@@ -19,20 +19,30 @@ const ATTRIBUTION_CLASS = "maplibregl-ctrl-attrib";
  */
 export function panIntoView(map: MapLibreMap, popup: Popup): void {
   queueMicrotask(() => {
-    if (map.isMoving()) map.once("moveend", () => panUnlessTakenOver(map, popup));
+    if (map.isMoving()) panAfterMove(map, popup);
     else panClear(map, popup);
   });
 }
 
 /**
- * Pans a frame after the move ended, unless the map moves again by then: a user's drag or zoom
- * ends the move under way at once, and MapLibre counts the gesture as moving only a frame later.
- * Where the user takes the map, it stays.
+ * Pans a frame after the move under way ends, unless the map moves again by then or the user
+ * holds it: a press or touch on the map ends the move at once, often frames before MapLibre counts
+ * the gesture as moving, and a pan then would cancel the gesture itself. Where the user takes the
+ * map, it stays; a later selection's pan, which ends this one, runs its course.
  */
-function panUnlessTakenOver(map: MapLibreMap, popup: Popup): void {
-  requestAnimationFrame(() => {
-    if (!map.isMoving()) panClear(map, popup);
+function panAfterMove(map: MapLibreMap, popup: Popup): void {
+  map.once("moveend", () => {
+    requestAnimationFrame(() => {
+      if (!map.isMoving() && !isHeldByUser(map)) panClear(map, popup);
+    });
   });
+}
+
+/** Whether a gesture of the user's holds the map: a press or touch, or a wheel's zoom under way. */
+function isHeldByUser(map: MapLibreMap): boolean {
+  return [map.dragPan, map.dragRotate, map.touchZoomRotate, map.scrollZoom].some((gesture) =>
+    gesture.isActive(),
+  );
 }
 
 function panClear(map: MapLibreMap, popup: Popup): void {
