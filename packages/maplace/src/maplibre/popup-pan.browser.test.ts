@@ -16,8 +16,11 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-/** Long enough into a selection's pan for it to be under way, not over. */
-const EASING_MS = 100;
+/** Long enough for a selection's pan to outlast whatever a test does while it runs, under any load. */
+const SLOW_PAN_MS = 30_000;
+
+/** Long enough for a slowed pan to bring a popup where a test wants it, well before it ends. */
+const UNDER_WAY_MS = 10_000;
 
 /** Long enough for a drag's inertia, or any pan after it, to have ended. */
 const QUIET_MS = 1_000;
@@ -65,6 +68,24 @@ const popupOf = (map: MapLibreMap) =>
 
 const isAt = ({ lat, lng }: { lat: number; lng: number }, at: typeof P0) =>
   Math.abs(lat - at.lat) < 1e-5 && Math.abs(lng - at.lng) < 1e-5;
+
+/**
+ * Runs `select` with the map's next `panTo` (a selection's) taking `SLOW_PAN_MS`, and waits until
+ * it runs, so a test acts while it is provably under way.
+ */
+async function whileNextPanRuns(map: MapLibreMap, select: () => void): Promise<void> {
+  const panTo = map.panTo;
+  const restore = () => {
+    map.panTo = panTo;
+  };
+  onTestFinished(restore);
+  map.panTo = (center, options, eventData) => {
+    restore();
+    return panTo.call(map, center, { ...options, duration: SLOW_PAN_MS }, eventData);
+  };
+  select();
+  await expect.poll(() => map.isMoving()).toBe(true);
+}
 
 /** What the map's `moveend` centred on `p0` saw, once there has been one. */
 async function centredOnP0(moveEnds: PhoneMap["moveEnds"]) {
@@ -132,8 +153,7 @@ describe("a MapLibre popup panned into view on a phone", () => {
 
   it("lets a new selection's pan run its course, whatever an earlier selection's popup waited for", async () => {
     const phone = await phoneMapWithList(6);
-    phone.maplace.select("p5");
-    await wait(EASING_MS);
+    await whileNextPanRuns(phone.map, () => phone.maplace.select("p5"));
     phone.maplace.select("p0");
     await expectOverTheListOnceCentred(phone);
     await expectClearOfTheList(phone);
@@ -142,12 +162,18 @@ describe("a MapLibre popup panned into view on a phone", () => {
   it("leaves the map where a user's drag put it, the selection's pan cut short", async () => {
     const phone = await phoneMapWithList(6);
     const panBy = vi.spyOn(phone.map, "panBy");
-    phone.maplace.select("p0");
-    await wait(EASING_MS);
+    const dragStarts = vi.fn();
+    phone.map.on("dragstart", dragStarts);
+    await whileNextPanRuns(phone.map, () => phone.maplace.select("p0"));
+    // Grabbed once the pan has brought the popup over the list, where a pan of its own would move it.
+    const overTheList = () => boxesMeet(phone.popupBox() as Box, phone.panel());
+    await expect.poll(overTheList, { timeout: UNDER_WAY_MS }).toBe(true);
+    // At the map's left edge, clear of the popup, the pins and the list.
     const box = phone.mapBox();
-    const start = { x: box.left + 60, y: box.bottom - 120 };
-    await commands.pressMouse([start, { x: start.x + 40, y: start.y - 80 }]);
+    const start = { x: box.left + 24, y: box.top + box.height / 2 };
+    await commands.pressMouse([start, { x: start.x + 20, y: start.y - 80 }]);
     await wait(QUIET_MS);
+    expect(dragStarts).toHaveBeenCalled();
     expect(panBy).not.toHaveBeenCalled();
   });
 
