@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type ProviderImports, providerLoaders } from "./provider-loaders.ts";
+import { elementLoaders, type ProviderImports } from "./provider-loaders.ts";
 
 function stubImports() {
   const steps: string[] = [];
@@ -14,7 +14,7 @@ function stubImports() {
   return { imports, steps };
 }
 
-describe("providerLoaders", () => {
+describe("elementLoaders", () => {
   it("resolves MapLibre's element only once its worker is readied", async () => {
     const { imports, steps } = stubImports();
     let assetsArrive: () => void = () => {};
@@ -27,8 +27,8 @@ describe("providerLoaders", () => {
         }).then(assets),
     };
     let loaded = false;
-    const loading = providerLoaders(held)
-      .elementLoaders.maplibre()
+    const loading = elementLoaders(held)
+      .maplibre()
       .then(() => {
         loaded = true;
       });
@@ -41,7 +41,7 @@ describe("providerLoaders", () => {
 
   it("loads Google's element without MapLibre's assets", async () => {
     const { imports, steps } = stubImports();
-    await providerLoaders(imports).elementLoaders.google();
+    await elementLoaders(imports).google();
     expect(steps).toEqual(["google's element"]);
   });
 });

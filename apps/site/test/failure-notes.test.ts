@@ -1,27 +1,20 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import type { Provider } from "../src/examples/example-providers.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";
 import { mapLibreDrawn, mapLibreVersionIn } from "./drawn-on-maplibre.ts";
-import { expectNoteAlone, expectNotedInTurn, type InTurn } from "./failure-note-checks.ts";
-import { ON_GOOGLE } from "./google-session.ts";
+import { expectNoteAlone, expectNotedInTurn, simpleInTurn } from "./failure-note-checks.ts";
+import { sectionFrom, simpleFromScript } from "./failure-openings.ts";
 import {
   chooseProvider,
   chooseVersion,
   leaveOnlySection,
   providerVersionIn,
-  sectionOf,
   shownNotes,
 } from "./home-sections.ts";
 import { ON_MAPLIBRE } from "./maplibre-session.ts";
+import { MAPLIBRE_GL_CHUNKS, VANILLA_CHUNK } from "./site-chunks.ts";
 import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
-import {
-  addedByBootstrap,
-  footerToggle,
-  openHome,
-  placeholder,
-  type VisitorOptions,
-} from "./visitor.ts";
+import { addedByBootstrap, footerToggle, openHome, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -32,11 +25,6 @@ const simpleOnGoogle = (page: Page, kind: VersionKind) =>
 /** The button simple's failure note offers when a reload mends its failure. */
 const reloadButton = (page: Page) =>
   page.locator("section#simple").getByRole("button", { name: "Reload the page" });
-
-/** A version module's chunk: the site's build names each after its file. */
-const VANILLA_CHUNK = /\/_astro\/vanilla\.[^/]+\.js$/;
-/** The chunk that readies maplibre-gl for the site (`maplibre-assets.ts`). */
-const MAPLIBRE_ASSETS_CHUNK = /\/_astro\/maplibre-assets\.[^/]+\.js$/;
 
 describe("a map's failure note", () => {
   it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
@@ -115,7 +103,7 @@ describe("a map's failure note", () => {
   }, 60_000);
 
   it("says why a MapLibre version's map didn't load: OpenFreeMap blocked", async () => {
-    const { page, context, section } = await sectionFrom({}, simpleFromScript("maplibre"));
+    const { page, context, section } = await sectionFrom(site, {}, simpleFromScript("maplibre"));
     await expectNotedInTurn(
       page,
       section,
@@ -130,7 +118,11 @@ describe("a map's failure note", () => {
   }, 60_000);
 
   it("says OpenFreeMap refused a MapLibre version's style", async () => {
-    const visit = await sectionFrom({ openFreeMap: "forbidden" }, simpleFromScript("maplibre"));
+    const visit = await sectionFrom(
+      site,
+      { openFreeMap: "forbidden" },
+      simpleFromScript("maplibre"),
+    );
     await expectNotedInTurn(
       visit.page,
       visit.section,
@@ -147,7 +139,7 @@ describe("a map's failure note", () => {
   it("says why a Google version's map didn't load: its libraries failed", async () => {
     // The Script version first: its adapter adds Maps JS itself, which the module versions then
     // find on the page, with no bootstrap to wait on the stub.
-    const visit = await sectionFrom({ google: "failing" }, simpleFromScript("google"));
+    const visit = await sectionFrom(site, { google: "failing" }, simpleFromScript("google"));
     const inTurn = simpleInTurn("google", ["script", "vanilla", "react"]);
     await expectNotedInTurn(visit.page, visit.section, inTurn, {
       failed: "provider-load-failed",
@@ -157,26 +149,40 @@ describe("a map's failure note", () => {
     await visit.context.close();
   }, 60_000);
 
-  it("offers a reload when what readies MapLibre for a version didn't load", async () => {
-    const { page, context } = await site.visitor({ openFreeMap: "local" });
-    await page.route(MAPLIBRE_ASSETS_CHUNK, (route) => route.abort());
-    await openHome(page, site.url);
-    await leaveOnlySection(page, "simple");
-    await chooseVersion(page, "simple", "Bundler");
-    await footerToggle(page).click();
-    const section = page.locator("section#simple");
-    await section.scrollIntoViewIfNeeded();
-    const vanilla = mapLibreVersionIn(section, "vanilla");
-    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("script");
-    await expectNoteAlone(section, {
+  // A version's own imports bring maplibre-gl: a module version's import, a script version's
+  // `Maplace`, fails with it, in that version's words.
+  it.for([
+    { label: "Bundler", kind: "vanilla", failed: "module", note: "its code didn't load or run." },
+    {
+      label: "Script",
+      kind: "script",
+      failed: "script",
       note: "its script didn't load. The network?",
-      reload: true,
-    });
-    await context.close();
-  }, 60_000);
+    },
+  ] as const)(
+    "offers a reload when maplibre-gl didn't load for a $label version",
+    { timeout: 60_000 },
+    async ({ label, kind, failed, note }) => {
+      const { context, section } = await sectionFrom(
+        site,
+        { openFreeMap: "local" },
+        {
+          example: "simple",
+          provider: "maplibre",
+          version: label,
+          beforeConsent: (page) => page.route(MAPLIBRE_GL_CHUNKS, (route) => route.abort()),
+        },
+      );
+      const version = mapLibreVersionIn(section, kind);
+      await expect.poll(() => version.getAttribute("data-failed"), ASKED).toBe(failed);
+      await expectNoteAlone(section, { note, reload: true });
+      await context.close();
+    },
+  );
 
   it("says when a script version's program throws as it runs", async () => {
     const { context, section } = await sectionFrom(
+      site,
       { openFreeMap: "local" },
       {
         ...simpleFromScript("maplibre"),
@@ -196,6 +202,7 @@ describe("a map's failure note", () => {
 
   it("shows only the failure when a version's map fails while its start still waits", async () => {
     const { context, section } = await sectionFrom(
+      site,
       {},
       {
         example: "mixed",
@@ -216,49 +223,4 @@ describe("a map's failure note", () => {
     expect(await notes.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
     await context.close();
   }, 60_000);
-});
-
-/** A section opened on its own, a provider and a version chosen, before consenting. */
-interface Opening {
-  readonly example: string;
-  readonly provider: Provider;
-  /** The version's label, chosen before consent: a hidden page map never loads. */
-  readonly version: string;
-  /** What the test does to the page last before consenting. */
-  readonly beforeConsent?: (page: Page) => Promise<unknown>;
-}
-
-/** simple on `provider`, its Script version chosen before consent. */
-const simpleFromScript = (provider: Provider): Opening => ({
-  example: "simple",
-  provider,
-  version: "Script",
-});
-
-/** A visitor seeing the site as `options` say, on `opening`'s section alone, then consenting. */
-async function sectionFrom(options: VisitorOptions, opening: Opening) {
-  const { example, provider, version, beforeConsent } = opening;
-  const visit = await site.visitor(options);
-  const { page } = visit;
-  await openHome(page, site.url);
-  await leaveOnlySection(page, example);
-  if (provider === "google") await chooseProvider(page, "Google");
-  await chooseVersion(page, example, version);
-  await beforeConsent?.(page);
-  await footerToggle(page).click();
-  return { ...visit, section: await sectionOf(page, example) };
-}
-
-/** How long each provider's version may take to fail. */
-const ON_PROVIDER: Readonly<Record<Provider, number>> = {
-  google: ON_GOOGLE.timeout,
-  maplibre: ON_MAPLIBRE.timeout,
-};
-
-/** simple's `kinds` on `provider`, in turn. */
-const simpleInTurn = (provider: Provider, kinds: readonly VersionKind[]): InTurn => ({
-  example: "simple",
-  provider,
-  kinds,
-  timeout: ON_PROVIDER[provider],
 });

@@ -2,7 +2,9 @@ import type { Locator, Page } from "playwright";
 import { expect } from "vitest";
 import type { Provider } from "../src/examples/example-providers.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";
+import { ON_GOOGLE } from "./google-session.ts";
 import { chooseVersion, providerVersionIn, shownNotes, versionChoice } from "./home-sections.ts";
+import { ON_MAPLIBRE } from "./maplibre-session.ts";
 
 /** What a version's frame shows for its map's failure. */
 export interface Noted {
@@ -56,3 +58,17 @@ export async function expectNoteAlone(
   expect(await reload.isVisible(), "reload offered").toBe(noted.reload);
   expect(await notes.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
 }
+
+/** How long each provider's version may take to fail. */
+const ON_PROVIDER: Readonly<Record<Provider, number>> = {
+  google: ON_GOOGLE.timeout,
+  maplibre: ON_MAPLIBRE.timeout,
+};
+
+/** simple's `kinds` on `provider`, in turn. */
+export const simpleInTurn = (provider: Provider, kinds: readonly VersionKind[]): InTurn => ({
+  example: "simple",
+  provider,
+  kinds,
+  timeout: ON_PROVIDER[provider],
+});

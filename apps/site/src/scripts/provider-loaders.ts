@@ -8,17 +8,6 @@ export type ProviderImports = ElementLoaders & {
   readonly mapLibreAssets: () => Promise<{ useBuiltWorker(): void }>;
 };
 
-/** What the site loads on demand for its providers. */
-export interface ProviderLoaders {
-  /**
-   * Readies MapLibre before any map of its runs: its stylesheet and its worker. The module loads
-   * once, and pointing maplibre-gl at its worker again changes nothing.
-   */
-  readonly readyMapLibre: () => Promise<void>;
-  /** Loads each provider's element, MapLibre's with MapLibre readied. */
-  readonly elementLoaders: ElementLoaders;
-}
-
 /** The site's own imports: maplibre-gl joins no page that runs no MapLibre map. */
 const SITE_IMPORTS: ProviderImports = {
   google: () => import("maplace/element/google"),
@@ -27,18 +16,18 @@ const SITE_IMPORTS: ProviderImports = {
 };
 
 /**
- * The loaders built on `imports`. MapLibre's element loads beside its assets, not after them: it
- * imports maplibre-gl only once a map opens, which waits for the element's load to resolve.
+ * What loads each provider's element for a page map, built on `imports`; a version's own imports
+ * ready maplibre-gl (`example-failure-notes.ts`). MapLibre's element loads beside its assets
+ * (its stylesheet and its worker), not after them: it imports maplibre-gl only once a map opens,
+ * which waits for the element's load to resolve. The assets load once, and pointing maplibre-gl
+ * at its worker again changes nothing.
  */
-export function providerLoaders(imports: ProviderImports): ProviderLoaders {
+export function elementLoaders(imports: ProviderImports): ElementLoaders {
   const readyMapLibre = async () => (await imports.mapLibreAssets()).useBuiltWorker();
   return {
-    readyMapLibre,
-    elementLoaders: {
-      google: imports.google,
-      maplibre: () => Promise.all([imports.maplibre(), readyMapLibre()]),
-    },
+    google: imports.google,
+    maplibre: () => Promise.all([imports.maplibre(), readyMapLibre()]),
   };
 }
 
-export const { readyMapLibre, elementLoaders: ELEMENT_LOADERS } = providerLoaders(SITE_IMPORTS);
+export const ELEMENT_LOADERS = elementLoaders(SITE_IMPORTS);

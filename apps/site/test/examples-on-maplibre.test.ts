@@ -17,8 +17,11 @@ import {
   siteWorkers,
 } from "./drawn-on-maplibre.ts";
 import {
+  chooseProvider,
   chooseVersion,
+  leaveOnlySection,
   pageMapState,
+  sectionOf,
   shownNotes,
   type VersionChoice,
   versionsInTurn,
@@ -26,6 +29,7 @@ import {
 } from "./home-sections.ts";
 import { expectLeftOpensAsShown, LEFT_WHILE_LOADING } from "./left-while-loading.ts";
 import { ON_MAPLIBRE, SECTION_MS, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
+import { MAPLIBRE_GL_CHUNKS, mapLibreLibraryChunk, VANILLA_CHUNK } from "./site-chunks.ts";
 import { loadMapsButtons } from "./visitor.ts";
 
 /**
@@ -176,3 +180,37 @@ describe("a version left while it loads, on MapLibre", () => {
 function polled(name: string, what: string) {
   return { ...ON_MAPLIBRE, message: `${name} on MapLibre: ${what}` };
 }
+
+describe("a MapLibre version's start", () => {
+  it("fetches its module beside maplibre-gl, and neither before consent", async () => {
+    const library = mapLibreLibraryChunk(site.dir);
+    const { page, context } = await site.visitor();
+    const requested: string[] = [];
+    let libraryEnded = false;
+    let moduleBeforeLibraryEnded = false;
+    page.on("request", (request) => {
+      requested.push(request.url());
+      if (VANILLA_CHUNK.test(request.url()) && !libraryEnded) moduleBeforeLibraryEnded = true;
+    });
+    page.on("requestfinished", (request) => {
+      if (request.url().endsWith(library)) libraryEnded = true;
+    });
+    // maplibre-gl held: a module fetched only once it's in is requested after it ends.
+    await page.route(`**${library}`, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await route.fallback();
+    });
+    await page.goto(new URL("/#simple", site.url).href);
+    await leaveOnlySection(page, "simple");
+    await chooseProvider(page, "MapLibre");
+    await chooseVersion(page, "simple", "Bundler");
+    const section = await sectionOf(page, "simple");
+    const before = (url: string) => MAPLIBRE_GL_CHUNKS.test(url) || VANILLA_CHUNK.test(url);
+    expect(requested.filter(before), "fetched before consent").toEqual([]);
+    await loadMapsButtons(section).first().click();
+    const version = mapLibreVersionIn(section, "vanilla");
+    await expect.poll(() => mapLibreDrawn(version), ON_MAPLIBRE).toBe(true);
+    expect(moduleBeforeLibraryEnded, "the module requested before maplibre-gl ended").toBe(true);
+    await context.close();
+  }, 60_000);
+});

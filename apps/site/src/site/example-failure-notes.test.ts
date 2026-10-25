@@ -68,4 +68,15 @@ describe("exampleFailureNotes", () => {
       expect(wraps?.[1] !== undefined && existsSync(wraps[1]), wraps?.[1]).toBe(true);
     }
   });
+
+  it("writes MapLibre's noted entry to run maplibre-assets.ts's useBuiltWorker before the version's own code", () => {
+    const code = loaded(MAPLIBRE_NOTED) ?? "";
+    const readied = /import \{ useBuiltWorker \} from "([^"]+)";\nuseBuiltWorker\(\);/.exec(code);
+    expect(readied?.[1]?.endsWith("/scripts/maplibre-assets.ts"), code).toBe(true);
+    expect(readied?.[1] !== undefined && existsSync(readied[1]), readied?.[1]).toBe(true);
+  });
+
+  it("writes Google's noted entry with nothing readied", () => {
+    expect(loaded(GOOGLE_NOTED)).not.toContain("useBuiltWorker");
+  });
 });
