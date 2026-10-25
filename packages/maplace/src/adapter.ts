@@ -138,7 +138,8 @@ export interface Adapter {
   /**
    * Places a view on the map, in a corner, whenever it is called (before the map opens it waits);
    * returns a function that removes it, safe twice and after destroy. Destroy takes every control
-   * off. The node is moved, never changed, and its keys, wheel and drags never move the map.
+   * off. The node is moved, never changed, and its keys, wheel and drags never move the map. Mounted
+   * again, the node moves, and only the remover its latest mount returned takes it off.
    */
   mountControl(node: HTMLElement, position: ControlPosition): () => void;
   destroy(): void;
