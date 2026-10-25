@@ -20,10 +20,11 @@ interface HeldPress {
 /**
  * Follows each press on `marker`, returning the one held now, and ends its drag where the user or
  * the browser ended it though MapLibre heard no end: the mouse let go outside the map's canvas or
- * the window losing focus with the button down, or a touch the browser cancelled. MapLibre ends a
- * drag only on the map's own `mouseup` or `touchend`, so the end is fired as one, where the pointer
- * last was (a page's listener on its map hears it too, as it would a release over the map). Each
- * press's listeners go at its end, or with the map.
+ * the window losing focus with the button down, a touch the browser cancelled, or a touch whose node
+ * the page took off the map (its moves are fired too). MapLibre ends a drag only on the map's
+ * own `mouseup` or `touchend`, so the end is fired as one, where the pointer last was (a page's
+ * listener on its map hears it too, as it would a release over the map). Each press's listeners go
+ * at its end, or with the map.
  */
 export function endDragsTheMapMisses(marker: Marker, mounted: MountedMapLibre): MarkerPress {
   const { map, maplibre, closing } = mounted;
@@ -82,23 +83,29 @@ export function endDragsTheMapMisses(marker: Marker, mounted: MountedMapLibre): 
   }
 
   /**
-   * A touch: every event of it goes to where it began, in the marker's element. Its end MapLibre
-   * hears; one the browser cancels is fired as its end, with the touches cancelled where they were.
+   * A touch: every event of it goes to the node it began on, even once the page's icon, rebuilt,
+   * took that node out of the map, where MapLibre no longer hears it: its moves and its end are
+   * then fired on the map. One the browser cancels is fired as its end, with the touches cancelled
+   * where they were.
    */
   function holdTouch(start: TouchEvent): void {
+    const touched = start.composedPath()[0] as HTMLElement;
     let last = start;
     const press = begin(() => map.fire(new maplibre.MapTouchEvent("touchend", map, last)));
     const listening = { capture: true, passive: true, signal: press.signal };
+    const isMissed = (event: TouchEvent) => element.isConnected && !isInCanvasContainer(event, map);
     const moved = (event: TouchEvent) => {
       last = event;
+      if (isMissed(event)) map.fire(new maplibre.MapTouchEvent("touchmove", map, event));
     };
-    const cancelled = (event: TouchEvent) => {
+    const ended = (event: TouchEvent) => {
       last = event;
-      press.release();
+      if (event.type === "touchcancel" || isMissed(event)) press.release();
+      else press.end();
     };
-    element.addEventListener("touchmove", moved, listening);
-    element.addEventListener("touchend", press.end, listening);
-    element.addEventListener("touchcancel", cancelled, listening);
+    touched.addEventListener("touchmove", moved, listening);
+    touched.addEventListener("touchend", ended, listening);
+    touched.addEventListener("touchcancel", ended, listening);
   }
 
   return { isHeld: () => held !== undefined, release: () => held?.release() };

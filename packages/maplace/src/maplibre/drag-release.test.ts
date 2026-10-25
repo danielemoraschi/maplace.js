@@ -42,10 +42,10 @@ function releasing({ draggable = true } = {}) {
   const held = endDragsTheMapMisses(marker as unknown as Marker, mounted);
   const press = () => element.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
   const release = (on: Element) => on.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-  /** A touch event on the marker, where every event of a touch goes; it is returned. */
-  const touch = (type: string) => {
+  /** A touch event on `on`, the marker unless given, where every event of a touch goes; returned. */
+  const touch = (type: string, on: Node = element) => {
     const event = new TouchEvent(type, { bubbles: true });
-    element.dispatchEvent(event);
+    on.dispatchEvent(event);
     return event;
   };
   return { element, canvasContainer, outside, fired, closing, held, press, release, touch };
@@ -180,9 +180,10 @@ describe("a marker's touch drag", () => {
     expect(fired[0]?.originalEvent).toBe(cancel);
   });
 
-  it("leaves a touch's own end to MapLibre", () => {
+  it("leaves a touch's own moves and end to MapLibre", () => {
     const { fired, touch } = releasing();
     touch("touchstart");
+    touch("touchmove");
     touch("touchend");
     touch("touchcancel");
     expect(fired).toEqual([]);
@@ -205,5 +206,29 @@ describe("a marker's touch drag", () => {
     expect(held.isHeld()).toBe(false);
     touch("touchcancel");
     expect(fired).toHaveLength(1);
+  });
+
+  it("fires the moves and the end of a touch whose node the page took out of the marker", () => {
+    const { element, fired, touch } = releasing();
+    const icon = element.appendChild(document.createElement("span"));
+    touch("touchstart", icon);
+    icon.remove();
+    const move = touch("touchmove", icon);
+    const end = touch("touchend", icon);
+    expect(fired.map(({ type, originalEvent }) => [type, originalEvent])).toEqual([
+      ["touchmove", move],
+      ["touchend", end],
+    ]);
+  });
+
+  it("fires nothing for a touch cut off from a marker taken off the map", () => {
+    const { element, fired, touch } = releasing();
+    const icon = element.appendChild(document.createElement("span"));
+    touch("touchstart", icon);
+    icon.remove();
+    element.remove();
+    touch("touchmove", icon);
+    touch("touchend", icon);
+    expect(fired).toEqual([]);
   });
 });
