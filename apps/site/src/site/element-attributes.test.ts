@@ -2,8 +2,7 @@ import { globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { LOCATION_ATTRIBUTES } from "../../../../packages/maplace/src/element/location-attributes.ts";
-import { MAP_SETTING_ATTRIBUTES } from "../../../../packages/maplace/src/element/map-settings-watch.ts";
-import { ROOT, readRootFile } from "../../../../scripts/build/package.ts";
+import { ROOT } from "../../../../scripts/build/package.ts";
 import { captures } from "../../../../scripts/docs/markdown.ts";
 import {
   ATTRIBUTES_READ_BY_NAME,
@@ -38,26 +37,6 @@ describe("the element's attribute lists", () => {
       ...LOCATION_ATTRIBUTES,
     ];
     expect(READ_IN_SOURCE.filter((name) => !documented.includes(name))).toEqual([]);
-  });
-});
-
-const MAP_SETTINGS: readonly string[] = Object.values(MAP_SETTING_ATTRIBUTES);
-
-/** The map settings a provider's source reads, named through `MAP_SETTING_ATTRIBUTES`. */
-function mapSettingsReadIn(file: string): string[] {
-  const source = readRootFile(`packages/maplace/src/element/${file}`);
-  return Object.entries(MAP_SETTING_ATTRIBUTES)
-    .filter(([key]) => source.includes(`MAP_SETTING_ATTRIBUTES.${key}`))
-    .map(([, name]) => name);
-}
-
-describe("each provider's attribute list", () => {
-  it.each([
-    ["Google", "google-map-attributes.ts", GOOGLE_PROVIDER_ATTRIBUTES],
-    ["MapLibre", "maplibre-attributes.ts", MAPLIBRE_PROVIDER_ATTRIBUTES],
-  ])("names exactly the map settings the %s provider's source reads", (_, file, listed) => {
-    const listedSettings = listed.filter((name) => MAP_SETTINGS.includes(name));
-    expect(new Set(mapSettingsReadIn(file))).toEqual(new Set(listedSettings));
   });
 });
 

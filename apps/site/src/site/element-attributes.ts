@@ -1,6 +1,7 @@
 import { LIST_ATTRIBUTES } from "../../../../packages/maplace/src/element/element-list.ts";
 import { SCRIPT_ATTRIBUTES } from "../../../../packages/maplace/src/element/google-attributes.ts";
-import { MAP_SETTING_ATTRIBUTES } from "../../../../packages/maplace/src/element/map-settings-watch.ts";
+import { GOOGLE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/google-map-attributes.ts";
+import { MAPLIBRE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/maplibre-attributes.ts";
 
 /**
  * The attributes the element reads by a literal name, kept in no list of its own:
@@ -17,13 +18,9 @@ export const MAP_ATTRIBUTES: readonly string[] = [...LIST_ATTRIBUTES, ...MAP_REA
 /** The attributes the element's Google provider reads, when the map opens. */
 export const GOOGLE_PROVIDER_ATTRIBUTES: readonly string[] = [
   ...GOOGLE_PROVIDER_READS,
-  MAP_SETTING_ATTRIBUTES.colorScheme,
-  MAP_SETTING_ATTRIBUTES.mapOptions,
+  ...GOOGLE_MAP_SETTINGS,
   ...Object.values(SCRIPT_ATTRIBUTES),
 ];
 
 /** The attributes the element's MapLibre provider reads, when the map opens; a change re-opens it. */
-export const MAPLIBRE_PROVIDER_ATTRIBUTES: readonly string[] = [
-  MAP_SETTING_ATTRIBUTES.mapStyle,
-  MAP_SETTING_ATTRIBUTES.mapOptions,
-];
+export const MAPLIBRE_PROVIDER_ATTRIBUTES: readonly string[] = MAPLIBRE_MAP_SETTINGS;
