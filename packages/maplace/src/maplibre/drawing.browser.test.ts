@@ -120,10 +120,12 @@ describe("MapLibre's drawing", () => {
     await adapter.apply(
       adding(markerDrawable("a"), withIcon, polylineDrawable("l"), polygonDrawable("p")),
     );
-    await probe.settle();
-    expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
-    expect(renderedIds(map, ["maplace-lines"])).toEqual(["l"]);
-    expect(renderedIds(map, ["maplace-fills"])).toEqual(["p"]);
+    await vi.waitFor(async () => {
+      await probe.settle();
+      expect(renderedIds(map, ["maplace-pins"])).toEqual(["a"]);
+      expect(renderedIds(map, ["maplace-lines"])).toEqual(["l"]);
+      expect(renderedIds(map, ["maplace-fills"])).toEqual(["p"]);
+    }, RENDER_WAIT);
     expect(icon.isConnected).toBe(true);
     expect(probe.locationIds()).toEqual(["a", "b", "l", "p"]);
   });

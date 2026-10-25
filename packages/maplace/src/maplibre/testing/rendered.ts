@@ -1,6 +1,6 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
 
-/** How long a check waits for MapLibre to render: more under a busy run. */
+/** How long a check waits for MapLibre to render or move: more under a busy run. */
 export const RENDER_WAIT = { timeout: 10_000 };
 
 /** The ids MapLibre renders in `layers`, sorted. */

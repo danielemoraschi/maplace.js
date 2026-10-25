@@ -85,13 +85,13 @@ async function whileNextPanRuns(map: MapLibreMap, select: () => void): Promise<v
     return panTo.call(map, center, { ...options, duration: SLOW_PAN_MS }, eventData);
   };
   select();
-  await expect.poll(() => map.isMoving()).toBe(true);
+  await expect.poll(() => map.isMoving(), RENDER_WAIT).toBe(true);
 }
 
 /** What the map's `moveend` centred on `p0` saw, once there has been one. */
 async function centredOnP0(moveEnds: PhoneMap["moveEnds"]) {
   const centred = () => moveEnds.find(({ center }) => isAt(center, P0));
-  await expect.poll(centred).toBeDefined();
+  await expect.poll(centred, RENDER_WAIT).toBeDefined();
   return centred();
 }
 
@@ -125,7 +125,7 @@ async function expectClearOfTheList({ popupBox, panel, mapBox }: PhoneMap) {
     const popup = popupBox();
     return popup !== undefined && !boxesMeet(popup, panel()) && insideBy(popup, mapBox(), MARGIN);
   };
-  await expect.poll(clear, { timeout: 3_000 }).toBe(true);
+  await expect.poll(clear, RENDER_WAIT).toBe(true);
 }
 
 describe("a MapLibre popup panned into view on a phone", () => {
@@ -209,7 +209,7 @@ describe("a MapLibre popup panned into view on a phone", () => {
       .poll(() => {
         const popup = phone.popupBox();
         return popup !== undefined && insideBy(popup, phone.mapBox(), MARGIN);
-      })
+      }, RENDER_WAIT)
       .toBe(true);
   });
 });
