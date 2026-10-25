@@ -19,6 +19,18 @@ export function controlChecks(subject: ConformanceSubject): void {
       expect(removeLater).not.toThrow();
     });
 
+    it("keeps a node mounted again on the map when its first remover runs; its last remover takes it off", async () => {
+      const { adapter, container, probe } = await mountSubject(subject);
+      const control = document.createElement("button");
+      const removeFirst = adapter.mountControl(control, "top-left");
+      const removeLast = adapter.mountControl(control, "bottom-right");
+      await probe.settle();
+      removeFirst();
+      const afterFirst = container.contains(control);
+      removeLast();
+      expect([afterFirst, container.contains(control)]).toEqual([true, false]);
+    });
+
     it("places a control mounted before the map opened once it opens", async () => {
       const { adapter, container, mounting, probe } = startMount(subject);
       const control = document.createElement("button");

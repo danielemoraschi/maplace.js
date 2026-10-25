@@ -27,6 +27,7 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
   let context: MountContext | undefined;
   let mountedMap: MountedMap | undefined;
   let destroyed = false;
+  const latestRemoverOf = new WeakMap<HTMLElement, () => void>();
   const drawing = createDrawing(map, () => destroyed);
   const live = () => (destroyed ? undefined : mountedMap?.live());
   const probe = createProbe({ map, live, camera, routing });
@@ -66,7 +67,13 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
     mountControl(node, position) {
       recorder.record({ method: "mountControl", position });
       mountedMap?.layer?.append(node);
-      return () => node.remove?.();
+      const remove = () => {
+        if (latestRemoverOf.get(node) !== remove) return;
+        latestRemoverOf.delete(node);
+        node.remove?.();
+      };
+      latestRemoverOf.set(node, remove);
+      return remove;
     },
     destroy() {
       destroyed = true;

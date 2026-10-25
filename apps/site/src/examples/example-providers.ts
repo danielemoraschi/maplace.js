@@ -1,5 +1,6 @@
-/** A map provider an example runs on. */
-export type Provider = "google" | "maplibre";
+import type { Provider } from "../../../../packages/maplace/src/testing/examples/example-files.ts";
+
+export type { Provider } from "../../../../packages/maplace/src/testing/examples/example-files.ts";
 
 interface ProviderLabel {
   readonly provider: Provider;
