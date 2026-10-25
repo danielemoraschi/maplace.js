@@ -1,12 +1,13 @@
 // @vitest-environment happy-dom
 import type { Maplace } from "maplace";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
 import { createMaplace, MaplaceError } from "../../../../packages/maplace/src/index.ts";
 import type { FakeAdapter } from "../../../../packages/maplace/src/testing/fake/types.ts";
 import { createFakeAdapter } from "../../../../packages/maplace/src/testing/fake-adapter.ts";
 import { notingAdapterFailures, notingMapFailures } from "./version-map-failures.ts";
 
-const NOT_LOADED =
+const NOT_LOADED_NOTE =
   "The map couldn't load: OpenFreeMap's map didn't load. A blocker, or the network?";
 
 beforeEach(() => {
@@ -47,7 +48,7 @@ describe("notingMapFailures", () => {
     await flushed();
     expect(maplace.getSnapshot().loadState).toBe("error");
     expect(version().dataset.failed).toBe("provider-load-failed");
-    expect(note()).toBe(NOT_LOADED);
+    expect(note()).toBe(NOT_LOADED_NOTE);
   });
 
   it("leaves the note alone for an error that doesn't fail the load", async () => {
@@ -68,7 +69,7 @@ describe("notingAdapterFailures", () => {
     await flushed();
     expect(maplace.getSnapshot().loadState).toBe("error");
     expect(version().dataset.failed).toBe("provider-load-failed");
-    expect(note()).toBe(NOT_LOADED);
+    expect(note()).toBe(NOT_LOADED_NOTE);
   });
 
   it("notes a load or auth failure the adapter reports later, the store hearing it first", async () => {
@@ -82,15 +83,6 @@ describe("notingAdapterFailures", () => {
     expect(heard).toHaveBeenCalledOnce();
     expect(version().dataset.failed).toBe("provider-auth-failed");
     expect(note()).toBe("The map couldn't load: OpenFreeMap refused the map's style.");
-  });
-
-  it("leaves the note alone for a report that doesn't fail the load", async () => {
-    const fake = createFakeAdapter();
-    attachNoted(fake);
-    await fake.finishMount();
-    fake.host().reportError(new MaplaceError("route-failed", "no route"));
-    await flushed();
-    expect(version().dataset.failed).toBeUndefined();
   });
 
   it("notes a report that isn't a MaplaceError, which the store fails the load with", async () => {
@@ -135,6 +127,21 @@ describe("notingAdapterFailures", () => {
     await fake.failMount(new Error("an adapter's bug"));
     await flushed();
     expect(version().dataset.failed).toBe("provider-load-failed");
-    expect(note()).toBe(NOT_LOADED);
+    expect(note()).toBe(NOT_LOADED_NOTE);
   });
+
+  // W35: the site keeps its own copy of the store's rule (`LOAD_FAILURES`), held to the store
+  // here, for every code the RFC lists.
+  it.each([...API_LISTS.runtimeCodes, ...API_LISTS.misuseCodes])(
+    "notes a reported %s only when the store fails the load with it",
+    async (code) => {
+      const fake = createFakeAdapter();
+      const { maplace } = attachNoted(fake);
+      await fake.finishMount();
+      fake.host().reportError(new MaplaceError(code, "reported"));
+      await flushed();
+      const failedLoad = maplace.getSnapshot().loadState === "error";
+      expect(version().dataset.failed !== undefined, "noted").toBe(failedLoad);
+    },
+  );
 });

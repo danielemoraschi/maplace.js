@@ -1,15 +1,34 @@
-/** Why a version didn't start: the site has no key, Maps JS didn't load, or its own script. */
-export type VersionFailure = "no-key" | "maps-js" | "script";
+import { failureName, isCodeFailure, type VersionFailure } from "./version-failures.ts";
 
-/** A version couldn't be readied, for a reason the visitor is told (`VersionFailure`). */
+/** A version couldn't start, for a reason the visitor is told (`VersionFailure`). */
 export class VersionStartFailure extends Error {
   readonly failure: VersionFailure;
 
   constructor(failure: VersionFailure, options?: ErrorOptions) {
-    super(`the version didn't start: ${failure}`, options);
+    super(`the version didn't start: ${described(failure)}`, options);
     this.name = "VersionStartFailure";
     this.failure = failure;
   }
+}
+
+/** `failure` for a developer: its name, and the field it concerns, if any. */
+function described(failure: VersionFailure): string {
+  const field = isCodeFailure(failure) ? undefined : failure.field;
+  return field === undefined ? failureName(failure) : `${failureName(failure)} (${field})`;
+}
+
+/** `step`, any throw or rejection of its failing the version's start with `failure`. */
+export function failingWith<Args extends unknown[]>(
+  failure: VersionFailure,
+  step: (...args: Args) => Promise<unknown>,
+): (...args: Args) => Promise<void> {
+  return async (...args) => {
+    try {
+      await step(...args);
+    } catch (cause) {
+      throw new VersionStartFailure(failure, { cause });
+    }
+  };
 }
 
 /**
@@ -31,10 +50,11 @@ export interface VersionStarting {
 /**
  * What starts a version, once, as a page's map is released: its provider readied, then the
  * version run. `data-starting` marks the wait, `data-started` a version that runs;
- * one that fails says why, any error but a `VersionStartFailure` being its script's.
+ * one that fails says why, any error but a `VersionStartFailure` being its module's.
  */
 export function versionStarter(starting: VersionStarting): (version: HTMLElement) => Promise<void> {
   const started = new WeakSet<HTMLElement>();
+  const logged = new WeakSet<object>();
   return async (version) => {
     if (started.has(version)) return;
     started.add(version);
@@ -44,16 +64,34 @@ export function versionStarter(starting: VersionStarting): (version: HTMLElement
       await starting.load(version);
       version.dataset.started = "";
     } catch (error) {
-      starting.failed(version, failureOf(error));
+      const { failure, cause } = whatFailed(error);
+      logOnce(logged, cause);
+      starting.failed(version, failure);
     } finally {
       delete version.dataset.starting;
     }
   };
 }
 
-/** Why a version didn't start, from what its start threw: an unforeseen error logged first. */
-function failureOf(error: unknown): VersionFailure {
-  if (error instanceof VersionStartFailure) return error.failure;
-  console.error("maplace: the example's script didn't load", error);
-  return "script";
+/**
+ * Why a version didn't start, from what its start threw, and what the developer is told of it:
+ * a failure's cause (none when the failure is all the story: no key), or an unforeseen error,
+ * its module's.
+ */
+function whatFailed(error: unknown): { failure: VersionFailure; cause: unknown } {
+  if (error instanceof VersionStartFailure) return { failure: error.failure, cause: error.cause };
+  return { failure: "module", cause: error };
+}
+
+/**
+ * Logs `cause` once: the versions waiting on one thing (the page's Maps JS) fail with the same
+ * cause, which one line tells.
+ */
+function logOnce(logged: WeakSet<object>, cause: unknown): void {
+  if (cause === undefined) return;
+  if (typeof cause === "object" && cause !== null) {
+    if (logged.has(cause)) return;
+    logged.add(cause);
+  }
+  console.error("maplace: the example didn't start", cause);
 }

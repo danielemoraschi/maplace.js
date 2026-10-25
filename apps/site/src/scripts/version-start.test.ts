@@ -1,6 +1,12 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
-import { VersionStartFailure, type VersionStarting, versionStarter } from "./version-start.ts";
+import { NO_KEY, NOT_LOADED } from "./version-failures.ts";
+import {
+  failingWith,
+  VersionStartFailure,
+  type VersionStarting,
+  versionStarter,
+} from "./version-start.ts";
 
 function version(): HTMLElement {
   document.body.innerHTML = `<div class="map-frame">
@@ -49,26 +55,54 @@ describe("versionStarter", () => {
   });
 
   it("says why when it can't be readied, importing nothing", async () => {
-    const ready = () => Promise.reject(new VersionStartFailure("no-key"));
+    const ready = () => Promise.reject(new VersionStartFailure(NO_KEY));
     const { start, starting, steps } = setup({ ready });
     const target = version();
     await start(target);
-    expect(starting.failed).toHaveBeenCalledWith(target, "no-key");
+    expect(starting.failed).toHaveBeenCalledWith(target, NO_KEY);
     expect(steps).toEqual([]);
     expect(target.hasAttribute("data-starting")).toBe(false);
     expect(target.hasAttribute("data-started")).toBe(false);
   });
 
-  it("says the script didn't load when readying or the import fails otherwise", async () => {
+  it("says the module failed when readying or the import fails otherwise", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const offline = () => Promise.reject(new Error("offline"));
     for (const overrides of [{ ready: offline }, { load: offline }]) {
       const { start, starting } = setup({ ready: async () => {}, ...overrides });
       const target = version();
       await start(target);
-      expect(starting.failed).toHaveBeenCalledWith(target, "script");
+      expect(starting.failed).toHaveBeenCalledWith(target, "module");
     }
     expect(console.error).toHaveBeenCalledTimes(2);
+  });
+
+  it("logs the cause of a failure it was given one with", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const thrown = new Error("thrown");
+    const load = () => Promise.reject(new VersionStartFailure("program", { cause: thrown }));
+    const { start, starting } = setup({ ready: async () => {}, load });
+    const target = version();
+    await start(target);
+    expect(starting.failed).toHaveBeenCalledWith(target, "program");
+    expect(console.error).toHaveBeenCalledWith(expect.any(String), thrown);
+  });
+
+  it("logs a cause once, however many versions fail with it", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const mapsJs = new Error("Maps JS didn't load");
+    const ready = () => Promise.reject(new VersionStartFailure(NOT_LOADED, { cause: mapsJs }));
+    const { start } = setup({ ready });
+    await start(version());
+    await start(version());
+    expect(console.error).toHaveBeenCalledOnce();
+  });
+
+  it("logs nothing for a failure that has no cause to tell", async () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    const ready = () => Promise.reject(new VersionStartFailure(NO_KEY));
+    await setup({ ready }).start(version());
+    expect(logged).not.toHaveBeenCalled();
   });
 
   it("starts a version once", async () => {
@@ -86,5 +120,35 @@ describe("versionStarter", () => {
     expect(starting.failed).not.toHaveBeenCalled();
     expect(starting.load).toHaveBeenCalledWith(target);
     expect(target.hasAttribute("data-started")).toBe(true);
+  });
+});
+
+describe("VersionStartFailure", () => {
+  it("names the failure for the developer, with the field it concerns", () => {
+    expect(new VersionStartFailure(NO_KEY).message).toContain("invalid-input (api-key)");
+    expect(new VersionStartFailure("program").message).toContain("program");
+  });
+});
+
+describe("failingWith", () => {
+  it("turns a step's rejection, or its throw, into the version's failure, its cause kept", async () => {
+    const offline = new Error("offline");
+    for (const step of [
+      () => Promise.reject(offline),
+      () => {
+        throw offline;
+      },
+    ]) {
+      const failure = await failingWith("script", step)().catch((error: unknown) => error);
+      expect(failure).toBeInstanceOf(VersionStartFailure);
+      expect(failure).toMatchObject({ failure: "script", cause: offline });
+    }
+  });
+
+  it("passes a step that resolves, with its arguments or none", async () => {
+    const step = vi.fn(async (_first: string, _second: number) => "done");
+    await expect(failingWith("module", step)("a", 1)).resolves.toBeUndefined();
+    expect(step).toHaveBeenCalledWith("a", 1);
+    await expect(failingWith("module", async () => {})()).resolves.toBeUndefined();
   });
 });

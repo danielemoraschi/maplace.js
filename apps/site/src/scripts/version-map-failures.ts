@@ -1,5 +1,6 @@
 import type { Adapter, AdapterHost, ErrorCode, LoadState, MaplaceError } from "maplace";
-import { type MapFailure, noteVersionMapFailure } from "./map-failures.ts";
+import { noteVersionMapFailure } from "./map-failures.ts";
+import { type MapFailure, NOT_LOADED } from "./version-failures.ts";
 
 /**
  * The codes that fail a map's load, as the store counts them (`maplace/load.ts`): any other
@@ -90,7 +91,7 @@ function failsLoad(error: unknown): boolean {
 
 /** What a failure fails the load with: its `MaplaceError`, anything else as the store's. */
 function loadFailureOf(error: unknown): MapFailure {
-  return isMaplaceError(error) ? error : { code: "provider-load-failed" };
+  return isMaplaceError(error) ? error : NOT_LOADED;
 }
 
 /** Told by its name, so this module takes only types from the package. */

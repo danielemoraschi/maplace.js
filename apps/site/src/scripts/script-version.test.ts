@@ -32,17 +32,23 @@ describe("scriptVersionStart", () => {
     expect(inert(version)).toBeNull();
   });
 
-  it("fails the start when its program throws as it runs", async () => {
-    const runModule = vi.fn(async () => Promise.reject(new Error("thrown")));
+  it("fails the start as its program's when its program throws as it runs", async () => {
+    const thrown = new Error("thrown");
+    const runModule = vi.fn(async () => Promise.reject(thrown));
     const version = scriptVersion("maplibre");
-    await expect(scriptVersionStart(async () => {}, runModule)(version)).rejects.toThrow("thrown");
+    await expect(scriptVersionStart(async () => {}, runModule)(version)).rejects.toMatchObject({
+      failure: "program",
+      cause: thrown,
+    });
   });
 
-  it("runs nothing when its provider's Maplace didn't load", async () => {
+  it("fails the start as the site's script's, running nothing, when its Maplace didn't load", async () => {
     const installMaplace = vi.fn(async () => Promise.reject(new Error("offline")));
     const runModule = vi.fn(async () => {});
     const version = scriptVersion("google");
-    await expect(scriptVersionStart(installMaplace, runModule)(version)).rejects.toThrow("offline");
+    await expect(scriptVersionStart(installMaplace, runModule)(version)).rejects.toMatchObject({
+      failure: "script",
+    });
     expect(runModule).not.toHaveBeenCalled();
     expect(inert(version)).not.toBeNull();
   });

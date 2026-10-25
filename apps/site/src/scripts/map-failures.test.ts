@@ -11,6 +11,7 @@ import {
   showFailureNoteOf,
   startFailureNotes,
 } from "./map-failures.ts";
+import { NO_KEY, NOT_LOADED } from "./version-failures.ts";
 
 /** A frame holding `versions` (each `kind provider`, the first shown), and its note. */
 function frame(...versions: string[]): string {
@@ -33,13 +34,13 @@ const versionOn = (provider: string, kind = "html") =>
   ) as HTMLElement;
 
 describe("noteVersionFailure", () => {
-  it("writes why the version didn't start into its frame's note, and marks the version", () => {
+  it("notes a readying failure in its provider's words, and marks the version with its code", () => {
     document.body.innerHTML = frame("vanilla google");
-    noteVersionFailure(versionOn("google", "vanilla"), "maps-js");
+    noteVersionFailure(versionOn("google", "vanilla"), NOT_LOADED);
     expect(note()).toBe(
       "The map couldn't load: Google Maps didn't load. A blocker, or the network?",
     );
-    expect(versionOn("google", "vanilla").dataset.failed).toBe("maps-js");
+    expect(versionOn("google", "vanilla").dataset.failed).toBe("provider-load-failed");
   });
 
   it("marks the version with the kind of failure, which says whether a reload can mend it", () => {
@@ -49,18 +50,29 @@ describe("noteVersionFailure", () => {
     expect(versionOn("maplibre", "vanilla").hasAttribute("data-reload-mends")).toBe(true);
   });
 
-  it("offers a reload for a script or Maps JS that didn't load, not for a missing key", () => {
+  it("offers a reload for Maps JS that didn't load, not for a missing key", () => {
     document.body.innerHTML = frame("vanilla google");
     const version = versionOn("google", "vanilla");
-    noteVersionFailure(version, "maps-js");
+    noteVersionFailure(version, NOT_LOADED);
     expect(version.hasAttribute("data-reload-mends")).toBe(true);
-    noteVersionFailure(version, "no-key");
+    noteVersionFailure(version, NO_KEY);
+    expect(version.hasAttribute("data-reload-mends")).toBe(false);
+  });
+
+  it("offers a reload for a module that didn't load or run, not for a program's throw", () => {
+    document.body.innerHTML = frame("vanilla maplibre");
+    const version = versionOn("maplibre", "vanilla");
+    noteVersionFailure(version, "module");
+    expect(note()).toBe("The map couldn't load: its code didn't load or run.");
+    expect(version.hasAttribute("data-reload-mends")).toBe(true);
+    noteVersionFailure(version, "program");
+    expect(note()).toBe("The map couldn't load: its program threw an error as it ran.");
     expect(version.hasAttribute("data-reload-mends")).toBe(false);
   });
 
   it("says the site has no key, or the version's script didn't load", () => {
     document.body.innerHTML = frame("vanilla google");
-    noteVersionFailure(versionOn("google", "vanilla"), "no-key");
+    noteVersionFailure(versionOn("google", "vanilla"), NO_KEY);
     expect(note()).toBe("The map couldn't load: this site has no Google Maps key.");
     noteVersionFailure(versionOn("google", "vanilla"), "script");
     expect(note()).toBe("The map couldn't load: its script didn't load. The network?");
@@ -69,8 +81,7 @@ describe("noteVersionFailure", () => {
 
 describe("failureNote", () => {
   it("says the site has no key when the map had none", () => {
-    const error = { code: "invalid-input", field: "api-key" } as const;
-    expect(failureNote(error, "google")).toBe(
+    expect(failureNote(NO_KEY, "google")).toBe(
       "The map couldn't load: this site has no Google Maps key.",
     );
   });
@@ -91,6 +102,10 @@ describe("failureNote", () => {
     expect(failureNote({ code: "provider-auth-failed" }, "maplibre")).toBe(
       "The map couldn't load: OpenFreeMap refused the map's style.",
     );
+  });
+
+  it("tells only a Google map of a missing key in Google's words", () => {
+    expect(failureNote(NO_KEY, "maplibre")).toBe("The map couldn't load.");
   });
 
   it("keeps to the plain note for anything else", () => {
@@ -173,9 +188,11 @@ describe("noteMapsJsFailure", () => {
       '<div data-live-version="react" data-provider="google" data-starting></div>',
     );
     noteMapsJsFailure(document);
-    expect(notes()).toEqual([
-      failureNote({ code: "provider-load-failed" }, "google"),
-      failureNote({ code: "provider-load-failed" }, "google"),
+    expect(notes()).toEqual([failureNote(NOT_LOADED, "google"), failureNote(NOT_LOADED, "google")]);
+    const failed = [...document.querySelectorAll<HTMLElement>("[data-failed]")];
+    expect(failed.map(({ dataset }) => dataset.failed)).toEqual([
+      "provider-load-failed",
+      "provider-load-failed",
     ]);
   });
 
@@ -197,6 +214,14 @@ describe("noteMapsJsFailure", () => {
 });
 
 describe("noteVersionMapFailure", () => {
+  it("notes the version of the element it's given, its map's container", () => {
+    document.body.innerHTML = frame("vanilla maplibre");
+    const version = versionOn("maplibre", "vanilla");
+    version.innerHTML = '<div id="map"></div>';
+    noteVersionMapFailure(version.firstElementChild as Element, NOT_LOADED);
+    expect(version.dataset.failed).toBe("provider-load-failed");
+  });
+
   it("notes a version's map that didn't load in its words, its code kept, a reload offered when it mends", () => {
     document.body.innerHTML = frame("vanilla maplibre");
     const version = versionOn("maplibre", "vanilla");
@@ -218,10 +243,10 @@ describe("noteVersionMapFailure", () => {
   it("leaves a version that failed already as it was", () => {
     document.body.innerHTML = frame("vanilla google");
     const version = versionOn("google", "vanilla");
-    noteVersionFailure(version, "maps-js");
+    noteVersionFailure(version, NOT_LOADED);
     const first = note();
     noteVersionMapFailure(version, { code: "provider-auth-failed" });
-    expect(version.dataset.failed).toBe("maps-js");
+    expect(version.dataset.failed).toBe("provider-load-failed");
     expect(note()).toBe(first);
     expect(version.hasAttribute("data-reload-mends")).toBe(true);
   });

@@ -23,7 +23,7 @@ import { installMaplace } from "./site-maplace.ts";
 import { startStarButtons } from "./star-buttons.ts";
 import { markWhenStuck } from "./stuck-mark.ts";
 import { startTabs } from "./tabs.ts";
-import { versionStarter } from "./version-start.ts";
+import { failingWith, versionStarter } from "./version-start.ts";
 import { startVersionSwitches } from "./version-switch.ts";
 
 // Every map on the site is held (`<maplace-map hold>`): nothing from Google Maps or OpenFreeMap
@@ -36,7 +36,7 @@ import { startVersionSwitches } from "./version-switch.ts";
 // version's bootstrap and Maps JS, a script version's adapter adding Maps JS itself), then a
 // script version's program run on the page's `Maplace`, as an imported module, or a module
 // version's module.
-// A map whose failure a reload mends (a script, Maps JS, a provider's map that didn't load) offers one.
+// A map whose failure a reload mends offers one (`MENDED_BY_RELOAD`, map-failures.ts).
 const mapsJs = watchMapsJs(document);
 const maps = [...document.querySelectorAll<MaplaceMapElement>("maplace-map[hold]")];
 const versions = [
@@ -65,7 +65,8 @@ const startVersion = versionStarter({
       script: googleScriptReady(pageMapsJs),
       module: googleVersionReady({ ...pageMapsJs, runBootstrap: runPageScripts }),
     }),
-    maplibre: readyMapLibre,
+    // maplibre-gl, the site's own chunk: as a page map's element script that didn't load.
+    maplibre: failingWith("script", readyMapLibre),
   }),
   load: byKind({ script: scriptVersionStart(installMaplace, importAsModule), module: loadVersion }),
   failed: noteVersionStartFailure,

@@ -2,10 +2,15 @@ import type { MaplaceError } from "maplace";
 import type { MaplaceElementEventMap } from "maplace/element";
 import type { Provider } from "../examples/example-providers.ts";
 import { providerOf, versionOf } from "./by-provider.ts";
-import type { VersionFailure } from "./version-start.ts";
-
-/** As much of a map's error as the note reads. */
-export type MapFailure = Pick<MaplaceError, "code"> & Partial<Pick<MaplaceError, "field">>;
+import {
+  type CodeFailure,
+  type FailureName,
+  failureName,
+  isCodeFailure,
+  type MapFailure,
+  NOT_LOADED,
+  type VersionFailure,
+} from "./version-failures.ts";
 
 const NOTE = "The map couldn't load";
 
@@ -23,7 +28,7 @@ const REASONS: Readonly<Record<Provider, Partial<Record<MaplaceError["code"], st
 
 /** Why a map on `provider` didn't load, for the visitor; the element's message is the developer's. */
 function reasonFor({ code, field }: MapFailure, provider: Provider): string | undefined {
-  if (field === "api-key") return "this site has no Google Maps key.";
+  if (field === "api-key" && provider === "google") return "this site has no Google Maps key.";
   return REASONS[provider][code];
 }
 
@@ -32,9 +37,6 @@ export function failureNote(failure: MapFailure, provider: Provider): string {
   const reason = reasonFor(failure, provider);
   return reason === undefined ? `${NOTE}.` : `${NOTE}: ${reason}`;
 }
-
-/** The note for a map whose own script, the site's element, didn't load. */
-const SCRIPT_FAILURE = `${NOTE}: its script didn't load. The network?`;
 
 /**
  * Shows that `map`'s script didn't load. The element isn't defined then, so it has no error state
@@ -52,47 +54,46 @@ export function clearScriptFailure(map: Element): void {
   delete version.dataset.reloadMends;
 }
 
-/**
- * The note for each reason a script, vanilla or React version didn't start ("no-key", "maps-js":
- * Google's).
- */
-const VERSION_FAILURES: Readonly<Record<VersionFailure, string>> = {
-  "no-key": failureNote({ code: "invalid-input", field: "api-key" }, "google"),
-  "maps-js": failureNote({ code: "provider-load-failed" }, "google"),
-  script: SCRIPT_FAILURE,
+/** The note for each reason a version's own code didn't run (`CodeFailure`). */
+const CODE_FAILURES: Readonly<Record<CodeFailure, string>> = {
+  script: `${NOTE}: its script didn't load. The network?`,
+  module: `${NOTE}: its code didn't load or run.`,
+  program: `${NOTE}: its program threw an error as it ran.`,
 };
 
-/** Why a version or a page's map failed: a version's start, or the map's own error. */
-type Failure = VersionFailure | MaplaceError["code"];
+/** The note for a version on `provider` that didn't start: its readying's, or its code's. */
+function versionFailureNote(failure: VersionFailure, provider: Provider): string {
+  return isCodeFailure(failure) ? CODE_FAILURES[failure] : failureNote(failure, provider);
+}
 
 /**
- * The failures a reload mends, what didn't load being fetched again: the version's script (the
- * browser keeps a failed import's failure until then), Maps JS (`watchMapsJs` keeps its failure),
- * a provider's map. Not a missing or refused key.
+ * The failures a reload mends, what didn't load being fetched again: the site's script or the
+ * version's module (the browser keeps a failed import's failure until then; a module that threw
+ * throws again, harmlessly), Maps JS (`watchMapsJs` keeps its failure), a provider's map. Not a
+ * missing or refused key, nor a program's throw.
  */
-const MENDED_BY_RELOAD: ReadonlySet<Failure> = new Set<Failure>([
+const MENDED_BY_RELOAD: ReadonlySet<FailureName> = new Set<FailureName>([
   "script",
-  "maps-js",
+  "module",
   "provider-load-failed",
 ]);
 
 /** Shows why `version` didn't start, in its frame's note, shown while the version is. */
 export function noteVersionFailure(version: HTMLElement, failure: VersionFailure): void {
-  noteFailure(version, VERSION_FAILURES[failure]);
-  version.dataset.failed = failure;
-  offerReloadIfMends(version, failure);
+  writeFailure(version, failure);
+  version.dataset.failed = failureName(failure);
 }
 
 /**
- * Shows why `version` didn't start, unless its map's failure was noted first
- * (`noteVersionMapFailure`): the first failure is the one that says why.
+ * Shows why `version` didn't start, unless it failed already (its map, say, while its start
+ * waited): the first failure is the one that says why.
  */
 export function noteVersionStartFailure(version: HTMLElement, failure: VersionFailure): void {
   if (version.dataset.failed === undefined) noteVersionFailure(version, failure);
 }
 
 /** Marks `version` for its note's reload button (`frame.css`) when a reload mends `failure`. */
-function offerReloadIfMends(version: HTMLElement, failure: Failure): void {
+function offerReloadIfMends(version: HTMLElement, failure: FailureName): void {
   version.toggleAttribute("data-reload-mends", MENDED_BY_RELOAD.has(failure));
 }
 
@@ -107,7 +108,7 @@ const RUNNING_GOOGLE_VERSION =
  */
 export function noteMapsJsFailure(root: ParentNode): void {
   for (const version of root.querySelectorAll<HTMLElement>(RUNNING_GOOGLE_VERSION)) {
-    noteVersionFailure(version, "maps-js");
+    noteVersionFailure(version, NOT_LOADED);
   }
 }
 
@@ -116,27 +117,24 @@ export function startFailureNotes(maps: readonly HTMLElement[]): void {
   for (const map of maps) {
     map.addEventListener("maplace-error", (event) => {
       const { error } = (event as MaplaceElementEventMap["maplace-error"]).detail;
-      writeMapFailure(versionOf(map), error);
+      writeFailure(versionOf(map), error);
     });
   }
 }
 
 /**
- * Shows that the map of the version `element` is in didn't load, in that version's note, as a
- * page map's is; `data-failed` keeps the error's code, which shows it. A version that failed
+ * Shows that the map of the version `element` is in didn't load, in that version's note, in the
+ * words a page map's failure gets, its `data-failed` the error's code. A version that failed
  * already keeps its first note.
  */
 export function noteVersionMapFailure(element: Element, failure: MapFailure): void {
-  const version = versionOf(element);
-  if (version.dataset.failed !== undefined) return;
-  writeMapFailure(version, failure);
-  version.dataset.failed = failure.code;
+  noteVersionStartFailure(versionOf(element), failure);
 }
 
-/** Writes why `version`'s map failed into its note, offering a reload when one mends it. */
-function writeMapFailure(version: HTMLElement, failure: MapFailure): void {
-  noteFailure(version, failureNote(failure, providerOf(version)));
-  offerReloadIfMends(version, failure.code);
+/** Writes why `version` failed into its note, offering a reload when one mends it. */
+function writeFailure(version: HTMLElement, failure: VersionFailure): void {
+  noteFailure(version, versionFailureNote(failure, providerOf(version)));
+  offerReloadIfMends(version, failureName(failure));
 }
 
 /**

@@ -189,7 +189,9 @@ describe("the examples' provider toggle", () => {
     await expect.poll(() => onMapLibre.getAttribute("data-started"), ON_MAPLIBRE).toBe("");
     await chooseProvider(page, "Google");
     const onGoogle = providerVersionIn(section, "google", "vanilla");
-    await expect.poll(() => onGoogle.getAttribute("data-failed"), ASKED).toBe("maps-js");
+    await expect
+      .poll(() => onGoogle.getAttribute("data-failed"), ASKED)
+      .toBe("provider-load-failed");
     expect(mapsJsRequests().length).toBeGreaterThan(0);
     expect(await onMapLibre.getAttribute("data-failed")).toBeNull();
     await context.close();

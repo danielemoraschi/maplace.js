@@ -44,7 +44,10 @@ export async function expectNotedInTurn(
 }
 
 /** Expects `section`'s frame to say `noted` and offer a reload as it says, its loading note gone. */
-async function expectNoteAlone(section: Locator, noted: Noted): Promise<void> {
+export async function expectNoteAlone(
+  section: Locator,
+  noted: Omit<Noted, "failed">,
+): Promise<void> {
   const note = section.locator("[data-map-failure]");
   expect(await note.textContent()).toBe(`The map couldn't load: ${noted.note}`);
   expect(await note.isVisible()).toBe(true);

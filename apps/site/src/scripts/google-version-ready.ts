@@ -1,4 +1,5 @@
-import { VersionStartFailure } from "./version-start.ts";
+import { NO_KEY, NOT_LOADED } from "./version-failures.ts";
+import { failingWith, VersionStartFailure } from "./version-start.ts";
 
 /** How a Google version finds the page's Maps JS, and waits for it. */
 export interface PageMapsJs {
@@ -17,47 +18,40 @@ export interface GoogleReadying extends PageMapsJs {
 /**
  * What a Google version waits for before its module runs: Maps JS, through its own bootstrap
  * unless the page has it already (the element's tag, or another version's bootstrap). Without
- * the site's key (`data-maps-key-missing`) it runs nothing and fails with "no-key";
- * Maps JS failing to load fails it with "maps-js".
+ * the site's key (`data-maps-key-missing`) it runs nothing and fails as a map with no key;
+ * Maps JS failing to load fails it as Maps JS not loaded, as the element reports either.
  */
 export function googleVersionReady({
   runBootstrap,
   mapsJsOnPage,
   mapsImportable,
 }: GoogleReadying): (version: HTMLElement) => Promise<void> {
+  const awaitMapsJs = failingWith(NOT_LOADED, mapsImportable);
   return async (version) => {
     refuseWithoutKey(version);
     if (!mapsJsOnPage()) runBootstrap(version);
-    await awaitMapsJs(mapsImportable);
+    await awaitMapsJs();
   };
 }
 
 /**
  * What a Google script version (W33) waits for before its program runs: nothing of Maps JS when
  * the page has none, since its adapter adds it; the page's when it has some, which its adapter
- * would share, failing with "maps-js" as a module version does when that failed. Without the
- * site's key it fails with "no-key", adding nothing.
+ * would share, failing as a module version does when that failed. Without the site's key it
+ * fails as a map with no key, adding nothing.
  */
 export function googleScriptReady({
   mapsJsOnPage,
   mapsImportable,
 }: PageMapsJs): (version: HTMLElement) => Promise<void> {
+  const awaitMapsJs = failingWith(NOT_LOADED, mapsImportable);
   return async (version) => {
     refuseWithoutKey(version);
-    if (mapsJsOnPage()) await awaitMapsJs(mapsImportable);
+    if (mapsJsOnPage()) await awaitMapsJs();
   };
 }
 
-/** Resolves once Maps JS can import libraries; its failure is the version's "maps-js". */
-async function awaitMapsJs(mapsImportable: () => Promise<void>): Promise<void> {
-  try {
-    await mapsImportable();
-  } catch (error) {
-    throw new VersionStartFailure("maps-js", { cause: error });
-  }
-}
-
-/** Fails a version the site has no key for (`data-maps-key-missing`) with "no-key". */
+/** Fails a version the site has no key for (`data-maps-key-missing`), as a map with no key. */
 function refuseWithoutKey(version: HTMLElement): void {
-  if (version.dataset.mapsKeyMissing !== undefined) throw new VersionStartFailure("no-key");
+  if (version.dataset.mapsKeyMissing !== undefined) throw new VersionStartFailure(NO_KEY);
 }

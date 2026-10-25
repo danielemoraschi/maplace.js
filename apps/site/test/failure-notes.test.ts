@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Provider } from "../src/examples/example-providers.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";
 import { mapLibreDrawn, mapLibreVersionIn } from "./drawn-on-maplibre.ts";
-import { expectNotedInTurn, type InTurn } from "./failure-note-checks.ts";
+import { expectNoteAlone, expectNotedInTurn, type InTurn } from "./failure-note-checks.ts";
 import { ON_GOOGLE } from "./google-session.ts";
 import {
   chooseProvider,
@@ -34,6 +34,8 @@ const reloadButton = (page: Page) =>
 
 /** A version module's chunk: the site's build names each after its file. */
 const VANILLA_CHUNK = /\/_astro\/vanilla\.[^/]+\.js$/;
+/** The chunk that readies maplibre-gl for the site (`maplibre-assets.ts`). */
+const MAPLIBRE_ASSETS_CHUNK = /\/_astro\/maplibre-assets\.[^/]+\.js$/;
 
 describe("a map's failure note", () => {
   it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
@@ -47,7 +49,9 @@ describe("a map's failure note", () => {
     await footerToggle(page).click();
     await page.locator("#simple-vanilla-map").scrollIntoViewIfNeeded();
     const vanilla = simpleOnGoogle(page, "vanilla");
-    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("maps-js");
+    await expect
+      .poll(() => vanilla.getAttribute("data-failed"), ASKED)
+      .toBe("provider-load-failed");
     const mapsTags = mapsJsRequests();
     expect(mapsTags.length).toBeGreaterThan(0);
     expect(mapsTags.filter((url) => !addedByBootstrap(url))).toEqual([]);
@@ -65,7 +69,9 @@ describe("a map's failure note", () => {
     expect(await reloadButton(page).isVisible()).toBe(true);
     await chooseVersion(page, "simple", "Bundler");
     const vanilla = simpleOnGoogle(page, "vanilla");
-    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("maps-js");
+    await expect
+      .poll(() => vanilla.getAttribute("data-failed"), ASKED)
+      .toBe("provider-load-failed");
     const note = page.locator("section#simple [data-map-failure]");
     expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
     expect(await note.isVisible()).toBe(true);
@@ -73,12 +79,12 @@ describe("a map's failure note", () => {
     // A script version's adapter would share the page's failed Maps JS: it says so too.
     await chooseVersion(page, "simple", "Script");
     const script = simpleOnGoogle(page, "script");
-    await expect.poll(() => script.getAttribute("data-failed"), ASKED).toBe("maps-js");
+    await expect.poll(() => script.getAttribute("data-failed"), ASKED).toBe("provider-load-failed");
     expect(await note.isVisible()).toBe(true);
     await context.close();
   }, 30_000);
 
-  it("offers a reload when a version's script didn't load, which starts it", async () => {
+  it("offers a reload when a version's module didn't load, which starts it", async () => {
     const { page, context } = await site.visitor({ openFreeMap: "local" });
     let refused = false;
     await page.route(VANILLA_CHUNK, (route) => {
@@ -93,10 +99,11 @@ describe("a map's failure note", () => {
     const section = page.locator("section#simple");
     await section.scrollIntoViewIfNeeded();
     const vanilla = mapLibreVersionIn(section, "vanilla");
-    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("script");
-    expect(await section.locator("[data-map-failure]").textContent()).toBe(
-      "The map couldn't load: its script didn't load. The network?",
-    );
+    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("module");
+    await expectNoteAlone(section, {
+      note: "its code didn't load or run.",
+      reload: true,
+    });
     await Promise.all([page.waitForEvent("load"), reloadButton(page).click()]);
     await chooseVersion(page, "simple", "Bundler");
     await section.scrollIntoViewIfNeeded();
@@ -149,6 +156,24 @@ describe("a map's failure note", () => {
     await visit.context.close();
   }, 60_000);
 
+  it("offers a reload when what readies MapLibre for a version didn't load", async () => {
+    const { page, context } = await site.visitor({ openFreeMap: "local" });
+    await page.route(MAPLIBRE_ASSETS_CHUNK, (route) => route.abort());
+    await openHome(page, site.url);
+    await leaveOnlySection(page, "simple");
+    await chooseVersion(page, "simple", "Bundler");
+    await footerToggle(page).click();
+    const section = page.locator("section#simple");
+    await section.scrollIntoViewIfNeeded();
+    const vanilla = mapLibreVersionIn(section, "vanilla");
+    await expect.poll(() => vanilla.getAttribute("data-failed"), ASKED).toBe("script");
+    await expectNoteAlone(section, {
+      note: "its script didn't load. The network?",
+      reload: true,
+    });
+    await context.close();
+  }, 60_000);
+
   it("says when a script version's program throws as it runs", async () => {
     const { context, section } = await sectionFrom(
       { openFreeMap: "local" },
@@ -160,8 +185,11 @@ describe("a map's failure note", () => {
       },
     );
     const script = mapLibreVersionIn(section, "script");
-    await expect.poll(() => script.getAttribute("data-failed"), ON_MAPLIBRE).toBe("script");
-    expect(await section.locator("[data-map-failure]").isVisible()).toBe(true);
+    await expect.poll(() => script.getAttribute("data-failed"), ON_MAPLIBRE).toBe("program");
+    await expectNoteAlone(section, {
+      note: "its program threw an error as it ran.",
+      reload: false,
+    });
     await context.close();
   }, 60_000);
 
