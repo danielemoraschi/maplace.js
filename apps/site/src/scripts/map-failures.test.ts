@@ -2,32 +2,38 @@
 import { describe, expect, it } from "vitest";
 import {
   clearScriptFailure,
-  failureNote,
   noteMapsJsFailure,
   noteScriptFailure,
   noteVersionFailure,
   noteVersionMapFailure,
   noteVersionStartFailure,
-  showFailureNoteOf,
   startFailureNotes,
 } from "./map-failures.ts";
 import { NO_KEY, NOT_LOADED } from "./version-failures.ts";
+import { notesOf, SHOWN_NOTES } from "./version-notes.ts";
 
-/** A frame holding `versions` (each `kind provider`, the first shown), and its note. */
+/** A version's notes, as the frame writes them after it. */
+const NOTES = "<div data-version-notes><p><span data-map-failure></span></p></div>";
+
+/** A frame holding `versions` (each `kind provider`, the first shown), each with its notes. */
 function frame(...versions: string[]): string {
   const markup = versions.map((version, index) => {
     const [kind, provider] = version.split(" ");
     const map = kind === "html" ? "<maplace-map></maplace-map>" : "";
-    return `<div data-live-version="${kind}" data-provider="${provider}"${index > 0 ? " hidden" : ""}>${map}</div>`;
+    return `<div class="version" data-live-version="${kind}" data-provider="${provider}"${index > 0 ? " hidden" : ""}>${map}</div>${NOTES}`;
   });
-  return `<div class="map-frame">${markup.join("")}<p data-map-failure></p></div>`;
+  return `<div class="map-frame">${markup.join("")}</div>`;
 }
 
 /** `map` failing as the element says it did: a `maplace-error` with `code`. */
 const fail = (map: Element | undefined, code: string) =>
   map?.dispatchEvent(new CustomEvent("maplace-error", { detail: { error: { code } } }));
 
-const note = () => document.querySelector("[data-map-failure]")?.textContent;
+/** The note of the version shown. */
+const note = () => document.querySelector(`${SHOWN_NOTES} [data-map-failure]`)?.textContent;
+/** The note `version` keeps, shown or not. */
+const noteOf = (version: HTMLElement) =>
+  notesOf(version).querySelector("[data-map-failure]")?.textContent;
 const versionOn = (provider: string, kind = "html") =>
   document.querySelector<HTMLElement>(
     `[data-provider="${provider}"][data-live-version="${kind}"]`,
@@ -79,41 +85,6 @@ describe("noteVersionFailure", () => {
   });
 });
 
-describe("failureNote", () => {
-  it("says the site has no key when the map had none", () => {
-    expect(failureNote(NO_KEY, "google")).toBe(
-      "The map couldn't load: this site has no Google Maps key.",
-    );
-  });
-
-  it("says Google refused the key, or didn't load", () => {
-    expect(failureNote({ code: "provider-auth-failed" }, "google")).toBe(
-      "The map couldn't load: Google refused this site's key.",
-    );
-    expect(failureNote({ code: "provider-load-failed" }, "google")).toBe(
-      "The map couldn't load: Google Maps didn't load. A blocker, or the network?",
-    );
-  });
-
-  it("says why a MapLibre map didn't load", () => {
-    expect(failureNote({ code: "provider-load-failed" }, "maplibre")).toBe(
-      "The map couldn't load: OpenFreeMap's map didn't load. A blocker, or the network?",
-    );
-    expect(failureNote({ code: "provider-auth-failed" }, "maplibre")).toBe(
-      "The map couldn't load: OpenFreeMap refused the map's style.",
-    );
-  });
-
-  it("tells only a Google map of a missing key in Google's words", () => {
-    expect(failureNote(NO_KEY, "maplibre")).toBe("The map couldn't load.");
-  });
-
-  it("keeps to the plain note for anything else", () => {
-    expect(failureNote({ code: "unknown-id" }, "google")).toBe("The map couldn't load.");
-    expect(failureNote({ code: "unknown-id" }, "maplibre")).toBe("The map couldn't load.");
-  });
-});
-
 describe("noteScriptFailure", () => {
   it("marks the page map's own version when its script didn't load, not the frame", () => {
     document.body.innerHTML = frame("html google", "html maplibre");
@@ -129,13 +100,12 @@ describe("noteScriptFailure", () => {
     noteScriptFailure(map);
     clearScriptFailure(map);
     expect(versionOn("google").hasAttribute("data-failed")).toBe(false);
-    expect(versionOn("google").hasAttribute("data-failure-note")).toBe(false);
     expect(versionOn("google").hasAttribute("data-reload-mends")).toBe(false);
   });
 });
 
 describe("startFailureNotes", () => {
-  it("writes a map's failure into its frame's note, in its provider's words", () => {
+  it("writes a map's failure into its version's note, in its provider's words", () => {
     document.body.innerHTML = frame("html google") + frame("html maplibre");
     const [google, maplibre] = document.querySelectorAll<HTMLElement>("maplace-map");
     startFailureNotes([google, maplibre] as HTMLElement[]);
@@ -158,8 +128,22 @@ describe("startFailureNotes", () => {
   });
 });
 
-describe("showFailureNoteOf", () => {
-  it("shows the shown version's own note after a switch, when both providers' versions failed", () => {
+describe("a version's own note", () => {
+  it("is written in that version's notes, not another version's", () => {
+    document.body.innerHTML = frame("vanilla google", "vanilla maplibre");
+    noteVersionFailure(versionOn("maplibre", "vanilla"), "module");
+    expect(noteOf(versionOn("maplibre", "vanilla"))).toMatch(/its code didn't load or run/);
+    expect(noteOf(versionOn("google", "vanilla"))).toBe("");
+  });
+
+  it("can't be written in notes the frame gave no failure note", () => {
+    document.body.innerHTML =
+      '<div data-live-version="vanilla" data-provider="maplibre"></div><div data-version-notes></div>';
+    const version = versionOn("maplibre", "vanilla");
+    expect(() => noteVersionFailure(version, "module")).toThrow(/no failure note/);
+  });
+
+  it("is kept while its version is hidden, for when it's shown", () => {
     document.body.innerHTML = frame("html google", "html maplibre");
     const [google, maplibre] = document.querySelectorAll<HTMLElement>("maplace-map");
     startFailureNotes([google, maplibre] as HTMLElement[]);
@@ -168,7 +152,6 @@ describe("showFailureNoteOf", () => {
     expect(note()).toMatch(/Google refused/);
     versionOn("google").hidden = true;
     versionOn("maplibre").hidden = false;
-    showFailureNoteOf(versionOn("maplibre"));
     expect(note()).toMatch(/OpenFreeMap's map didn't load/);
   });
 });
@@ -176,7 +159,7 @@ describe("showFailureNoteOf", () => {
 describe("noteMapsJsFailure", () => {
   const frames = (...versions: string[]) => {
     document.body.innerHTML = versions
-      .map((version) => `<div class="map-frame">${version}<p data-map-failure></p></div>`)
+      .map((version) => `<div class="map-frame">${version}${NOTES}</div>`)
       .join("");
   };
   const notes = () =>
@@ -188,7 +171,8 @@ describe("noteMapsJsFailure", () => {
       '<div data-live-version="react" data-provider="google" data-starting></div>',
     );
     noteMapsJsFailure(document);
-    expect(notes()).toEqual([failureNote(NOT_LOADED, "google"), failureNote(NOT_LOADED, "google")]);
+    const mapsJs = "The map couldn't load: Google Maps didn't load. A blocker, or the network?";
+    expect(notes()).toEqual([mapsJs, mapsJs]);
     const failed = [...document.querySelectorAll<HTMLElement>("[data-failed]")];
     expect(failed.map(({ dataset }) => dataset.failed)).toEqual([
       "provider-load-failed",

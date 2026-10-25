@@ -13,7 +13,7 @@ const NOT_LOADED_NOTE =
 beforeEach(() => {
   document.body.innerHTML = `<div class="map-frame">
     <div data-live-version="vanilla" data-provider="maplibre"><div id="version-map"></div></div>
-    <p data-map-failure></p>
+    <div data-version-notes><p data-map-failure></p></div>
   </div>`;
 });
 

@@ -9,7 +9,13 @@ import type { Provider } from "../src/examples/example-providers.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { exampleProviders } from "../src/examples/example-sources.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { chooseProvider, chooseTab, chooseVersion } from "./home-sections.ts";
+import {
+  chooseProvider,
+  chooseTab,
+  chooseVersion,
+  shownNotes,
+  visitSection,
+} from "./home-sections.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { footerToggle, openHome, placeholder } from "./visitor.ts";
@@ -118,6 +124,26 @@ describe("the home page's examples", () => {
     await context.close();
   }, 30_000);
 
+  it("follows every version with its own notes, which the frame shows with it", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url);
+    const withoutNotes = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>("[data-live-version]")]
+        .filter((version) => !version.nextElementSibling?.matches("[data-version-notes]"))
+        .map(({ dataset }) => `${dataset.example} ${dataset.provider} ${dataset.liveVersion}`),
+    );
+    expect(withoutNotes).toEqual([]);
+    const savingVersions = await page.evaluate(
+      () =>
+        [...document.querySelectorAll<HTMLElement>("[data-live-version]")].filter((version) =>
+          version.nextElementSibling?.querySelector("[data-saved]"),
+        ).length,
+    );
+    expect(savingVersions, "polygon's versions, each with its saved note").toBe(8);
+    expect(await page.locator("section:not(#polygon) [data-saved]").count()).toBe(0);
+    await context.close();
+  }, 30_000);
+
   it("runs a page's scripts as its map opens: route's stops, big's points", async () => {
     const { page, context, fetched } = await site.visitor();
     await openHome(page, site.url);
@@ -214,4 +240,30 @@ describe("the site's map ID", () => {
     );
     expect(texts.some((text) => text.includes(SITE_MAP_ID))).toBe(true);
   });
+});
+
+describe("polygon's saved note", () => {
+  /** Calls the `save` polygon's versions call with an edit, as one would. */
+  const save = (page: Page, title: string) =>
+    page.evaluate((saved) => {
+      const pageGlobals = globalThis as unknown as { save(location: object): void };
+      pageGlobals.save({ id: "park", title: saved, path: [1, 2, 3] });
+    }, title);
+
+  it("says what the shown version saved, each version keeping its own", async () => {
+    const { page, context, section } = await visitSection(site, "polygon");
+    await chooseVersion(page, "polygon", "Bundler");
+    const saved = shownNotes(section).locator("[data-saved]");
+    await save(page, "Park");
+    expect(await saved.textContent()).toBe("Saved: Park, 3 points.");
+    expect(await saved.isVisible()).toBe(true);
+    await chooseVersion(page, "polygon", "Script");
+    expect(await saved.isVisible(), "the Script version saved nothing").toBe(false);
+    const bundlerSave = section.getByText("Saved: Park, 3 points.");
+    expect(await bundlerSave.isVisible(), "the hidden Bundler version's save").toBe(false);
+    await chooseVersion(page, "polygon", "Bundler");
+    expect(await saved.textContent()).toBe("Saved: Park, 3 points.");
+    expect(await saved.isVisible()).toBe(true);
+    await context.close();
+  }, 30_000);
 });

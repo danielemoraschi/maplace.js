@@ -1,7 +1,5 @@
 import { FIRST_PROVIDER, isProvider, type Provider } from "../examples/example-providers.ts";
 import { FIRST_VERSION } from "../examples/example-versions.ts";
-import { hideSavedNote } from "../examples/page-save.ts";
-import { showFailureNoteOf } from "./map-failures.ts";
 import { keepProvider, keptProvider } from "./provider-choice.ts";
 import { reveal } from "./reveal.ts";
 
@@ -17,10 +15,10 @@ const setShown: Show = (element, shown) => {
  * Every `[data-version-switch]` section under `root` shows the version its `[data-site-switch]`
  * radios chose, on the provider the page's toggle (`[data-provider-choice]`) chose, kept in
  * `storage` for the visit:
- * - in its frame, that `[data-live-version]`, faded in, the others hidden at once, with that
- *   version's failure note, if any, and no note of what the map shown before saved; a section with
- *   no version on the provider (route on MapLibre) shows none, its frame marked `data-no-version`
- *   for its note, whose `[data-show-on]` button shows that section alone on the provider it names;
+ * - in its frame, that `[data-live-version]`, faded in, the others hidden at once, each with its
+ *   own notes, shown and hidden with it (`frame.css`); a section with no version on the provider
+ *   (route on MapLibre) shows none, its frame marked `data-no-version` for its note, whose
+ *   `[data-show-on]` button shows that section alone on the provider it names;
  * - in each code tab, the provider's files; a section with none for it keeps the files it has.
  *
  * The page renders the first provider chosen; a provider kept earlier in the visit is shown at
@@ -103,8 +101,8 @@ function offerVersions(section: HTMLElement, offered: boolean): void {
 }
 
 /**
- * Shows the section's `version` on `provider`, with its own failure note; hides the others, and
- * the note of what the map shown before saved. Whether the section has that version.
+ * Shows the section's `version` on `provider`, and hides the others. Whether the section has that
+ * version.
  */
 function showVersion(
   section: ParentNode,
@@ -116,11 +114,7 @@ function showVersion(
   for (const live of section.querySelectorAll<HTMLElement>("[data-live-version]")) {
     const chosen = live.dataset.liveVersion === version && live.dataset.provider === provider;
     show(live, chosen);
-    if (chosen) {
-      found = true;
-      showFailureNoteOf(live);
-      hideSavedNote(live);
-    }
+    found ||= chosen;
   }
   return found;
 }

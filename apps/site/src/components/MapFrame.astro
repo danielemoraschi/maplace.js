@@ -1,12 +1,7 @@
 ---
 import { SITE_MAPS_MAP_ID } from "astro:env/client";
 import { SITE_MAPS_KEY } from "astro:env/server";
-import {
-  callsSave,
-  type LiveVersionMarkup,
-  liveVersions,
-  shownFirst,
-} from "../examples/live-versions.ts";
+import { type LiveVersionMarkup, liveVersions, shownFirst } from "../examples/live-versions.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
 
 interface Props {
@@ -24,7 +19,6 @@ const versions = liveVersions(name, settings);
 /** Whether `version` runs on Google, which the site has no key for. */
 const keyMissing = ({ provider }: LiveVersionMarkup) =>
   provider === "google" && settings.apiKey === undefined;
-const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-1 text-sm";
 ---
 
 <div
@@ -45,6 +39,16 @@ const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-
       >
         <Fragment set:html={version.markup} />
       </div>
+      <div data-version-notes>
+        {version.callsSave && (
+          <p class="m-0 border-t-2 border-ink bg-paper px-3 py-2 text-sm" data-saved hidden />
+        )}
+        <p class="map-note loading">Loading the map…</p>
+        <p class="map-note failed">
+          <span data-map-failure>The map couldn't load.</span>{" "}
+          <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
+        </p>
+      </div>
     ))
   }
   {
@@ -55,15 +59,5 @@ const NOTE = "absolute bottom-3 left-3 m-0 border-2 border-ink bg-paper px-2 py-
       </div>
     )
   }
-  {
-    callsSave(name) && (
-      <p class="m-0 border-t-2 border-ink bg-paper px-3 py-2 text-sm" data-saved hidden />
-    )
-  }
-  <p class={`map-note loading ${NOTE}`}>Loading the map…</p>
-  <p class={`map-note failed ${NOTE}`}>
-    <span data-map-failure>The map couldn't load.</span>{" "}
-    <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
-  </p>
   <ConsentPlaceholder />
 </div>

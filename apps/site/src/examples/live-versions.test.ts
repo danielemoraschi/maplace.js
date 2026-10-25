@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { callsSave, liveVersions, shownFirst } from "./live-versions.ts";
+import { callsSaveIn, liveVersions, shownFirst } from "./live-versions.ts";
 
 /** `simple`'s versions on Google, in their order: page, script, vanilla, React. */
 const onGoogle = (settings: { apiKey: string; mapId?: string }) =>
@@ -81,8 +81,17 @@ describe("shownFirst", () => {
 });
 
 describe("callsSave", () => {
-  it("is whether the example's page calls save()", () => {
-    expect(callsSave("polygon")).toBe(true);
-    expect(callsSave("simple")).toBe(false);
+  /** Whether each of `name`'s versions calls save(). */
+  const savingOf = (name: string) => liveVersions(name, {}).map(({ callsSave }) => callsSave);
+
+  it("marks every version whose own files call save(): all of polygon's, on both providers", () => {
+    expect(savingOf("polygon")).toEqual(Array(8).fill(true));
+  });
+
+  it("leaves unmarked a version that only mentions a save, as a method or in a word", () => {
+    expect(
+      callsSaveIn(["store.save(location);", "autosave(it);", "declare function save(l);"]),
+    ).toBe(false);
+    expect(callsSaveIn(["await save(location);"])).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 /*
- * An example's version in its frame, as its page lays it out, and the notes over it: markup the
- * site doesn't write, so no utility can reach it. Every rule matches at any depth:
+ * An example's version in its frame, as its page lays it out: markup the site doesn't write, so no
+ * utility can reach it (its notes, after it, are the site's: below). Every rule matches at any depth:
  * a page's nodes sit in `<maplace-map>`, a vanilla host's in its own wrappers and React's in its
  * root, so a rule by a node's place would style one version and not the others. In no layer, as
  * the page's own rules are: the library's defaults are `:where()` rules in no layer, made for any
@@ -98,26 +98,34 @@
   @apply button-plain;
 }
 
-/* The notes over the frame are the site's own markup: in its layer, as its utilities are. */
+/*
+ * Each version's notes, right after it (`[data-version-notes]`, `version-notes.ts`), are the
+ * site's own markup: in its layer, as its utilities are. A hidden version's notes never show, what
+ * it saved included.
+ */
 @layer components {
-  /* Notes for the version shown only; a version that failed while starting shows its failure alone. */
-  .map-note {
+  .version[hidden] + [data-version-notes] {
     display: none;
   }
-  .map-frame:has(.version[data-failed]:not([hidden])) .failed,
-  .map-frame:has(.version[data-starting]:not([data-failed], [hidden])) .loading {
+  /* Over the frame, at its bottom left; a version that failed while starting shows its failure
+     alone. */
+  .map-note {
+    @apply absolute bottom-3 left-3 m-0 hidden border-2 border-ink bg-paper px-2 py-1 text-sm;
+  }
+  .version[data-failed] + [data-version-notes] .failed,
+  .version[data-starting]:not([data-failed]) + [data-version-notes] .loading {
     display: block;
   }
   /* A failure a reload mends offers one (`data-reload-mends`, `map-failures.ts`). */
   [data-map-reload] {
     display: none;
   }
-  .map-frame:has(.version[data-reload-mends]:not([hidden])) [data-map-reload] {
+  .version[data-reload-mends] + [data-version-notes] [data-map-reload] {
     display: block;
   }
   /* Apart: a browser without `:state()` drops the whole rule. */
-  .map-frame:has(.version:not([hidden]) maplace-map:state(error)) .failed,
-  .map-frame:has(.version:not([hidden]) maplace-map:state(loading)) .loading {
+  .version:has(maplace-map:state(error)) + [data-version-notes] .failed,
+  .version:has(maplace-map:state(loading)) + [data-version-notes] .loading {
     display: block;
   }
 }

@@ -11,6 +11,7 @@ import {
   leaveOnlySection,
   providerVersionIn,
   sectionOf,
+  shownNotes,
 } from "./home-sections.ts";
 import { ON_MAPLIBRE } from "./maplibre-session.ts";
 import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
@@ -72,7 +73,7 @@ describe("a map's failure note", () => {
     await expect
       .poll(() => vanilla.getAttribute("data-failed"), ASKED)
       .toBe("provider-load-failed");
-    const note = page.locator("section#simple [data-map-failure]");
+    const note = shownNotes(page.locator("section#simple")).locator("[data-map-failure]");
     expect(await note.textContent()).toMatch(/^The map couldn't load: Google Maps didn't load/);
     expect(await note.isVisible()).toBe(true);
     expect(await reloadButton(page).isVisible()).toBe(true);
@@ -210,8 +211,9 @@ describe("a map's failure note", () => {
       .poll(() => vanilla.getAttribute("data-failed"), ON_MAPLIBRE)
       .toBe("provider-load-failed");
     expect(await vanilla.getAttribute("data-starting")).toBe("");
-    expect(await section.locator("[data-map-failure]").isVisible()).toBe(true);
-    expect(await section.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
+    const notes = shownNotes(section);
+    expect(await notes.locator("[data-map-failure]").isVisible()).toBe(true);
+    expect(await notes.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
     await context.close();
   }, 60_000);
 });

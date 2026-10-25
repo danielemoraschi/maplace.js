@@ -1,31 +1,24 @@
 import type { Location } from "maplace";
+import { SHOWN_NOTES } from "./version-notes.ts";
 
 /** What `save(location)` is given: a location, of any type. */
 type SavedLocation = Pick<Location, "id" | "title"> & { readonly path?: readonly unknown[] };
 
 /**
- * The `save` the `polygon` page calls with each edit, which a reader writes for their own
- * backend: on the site, it says what was saved in the `[data-saved]` note of the one page that
- * calls it (`example-sections.test.ts` holds that to one).
+ * The `save` every `polygon` version calls with each edit, which a reader writes for their own
+ * backend: on the site, it says what was saved in the shown version's `[data-saved]` note, the one
+ * a visitor can edit, in the one section whose versions save (`example-sections.test.ts`). Each
+ * version keeps its own last save, shown again with it.
  */
 export function provideSave(pageGlobals: object, document: Document): void {
   Object.assign(pageGlobals, {
     save(location: SavedLocation): void {
-      const note = document.querySelector<HTMLElement>("[data-saved]");
+      const note = document.querySelector<HTMLElement>(`${SHOWN_NOTES} [data-saved]`);
       if (note === null) return;
       note.textContent = `Saved: ${savedName(location)}.`;
       note.hidden = false;
     },
   });
-}
-
-/**
- * Hides the `[data-saved]` note of the frame `version` is in: what it says was saved by the map
- * shown before, not by `version`'s.
- */
-export function hideSavedNote(version: Element): void {
-  const note = version.closest(".map-frame")?.querySelector<HTMLElement>("[data-saved]");
-  if (note) note.hidden = true;
 }
 
 /** `Park, 3 points`, or the id of a location without a title. */

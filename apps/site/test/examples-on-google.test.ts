@@ -18,6 +18,7 @@ import {
   leaveOnlySection,
   pageMapState,
   sectionOf,
+  shownNotes,
   type VersionChoice,
   versionsInTurn,
   visitSection,
@@ -89,7 +90,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
             })
             .toBe(markers);
         }
-        expect(await section.locator("[data-map-failure]").isVisible()).toBe(false);
+        expect(await shownNotes(section).locator("[data-map-failure]").isVisible()).toBe(false);
         expect(errors()).toEqual([]);
         // The page's element and a script version's adapter add Maps JS's own tag; a module
         // version's HTML, Google's bootstrap.

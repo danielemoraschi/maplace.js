@@ -19,6 +19,7 @@ import {
 import {
   chooseVersion,
   pageMapState,
+  shownNotes,
   type VersionChoice,
   versionsInTurn,
   visitSection,
@@ -84,8 +85,8 @@ describe("the site's examples on MapLibre", () => {
         await expect
           .poll(() => siteWorkers(page, site.url).length, polled(name, "maplibre-gl's worker"))
           .toBeGreaterThan(0);
-        expect(await section.locator("[data-map-failure]").isVisible()).toBe(false);
-        expect(await section.locator("[data-failed], [data-failure-note]").count()).toBe(0);
+        expect(await shownNotes(section).locator("[data-map-failure]").isVisible()).toBe(false);
+        expect(await section.locator("[data-failed]").count()).toBe(0);
         expect(errors()).toEqual([]);
         expect(warnings()).toEqual([]);
         expect(await section.locator(".maplibregl-map").count(), "maps made").toBe(
@@ -107,7 +108,7 @@ describe("the site's examples on MapLibre", () => {
     // Ready again after loading anew: the map opened on the dark style, not still on the light.
     await expect.poll(states, ON_MAPLIBRE).toEqual(expect.arrayContaining(["loading"]));
     await expect.poll(() => states().then((seen) => seen.at(-1)), ON_MAPLIBRE).toBe("ready");
-    expect(await section.locator("[data-map-failure]").isVisible()).toBe(false);
+    expect(await shownNotes(section).locator("[data-map-failure]").isVisible()).toBe(false);
     expect(errors()).toEqual([]);
     await context.close();
   }, 30_000);

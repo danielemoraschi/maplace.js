@@ -12,7 +12,7 @@ function frame(provider: string, id: string): string {
       <maplace-map hold id="${id}"></maplace-map>
       <script type="${INERT_SCRIPT_TYPE}">window.ran = true;</script>
     </div>
-    <p data-map-failure></p>
+    <div data-version-notes><p data-map-failure></p></div>
   </div>`;
 }
 

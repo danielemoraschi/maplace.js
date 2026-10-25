@@ -39,7 +39,7 @@ function section(name: string, providers: readonly string[] = PROVIDERS): string
     <div role="tablist">${["map", "html", "react"].map(tab).join("")}</div>
     <fieldset data-site-switch>${radios}</fieldset>
     <label><input type="checkbox" data-own-input /> North only</label>
-    <div class="map-frame"><p data-map-failure></p><p data-saved hidden></p>${providers.flatMap((provider) => VERSIONS.map((kind) => version(kind, provider))).join("")}${button}</div>
+    <div class="map-frame">${providers.flatMap((provider) => VERSIONS.map((kind) => version(kind, provider))).join("")}${button}</div>
     <div role="tabpanel">${providers.map(files).join("")}</div>
     <div role="tabpanel">${providers.map(files).join("")}</div>
   </section>`;
@@ -207,27 +207,8 @@ describe("startVersionSwitches", () => {
     expect(vi.mocked(fadeIn).mock.calls).toEqual([[page]]);
   });
 
-  it("writes the revealed version's note into the frame's", () => {
-    const failed = document.querySelector<HTMLElement>(
-      '[data-example="simple"][data-provider="google"][data-live-version="html"]',
-    );
-    if (failed) failed.dataset.failureNote = "Google's note";
-    chooseProvider("google");
-    expect(document.querySelector("#simple [data-map-failure]")?.textContent).toBe("Google's note");
-  });
-
-  it("hides what the map shown before saved, the map now shown having saved nothing", () => {
-    const saved = document.querySelector<HTMLElement>("#simple [data-saved]") as HTMLElement;
-    saved.hidden = false;
-    chooseProvider("google");
-    expect(saved.hidden).toBe(true);
-  });
-
-  it("leaves the shown map and its note alone when the example's own input changes", () => {
-    const saved = document.querySelector<HTMLElement>("#simple [data-saved]") as HTMLElement;
-    saved.hidden = false;
+  it("leaves the shown map alone when the example's own input changes", () => {
     document.querySelector<HTMLInputElement>("#simple [data-own-input]")?.click();
-    expect(saved.hidden).toBe(false);
     expect(shown("simple")).toEqual(["maplibre html"]);
   });
 });

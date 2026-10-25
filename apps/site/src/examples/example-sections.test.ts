@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { FIRST_PROVIDER } from "./example-providers.ts";
 import { EXAMPLE_SECTIONS } from "./example-sections.ts";
 import { exampleNames, exampleProviders } from "./example-sources.ts";
-import { callsSave } from "./live-versions.ts";
+import { liveVersions } from "./live-versions.ts";
 
 /** The hero's snippet, not a section. */
 const HERO_EXAMPLE = "quick-start";
@@ -17,8 +17,10 @@ describe("EXAMPLE_SECTIONS", () => {
     );
   });
 
-  it("has one page at most calling save(), so the one note save() writes is that page's", () => {
-    const saving = EXAMPLE_SECTIONS.filter(({ name }) => callsSave(name));
+  it("has one section at most whose versions call save(), so save() writes that section's note", () => {
+    const saving = EXAMPLE_SECTIONS.filter(({ name }) =>
+      liveVersions(name, {}).some(({ callsSave }) => callsSave),
+    );
     expect(saving.map(({ name }) => name)).toEqual(["polygon"]);
   });
 

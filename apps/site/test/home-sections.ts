@@ -2,6 +2,7 @@ import type { MaplaceMapElement } from "maplace/element";
 import type { Locator, Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
 import { VERSION_LABELS, type VersionKind } from "../src/examples/example-versions.ts";
+import { SHOWN_NOTES } from "../src/scripts/version-notes.ts";
 import type { SiteSession } from "./site-session.ts";
 import type { Visitor } from "./visitor.ts";
 
@@ -37,6 +38,9 @@ export async function visitSection(
   await leaveOnlySection(visit.page, name);
   return { ...visit, section: await sectionOf(visit.page, name) };
 }
+
+/** The notes of the version `section` shows: each version has its own (`version-notes.ts`). */
+export const shownNotes = (section: Locator) => section.locator(SHOWN_NOTES);
 
 /** Runs `example`'s section's map from `version` (its label): the switch above its frame. */
 export function chooseVersion(page: Page, example: string, version: string): Promise<void> {

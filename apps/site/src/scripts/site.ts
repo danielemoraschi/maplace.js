@@ -6,7 +6,6 @@ import { whenVisible } from "../consent/when-visible.ts";
 import { versionModule } from "../examples/example-modules.ts";
 import { exampleFolder } from "../examples/example-providers.ts";
 import type { LiveVersion } from "../examples/example-versions.ts";
-import { provideSave } from "../examples/page-save.ts";
 import { runPageScripts } from "../examples/page-scripts.ts";
 import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
@@ -16,6 +15,7 @@ import { noteMapsJsFailure, noteVersionStartFailure, startFailureNotes } from ".
 import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
+import { provideSave } from "./page-save.ts";
 import { ELEMENT_LOADERS, readyMapLibre } from "./provider-loaders.ts";
 import { startReloadButtons } from "./reload-buttons.ts";
 import { importAsModule, scriptVersionStart } from "./script-version.ts";

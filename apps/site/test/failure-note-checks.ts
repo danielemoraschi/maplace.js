@@ -2,7 +2,7 @@ import type { Locator, Page } from "playwright";
 import { expect } from "vitest";
 import type { Provider } from "../src/examples/example-providers.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";
-import { chooseVersion, providerVersionIn, versionChoice } from "./home-sections.ts";
+import { chooseVersion, providerVersionIn, shownNotes, versionChoice } from "./home-sections.ts";
 
 /** What a version's frame shows for its map's failure. */
 export interface Noted {
@@ -48,10 +48,11 @@ export async function expectNoteAlone(
   section: Locator,
   noted: Omit<Noted, "failed">,
 ): Promise<void> {
-  const note = section.locator("[data-map-failure]");
+  const notes = shownNotes(section);
+  const note = notes.locator("[data-map-failure]");
   expect(await note.textContent()).toBe(`The map couldn't load: ${noted.note}`);
   expect(await note.isVisible()).toBe(true);
   const reload = section.getByRole("button", { name: "Reload the page" });
   expect(await reload.isVisible(), "reload offered").toBe(noted.reload);
-  expect(await section.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
+  expect(await notes.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
 }

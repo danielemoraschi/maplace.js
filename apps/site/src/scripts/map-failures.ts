@@ -1,42 +1,14 @@
-import type { MaplaceError } from "maplace";
 import type { MaplaceElementEventMap } from "maplace/element";
-import type { Provider } from "../examples/example-providers.ts";
 import { providerOf, versionOf } from "./by-provider.ts";
+import { versionFailureNote } from "./failure-words.ts";
 import {
-  type CodeFailure,
   type FailureName,
   failureName,
-  isCodeFailure,
   type MapFailure,
   NOT_LOADED,
   type VersionFailure,
 } from "./version-failures.ts";
-
-const NOTE = "The map couldn't load";
-
-/** Why a map didn't load, by its error's code, on each provider: the visitor's words. */
-const REASONS: Readonly<Record<Provider, Partial<Record<MaplaceError["code"], string>>>> = {
-  google: {
-    "provider-auth-failed": "Google refused this site's key.",
-    "provider-load-failed": "Google Maps didn't load. A blocker, or the network?",
-  },
-  maplibre: {
-    "provider-auth-failed": "OpenFreeMap refused the map's style.",
-    "provider-load-failed": "OpenFreeMap's map didn't load. A blocker, or the network?",
-  },
-};
-
-/** Why a map on `provider` didn't load, for the visitor; the element's message is the developer's. */
-function reasonFor({ code, field }: MapFailure, provider: Provider): string | undefined {
-  if (field === "api-key" && provider === "google") return "this site has no Google Maps key.";
-  return REASONS[provider][code];
-}
-
-/** The note a frame shows for a map on `provider` that failed. */
-export function failureNote(failure: MapFailure, provider: Provider): string {
-  const reason = reasonFor(failure, provider);
-  return reason === undefined ? `${NOTE}.` : `${NOTE}: ${reason}`;
-}
+import { notesOf } from "./version-notes.ts";
 
 /**
  * Shows that `map`'s script didn't load. The element isn't defined then, so it has no error state
@@ -50,20 +22,7 @@ export function noteScriptFailure(map: Element): void {
 export function clearScriptFailure(map: Element): void {
   const version = versionOf(map);
   delete version.dataset.failed;
-  delete version.dataset.failureNote;
   delete version.dataset.reloadMends;
-}
-
-/** The note for each reason a version's own code didn't run (`CodeFailure`). */
-const CODE_FAILURES: Readonly<Record<CodeFailure, string>> = {
-  script: `${NOTE}: its script didn't load. The network?`,
-  module: `${NOTE}: its code didn't load or run.`,
-  program: `${NOTE}: its program threw an error as it ran.`,
-};
-
-/** The note for a version on `provider` that didn't start: its readying's, or its code's. */
-function versionFailureNote(failure: VersionFailure, provider: Provider): string {
-  return isCodeFailure(failure) ? CODE_FAILURES[failure] : failureNote(failure, provider);
 }
 
 /**
@@ -78,7 +37,7 @@ const MENDED_BY_RELOAD: ReadonlySet<FailureName> = new Set<FailureName>([
   "provider-load-failed",
 ]);
 
-/** Shows why `version` didn't start, in its frame's note, shown while the version is. */
+/** Shows why `version` didn't start, in its own note, shown while the version is. */
 export function noteVersionFailure(version: HTMLElement, failure: VersionFailure): void {
   writeFailure(version, failure);
   version.dataset.failed = failureName(failure);
@@ -112,7 +71,7 @@ export function noteMapsJsFailure(root: ParentNode): void {
   }
 }
 
-/** Each map's `maplace-error` written into its frame's note. */
+/** Each map's `maplace-error` written into its version's note. */
 export function startFailureNotes(maps: readonly HTMLElement[]): void {
   for (const map of maps) {
     map.addEventListener("maplace-error", (event) => {
@@ -137,18 +96,12 @@ function writeFailure(version: HTMLElement, failure: VersionFailure): void {
   offerReloadIfMends(version, failureName(failure));
 }
 
-/**
- * Writes the note `version` kept, if any, into its frame's one `[data-map-failure]`: as the
- * version is shown, so the note is always the shown version's.
- */
-export function showFailureNoteOf(version: HTMLElement): void {
-  const note = version.dataset.failureNote;
-  const shown = version.closest(".map-frame")?.querySelector("[data-map-failure]");
-  if (note !== undefined && shown) shown.textContent = note;
-}
-
-/** Keeps `note` on `version`, and shows it in the frame's note while the version is shown. */
+/** Writes `note` in `version`'s own failure note, which shows while the version does (`frame.css`). */
 function noteFailure(version: HTMLElement, note: string): void {
-  version.dataset.failureNote = note;
-  if (!version.hidden) showFailureNoteOf(version);
+  const failureText = notesOf(version).querySelector("[data-map-failure]");
+  if (failureText === null) {
+    const { liveVersion, provider } = version.dataset;
+    throw new Error(`the ${provider} ${liveVersion} version's notes have no failure note`);
+  }
+  failureText.textContent = note;
 }
