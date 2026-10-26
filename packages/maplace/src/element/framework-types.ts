@@ -47,7 +47,7 @@ type LocationTemplate = Attributes<(typeof LOCATION_ATTRIBUTES)[number], Attribu
 
 /** The map's own events and the DOM's, so a listener of either takes its event. */
 type MapEvents = MaplaceElementEventMap & HTMLElementEventMap;
-type MapEvent = keyof MapEvents & string;
+type MapEvent = keyof MapEvents;
 /** A listener on the map, its event's `currentTarget` the map; `null` or `undefined` is none. */
 type Listener<E extends MapEvent> =
   | ((event: MapEvents[E] & { readonly currentTarget: MaplaceMapElement }) => void)
