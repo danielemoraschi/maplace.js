@@ -76,6 +76,15 @@ describe("buildListView", () => {
     expect(factory).toHaveBeenCalledWith(expect.anything(), SETUP);
   });
 
+  it("builds a view of its own for each map naming one defined view (0.2 shared its controls between maps)", () => {
+    const factory = vi.fn<ListViewFactory>(plainView);
+    listViews.defineListView("menu", factory);
+    const [first, second] = [core.createMaplace(), core.createMaplace()];
+    listViews.buildListView("menu", first, SETUP);
+    listViews.buildListView("menu", second, SETUP);
+    expect(factory.mock.calls.map(([maplace]) => maplace)).toEqual([first, second]);
+  });
+
   it.each(["menu", "constructor"])("refuses %s while nothing is defined under it", (name) => {
     expect(() => built(name)).toThrow(
       refusal(new RegExp(`list "${name}" names no list view: leave list empty`)),

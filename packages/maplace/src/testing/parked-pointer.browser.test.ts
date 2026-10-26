@@ -1,7 +1,7 @@
 // A file's tests run one after another, on one page and one mouse: this file checks where a file's
-// own setup finds the pointer (T24), and what the first test leaves under the pointer for the
-// second (T17).
-import { beforeAll, describe, expect, it } from "vitest";
+// own setup finds the pointer (T24), what the first test leaves under the pointer for the second
+// (T17), and where a nested describe's setup finds it (T27).
+import { beforeAll, describe, expect, it, onTestFinished } from "vitest";
 import { commands, page } from "vitest/browser";
 import { frames } from "../google/frames";
 import { centreOf } from "../google/testing/page-input";
@@ -44,5 +44,38 @@ describe("the pointer between tests", () => {
     const { calls } = placedListbox(titled("a", "b"));
     await frames(SETTLE_FRAMES);
     expect(calls).toEqual([]);
+  });
+});
+
+describe("the pointer after a test's own cleanup", () => {
+  it("moves the pointer to the frame's middle as it finishes", () => {
+    // As a viewport put back or a held button let go: the test's own, after it ends.
+    onTestFinished(() => commands.moveMouse({ x: innerWidth / 2, y: innerHeight / 2 }));
+    expect(lastMove?.clientX, "parked as it starts").toBeCloseTo(innerWidth - 1, 0);
+  });
+
+  it("starts parked all the same, the park coming after that cleanup", () => {
+    expect(lastMove?.clientX).toBeCloseTo(innerWidth - 1, 0);
+    expect(lastMove?.clientY).toBeCloseTo(innerHeight - 1, 0);
+  });
+});
+
+describe("the pointer before a nested describe's setup", () => {
+  it("leaves the pointer in the frame's middle", async () => {
+    const middle = { x: innerWidth / 2, y: innerHeight / 2 };
+    await commands.moveMouse(middle);
+    await expect.poll(() => lastMove?.clientX).toBeCloseTo(middle.x, 0);
+  });
+
+  describe("a block laid out in its own beforeAll", () => {
+    let moveAtSetup: MouseEvent | undefined;
+    beforeAll(() => {
+      moveAtSetup = lastMove;
+    });
+
+    it("finds the pointer parked, not where the test before left it", () => {
+      expect(moveAtSetup?.clientX).toBeCloseTo(innerWidth - 1, 0);
+      expect(moveAtSetup?.clientY).toBeCloseTo(innerHeight - 1, 0);
+    });
   });
 });

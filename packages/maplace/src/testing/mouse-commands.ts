@@ -30,7 +30,7 @@ const MOVE_STEPS = 10;
 /**
  * Real mouse input, run by Playwright outside the page, for the browser tests of every provider:
  * trusted, stepped moves (Google's handles answer no other), clicks and the wheel, and the pointer
- * parked before each file's setup and each test (`parked-pointer.ts`). Registered in
+ * parked before each file's setup and after each test (`parked-pointer.ts`). Registered in
  * `vitest.config.ts`.
  */
 export const MOUSE_COMMANDS = {

@@ -1,6 +1,7 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SELECTED_LOOK } from "../adapter-kit/shape-looks";
+import { frames } from "../google/frames";
 import type { LocationState } from "../location";
 import {
   adding,
@@ -128,6 +129,34 @@ describe("MapLibre's drawing", () => {
     }, RENDER_WAIT);
     expect(icon.isConnected).toBe(true);
     expect(probe.locationIds()).toEqual(["a", "b", "l", "p"]);
+  });
+
+  it("settles only once the map has drawn what it was still loading", async () => {
+    const { map, probe } = await mountedMapLibre();
+    await probe.settle();
+    // As while a source's worker still holds data sent without a wait (a restyle, a selection).
+    const loading = vi.spyOn(map, "loaded").mockReturnValue(false);
+    let settled = false;
+    const settling = probe.settle().then(() => {
+      settled = true;
+    });
+    await frames(5);
+    expect(settled).toBe(false);
+    loading.mockRestore();
+    map.triggerRepaint();
+    const released = performance.now();
+    await settling;
+    // Well before the settle's own 3 s timeout: it waited for the map's idle, not for the clock.
+    expect(performance.now() - released).toBeLessThan(2000);
+  });
+
+  it("draws a page's icon node at the size its page gave it (0.2 dropped icon width and height)", async () => {
+    const { adapter } = await mountedMapLibre();
+    const icon = document.createElement("div");
+    icon.style.cssText = "width: 40px; height: 30px";
+    await adapter.apply(adding(markerDrawable("a", undefined, { renderIcon: () => icon })));
+    const { width, height } = icon.getBoundingClientRect();
+    expect({ width, height }).toEqual({ width: 40, height: 30 });
   });
 });
 

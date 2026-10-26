@@ -12,7 +12,7 @@ export interface HeldMouse<Point = ViewportPoint> {
 
 /**
  * Presses the mouse at `point` and holds it. It is let go after the test whatever happens, or
- * the parked pointer of the next test would drag.
+ * the park after the test would drag.
  */
 export async function holdMouseAt(point: ViewportPoint): Promise<HeldMouse> {
   let held = true;
