@@ -62,8 +62,8 @@ const RUNNING_GOOGLE_VERSION =
 
 /**
  * Shows that Maps JS didn't load for each Google version in `root` that is running. A version's
- * bootstrap adds its Maps tag only once its module asks for a library, so Maps JS fails after
- * the version started.
+ * bootstrap adds its Maps tag as the version starts (`askBootstrapForMapsJs`), so Maps JS may
+ * fail while the version starts or after.
  */
 export function noteMapsJsFailure(root: ParentNode): void {
   for (const version of root.querySelectorAll<HTMLElement>(RUNNING_GOOGLE_VERSION)) {

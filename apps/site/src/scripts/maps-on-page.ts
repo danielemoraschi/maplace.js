@@ -1,3 +1,7 @@
+import {
+  canImportLibraries,
+  loadLibraries,
+} from "../../../../packages/maplace/src/google/libraries.ts";
 import { MAPS_SCRIPT_ORIGIN } from "../../../../packages/maplace/src/google/maps-script-url.ts";
 
 /** Any Maps JS tag, the element's or a bootstrap's. */
@@ -5,11 +9,6 @@ const MAPS_JS = `script[src^="${MAPS_SCRIPT_ORIGIN}"]`;
 
 /** How often the wait for `importLibrary` looks again. */
 const POLL_MS = 50;
-
-/** The page's `google.maps`, read without Google's types: the site has none. */
-interface PageGlobals {
-  readonly google?: { readonly maps?: { readonly importLibrary?: unknown } };
-}
 
 /** Whether Maps JS is on the page or on its way: a Maps tag, or `importLibrary` defined. */
 export function mapsJsOnPage(document: Document): boolean {
@@ -76,6 +75,12 @@ function waitForImportLibrary(hasFailed: () => boolean): Promise<void> {
   });
 }
 
-function canImportLibraries(): boolean {
-  return typeof (globalThis as PageGlobals).google?.maps?.importLibrary === "function";
+/**
+ * Asks the page's bootstrap for the libraries the adapter draws with, not waiting: the bootstrap
+ * adds Maps JS's tag, naming the libraries asked for together, only once one is asked for. A
+ * failure is the version's map's to report (its own ask fails, and `watchMapsJs` hears the
+ * failed tag); without a bootstrap there is nothing to ask.
+ */
+export function askBootstrapForMapsJs(): void {
+  loadLibraries().catch(() => {});
 }

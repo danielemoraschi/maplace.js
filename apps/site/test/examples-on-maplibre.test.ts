@@ -182,20 +182,20 @@ function polled(name: string, what: string) {
 }
 
 describe("a MapLibre version's start", () => {
-  it("fetches its module beside maplibre-gl, and neither before consent", async () => {
+  it("fetches its module and maplibre-gl's chunks together, none before consent", async () => {
     const library = mapLibreLibraryChunk(site.dir);
     const { page, context } = await site.visitor();
     const requested: string[] = [];
+    const afterLibrary: string[] = [];
     let libraryEnded = false;
-    let moduleBeforeLibraryEnded = false;
     page.on("request", (request) => {
       requested.push(request.url());
-      if (VANILLA_CHUNK.test(request.url()) && !libraryEnded) moduleBeforeLibraryEnded = true;
+      if (libraryEnded) afterLibrary.push(request.url());
     });
     page.on("requestfinished", (request) => {
       if (request.url().endsWith(library)) libraryEnded = true;
     });
-    // maplibre-gl held: a module fetched only once it's in is requested after it ends.
+    // maplibre-gl held: a chunk fetched only once it's in is requested after it ends.
     await page.route(`**${library}`, async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
       await route.fallback();
@@ -205,12 +205,15 @@ describe("a MapLibre version's start", () => {
     await chooseProvider(page, "MapLibre");
     await chooseVersion(page, "simple", "Bundler");
     const section = await sectionOf(page, "simple");
-    const before = (url: string) => MAPLIBRE_GL_CHUNKS.test(url) || VANILLA_CHUNK.test(url);
-    expect(requested.filter(before), "fetched before consent").toEqual([]);
+    const startCode = (url: string) => MAPLIBRE_GL_CHUNKS.test(url) || VANILLA_CHUNK.test(url);
+    expect(requested.filter(startCode), "fetched before consent").toEqual([]);
     await loadMapsButtons(section).first().click();
     const version = mapLibreVersionIn(section, "vanilla");
     await expect.poll(() => mapLibreDrawn(version), ON_MAPLIBRE).toBe(true);
-    expect(moduleBeforeLibraryEnded, "the module requested before maplibre-gl ended").toBe(true);
+    expect(libraryEnded, "maplibre-gl's library seen to end").toBe(true);
+    expect(afterLibrary.filter(startCode), "requested once maplibre-gl's library was in").toEqual(
+      [],
+    );
     await context.close();
   }, 60_000);
 });
