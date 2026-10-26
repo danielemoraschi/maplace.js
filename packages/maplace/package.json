@@ -69,7 +69,9 @@
     "@types/react": "^19.0.0",
     "maplibre-gl": "^6.15.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "svelte": "^4.0.0 || ^5.0.0",
+    "vue": "^3.3.0"
   },
   "peerDependenciesMeta": {
     "@types/google.maps": {
@@ -85,6 +87,12 @@
       "optional": true
     },
     "react-dom": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   }

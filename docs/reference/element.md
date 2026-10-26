@@ -123,3 +123,52 @@ A page on the CDN script, which imports nothing, calls it as `Maplace.defineList
 ## Misuse
 
 Where no caller can catch a throw, misuse sets the element's error state (`loadState` and `:state(error)`) and dispatches `maplace-error`; nothing fails silently. The error stands until the misuse is corrected: bad locations or a bad route keep the previous ones until valid ones are given, and a `selected-id` the locations don't have is selected once they do. The codes are in the [API reference](api.md#misuse-codes), the rules in [RFC §3 Errors](../rfc-1.0.md#errors).
+
+## Vue and Svelte
+
+Vue and Svelte use the elements as they are, with no wrapper. Import an element entry in the component, or anywhere before the app mounts. With server rendering (Nuxt, SvelteKit), render the map in the browser only, in a component that imports the entry and renders only there (Nuxt's `.client.vue`, a SvelteKit page with `ssr = false`), so the elements are defined before it mounts.
+
+Vue is told that `maplace-` tags are custom elements, not components, in its compiler options, here those of `@vitejs/plugin-vue`:
+
+```ts
+vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith("maplace-") } } })
+```
+
+```vue
+<script setup lang="ts">
+import "maplace/element/google";
+import type { Location } from "maplace";
+import type { MaplaceElementEventMap } from "maplace/element";
+
+const locations: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
+const showSelected = (event: MaplaceElementEventMap["maplace-selectionchange"]) =>
+  console.log(event.detail.id);
+</script>
+
+<template>
+  <maplace-map api-key="YOUR_KEY" list map-options='{"maxZoom": 12}' :locations.prop="locations"
+    @maplace-selectionchange="showSelected"></maplace-map>
+</template>
+```
+
+Svelte takes the tags as they are:
+
+```svelte
+<script lang="ts">
+  import "maplace/element/google";
+  import type { Location } from "maplace";
+
+  const locations: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
+</script>
+
+<maplace-map api-key="YOUR_KEY" list="" map-options={JSON.stringify({ maxZoom: 12 })} {locations}
+  onmaplace-selectionchange={(event) => console.log(event.detail.id)}></maplace-map>
+```
+
+- **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. An attribute read by its presence, such as `cluster` or `hold`, is written or left out, never given `false`, which both frameworks write as `"false"`. Svelte 5 writes a bare attribute as `"true"`, so a bare `list` is `list=""` there, as `true` names no list view. A location's `listed` and `editable` take `false` as `"false"`, their off value.
+- **`locations`** is a property, as are `route` and `sanitize`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
+- **Events** are listened to by their [names](#events): `@maplace-selectionchange` in Vue, `onmaplace-selectionchange` in Svelte 5 and `on:maplace-selectionchange` in Svelte 4, the event typed with its `detail`; a listener for another event, such as a page's own, types its parameter itself.
+- **Popups and icons** in Vue come through `locations`, not a `<maplace-location>`'s `<template>` child: Vue renders a template's children into the element, not its content, so the child arrives empty.
+- **Anything more** goes through the element itself, taken with `ref` in Vue or `bind:this` in Svelte: its [properties and methods](#properties-and-methods), such as its `maplace` store.
+
+The types of `maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those three properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.
