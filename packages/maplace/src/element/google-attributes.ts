@@ -1,7 +1,7 @@
 import type { MapsScriptLoad } from "../google/maps-script";
 import type { MapsScriptRequest } from "../google/maps-script-url";
 import type { GoogleAdapterOptions } from "../google/options";
-import { givenAttribute } from "./attribute-values";
+import { given, givenAttribute } from "./attribute-values";
 import { createdMapSettingsOf } from "./google-map-attributes";
 
 /** The attribute each Maps JS setting is read from. */
@@ -18,8 +18,11 @@ export interface GoogleSettings {
   readonly script: MapsScriptLoad;
 }
 
-/** The Google settings `element`'s attributes give; a bad value is misuse. */
-export function googleSettingsOf(element: Element): GoogleSettings {
+/**
+ * The Google settings `element`'s attributes give, its nonce from its `nonce` property; a bad
+ * value is misuse.
+ */
+export function googleSettingsOf(element: HTMLElement): GoogleSettings {
   const read = (name: string) => givenAttribute(element, name);
   return {
     adapterOptions: { mapId: read("map-id"), ...createdMapSettingsOf(element) },
@@ -28,7 +31,7 @@ export function googleSettingsOf(element: Element): GoogleSettings {
       version: read(SCRIPT_ATTRIBUTES.version),
       language: read(SCRIPT_ATTRIBUTES.language),
       region: read(SCRIPT_ATTRIBUTES.region),
-      nonce: read("nonce"),
+      nonce: given(element.nonce),
     },
   };
 }

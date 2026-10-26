@@ -160,7 +160,7 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 
 ## Content Security Policy
 
-The script the element adds carries the `nonce` attribute of its `<maplace-map>`, and the one an adapter given `apiKey` adds carries its `nonce` option, so a page with a nonce-based policy lets it load. The element never writes inline styles: its default styles are an adopted stylesheet, and a shape's styles are JSON attributes, not `style`.
+The script the element adds carries its `<maplace-map>`'s nonce, read from the element's `nonce` property (which a framework may set, and which keeps the attribute's value once a policy sent as a header hides it), and the one an adapter given `apiKey` adds carries its `nonce` option, so a page with a nonce-based policy lets it load. The element never writes inline styles: its default styles are an adopted stylesheet, and a shape's styles are JSON attributes, not `style`.
 
 On MapLibre, from the CDN script or npm, a policy allows `img-src data: blob:`, as MapLibre asks: the pin maplacejs draws in front for the selected or hovered location, and on an `editable` marker, is a `data:` image. The MapLibre CDN script also starts maplibre-gl's worker from a `blob:` URL, so its pages allow `worker-src blob:`; its stylesheet is adopted, as the element's own styles are. The map fetches its style, and the tiles, fonts and icons it names, from the style's servers (OpenFreeMap's, by default), which `connect-src` allows.
 
