@@ -35,7 +35,7 @@ const LAYERS = {
   // sees the composed store.
   testing: {
     files:
-      /^testing\/(?!(mounted|listed|lists|fake-adapter|mouse-commands|parked-pointer)$|fake\/|conformance\/|examples\/)/,
+      /^testing\/(?!(mounted|listed|lists|fake-adapter|mouse-commands|parked-pointer|touch)$|fake\/|conformance\/|examples\/)/,
     imports: ["data", "contract", "adapter-kit"],
   },
   // The fake adapter: an in-memory map, at contract level like any adapter.
@@ -74,9 +74,10 @@ const LAYERS = {
   },
   // Test support for the list views: plain data and the view's own types.
   "list-testing": { files: /^testing\/lists$/, imports: ["data", "view"] },
-  // Real input in the browser tests, through Playwright, and the pointer parked before each (T17).
+  // Real input in the browser tests, through Playwright or the DevTools protocol, and the pointer
+  // parked before each (T17).
   "browser-testing": {
-    files: /^testing\/(mouse-commands|parked-pointer)$/,
+    files: /^testing\/(mouse-commands|parked-pointer|touch)$/,
     imports: [],
     packages: ["vitest"],
   },

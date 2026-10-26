@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { ViewportPoint } from "../../testing/mouse-commands";
+import { holdTouchAt } from "../../testing/touch";
 import { holdMouseAt } from "./held-mouse";
-import { holdTouchAt } from "./held-touch";
 import { centreOf } from "./page-input";
 
 afterEach(() => document.body.replaceChildren());
@@ -59,5 +59,15 @@ describe("held touch", () => {
     await held.cancel();
     await held.cancel();
     await expect.poll(() => heard).toEqual(["touchstart", "touchmove", "touchcancel"]);
+  });
+
+  it("lifts a finger, and ends nothing after", async () => {
+    const { heard, centre } = recordingElement("touchstart", "touchend", "touchcancel");
+    const finger = await holdTouchAt(centre);
+    await finger.lift();
+    await expect.poll(() => heard).toEqual(["touchstart", "touchend"]);
+    await finger.lift();
+    await finger.cancel();
+    expect(heard).toEqual(["touchstart", "touchend"]);
   });
 });

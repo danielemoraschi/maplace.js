@@ -39,7 +39,7 @@ createGoogleMap("#simple-vanilla-map", {
 | `offset` | `[x, y]` | Pixel offset from the anchor. Default `[0, 0]` |
 | `openOn` | `"click" \| "hover"` | What opens it. Default `"click"`; with `"click"`, closing it deselects |
 
-A popup follows the selection (or the hover, with `openOn: "hover"`). On a shape it points at a centre point: a circle's centre, the centre of a polygon's bounds, halfway along a polyline.
+A popup follows the selection (or the hover, with `openOn: "hover"`). On a shape it points at a centre point: a circle's centre, the centre of a polygon's bounds, halfway along a polyline. A touch hovers no list entry and no DOM marker (every Google marker, and MapLibre's with an icon or `editable`), so with `openOn: "hover"` a tap opens no popup on them; MapLibre's pins and shapes can still be hovered by the mouse events a browser sends after a tap.
 
 ## The first view
 
@@ -89,7 +89,7 @@ The snapshot is immutable and replaced on every change, while unchanged parts ke
 | Event | Payload | When |
 |---|---|---|
 | `selectionChange` | `{ id }` | The selection changed, from the map, a list or `select()`; `id` is `undefined` when cleared |
-| `hoverChange` | `{ id }` | The pointer or focus moved onto a location, or off it |
+| `hoverChange` | `{ id }` | The pointer or focus moved onto a location, or off it; a touch hovers no list entry or DOM marker ([Popup options](#popup-options)) |
 | `mapClick` | `{ position }` | A single click on the map itself, not on a location; it clears the selection. A double-click fires nothing |
 | `locationEdit` | `{ location, geometry }` | While the user drags or reshapes: the geometry so far, never written to the store; a drag the page ends (the location removed, `editable` off) is cut short, with no `locationChange` |
 | `locationChange` | `{ location, previous }` | A drag or edit ended; the store already holds the new value |
