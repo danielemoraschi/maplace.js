@@ -1,5 +1,5 @@
 /** How near the viewport a map opens, so it is drawn by the time it scrolls in. */
-const AHEAD = "200px";
+const AHEAD = "100px";
 
 /** Runs `run` once `element` comes near the viewport, then stops watching it. */
 export type WhenVisible = (element: Element, run: () => void) => void;
