@@ -16,11 +16,11 @@ const SITE_IMPORTS: ProviderImports = {
 };
 
 /**
- * What loads each provider's element for a page map, built on `imports`; a version's own imports
- * ready maplibre-gl (`example-failure-notes.ts`). MapLibre's element loads beside its assets
- * (its stylesheet and its worker), not after them: it imports maplibre-gl only once a map opens,
- * which waits for the element's load to resolve. The assets load once, and pointing maplibre-gl
- * at its worker again changes nothing.
+ * What loads each provider's element for a page map, built on `imports`; a version readies
+ * maplibre-gl through its own imports (`example-failure-notes.ts`) and `mapLibreVersionReady`.
+ * MapLibre's element loads beside its assets (its stylesheet and its worker), not after them: it
+ * imports maplibre-gl only once a map opens, which waits for the element's load to resolve. The
+ * assets load once, and pointing maplibre-gl at its worker again changes nothing.
  */
 export function elementLoaders(imports: ProviderImports): ElementLoaders {
   const readyMapLibre = async () => (await imports.mapLibreAssets()).useBuiltWorker();
@@ -31,3 +31,17 @@ export function elementLoaders(imports: ProviderImports): ElementLoaders {
 }
 
 export const ELEMENT_LOADERS = elementLoaders(SITE_IMPORTS);
+
+/**
+ * What readies a MapLibre version: maplibre-gl as its adapter imports it (`loadMapLibreGl`), in
+ * the site's build a small chunk nothing else fetches before the map mounts, asked for now and
+ * not waited for, so it downloads beside the version's code. A failure is the version's map's to
+ * report: its module, or the adapter's own import, fails with it.
+ */
+export function mapLibreVersionReady(loadMapLibreGl: () => Promise<unknown>): () => Promise<void> {
+  return async () => {
+    loadMapLibreGl().catch(() => {});
+  };
+}
+
+export const READY_MAPLIBRE_VERSION = mapLibreVersionReady(() => import("maplibre-gl"));

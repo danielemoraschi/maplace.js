@@ -224,3 +224,35 @@ describe("a map's failure note", () => {
     await context.close();
   }, 60_000);
 });
+
+describe("a Google version's start", () => {
+  it("asks for Maps JS beside its module, not once the module is in", async () => {
+    let moduleEnded = false;
+    let mapsJsBeforeModuleEnded = false;
+    const { context } = await sectionFrom(
+      site,
+      { google: "stubbed" },
+      {
+        example: "simple",
+        provider: "google",
+        version: "Bundler",
+        beforeConsent: async (page) => {
+          page.on("request", (request) => {
+            if (addedByBootstrap(request.url()) && !moduleEnded) mapsJsBeforeModuleEnded = true;
+          });
+          page.on("requestfinished", (request) => {
+            if (VANILLA_CHUNK.test(request.url())) moduleEnded = true;
+          });
+          // The module held: Maps JS asked for only once it's in is requested after it ends.
+          await page.route(VANILLA_CHUNK, async (route) => {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            await route.fallback();
+          });
+        },
+      },
+    );
+    await expect.poll(() => moduleEnded, ASKED).toBe(true);
+    expect(mapsJsBeforeModuleEnded, "Maps JS requested before the module ended").toBe(true);
+    await context.close();
+  }, 30_000);
+});

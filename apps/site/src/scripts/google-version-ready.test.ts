@@ -22,6 +22,9 @@ function setup(overrides: Partial<GoogleReadying> = {}) {
     runBootstrap: vi.fn(() => {
       steps.push("bootstrap");
     }),
+    askForMapsJs: vi.fn(() => {
+      steps.push("maps js asked");
+    }),
     mapsJsOnPage: () => false,
     mapsImportable: vi.fn(async () => {
       steps.push("maps js");
@@ -41,11 +44,11 @@ async function failureOf(readied: Promise<void>): Promise<unknown> {
 }
 
 describe("googleVersionReady", () => {
-  it("runs the bootstrap, then waits for Maps JS", async () => {
+  it("runs the bootstrap and asks it for Maps JS, then waits for it", async () => {
     const { ready, readying, steps } = setup();
     const target = version();
     await ready(target);
-    expect(steps).toEqual(["bootstrap", "maps js"]);
+    expect(steps).toEqual(["bootstrap", "maps js asked", "maps js"]);
     expect(readying.runBootstrap).toHaveBeenCalledWith(target);
   });
 

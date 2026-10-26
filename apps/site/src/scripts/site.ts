@@ -12,11 +12,11 @@ import { byProvider, providerOf } from "./by-provider.ts";
 import { startCopyButtons } from "./copy-buttons.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
 import { noteMapsJsFailure, noteVersionStartFailure, startFailureNotes } from "./map-failures.ts";
-import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
+import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { provideSave } from "./page-save.ts";
-import { ELEMENT_LOADERS } from "./provider-loaders.ts";
+import { ELEMENT_LOADERS, READY_MAPLIBRE_VERSION } from "./provider-loaders.ts";
 import { startReloadButtons } from "./reload-buttons.ts";
 import { importAsModule, scriptVersionStart } from "./script-version.ts";
 import { installMaplace } from "./site-maplace.ts";
@@ -32,10 +32,10 @@ import { startVersionSwitches } from "./version-switch.ts";
 // consents, never fetches it, and maplibre-gl comes only with a MapLibre map; a map's page scripts
 // run when it is released, once the element is defined and the page's `Maplace` set, as the CDN
 // script would have it. A script, vanilla or React version, once chosen, starts the same way:
-// consented and in view, its provider readied (on Google, a module version's bootstrap and Maps JS,
-// a script version's adapter adding Maps JS itself; on MapLibre, nothing here: the version's own
-// imports ready maplibre-gl, fetched beside them), then a script version's program run on the
-// page's `Maplace`, as an imported module, or a module version's module.
+// consented and in view, its provider readied, then a script version's program run on the page's
+// `Maplace`, as an imported module, or a module version's module. On Google, a module version's
+// bootstrap runs and is asked for Maps JS at once; a script version's adapter adds Maps JS itself.
+// On MapLibre, maplibre-gl as its adapter imports it is asked for beside the version's own imports.
 // A map whose failure a reload mends offers one (`MENDED_BY_RELOAD`, map-failures.ts).
 const mapsJs = watchMapsJs(document);
 const maps = [...document.querySelectorAll<MaplaceMapElement>("maplace-map[hold]")];
@@ -63,10 +63,13 @@ const startVersion = versionStarter({
     // A script version's adapter adds Maps JS itself, or shares the page's.
     google: byKind({
       script: googleScriptReady(pageMapsJs),
-      module: googleVersionReady({ ...pageMapsJs, runBootstrap: runPageScripts }),
+      module: googleVersionReady({
+        ...pageMapsJs,
+        runBootstrap: runPageScripts,
+        askForMapsJs: askBootstrapForMapsJs,
+      }),
     }),
-    // A version's own imports ready maplibre-gl (`example-failure-notes.ts`).
-    maplibre: async () => {},
+    maplibre: READY_MAPLIBRE_VERSION,
   }),
   load: byKind({ script: scriptVersionStart(installMaplace, importAsModule), module: loadVersion }),
   failed: noteVersionStartFailure,

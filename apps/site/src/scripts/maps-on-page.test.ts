@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options { "settings": { "handleDisabledFileLoadingAsSuccess": true } }
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
+import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 
 const MAPS_JS = "https://maps.googleapis.com/maps/api/js?key=k&callback=x";
 
@@ -11,8 +11,8 @@ function mapsTag(): HTMLScriptElement {
   return script;
 }
 
-const defineImportLibrary = () =>
-  vi.stubGlobal("google", { maps: { importLibrary: () => Promise.resolve({}) } });
+const defineImportLibrary = (importLibrary = () => Promise.resolve({})) =>
+  vi.stubGlobal("google", { maps: { importLibrary } });
 
 const failLoading = (script: HTMLScriptElement) => script.dispatchEvent(new Event("error"));
 
@@ -94,5 +94,26 @@ describe("watchMapsJs", () => {
     defineImportLibrary();
     await vi.advanceTimersByTimeAsync(50);
     await expect(importable).resolves.toBeUndefined();
+  });
+});
+
+describe("askBootstrapForMapsJs", () => {
+  it("asks the bootstrap for the adapter's libraries together", () => {
+    const importLibrary = vi.fn(async () => ({}));
+    defineImportLibrary(importLibrary);
+    askBootstrapForMapsJs();
+    expect(importLibrary.mock.calls).toEqual([["core"], ["maps"], ["marker"]]);
+  });
+
+  // A rejection left unhandled would fail the run.
+  it("leaves a failed ask to the version's map", async () => {
+    defineImportLibrary(() => Promise.reject(new Error("no Maps JS")));
+    expect(() => askBootstrapForMapsJs()).not.toThrow();
+    await new Promise((resolve) => setTimeout(resolve));
+  });
+
+  it("asks nothing without a bootstrap", async () => {
+    expect(() => askBootstrapForMapsJs()).not.toThrow();
+    await new Promise((resolve) => setTimeout(resolve));
   });
 });

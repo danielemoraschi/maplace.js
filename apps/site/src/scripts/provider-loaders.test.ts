@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { elementLoaders, type ProviderImports } from "./provider-loaders.ts";
+import { describe, expect, it, vi } from "vitest";
+import { elementLoaders, mapLibreVersionReady, type ProviderImports } from "./provider-loaders.ts";
 
 function stubImports() {
   const steps: string[] = [];
@@ -43,5 +43,19 @@ describe("elementLoaders", () => {
     const { imports, steps } = stubImports();
     await elementLoaders(imports).google();
     expect(steps).toEqual(["google's element"]);
+  });
+});
+
+describe("mapLibreVersionReady", () => {
+  it("readies a version at once, maplibre-gl asked for and not waited for", async () => {
+    const loadMapLibreGl = vi.fn(() => new Promise(() => {}));
+    await expect(mapLibreVersionReady(loadMapLibreGl)()).resolves.toBeUndefined();
+    expect(loadMapLibreGl).toHaveBeenCalledOnce();
+  });
+
+  // A rejection left unhandled would fail the run.
+  it("leaves a maplibre-gl that failed to the version's map", async () => {
+    const failed = () => Promise.reject(new Error("maplibre-gl didn't load"));
+    await expect(mapLibreVersionReady(failed)()).resolves.toBeUndefined();
   });
 });

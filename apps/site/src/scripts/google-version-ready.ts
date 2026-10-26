@@ -13,23 +13,33 @@ export interface PageMapsJs {
 export interface GoogleReadying extends PageMapsJs {
   /** Runs the version's inert Google bootstrap. */
   readonly runBootstrap: (version: HTMLElement) => void;
+  /**
+   * Asks the bootstrap just run for Maps JS, not waiting: it fetches Maps JS only once a library
+   * is asked for.
+   */
+  readonly askForMapsJs: () => void;
 }
 
 /**
- * What a Google version waits for before its module runs: Maps JS, through its own bootstrap
- * unless the page has it already (the element's tag, or another version's bootstrap). Without
- * the site's key (`data-maps-key-missing`) it runs nothing and fails as a map with no key;
- * Maps JS failing to load fails it as Maps JS not loaded, as the element reports either.
+ * What a Google version waits for before its module runs: Maps JS, through its own bootstrap,
+ * asked at once so Maps JS downloads beside the module, unless the page has it already
+ * (the element's tag, or another version's bootstrap). Without the site's key
+ * (`data-maps-key-missing`) it runs nothing and fails as a map with no key; Maps JS failing to
+ * load fails it as Maps JS not loaded, as the element reports either.
  */
 export function googleVersionReady({
   runBootstrap,
+  askForMapsJs,
   mapsJsOnPage,
   mapsImportable,
 }: GoogleReadying): (version: HTMLElement) => Promise<void> {
   const awaitMapsJs = failingWith(NOT_LOADED, mapsImportable);
   return async (version) => {
     refuseWithoutKey(version);
-    if (!mapsJsOnPage()) runBootstrap(version);
+    if (!mapsJsOnPage()) {
+      runBootstrap(version);
+      askForMapsJs();
+    }
     await awaitMapsJs();
   };
 }
