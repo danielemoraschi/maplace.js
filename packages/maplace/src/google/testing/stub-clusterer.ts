@@ -7,7 +7,7 @@ type Marker = google.maps.marker.AdvancedMarkerElement;
 export const MarkerClustererEvents = { CLUSTERING_END: "clusteringend" } as const;
 
 /** Google's clustering algorithm as far as maplace uses it: the markers it last read. */
-export class SuperClusterAlgorithm {
+export class SuperClusterViewportAlgorithm {
   protected markers: Marker[] = [];
 
   constructor(readonly options: object) {}
@@ -33,6 +33,8 @@ export const clusterersMade: MarkerClusterer[] = [];
  */
 export class MarkerClusterer {
   protected markers: Marker[] = [];
+  /** The clusters its last render drew: as a test sets them, none by default. */
+  clusters: { readonly markers: readonly Marker[] }[] = [];
   readonly #ended = new Set<() => void>();
   readonly render = vi.fn(() => {
     this.options.algorithm?.read(this.markers);
@@ -43,7 +45,7 @@ export class MarkerClusterer {
   constructor(
     readonly options: {
       readonly onClusterClick?: unknown;
-      readonly algorithm?: SuperClusterAlgorithm;
+      readonly algorithm?: SuperClusterViewportAlgorithm;
     },
   ) {
     clusterersMade.push(this);

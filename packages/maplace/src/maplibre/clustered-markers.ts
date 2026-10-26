@@ -1,3 +1,4 @@
+import { isInBox } from "../adapter-kit/cluster-box";
 import { type Placement, placementOf } from "../adapter-kit/placement";
 import {
   type ClusterGroup,
@@ -8,7 +9,7 @@ import {
   NO_GROUPS,
 } from "./cluster-index";
 import { createClusterMarkers } from "./cluster-markers";
-import { clusterBoxOf, clusterZoomOf, isInBox } from "./cluster-view";
+import { clusterBoxOf, clusterZoomOf } from "./cluster-view";
 import type { ClusteringFactory, ClusterMember } from "./clustering";
 import { lngLatOf, toMapLibreZoom } from "./conversions";
 

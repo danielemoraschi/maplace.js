@@ -6,7 +6,7 @@ import { clusteredMarkers } from "./clustered-markers";
 import {
   clusterersMade,
   type MarkerClusterer,
-  type SuperClusterAlgorithm,
+  type SuperClusterViewportAlgorithm,
 } from "./testing/stub-clusterer";
 import { StubMap, StubMarker, stubLibraries } from "./testing/stub-libraries";
 
@@ -44,7 +44,7 @@ describe("clusteredMarkers", () => {
 
   it("clusters again once a clustered marker moved, every position read anew", () => {
     const { layer, clusterer, marker } = onClusteredLayer();
-    const algorithm = clusterer.options.algorithm as SuperClusterAlgorithm;
+    const algorithm = clusterer.options.algorithm as SuperClusterViewportAlgorithm;
     layer.place(marker, SHOWN);
     layer.flush();
     layer.moved(marker);
@@ -96,6 +96,39 @@ describe("clusteredMarkers", () => {
     layer.place(marker, SHOWN);
     layer.flush();
     expect(clusterer.held()).toEqual([marker]);
+  });
+
+  it("takes a marker no longer selected off the map when the clusterer draws it in no cluster", () => {
+    const { map, layer, marker } = onClusteredLayer();
+    layer.place(marker, SELECTED);
+    layer.flush();
+    expect(marker.map).toBe(map);
+    // Deselected away from the view: no cluster the render draws holds it.
+    layer.place(marker, SHOWN);
+    layer.flush();
+    expect(marker.map).toBeNull();
+  });
+
+  it("takes the marker selected before off the map, whichever is placed first", () => {
+    const { map, layer, marker } = onClusteredLayer();
+    const other = new StubMarker() as unknown as Marker;
+    layer.place(marker, SELECTED);
+    layer.flush();
+    layer.place(other, lookIn(presented({ selectedId: "b" }), "b"));
+    layer.place(marker, SHOWN);
+    layer.flush();
+    expect(marker.map).toBeNull();
+    expect(other.map).toBe(map);
+  });
+
+  it("leaves a marker no longer selected on the map when the clusterer draws it on its own", () => {
+    const { map, layer, clusterer, marker } = onClusteredLayer();
+    layer.place(marker, SELECTED);
+    layer.flush();
+    clusterer.clusters = [{ markers: [marker] }];
+    layer.place(marker, SHOWN);
+    layer.flush();
+    expect(marker.map).toBe(map);
   });
 
   it("lets a removed marker go", () => {

@@ -45,8 +45,11 @@ function shownOn(map: google.maps.Map) {
   return { elements, clustered, alone, total };
 }
 
-/** The whole world, where `points` are. */
-const WORLD: View = { kind: "center", center: { lat: 20, lng: 0 }, zoom: 2 };
+/** The whole world, where `points` are, twice across the map: more than one world shows. */
+const WORLD: View = { kind: "center", center: { lat: 0, lng: 0 }, zoom: 0 };
+
+/** Zoomed in on location `m100`, past where `points` cluster. */
+const CLOSE_TO_M100: View = { kind: "center", center: { lat: 15, lng: -80 }, zoom: 10 };
 
 /**
  * A store on Google clustering `locations`, once every shown location is on the map, in a
@@ -109,6 +112,18 @@ describeWithMaps("clustering on Google", () => {
     expect(elements.length).toBeLessThan(1000);
     expect(total).toBe(LARGE_DIFF);
     expect(longest).toBeLessThanOrEqual(LONGEST_CLUSTERING_TASK_MS);
+  });
+
+  it("puts only the markers in and near the view on the map, zoomed past clustering", async () => {
+    const store = createMaplace({
+      locations: points(LARGE_DIFF),
+      cluster: true,
+      view: CLOSE_TO_M100,
+    });
+    const map = (await onGoogle(store)).googleMap() as google.maps.Map;
+    await expect.poll(() => drawnAlone(map, "m100"), { timeout: TILES_TIMEOUT_MS }).toHaveLength(1);
+    await frames(3);
+    expect(shownOn(map).elements.length).toBeLessThan(50);
   });
 
   it("counts no hidden location in a cluster, nor a removed one", async () => {

@@ -31,13 +31,13 @@ export interface ClusterIndex {
 }
 
 /**
- * Google's clusterer's settings (`@googlemaps/markerclusterer`'s `SuperClusterAlgorithm`, its
- * defaults): on Google's zoom, which is maplace's, so the same clusters show at the same view on
- * either map.
+ * Google's clusterer's settings (`@googlemaps/markerclusterer`'s `SuperClusterViewportAlgorithm`,
+ * its defaults): on Google's zoom, which is maplace's, so the same clusters show at the same view
+ * on either map.
  */
 const GOOGLE_CLUSTERER_SETTINGS = { radius: 60, maxZoom: 16 } as const;
 
-/** The whole world, where Google's clusterer groups too. */
+/** The whole world, grouped here once; Google's clusterer takes only those around the view. */
 const WORLD: GeoJSON.BBox = [-180, -90, 180, 90];
 
 interface PointProperties {

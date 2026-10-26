@@ -102,7 +102,7 @@ Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older 
 
 ## Clustering
 
-The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing maplacejs's own cluster markers: a count, titled "Cluster of N locations". Circles, lines and polygons are never clustered, and the selected location is drawn on its own. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
+The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing maplacejs's own cluster markers: a count, titled "Cluster of N locations". Circles, lines and polygons are never clustered, and the selected location is drawn on its own. Only the view and half a view around it are clustered and on the map, as on MapLibre, so a map zoomed in carries the markers it shows, not every one, and a short pan draws nothing again. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
 
 ## When Google refuses
 
