@@ -37,7 +37,7 @@ function built(name: string, factory?: ListViewFactory) {
 }
 
 describe("defineListView", () => {
-  it.each(["", "select"])("refuses the built-in name %j", (name) => {
+  it.each(["", "true", "select"])("refuses the built-in name %j", (name) => {
     expect(() => listViews.defineListView(name, plainView)).toThrow(
       refusal(new RegExp(`list view "${name}" is built in`)),
     );
@@ -61,6 +61,12 @@ describe("buildListView", () => {
     ]);
     list.destroy();
     select.destroy();
+  });
+
+  it('builds the listbox for "true", as Svelte 5 writes a bare list', () => {
+    const list = built("true");
+    expect(list.element.getAttribute("role")).toBe("listbox");
+    list.destroy();
   });
 
   it("builds the view defined under the name, with the store and setup", () => {

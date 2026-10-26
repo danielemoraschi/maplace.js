@@ -8,16 +8,20 @@ import { MAPLIBRE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/
  * element-attributes.test.ts finds each in the element's source, so a rename fails there.
  */
 const MAP_READS = ["provider", "cluster", "hold", "selected-id"] as const;
-const GOOGLE_PROVIDER_READS = ["map-id", "nonce"] as const;
+const GOOGLE_PROVIDER_READS = ["map-id"] as const;
 
 export const ATTRIBUTES_READ_BY_NAME: readonly string[] = [...MAP_READS, ...GOOGLE_PROVIDER_READS];
 
 /** The attributes `<maplace-map>` reads itself, whatever its provider. */
 export const MAP_ATTRIBUTES: readonly string[] = [...LIST_ATTRIBUTES, ...MAP_READS];
 
-/** The attributes the element's Google provider reads, when the map opens. */
+/**
+ * The attributes the element's Google provider reads, when the map opens: `nonce` through the
+ * element's property, which keeps its value when a header CSP hides the attribute.
+ */
 export const GOOGLE_PROVIDER_ATTRIBUTES: readonly string[] = [
   ...GOOGLE_PROVIDER_READS,
+  "nonce",
   ...GOOGLE_MAP_SETTINGS,
   ...Object.values(SCRIPT_ATTRIBUTES),
 ];

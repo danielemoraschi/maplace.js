@@ -47,8 +47,8 @@ export { defineListView } from "./list-views";
  *   `light`, `dark` or `follow-system`, and a JSON object of its map options; MapLibre: the style
  *   URL or JSON style object, and a JSON object of its map options). A change of one its provider
  *   reads opens the map again where it was.
- * - `list`: present = list view; `list="select"` = native select; `list="<name>"` = a view given
- *   to `defineListView`; absent = no list.
+ * - `list`: present (empty, or `"true"` as Svelte 5 writes it) = list view; `list="select"` =
+ *   native select; `list="<name>"` = a view given to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
  * - `fit-all-label`: label of a first list entry that fits all locations.
  * - `list-heading`: a heading above the list, beside the map or on it; the list's accessible name.

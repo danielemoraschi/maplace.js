@@ -9,7 +9,9 @@ const A_VALUE_OF_EACH_MAP_SETTING: Record<MapSettingAttribute, string> = {
 };
 
 /** The map settings whose value changes what `read` makes of an element. */
-export function mapSettingsThatChange(read: (element: Element) => unknown): MapSettingAttribute[] {
+export function mapSettingsThatChange(
+  read: (element: HTMLElement) => unknown,
+): MapSettingAttribute[] {
   const unset = JSON.stringify(read(elementWith({})));
   return MAP_SETTINGS.filter(
     (name) =>

@@ -14,7 +14,8 @@ import type { ProviderFactory } from "./index";
  * opens) and `map-options` (a JSON object of Google's map options, as `mapOptions`: not centre,
  * zoom, map ID, colour scheme or `styles`) for the map it creates, a change of either opening the
  * map again where it was; and for Maps JS `api-key` (required unless the page loaded Maps JS
- * itself), `version`, `language`, `region` and `nonce`.
+ * itself), `version`, `language`, `region` and `nonce` (read as the element's property, which
+ * keeps its value when a header CSP hides the attribute).
  * The first map to open adds Maps JS to the page, once however many maps; a map asking for
  * another `api-key`, `version`, `language` or `region` than the page loaded is misuse (error
  * state and `maplace-error`). A held map adds nothing until released.

@@ -21,7 +21,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 
 | Attribute | What |
 |---|---|
-| `list` | Present: a list of the locations; `list="select"`: a native select; `list="<name>"`: a [list view of yours](#list-views). Absent: no list |
+| `list` | Present: a list of the locations (empty, or `"true"`, as Svelte 5 writes a bare `list`); `list="select"`: a native select; `list="<name>"`: a [list view of yours](#list-views). Absent: no list |
 | `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
 | `fit-all-label` | The label of a first list entry that clears the selection and fits all locations |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
@@ -116,7 +116,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## List views
 
-`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is.
+`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is.
 
 A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
 
@@ -161,11 +161,11 @@ Svelte takes the tags as they are:
   const locations: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
 </script>
 
-<maplace-map api-key="YOUR_KEY" list="" map-options={JSON.stringify({ maxZoom: 12 })} {locations}
+<maplace-map api-key="YOUR_KEY" list map-options={JSON.stringify({ maxZoom: 12 })} {locations}
   onmaplace-selectionchange={(event) => console.log(event.detail.id)}></maplace-map>
 ```
 
-- **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. An attribute read by its presence, such as `cluster` or `hold`, is written or left out, never given `false`, which both frameworks write as `"false"`. Svelte 5 writes a bare attribute as `"true"`, so a bare `list` is `list=""` there, as `true` names no list view. A location's `listed` and `editable` take `false` as `"false"`, their off value.
+- **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. An attribute read by its presence, such as `cluster` or `hold`, is written or left out, never given `false`, which both frameworks write as `"false"`. Svelte 5 writes a bare attribute as `"true"`, which `list` takes as the built-in list. A location's `listed` and `editable` take `false` as `"false"`, their off value.
 - **`locations`** is a property, as are `route` and `sanitize`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
 - **Events** are listened to by their [names](#events): `@maplace-selectionchange` in Vue, `onmaplace-selectionchange` in Svelte 5 and `on:maplace-selectionchange` in Svelte 4, the event typed with its `detail`; a listener for another event, such as a page's own, types its parameter itself.
 - **Popups and icons** in Vue come through `locations`, not a `<maplace-location>`'s `<template>` child: Vue renders a template's children into the element, not its content, so the child arrives empty.

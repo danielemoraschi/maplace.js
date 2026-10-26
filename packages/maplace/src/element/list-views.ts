@@ -5,9 +5,15 @@ import { createRegistry } from "./registry";
 
 const LIST_FIELD = { field: "list" };
 
-/** `list=""` is the listbox, `list="select"` the native select: both built in, never redefined. */
+const listbox: ListViewFactory = (maplace, { options }) => createListView(maplace, options);
+
+/**
+ * `list=""` is the listbox, as is `list="true"` (Svelte 5's bare `list`), and `list="select"` the
+ * native select: all built in, never redefined.
+ */
 const BUILT_IN = new Map<string, ListViewFactory>([
-  ["", (maplace, { options }) => createListView(maplace, options)],
+  ["", listbox],
+  ["true", listbox],
   ["select", (maplace, { options }) => createListView(maplace, { ...options, as: "select" })],
 ]);
 
