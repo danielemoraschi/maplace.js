@@ -145,7 +145,7 @@ This section explains the declarations in [`packages/maplace/src/`](../packages/
 |---|---|
 | location | One item of your data: a marker, circle, polyline or polygon, with a unique `id` |
 | selection | The one location currently chosen (`selectedId`), shared by map and list |
-| hover | The location under the pointer or keyboard focus (`hoveredId`) |
+| hover | The location under the pointer or keyboard focus (`hoveredId`); a touch hovers no list entry and no DOM marker (every Google marker, and MapLibre's with an icon or `editable`) |
 | view | What you asked the map to show: fit all, a box, a centre and zoom, or one location (what selecting asks for) |
 | bounds | A box on the map: south, west, north, east; west greater than east crosses the antimeridian |
 | viewport | What the map actually shows, as reported by the provider; zoom and bounds mean the same on every provider (see `Viewport`, `Bounds`) |

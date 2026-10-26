@@ -1,7 +1,8 @@
+// @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import type { AdapterHost } from "../adapter";
 import { createRecordingHost } from "../testing/conformance/recording-host";
-import { createHoverReports } from "./hover-reports";
+import { createHoverReports, reportElementHover } from "./hover-reports";
 
 function reporting() {
   const host = createRecordingHost();
@@ -12,6 +13,10 @@ function reporting() {
     reports: () => host.reportsOf("reportHoverChange").map(([id]) => id),
     stop: () => (live = undefined),
   };
+}
+
+function pointed(element: Element, type: string, pointerType: string): void {
+  element.dispatchEvent(new PointerEvent(type, { pointerType }));
 }
 
 describe("createHoverReports", () => {
@@ -61,5 +66,34 @@ describe("createHoverReports", () => {
     stop();
     hover.enter("pointer", "a");
     expect(reports()).toEqual([]);
+  });
+});
+
+describe("reportElementHover", () => {
+  it("reports no hover for a touch entering and leaving the element", () => {
+    const { hover, reports } = reporting();
+    const element = document.createElement("div");
+    reportElementHover(element, "a", hover);
+    pointed(element, "pointerenter", "touch");
+    pointed(element, "pointerleave", "touch");
+    expect(reports()).toEqual([]);
+  });
+
+  it("lets go of what the pointer hovered elsewhere when a touch enters the element", () => {
+    const { hover, reports } = reporting();
+    const element = document.createElement("div");
+    reportElementHover(element, "a", hover);
+    hover.enter("pointer", "pin");
+    pointed(element, "pointerenter", "touch");
+    expect(reports()).toEqual(["pin", undefined]);
+  });
+
+  it("keeps a mouse's hover when a touch leaves the element", () => {
+    const { hover, reports } = reporting();
+    const element = document.createElement("div");
+    reportElementHover(element, "a", hover);
+    pointed(element, "pointerenter", "mouse");
+    pointed(element, "pointerleave", "touch");
+    expect(reports()).toEqual(["a"]);
   });
 });

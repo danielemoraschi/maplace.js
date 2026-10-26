@@ -4,7 +4,7 @@ import { commands } from "vitest/browser";
 import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
 import { presented } from "../testing/conformance/fixtures";
-import { unmountAll } from "../testing/conformance/harness";
+import { type MountedSubject, unmountAll } from "../testing/conformance/harness";
 import type { RecordingHost } from "../testing/conformance/recording-host";
 import { holdTouchAt } from "../testing/touch";
 import { editingMarker, expectOneChangeEndingTheEdits } from "./testing/editable-marker";
@@ -26,6 +26,15 @@ function square(): HTMLElement {
   const icon = document.createElement("span");
   icon.style.cssText = "display: block; width: 20px; height: 20px";
   return icon;
+}
+
+/** `host` answering each hover at once, as a page's store does: the marker drawn hovered. */
+function answerHoverAtOnce({ adapter, host }: Pick<MountedSubject, "adapter" | "host">): void {
+  const record = host.reportHoverChange;
+  host.reportHoverChange = (id) => {
+    record(id);
+    adapter.present(presented({ hoveredId: id }));
+  };
 }
 
 /**
@@ -72,3 +81,16 @@ describe("a MapLibre marker dragged by touch, its page icon rebuilt mid-drag", (
   });
 });
 
+describe("a MapLibre marker whose page icon follows hover, dragged by touch", () => {
+  it("follows the finger, reporting its change once and no hover", async () => {
+    const mounted = await editingMarker(newIconPerState());
+    answerHoverAtOnce(mounted);
+    const { map, host, marker } = mounted;
+    const finger = await holdTouchAt(middleOf(marker.getElement().firstElementChild as Element));
+    await finger.moveTo(pagePointOf(map, DRAGGED_TO));
+    await finger.lift();
+    expect(marker.getLngLat().lng).toBeCloseTo(DRAGGED_TO.lng, 1);
+    expectOneChangeEndingTheEdits(host);
+    expect(host.reportsOf("reportHoverChange")).toEqual([]);
+  });
+});

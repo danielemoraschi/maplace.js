@@ -7,6 +7,8 @@ export interface HoverReports {
   enter(by: Pointing, id: string): void;
   /** Only when `by` is still on `id`: focus leaving A must not clear the pointer on B. */
   leave(by: Pointing, id: string): void;
+  /** Whatever `by` points at, let go: a touch elsewhere moved the pointer off it, unreported. */
+  letGo(by: Pointing): void;
   /** A location hidden or removed: nothing still points at it, though no event said so. */
   gone(id: string): void;
 }
@@ -36,6 +38,10 @@ export function createHoverReports(live: () => AdapterHost | undefined): HoverRe
       on[by] = undefined;
       report();
     },
+    letGo(by) {
+      on[by] = undefined;
+      report();
+    },
     gone(id) {
       for (const by of ["pointer", "focus"] as const) if (on[by] === id) on[by] = undefined;
       report();
@@ -48,10 +54,25 @@ export function createHoverReports(live: () => AdapterHost | undefined): HoverRe
  * click focuses it as well; only keyboard focus points at it. The listeners go with the element.
  */
 export function reportElementHover(element: HTMLElement, id: string, hover: HoverReports): void {
-  element.addEventListener("pointerenter", () => hover.enter("pointer", id));
-  element.addEventListener("pointerleave", () => hover.leave("pointer", id));
+  element.addEventListener("pointerenter", (event) => {
+    if (isTouch(event)) hover.letGo("pointer");
+    else hover.enter("pointer", id);
+  });
+  element.addEventListener("pointerleave", (event) => {
+    if (!isTouch(event)) hover.leave("pointer", id);
+  });
   element.addEventListener("focusin", () => {
     if (element.matches(":focus-visible")) hover.enter("focus", id);
   });
   element.addEventListener("focusout", () => hover.leave("focus", id));
+}
+
+/**
+ * A touch hovers nothing, as in the list: a tap would flash a hover, and a page answering it at
+ * once would rebuild the icon under the finger before its drag begins. It still moves the pointer
+ * off what it hovered (a pin, by the mouse events a tap sends). Only touch is left out: a pointer
+ * event made with no type still hovers.
+ */
+function isTouch(event: PointerEvent): boolean {
+  return event.pointerType === "touch";
 }
