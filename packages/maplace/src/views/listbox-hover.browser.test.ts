@@ -1,32 +1,19 @@
-// The provider types `cdp()`: a Playwright CDP session.
-/// <reference types="@vitest/browser-playwright" />
-import { describe, expect, it, onTestFinished } from "vitest";
-import { cdp, page, userEvent } from "vitest/browser";
+import { describe, expect, it } from "vitest";
+import { page, userEvent } from "vitest/browser";
+import { centreOf } from "../google/testing/page-input";
 import { shadowRootOnPage } from "../testing/container";
 import { placedListbox, titled } from "../testing/lists";
+import { holdTouchAt } from "../testing/touch";
 
 const locations = titled("a", "b");
 const option = (name: string) => page.getByRole("option", { name });
 
-/** A real tap: touch input through the DevTools protocol; done once the element is clicked. */
+/** A real tap; done once the element is clicked, which Chromium may do later than a frame. */
 async function tap(element: Element): Promise<void> {
-  const session = cdp();
-  await session.send("Emulation.setTouchEmulationEnabled", { enabled: true });
-  onTestFinished(async () => {
-    await session.send("Emulation.setTouchEmulationEnabled", { enabled: false });
-  });
   const clicked = nextClick(element);
-  const touchPoints = [centreOnScreen(element)];
-  await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints });
-  await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  const finger = await holdTouchAt(centreOf(element));
+  await finger.lift();
   await clicked;
-}
-
-/** The element's centre in the top-level page: tests run in a frame, the protocol doesn't. */
-function centreOnScreen(element: Element) {
-  const box = element.getBoundingClientRect();
-  const frame = window.frameElement?.getBoundingClientRect() ?? { left: 0, top: 0 };
-  return { x: frame.left + box.left + box.width / 2, y: frame.top + box.top + box.height / 2 };
 }
 
 function nextClick(element: Element): Promise<void> {

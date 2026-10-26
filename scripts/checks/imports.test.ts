@@ -17,6 +17,7 @@ describe("layerOf", () => {
     expect(layerOf("google/create-adapter")).toBe("google");
     expect(layerOf("testing/mouse-commands")).toBe("browser-testing");
     expect(layerOf("testing/parked-pointer")).toBe("browser-testing");
+    expect(layerOf("testing/touch")).toBe("browser-testing");
     expect(layerOf("testing/container")).toBe("testing");
   });
 

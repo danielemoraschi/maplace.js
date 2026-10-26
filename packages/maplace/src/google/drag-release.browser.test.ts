@@ -9,6 +9,7 @@ import {
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import type { ViewportPoint } from "../testing/mouse-commands";
+import { holdTouchAt } from "../testing/touch";
 import {
   CUT_CORNER,
   changesOf,
@@ -20,7 +21,6 @@ import {
   mountedAround,
   polygonOn,
 } from "./testing/held-drags";
-import { holdTouchAt } from "./testing/held-touch";
 import { drawnMarker, QUIET_MS, wait } from "./testing/map-waits";
 import { steadyPoint } from "./testing/page-input";
 import { shapeTarget } from "./testing/shape-target";
