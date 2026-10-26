@@ -5,6 +5,8 @@ import type { Location } from "../location";
 import type { Route } from "../route";
 import type { LoadState, Maplace } from "../store";
 import { defineElements } from "./define";
+// Vue's and Svelte's template types for the elements: declarations only.
+import "./framework-types";
 
 /** Where the element puts its list: on the map, or outside it in the page. */
 export type ListPosition = ControlPosition | "outside";

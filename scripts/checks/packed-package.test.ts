@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildPackage } from "../build/build-package.ts";
@@ -30,12 +31,21 @@ describe("the packed package", () => {
     expect(await typeResolutionProblems(tarball)).toEqual([]);
   }, 30_000);
 
-  it("type-checks for a strict consumer without Google, MapLibre or React, who needs none's types", () => {
+  it("type-checks for a strict consumer without Google, MapLibre, React, Vue or Svelte, who needs none's types", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "core-and-element");
     expect(errors).toEqual([]);
-    const providerTypes = /\/(@types\/(google\.maps|react)|maplibre-gl)\//;
-    expect(loadedFiles.filter((file) => providerTypes.test(file))).toEqual([]);
+    const typesNotNeeded = /\/(@types\/(google\.maps|react)|maplibre-gl|vue|@vue|svelte)\//;
+    expect(loadedFiles.filter((file) => typesNotNeeded.test(file))).toEqual([]);
   }, 30_000);
+
+  it("ships the element's Vue and Svelte template types with its declarations", () => {
+    const declarations = (file: string) =>
+      readFileSync(join(stagedDir, "dist/element", file), "utf8");
+    expect(declarations("index.d.ts")).toContain('import "./framework-types.js";');
+    expect(declarations("framework-types.d.ts")).toMatch(
+      /declare module "vue".*declare module "svelte\/elements"/s,
+    );
+  });
 
   it("type-checks for a strict consumer in React", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "react");
