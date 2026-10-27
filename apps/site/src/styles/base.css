@@ -6,13 +6,16 @@
     scroll-padding-top: var(--spacing-header);
   }
 
-  /* On the home page, below the examples' provider toggle held under the header too. */
-  :root:has([data-provider-choice]) {
-    scroll-padding-top: calc(
-      var(--spacing-header) +
-      var(--spacing-toggle-height) +
-      var(--spacing-toggle-inset)
-    );
+  /* On an examples' page, below the examples' bar held under the header too. */
+  :root:has([data-group-bar]) {
+    scroll-padding-top: calc(var(--spacing-header) + var(--spacing-group-bar));
+  }
+
+  /* The bar's two rows below 48rem, the toggle's then the links' (`ExampleGroupBar.astro`). */
+  @media (width < 48rem) {
+    :root {
+      --spacing-group-bar: 5.8125rem;
+    }
   }
 
   *,

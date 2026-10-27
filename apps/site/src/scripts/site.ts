@@ -1,7 +1,6 @@
-import type { MaplaceMapElement } from "maplace/element";
 import { startConsent } from "../consent/consent-controls.ts";
 import { createConsentStore } from "../consent/consent-store.ts";
-import { gateMaps } from "../consent/map-gate.ts";
+import { consentLatch } from "../consent/map-gate.ts";
 import { whenVisible } from "../consent/when-visible.ts";
 import { versionModule } from "../examples/example-modules.ts";
 import { exampleFolder } from "../examples/example-providers.ts";
@@ -10,20 +9,24 @@ import { runPageScripts } from "../examples/page-scripts.ts";
 import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
-import { noteMapsJsFailure, noteVersionStartFailure, startFailureNotes } from "./map-failures.ts";
+import { fetchGroupPanel } from "./group-panels.ts";
+import { startGroupSwitch } from "./group-switch.ts";
+import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { provideSave } from "./page-save.ts";
 import { ELEMENT_LOADERS, READY_MAPLIBRE_VERSION } from "./provider-loaders.ts";
-import { startReloadButtons } from "./reload-buttons.ts";
 import { importAsModule, scriptVersionStart } from "./script-version.ts";
+import { followSectionAnchor } from "./section-anchor.ts";
+import { sectionStarter } from "./section-start.ts";
 import { installMaplace } from "./site-maplace.ts";
 import { startStarButtons } from "./star-buttons.ts";
-import { markWhenStuck } from "./stuck-mark.ts";
-import { startTabs } from "./tabs.ts";
 import { versionStarter } from "./version-start.ts";
-import { startVersionSwitches } from "./version-switch.ts";
+import { startProviderToggle } from "./version-switch.ts";
+
+// An old home page link to an example on another group's page goes there (W38).
+followSectionAnchor(location);
 
 // Every map on the site is held (`<maplace-map hold>`): nothing from Google Maps or OpenFreeMap
 // loads until the visitor consents, then each map as it comes into view. A provider's element
@@ -37,10 +40,6 @@ import { startVersionSwitches } from "./version-switch.ts";
 // On MapLibre, maplibre-gl as its adapter imports it is asked for beside the version's own imports.
 // A map whose failure a reload mends offers one (`MENDED_BY_RELOAD`, map-failures.ts).
 const mapsJs = watchMapsJs(document);
-const maps = [...document.querySelectorAll<MaplaceMapElement>("maplace-map[hold]")];
-const versions = [
-  ...document.querySelectorAll<HTMLElement>('[data-live-version]:not([data-live-version="html"])'),
-];
 
 const release = pageMapRelease(ELEMENT_LOADERS, installMaplace);
 
@@ -77,27 +76,26 @@ const startVersion = versionStarter({
 mapsJs.whenFailed(() => noteMapsJsFailure(document));
 
 const reloadPage = () => location.reload();
-const openPageMaps = gateMaps(maps, { whenVisible, release });
-const openVersions = gateMaps(versions, { whenVisible, release: startVersion });
+const latch = consentLatch();
+const startSections = sectionStarter({
+  whenVisible,
+  release,
+  startVersion,
+  followToggle: startProviderToggle(document, () => sessionStorage),
+  reload: reloadPage,
+  latch,
+});
 
 provideSave(globalThis, document);
 revealCurrentNavLink(document);
 followNavFocus(document);
-startTabs(document);
-startVersionSwitches(document, () => sessionStorage);
-const stickyToggle = document.querySelector<HTMLElement>("[data-sticky-toggle]");
-// A browser with scroll-state queries knows when the toggle is stuck by itself.
-if (stickyToggle && !CSS.supports("container-type", "scroll-state")) markWhenStuck(stickyToggle);
-startReloadButtons(document, reloadPage);
+startSections(document);
+startGroupSwitch({ document, startSections, fetchPanel: fetchGroupPanel, leave: location });
 void startStarButtons(document);
-startFailureNotes(maps);
 startConsent({
   document,
   store: createConsentStore(() => localStorage),
-  openMaps: () => {
-    openPageMaps();
-    openVersions();
-  },
+  openMaps: latch.turnOn,
   reload: reloadPage,
 });
 

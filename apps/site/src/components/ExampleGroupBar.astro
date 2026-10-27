@@ -1,0 +1,44 @@
+---
+import { EXAMPLE_GROUPS, type ExampleGroup, groupPath } from "../examples/example-sections.ts";
+import ProviderSwitch from "./ProviderSwitch.astro";
+
+interface Props {
+  /** The group the page shows. */
+  current: ExampleGroup;
+}
+
+const { current } = Astro.props;
+// Each link names its group's page; a click switches to it in place (`group-switch.ts`).
+const LINK =
+  "group/link flex shrink-0 items-start gap-1 border-b-3 border-transparent pt-1 pb-2 font-display text-xl font-bold whitespace-nowrap text-muted no-underline hover:text-ink aria-[current=page]:border-ink aria-[current=page]:text-ink max-[48rem]:text-md";
+---
+
+{/* Held under the header, `--spacing-group-bar` tall at every width (its scroll padding in `base.css`): one row from 48rem, its links scrolling sideways rather than wrapping; below, the toggle's row then the links'. */}
+<div
+  class="sticky top-(--spacing-header-height) z-[5] mt-12 flex h-(--spacing-group-bar) items-end bg-paper"
+  data-group-bar
+>
+  <div class="flex w-full flex-nowrap items-end gap-x-6 border-b border-ink max-[48rem]:flex-wrap">
+    <nav
+      aria-label="Examples"
+      class="-mb-px flex min-w-0 gap-x-6 overflow-x-auto [scrollbar-width:none] max-[48rem]:basis-full max-[48rem]:justify-between max-[48rem]:gap-x-3"
+    >
+      {
+        EXAMPLE_GROUPS.map((group) => (
+          <a
+            href={groupPath(group)}
+            aria-current={group.id === current.id ? "page" : undefined}
+            class={LINK}
+          >
+            {group.label}{" "}
+            <span class="text-xs font-semibold text-muted group-aria-[current=page]/link:text-accent">
+              {group.sections.length}<span class="sr-only"> examples</span>
+            </span>
+          </a>
+        ))
+      }
+    </nav>
+    <ProviderSwitch class="ms-auto mb-2 shrink-0 max-[48rem]:order-first" />
+  </div>
+  <p class="sr-only" aria-live="polite" data-group-announce></p>
+</div>

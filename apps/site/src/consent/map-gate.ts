@@ -20,3 +20,27 @@ export function gateMaps<Held>(
     for (const map of maps) whenVisible(map, () => release(map));
   };
 }
+
+/** What opens maps on consent, the page's own and those added later. */
+export interface ConsentLatch {
+  /** Runs `open` once maps are on: at once if they are, else when they turn on. */
+  whenOn(open: () => void): void;
+  /** Maps are on: runs what was waiting, once. */
+  turnOn(): void;
+}
+
+/** A latch shut until consent is given, then open for good. */
+export function consentLatch(): ConsentLatch {
+  let on = false;
+  const waiting: (() => void)[] = [];
+  return {
+    whenOn(open) {
+      if (on) open();
+      else waiting.push(open);
+    },
+    turnOn() {
+      on = true;
+      for (const open of waiting.splice(0)) open();
+    },
+  };
+}

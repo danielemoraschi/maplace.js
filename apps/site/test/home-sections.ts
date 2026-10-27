@@ -1,6 +1,7 @@
 import type { MaplaceMapElement } from "maplace/element";
 import type { Locator, Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
+import { findGroupOfSection, groupPath } from "../src/examples/example-sections.ts";
 import { VERSION_LABELS, type VersionKind } from "../src/examples/example-versions.ts";
 import { SHOWN_NOTES } from "../src/scripts/version-notes.ts";
 import type { SiteSession } from "./site-session.ts";
@@ -26,15 +27,23 @@ export function versionsInTurn(index: number): [VersionChoice, ...VersionChoice[
   return order as [VersionChoice, ...VersionChoice[]];
 }
 
+/** The route of the examples' page holding `name`'s section (W38). */
+export function sectionPage(name: string): string {
+  const group = findGroupOfSection(name);
+  if (group === undefined) throw new Error(`no example group holds ${name}`);
+  return groupPath(group);
+}
+
 /**
- * A fresh visitor on the home page of `site` with only `name`'s section left, scrolled to it.
+ * A fresh visitor on the examples' page of `site` holding `name`'s section, with only that section
+ * left, scrolled to it.
  */
 export async function visitSection(
   site: SiteSession,
   name: string,
 ): Promise<Visitor & { readonly section: Locator }> {
   const visit = await site.visitor();
-  await visit.page.goto(new URL(`/#${name}`, site.url).href);
+  await visit.page.goto(new URL(`${sectionPage(name)}#${name}`, site.url).href);
   await leaveOnlySection(visit.page, name);
   return { ...visit, section: await sectionOf(visit.page, name) };
 }
@@ -94,9 +103,15 @@ export async function chooseTab(page: Page, example: string, name: string): Prom
   return section;
 }
 
-/** `example`'s section on the home page, scrolled into view. */
+/** `example`'s section on its examples' page, scrolled into view. */
 export async function sectionOf(page: Page, example: string): Promise<Locator> {
   const section = page.locator(`section#${example}`);
   await section.scrollIntoViewIfNeeded();
   return section;
 }
+
+/** The examples' bar's link to the group labelled `label` (`ExampleGroupBar.astro`). */
+export const groupLink = (page: Page, label: string) =>
+  page
+    .getByRole("navigation", { name: "Examples" })
+    .getByRole("link", { name: new RegExp(`^${label} `) });

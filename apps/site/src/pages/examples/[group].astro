@@ -1,0 +1,16 @@
+---
+import ExampleGroupPage from "../../components/ExampleGroupPage.astro";
+import { EXAMPLE_GROUPS, type ExampleGroup, HOME_GROUP } from "../../examples/example-sections.ts";
+
+/** Every group's page but the home page's. */
+export function getStaticPaths() {
+  return EXAMPLE_GROUPS.filter((group) => group.id !== HOME_GROUP.id).map((group) => ({
+    params: { group: group.id },
+    props: { group },
+  }));
+}
+
+const { group } = Astro.props as { group: ExampleGroup };
+---
+
+<ExampleGroupPage group={group} />

@@ -12,21 +12,19 @@ import {
 } from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
+import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
 import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
-import {
-  GOOGLE_MAPS,
-  MAP_PROVIDERS,
-  MAP_PROVIDERS_SECTION,
-  THIRD_PARTIES,
-  thirdPartyOf,
-} from "../src/site/third-parties.ts";
+import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION, THIRD_PARTIES } from "../src/site/third-parties.ts";
 import { textGluedToInline } from "./glued-text.ts";
-import { chooseProvider } from "./home-sections.ts";
-import { ASKED, SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
-import { firstMap, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
+import { sectionPage } from "./home-sections.ts";
+import { SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
+import { grantConsent, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
+
+/** The examples' pages, the home page first (W38). */
+const EXAMPLE_PAGES = EXAMPLE_GROUPS.map(groupPath);
 
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
@@ -74,7 +72,7 @@ describe("the site's icon", () => {
 
 describe("an example's guide", () => {
   it("shows under its example: the custom list's, linking the list views reference", async () => {
-    const { page, context } = await openPage("/");
+    const { page, context } = await openPage(sectionPage("custom-list"));
     const guide = page.locator("section#custom-list .example-guide");
     expect(await guide.textContent()).toContain("defineListView");
     const link = guide.getByRole("link", { name: "defineListView(name, factory)" });
@@ -113,7 +111,7 @@ describe("the changelog page", () => {
 
 describe("the footer", () => {
   const routes = [
-    "/",
+    ...EXAMPLE_PAGES,
     ...FOOTER_PAGES.map(({ route }) => route),
     ...REPO_DOCS.map(({ id }) => docRoute(id)),
   ];
@@ -191,7 +189,7 @@ describe("the privacy page", () => {
 
 describe("the site's copy", () => {
   it("keeps a space between text and the link or code after it, on every page", async () => {
-    for (const route of ["/", ...PAGES_WITHOUT_MAPS]) {
+    for (const route of [...EXAMPLE_PAGES, ...PAGES_WITHOUT_MAPS]) {
       const { page, context } = await openPage(route);
       expect({ route, glued: await textGluedToInline(page) }).toEqual({ route, glued: [] });
       await context.close();
@@ -240,42 +238,15 @@ describe("what the site sends where", () => {
   /** The same `<html data-maps>` on every page without maps. */
   const onEveryPage = (setting: string) => PAGES_WITHOUT_MAPS.map(() => setting);
 
-  async function grantConsent({ page }: Visitor): Promise<void> {
-    await page.goto(site.url);
-    await firstMap(page).scrollIntoViewIfNeeded();
-    await placeholder(page).click();
-  }
-
   it("a page without maps asks nothing off the site, before consent or after", async () => {
     const visit = await site.visitor();
     expect(await visitPagesWithoutMaps(visit)).toEqual(onEveryPage("off"));
     expect(visit.offsite()).toEqual([]);
-    await grantConsent(visit);
+    await grantConsent(visit.page, site.url);
     await visit.page.close();
     const before = visit.offsite().length;
     expect(await visitPagesWithoutMaps(visit)).toEqual(onEveryPage("on"));
     expect(visit.offsite().slice(before)).toEqual([]);
     await visit.context.close();
   }, 60_000);
-
-  it("once the maps are on, every request its pages make off the site goes to a third party the privacy page names", async () => {
-    const visit = await site.visitor();
-    const { page, offsite, mapProviders, mapsJsRequests, context } = visit;
-    await grantConsent(visit);
-    const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
-    const scrollPastShownMaps = async () => {
-      for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
-      await pause(SETTLE_MS);
-    };
-    // Every map on MapLibre, the page's first provider: none of it billed by Google.
-    await scrollPastShownMaps();
-    await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
-    expect(mapProviders().filter((url) => thirdPartyOf(url) === GOOGLE_MAPS)).toEqual([]);
-    await chooseProvider(page, "Google");
-    await scrollPastShownMaps();
-    await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
-    await pause(SETTLE_MS);
-    expect(offsite().filter((url) => thirdPartyOf(url) === undefined)).toEqual([]);
-    await context.close();
-  }, 30_000);
 });

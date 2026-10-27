@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Provider } from "../examples/example-providers.ts";
 import { fadeIn } from "./fade-in.ts";
 import { keepProvider, PROVIDER_CHOICE_KEY } from "./provider-choice.ts";
-import { startVersionSwitches } from "./version-switch.ts";
+import { startProviderToggle } from "./version-switch.ts";
 
 vi.mock("./fade-in.ts");
 
@@ -74,11 +74,28 @@ const storage = () => sessionStorage;
 const noVersion = (name: string) =>
   document.querySelector(`#${name} .map-frame`)?.hasAttribute("data-no-version");
 
+/** What adds a root's sections to those the page's toggle switches. */
+let followToggle: (root: ParentNode) => void;
+
+/** Starts the page's toggle, then its sections. */
+function startSwitches(): void {
+  followToggle = startProviderToggle(document, storage);
+  followToggle(document);
+}
+
 function startPage(kept?: Provider): void {
   document.body.innerHTML =
     pageToggle() + section("simple") + section("big") + section("route", ["google"]);
   if (kept) keepProvider(storage, kept);
-  startVersionSwitches(document, storage);
+  startSwitches();
+}
+
+/** A group's panel added after start, holding `name`'s section, as `group-switch.ts` adds one. */
+function addPanel(name: string): HTMLElement {
+  const panel = document.createElement("div");
+  panel.innerHTML = section(name);
+  document.body.append(panel);
+  return panel;
 }
 
 beforeEach(() => {
@@ -87,7 +104,7 @@ beforeEach(() => {
   startPage();
 });
 
-describe("startVersionSwitches", () => {
+describe("startProviderToggle", () => {
   it("shows MapLibre's HTML version at first, and route no version", () => {
     expect([shown("simple"), shown("big"), shown("route")]).toEqual([
       ["maplibre html"],
@@ -184,7 +201,7 @@ describe("startVersionSwitches", () => {
   it("opens on a provider the visitor chose before it ran, and keeps it", () => {
     document.body.innerHTML = pageToggle() + section("simple");
     (document.querySelector('[value="google"]') as HTMLInputElement).checked = true;
-    startVersionSwitches(document, storage);
+    startSwitches();
     expect(shown("simple")).toEqual(["google html"]);
     expect(sessionStorage.getItem(PROVIDER_CHOICE_KEY)).toBe("google");
   });
@@ -210,5 +227,36 @@ describe("startVersionSwitches", () => {
   it("leaves the shown map alone when the example's own input changes", () => {
     document.querySelector<HTMLInputElement>("#simple [data-own-input]")?.click();
     expect(shown("simple")).toEqual(["maplibre html"]);
+  });
+
+  it("switches sections followed later with the toggle, as those it started with", () => {
+    followToggle(addPanel("menu"));
+    chooseProvider("google");
+    expect([shown("simple"), shown("menu")]).toEqual([["google html"], ["google html"]]);
+    chooseVersion("menu", "react");
+    expect(shown("menu")).toEqual(["google react"]);
+  });
+
+  it("shows a section followed later at once on the provider chosen before it came", () => {
+    chooseProvider("google");
+    followToggle(addPanel("menu"));
+    expect(shown("menu")).toEqual(["google html"]);
+    expect(filesShown("menu")).toEqual(["google", "google"]);
+  });
+
+  it("listens to the toggle once, whatever the number of roots it follows", () => {
+    const kept: string[] = [];
+    const counting = () =>
+      ({
+        getItem: () => null,
+        setItem: (_key: string, value: string) => kept.push(value),
+      }) as unknown as Storage;
+    document.body.innerHTML = pageToggle() + section("simple");
+    const follow = startProviderToggle(document, counting);
+    follow(document);
+    follow(addPanel("menu"));
+    follow(addPanel("tabs"));
+    chooseProvider("google");
+    expect(kept).toEqual(["google"]);
   });
 });

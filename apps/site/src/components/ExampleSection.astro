@@ -39,21 +39,13 @@ const tabs = [
 const panel = (tab: string) => `example-${name}-${tab}`;
 ---
 
-{/* Its top spacing is `--spacing-toggle-offset` in `theme.css`: change both together. */}
 <section
   class="example mt-12 border-t-3 border-ink pt-4"
   id={name}
   aria-labelledby={`${name}-title`}
   data-version-switch={name}
 >
-  {/* The first section's row leaves room for the page's provider toggle (`index.astro`). */}
-  <div
-    class:list={[
-      "flex flex-wrap items-baseline gap-x-4 gap-y-1",
-      number === 1 && "pe-[calc(var(--spacing-toggle-width)+1rem)]",
-    ]}
-    data-heading-row
-  >
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1" data-heading-row>
     <h2 class="m-0 text-3xl" id={`${name}-title`}>
       <span class="text-accent">{String(number).padStart(2, "0")}</span>{" "}{title}
     </h2>

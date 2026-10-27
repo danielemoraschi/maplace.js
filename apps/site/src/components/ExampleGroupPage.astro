@@ -1,0 +1,35 @@
+---
+import {
+  type ExampleGroup,
+  groupDescription,
+  groupTitle,
+  sectionNumber,
+} from "../examples/example-sections.ts";
+import Base from "../layouts/Base.astro";
+import ExampleGroupBar from "./ExampleGroupBar.astro";
+import ExampleSection from "./ExampleSection.astro";
+import Hero from "./Hero.astro";
+import InstallBox from "./InstallBox.astro";
+
+interface Props {
+  group: ExampleGroup;
+}
+
+const { group } = Astro.props;
+---
+
+{/* Every group's page is the home page with that group's examples: its panel is what another group's page fetches to switch to it in place (`group-switch.ts`). */}
+<Base title={groupTitle(group)} description={groupDescription(group)}>
+  <Hero />
+  <InstallBox />
+  <ExampleGroupBar current={group} />
+  {/* Its own top padding, not its summary's margin: a switch lands the panel's top under the bar. */}
+  <div class="pt-5" data-group-panel={group.id}>
+    <p class="m-0 max-w-text text-lg text-muted">{group.summary}</p>
+    {
+      group.sections.map((section) => (
+        <ExampleSection number={sectionNumber(section)} {...section} />
+      ))
+    }
+  </div>
+</Base>

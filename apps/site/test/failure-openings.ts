@@ -1,6 +1,12 @@
 import type { Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
-import { chooseProvider, chooseVersion, leaveOnlySection, sectionOf } from "./home-sections.ts";
+import {
+  chooseProvider,
+  chooseVersion,
+  leaveOnlySection,
+  sectionOf,
+  sectionPage,
+} from "./home-sections.ts";
 import type { SiteSession } from "./site-session.ts";
 import { footerToggle, openHome, type VisitorOptions } from "./visitor.ts";
 
@@ -26,7 +32,7 @@ export async function sectionFrom(site: SiteSession, options: VisitorOptions, op
   const { example, provider, version, beforeConsent } = opening;
   const visit = await site.visitor(options);
   const { page } = visit;
-  await openHome(page, site.url);
+  await openHome(page, site.url, sectionPage(example));
   await leaveOnlySection(page, example);
   if (provider === "google") await chooseProvider(page, "Google");
   await chooseVersion(page, example, version);

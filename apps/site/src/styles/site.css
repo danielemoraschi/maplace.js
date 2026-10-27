@@ -14,19 +14,5 @@
 @import "./prose.css";
 @import "./frame.css";
 
-/*
- * `stuck:` styles what is inside a sticky element held at its top, the element marked
- * `[container-type:scroll-state]`: by scroll-state queries where the browser has them (Chrome,
- * Edge), elsewhere by the element's `data-stuck`, set as the page scrolls (`stuck-mark.ts`).
- */
-@custom-variant stuck {
-  @container scroll-state(stuck: top) {
-    @slot;
-  }
-  &:where([data-stuck] *) {
-    @slot;
-  }
-}
-
 /* Only the site's markup: a word in a module or an example (`hidden`, `container`) is no class. */
 @source "../**/*.astro";

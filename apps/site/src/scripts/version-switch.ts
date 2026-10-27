@@ -12,41 +12,32 @@ const setShown: Show = (element, shown) => {
 };
 
 /**
- * Every `[data-version-switch]` section under `root` shows the version its `[data-site-switch]`
- * radios chose, on the provider the page's toggle (`[data-provider-choice]`) chose, kept in
- * `storage` for the visit:
+ * Starts the page's provider toggle (`[data-provider-choice]`), its choice kept in `storage` for
+ * the visit, and returns what adds the `[data-version-switch]` sections under a root to those it
+ * switches: the page's own, then each group's panel added later (`group-switch.ts`). Each section
+ * shows the version its `[data-site-switch]` radios chose, on the provider the toggle chose:
  * - in its frame, that `[data-live-version]`, faded in, the others hidden at once, each with its
  *   own notes, shown and hidden with it (`frame.css`); a section with no version on the provider
  *   (route on MapLibre) shows none, its frame marked `data-no-version` for its note, whose
  *   `[data-show-on]` button shows that section alone on the provider it names;
  * - in each code tab, the provider's files; a section with none for it keeps the files it has.
  *
- * The page renders the first provider chosen; a provider kept earlier in the visit is shown at
- * once, before any map is released. The sections come with the toggle, on the home page only: a
- * page without the toggle has none to switch.
+ * Sections are rendered on the first provider; on another, chosen earlier in the visit or before a
+ * section came, they are shown on it at once, before any map is released. A page without the
+ * toggle has no sections to switch.
  */
-export function startVersionSwitches(root: ParentNode, storage: () => Storage): void {
-  const toggle = root.querySelector<HTMLElement>("[data-provider-choice]");
-  if (toggle === null) return;
-  const sections = [...root.querySelectorAll<HTMLElement>("[data-version-switch]")];
+export function startProviderToggle(
+  page: ParentNode,
+  storage: () => Storage,
+): (root: ParentNode) => void {
+  const toggle = page.querySelector<HTMLElement>("[data-provider-choice]");
+  if (toggle === null) return () => {};
+  const sections: HTMLElement[] = [];
   const ownProvider = new Map<HTMLElement, Provider>();
   let pageProvider = providerAtStart(toggle, storage);
   const showSection = (section: HTMLElement, show: Show) =>
     showChoice(section, ownProvider.get(section) ?? pageProvider, show);
 
-  for (const section of sections) {
-    for (const radios of section.querySelectorAll("[data-site-switch]")) {
-      radios.addEventListener("change", () => showSection(section, reveal));
-    }
-    section.querySelector<HTMLElement>("[data-show-on]")?.addEventListener("click", (event) => {
-      const named = (event.currentTarget as HTMLElement).dataset.showOn ?? "";
-      if (!isProvider(named)) return;
-      ownProvider.set(section, named);
-      showSection(section, reveal);
-      // The button hides with its note: focus goes to what the section now shows.
-      checkedRadioIn(section, `${section.dataset.versionSwitch}-version`)?.focus();
-    });
-  }
   toggle.addEventListener("change", () => {
     pageProvider = chosenProvider(toggle) ?? pageProvider;
     keepProvider(storage, pageProvider);
@@ -54,12 +45,37 @@ export function startVersionSwitches(root: ParentNode, storage: () => Storage): 
     // Only what the visitor sees fades in; the sections off screen change at once.
     for (const section of sections) showSection(section, isOnScreen(section) ? reveal : setShown);
   });
-  // The page is built on the first provider: anything else is shown at once.
   if (pageProvider !== FIRST_PROVIDER) {
     checkRadio(toggle, pageProvider);
     keepProvider(storage, pageProvider);
-    for (const section of sections) showSection(section, setShown);
   }
+
+  return (root) => {
+    for (const section of root.querySelectorAll<HTMLElement>("[data-version-switch]")) {
+      sections.push(section);
+      followSection(section, (show) => showSection(section, show), ownProvider);
+      if (pageProvider !== FIRST_PROVIDER) showSection(section, setShown);
+    }
+  };
+}
+
+/** Wires `section`'s version radios and its `[data-show-on]` button to show its choice. */
+function followSection(
+  section: HTMLElement,
+  showSection: (show: Show) => void,
+  ownProvider: Map<HTMLElement, Provider>,
+): void {
+  for (const radios of section.querySelectorAll("[data-site-switch]")) {
+    radios.addEventListener("change", () => showSection(reveal));
+  }
+  section.querySelector<HTMLElement>("[data-show-on]")?.addEventListener("click", (event) => {
+    const named = (event.currentTarget as HTMLElement).dataset.showOn ?? "";
+    if (!isProvider(named)) return;
+    ownProvider.set(section, named);
+    showSection(reveal);
+    // The button hides with its note: focus goes to what the section now shows.
+    checkedRadioIn(section, `${section.dataset.versionSwitch}-version`)?.focus();
+  });
 }
 
 /**

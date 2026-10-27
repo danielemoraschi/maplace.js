@@ -187,9 +187,12 @@ export const firstMap = (page: Page) => page.locator("maplace-map").first();
 /** The footer's switch that turns the maps on, or off, on every page. */
 export const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
 
-/** Opens the home page of the site at `siteUrl` and scrolls to its first map. */
-export async function openHome(page: Page, siteUrl: string): Promise<void> {
-  await page.goto(siteUrl);
+/**
+ * Opens the home page of the site at `siteUrl`, or the examples' page at `route`, and scrolls to
+ * its first map.
+ */
+export async function openHome(page: Page, siteUrl: string, route = "/"): Promise<void> {
+  await page.goto(new URL(route, siteUrl).href);
   await firstMap(page).scrollIntoViewIfNeeded();
 }
 
@@ -210,3 +213,26 @@ export const drawnOnTop = (locator: Locator) =>
 
 /** The page's first "Load maps" button. */
 export const placeholder = (page: Page) => loadMapsButtons(page).first();
+
+/** A laid-out box, as Playwright measures it. */
+export type Box = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
+
+/** `locator`'s box, which must be laid out. */
+export async function boxOf(locator: Locator): Promise<Box> {
+  const box = await locator.boundingBox();
+  if (box === null) throw new Error("nothing laid out");
+  return box;
+}
+
+/** Consents to the maps from the first placeholder of the home page of the site at `siteUrl`. */
+export async function grantConsent(page: Page, siteUrl: string): Promise<void> {
+  await openHome(page, siteUrl);
+  await placeholder(page).click();
+}
+
+/** The ids `page` uses more than once. */
+export const duplicateIds = (page: Page) =>
+  page.evaluate(() => {
+    const ids = [...document.querySelectorAll("[id]")].map(({ id }) => id);
+    return ids.filter((id, index) => ids.indexOf(id) !== index);
+  });

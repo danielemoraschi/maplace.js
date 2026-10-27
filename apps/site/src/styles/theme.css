@@ -29,17 +29,15 @@
   --text-hero: clamp(2.125rem, 9vw, 4.5rem);
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
+  /* The header's own height (`SiteHeader.astro`), where the examples' bar is held under it. */
+  --spacing-header-height: 4.0625rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
-  --spacing-header: 4.5rem;
-  /*
-   * The examples' provider toggle (`index.astro`): its size, and how far into a section its
-   * heading row is, a section's `mt-12 border-t-3 pt-4` (`ExampleSection.astro`).
-   */
+  --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
+  /* The examples' bar (`ExampleGroupBar.astro`) from 48rem; below, its two rows' (`base.css`). */
+  --spacing-group-bar: 3.6875rem;
+  /* The examples' provider toggle (`ProviderSwitch.astro`). */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;
-  --spacing-toggle-offset: calc(4rem + 3px);
-  /* How far the stuck toggle's white box reaches around it. */
-  --spacing-toggle-inset: 0.375rem;
   /* An example's map: the height its hosts give it. */
   --spacing-map: 24rem;
   --container-measure: 72rem;

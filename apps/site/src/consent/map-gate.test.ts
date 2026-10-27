@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gateMaps } from "./map-gate.ts";
+import { consentLatch, gateMaps } from "./map-gate.ts";
 
 /** Maps by name, a visibility the test controls, and the releases it saw. */
 function setup(...maps: string[]) {
@@ -34,5 +34,34 @@ describe("gateMaps", () => {
     openMaps();
     show("rome");
     expect(released).toEqual(["rome"]);
+  });
+});
+
+describe("consentLatch", () => {
+  it("runs what was given before consent once maps turn on", () => {
+    const latch = consentLatch();
+    const opened: string[] = [];
+    latch.whenOn(() => opened.push("page"));
+    latch.whenOn(() => opened.push("panel"));
+    expect(opened).toEqual([]);
+    latch.turnOn();
+    expect(opened).toEqual(["page", "panel"]);
+  });
+
+  it("runs what is given after consent at once", () => {
+    const latch = consentLatch();
+    latch.turnOn();
+    const opened: string[] = [];
+    latch.whenOn(() => opened.push("panel"));
+    expect(opened).toEqual(["panel"]);
+  });
+
+  it("runs nothing twice when turned on twice", () => {
+    const latch = consentLatch();
+    const opened: string[] = [];
+    latch.whenOn(() => opened.push("page"));
+    latch.turnOn();
+    latch.turnOn();
+    expect(opened).toEqual(["page"]);
   });
 });

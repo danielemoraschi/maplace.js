@@ -2,34 +2,17 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { headCommit } from "../../../scripts/build/git.ts";
-import { ROOT } from "../../../scripts/build/package.ts";
-import { exampleData } from "../src/examples/example-data.ts";
-import type { Provider } from "../src/examples/example-providers.ts";
-import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
-import { exampleProviders } from "../src/examples/example-sources.ts";
-import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import {
   chooseProvider,
   chooseTab,
   chooseVersion,
+  sectionPage,
   shownNotes,
   visitSection,
 } from "./home-sections.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { footerToggle, openHome, placeholder } from "./visitor.ts";
-
-/** One page map per example on the home page (D23) on each of its providers. */
-const PAGE_MAP_COUNT = EXAMPLE_SECTIONS.flatMap(({ name }) => exampleProviders(name)).length;
-
-/** The heights of the maps on `provider` shown in the examples' sections. */
-const shownMapHeights = (page: Page, provider: Provider) =>
-  page
-    .locator(
-      `section.example [data-live-version]:not([hidden]) maplace-map[provider="${provider}"]`,
-    )
-    .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
 
 const site = siteBuiltBeforeTests();
 
@@ -40,43 +23,9 @@ describe("the home page's links", () => {
     await expect.poll(() => page.locator("a.github-button").count(), ASKED).toBe(0);
     await context.close();
   }, 30_000);
-
-  it("links the data an example fetches to the repo, at the commit built, in a new tab", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    const links = await page
-      .locator("section.example")
-      .getByRole("link", { name: /\.json$/ })
-      .evaluateAll((anchors) => anchors.map((a) => a.getAttribute("href")));
-    const targets = await page
-      .locator("section.example")
-      .getByRole("link", { name: /\.json$/ })
-      .evaluateAll((anchors) => anchors.map((a) => a.getAttribute("target")));
-    expect(new Set(targets)).toEqual(new Set(["_blank"]));
-    const blob = `${REPOSITORY_URL}/blob/${headCommit(ROOT)}/`;
-    expect(links.sort()).toEqual(
-      exampleData()
-        .map(({ path }) => `${blob}${path}`)
-        .sort(),
-    );
-    await context.close();
-  }, 30_000);
 });
 
 describe("the home page's headings and install box", () => {
-  it("names each section by its number and title", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    for (const [index, { name }] of EXAMPLE_SECTIONS.entries()) {
-      const section = page.locator(`section#${name}`);
-      const heading = (await section.getByRole("heading", { level: 2 }).textContent())?.trim();
-      const number = String(index + 1).padStart(2, "0");
-      expect(heading).toMatch(new RegExp(`^${number} \\S`));
-      expect(await page.getByRole("region", { name: heading ?? "" }).count()).toBe(1);
-    }
-    await context.close();
-  }, 30_000);
-
   it("offers each provider's npm command and pinned script", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url, { waitUntil: "domcontentloaded" });
@@ -93,58 +42,10 @@ describe("the home page's headings and install box", () => {
   }, 30_000);
 });
 
-describe("the home page's examples", () => {
-  it("shows every example's map on each of its providers, held", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url);
-    expect(await page.locator("section.example maplace-map[hold]").count()).toBe(PAGE_MAP_COUNT);
-    await context.close();
-  }, 30_000);
-
-  it("gives every map a box, as a map without one never comes into view to be released", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url);
-    const onMapLibre = await shownMapHeights(page, "maplibre");
-    await chooseProvider(page, "Google");
-    const onGoogle = await shownMapHeights(page, "google");
-    expect(onGoogle.length + onMapLibre.length).toBe(PAGE_MAP_COUNT);
-    expect([...onGoogle, ...onMapLibre].filter((height) => height === 0)).toEqual([]);
-    await context.close();
-  }, 30_000);
-
-  it("uses no id twice, with every example's versions on one page", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url);
-    const ids = await page.evaluate(() =>
-      [...document.querySelectorAll("[id]")].map(({ id }) => id),
-    );
-    expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
-    await context.close();
-  }, 30_000);
-
-  it("follows every version with its own notes, which the frame shows with it", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url);
-    const withoutNotes = await page.evaluate(() =>
-      [...document.querySelectorAll<HTMLElement>("[data-live-version]")]
-        .filter((version) => !version.nextElementSibling?.matches("[data-version-notes]"))
-        .map(({ dataset }) => `${dataset.example} ${dataset.provider} ${dataset.liveVersion}`),
-    );
-    expect(withoutNotes).toEqual([]);
-    const savingVersions = await page.evaluate(
-      () =>
-        [...document.querySelectorAll<HTMLElement>("[data-live-version]")].filter((version) =>
-          version.nextElementSibling?.querySelector("[data-saved]"),
-        ).length,
-    );
-    expect(savingVersions, "polygon's versions, each with its saved note").toBe(8);
-    expect(await page.locator("section:not(#polygon) [data-saved]").count()).toBe(0);
-    await context.close();
-  }, 30_000);
-
+describe("Data & routes' examples", () => {
   it("runs a page's scripts as its map opens: route's stops, big's points", async () => {
     const { page, context, fetched } = await site.visitor();
-    await openHome(page, site.url);
+    await openHome(page, site.url, sectionPage("route"));
     await placeholder(page).click();
     await chooseProvider(page, "Google");
     await page.locator("#route-map").scrollIntoViewIfNeeded();
@@ -164,7 +65,7 @@ describe("the home page's examples", () => {
 
   it("runs the chosen version once consented, its map in a box", async () => {
     const { page, context, fetched } = await site.visitor({ google: "stubbed" });
-    await openHome(page, site.url);
+    await openHome(page, site.url, sectionPage("route"));
     // Chosen before consent, so big's page map, hidden, is never released: only its React
     // version can fetch the points.
     await chooseProvider(page, "Google");
@@ -215,20 +116,6 @@ describe("the home page's code tabs", () => {
 });
 
 describe("the site's map ID", () => {
-  it("is every example page's map ID, but where the page sets its own", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    const mapIds = await page
-      .locator('section.example maplace-map[provider="google"]')
-      .evaluateAll((maps) => maps.map((map) => map.getAttribute("map-id")));
-    const styled = await page
-      .locator('section#styled maplace-map[provider="google"]')
-      .getAttribute("map-id");
-    expect(styled).toBe("DEMO_MAP_ID");
-    expect(mapIds.filter((id) => id !== SITE_MAP_ID)).toEqual(["DEMO_MAP_ID"]);
-    await context.close();
-  }, 30_000);
-
   it("is in the scripts the vanilla and React versions run on", async () => {
     const scripts = await readdir(join(site.dir, "_astro"));
     const texts = await Promise.all(

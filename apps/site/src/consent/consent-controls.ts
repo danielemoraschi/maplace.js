@@ -3,7 +3,7 @@ import type { ConsentStore } from "./consent-store.ts";
 export interface ConsentControls {
   readonly document: Document;
   readonly store: ConsentStore;
-  /** Lets the site's maps load (`gateMaps`). */
+  /** Lets the site's maps load: the page's consent latch turned on (`map-gate.ts`). */
   readonly openMaps: () => void;
   /** Reloads the page: Maps JS can't be unloaded, so turning maps off starts the page again. */
   readonly reload: () => void;
@@ -35,11 +35,11 @@ export function startConsent({ document, store, openMaps, reload }: ConsentContr
     }
   }
 
-  for (const button of document.querySelectorAll("[data-maps-grant]")) {
-    button.addEventListener("click", grant);
-  }
-  for (const toggle of document.querySelectorAll("[data-maps-toggle]")) {
-    toggle.addEventListener("click", toggleMaps);
-  }
+  // On the document, so a placeholder in a group's panel added later grants too.
+  document.addEventListener("click", ({ target }) => {
+    if (!(target instanceof Element)) return;
+    if (target.closest("[data-maps-grant]")) grant();
+    else if (target.closest("[data-maps-toggle]")) toggleMaps();
+  });
   if (store.isGranted()) turnMapsOn();
 }
