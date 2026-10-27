@@ -28,6 +28,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
 | `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `hold` | Stays idle, with no provider request and no list built, until `release()` |
+| `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace` |
 
 `list`, `list-position`, `fit-all-label` and `list-heading` are live: a change builds the list again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
@@ -41,7 +42,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `sanitize` | The store's `sanitize` option, so locations given as JSON or through `locations` can use `html`. Set it before the map opens; set later, it is misuse |
 | `maplace` | The underlying [store](store.md), for anything the attributes don't cover |
 | `loadState` | `error` while a misuse stands, else the store's: `idle`, `loading`, `ready` or `error` |
-| `release` | `release()` starts loading an element held with `hold` |
+| `release` | `release()` starts loading at once an element held with `hold` or waiting with `loading="lazy"` |
 
 The store is created when the element first connects (or `maplace`, `locations` or `route` is first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
 
@@ -64,7 +65,7 @@ The store's [events](store.md#events), as DOM events on the element, named in lo
 
 ## Load states
 
-The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles; its default styles, and how to turn them off, are on [Styling](styling.md). A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too.
+The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles; its default styles, and how to turn them off, are on [Styling](styling.md). A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too. A map with `loading="lazy"` stays idle until it comes near the viewport, so a map below the fold costs no map load (Google bills each) until the visitor scrolls to it; one in a hidden panel (a closed tab, `<details>`, `display: none`) loads once shown. Its list is built at once; with `hold` as well, it waits for `release()`, which loads it wherever it is.
 
 ## Location attributes
 

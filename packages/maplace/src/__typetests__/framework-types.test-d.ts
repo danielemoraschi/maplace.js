@@ -37,6 +37,10 @@ type SelectionListener = (event: OnMap<MaplaceElementEventMap["maplace-selection
 expectTypeOf<ProviderAttribute>().toExtend<NamedKeys<VueMap>>();
 expectTypeOf<ProviderAttribute>().toExtend<NamedKeys<SvelteMap>>();
 
+// The map's own attributes read by name are typed on the map.
+expectTypeOf<"hold" | "loading">().toExtend<NamedKeys<VueMap>>();
+expectTypeOf<"hold" | "loading">().toExtend<NamedKeys<SvelteMap>>();
+
 // A location takes exactly its attributes, and no listener.
 expectTypeOf<NamedKeys<VueLocation>>().toEqualTypeOf<(typeof LOCATION_ATTRIBUTES)[number]>();
 expectTypeOf<NamedKeys<SvelteLocation>>().toEqualTypeOf<(typeof LOCATION_ATTRIBUTES)[number]>();
@@ -89,6 +93,7 @@ export const vueMap: VueMap = {
 };
 export const svelteMap: SvelteMap = {
   hold: true,
+  loading: "lazy",
   id: "m",
   "data-x": "1",
   locations,

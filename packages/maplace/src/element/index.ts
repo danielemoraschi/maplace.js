@@ -57,6 +57,9 @@ export { defineListView } from "./list-views";
  * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `hold`: stay idle, with no provider request and no list built, until `release()`.
+ * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
+ *   list is built at once), on each connect until `release()`; read when the map would open, as
+ *   `hold` is.
  * - provider attributes, such as `api-key` and `map-id` for Google, or `map-style` for MapLibre,
  *   read when the map opens.
  *
@@ -87,7 +90,7 @@ export interface MaplaceMapElement extends HTMLElement {
    * `:state(idle | loading | ready | error)`, so CSS can style e.g. a consent placeholder.
    */
   readonly loadState: LoadState;
-  /** Starts loading when the element has `hold`. */
+  /** Starts loading at once when the element has `hold` or waits with `loading="lazy"`. */
   release(): void;
 }
 

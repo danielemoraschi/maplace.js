@@ -166,4 +166,4 @@ On MapLibre, from the CDN script or npm, a policy allows `img-src data: blob:`, 
 
 ## Consent
 
-A map with `hold` asks nothing of its provider (Google, or the style's servers on MapLibre), and adds no script, until `release()`. A page that needs a visitor's consent before loading a map renders its map with `hold`, styles the placeholder with `:state(idle)`, and calls `release()` once the visitor agrees ([load states](element.md#load-states)).
+A map with `hold` asks nothing of its provider (Google, or the style's servers on MapLibre), and adds no script, until `release()`. A page that needs a visitor's consent before loading a map renders its map with `hold`, styles the placeholder with `:state(idle)`, and calls `release()` once the visitor agrees ([load states](element.md#load-states)). A map below the fold can also wait to be seen: with `loading="lazy"` it asks nothing of its provider until it nears the viewport ([load states](element.md#load-states)).

@@ -8,6 +8,7 @@ import { createListKeeper, type ListKeeper } from "./list-keeper";
 import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
 import { createMapSettingsWatch } from "./map-settings-watch";
+import { createNearViewWait } from "./near-view";
 import { reapplyOwnProperties } from "./own-properties";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
@@ -28,6 +29,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   readonly #setupRetry = createSetupRetry(this, () => this.#openSession());
   readonly #settingsWatch = createMapSettingsWatch(this, () => this.#reopenAtCamera());
   readonly #ownNodesWatch = new MutationObserver(() => this.#keepOwnNodes());
+  readonly #nearView = createNearViewWait(this, () => this.#openSession());
   readonly #feed = new StoreFeed(this, this.#misuse, () => this.#showLoadState());
   #lists: ListKeeper | undefined;
   #camera: CameraKeeper | undefined;
@@ -99,6 +101,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
 
   release(): void {
     this.#released = true;
+    this.#nearView.stop();
     this.#open();
   }
 
@@ -117,6 +120,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     });
     this.#lists.open();
     this.#camera ??= createCameraKeeper(store);
+    if (!this.#released && this.#session === undefined) this.#nearView.start();
     this.#openSession();
   }
 
@@ -125,7 +129,8 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   #openSession(): void {
-    if (!this.isConnected || this.#isHeld() || this.#session !== undefined) return;
+    if (!this.isConnected || this.#isHeld() || this.#nearView.waiting) return;
+    if (this.#session !== undefined) return;
     const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#lists?.list };
     // Before attaching: an adapter may report where it opened while it mounts.
     this.#camera?.opening();
@@ -141,6 +146,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #stop(): void {
     this.#closeSession();
     this.#setupRetry.stop();
+    this.#nearView.stop();
     this.#lists?.stop();
     this.#ownNodesWatch.disconnect();
     this.#feed.stopWatching();
