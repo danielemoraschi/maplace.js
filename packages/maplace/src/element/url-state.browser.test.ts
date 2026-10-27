@@ -1,6 +1,7 @@
 import { describe, expect, it, onTestFinished } from "vitest";
+import { twoFrames } from "../testing/webgl-canvas";
 import { historyWrites } from "./testing/address";
-import { adaptersMade, MILAN, mapFrom, nextTask, ROME } from "./testing/fake-maps";
+import { adaptersMade, MILAN, mapFrom, nextTask, ROME, styledPage } from "./testing/fake-maps";
 
 /**
  * The frame's address with `parameters` added, until the test finishes: the runner may carry
@@ -86,5 +87,19 @@ describe("<maplace-map url-state>", () => {
     const map = await mapFrom(`<maplace-map url-state hold>${ROME}${MILAN}</maplace-map>`);
     expect(map.maplace.getSnapshot().selectedId).toBe("milan");
     expect(adaptersMade.length).toBe(opened);
+  });
+
+  it("selects the address's location while a lazy map waits, and its list shows it", async () => {
+    atAddress({ location: "milan" });
+    styledPage();
+    onTestFinished(() => scrollTo(0, 0));
+    const opened = adaptersMade.length;
+    const map = await mapFrom(
+      `<div style="height: 200vh"></div><maplace-map loading="lazy" url-state list>${ROME}${MILAN}</maplace-map>`,
+    );
+    await twoFrames();
+    const selected = map.querySelector('[role="option"][aria-selected="true"]');
+    expect([adaptersMade.length, map.maplace.getSnapshot().selectedId]).toEqual([opened, "milan"]);
+    expect(selected?.textContent).toContain("Milan");
   });
 });
