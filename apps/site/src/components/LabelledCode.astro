@@ -1,0 +1,17 @@
+---
+interface Props {
+  /** The id of the code. */
+  id: string;
+  /** What the code is for, its heading. */
+  label: string;
+  /** The command or snippet. */
+  text: string;
+}
+
+const { id, label, text } = Astro.props;
+---
+
+<div class="mb-4">
+  <h3 class="mt-0 mb-1 text-sm font-medium">{label}</h3>
+  <pre class="m-0 border-2 border-ink px-4 py-3 break-all whitespace-pre-wrap"><code id={id}>{text}</code></pre>
+</div>

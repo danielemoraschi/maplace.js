@@ -1,32 +1,32 @@
 ---
 import { getEntry } from "astro:content";
 import { docRoute } from "../site/repo-docs.ts";
-import CopyableCode from "./CopyableCode.astro";
+import LabelledCode from "./LabelledCode.astro";
 
 const entry = await getEntry("install", "element");
 if (entry === undefined) throw new Error("the install collection has no element entry");
 const { version, providers } = entry.data;
-const HEADING = "mt-0 mb-2 text-xl";
+const HEADING = "mt-2 mb-2 text-xl";
+/** One provider per column, Google's then MapLibre's; one under the other on a phone. */
+const PAIR = "grid grid-cols-2 gap-x-6 max-[720px]:grid-cols-1";
 ---
 
-<div
-  class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-6 border-t-3 border-ink pt-4 max-[720px]:grid-cols-[minmax(0,1fr)]"
->
-  <div>
-    <h2 class={HEADING}>Install</h2>
+<div class="border-t-3 border-ink pt-4">
+  <h2 class={HEADING}>Install</h2>
+  <div class={PAIR}>
     {
       providers.map(({ provider, label, npmCommand }) => (
-        <CopyableCode id={`npm-install-${provider}`} label={label} text={npmCommand} />
+        <LabelledCode id={`npm-install-${provider}`} label={label} text={npmCommand} />
       ))
     }
   </div>
-  <div>
-    <h2 class={HEADING}>Or pin the CDN script</h2>
+  <h2 class={HEADING}>CDN script</h2>
+  <div class={PAIR}>
     {
       providers.map(({ provider, label, cdnSnippet }) => (
-        <CopyableCode id={`pinned-script-${provider}`} label={label} text={cdnSnippet} />
+        <LabelledCode id={`pinned-script-${provider}`} label={label} text={cdnSnippet} />
       ))
     }
-    <p class="mt-2 mb-0 text-sm text-muted">maplacejs {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
   </div>
+  <p class="m-0 text-sm text-muted">maplacejs {version}, checked by the browser against its hash. <a href={`${docRoute("getting-started")}#one-script-per-page`}>Which script</a></p>
 </div>

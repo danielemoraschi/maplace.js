@@ -77,19 +77,17 @@ describe("the home page's headings and install box", () => {
     await context.close();
   }, 30_000);
 
-  it("offers each provider's npm command and pinned script, each with a Copy button", async () => {
+  it("offers each provider's npm command and pinned script", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url, { waitUntil: "domcontentloaded" });
     expect(await page.locator("#npm-install-google").textContent()).toBe("npm install maplace");
     expect(await page.locator("#npm-install-maplibre").textContent()).toBe(
       "npm install maplace maplibre-gl",
     );
-    for (const kind of ["npm-install", "pinned-script"]) {
-      for (const provider of ["google", "maplibre"]) {
-        const id = `${kind}-${provider}`;
-        const copy = page.locator(`button[data-copy="${id}"]`);
-        expect(await copy.getAttribute("aria-describedby")).toBe(`${id}-label`);
-      }
+    for (const provider of ["google", "maplibre"]) {
+      expect(await page.locator(`#pinned-script-${provider}`).textContent()).toContain(
+        "integrity=",
+      );
     }
     await context.close();
   }, 30_000);
