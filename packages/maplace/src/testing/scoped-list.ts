@@ -37,14 +37,19 @@ export function scopedList(
     detach();
     map.remove();
   });
+  const all = queried(list.element, ".maplace-show-all");
+  const area = queried(list.element, ".maplace-area-only");
   const ids = () => optionsIn(list.element).map((option) => option.textContent);
   return {
     maplace,
     adapter,
     list,
-    areaOnly: queried(list.element, ".maplace-area-only") as HTMLButtonElement,
-    showAll: queried(list.element, ".maplace-show-all") as HTMLButtonElement,
+    group: queried(list.element, ".maplace-area-switch"),
+    all,
+    area,
     status: queried(list.element, ".maplace-empty-area"),
+    /** Which of the switch's buttons is pressed, "All" first. */
+    pressed: () => [all, area].map((button) => button.getAttribute("aria-pressed")),
     detach,
     ids,
     listedCount: () => ids().length,

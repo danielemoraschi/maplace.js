@@ -4,152 +4,123 @@ import { movedTo, PLACES, readyScopedList, SCOPED, scopedList } from "./testing/
 import { listedLocations } from "./views/listed-locations";
 
 describe("createListView with scope: 'viewport'", () => {
-  it("at load, lists every location with 'This area only' hidden, for locations given before attaching", async () => {
-    const { areaOnly, listedCount } = await readyScopedList();
-    expect([listedCount(), areaOnly.hidden]).toEqual([5, true]);
+  it("at load, shows the switch on 'All' and lists every location", async () => {
+    const { group, listedCount, pressed } = await readyScopedList();
+    expect([listedCount(), group.hidden, pressed()]).toEqual([5, false, ["true", "false"]]);
   });
 
-  it("at load, the same when the fitted view is reported before ready", async () => {
-    const { maplace, adapter, areaOnly, listedCount } = scopedList({ holdApplies: true });
-    await adapter.finishMount();
-    await adapter.probe().settle();
-    expect(maplace.getSnapshot().loadState).toBe("loading");
-    await adapter.finishApplies();
-    await maplace.whenReady();
-    expect([listedCount(), areaOnly.hidden]).toEqual([5, true]);
+  it("shows the switch before the map is ready, and before there is a view", () => {
+    const { group, pressed } = scopedList({ holdApplies: true });
+    expect([group.hidden, pressed()]).toEqual([false, ["true", "false"]]);
   });
 
-  it("at load, the same for locations set after the map opened", async () => {
-    const { maplace, adapter, areaOnly, listedCount } = scopedList({ locations: [] });
-    await adapter.finishMount();
-    await maplace.whenReady();
-    await adapter.probe().settle();
-    maplace.setLocations(PLACES);
-    await adapter.probe().settle();
-    expect([listedCount(), areaOnly.hidden]).toEqual([5, true]);
-  });
-
-  it("shows no 'This area only' for a view reported while loading", async () => {
-    const { adapter, areaOnly } = scopedList({ holdApplies: true });
-    await adapter.finishMount();
-    adapter.host().reportViewportChange(viewAround(-40, 5));
-    expect(areaOnly.hidden).toBe(true);
-  });
-
-  it("stays unscoped for a viewport with no area", async () => {
-    const { maplace, adapter, areaOnly, listedCount } = await readyScopedList();
+  it("in 'All', keeps every location listed after a move", async () => {
+    const { maplace, adapter, listedCount } = await readyScopedList();
     await movedTo(maplace, adapter, -40);
-    areaOnly.click();
-    adapter.host().reportViewportChange({ ...viewAround(-40, 5), bounds: NO_AREA });
-    expect([listedCount(), areaOnly.hidden]).toEqual([5, true]);
+    expect(listedCount()).toBe(5);
   });
 
-  it("shows 'This area only' after a move that would list other locations, keeping the list as it was", async () => {
-    const { maplace, adapter, areaOnly, listedCount } = await readyScopedList();
+  it("'This area' lists what is in the view now, and presses its button", async () => {
+    const { maplace, adapter, area, ids, pressed } = await readyScopedList();
     await movedTo(maplace, adapter, -40);
-    expect([listedCount(), areaOnly.hidden]).toEqual([5, false]);
+    area.click();
+    expect([ids(), pressed()]).toEqual([["far-west"], ["false", "true"]]);
   });
 
-  it("shows no 'This area only' for a move that lists the same", async () => {
-    const { maplace, adapter, areaOnly } = await readyScopedList();
-    maplace.setView({ lat: 10, lng: 0 }, 1);
+  it("'This area' follows the map: each new view lists what it holds", async () => {
+    const { maplace, adapter, area, ids } = await readyScopedList();
+    await movedTo(maplace, adapter, -40);
+    area.click();
+    await movedTo(maplace, adapter, 40);
+    expect(ids()).toEqual(["far-east"]);
+    maplace.select("west");
     await adapter.probe().settle();
-    expect(areaOnly.hidden).toBe(true);
+    expect(ids()).toContain("west");
   });
 
-  it("shows no 'This area only' for a resize of the scoped view, which keeps its centre and zoom", async () => {
-    const { maplace, adapter, areaOnly } = await readyScopedList();
+  it("'This area' keeps its list through a resize of the view, which keeps its centre and zoom", async () => {
+    const { maplace, adapter, area, ids } = await readyScopedList();
     await movedTo(maplace, adapter, -40);
-    areaOnly.click();
-    const scopedTo = maplace.getSnapshot().viewport ?? viewAround(-40, 5);
+    area.click();
+    const shown = maplace.getSnapshot().viewport ?? viewAround(-40, 5);
     adapter.host().reportViewportChange({
-      ...scopedTo,
-      bounds: { ...scopedTo.bounds, east: scopedTo.bounds.east + 40 },
+      ...shown,
+      bounds: { ...shown.bounds, east: shown.bounds.east + 40 },
     });
-    expect(areaOnly.hidden).toBe(true);
+    expect(ids()).toEqual(["far-west"]);
   });
 
-  it("'This area only' lists what is in the view now, and hides", async () => {
-    const { maplace, adapter, areaOnly, ids } = await readyScopedList();
+  it("'This area' lists again on a change of locations or filter", async () => {
+    const { maplace, adapter, area, ids } = await readyScopedList();
     await movedTo(maplace, adapter, -40);
-    areaOnly.click();
-    expect([ids(), areaOnly.hidden]).toEqual([["far-west"], true]);
+    area.click();
+    maplace.setFilter(["N"]);
+    expect(ids()).toEqual([]);
+    maplace.setFilter(undefined);
+    expect(ids()).toEqual(["far-west"]);
+    maplace.setLocations([...PLACES, { id: "near-west", lat: 0, lng: -41 }]);
+    await adapter.probe().settle();
+    expect(ids()).toEqual(["far-west", "near-west"]);
   });
 
-  it("a selection that moves the map shows 'This area only'", async () => {
-    const { maplace, adapter, areaOnly } = await readyScopedList();
-    maplace.setView({ lat: 0, lng: 0 }, 4);
-    await adapter.probe().settle();
-    areaOnly.click();
-    maplace.select("far-east");
-    await adapter.probe().settle();
-    expect(areaOnly.hidden).toBe(false);
+  it("'This area' stays chosen with no view, listing everything until a view comes", async () => {
+    const scoped = await readyScopedList();
+    const { maplace, adapter, area, listedCount, detach, pressed } = scoped;
+    await movedTo(maplace, adapter, -40);
+    area.click();
+    adapter.host().reportViewportChange({ ...viewAround(-40, 5), bounds: NO_AREA });
+    expect([listedCount(), pressed()]).toEqual([5, ["false", "true"]]);
+    adapter.host().reportViewportChange(viewAround(-40, 5));
+    expect(listedCount()).toBe(1);
+    detach();
+    expect([listedCount(), pressed()]).toEqual([5, ["false", "true"]]);
   });
 
-  it("says emptyAreaLabel in a status when filtering to the view lists nothing", async () => {
+  it("'All' lists every location again, and presses its button", async () => {
+    const { maplace, adapter, all, area, listedCount, pressed } = await readyScopedList();
+    await movedTo(maplace, adapter, -40);
+    area.click();
+    all.click();
+    expect([listedCount(), pressed()]).toEqual([5, ["true", "false"]]);
+  });
+
+  it("over an empty area, keeps the switch and says emptyAreaLabel in the status", async () => {
     const view = { ...SCOPED, emptyAreaLabel: "Nothing here" };
-    const { maplace, adapter, areaOnly, status, list } = await readyScopedList({}, view);
+    const { maplace, adapter, group, area, status, list } = await readyScopedList({}, view);
+    expect(status.textContent).toBe("");
     await movedTo(maplace, adapter, 150);
-    areaOnly.click();
-    expect([status.hidden, status.textContent, list.element.hidden]).toEqual([
-      false,
+    area.click();
+    expect([status.textContent, group.hidden, list.element.hidden]).toEqual([
       "Nothing here",
       false,
+      false,
     ]);
-  });
-
-  it("says so in the status over an empty area with a fit-all entry too", async () => {
-    const view = { ...SCOPED, fitAllLabel: "All" };
-    const { maplace, adapter, areaOnly, status } = await readyScopedList({}, view);
-    await movedTo(maplace, adapter, 150);
-    areaOnly.click();
-    expect(status.hidden).toBe(false);
-  });
-
-  it("shows no 'This area only' for a resize of the fitted view while unscoped", async () => {
-    const { maplace, adapter, areaOnly } = await readyScopedList();
-    const fitted = maplace.getSnapshot().viewport ?? viewAround(0, 3);
-    adapter.host().reportViewportChange({
-      ...fitted,
-      bounds: { ...fitted.bounds, west: -35, east: 35 },
-    });
-    expect(areaOnly.hidden).toBe(true);
-  });
-
-  it("a detach lists everything again and hides both buttons and the status", async () => {
-    const scoped = await readyScopedList();
-    const { maplace, adapter, areaOnly, showAll, status, listedCount, detach } = scoped;
-    await movedTo(maplace, adapter, 150);
-    areaOnly.click();
     await movedTo(maplace, adapter, -40);
-    detach();
-    expect([listedCount(), areaOnly.hidden, showAll.hidden, status.hidden]).toEqual([
-      5,
-      true,
-      true,
-      true,
-    ]);
+    expect(status.textContent).toBe("");
   });
 
-  it("labels the button areaOnlyLabel, 'This area only' by default", async () => {
-    expect(scopedList().areaOnly.textContent).toBe("This area only");
-    const view = { ...SCOPED, areaOnlyLabel: "Look here" };
-    expect(scopedList({}, view).areaOnly.textContent).toBe("Look here");
+  it("says so over an empty area with a fit-all entry too", async () => {
+    const view = { ...SCOPED, fitAllLabel: "Everything" };
+    const { maplace, adapter, area, status } = await readyScopedList({}, view);
+    await movedTo(maplace, adapter, 150);
+    area.click();
+    expect(status.textContent).toBe("No locations in this area");
   });
 
-  it("lists what the filter shows within the view", async () => {
-    const { maplace, adapter, areaOnly, ids } = await readyScopedList();
-    maplace.setFilter(["N"]);
-    maplace.setView({ lat: 15, lng: 0 }, 3);
-    await adapter.probe().settle();
-    areaOnly.click();
-    expect(ids()).toEqual(["north"]);
+  it("labels the buttons showAllLabel and areaOnlyLabel, 'All' and 'This area' by default, in a group named as the list", () => {
+    const byDefault = scopedList();
+    expect([byDefault.all.textContent, byDefault.area.textContent]).toEqual(["All", "This area"]);
+    expect(byDefault.group.getAttribute("aria-label")).toBe("Locations");
+    const view = { ...SCOPED, showAllLabel: "Everywhere", areaOnlyLabel: "Here", label: "Shops" };
+    const given = scopedList({}, view);
+    expect([given.all.textContent, given.area.textContent]).toEqual(["Everywhere", "Here"]);
+    expect(given.group.getAttribute("aria-label")).toBe("Shops");
   });
 
   it("listedLocations stays unscoped", async () => {
-    const { maplace, adapter, areaOnly } = await readyScopedList();
+    const { maplace, adapter, area } = await readyScopedList();
     await movedTo(maplace, adapter, -40);
-    areaOnly.click();
+    area.click();
     expect(listedLocations(maplace.getSnapshot())).toHaveLength(5);
   });
 });

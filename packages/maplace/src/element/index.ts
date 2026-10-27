@@ -31,7 +31,7 @@ export interface ListViewSetup {
   readonly options: ElementListOptions;
   /**
    * The locations maplace's own lists show now, in data order (those shown under the filter),
-   * unfiltered by the view: a list with `scope` narrows them to its view after "This area only",
+   * unfiltered by the view: a list with `scope` narrows them to its view in "This area",
    * and a view of yours with `scope` scopes itself. Read it again on each store change, so a view
    * of yours lists what they list.
    */
@@ -60,9 +60,9 @@ export { defineListView } from "./list-views";
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
  * - `fit-all-label`: label of a first list entry that fits all locations.
  * - `list-heading`: a heading above the list, beside the map or on it; the list's accessible name.
- * - `list-scope`: `viewport` lists only what is in the map's view, after a "This area only"
- *   button shown on a move is pressed; "Show all", shown then, lists all again.
- * - `area-only-label`, `show-all-label`: those buttons' labels.
+ * - `list-scope`: `viewport` shows a switch above the list, "All" (at load) or "This area",
+ *   which lists only what is in the map's view and follows it, wherever the list is.
+ * - `area-only-label`, `show-all-label`: the labels of "This area" and "All".
  * - `empty-area-label`: what the list says when nothing is in its view.
  *   (`list`, `list-position`, `fit-all-label`, `list-heading`, `list-scope`, `area-only-label`,
  *   `show-all-label` and `empty-area-label` are live: the list is built again.)

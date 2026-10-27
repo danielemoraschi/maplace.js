@@ -1,9 +1,5 @@
-import {
-  type AreaFilter,
-  type AreaFilterLabels,
-  type AreaFilterState,
-  createAreaFilter,
-} from "./area-filter";
+import { activeElementAround } from "./active-element";
+import { type AreaSwitch, type AreaSwitchLabels, createAreaSwitch } from "./area-switch";
 import { element } from "./listbox-nodes";
 import type { ListVariant } from "./variant";
 
@@ -19,47 +15,38 @@ export interface ListHeading {
 /** What the block holds above the entries, each when given. */
 export interface BlockParts {
   readonly heading: ListHeading | undefined;
-  readonly areaFilter: AreaFilterLabels | undefined;
+  readonly areaSwitch: AreaSwitchLabels | undefined;
 }
 
 export interface ListBlock<Data> {
   /** The variant as the view shows it: itself, or in a block with the parts above it. */
   readonly variant: ListVariant<Data>;
-  readonly areaFilter: AreaFilter | undefined;
+  readonly areaSwitch: AreaSwitch | undefined;
 }
 
 /**
- * `variant` as the view shows it: as it is with no heading and no area filter, else in one block
- * (the view's element) holding the heading, the area filter's buttons and status, then the
- * entries, hidden while all but the heading are. The heading is a plain block, not
- * `role="heading"`: the page's heading levels are the page's own.
+ * `variant` as the view shows it: as it is with no heading and no area switch, else in one block
+ * (the view's element) holding the heading, the area switch and its status, then the entries.
+ * The block hides while the entries do, unless it holds a switch, which never hides and takes the
+ * focus the entries lose when they empty, so it never falls to the page. The heading is a plain
+ * block, not `role="heading"`: the page's heading levels are the page's own.
  */
 export function listBlock<Data>(variant: ListVariant<Data>, parts: BlockParts): ListBlock<Data> {
-  if (parts.heading === undefined && parts.areaFilter === undefined) {
-    return { variant, areaFilter: undefined };
+  if (parts.heading === undefined && parts.areaSwitch === undefined) {
+    return { variant, areaSwitch: undefined };
   }
   const block = element("div", LIST_CLASS);
   if (parts.heading !== undefined) block.append(headingElement(parts.heading));
-  const filter = parts.areaFilter && createAreaFilter(parts.areaFilter, variant.element);
-  const filterNodes = filter ? [filter.areaOnly, filter.showAll, filter.status] : [];
-  block.append(...filterNodes, variant.element);
-  const hidable = [...filterNodes, variant.element];
-  const showBlock = () => {
-    block.hidden = hidable.every((node) => node.hidden);
-  };
-  const areaFilter = filter && {
-    areaOnly: filter.areaOnly,
-    showAll: filter.showAll,
-    update(state: AreaFilterState) {
-      filter.update(state);
-      showBlock();
-    },
-  };
+  const areaSwitch = parts.areaSwitch && createAreaSwitch(parts.areaSwitch);
+  if (areaSwitch) block.append(areaSwitch.group, areaSwitch.status);
+  block.append(variant.element);
   const shown: ListVariant<Data> = {
     element: block,
     renderStructure(structure) {
+      const focusWasIn = holdsFocus(variant.element);
       variant.renderStructure(structure);
-      showBlock();
+      if (!areaSwitch) block.hidden = variant.element.hidden;
+      else if (focusWasIn && !holdsFocus(variant.element)) areaSwitch.focusPressed();
     },
     renderState: (state) => variant.renderState(state),
     destroy() {
@@ -67,7 +54,11 @@ export function listBlock<Data>(variant: ListVariant<Data>, parts: BlockParts): 
       block.remove();
     },
   };
-  return { variant: shown, areaFilter };
+  return { variant: shown, areaSwitch };
+}
+
+function holdsFocus(node: Element): boolean {
+  return node.contains(activeElementAround(node));
 }
 
 function headingElement(heading: ListHeading): HTMLElement {

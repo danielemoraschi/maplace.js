@@ -100,7 +100,7 @@ function listPosition(value: string | null): ListPosition {
   });
 }
 
-/** `list-scope`: `viewport`, for a list with room for its "This area only" and "Show all". */
+/** `list-scope`: `viewport`, for a list with room for its "All" and "This area" switch. */
 function listScope(host: HTMLElement, name: string): ListViewOptions["scope"] {
   const value = host.getAttribute("list-scope");
   if (value === null) return undefined;

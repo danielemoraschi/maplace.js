@@ -64,9 +64,10 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
 | `maplace-list` | With a heading or `scope`, the block holding them and the entries |
 | `maplace-list-heading` | That heading |
-| `maplace-area-only` | The "This area only" button of a list with `scope` |
-| `maplace-show-all` | The "Show all" button of a list with `scope`, shown while it is filtered to a view |
-| `maplace-empty-area` | What a list with `scope` says when nothing is in view |
+| `maplace-area-switch` | The switch of a list with `scope`: a group of two buttons, the one in use `[aria-pressed=true]` |
+| `maplace-show-all` | The switch's "All" button |
+| `maplace-area-only` | The switch's "This area" button |
+| `maplace-empty-area` | The status of a list with `scope`, empty but over an empty area, when it says so |
 | `maplace-listbox` | The list of entries |
 | `maplace-group` | A group of entries |
 | `maplace-group-heading` | A group's heading |

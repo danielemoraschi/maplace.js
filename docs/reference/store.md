@@ -127,18 +127,18 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `label` | `string` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | `string` | A visible heading above the entries |
 | `render` | `(entry) => Node` | An entry's content, for `as: "list"` only; the view keeps keyboard, focus and ARIA handling |
-| `scope` | `"viewport"` | Lists only the locations in the map's view, from a "This area only" button, and all again from "Show all"; for `as: "list"` only |
-| `areaOnlyLabel` | `string` | The label of "This area only"; default "This area only" |
-| `showAllLabel` | `string` | The label of "Show all"; default "Show all" |
+| `scope` | `"viewport"` | A switch above the list, "All" or "This area", which lists only the locations in the map's view and follows it; for `as: "list"` only |
+| `areaOnlyLabel` | `string` | The label of the switch's "This area"; default "This area" |
+| `showAllLabel` | `string` | The label of the switch's "All"; default "All" |
 | `emptyAreaLabel` | `string` | What a scoped list says when nothing is in its view; default "No locations in this area" |
 
-With `scope: "viewport"` the list can be filtered to the map's view. It lists every location until "This area only" is first pressed, which at load is what the fitted view holds. Once the map is ready, a move (a selection or fit-all included) that would list other locations shows that button above the entries, and the list keeps what it listed; pressing it lists the locations in the view then: a marker or circle when its point or centre is in it, a line or polygon when any point of its path is. A resize or a rotation, which keeps the centre and zoom, shows no button. While the list is filtered, "Show all" shows beside it and lists every location again; after it, "This area only" shows if the view would list other locations. A view holding nothing keeps the list's panel on the map with a status saying so (`emptyAreaLabel`) and "Show all", the way back. Focus never stays on a part that hides: from "This area only" it moves to the list's first entry (the selected one, if listed), or to the status over an empty area; from "Show all" or the status, to the list's first entry, or to "This area only" when the list has none. With no view (not attached, held, not laid out) the list lists everything again.
+With `scope: "viewport"` the list shows a switch above its entries, always: two buttons, "All" and "This area", the one in use pressed (`aria-pressed`), in a group named as the list (its `label`, else its `heading`, else "Locations"). "All", at load, lists every location. "This area" lists the locations in the map's view (a marker or circle when its point or centre is in it, a line or polygon when any point of its path is) and follows the map: each new view lists again, as does a change of locations or filter. A resize or a rotation, which keeps the centre and zoom, isn't a new view, so a list under the map, whose height resizes it, can't loop. With no view (not attached, not laid out, reopened) "This area" stays chosen and lists everything until a view comes. A view holding nothing keeps the switch, and a status (`role="status"`, always on the page, so a screen reader hears it) says so (`emptyAreaLabel`). Nothing hides, so focus stays on the button pressed, and focus on an entry the list leaves out when it empties goes to it. It works wherever the list is: on the map, beside or under it, in a container of your own, or a `<LocationList>` outside the `<MaplaceMap>`.
 
 The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins; its element carries `maplace-list-view`, and [Styling](styling.md) lists its classes and how to turn the defaults off.
 
 ## Listed locations
 
-`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's. The map's view never narrows it: a list with `scope` narrows them to its view after "This area only".
+`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's. The map's view never narrows it: a list with `scope` narrows them to its view in "This area".
 
 ## Adapters
 

@@ -1,59 +1,31 @@
 import type { Location } from "../location";
-import type { Snapshot } from "../store";
 import { hasArea, isInBox, unwrapped, type ViewBox } from "../view-box";
 import type { Viewport } from "../viewport";
-import { type ListedTest, listedEntries } from "./model";
+import type { ListedTest } from "./model";
+
+/** What a list with `scope` is switched to: "All" its locations, or "This area", the map's view. */
+export type AreaMode = "all" | "area";
 
 /**
- * What a list with `scope` lists in: every listed location until "This area only", then the view
- * it was last filtered to, until "Show all".
+ * The view a list with `scope` lists the locations of once the map reports `viewport`, or none
+ * to list them all. In "This area", each new view, and `scope` itself through a resize, which
+ * keeps the centre and zoom (the list's own height changing the map's is one, so a list under
+ * the map can't loop); none in "All", and without a laid-out view (not attached, not laid out,
+ * reopened) until one comes.
  */
-export type ListScope =
-  | { readonly kind: "unscoped" }
-  | { readonly kind: "scoped"; readonly to: Viewport };
-
-export const UNSCOPED: ListScope = { kind: "unscoped" };
-
-/**
- * The scope once the map reports `viewport`: unscoped without a laid-out one (a detach, a hidden
- * map), else the same scope. Nothing but "This area only" scopes a list.
- */
-export function scopeAfter(scope: ListScope, viewport: Viewport | undefined): ListScope {
-  return isLaidOut(viewport) ? scope : UNSCOPED;
+export function scopeIn(
+  mode: AreaMode,
+  scope: Viewport | undefined,
+  viewport: Viewport | undefined,
+): Viewport | undefined {
+  if (mode === "all" || !isLaidOut(viewport)) return undefined;
+  return scope !== undefined && sameCamera(scope, viewport) ? scope : viewport;
 }
 
-/** What "This area only" in `viewport` makes: scoped to it, or unscoped when it isn't laid out. */
-export function scopedTo(viewport: Viewport | undefined): ListScope {
-  return isLaidOut(viewport) ? { kind: "scoped", to: viewport } : UNSCOPED;
-}
-
-/**
- * Whether the map reports a view to decide "This area only" on again: another report, and not
- * a resize of the last one, which keeps its centre and zoom (the list's own height changing the
- * map's is one).
- */
-export function isNewView(previous: Viewport | undefined, next: Viewport | undefined): boolean {
-  if (next === previous) return false;
-  return previous === undefined || next === undefined || !sameCamera(previous, next);
-}
-
-/**
- * Whether "This area only" would change the list, which shows `listing`: once the map is
- * ready, for a laid-out view that lists other locations.
- */
-export function offersAreaOnly<Data>(
-  snapshot: Snapshot<Data>,
-  listing: readonly Location<Data>[],
-): boolean {
-  const { viewport } = snapshot;
-  if (snapshot.loadState !== "ready" || !isLaidOut(viewport)) return false;
-  return !sameLocations(listing, listedEntries(snapshot, inViewOf(scopedTo(viewport))));
-}
-
-/** What a scoped list keeps: the locations with a point in its view; nothing narrows otherwise. */
-export function inViewOf(scope: ListScope): ListedTest | undefined {
-  if (scope.kind === "unscoped") return undefined;
-  const box = unwrapped(scope.to.bounds);
+/** What a list scoped to `scope` keeps: the locations with a point in it; with none, all. */
+export function inViewOf(scope: Viewport | undefined): ListedTest | undefined {
+  if (scope === undefined) return undefined;
+  const box = unwrapped(scope.bounds);
   return (location) => isLocationInBox(location, box);
 }
 
@@ -63,10 +35,6 @@ function isLaidOut(viewport: Viewport | undefined): viewport is Viewport {
 
 function sameCamera(a: Viewport, b: Viewport): boolean {
   return a.zoom === b.zoom && a.center.lat === b.center.lat && a.center.lng === b.center.lng;
-}
-
-function sameLocations<Data>(a: readonly Location<Data>[], b: readonly Location<Data>[]): boolean {
-  return a.length === b.length && a.every((location, index) => location === b[index]);
 }
 
 /** A marker by its point, a circle by its centre, a line or polygon by any point of its path. */

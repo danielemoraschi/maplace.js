@@ -18,9 +18,10 @@ import { eventPropName } from "../../../../packages/maplace/src/react/store-bind
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
 import {
   AREA_ONLY_CLASS,
+  AREA_SWITCH_CLASS,
   EMPTY_AREA_CLASS,
   SHOW_ALL_CLASS,
-} from "../../../../packages/maplace/src/views/area-filter.ts";
+} from "../../../../packages/maplace/src/views/area-switch.ts";
 import {
   LIST_CLASS,
   LIST_HEADING_CLASS,
@@ -61,8 +62,9 @@ export const STYLING_CLASSES = [
   LIST_VIEW_CLASS,
   LIST_CLASS,
   LIST_HEADING_CLASS,
-  AREA_ONLY_CLASS,
+  AREA_SWITCH_CLASS,
   SHOW_ALL_CLASS,
+  AREA_ONLY_CLASS,
   EMPTY_AREA_CLASS,
   LISTBOX_CLASS,
   GROUP_CLASS,

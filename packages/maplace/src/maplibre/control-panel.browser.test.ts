@@ -100,6 +100,19 @@ describe("the panel of a control on a MapLibre map", () => {
     expect(view.element.getBoundingClientRect().width).toBeLessThan(12 * 13);
   });
 
+  it("fits a scoped list's switch in the 12em panel, each button on one line", async () => {
+    const maplace = createMaplace({ locations: places() });
+    const { adapter } = await onPageMapLibre(maplace);
+    const view = createListView(maplace, { scope: "viewport" });
+    onTestFinished(() => view.destroy());
+    adapter.mountControl(view.element, "top-right");
+    const lineHeight = Number.parseFloat(getComputedStyle(view.element).lineHeight);
+    for (const button of view.element.querySelectorAll(".maplace-area-switch>button")) {
+      expect(button.getBoundingClientRect().height).toBeLessThan(lineHeight * 2);
+    }
+    expect(view.element.getBoundingClientRect().width).toBe(12 * 13);
+  });
+
   it("lets the page's own rule win", async () => {
     pageRule(".maplace-control { background: rgb(1, 2, 3) }");
     const { panel } = await buttonOn();

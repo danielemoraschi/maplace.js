@@ -3,9 +3,10 @@ import type { Location } from "../location";
 import { createMaplace } from "../maplace/create";
 import { mounted } from "../testing/mounted";
 import type { Viewport } from "../viewport";
-import type { AreaFilter } from "./area-filter";
+import type { AreaSwitch } from "./area-switch";
 import { follow } from "./follow";
 import type { ListVariant } from "./variant";
+import type { AreaMode } from "./viewport-scope";
 
 const locations: Location[] = [
   { id: "a", lat: 0, lng: 0 },
@@ -25,23 +26,23 @@ function recordingVariant(): ListVariant & { readonly calls: string[] } {
 
 const rules = { groupHeadings: undefined };
 
-/** An area filter that records its updates, its buttons pressed by `pressAreaOnly`, `pressShowAll`. */
-function recordingAreaFilter(): AreaFilter & {
+/** An area switch that records what its status says, its buttons pressed by `choose`. */
+function recordingAreaSwitch(): AreaSwitch & {
   readonly calls: string[];
-  pressAreaOnly(): void;
-  pressShowAll(): void;
+  choose(mode: AreaMode): void;
 } {
   const calls: string[] = [];
-  const areaOnly = new EventTarget() as HTMLButtonElement;
-  const showAll = new EventTarget() as HTMLButtonElement;
+  let listener: ((mode: AreaMode) => void) | undefined;
   return {
     calls,
-    areaOnly,
-    showAll,
-    update: ({ moved, scoped, emptyArea }) =>
-      calls.push(`moved:${moved}/scoped:${scoped}/empty:${emptyArea}`),
-    pressAreaOnly: () => areaOnly.dispatchEvent(new Event("click")),
-    pressShowAll: () => showAll.dispatchEvent(new Event("click")),
+    showEmptyArea: (empty) => calls.push(`empty:${empty}`),
+    onChoose(choose) {
+      listener = choose;
+      return () => {
+        listener = undefined;
+      };
+    },
+    choose: (mode) => listener?.(mode),
   };
 }
 
@@ -97,57 +98,67 @@ describe("follow", () => {
     expect(variant.calls).toEqual(["destroy"]);
   });
 
-  it("renders no new structure for a viewport while unscoped, or for a move of a scoped list", async () => {
+  it("in 'All', renders no new structure for a view; in 'This area', for each new view", async () => {
     const { maplace, host } = await mounted({ locations });
     const variant = recordingVariant();
-    const areaFilter = recordingAreaFilter();
-    follow(maplace, { variant, rules, areaFilter });
+    const areaSwitch = recordingAreaSwitch();
+    follow(maplace, { variant, rules, areaSwitch });
+    expect(areaSwitch.calls.at(-1)).toBe("empty:false");
     variant.calls.length = 0;
     host.reportViewportChange(viewportAt(0));
     expect(variant.calls).toEqual([]);
-    areaFilter.pressAreaOnly();
+    areaSwitch.choose("area");
+    expect([variant.calls, areaSwitch.calls.at(-1)]).toEqual([["structure"], "empty:false"]);
     variant.calls.length = 0;
     host.reportViewportChange(viewportAt(30));
-    expect(variant.calls).toEqual([]);
-    expect(areaFilter.calls.at(-1)).toBe("moved:true/scoped:true/empty:false");
+    expect([variant.calls, areaSwitch.calls.at(-1)]).toEqual([["structure"], "empty:true"]);
   });
 
-  it("renders the structure again when a scoped list's viewport goes", async () => {
+  it("in 'This area', renders no new structure for a resize of the view", async () => {
+    const { maplace, host } = await mounted({ locations });
+    const variant = recordingVariant();
+    const areaSwitch = recordingAreaSwitch();
+    follow(maplace, { variant, rules, areaSwitch });
+    host.reportViewportChange(viewportAt(0));
+    areaSwitch.choose("area");
+    variant.calls.length = 0;
+    const resized = viewportAt(0);
+    host.reportViewportChange({ ...resized, bounds: { ...resized.bounds, north: 20 } });
+    expect(variant.calls).toEqual([]);
+  });
+
+  it("keeps 'This area' through a detach, listing everything until a view comes", async () => {
     const { maplace, host, detach } = await mounted({ locations });
     const variant = recordingVariant();
-    const areaFilter = recordingAreaFilter();
-    follow(maplace, { variant, rules, areaFilter });
-    host.reportViewportChange(viewportAt(0));
-    areaFilter.pressAreaOnly();
+    const areaSwitch = recordingAreaSwitch();
+    follow(maplace, { variant, rules, areaSwitch });
+    host.reportViewportChange(viewportAt(30));
+    areaSwitch.choose("area");
     variant.calls.length = 0;
     detach();
-    expect(variant.calls).toEqual(["structure"]);
-    expect(areaFilter.calls.at(-1)).toBe("moved:false/scoped:false/empty:false");
+    expect([variant.calls, areaSwitch.calls.at(-1)]).toEqual([["structure"], "empty:false"]);
   });
 
-  it("'Show all' renders the structure again unscoped, offering 'This area only' for the view", async () => {
+  it("'All' renders the structure again unscoped", async () => {
     const { maplace, host } = await mounted({ locations });
     const variant = recordingVariant();
-    const areaFilter = recordingAreaFilter();
-    follow(maplace, { variant, rules, areaFilter });
+    const areaSwitch = recordingAreaSwitch();
+    follow(maplace, { variant, rules, areaSwitch });
     host.reportViewportChange(viewportAt(30));
-    areaFilter.pressAreaOnly();
-    expect(areaFilter.calls.at(-1)).toBe("moved:false/scoped:true/empty:true");
+    areaSwitch.choose("area");
     variant.calls.length = 0;
-    areaFilter.pressShowAll();
-    expect(variant.calls).toEqual(["structure"]);
-    expect(areaFilter.calls.at(-1)).toBe("moved:true/scoped:false/empty:false");
+    areaSwitch.choose("all");
+    expect([variant.calls, areaSwitch.calls.at(-1)]).toEqual([["structure"], "empty:false"]);
   });
 
-  it("stops listening to both buttons once unsubscribed", async () => {
+  it("stops listening to the switch once unsubscribed", async () => {
     const { maplace, host } = await mounted({ locations });
     const variant = recordingVariant();
-    const areaFilter = recordingAreaFilter();
-    follow(maplace, { variant, rules, areaFilter })();
+    const areaSwitch = recordingAreaSwitch();
+    follow(maplace, { variant, rules, areaSwitch })();
     host.reportViewportChange(viewportAt(30));
     variant.calls.length = 0;
-    areaFilter.pressAreaOnly();
-    areaFilter.pressShowAll();
+    areaSwitch.choose("area");
     expect(variant.calls).toEqual([]);
   });
 });

@@ -39,16 +39,15 @@ export interface ListViewOptions<Data = unknown> {
    */
   readonly render?: ((entry: ListEntry<Data>) => Node) | undefined;
   /**
-   * `viewport`: a "This area only" button lists only the locations in the map's view (a shape
-   * when any of its points is). It shows after a move that would list other locations (a resize
-   * or a rotation isn't one); "Show all", shown while the list is filtered, lists them all again.
-   * Until the first is pressed, and with no view (not attached, held, not laid out), the list
-   * lists them all, which at load is what the fitted view holds. For `as: 'list'` only.
+   * `viewport`: a switch above the entries, "All" and "This area", always shown. "All" (at load)
+   * lists every location; "This area" lists those in the map's view (a shape when any of its
+   * points is) and follows it, listing again on each new view (a resize isn't one) and with no
+   * view (not attached, not laid out) every location until one comes. For `as: 'list'` only.
    */
   readonly scope?: "viewport" | undefined;
-  /** The label of "This area only". Default "This area only". */
+  /** The label of the switch's "This area". Default "This area". */
   readonly areaOnlyLabel?: string | undefined;
-  /** The label of "Show all". Default "Show all". */
+  /** The label of the switch's "All". Default "All". */
   readonly showAllLabel?: string | undefined;
   /** What a scoped list says when nothing is in its view. Default "No locations in this area". */
   readonly emptyAreaLabel?: string | undefined;
@@ -62,8 +61,8 @@ export interface ListViewOptions<Data = unknown> {
 export interface ListView {
   /**
    * The listbox or select itself, or with `heading` or `scope` a block holding the heading, the
-   * "This area only" and "Show all" buttons, the empty-area status and the listbox, each with the
-   * class `maplace-list-view`: place it with `mountControl`. Label it from the page only without either:
+   * "All" and "This area" switch, the empty-area status and the listbox, each with the class
+   * `maplace-list-view`: place it with `mountControl`. Label it from the page only without either:
    * the block is no list, so a label on it names nothing (give `label` instead).
    */
   readonly element: HTMLElement;
@@ -76,8 +75,8 @@ export interface ListView {
 }
 
 const DEFAULT_LABEL = "Locations";
-const DEFAULT_AREA_ONLY_LABEL = "This area only";
-const DEFAULT_SHOW_ALL_LABEL = "Show all";
+const DEFAULT_AREA_ONLY_LABEL = "This area";
+const DEFAULT_SHOW_ALL_LABEL = "All";
 const DEFAULT_EMPTY_AREA_LABEL = "No locations in this area";
 
 /** The class of every list view's element `createListView` builds, whichever it is: the class a page styles it by. */
@@ -99,16 +98,17 @@ export function createListView<Data>(
       throw error;
     });
   });
+  const label = options?.label ?? options?.heading ?? DEFAULT_LABEL;
   const list: ListVariant<Data> = VARIANTS[options?.as ?? "list"](actions, {
-    label: options?.label ?? options?.heading ?? DEFAULT_LABEL,
+    label,
     fitAllLabel: options?.fitAllLabel,
     render: options?.render,
   });
-  const { variant, areaFilter } = listBlock(list, blockPartsOf(options));
+  const { variant, areaSwitch } = listBlock(list, blockPartsOf(options, label));
   const stopFollowing = follow(maplace, {
     variant,
     rules: { groupHeadings: options?.groupHeadings },
-    areaFilter,
+    areaSwitch,
   });
   let destroyed = false;
   destroy = () => {
@@ -121,17 +121,21 @@ export function createListView<Data>(
   return { element: variant.element, destroy };
 }
 
-/** What the view shows above its entries: the heading and the area filter, each when asked for. */
-function blockPartsOf(options: ListViewOptions<never> | undefined): BlockParts {
+/**
+ * What the view shows above its entries: the heading and the area switch, each when asked for;
+ * the switch named as the list, whose way of showing its locations it switches.
+ */
+function blockPartsOf(options: ListViewOptions<never> | undefined, name: string): BlockParts {
   const heading = options?.heading;
   return {
     heading:
       heading === undefined
         ? undefined
         : { text: heading, namesList: options?.label === undefined },
-    areaFilter:
+    areaSwitch:
       options?.scope === "viewport"
         ? {
+            name,
             areaOnly: options.areaOnlyLabel ?? DEFAULT_AREA_ONLY_LABEL,
             showAll: options.showAllLabel ?? DEFAULT_SHOW_ALL_LABEL,
             emptyArea: options.emptyAreaLabel ?? DEFAULT_EMPTY_AREA_LABEL,

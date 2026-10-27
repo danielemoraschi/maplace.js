@@ -3,7 +3,7 @@ import { createGoogleMap } from "maplace/google";
 
 const maplace = createGoogleMap("#big-vanilla-map", {
   cluster: true,
-  // On the map, top-right: a list of what is in view, with "This area only" after a move, then "Show all".
+  // On the map, top-right: a list switched between "All" and "This area", what is in view.
   list: { scope: "viewport" },
 });
 

@@ -4,9 +4,10 @@ import { recordingActions, structureOf, titled } from "../testing/lists";
 import { type BlockParts, listBlock } from "./list-block";
 import { createListbox } from "./listbox";
 
-const AREA_FILTER = {
-  areaOnly: "This area only",
-  showAll: "Show all",
+const AREA_SWITCH = {
+  name: "Shops",
+  showAll: "All",
+  areaOnly: "This area",
   emptyArea: "No locations in this area",
 };
 
@@ -16,22 +17,13 @@ function listboxIn(parts: BlockParts) {
     fitAllLabel: undefined,
     render: undefined,
   });
-  const { variant: block, areaFilter } = listBlock(listbox, parts);
-  return { listbox, block, areaFilter, children: Array.from(block.element.children) };
+  const { variant: block, areaSwitch } = listBlock(listbox, parts);
+  return { listbox, block, areaSwitch, children: Array.from(block.element.children) };
 }
 
 function headedListbox(text: string, namesList = true) {
-  const parts = listboxIn({ heading: { text, namesList }, areaFilter: undefined });
+  const parts = listboxIn({ heading: { text, namesList }, areaSwitch: undefined });
   return { ...parts, heading: parts.block.element.firstElementChild as HTMLElement };
-}
-
-/** A listbox under an area filter, on the page, listing `ids`. */
-function filteredListbox(...ids: string[]) {
-  const parts = listboxIn({ heading: undefined, areaFilter: AREA_FILTER });
-  document.body.append(parts.block.element);
-  parts.block.renderStructure(structureOf(titled(...ids)));
-  if (parts.areaFilter === undefined) throw new Error("no area filter");
-  return { ...parts, areaFilter: parts.areaFilter };
 }
 
 afterEach(() => {
@@ -82,38 +74,28 @@ describe("listBlock with a heading", () => {
   });
 });
 
-describe("listBlock with an area filter", () => {
-  it("is the variant itself with neither heading nor area filter", () => {
-    const { listbox, block, areaFilter } = listboxIn({ heading: undefined, areaFilter: undefined });
-    expect([block, areaFilter]).toEqual([listbox, undefined]);
+describe("listBlock with an area switch", () => {
+  it("is the variant itself with neither heading nor area switch", () => {
+    const { listbox, block, areaSwitch } = listboxIn({ heading: undefined, areaSwitch: undefined });
+    expect([block, areaSwitch]).toEqual([listbox, undefined]);
   });
 
-  it("shows the heading, the two buttons, the status, then the entries, in one block", () => {
+  it("shows the heading, the switch, the status, then the entries, in one block", () => {
     const { listbox, children } = listboxIn({
       heading: { text: "Shops", namesList: true },
-      areaFilter: AREA_FILTER,
+      areaSwitch: AREA_SWITCH,
     });
     expect(children.map((child) => child.className)).toEqual([
       "maplace-list-heading",
-      "maplace-area-only",
-      "maplace-show-all",
+      "maplace-area-switch",
       "maplace-empty-area",
       listbox.element.className,
     ]);
   });
 
-  it("hides the block only while the entries, the buttons and the status are all hidden", () => {
-    const { block, areaFilter } = filteredListbox();
-    expect(block.element.hidden).toBe(true);
-    areaFilter.update({ moved: true, scoped: false, emptyArea: false });
-    expect(block.element.hidden).toBe(false);
-    areaFilter.update({ moved: false, scoped: true, emptyArea: false });
-    expect(block.element.hidden).toBe(false);
-    areaFilter.update({ moved: false, scoped: true, emptyArea: true });
-    expect(block.element.hidden).toBe(false);
-    areaFilter.update({ moved: false, scoped: false, emptyArea: false });
-    expect(block.element.hidden).toBe(true);
-    block.renderStructure(structureOf(titled("a")));
+  it("keeps the block shown while the list is empty: the switch never hides", () => {
+    const { block } = listboxIn({ heading: undefined, areaSwitch: AREA_SWITCH });
+    block.renderStructure(structureOf([]));
     expect(block.element.hidden).toBe(false);
   });
 });

@@ -32,7 +32,8 @@ async function scopedListBesideMap(root: (typeof ROOT_MODES)[number], list: Reac
     await settled(adapter);
   };
   const press = (name: "area-only" | "show-all") => inAct(() => button(name)?.click());
-  return { ...rendered, button, moveTo, press };
+  const pressed = () => button("area-only")?.getAttribute("aria-pressed");
+  return { ...rendered, button, moveTo, press, pressed };
 }
 
 /** Its id in `ids` while mounted. */
@@ -47,21 +48,23 @@ function Mounted({ id, in: ids }: { readonly id: string; readonly in: Set<string
 }
 
 describe.each(ROOT_MODES)("LocationList with scope, in $mode", (root) => {
-  it("lists only what is in the map's view with scope='viewport', from the button shown after a move", async () => {
-    const { container, button, moveTo, press } = await scopedListBesideMap(
+  it("lists only what is in the map's view with scope='viewport', from 'This area', labelled areaOnlyLabel", async () => {
+    const { container, button, moveTo, press, pressed } = await scopedListBesideMap(
       root,
       <LocationList scope="viewport" areaOnlyLabel="Look here" />,
     );
-    expect([optionsIn(container).length, button("area-only")?.hidden]).toEqual([3, true]);
+    expect([optionsIn(container).length, pressed()]).toEqual([3, "false"]);
     await moveTo(40, 16, 9);
-    const areaOnly = button("area-only");
-    expect([areaOnly?.hidden, areaOnly?.textContent]).toEqual([false, "Look here"]);
+    expect(button("area-only")?.textContent).toBe("Look here");
     await press("area-only");
-    expect(optionsIn(container).map((option) => option.textContent)).toEqual(["south"]);
+    expect([optionsIn(container).map((option) => option.textContent), pressed()]).toEqual([
+      ["south"],
+      "true",
+    ]);
   });
 
-  it("lists everything again from 'Show all', labelled showAllLabel", async () => {
-    const { container, button, moveTo, press } = await scopedListBesideMap(
+  it("lists everything again from 'All', labelled showAllLabel", async () => {
+    const { container, button, moveTo, press, pressed } = await scopedListBesideMap(
       root,
       <LocationList scope="viewport" showAllLabel="Everything" />,
     );
@@ -69,7 +72,7 @@ describe.each(ROOT_MODES)("LocationList with scope, in $mode", (root) => {
     await press("area-only");
     expect(button("show-all")?.textContent).toBe("Everything");
     await press("show-all");
-    expect([optionsIn(container).length, button("show-all")?.hidden]).toEqual([3, true]);
+    expect([optionsIn(container).length, pressed()]).toEqual([3, "false"]);
   });
 
   it("unmounts the content of entries filtering leaves out, and mounts them fresh when listed again", async () => {
