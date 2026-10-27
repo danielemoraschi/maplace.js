@@ -27,6 +27,7 @@ type NamedMapAttribute =
   | "provider"
   | "cluster"
   | "hold"
+  | "loading"
   | "selected-id"
   | "api-key"
   | "map-id"
