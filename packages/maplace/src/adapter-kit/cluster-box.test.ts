@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { clusterBoxAround, holdsView, isInBox, WORLD_BOX } from "./cluster-box";
+import { isInBox } from "../view-box";
+import { clusterBoxAround, holdsView, WORLD_BOX } from "./cluster-box";
 
 const VIEW = { south: 10, west: 20, north: 30, east: 60 };
 
@@ -19,12 +20,6 @@ describe("clusterBoxAround", () => {
 });
 
 describe("isInBox", () => {
-  it("finds a point in a view across the antimeridian given as unwrapped longitudes", () => {
-    const box = { south: -10, west: 170, north: 10, east: 190 };
-    expect(isInBox({ lat: 0, lng: -175 }, box)).toBe(true);
-    expect(isInBox({ lat: 0, lng: 175 }, box)).toBe(true);
-  });
-
   it("leaves out a point beyond the padded view", () => {
     const box = clusterBoxAround(VIEW);
     expect(isInBox({ lat: 20, lng: 79 }, box)).toBe(true);

@@ -2,7 +2,7 @@ import type { Adapter } from "../adapter";
 import { isMarker } from "../diff/geometry";
 import type { Location } from "../location";
 import { locationById } from "../location-index";
-import { isShown, type Scope } from "../location-state";
+import { type FilteredLocations, isShown } from "../location-state";
 import { runSafely } from "../state/safely";
 import { boundsView, type LocationView, locationView } from "../state/views";
 import type { Snapshot } from "../store";
@@ -40,7 +40,7 @@ type FitAllView = Extract<View, { readonly kind: "fit-all" }>;
  */
 function openingView(
   view: ResolvedView | undefined,
-  { locations }: Scope,
+  { locations }: FilteredLocations,
 ): ResolvedView | undefined {
   if (view?.kind !== "location" || view.zoom !== undefined) return view;
   const marker = locationById(locations, view.id);
@@ -52,19 +52,22 @@ function openingView(
  * shown locations (undefined when nothing is shown), a location view without a zoom takes the
  * location's own, and a shape with neither a box around it.
  */
-export function resolveView(view: View, scope: Scope): ResolvedView | undefined {
+export function resolveView(view: View, filtered: FilteredLocations): ResolvedView | undefined {
   switch (view.kind) {
     case "fit-all":
-      return shownLocationsFitted(view, scope);
+      return shownLocationsFitted(view, filtered);
     case "location":
-      return locationShown(view, scope);
+      return locationShown(view, filtered);
     default:
       return view;
   }
 }
 
-function shownLocationsFitted({ padding }: FitAllView, scope: Scope): ResolvedView | undefined {
-  const shown = scope.locations.filter((location) => isShown(location, scope.filter));
+function shownLocationsFitted(
+  { padding }: FitAllView,
+  filtered: FilteredLocations,
+): ResolvedView | undefined {
+  const shown = filtered.locations.filter((location) => isShown(location, filtered.filter));
   const bounds = boundsAround(shown);
   return bounds && boundsView(bounds, padding);
 }
@@ -73,7 +76,7 @@ function shownLocationsFitted({ padding }: FitAllView, scope: Scope): ResolvedVi
  * A location brought into view at the asked zoom, else its own; with neither, a marker keeps the
  * map's zoom and a shape is fitted.
  */
-function locationShown(view: LocationView, { locations }: Scope): ResolvedView {
+function locationShown(view: LocationView, { locations }: FilteredLocations): ResolvedView {
   const location = locationById(locations, view.id);
   if (view.zoom !== undefined || location === undefined) return view;
   if (location.zoom !== undefined) return locationView(view.id, location.zoom);

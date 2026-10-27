@@ -1,5 +1,5 @@
-import { isInBox } from "../adapter-kit/cluster-box";
 import { type Placement, placementOf } from "../adapter-kit/placement";
+import { isInBox } from "../view-box";
 import {
   type ClusterGroup,
   type ClusterIndex,

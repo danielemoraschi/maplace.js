@@ -1,6 +1,6 @@
 import type { Location } from "../location";
 import { locationById } from "../location-index";
-import { isSelectable, type Scope } from "../location-state";
+import { type FilteredLocations, isSelectable } from "../location-state";
 
 /** Whether `value` is one of these locations, the same object under its own id. */
 export function isHeld(locations: readonly Location[], value: unknown): boolean {
@@ -20,6 +20,6 @@ export function frozenList<Data>(locations: readonly Location<Data>[]): readonly
  * An id that is set but names no shown location: unknown, hidden or filtered out. In a report from
  * the map, it is a race with a diff still being drawn.
  */
-export function isUnselectableId(scope: Scope, id: string | undefined): boolean {
-  return id !== undefined && !isSelectable(scope, id);
+export function isUnselectableId(filtered: FilteredLocations, id: string | undefined): boolean {
+  return id !== undefined && !isSelectable(filtered, id);
 }

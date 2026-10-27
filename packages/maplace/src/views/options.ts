@@ -11,6 +11,7 @@ import {
 } from "../validate/values";
 
 const AS = members<NonNullable<ListViewOptions["as"]>>({ list: true, select: true });
+const SCOPES = members<NonNullable<ListViewOptions["scope"]>>({ viewport: true });
 
 const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
   checks: {
@@ -20,18 +21,28 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     label: optional(checkNonBlankString),
     heading: optional(checkNonBlankString),
     render: optional(checkFunction),
+    scope: optional(oneOf(SCOPES)),
+    searchAreaLabel: optional(checkNonBlankString),
+    emptyAreaLabel: optional(checkNonBlankString),
   },
   unknown: "is not a list view option",
 });
 
-/** `createListView` options; `render` with `as: 'select'` is refused, never ignored. */
+/** `createListView` options; `render` or `scope` with `as: 'select'` is refused, never ignored. */
 export function checkListViewOptions(
   value: unknown,
   field: Field,
 ): asserts value is ListViewOptions | undefined {
   if (value === undefined) return;
   checkFields(value, field);
-  if (value.as === "select" && value.render !== undefined) {
+  if (value.as === "select") refuseForSelect(value, field);
+}
+
+function refuseForSelect(value: ListViewOptions, field: Field): void {
+  if (value.render !== undefined) {
     reject(field, "render needs as: 'list'; a native select option holds text only");
+  }
+  if (value.scope !== undefined) {
+    reject(field, "scope needs as: 'list'; a native select has no room for its button");
   }
 }

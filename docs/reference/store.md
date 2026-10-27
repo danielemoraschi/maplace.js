@@ -127,12 +127,17 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `label` | `string` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | `string` | A visible heading above the entries |
 | `render` | `(entry) => Node` | An entry's content, for `as: "list"` only; the view keeps keyboard, focus and ARIA handling |
+| `scope` | `"viewport"` | Lists only the locations in the map's view, from a "Search this area" button; for `as: "list"` only |
+| `searchAreaLabel` | `string` | That button's label; default "Search this area" |
+| `emptyAreaLabel` | `string` | What a scoped list says when nothing is in its view; default "No locations in this area" |
+
+With `scope: "viewport"` the list follows the map, as a "search this area" list does. It lists every location until its button is first pressed, which at load is what the fitted view holds. Once the map is ready, a move (a selection or fit-all included) that would list other locations shows the button above the entries, and the list keeps what it listed; pressing it lists the locations in the view then: a marker or circle when its point or centre is in it, a line or polygon when any point of its path is. A resize or a rotation, which keeps the centre and zoom, shows no button. A search that finds nothing keeps the list's panel on the map with a status saying so (`emptyAreaLabel`), and focus moves there from the button; with no view (not attached, held, not laid out) the list lists everything again.
 
 The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins; its element carries `maplace-list-view`, and [Styling](styling.md) lists its classes and how to turn the defaults off.
 
 ## Listed locations
 
-`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's.
+`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's. The map's view never narrows it: a list with `scope` narrows them to its view after a search.
 
 ## Adapters
 

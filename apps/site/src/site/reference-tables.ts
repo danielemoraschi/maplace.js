@@ -16,7 +16,12 @@ import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
 import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/control-styles.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
-import { LIST_CLASS, LIST_HEADING_CLASS } from "../../../../packages/maplace/src/views/headed.ts";
+import {
+  EMPTY_AREA_CLASS,
+  LIST_CLASS,
+  LIST_HEADING_CLASS,
+  SEARCH_AREA_CLASS,
+} from "../../../../packages/maplace/src/views/list-block.ts";
 import {
   FIT_ALL_CLASS,
   GROUP_CLASS,
@@ -53,6 +58,8 @@ export const STYLING_CLASSES = [
   LIST_VIEW_CLASS,
   LIST_CLASS,
   LIST_HEADING_CLASS,
+  SEARCH_AREA_CLASS,
+  EMPTY_AREA_CLASS,
   LISTBOX_CLASS,
   GROUP_CLASS,
   HEADING_CLASS,

@@ -16,6 +16,11 @@ const list = createListView(shop, {
 });
 expectTypeOf(list).toEqualTypeOf<ListView>();
 expectTypeOf(list.element).toEqualTypeOf<HTMLElement>();
+createListView(shop, {
+  scope: "viewport",
+  searchAreaLabel: "Search here",
+  emptyAreaLabel: "Nothing here",
+});
 
 // @ts-expect-error the list is a listbox or a native select
 createListView(shop, { as: "dropdown" });
@@ -23,3 +28,5 @@ createListView(shop, { as: "dropdown" });
 createListView(shop, { render: () => "<b>Shop</b>" });
 // @ts-expect-error a heading is text, never a node
 createListView(shop, { heading: document.createElement("h2") });
+// @ts-expect-error a list scopes to the map's view only
+createListView(shop, { scope: "world" });

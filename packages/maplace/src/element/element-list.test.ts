@@ -4,7 +4,7 @@ import { type Adapter, createMaplace, type Maplace } from "../index";
 import { frameDocument } from "../testing/iframes";
 import { cssTextOf } from "../testing/selectors";
 import { PLACED_LIST_CLASS } from "./default-styles";
-import { listFromAttributes } from "./element-list";
+import { isListAttribute, listFromAttributes } from "./element-list";
 import type { ListViewFactory, ListViewSetup } from "./index";
 import { defineListView } from "./list-views";
 import { elementWith } from "./testing/dom";
@@ -101,7 +101,48 @@ describe("listFromAttributes with a list view defined by name", () => {
     expect(view.factory).not.toHaveBeenCalled();
   });
 
-  it.each(["list-heading", "fit-all-label"])(
+  it("passes list-scope and the two labels to the list", () => {
+    const view = definedView();
+    const host = elementWith({
+      list: view.name,
+      "list-scope": "viewport",
+      "search-area-label": "Look here",
+      "empty-area-label": "Nothing here",
+    });
+    listFromAttributes(host, createMaplace());
+    expect(view.given.setup?.options).toMatchObject({
+      scope: "viewport",
+      searchAreaLabel: "Look here",
+      emptyAreaLabel: "Nothing here",
+    });
+  });
+
+  it("refuses a list-scope other than viewport, naming it", () => {
+    const view = definedView();
+    const host = elementWith({ list: view.name, "list-scope": "world" });
+    expect(() => listFromAttributes(host, createMaplace())).toThrow(
+      expect.objectContaining({
+        field: "list-scope",
+        message: expect.stringContaining('list-scope must be "viewport", got "world"'),
+      }),
+    );
+    expect(view.factory).not.toHaveBeenCalled();
+  });
+
+  it("refuses list-scope with list='select', naming list-scope", () => {
+    const host = elementWith({ list: "select", "list-scope": "viewport" });
+    expect(() => listFromAttributes(host, createMaplace())).toThrow(
+      expect.objectContaining({ code: "invalid-input", field: "list-scope" }),
+    );
+  });
+
+  it("treats list-scope and both labels as list attributes", () => {
+    for (const name of ["list-scope", "search-area-label", "empty-area-label"]) {
+      expect(isListAttribute(name)).toBe(true);
+    }
+  });
+
+  it.each(["list-heading", "fit-all-label", "search-area-label", "empty-area-label"])(
     "refuses a blank %s before any view is built",
     (name) => {
       const view = definedView();

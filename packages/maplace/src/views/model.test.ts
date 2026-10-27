@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
-import { type ListRules, labelOf, listStructureOf } from "./model";
+import { type ListRules, labelOf, listedEntries, listStructureOf } from "./model";
 
 const north: Location = { id: "n", lat: 0, lng: 0, title: "North", group: "N" };
 const south: Location = { id: "s", lat: 0, lng: 0, title: "  ", group: "S" };
@@ -30,13 +30,8 @@ describe("listStructureOf", () => {
     ]);
   });
 
-  it("follows the filter and the matches rule", () => {
+  it("follows the filter", () => {
     expect(sections({ groupHeadings: false }, ["N"])).toEqual([{ heading: undefined, ids: ["n"] }]);
-    const onlyLoose = {
-      groupHeadings: false,
-      matches: (location: Location) => location.id === "l",
-    };
-    expect(sections(onlyLoose)).toEqual([{ heading: undefined, ids: ["l"] }]);
   });
 
   it("gives a blank group name its own section without a heading", () => {
@@ -67,5 +62,15 @@ describe("listStructureOf: locations not listed", () => {
 describe("labelOf", () => {
   it("is the title when it has text, else the id", () => {
     expect([north, south, loose].map(labelOf)).toEqual(["North", "s", "Loose"]);
+  });
+});
+
+describe("listedEntries", () => {
+  it("lists what listStructureOf lists, in data order, narrowed to what it keeps", () => {
+    const filtered = { locations, filter: ["N", "S"] };
+    const structure = listStructureOf(filtered, { groupHeadings: false });
+    expect(listedEntries(filtered)).toEqual(structure.sections[0]?.locations);
+    const kept = (location: Location) => location.id !== "s";
+    expect(listedEntries(filtered, kept).map(({ id }) => id)).toEqual(["n"]);
   });
 });

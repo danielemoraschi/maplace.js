@@ -67,5 +67,5 @@ export const EXAMPLE_SECTIONS: readonly ExampleSection[] = [
     title: "Styled",
     summary: "The provider's own look: a light or dark map, and on Google the map-type control.",
   },
-  { name: "big", title: "Cluster", summary: "4,000 points, clustered." },
+  { name: "big", title: "Cluster", summary: "4,000 points, clustered, listing what is in view." },
 ];
