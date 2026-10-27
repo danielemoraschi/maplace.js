@@ -1,3 +1,4 @@
+import { type ContextBudget, PAGE_CONTEXT_BUDGET } from "./context-budget";
 import { hasSize, sizeOf } from "./map-size";
 
 /** A map drawing on a WebGL 2 canvas, as far as giving its context back goes. */
@@ -22,20 +23,20 @@ type ContextState = "live" | "losing" | "lost" | "restoring";
 
 /**
  * Gives the map's WebGL context back while its element has no size (hidden, `display: none`, a
- * closed tab), and takes it back once it has one, until the returned function stops it. A browser
- * keeps about 16 contexts per page and takes the oldest one away past that, blanking a map on
- * screen, so maps kept hidden mustn't count.
+ * closed tab) and the page's maps hold more than `budget` allows, the map hidden longest first,
+ * and takes it back once it has one, until the returned function stops it. A browser keeps about
+ * 16 contexts per page and takes the oldest one away past that, blanking a map on screen, so maps
+ * kept hidden mustn't count past the budget.
  *
  * Only a context lost here is taken back, once the map has seen the loss: the browser restores no
  * other, and the map would stay blank. The watch listens on the canvas after the map's own
  * listeners, which the map added when it made the context. Stopping leaves the context given
  * back: the map is going.
  */
-export function giveBackContextWhileHidden({
-  element,
-  canvas,
-  whenReady,
-}: ContextOwner): () => void {
+export function giveBackContextWhileHidden(
+  { element, canvas, whenReady }: ContextOwner,
+  budget: ContextBudget = PAGE_CONTEXT_BUDGET,
+): () => void {
   const gl = canvas.getContext("webgl2");
   const lossControl = gl?.getExtension("WEBGL_lose_context");
   if (!(gl && lossControl)) return () => {};
@@ -43,11 +44,18 @@ export function giveBackContextWhileHidden({
   let stopped = false;
   const isShown = () => hasSize(sizeOf(element));
 
+  const holder = {
+    holdsContext: () => context === "live" || context === "restoring",
+    giveBack: () => whenReady(giveBackIfHidden),
+  };
   const followSize = () => {
     if (stopped) return;
-    const shown = isShown();
-    if (!shown && context === "live") whenReady(giveBackIfHidden);
-    else if (shown && context === "lost") takeBack();
+    if (!isShown()) {
+      budget.hidden(holder);
+      return;
+    }
+    if (context === "lost") takeBack();
+    budget.shown(holder);
   };
   const giveBackIfHidden = () => {
     if (stopped || context !== "live" || isShown()) return;
@@ -72,12 +80,14 @@ export function giveBackContextWhileHidden({
     setTimeout(followSize);
   };
 
+  budget.watch(holder);
   const observer = new ResizeObserver(followSize);
   observer.observe(element);
   canvas.addEventListener("webglcontextlost", lost);
   canvas.addEventListener("webglcontextrestored", restored);
   return () => {
     stopped = true;
+    budget.forget(holder);
     observer.disconnect();
     canvas.removeEventListener("webglcontextlost", lost);
     canvas.removeEventListener("webglcontextrestored", restored);

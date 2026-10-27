@@ -13,6 +13,13 @@ import {
 import { type MapInUse, mapSourceFor } from "./map-source";
 import { StubMap, stubLibraries } from "./testing/stub-libraries";
 
+// On a page with no room for a hidden map's context, each map gives it back once hidden
+// (`adapter-kit/context-budget.ts`).
+vi.mock("../adapter-kit/context-budget", async (importOriginal) => {
+  const budget = await importOriginal<typeof import("../adapter-kit/context-budget")>();
+  return { ...budget, PAGE_CONTEXT_BUDGET: budget.contextBudget(0) };
+});
+
 const opened: MapInUse[] = [];
 const contexts: WebGL2RenderingContext[] = [];
 

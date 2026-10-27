@@ -7,6 +7,13 @@ import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { removePageMaps } from "./testing/subject";
 import { TEST_STYLE } from "./testing/test-style";
 
+// On a page with no room for a hidden map's context, each map gives it back once hidden
+// (`adapter-kit/context-budget.ts`).
+vi.mock("../adapter-kit/context-budget", async (importOriginal) => {
+  const budget = await importOriginal<typeof import("../adapter-kit/context-budget")>();
+  return { ...budget, PAGE_CONTEXT_BUDGET: budget.contextBudget(0) };
+});
+
 afterEach(() => {
   vi.restoreAllMocks();
   unmountAll();

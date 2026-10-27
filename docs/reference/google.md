@@ -118,4 +118,4 @@ A popup is Google's InfoWindow, headed by the location's title. One opened by a 
 
 ## Hidden maps
 
-A Google map with a map ID draws with WebGL, and a browser keeps about 16 WebGL contexts per page, taking the oldest away past that. So a vector map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab), takes it back once shown, and gives it back when destroyed. A raster map holds none, and your own map (`map`) keeps its context. Checked in Chromium.
+A Google map with a map ID draws with WebGL, and a browser keeps about 16 WebGL contexts per page, taking the oldest away past that. So a vector map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, takes it back once shown, and gives it back when destroyed. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A raster map holds none, and your own map (`map`) keeps its context. Checked in Chromium.

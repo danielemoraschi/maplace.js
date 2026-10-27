@@ -108,7 +108,7 @@ A dark map is a dark style (`map-style`), since MapLibre has no colour scheme op
 
 ## Hidden maps
 
-A browser keeps about 16 WebGL contexts per page, one per MapLibre map, and takes the oldest away past that, leaving that map blank. So a map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and takes it back once shown, drawing again from its style. A map hidden with `visibility` or `opacity` keeps its context, and so does your own map (`map`). More than about 16 maps on show at once is past the browser's limit. Checked in Chromium.
+A browser keeps about 16 WebGL contexts per page, one per MapLibre map, and takes the oldest away past that, leaving that map blank. So a map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, and takes it back once shown, drawing again from its style. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A map hidden with `visibility` or `opacity` keeps its context, and so does your own map (`map`). More than about 16 maps on show at once is past the browser's limit. Checked in Chromium.
 
 ## Zoom
 

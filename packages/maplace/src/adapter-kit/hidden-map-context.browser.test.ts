@@ -10,16 +10,23 @@ import {
   show,
   twoFrames,
 } from "../testing/webgl-canvas";
+import { contextBudget } from "./context-budget";
 import { type ContextOwner, giveBackContextWhileHidden } from "./hidden-map-context";
 
 const READY_NOW: ContextOwner["whenReady"] = (run) => run();
 
-/** A sized element drawing on a WebGL 2 canvas, its context watched until the test ends. */
-function watched({ whenReady = READY_NOW } = {}) {
+/** A page with no room for a hidden map's context: each gives it back once hidden. */
+const pageWithNoRoom = () => contextBudget(0);
+
+/**
+ * A sized element drawing on a WebGL 2 canvas, its context watched with `budget` until the test
+ * ends.
+ */
+function watched({ whenReady = READY_NOW, budget = pageWithNoRoom() } = {}) {
   const element = sizedContainer();
   const gl = drawnCanvasIn(element);
   const canvas = gl.canvas as HTMLCanvasElement;
-  const releaseContext = giveBackContextWhileHidden({ element, canvas, whenReady });
+  const releaseContext = giveBackContextWhileHidden({ element, canvas, whenReady }, budget);
   onTestFinished(() => {
     releaseContext();
     freeContext(gl);
@@ -150,5 +157,51 @@ describe("a map's WebGL context, watched", () => {
     element.append(canvas);
     const releaseContext = giveBackContextWhileHidden({ element, canvas, whenReady: READY_NOW });
     expect(releaseContext).not.toThrow();
+  });
+});
+
+describe("a hidden map's WebGL context, on a page with room for it", () => {
+  it("is kept, so the map shows again without drawing from scratch", async () => {
+    const map = watched({ budget: contextBudget(1) });
+    hide(map.element);
+    await twoFrames();
+    expect(map.gl.isContextLost()).toBe(false);
+  });
+
+  it("is given back, the map hidden longest first, once another map needs the room", async () => {
+    const budget = contextBudget(2);
+    const first = watched({ budget });
+    const second = watched({ budget });
+    hide(first.element);
+    hide(second.element);
+    await twoFrames();
+    watched({ budget });
+    await lostSoon(first.gl);
+    expect(second.gl.isContextLost()).toBe(false);
+  });
+
+  it("counts again once its map shows, giving back another map's hidden one", async () => {
+    const budget = contextBudget(2);
+    const first = watched({ budget });
+    const second = watched({ budget });
+    const third = watched({ budget });
+    hide(first.element);
+    await lostSoon(first.gl);
+    hide(second.element);
+    await twoFrames();
+    expect(second.gl.isContextLost()).toBe(false);
+    show(first.element);
+    await lostSoon(first.gl, false);
+    await lostSoon(second.gl);
+    expect(third.gl.isContextLost()).toBe(false);
+  });
+
+  it("counts no more once its map is released", async () => {
+    const budget = contextBudget(1);
+    const kept = watched({ budget });
+    watched({ budget }).releaseContext();
+    hide(kept.element);
+    await twoFrames();
+    expect(kept.gl.isContextLost()).toBe(false);
   });
 });
