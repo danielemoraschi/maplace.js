@@ -10,6 +10,7 @@ export const MarkerClustererEvents = { CLUSTERING_END: "clusteringend" } as cons
 /** Google's clustering algorithm as far as maplace uses it: the markers it last read. */
 export class SuperClusterViewportAlgorithm {
   protected markers: Marker[] = [];
+  protected superCluster = { load(_points: unknown[]): void {} };
 
   constructor(readonly options: object) {}
 

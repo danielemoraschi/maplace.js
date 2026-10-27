@@ -1,6 +1,7 @@
 import {
   type AlgorithmInput,
   SuperClusterViewportAlgorithm,
+  type SuperClusterViewportOptions,
   type SuperClusterViewportState,
 } from "@googlemaps/markerclusterer";
 import { isInside, isWholeWorld, paddedView, WHOLE_WORLD } from "./cluster-view";
@@ -10,6 +11,15 @@ import { isInside, isWholeWorld, paddedView, WHOLE_WORLD } from "./cluster-view"
  * map; it reads the markers' positions again only when its list changes.
  */
 export class ClusteringAlgorithm extends SuperClusterViewportAlgorithm {
+  /**
+   * Loaded with no markers, as the library loads only a list that differs from the last, and
+   * starts from an empty one: a render before any marker would cluster an index never built.
+   */
+  constructor(options: SuperClusterViewportOptions) {
+    super(options);
+    this.superCluster.load([]);
+  }
+
   /** A marker moved: the next render reads every position again. */
   forgetPositions(): void {
     this.markers = [];

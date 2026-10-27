@@ -42,4 +42,10 @@ describe("ClusteringAlgorithm", () => {
     clustering.clustersAgainOn(mapShowing(10, { south: 0, west: 0, north: 0, east: 0 }));
     expect(clustering.clustersAgainOn(mapShowing(10, VIEW))).toBe(true);
   });
+
+  it("clusters a map with no markers yet into no clusters", () => {
+    const clustering = new ClusteringAlgorithm({});
+    const input = { markers: [], map: mapShowing(6, VIEW) } as unknown as AlgorithmInput;
+    expect(clustering.calculate(input).clusters).toEqual([]);
+  });
 });
