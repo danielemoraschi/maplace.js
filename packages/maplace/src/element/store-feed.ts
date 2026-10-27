@@ -8,6 +8,7 @@ import {
 import { elementMisuse } from "./element-error";
 import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
+import { PendingSelection } from "./pending-selection";
 import type { StandingMisuse } from "./standing-misuse";
 
 /** What the store renders `html` through, as its `sanitize` option. */
@@ -15,7 +16,8 @@ export type Sanitize = NonNullable<MaplaceOptions["sanitize"]>;
 
 /**
  * The element's store and what feeds it: the `locations` and `route` properties, or the
- * locations written inside the element. Values given before the store exists wait for it.
+ * locations written inside the element, and the selection the page's address names. Values given
+ * before the store exists wait for it.
  */
 export class StoreFeed {
   readonly #host: HTMLElement;
@@ -27,14 +29,14 @@ export class StoreFeed {
   #sanitize: Sanitize | undefined;
   #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
   #locationsGiven = false;
-  /** `selected-id`, until the locations have it or something else is selected. */
-  #pendingSelection: string | undefined;
+  readonly #pendingSelection: PendingSelection;
   #stopWatching: (() => void) | undefined;
 
   constructor(host: HTMLElement, misuse: StandingMisuse, onStoreChange: () => void) {
     this.#host = host;
     this.#misuse = misuse;
     this.#onStoreChange = onStoreChange;
+    this.#pendingSelection = new PendingSelection(() => this.#store, misuse);
   }
 
   /** The store, if created yet. */
@@ -73,6 +75,15 @@ export class StoreFeed {
     const store = this.#store;
     if (store === undefined) this.#pending.route = route;
     else this.#misuse.attempt("route", () => store.setRoute(route));
+  }
+
+  /**
+   * Selects `id` once the locations show it, winning over `selected-id`; an id they never show is
+   * dropped, silently, when something else is selected.
+   */
+  selectOnceShown(id: string): void {
+    this.#pendingSelection.fromAddress(id);
+    this.#pendingSelection.trySelect();
   }
 
   /**
@@ -129,7 +140,7 @@ export class StoreFeed {
    * route.
    */
   #feedPending(): void {
-    this.#pendingSelection = this.#host.getAttribute("selected-id") ?? undefined;
+    this.#pendingSelection.fromAttribute(this.#host.getAttribute("selected-id") ?? undefined);
     const { locations, route } = this.#pending;
     this.#pending = {};
     // Given locations are checked as given, whatever they are.
@@ -141,7 +152,7 @@ export class StoreFeed {
 
   #listenTo(store: Maplace): void {
     forwardEvents(store, this.#host);
-    store.on("selectionChange", () => this.#selectionMade());
+    store.on("selectionChange", () => this.#pendingSelection.drop());
     store.subscribe(this.#onStoreChange);
   }
 
@@ -159,22 +170,6 @@ export class StoreFeed {
       store.setLocations(read());
       return true;
     });
-    if (applied) this.#selectPending();
-  }
-
-  #selectPending(): void {
-    const store = this.#store;
-    const id = this.#pendingSelection;
-    if (store === undefined || id === undefined) return;
-    const selected = this.#misuse.retry("selection", () => {
-      store.select(id);
-      return true;
-    });
-    if (selected) this.#pendingSelection = undefined;
-  }
-
-  #selectionMade(): void {
-    this.#pendingSelection = undefined;
-    this.#misuse.clear("selection");
+    if (applied) this.#pendingSelection.trySelect();
   }
 }

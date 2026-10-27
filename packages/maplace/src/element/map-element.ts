@@ -13,6 +13,7 @@ import { reapplyOwnProperties } from "./own-properties";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
 import { type Sanitize, StoreFeed } from "./store-feed";
+import { createUrlState } from "./url-state";
 import { MAPLACE_VERSION } from "./version";
 
 /**
@@ -31,6 +32,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   readonly #ownNodesWatch = new MutationObserver(() => this.#keepOwnNodes());
   readonly #nearView = createNearViewWait(this, () => this.#openSession());
   readonly #feed = new StoreFeed(this, this.#misuse, () => this.#showLoadState());
+  readonly #urlState = createUrlState(this, this.#feed);
   #lists: ListKeeper | undefined;
   #camera: CameraKeeper | undefined;
   #session: MapSession | undefined;
@@ -80,6 +82,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     adoptDefaultStyles(this.ownerDocument);
     this.#keepOwnNodes();
     this.#ownNodesWatch.observe(this, { childList: true });
+    this.#urlState.start();
     this.#feed.watch();
     afterParsing(this.ownerDocument, () => this.#open());
   }
@@ -150,6 +153,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#lists?.stop();
     this.#ownNodesWatch.disconnect();
     this.#feed.stopWatching();
+    this.#urlState.stop();
   }
 
   /** The page may replace the element's children, rendering its locations: the map and list stay. */
