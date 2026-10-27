@@ -4,6 +4,7 @@ import type { Journey } from "../adapter-kit/journey";
 import { withTotals } from "../adapter-kit/route-result";
 import { MaplaceError } from "../errors";
 import {
+  type Avoidance,
   legStops,
   passesThrough,
   type Route,
@@ -31,20 +32,43 @@ const GOOGLE_TRAVEL_MODES: Readonly<Record<TravelMode, google.maps.TravelModeStr
   transit: "TRANSIT",
 };
 
+const GOOGLE_AVOIDS = {
+  tolls: "avoidTolls",
+  highways: "avoidHighways",
+  ferries: "avoidFerries",
+} as const satisfies Record<Avoidance, keyof google.maps.routes.RouteModifiers>;
+
 /**
- * The journey as Google's request: no travel mode is Google's default, driving, and a stop
- * passed through is one of Google's via waypoints, every other one a stopover.
+ * The journey as Google's request: no travel mode is Google's default, driving, a stop passed
+ * through is one of Google's via waypoints, every other one a stopover, and what it avoids, on a
+ * driving route, Google's route modifiers.
  */
 export function routeRequest(journey: Journey): google.maps.routes.ComputeRoutesRequest {
   const [origin, ...after] = journey.points;
   const destination = after.pop();
+  const routeModifiers = routeModifiersOf(journey);
   return {
     origin: origin as google.maps.LatLngLiteral,
     destination: destination as google.maps.LatLngLiteral,
     intermediates: after.map((location, index) => waypointOf(location, index + 1, journey)),
     fields: ROUTE_FIELDS,
     ...(journey.travelMode && { travelMode: GOOGLE_TRAVEL_MODES[journey.travelMode] }),
+    ...(routeModifiers && { routeModifiers }),
   };
+}
+
+/**
+ * What the journey keeps off, as Google's route modifiers: none when it avoids nothing or isn't
+ * driven, since Google applies them to driving only (its two-wheeler mode isn't offered).
+ */
+function routeModifiersOf({
+  avoid = [],
+  travelMode = "driving",
+}: Journey): google.maps.routes.RouteModifiers | undefined {
+  if (avoid.length === 0 || travelMode !== "driving") return undefined;
+  const modifiers: google.maps.routes.RouteModifiers = {};
+  for (const avoided of avoid) modifiers[GOOGLE_AVOIDS[avoided]] = true;
+  return modifiers;
 }
 
 /**

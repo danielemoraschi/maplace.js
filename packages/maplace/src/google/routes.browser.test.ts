@@ -73,6 +73,26 @@ describeWithMaps("routes on Google", () => {
     expect(results).toHaveLength(2);
   });
 
+  it("keeps off highways and tolls when asked, and not again for them in another order", async () => {
+    const { maplace, computeRoutes, results, reported } = await routeOnGoogle();
+    maplace.setRoute({ stops: ["a", "b"] });
+    await reported(1);
+    maplace.setRoute({ stops: ["a", "b"], avoid: ["highways", "tolls"] });
+    // The old result cleared, then the new one.
+    await reported(3);
+    expect(computeRoutes.mock.calls[1]?.[0].routeModifiers).toEqual({
+      avoidHighways: true,
+      avoidTolls: true,
+    });
+    expect(results[1]).toBeUndefined();
+    // The A13 between Bologna and Ferrara is a toll motorway: Google takes another road.
+    expect(results[2]?.path).not.toEqual(results[0]?.path);
+    maplace.setRoute({ stops: ["a", "b"], avoid: ["tolls", "highways"] });
+    await frames(10);
+    expect(computeRoutes).toHaveBeenCalledTimes(2);
+    expect(results).toHaveLength(3);
+  });
+
   it("lets a click on the line through to the map, which deselects", async () => {
     const { maplace, googleMap, results, reported } = await routeOnGoogle();
     maplace.setRoute({ stops: ["a", "b"] });

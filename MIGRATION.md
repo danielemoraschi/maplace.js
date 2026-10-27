@@ -140,7 +140,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `styles` | on Google, a map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)); on MapLibre, the map's style (`mapStyle`, the element's `map-style`), any provider's style URL |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
-| `directions_options.avoidHighways`, `avoidTolls` | dropped |
+| `directions_options.avoidHighways`, `avoidTolls` | `route.avoid`: `["highways", "tolls"]`, and `"ferries"` too; on Google, driving routes only |
 | `directions_options.unitSystem` | dropped: results are metres and seconds, format them as you like |
 | `directions_options.optimizeWaypoints`, `provideRouteAlternatives` | dropped: one route per map, stops in your order |
 | `directions_panel` | dropped: render each leg's `steps` from the `routeChange` event |

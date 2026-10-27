@@ -1,5 +1,5 @@
 import type { LatLng } from "../geometry";
-import { type Route, sameStops, type TravelMode } from "../route";
+import { type Avoidance, type Route, sameComputation, type TravelMode } from "../route";
 import { sameList, samePoint } from "./same-geometry";
 
 /**
@@ -11,6 +11,8 @@ export interface Journey {
   /** Inner stops passed through (`Route.via`). */
   readonly via: readonly string[] | undefined;
   readonly travelMode: TravelMode | undefined;
+  /** What the route keeps off (`Route.avoid`). */
+  readonly avoid: readonly Avoidance[] | undefined;
   /** Where each stop is on the map, in order. */
   readonly points: readonly LatLng[];
 }
@@ -26,18 +28,18 @@ export function journeyOf(route: Route, pointOf: StopPoint): Journey | undefined
     if (point === undefined) return undefined;
     points.push(point);
   }
-  return { stops: route.stops, via: route.via, travelMode: route.travelMode, points };
+  const { stops, via, travelMode, avoid } = route;
+  return { stops, via, travelMode, avoid, points };
 }
 
 /**
  * Whether `next` was computed already: the same stops, in order, the same ones ending legs, at
- * the same points.
+ * the same points, with the same travel mode and the same things avoided.
  */
 export function sameJourney(last: Journey | undefined, next: Journey): boolean {
   return (
     last !== undefined &&
-    last.travelMode === next.travelMode &&
-    sameStops(last, next) &&
+    sameComputation(last, next) &&
     sameList(last.points, next.points, samePoint)
   );
 }

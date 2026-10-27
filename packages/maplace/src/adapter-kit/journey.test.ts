@@ -24,6 +24,11 @@ describe("journeyOf", () => {
     expect(journeyOf(route, placedAt({ a: A, b: B }))?.via).toEqual(["b"]);
   });
 
+  it("carries what the route avoids", () => {
+    const route = { stops: ["a", "b"], avoid: ["tolls"] as const };
+    expect(journeyOf(route, placedAt({ a: A, b: B }))?.avoid).toEqual(["tolls"]);
+  });
+
   it("is undefined until every stop is placed", () => {
     expect(journeyOf({ stops: ["a", "b"] }, placedAt({ a: A }))).toBeUndefined();
   });
@@ -34,6 +39,7 @@ describe("sameJourney", () => {
     stops: ["a", "b"],
     via: undefined,
     travelMode,
+    avoid: undefined,
     points: [a, B],
   });
 
@@ -53,10 +59,18 @@ describe("sameJourney", () => {
       stops: ["a", "b", "c", "a"],
       via,
       travelMode: undefined,
+      avoid: undefined,
       points: [A, B, B, A],
     });
     expect(sameJourney(through(["b"]), through(["c"]))).toBe(false);
     expect(sameJourney(through(["b", "c"]), through(["c", "b"]))).toBe(true);
+  });
+
+  it("fails when other things are avoided, never for the same ones in another order", () => {
+    const avoiding = (avoid?: Journey["avoid"]): Journey => ({ ...journey(), avoid });
+    expect(sameJourney(avoiding(["tolls"]), avoiding(["highways"]))).toBe(false);
+    expect(sameJourney(avoiding(), avoiding(["ferries"]))).toBe(false);
+    expect(sameJourney(avoiding(["tolls", "ferries"]), avoiding(["ferries", "tolls"]))).toBe(true);
   });
 
   it("fails for other stops at the same points", () => {

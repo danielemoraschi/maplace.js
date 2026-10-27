@@ -81,6 +81,10 @@ expectTypeOf<RouteStep["durationSeconds"]>().toEqualTypeOf<number>();
 maplace.setRoute({ stops: ["a", "b", "c"], via: ["b"] });
 // @ts-expect-error via is an array of location ids
 maplace.setRoute({ stops: ["a", "b", "c"], via: "b" });
+// A route keeps off tolls, highways or ferries, in any order.
+maplace.setRoute({ stops: ["a", "b"], avoid: ["tolls", "ferries"] });
+// @ts-expect-error a route avoids tolls, highways or ferries
+maplace.setRoute({ stops: ["a", "b"], avoid: ["bridges"] });
 // @ts-expect-error a viewport has no `center.lon`; coordinates are lat/lng
 shop.on("viewportChange", ({ viewport }) => viewport.center.lon);
 

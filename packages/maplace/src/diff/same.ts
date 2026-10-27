@@ -1,4 +1,4 @@
-import { type Route, sameStops } from "../route";
+import { type Route, sameComputation } from "../route";
 
 /**
  * Shallow equality: every field of either object is `===` the same field of the other. A field
@@ -30,17 +30,9 @@ export function sameFilter(
   return sameOptional(a, b, sameItems);
 }
 
-/** The same route: its journey and its style. */
+/** The same route: the same computation and the same style. */
 export function sameRoute(a: Route, b: Route): boolean {
-  return sameJourney(a, b) && sameOptional(a.style, b.style, sameFields);
-}
-
-/**
- * Same stops in order, the same ones ending legs, and same travel mode: what a computed route
- * depends on.
- */
-export function sameJourney(a: Route, b: Route): boolean {
-  return a.travelMode === b.travelMode && sameStops(a, b);
+  return sameComputation(a, b) && sameOptional(a.style, b.style, sameFields);
 }
 
 /** `previous` when `next` has the same fields, so unchanged values keep their reference. */

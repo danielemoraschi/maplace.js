@@ -116,7 +116,13 @@ export const STORE_NAMES = {
     routeResult: true,
     loadState: true,
   }),
-  route: everyName<keyof Route>({ stops: true, via: true, travelMode: true, style: true }),
+  route: everyName<keyof Route>({
+    stops: true,
+    via: true,
+    travelMode: true,
+    avoid: true,
+    style: true,
+  }),
   listViewOptions: everyName<keyof ListViewOptions>({
     as: true,
     groupHeadings: true,

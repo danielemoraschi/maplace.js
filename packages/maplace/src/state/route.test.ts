@@ -138,6 +138,31 @@ describe("setRoute", () => {
     expect(setRoute(direct, { stops: ["a", "b", "c"], via: [] })).toBe(NO_CHANGE);
   });
 
+  it("sets a frozen copy of the things avoided", () => {
+    const avoid = ["tolls", "ferries"] as const;
+    const { patch } = setRoute(ABC, { stops: ["a", "b"], avoid });
+    expect(patch.route?.avoid).toEqual(avoid);
+    expect(patch.route?.avoid).not.toBe(avoid);
+    expect(Object.isFrozen(patch.route?.avoid)).toBe(true);
+  });
+
+  it("clears the result when only the things avoided change", () => {
+    const current = routed({ route: { stops: ["a", "b"] } });
+    expect(setRoute(current, { stops: ["a", "b"], avoid: ["tolls"] })).toMatchObject({
+      patch: { routeResult: undefined },
+      events: [{ name: "routeChange", payload: { result: undefined } }],
+    });
+  });
+
+  it("changes nothing for the same things avoided, in another order, repeated, or none named", () => {
+    const current = routed({ route: { stops: ["a", "b"], avoid: ["tolls", "ferries"] } });
+    expect(setRoute(current, { stops: ["a", "b"], avoid: ["ferries", "tolls", "tolls"] })).toBe(
+      NO_CHANGE,
+    );
+    const direct = routed({ route: { stops: ["a", "b"] } });
+    expect(setRoute(direct, { stops: ["a", "b"], avoid: [] })).toBe(NO_CHANGE);
+  });
+
   it("rejects a bad shape", () => {
     expect(() => setRoute(ABC, { stops: ["a", "b"], travelMode: "flying" } as never)).toThrow(
       /^setRoute: route\.travelMode must be one of/,

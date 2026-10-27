@@ -46,7 +46,7 @@ const OPTIONS_0_2: Readonly<Record<string, string>> = {
   styles: "use a map ID with Cloud styling",
   stroke_options: "use style",
   circle_options: "use style",
-  directions_options: "use setRoute({ stops, travelMode })",
+  directions_options: "use setRoute({ stops, travelMode, avoid })",
   directions_panel: "render each leg's steps from the routeChange event",
   draggable: "use editable per location",
   editable: "use editable per location",

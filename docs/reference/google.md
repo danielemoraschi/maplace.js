@@ -98,7 +98,7 @@ maplacejs draws advanced markers only (Google deprecated the legacy `Marker`), s
 
 ## Routes
 
-Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older one fails the route with `route-failed`. A route has 2 to 27 stops (the adapter's `routeStopLimit`), `via` stops counting too. Each leg comes with its turn-by-turn `steps`, at no extra cost, each `instruction` in the language Maps JS loaded with. Each computation is billed, so a route is computed only when it changes ([routes](store.md#routes)).
+Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older one fails the route with `route-failed`. A route has 2 to 27 stops (the adapter's `routeStopLimit`), `via` stops counting too. Each leg comes with its turn-by-turn `steps`, at no extra cost, each `instruction` in the language Maps JS loaded with. Each computation is billed, so a route is computed only when it changes ([routes](store.md#routes)). `avoid` becomes Google's route modifiers (`avoidTolls`, `avoidHighways`, `avoidFerries`), which Google applies to driving routes only: on another travel mode they aren't sent, and the route is computed without them. They are preferences: Google keeps off what it reasonably can, so a route may still take a toll road where no other one goes.
 
 ## Clustering
 

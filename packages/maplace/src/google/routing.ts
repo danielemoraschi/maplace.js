@@ -3,7 +3,7 @@
 import { anchorOf } from "../adapter-kit/anchor";
 import { type Journey, journeyOf, sameJourney } from "../adapter-kit/journey";
 import { MaplaceError } from "../errors";
-import { type Route, sameStops } from "../route";
+import { type Route, sameComputation } from "../route";
 import type { Drawing } from "./drawing";
 import type { GoogleMapState } from "./map-state";
 import type { MapPart } from "./mounted-map";
@@ -21,10 +21,10 @@ export interface Routing {
 
 /**
  * Draws the store's route and reports it. Each computation is billed, so one is asked only for a
- * new journey (stops, `via`, travel mode, or where a stop is), at most once per task, and only once
- * every diff applied so far is drawn: never for a half-drawn map. The store doesn't send the
- * route again when a stop moves; a stop moves here only when the store writes it, which after a
- * drag is once, on release. A new style alone draws the line again without computing. An answer
+ * new journey (stops, `via`, travel mode, `avoid`, or where a stop is), at most once per task, and
+ * only once every diff applied so far is drawn: never for a half-drawn map. The store doesn't send
+ * the route again when a stop moves; a stop moves here only when the store writes it, which after
+ * a drag is once, on release. A new style alone draws the line again without computing. An answer
  * for a journey since replaced, cleared or closed is dropped, its failure too. Each result and
  * failure names the route it was asked for.
  */
@@ -94,11 +94,11 @@ export function createRouting(
   }
 
   /**
-   * Whether `next` asks for the journey asked already (its stops, `via` and travel mode): if not,
-   * an answer still to come is dropped even before the new stops are drawn.
+   * Whether `next` asks for the journey asked already (its stops, `via`, travel mode and `avoid`):
+   * if not, an answer still to come is dropped even before the new stops are drawn.
    */
   function asksSameJourney(next: Route): boolean {
-    return asked !== undefined && asked.travelMode === next.travelMode && sameStops(asked, next);
+    return asked !== undefined && sameComputation(asked, next);
   }
 
   /** Nothing asked any more: answers still to come are dropped, and the line goes. */
