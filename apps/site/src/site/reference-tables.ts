@@ -1,4 +1,5 @@
 import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
+import { CLUSTER_CLASS } from "../../../../packages/maplace/src/adapter-kit/cluster-badge.ts";
 import { CONTROL_CLASS } from "../../../../packages/maplace/src/adapter-kit/control-styles.ts";
 import {
   POPUP_CLASS,
@@ -60,6 +61,7 @@ export const STYLING_CLASSES = [
   SELECT_CLASS,
   POPUP_CLASS,
   POPUP_HEADING_CLASS,
+  CLUSTER_CLASS,
   CONTROL_CLASS,
   GOOGLE_MAP_CLASS,
   MAPLIBRE_MAP_CLASS,

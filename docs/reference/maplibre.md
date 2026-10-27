@@ -130,7 +130,7 @@ A popup is MapLibre's, headed by the location's title. One opened by a click pan
 
 ## Clustering
 
-The `cluster` option (the element's `cluster` attribute) groups markers with `supercluster`, on Google's clusterer's settings (60 px, up to zoom 16, at the rounded zoom), so the same clusters show at the same view on either map. They are maplacejs's own cluster markers: a count, titled "Cluster of N locations".
+The `cluster` option (the element's `cluster` attribute) groups markers with `supercluster`, on Google's clusterer's settings (60 px, up to zoom 16, at the rounded zoom), so the same clusters show at the same view on either map. They are maplacejs's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)).
 
 A click or Enter on a cluster eases to the zoom at which it splits. Circles, lines and polygons are never clustered, and the selected location is drawn on its own.
 

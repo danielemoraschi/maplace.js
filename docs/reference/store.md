@@ -28,7 +28,7 @@ createGoogleMap("#simple-vanilla-map", {
 | `style` | `ShapeStyle` | The default [style](locations.md#styles) of circles, polylines and polygons; a location's `style` overrides it |
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while a shape is hovered and not selected |
-| `cluster` | `boolean` | Clusters markers; needs the `cluster` capability |
+| `cluster` | `boolean` | Clusters markers; needs the `cluster` capability; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `view` | `View` | The first view (see below) |
 
 ## Popup options

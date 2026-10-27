@@ -9,10 +9,35 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
 - **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its left side; on MapLibre, the heading on a line of its own, clear of the close button.
+- **Clusters:** a round badge with the count, blue with white text. `--maplace-cluster-background` and `--maplace-cluster-color`, set on the map or anything above it, change its colours.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
 - **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint ([MapLibre adapter](maplibre.md#on-map-controls)).
 
 Every selector is wrapped in `:where()` and weighs nothing, so any rule of the page wins: `.maplace-option { padding: 0 }` is enough to change the entries' padding.
+
+## Cluster badges
+
+A map with `cluster` draws each cluster as a badge with its count, `.maplace-cluster`, on Google and MapLibre alike. Two custom properties set its colours, on the map or anything above it:
+
+```css
+maplace-map {
+  --maplace-cluster-background: #0b6e4f;
+  --maplace-cluster-color: #fff;
+}
+```
+
+For the rest of its look, style the class: its default rule weighs nothing, so yours wins.
+
+```css
+.maplace-cluster {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  font: 700 15px/36px system-ui, sans-serif;
+}
+```
+
+The badge stands with its bottom middle on the cluster's point, whatever its size. Its accessible name, "Cluster of N locations", is on the marker around it, so a badge drawn differently still reads the same.
 
 ## Turning them off
 
@@ -47,6 +72,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |
 | `maplace-popup` | A popup's content |
 | `maplace-popup-heading` | A popup's heading, its location's title |
+| `maplace-cluster` | A cluster's badge, the count, on either provider |
 | `maplace-control` | The panel holding what is placed on a Google or MapLibre map |
 | `maplace-google-map` | The element a Google map maplacejs creates is drawn in |
 | `maplace-maplibre-map` | The element a MapLibre map maplacejs creates is drawn in |

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
+import { CLUSTER_CLASS } from "../adapter-kit/cluster-badge";
 import { tabTo } from "../google/testing/page-input";
 import {
   adding,
@@ -96,6 +97,13 @@ describe("clustering on MapLibre", () => {
     }, RENDER_WAIT);
     probe.pointerOver("a");
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined], ["a"]]);
+  });
+
+  it("draws a cluster as maplace's badge, in its default look", async () => {
+    const { container } = await clusteredTowns();
+    const [cluster] = clustersOn(container).elements as [HTMLElement];
+    const badge = cluster.querySelector(`.${CLUSTER_CLASS}`);
+    expect(badge && getComputedStyle(badge).backgroundColor).toBe("rgb(26, 115, 232)");
   });
 
   it("shows a pointer over a cluster, and zooms into it when it is clicked", async () => {

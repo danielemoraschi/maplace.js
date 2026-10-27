@@ -26,7 +26,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `fit-all-label` | The label of a first list entry that clears the selection and fits all locations |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
 | `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
-| `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists |
+| `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `hold` | Stays idle, with no provider request and no list built, until `release()` |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace` |
 

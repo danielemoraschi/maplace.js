@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 import { expect, it } from "vitest";
 import { commands, userEvent } from "vitest/browser";
+import { CLUSTER_CLASS } from "../adapter-kit/cluster-badge";
 import type { MarkerGeometry } from "../geometry";
 import type { Location } from "../location";
 import { createMaplace } from "../maplace/create";
@@ -9,7 +10,7 @@ import { sizedContainer } from "../testing/container";
 import { longestTaskDuring } from "../testing/long-tasks";
 import type { View } from "../viewport";
 import { frames } from "./frames";
-import { steadyPoint, tabTo } from "./testing/page-input";
+import { centreOf, steadyPoint, tabTo } from "./testing/page-input";
 import { onGoogle, TILES_TIMEOUT_MS } from "./testing/store-on-google";
 import { pageMapIn } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -48,6 +49,9 @@ function shownOn(map: google.maps.Map) {
 /** The whole world, where `points` are, twice across the map: more than one world shows. */
 const WORLD: View = { kind: "center", center: { lat: 0, lng: 0 }, zoom: 0 };
 
+/** The world's middle, a quarter of a turn wide on the 512 px map: what it clusters is held. */
+const ZOOM_3: View = { kind: "center", center: { lat: 0, lng: 0 }, zoom: 3 };
+
 /** Zoomed in on location `m100`, past where `points` cluster. */
 const CLOSE_TO_M100: View = { kind: "center", center: { lat: 15, lng: -80 }, zoom: 10 };
 
@@ -66,17 +70,29 @@ async function clusteredOnGoogle(locations: Location[], view?: View) {
 /** Once `count` locations show on `map`, in clusters or alone. */
 async function allShownOn(map: google.maps.Map, count: number): Promise<void> {
   await expect.poll(() => shownOn(map).total, { timeout: TILES_TIMEOUT_MS }).toBe(count);
-  // The clusterer takes old cluster markers off a frame after each render.
+  // Cluster markers a render no longer draws come off a frame after it.
   await frames(3);
+}
+
+/** The cluster markers on `map`. */
+function clustersOn(map: google.maps.Map): HTMLElement[] {
+  return shownOn(map).elements.filter((element) => clusterSize(element) !== undefined);
 }
 
 /** The cluster of the fewest locations: the tightest bounds, so a click on it zooms in. */
 function smallestCluster(map: google.maps.Map): HTMLElement | undefined {
-  const clusters = shownOn(map).elements.flatMap((element) => {
-    const size = clusterSize(element);
-    return size === undefined ? [] : [{ element, size }];
+  const sizeOf = (element: HTMLElement) => clusterSize(element) ?? 0;
+  return clustersOn(map).sort((a, b) => sizeOf(a) - sizeOf(b))[0];
+}
+
+/** Of `elements`, the one nearest the point `right` px right of `map`'s centre. */
+function nearestRightOfCentre(map: google.maps.Map, elements: HTMLElement[], right: number) {
+  const centre = centreOf(map.getDiv());
+  const distances = elements.map((element) => {
+    const { x, y } = centreOf(element);
+    return { element, distance: Math.hypot(x - centre.x - right, y - centre.y) };
   });
-  return clusters.sort((a, b) => a.size - b.size)[0]?.element;
+  return distances.sort((a, b) => a.distance - b.distance)[0]?.element as HTMLElement;
 }
 
 /** The locations a cluster marker stands for; undefined for a location drawn alone. */
@@ -111,6 +127,9 @@ describeWithMaps("clustering on Google", () => {
     );
     expect(elements.length).toBeLessThan(1000);
     expect(total).toBe(LARGE_DIFF);
+    // maplace's sheet reaches the badge inside Google's advanced marker.
+    const badge = map.getDiv().querySelector(`.${CLUSTER_CLASS}`);
+    expect(badge && getComputedStyle(badge).backgroundColor).toBe("rgb(26, 115, 232)");
     expect(longest).toBeLessThanOrEqual(LONGEST_CLUSTERING_TASK_MS);
   });
 
@@ -124,6 +143,32 @@ describeWithMaps("clustering on Google", () => {
     await expect.poll(() => drawnAlone(map, "m100"), { timeout: TILES_TIMEOUT_MS }).toHaveLength(1);
     await frames(3);
     expect(shownOn(map).elements.length).toBeLessThan(50);
+  });
+
+  it("keeps a cluster's marker, and its focus, over a pan past what it clustered", async () => {
+    const store = createMaplace({ locations: points(LARGE_DIFF), cluster: true, view: ZOOM_3 });
+    const map = (await onGoogle(store)).googleMap() as google.maps.Map;
+    await expect
+      .poll(() => shownOn(map).clustered.length, { timeout: TILES_TIMEOUT_MS })
+      .toBeGreaterThan(0);
+    await frames(3);
+    const before = new Set(clustersOn(map));
+    // Past the east of what was clustered, the cluster focused right of the centre still in view:
+    // Google moves the focus off a marker that leaves the view.
+    const width = map.getDiv().clientWidth;
+    const focused = nearestRightOfCentre(map, [...before], width * 0.3);
+    // Not by Tab: hundreds of markers may come before it.
+    focused.focus();
+    expect(document.activeElement).toBe(focused);
+    map.panBy(width * 0.6, 0);
+    await expect
+      .poll(() => clustersOn(map).some((element) => !before.has(element)), {
+        timeout: TILES_TIMEOUT_MS,
+      })
+      .toBe(true);
+    await frames(3);
+    expect(clustersOn(map)).toContain(focused);
+    expect(document.activeElement).toBe(focused);
   });
 
   it("counts no hidden location in a cluster, nor a removed one", async () => {
@@ -182,7 +227,7 @@ describeWithMaps("clustering on Google", () => {
       .poll(() => shownOn(map).clustered.length, { timeout: TILES_TIMEOUT_MS })
       .toBeGreaterThan(0);
     adapter.destroy();
-    // The clusterer takes cluster markers off a frame after it lets go.
+    // Google takes the markers out of the page once maplace takes them off the map.
     await expect.poll(() => shownOn(map).elements).toEqual([]);
   });
 });

@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
+import { CLUSTER_CLASS } from "../adapter-kit/cluster-badge";
 import { lookIn } from "../adapter-kit/presentation-changes";
 import { presented } from "../testing/conformance/fixtures";
 import { clusteredMarkers } from "./clustered-markers";
@@ -8,6 +9,7 @@ import {
   type MarkerClusterer,
   type SuperClusterViewportAlgorithm,
 } from "./testing/stub-clusterer";
+import { clusterOf } from "./testing/stub-clusters";
 import { StubMap, StubMarker, stubLibraries } from "./testing/stub-libraries";
 
 vi.mock("@googlemaps/markerclusterer", () => import("./testing/stub-clusterer"));
@@ -153,6 +155,38 @@ describe("clusteredMarkers", () => {
     marker.map = null;
     clusterer.render();
     expect(marker.map).toBeNull();
+  });
+
+  it("leaves the clusterer no cluster marker to take off after a render", () => {
+    const { layer, clusterer, marker } = onClusteredLayer();
+    const [inCluster, alone] = [new StubMarker(), new StubMarker()] as unknown as Marker[];
+    const clusterMarker = new StubMarker() as unknown as Marker;
+    clusterer.clusters = [
+      { markers: [marker, inCluster as Marker], marker: clusterMarker },
+      { markers: [alone as Marker], marker: alone as Marker },
+    ];
+    layer.place(marker, SHOWN);
+    layer.flush();
+    expect(clusterer.clusters.map((cluster) => cluster.marker)).toEqual([undefined, alone]);
+  });
+
+  it("takes the cluster markers off on release", () => {
+    const { map, layer, clusterer } = onClusteredLayer();
+    const drawn = clusterer.options.renderer?.render(
+      clusterOf(2, [1, 2]),
+      {} as never,
+      map,
+    ) as Marker;
+    drawn.map = map;
+    clusterer.render();
+    layer.release();
+    expect(drawn.map).toBeNull();
+  });
+
+  it("gives the map's document the cluster badges' styles", () => {
+    onClusteredLayer();
+    const rules = document.adoptedStyleSheets.flatMap((sheet) => [...sheet.cssRules]);
+    expect(rules.some((rule) => rule.cssText.includes(`.${CLUSTER_CLASS}`))).toBe(true);
   });
 
   it("gives the clusterer no click of its own: each cluster listens for its own", () => {

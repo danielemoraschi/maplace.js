@@ -1,7 +1,9 @@
 /// <reference types="google.maps" preserve="true" />
 import { MarkerClusterer, MarkerClustererEvents } from "@googlemaps/markerclusterer";
+import { CLUSTER_STYLES } from "../adapter-kit/cluster-badge";
 import { type Placement, placementOf } from "../adapter-kit/placement";
-import { clusterRenderer } from "./cluster-marker";
+import { adoptStyles } from "../adopted-styles";
+import { type ClusterMarkers, createClusterMarkers } from "./cluster-markers";
 import { ClusteringAlgorithm } from "./clustering-algorithm";
 import type { MarkerLayerFactory } from "./marker-layer";
 
@@ -9,9 +11,20 @@ type Marker = google.maps.marker.AdvancedMarkerElement;
 
 /**
  * Google's clusterer, given the markers to cluster at once: its own `addMarker` and
- * `removeMarker` search its list for each marker, which adds up over thousands.
+ * `removeMarker` search its list for each marker, which adds up over thousands. Its cluster
+ * markers are `clusterMarkers`' to keep and take off.
  */
 class Clusterer extends MarkerClusterer {
+  constructor(
+    map: google.maps.Map,
+    algorithm: ClusteringAlgorithm,
+    // Set once `super` returns: Google adds the clusterer to the map, and renders, only later.
+    private readonly clusterMarkers: ClusterMarkers,
+  ) {
+    // Not undefined, which takes the clusterer's own click: each cluster listens for its own.
+    super({ map, algorithm, renderer: clusterMarkers, onClusterClick: null as never });
+  }
+
   /** Clusters exactly these markers from the next render on. */
   cluster(markers: Marker[]): void {
     this.markers = markers;
@@ -20,6 +33,14 @@ class Clusterer extends MarkerClusterer {
   /** Whether its last render drew `marker` on its own, a cluster of one. */
   drewAlone(marker: Marker): boolean {
     return this.clusters.some(({ markers }) => markers.length === 1 && markers[0] === marker);
+  }
+
+  protected override renderClusters(): void {
+    super.renderClusters();
+    // Left here, a cluster's marker would be taken off by the clusterer's next render, a frame
+    // later, kept or not: `clusterMarkers` takes off those it no longer draws.
+    for (const cluster of this.clusters) if (cluster.markers.length !== 1) delete cluster.marker;
+    this.clusterMarkers.endRender();
   }
 }
 
@@ -31,17 +52,14 @@ class Clusterer extends MarkerClusterer {
  * moved out of what it clustered or changed zoom: only the view and half a view around it are
  * clustered and on the map (M35). A render takes off the map a marker it last drew on its own and
  * no longer clusters, so the one standing alone is put back after each, the clusterer's own on
- * `idle` too.
+ * `idle` too. Cluster markers are kept while a cluster stays where it was (`ClusterMarkers`, M36),
+ * and the map's document gets their badges' styles.
  */
 export const clusteredMarkers: MarkerLayerFactory = (map, libraries) => {
+  adoptStyles(map.getDiv().ownerDocument, CLUSTER_STYLES);
   const algorithm = new ClusteringAlgorithm({});
-  const clusterer = new Clusterer({
-    map,
-    algorithm,
-    renderer: clusterRenderer(libraries),
-    // Not undefined, which takes the clusterer's own click: each cluster listens for its own.
-    onClusterClick: null as never,
-  });
+  const clusterMarkers = createClusterMarkers(libraries);
+  const clusterer = new Clusterer(map, algorithm, clusterMarkers);
   const placements = new Map<Marker, Placement>();
   const toCluster = new Set<Marker>();
   let alone: Marker | undefined;
@@ -105,6 +123,7 @@ export const clusteredMarkers: MarkerLayerFactory = (map, libraries) => {
       rendered.remove();
       clusterer.cluster([]);
       clusterer.setMap(null);
+      clusterMarkers.release();
     },
   };
 };
