@@ -113,6 +113,8 @@ const [first] = maplace.getSnapshot().locations;
 if (first) maplace.select(first.id);
 ```
 
+Data kept as GeoJSON needs no conversion of your own: `locationsFromGeoJSON` turns a FeatureCollection into locations ([Locations, from GeoJSON](docs/reference/locations.md#from-geojson)).
+
 ## Everything a 0.2 page could touch
 
 From the source and README of tag `0.2.10` and the old docs site. "Dropped" always names the replacement or the reason.

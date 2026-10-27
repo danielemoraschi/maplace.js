@@ -175,7 +175,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 
 | Entry | What it gives |
 |---|---|
-| `maplace` | `createMaplace` (the headless store), `createListView`, `listedLocations`, the adapter contract and the types |
+| `maplace` | `createMaplace` (the headless store), `createListView`, `listedLocations`, `locationsFromGeoJSON` (a GeoJSON FeatureCollection as locations), the adapter contract and the types |
 | `maplace/google` | `createGoogleMap` (a store on a Google map in one call) and `createGoogleAdapter`: the only entry that knows `google.maps` |
 | `maplace/maplibre` | `createMapLibreMap` (a store on a MapLibre map in one call) and `createMapLibreAdapter`: the only entry that knows `maplibre-gl` |
 | `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |

@@ -82,7 +82,13 @@ const LAYERS = {
     packages: ["vitest"],
   },
   view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
-  entry: { files: /^index$/, imports: ["data", "contract", "store", "view", "maplace"] },
+  // A GeoJSON FeatureCollection as locations (C13): checked with the store's checks, so its
+  // misuse reads the same.
+  geojson: { files: /^geojson$/, imports: ["data", "validation"] },
+  entry: {
+    files: /^index$/,
+    imports: ["data", "contract", "store", "view", "maplace", "geojson"],
+  },
   // The element makes stores and list views through the core's entry, as a page does; it reads
   // the data rules, and the adapter contract, store and list view for their types and constants.
   element: {
