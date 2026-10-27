@@ -54,12 +54,17 @@ export { defineListView } from "./list-views";
  * - `list-heading`: a heading above the list, beside the map or on it; the list's accessible name.
  *   (`list`, `list-position`, `fit-all-label` and `list-heading` are live: the list is built
  *   again.)
- * - `selected-id`: the initial selection, like `<input value>`; later changes go through `maplace`.
+ * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
+ *   changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `hold`: stay idle, with no provider request and no list built, until `release()`.
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as
  *   `hold` is.
+ * - `url-state`: keeps the selection in the page's address while connected: the parameter it
+ *   names (`location` when bare or `"true"`) selects on load, over `selected-id` and never as
+ *   misuse; each selection is a history entry, and back and forward select again. Read on
+ *   connect.
  * - provider attributes, such as `api-key` and `map-id` for Google, or `map-style` for MapLibre,
  *   read when the map opens.
  *

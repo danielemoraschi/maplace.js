@@ -29,6 +29,7 @@ type NamedMapAttribute =
   | "hold"
   | "loading"
   | "selected-id"
+  | "url-state"
   | "api-key"
   | "map-id"
   | "nonce"

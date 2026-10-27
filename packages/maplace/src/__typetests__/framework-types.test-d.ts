@@ -87,6 +87,7 @@ export const vueMap: VueMap = {
   list: true,
   "map-options": '{"maxZoom": 12}',
   class: "map",
+  "url-state": "place",
   locations,
   onMaplaceSelectionchange: (event) => event.detail.id,
   onKeydown: (event) => event.currentTarget.release(),
@@ -94,6 +95,7 @@ export const vueMap: VueMap = {
 export const svelteMap: SvelteMap = {
   hold: true,
   loading: "lazy",
+  "url-state": true,
   id: "m",
   "data-x": "1",
   locations,
@@ -112,6 +114,9 @@ export const badLocations: SvelteMap = { locations: [{ id: "a", lat: "1", lng: 2
 
 // @ts-expect-error false is written as "false", which turns a presence attribute such as cluster on
 export const falseCluster: VueMap = { cluster: false };
+
+// @ts-expect-error false is written as "false", which names a parameter "false"
+export const falseUrlState: SvelteMap = { "url-state": false };
 
 // A location reads "false" as false, so false is its off value.
 export const unlisted: SvelteLocation = { listed: false, editable: false };
