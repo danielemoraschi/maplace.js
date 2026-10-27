@@ -1,7 +1,12 @@
 import { frozenPath } from "../diff/frozen";
-import { sameJourney } from "../diff/same";
 import { MaplaceError } from "../errors";
-import { type Route, type RouteLeg, type RouteResult, runsThrough } from "../route";
+import {
+  type Route,
+  type RouteLeg,
+  type RouteResult,
+  runsThrough,
+  sameComputation,
+} from "../route";
 import type { Snapshot } from "../store";
 import { child, reject, root } from "../validate/fail";
 import { type Change, NO_CHANGE } from "./change";
@@ -16,9 +21,9 @@ export interface RouteReport {
 
 /**
  * A route the map computed for `route`, or cleared (`undefined`): stored as a frozen copy, then
- * `routeChange` fires. A result for a route but the current one (other stops, `via` or travel
- * mode, or none set) was computed before it changed, a race like an unknown id: no change. A
- * result for the current route whose legs don't run between its stops is the adapter's bug and
+ * `routeChange` fires. A result for a route but the current one (other stops, `via`, travel mode
+ * or `avoid`, or none set) was computed before it changed, a race like an unknown id: no change.
+ * A result for the current route whose legs don't run between its stops is the adapter's bug and
  * throws.
  */
 export function setRouteResult<Data>(
@@ -57,7 +62,7 @@ export function isStaleRouteFailure(
  * style alone computes nothing again.
  */
 function answersCurrentRoute({ route: current }: Snapshot<unknown>, route: Route): boolean {
-  return current !== undefined && sameJourney(current, route);
+  return current !== undefined && sameComputation(current, route);
 }
 
 /** Legs that don't fit their own route are the adapter's bug, not a race: it throws. */

@@ -16,6 +16,7 @@ const JOURNEY: Journey = {
   stops: ["a", "b"],
   via: undefined,
   travelMode: undefined,
+  avoid: undefined,
   points: [
     { lat: 44.49, lng: 11.34 },
     { lat: 44.84, lng: 11.62 },
@@ -49,6 +50,7 @@ describe("computeRoute", () => {
       stops: ["a", "m", "c"],
       via: ["m"],
       travelMode: undefined,
+      avoid: undefined,
       points: [...JOURNEY.points, { lat: 44.65, lng: 10.93 }],
     };
     const computing = computeRoute(passing);

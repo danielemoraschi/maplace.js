@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { legStops, passesThrough, sameStops } from "./route";
+import {
+  legStops,
+  passesThrough,
+  type Route,
+  sameAvoid,
+  sameComputation,
+  sameStops,
+} from "./route";
 
 describe("legStops", () => {
   it("leaves out the inner stops the route passes through", () => {
@@ -42,5 +49,40 @@ describe("sameStops", () => {
     expect(sameStops({ stops }, { stops: ["a", "b", "c"] })).toBe(false);
     expect(sameStops({ stops, via: ["b"] }, { stops, via: ["c"] })).toBe(false);
     expect(sameStops({ stops, via: ["b"] }, { stops })).toBe(false);
+  });
+});
+
+describe("sameAvoid", () => {
+  it("holds for the same things avoided, in any order, repeated, or none named", () => {
+    expect(
+      sameAvoid({ avoid: ["tolls", "ferries"] }, { avoid: ["ferries", "tolls", "tolls"] }),
+    ).toBe(true);
+    expect(sameAvoid({ avoid: [] }, {})).toBe(true);
+  });
+
+  it("fails for other things avoided, or none against some", () => {
+    expect(sameAvoid({ avoid: ["tolls"] }, { avoid: ["highways"] })).toBe(false);
+    expect(sameAvoid({ avoid: ["tolls", "ferries"] }, { avoid: ["tolls", "tolls"] })).toBe(false);
+    expect(sameAvoid({ avoid: ["tolls"] }, {})).toBe(false);
+  });
+});
+
+describe("sameComputation", () => {
+  const stops = ["a", "b", "c"];
+
+  it("holds for the same stops, travel mode and things avoided, whatever the style", () => {
+    const styled: Route = {
+      stops,
+      via: ["b"],
+      avoid: ["ferries", "tolls"],
+      style: { stroke: "red" },
+    };
+    expect(sameComputation({ stops, via: ["b"], avoid: ["tolls", "ferries"] }, styled)).toBe(true);
+  });
+
+  it("fails for other stops passed through, another travel mode, or other things avoided", () => {
+    expect(sameComputation({ stops, via: ["b"] }, { stops })).toBe(false);
+    expect(sameComputation({ stops }, { stops, travelMode: "walking" })).toBe(false);
+    expect(sameComputation({ stops, avoid: ["tolls"] }, { stops })).toBe(false);
   });
 });

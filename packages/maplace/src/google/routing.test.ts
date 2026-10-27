@@ -67,6 +67,22 @@ describe("the Google route", () => {
     ]);
   });
 
+  it("computes again when only avoid changes, never for the same in another order", async () => {
+    const { routing, routes, open } = routingOnStubs();
+    open();
+    routing.setRoute(AB);
+    await tick();
+    routing.setRoute({ ...AB, avoid: ["tolls", "ferries"] });
+    await tick();
+    routing.setRoute({ ...AB, avoid: ["ferries", "tolls"] });
+    await tick();
+    expect(routes.computeRoutes).toHaveBeenCalledTimes(2);
+    expect(routes.computeRoutes.mock.calls[1]?.[0].routeModifiers).toEqual({
+      avoidTolls: true,
+      avoidFerries: true,
+    });
+  });
+
   it("computes again once a stop moves, never for other locations", async () => {
     const { routing, routes, routed, answer, move, moveStopB } = routingOnStubs();
     await routed();
@@ -94,6 +110,17 @@ describe("the Google route", () => {
     await routed();
     drawing.applied = 1;
     routing.setRoute({ stops: ["b", "a"] });
+    await tick();
+    const stale = await answer();
+    expect(reported()).toEqual([]);
+    expect(stale.createPolylines).not.toHaveBeenCalled();
+  });
+
+  it("drops an answer for what was avoided since replaced, while the stops wait to be drawn", async () => {
+    const { routing, routed, answer, reported, drawing } = routingOnStubs();
+    await routed();
+    drawing.applied = 1;
+    routing.setRoute({ ...AB, avoid: ["tolls"] });
     await tick();
     const stale = await answer();
     expect(reported()).toEqual([]);

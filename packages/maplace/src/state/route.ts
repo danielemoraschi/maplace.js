@@ -1,6 +1,6 @@
-import { sameJourney, sameRoute } from "../diff/same";
+import { sameRoute } from "../diff/same";
 import { locationById } from "../location-index";
-import { innerStops, type Route } from "../route";
+import { innerStops, type Route, sameComputation } from "../route";
 import type { Snapshot } from "../store";
 import { child, describeValue, type Field, item, reject, root } from "../validate/fail";
 import { checkRoute } from "../validate/route";
@@ -10,8 +10,9 @@ import { checkKnownId } from "./checks";
 const MIN_STOPS = 2;
 
 /**
- * Sets or clears the route. An equal route changes nothing; new stops, `via` or travel mode clear
- * the old result, while a new style alone keeps it (the line is redrawn, not recomputed).
+ * Sets or clears the route. An equal route changes nothing; new stops, `via`, travel mode or
+ * `avoid` clear the old result, while a new style alone keeps it (the line is redrawn, not
+ * recomputed).
  */
 export function setRoute<Data>(snapshot: Snapshot<Data>, route: Route | undefined): Change<Data> {
   if (route === undefined) return snapshot.route === undefined ? NO_CHANGE : clearRoute(snapshot);
@@ -21,7 +22,7 @@ export function setRoute<Data>(snapshot: Snapshot<Data>, route: Route | undefine
   const current = snapshot.route;
   if (current !== undefined && sameRoute(current, route)) return NO_CHANGE;
   const replaced = patchOnly<Data>({ route: frozenCopy(route) });
-  const recompute = current === undefined || !sameJourney(current, route);
+  const recompute = current === undefined || !sameComputation(current, route);
   return recompute ? andThen(snapshot, replaced, clearResult) : replaced;
 }
 
@@ -86,10 +87,12 @@ function clearResult<Data>(snapshot: Snapshot<Data>): Change<Data> {
 function frozenCopy(route: Route): Route {
   const style = route.style && Object.freeze({ ...route.style });
   const via = route.via && Object.freeze([...route.via]);
+  const avoid = route.avoid && Object.freeze([...route.avoid]);
   return Object.freeze({
     ...route,
     stops: Object.freeze([...route.stops]),
     ...(via && { via }),
+    ...(avoid && { avoid }),
     ...(style && { style }),
   });
 }

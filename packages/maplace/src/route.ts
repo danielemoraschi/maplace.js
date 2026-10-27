@@ -15,10 +15,19 @@ export interface Route {
   readonly via?: readonly string[] | undefined;
   /** Driving when left out. */
   readonly travelMode?: TravelMode | undefined;
+  /**
+   * What the route keeps off where it reasonably can, in any order; nothing when left out. A
+   * provider applies it to the travel modes it can (Google: driving only).
+   */
+  readonly avoid?: readonly ("tolls" | "highways" | "ferries")[] | undefined;
   readonly style?: LineStyle | undefined;
 }
 
+/** One thing a route can keep off: an item of `Route.avoid`. */
+export type Avoidance = NonNullable<Route["avoid"]>[number];
+
 type RouteStops = Pick<Route, "stops" | "via">;
+type RouteAsked = Pick<Route, "stops" | "via" | "travelMode" | "avoid">;
 
 /** The stops between the first and the last: those a route may pass through. */
 export function innerStops(stops: readonly string[]): readonly string[] {
@@ -43,6 +52,23 @@ export function sameStops(a: RouteStops, b: RouteStops): boolean {
       (id, index) => id === b.stops[index] && passesThrough(a, index) === passesThrough(b, index),
     )
   );
+}
+
+/**
+ * Whether two routes ask for the same computation: the same stops in order, the same ones passed
+ * through, the same travel mode and the same things avoided. Their style isn't part of it.
+ */
+export function sameComputation(a: RouteAsked, b: RouteAsked): boolean {
+  return a.travelMode === b.travelMode && sameStops(a, b) && sameAvoid(a, b);
+}
+
+/** The same things avoided, in any order and however often named; none named is an empty list. */
+export function sameAvoid(a: Pick<Route, "avoid">, b: Pick<Route, "avoid">): boolean {
+  return avoidsAllOf(a, b) && avoidsAllOf(b, a);
+}
+
+function avoidsAllOf(route: Pick<Route, "avoid">, other: Pick<Route, "avoid">): boolean {
+  return (other.avoid ?? []).every((item) => route.avoid?.includes(item));
 }
 
 /** Whether the legs run between the stops that end legs, those the route doesn't pass through. */

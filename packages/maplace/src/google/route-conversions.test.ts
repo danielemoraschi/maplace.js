@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import type { Journey } from "../adapter-kit/journey";
 import type { LatLng } from "../geometry";
-import type { TravelMode } from "../route";
+import type { Avoidance, TravelMode } from "../route";
 import { ROUTE_FIELDS, routeRequest, routeResultOf } from "./route-conversions";
 import { routeFailure, type StubLeg, type StubStep, stubLeg } from "./testing/stub-routes";
 
@@ -13,7 +13,13 @@ const FERRARA = { lat: 44.84, lng: 11.62 };
 
 /** A journey through `points`, its stops named `s0`, `s1` and on. */
 function journey(points: readonly LatLng[], travelMode?: TravelMode, via?: string[]): Journey {
-  return { stops: points.map((_, index) => `s${index}`), via, travelMode, points };
+  return {
+    stops: points.map((_, index) => `s${index}`),
+    via,
+    travelMode,
+    avoid: undefined,
+    points,
+  };
 }
 
 /** Google's route as far as the conversion reads it. */
@@ -53,6 +59,34 @@ describe("routeRequest", () => {
     expect(modeOf("bicycling").travelMode).toBe("BICYCLING");
     expect(modeOf("transit").travelMode).toBe("TRANSIT");
     expect(modeOf()).not.toHaveProperty("travelMode");
+  });
+
+  it("asks Google to avoid each, on a driving route or one with no travel mode", () => {
+    const avoiding = (travelMode?: TravelMode) =>
+      routeRequest({
+        ...journey([BOLOGNA, FERRARA], travelMode),
+        avoid: ["tolls", "highways", "ferries"],
+      });
+    const everything = { avoidTolls: true, avoidHighways: true, avoidFerries: true };
+    expect(avoiding("driving").routeModifiers).toEqual(everything);
+    expect(avoiding().routeModifiers).toEqual(everything);
+  });
+
+  it("names each thing avoided as Google's own modifier", () => {
+    const modifiersOf = (avoided: Avoidance) =>
+      routeRequest({ ...journey([BOLOGNA, FERRARA]), avoid: [avoided] }).routeModifiers;
+    expect(modifiersOf("tolls")).toEqual({ avoidTolls: true });
+    expect(modifiersOf("highways")).toEqual({ avoidHighways: true });
+    expect(modifiersOf("ferries")).toEqual({ avoidFerries: true });
+  });
+
+  it("sends no modifiers when nothing is avoided, or on another travel mode", () => {
+    const avoiding = (avoid: Journey["avoid"], travelMode?: TravelMode) =>
+      routeRequest({ ...journey([BOLOGNA, FERRARA], travelMode), avoid });
+    expect(avoiding([])).not.toHaveProperty("routeModifiers");
+    for (const mode of ["walking", "bicycling", "transit"] as const) {
+      expect(avoiding(["tolls"], mode)).not.toHaveProperty("routeModifiers");
+    }
   });
 });
 

@@ -71,7 +71,7 @@ export interface AdapterHost {
   /**
    * A route computed for `route`, the route `setRoute` gave; `result` undefined clears the stored
    * result. The store takes a result only for its current route (the same stops, the same ones
-   * passed through, the same travel mode).
+   * passed through, the same travel mode, the same things avoided).
    */
   reportRouteChange(route: Route, result: RouteResult | undefined): void;
   /**
@@ -131,8 +131,8 @@ export interface Adapter {
   /**
    * The route to draw, sent again only when it changes. A stop moving is the adapter's to notice
    * (its location's next diff): it computes again then, after a drag only once it ends, at most
-   * once per task. A new style alone redraws the line without computing; new stops, `via` or
-   * travel mode compute again; `undefined` clears it, reporting nothing (the store has).
+   * once per task. A new style alone redraws the line without computing; new stops, `via`, travel
+   * mode or `avoid` compute again; `undefined` clears it, reporting nothing (the store has).
    */
   setRoute(route: Route | undefined): void;
   /**
