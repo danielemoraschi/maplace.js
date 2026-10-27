@@ -62,10 +62,15 @@ export const instance = <MaplaceMap createAdapter={adapter} />;
 export const staticContent = <LocationList>{"Shops"}</LocationList>;
 export const headed = <LocationList heading="Choose a location:" />;
 export const onTheMap = <LocationList position="top-right" />;
+export const scoped = (
+  <LocationList scope="viewport" searchAreaLabel="Look here" emptyAreaLabel="Nothing here" />
+);
 // @ts-expect-error a position is one of the map's corners
 export const notACorner = <LocationList position="middle" />;
 // @ts-expect-error a heading is text
 export const headingNode = <LocationList heading={<h2>Shops</h2>} />;
+// @ts-expect-error a list scopes to the map's view only
+export const notAScope = <LocationList scope="world" />;
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 

@@ -1,5 +1,5 @@
 import type { Location } from "../location";
-import { isListed, type Scope } from "../location-state";
+import { type FilteredLocations, isListed } from "../location-state";
 
 /** Locations under one group heading, or none (`heading` undefined). */
 export interface ListSection<Data = unknown> {
@@ -12,20 +12,42 @@ export interface ListStructure<Data = unknown> {
   readonly sections: readonly ListSection<Data>[];
 }
 
-/** How locations become a structure; `matches` narrows them further (room for a search box). */
+/** How listed locations become a structure. */
 export interface ListRules {
   readonly groupHeadings: boolean | undefined;
-  readonly matches?: ((location: Location) => boolean) | undefined;
 }
 
-/** The listed locations that match `rules`, by group when headings are on, else in data order. */
-export function listStructureOf<Data>(scope: Scope, rules: ListRules): ListStructure<Data> {
-  const entries = (scope.locations as readonly Location<Data>[]).filter(
-    (location) => isListed(location, scope.filter) && (rules.matches?.(location) ?? true),
-  );
-  if (!headingsShown(scope.locations, rules))
+/** Whether a listed location is kept: in the map's view, for a list with `scope`. */
+export type ListedTest = (location: Location) => boolean;
+
+/** The listed locations, by group when headings are on, else in data order. */
+export function listStructureOf<Data>(
+  filtered: FilteredLocations,
+  rules: ListRules,
+): ListStructure<Data> {
+  return structureOf(listedEntries<Data>(filtered), filtered.locations, rules);
+}
+
+/** `entries`, already listed, by group when headings are on for `locations`, else in order. */
+export function structureOf<Data>(
+  entries: readonly Location<Data>[],
+  locations: readonly Location[],
+  rules: ListRules,
+): ListStructure<Data> {
+  if (!headingsShown(locations, rules)) {
     return { sections: [{ heading: undefined, locations: entries }] };
+  }
   return { sections: byGroup(entries) };
+}
+
+/** The listed locations, those `kept` keeps when given (`viewport-scope.ts`), in data order. */
+export function listedEntries<Data>(
+  filtered: FilteredLocations,
+  kept?: ListedTest | undefined,
+): readonly Location<Data>[] {
+  return (filtered.locations as readonly Location<Data>[]).filter(
+    (location) => isListed(location, filtered.filter) && (kept?.(location) ?? true),
+  );
 }
 
 /** What an entry is called: its title if it has text, else its id. */

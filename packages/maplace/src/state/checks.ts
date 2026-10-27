@@ -1,6 +1,6 @@
 import type { Location } from "../location";
 import { locationById } from "../location-index";
-import { isShown, type Scope } from "../location-state";
+import { type FilteredLocations, isShown } from "../location-state";
 import { child, describeValue, type Field, reject, root } from "../validate/fail";
 import { checkNonEmptyString } from "../validate/values";
 
@@ -18,9 +18,9 @@ export function checkKnownId<Data>(
 }
 
 /** Throws unless `id` names a location (`unknown-id`) that is shown (`invalid-input`). */
-export function checkSelectable(scope: Scope, id: string, field: Field): void {
-  const location = checkKnownId(scope.locations, id, field);
-  if (!isShown(location, scope.filter)) {
+export function checkSelectable(filtered: FilteredLocations, id: string, field: Field): void {
+  const location = checkKnownId(filtered.locations, id, field);
+  if (!isShown(location, filtered.filter)) {
     const problem = "names a hidden location (visible: false, or outside the filter)";
     reject(field, `${problem}, got ${describeValue(id)}`);
   }
@@ -28,10 +28,10 @@ export function checkSelectable(scope: Scope, id: string, field: Field): void {
 
 /** The id a public call names (`select`, `hover`): a non-empty string for a shown location. */
 export function checkSelectableId(
-  scope: Scope,
+  filtered: FilteredLocations,
   { method, id }: { readonly method: "select" | "hover"; readonly id: string },
 ): void {
   const field = child(root(method, typeof id === "string" ? id : undefined), "id");
   checkNonEmptyString(id, field);
-  checkSelectable(scope, id, field);
+  checkSelectable(filtered, id, field);
 }

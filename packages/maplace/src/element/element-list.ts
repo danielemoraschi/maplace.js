@@ -1,13 +1,21 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
 import { adoptCarriedStyles } from "../adopted-styles";
-import { listedLocations, type Maplace } from "../index";
+import { type ListViewOptions, listedLocations, type Maplace } from "../index";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
 import type { ElementListOptions, ListPosition } from "./index";
 import { buildListView } from "./list-views";
 
 /** The attributes the list is built from; a change of any of them builds it again. */
-export const LIST_ATTRIBUTES = ["list", "list-position", "fit-all-label", "list-heading"] as const;
+export const LIST_ATTRIBUTES = [
+  "list",
+  "list-position",
+  "fit-all-label",
+  "list-heading",
+  "list-scope",
+  "search-area-label",
+  "empty-area-label",
+] as const;
 
 const LIST_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(LIST_ATTRIBUTES);
 
@@ -38,7 +46,7 @@ export function listFromAttributes(host: HTMLElement, store: Maplace): ElementLi
   // Checked before the page's view is built, so a refused list leaves nothing to destroy.
   const position = listPosition(host.getAttribute("list-position"));
   const setup = {
-    options: listOptionsOf(host),
+    options: listOptionsOf(host, name),
     listed: () => listedLocations(store.getSnapshot()),
   };
   const view = buildListView(name, store, setup);
@@ -64,8 +72,14 @@ export function listFromAttributes(host: HTMLElement, store: Maplace): ElementLi
   };
 }
 
-function listOptionsOf(host: HTMLElement): ElementListOptions {
-  return { fitAllLabel: textOf(host, "fit-all-label"), heading: textOf(host, "list-heading") };
+function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
+  return {
+    fitAllLabel: textOf(host, "fit-all-label"),
+    heading: textOf(host, "list-heading"),
+    scope: listScope(host, name),
+    searchAreaLabel: textOf(host, "search-area-label"),
+    emptyAreaLabel: textOf(host, "empty-area-label"),
+  };
 }
 
 /** `name`'s text, refused when blank: for every view, the page's own as maplace's. */
@@ -82,4 +96,16 @@ function listPosition(value: string | null): ListPosition {
   throw elementMisuse(`list-position must be a corner or "outside", got "${value}"`, {
     field: "list-position",
   });
+}
+
+/** `list-scope`: `viewport`, for a list that can hold its "Search this area" button. */
+function listScope(host: HTMLElement, name: string): ListViewOptions["scope"] {
+  const value = host.getAttribute("list-scope");
+  if (value === null) return undefined;
+  const field = { field: "list-scope" };
+  if (name === "select") {
+    throw elementMisuse('list-scope needs a list: list="select" is a native select', field);
+  }
+  if (value === "viewport") return value;
+  throw elementMisuse(`list-scope must be "viewport", got "${value}"`, field);
 }

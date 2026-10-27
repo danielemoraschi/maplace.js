@@ -1,5 +1,6 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { clusterBoxAround, type ViewBox } from "../adapter-kit/cluster-box";
+import { clusterBoxAround } from "../adapter-kit/cluster-box";
+import type { ViewBox } from "../view-box";
 import { fromMapLibreZoom } from "./conversions";
 
 /** The zoom clusters are grouped at: maplace's, rounded, as Google's clusterer rounds it. */

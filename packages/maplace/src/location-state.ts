@@ -38,13 +38,13 @@ export function isListed(location: Location, filter: readonly string[] | undefin
 }
 
 /** What decides whether a location is shown: the locations and the filter over them. */
-export interface Scope {
+export interface FilteredLocations {
   readonly locations: readonly Location[];
   readonly filter: readonly string[] | undefined;
 }
 
 /** Known and shown: an id a map report, or a selection, may name. Lists must be frozen. */
-export function isSelectable(scope: Scope, id: string): boolean {
-  const location = locationById(scope.locations, id);
-  return location !== undefined && isShown(location, scope.filter);
+export function isSelectable(filtered: FilteredLocations, id: string): boolean {
+  const location = locationById(filtered.locations, id);
+  return location !== undefined && isShown(location, filtered.filter);
 }

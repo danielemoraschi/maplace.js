@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { createMaplace } from "../maplace/create";
+import { mounted } from "../testing/mounted";
+import type { Viewport } from "../viewport";
 import { follow } from "./follow";
+import type { SearchArea } from "./list-block";
 import type { ListVariant } from "./variant";
 
 const locations: Location[] = [
@@ -21,6 +24,26 @@ function recordingVariant(): ListVariant & { readonly calls: string[] } {
 }
 
 const rules = { groupHeadings: undefined };
+
+/** A search area that records its updates, clicked through `search()`. */
+function recordingSearchArea(): SearchArea & { readonly calls: string[]; search(): void } {
+  const calls: string[] = [];
+  const button = new EventTarget() as HTMLButtonElement;
+  return {
+    calls,
+    button,
+    update: ({ moved, emptyArea }) => calls.push(`moved:${moved}/empty:${emptyArea}`),
+    search: () => button.dispatchEvent(new Event("click")),
+  };
+}
+
+function viewportAt(lng: number, zoom = 5): Viewport {
+  return {
+    center: { lat: 0, lng },
+    zoom,
+    bounds: { south: -5, west: lng - 5, north: 5, east: lng + 5 },
+  };
+}
 
 describe("follow", () => {
   it("renders the structure and the state at once", () => {
@@ -64,5 +87,33 @@ describe("follow", () => {
       expect.objectContaining({ code: "destroyed" }),
     );
     expect(variant.calls).toEqual(["destroy"]);
+  });
+
+  it("renders no new structure for a viewport while unscoped, or for a move of a scoped list", async () => {
+    const { maplace, host } = await mounted({ locations });
+    const variant = recordingVariant();
+    const searchArea = recordingSearchArea();
+    follow(maplace, { variant, rules, searchArea });
+    variant.calls.length = 0;
+    host.reportViewportChange(viewportAt(0));
+    expect(variant.calls).toEqual([]);
+    searchArea.search();
+    variant.calls.length = 0;
+    host.reportViewportChange(viewportAt(30));
+    expect(variant.calls).toEqual([]);
+    expect(searchArea.calls.at(-1)).toBe("moved:true/empty:false");
+  });
+
+  it("renders the structure again when a scoped list's viewport goes", async () => {
+    const { maplace, host, detach } = await mounted({ locations });
+    const variant = recordingVariant();
+    const searchArea = recordingSearchArea();
+    follow(maplace, { variant, rules, searchArea });
+    host.reportViewportChange(viewportAt(0));
+    searchArea.search();
+    variant.calls.length = 0;
+    detach();
+    expect(variant.calls).toEqual(["structure"]);
+    expect(searchArea.calls.at(-1)).toBe("moved:false/empty:false");
   });
 });

@@ -8,8 +8,8 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `data`: the locations;
  * - `selection`: a `selected-id` the locations don't have, until they do or something is selected;
  * - `route`: the `route` property;
- * - `list`: `list`, `list-position`, `fit-all-label` or `list-heading`, or a list view not defined
- *   yet (tried again when one is);
+ * - `list`: the list's attributes (`LIST_ATTRIBUTES`), or a list view not defined yet (tried
+ *   again when one is);
  * - `cluster`: the attribute, which the store took when it was created;
  * - `sanitize`: the property, which the store also took when it was created.
  */

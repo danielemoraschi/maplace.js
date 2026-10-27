@@ -9,8 +9,7 @@ import {
 import type { ControlPosition } from "../adapter";
 import { adoptCarriedStyles } from "../adopted-styles";
 import { createListView, type ListViewOptions } from "../index";
-import type { Maplace } from "../store";
-import { structureChanged } from "../views/follow";
+import { isElement } from "../validate/values";
 import {
   createEntryPortals,
   EntryContent,
@@ -69,7 +68,17 @@ function useMountControl(position: ControlPosition | undefined): MountControl {
  * its options as it is made, and their content renders before paint.
  */
 function useListView<Data>(
-  { as, groupHeadings, fitAllLabel, label, heading, position }: LocationListProps<Data>,
+  {
+    as,
+    groupHeadings,
+    fitAllLabel,
+    label,
+    heading,
+    scope,
+    searchAreaLabel,
+    emptyAreaLabel,
+    position,
+  }: LocationListProps<Data>,
   portals: EntryPortals<Data> | undefined,
 ): RefObject<HTMLDivElement | null> {
   const store = useMaplace<Data>();
@@ -84,18 +93,34 @@ function useListView<Data>(
       fitAllLabel,
       label,
       heading,
+      scope,
+      searchAreaLabel,
+      emptyAreaLabel,
       render,
     } satisfies Record<keyof ListViewOptions<Data>, unknown>;
     const view = createListView(store, listOptions);
     const takeOff = position && mountControl?.(view.element, position);
     if (!position) placeIn(place.current, view.element);
-    const stopPruning = portals && pruneOnListChanges(store, portals, view.element);
+    const stopPruning = portals && pruneOnListChanges(portals, view.element);
     return () => {
       stopPruning?.();
       takeOff?.();
       view.destroy();
     };
-  }, [store, portals, as, groupHeadings, fitAllLabel, label, heading, position, mountControl]);
+  }, [
+    store,
+    portals,
+    as,
+    groupHeadings,
+    fitAllLabel,
+    label,
+    heading,
+    scope,
+    searchAreaLabel,
+    emptyAreaLabel,
+    position,
+    mountControl,
+  ]);
   return place;
 }
 
@@ -106,17 +131,28 @@ function placeIn(place: HTMLElement | null, list: HTMLElement): void {
   adoptCarriedStyles(place.ownerDocument);
 }
 
-/** Prunes the entries after the store changes what the list shows: its locations or filter. */
-function pruneOnListChanges<Data>(
-  store: Maplace<Data>,
-  portals: EntryPortals<Data>,
-  list: HTMLElement,
-): () => void {
-  let lastShown = store.getSnapshot();
-  return store.subscribe(() => {
-    const next = store.getSnapshot();
-    if (!structureChanged(lastShown, next)) return;
-    lastShown = next;
-    portals.prune(list);
+/**
+ * Prunes the entries whenever the list drops nodes, whatever dropped them: the store's locations
+ * or filter, or a scope to another view. Content changing inside an entry, or put back at once,
+ * prunes nothing.
+ */
+function pruneOnListChanges<Data>(portals: EntryPortals<Data>, list: HTMLElement): () => void {
+  const watch = new MutationObserver((records) => {
+    if (records.some((record) => droppedFrom(list, record))) portals.prune(list);
   });
+  watch.observe(list, { childList: true, subtree: true });
+  return () => watch.disconnect();
+}
+
+const ENTRY = '[role="option"]';
+
+/** Whether `record` took an entry out of `list`: content changing inside one prunes nothing. */
+function droppedFrom(list: HTMLElement, { removedNodes }: MutationRecord): boolean {
+  return Array.from(removedNodes).some(
+    (node) => isElement(node) && !list.contains(node) && holdsEntry(node),
+  );
+}
+
+function holdsEntry(node: Element): boolean {
+  return node.matches(ENTRY) || node.querySelector(ENTRY) !== null;
 }

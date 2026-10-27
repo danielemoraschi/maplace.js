@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { SHARED_CONTROL_STYLES } from "../adapter-kit/control-styles";
 import { selectorsOf, unguardedSelectorsOf, weighsNothing } from "../testing/selectors";
-import { LIST_CLASS } from "../views/headed";
+import { LIST_CLASS } from "../views/list-block";
 import { LISTBOX_CLASS } from "../views/listbox-nodes";
 import { CONTROL_STYLES } from "./control-styles";
 

@@ -62,8 +62,10 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-map-pane` | Inside `<maplace-map>`, the element the map is drawn in |
 | `maplace-placed-list` | The list `<maplace-map>` places beside the map or on it |
 | `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
-| `maplace-list` | With a heading, the block holding the heading and the entries |
+| `maplace-list` | With a heading or `scope`, the block holding them and the entries |
 | `maplace-list-heading` | That heading |
+| `maplace-search-area` | The "Search this area" button of a list with `scope` |
+| `maplace-empty-area` | What a list with `scope` says when nothing is in view |
 | `maplace-listbox` | The list of entries |
 | `maplace-group` | A group of entries |
 | `maplace-group-heading` | A group's heading |

@@ -1,3 +1,4 @@
+import { big } from "./behaviours/big";
 import { circles } from "./behaviours/circles";
 import { customList } from "./behaviours/custom-list";
 import { markers } from "./behaviours/markers";
@@ -25,6 +26,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   mixed,
   styled,
   "custom-list": customList,
+  big,
 };
 
 /** Where a provider's version does otherwise: on MapLibre, mixed's group C has no route. */

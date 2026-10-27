@@ -1,12 +1,16 @@
 <!doctype html>
-<!-- A page of your own script: the cluster CDN script, which bundles @googlemaps/markerclusterer, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key; its 4,000 points come from points-4k.json. -->
+<!-- A page of your own script: the cluster CDN script, which bundles @googlemaps/markerclusterer, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key; its 4,000 points come from points-4k.json, and its list on the map follows it: "Search this area" lists what is in view. -->
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-cluster.iife.js"></script>
 <style>
   #big-script-map { height: 24rem; }
 </style>
 <div id="big-script-map"></div>
 <script type="module">
-  const maplace = Maplace.createGoogleMap("#big-script-map", { apiKey: "YOUR_KEY", cluster: true });
+  const maplace = Maplace.createGoogleMap("#big-script-map", {
+    apiKey: "YOUR_KEY",
+    cluster: true,
+    list: { scope: "viewport" },
+  });
 
   const response = await fetch("/points-4k.json");
   const points = await response.json();

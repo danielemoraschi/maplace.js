@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-27 Added a list that follows the map: `scope: "viewport"` lists only the locations in the map's view, with a "Search this area" button after a move (`list-scope`, `search-area-label` and `empty-area-label` on `<maplace-map>`; `scope`, `searchAreaLabel` and `emptyAreaLabel` on `createListView` and `<LocationList>`), live in the Cluster example; the Store, React, Element and Styling reference pages
 - 2026-10-27 Added `url-state` on `<maplace-map>`: the selection in the page's address (`?location=<id>`, or the parameter it names), selected on load, a history entry per selection so back and forward step through them; documented in the element reference's Map attributes and URL state
 - 2026-10-27 Added `avoid` to a route, `"tolls"`, `"highways"` and `"ferries"` in any order (0.2's `directions_options.avoidTolls` and `avoidHighways`), passed to Google's Routes library on driving routes; the store reference's Routes, Google's Routes and the migration guide say how
 - 2026-10-27 Added `loading="lazy"` on `<maplace-map>`: the map loads its provider only as it comes within 100px of the viewport, so a map below the fold costs no map load until seen; its list is built at once, and `release()` loads it at once (the Element and Setup pages)

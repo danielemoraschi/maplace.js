@@ -15,6 +15,9 @@ describe("checkListViewOptions", () => {
       label: "Shops",
       heading: "Choose a location:",
       render: () => {},
+      scope: "viewport",
+      searchAreaLabel: "Search here",
+      emptyAreaLabel: "Nothing here",
     };
     expect(check(all)).not.toThrow();
   });
@@ -25,6 +28,9 @@ describe("checkListViewOptions", () => {
     expect(check({ label: "  " })).toThrow("createListView: label must be a non-blank string");
     expect(check({ heading: " " })).toThrow("createListView: heading must be a non-blank string");
     expect(check({ heading: 3 })).toThrow(/heading must be a non-blank string/);
+    expect(check({ scope: "world" })).toThrow(/scope must be one of/);
+    expect(check({ searchAreaLabel: " " })).toThrow(/searchAreaLabel must be a non-blank string/);
+    expect(check({ emptyAreaLabel: "" })).toThrow(/emptyAreaLabel must be a non-blank string/);
   });
 
   it("refuses render for a native select instead of ignoring it", () => {
@@ -32,6 +38,15 @@ describe("checkListViewOptions", () => {
       expect.objectContaining({
         code: "invalid-input",
         message: expect.stringContaining("render needs as: 'list'"),
+      }),
+    );
+  });
+
+  it("refuses scope for a native select instead of ignoring it", () => {
+    expect(check({ as: "select", scope: "viewport" })).toThrow(
+      expect.objectContaining({
+        code: "invalid-input",
+        message: expect.stringContaining("scope needs as: 'list'"),
       }),
     );
   });

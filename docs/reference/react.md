@@ -89,6 +89,9 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `fitAllLabel` | Adds a first entry with this label that clears the selection and fits all locations |
 | `label` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | A visible heading above the entries |
+| `scope` | `"viewport"`: lists only the locations in the map's view, from a "Search this area" button ([List view options](store.md#list-view-options)); for `as: "list"` only |
+| `searchAreaLabel` | That button's label; default "Search this area" |
+| `emptyAreaLabel` | What a scoped list says when nothing is in its view; default "No locations in this area" |
 | `children` | For `as: "list"`, a function rendering an entry's content: plain content, since the entry itself is the option |
 | `position` | A corner, inside a `<MaplaceMap>`: the list itself goes on the map there while the map is attached, as the element's `list-position`, so its panel hides with it and its entries scroll under its heading. Without a `<MaplaceMap>` it is misuse |
 
