@@ -57,8 +57,8 @@ const MODULE_FILE: Readonly<Record<HostKind, string>> = {
   react: "react.tsx",
 };
 
-// Found by glob, so an example runs by being in `examples/`. `migrate/from-0.2.ts` declares its
-// inputs instead of having them: it is type-checked only. A MapLibre version sits in `maplibre/`
+// Found by glob, so an example runs by being in `examples/`. The snippets in `migrate/` declare
+// their inputs instead of having them: they are type-checked only. A MapLibre version sits in `maplibre/`
 // beside its Google twin.
 const FILES = import.meta.glob<string>(
   ["../../../examples/*/*.html", "../../../examples/*/maplibre/*.html"],

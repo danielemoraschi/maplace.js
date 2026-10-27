@@ -9,6 +9,7 @@ describe("the maplace entry", () => {
       "createListView",
       "createMaplace",
       "listedLocations",
+      "locationsFromGeoJSON",
     ]);
   });
 });

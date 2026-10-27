@@ -4,7 +4,7 @@ Every export of every entry, with where it is explained, then the error codes an
 
 ## `maplace`
 
-The store, the list view, the adapter contract and the types. Side-effect-free.
+The store, the list view, the GeoJSON helper, the adapter contract and the types. Side-effect-free.
 
 | Export | Kind | Explained in |
 |---|---|---|
@@ -19,6 +19,8 @@ The store, the list view, the adapter contract and the types. Side-effect-free.
 | `createListView` | function | [List view options](store.md#list-view-options) |
 | `ListViewOptions`, `ListView`, `ListEntry` | types | [List view options](store.md#list-view-options) |
 | `listedLocations` | function | [Listed locations](store.md#listed-locations) |
+| `locationsFromGeoJSON` | function | [From GeoJSON](locations.md#from-geojson) |
+| `GeoJSONFeatureCollection`, `GeoJSONFeature` | types | [From GeoJSON](locations.md#from-geojson) |
 | `Location`, `MarkerLocation`, `CircleLocation`, `PolylineLocation`, `PolygonLocation` | types | [Locations](locations.md) |
 | `LatLng`, `Geometry`, `MarkerGeometry`, `CircleGeometry`, `PolylineGeometry`, `PolygonGeometry` | types | [Locations](locations.md#markers); a geometry is what a drag or edit changes |
 | `Content` | type | [Content](locations.md#content) |

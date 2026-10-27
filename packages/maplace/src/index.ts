@@ -17,6 +17,8 @@ export type {
   MaplaceEvents,
   Unsubscribe,
 } from "./events";
+export type { GeoJSONFeature, GeoJSONFeatureCollection } from "./geojson";
+export { locationsFromGeoJSON } from "./geojson";
 export type {
   CircleGeometry,
   Geometry,
