@@ -1,13 +1,13 @@
 import type { Location } from "../location";
 import type { Maplace, Snapshot } from "../store";
-import type { SearchArea } from "./list-block";
+import type { AreaFilter } from "./area-filter";
 import { type ListRules, listedEntries, structureOf } from "./model";
 import type { ListVariant } from "./variant";
 import {
   inViewOf,
   isNewView,
   type ListScope,
-  offersSearch,
+  offersAreaOnly,
   scopeAfter,
   scopedTo,
   UNSCOPED,
@@ -17,19 +17,20 @@ import {
 export interface Following<Data> {
   readonly variant: ListVariant<Data>;
   readonly rules: ListRules;
-  /** With `scope`: the button the list is scoped to the map's view again from. */
-  readonly searchArea?: SearchArea | undefined;
+  /** With `scope`: the buttons the list is filtered to the map's view from, and back. */
+  readonly areaFilter?: AreaFilter | undefined;
 }
 
 /**
  * Renders now, then on every change: the structure only when locations, filter or the list's
- * scope changed, the state only when selection or hover did. With a search area, each new view
- * (a resize is none) decides again whether "Search this area" shows (`offersSearch`). Each pass
- * reads the snapshot as it is then, because commits made during delivery are queued.
+ * scope changed, the state only when selection or hover did. With an area filter, each new view
+ * (a resize is none) decides again whether "This area only" shows (`offersAreaOnly`), as does
+ * "Show all". Each pass reads the snapshot as it is then, because commits made during delivery
+ * are queued.
  */
 export function follow<Data>(
   maplace: Maplace<Data>,
-  { variant, rules, searchArea }: Following<Data>,
+  { variant, rules, areaFilter }: Following<Data>,
 ): () => void {
   let shown: Snapshot<Data> | undefined;
   let scope: ListScope = UNSCOPED;
@@ -39,31 +40,38 @@ export function follow<Data>(
     listing = listedEntries(snapshot, inViewOf(scope));
     variant.renderStructure(structureOf(listing, snapshot.locations, rules));
   }
-  function showSearchArea(): void {
-    const emptyArea = scope.kind === "scoped" && listing.length === 0;
-    searchArea?.update({ moved: offered, emptyArea });
+  function showAreaFilter(): void {
+    const scoped = scope.kind === "scoped";
+    areaFilter?.update({ moved: offered, scoped, emptyArea: scoped && listing.length === 0 });
   }
   function sync(): void {
     const snapshot = maplace.getSnapshot();
-    const next = searchArea ? scopeAfter(scope, snapshot.viewport) : scope;
+    const next = areaFilter ? scopeAfter(scope, snapshot.viewport) : scope;
     const rescoped = next !== scope;
     scope = next;
     if (rescoped || structureChanged(shown, snapshot)) renderStructure(snapshot);
     if (stateChanged(shown, snapshot)) {
       variant.renderState({ selectedId: snapshot.selectedId, hoveredId: snapshot.hoveredId });
     }
-    if (searchArea && isNewView(shown?.viewport, snapshot.viewport)) {
-      offered = offersSearch(snapshot, listing);
+    if (areaFilter && isNewView(shown?.viewport, snapshot.viewport)) {
+      offered = offersAreaOnly(snapshot, listing);
     }
     shown = snapshot;
-    showSearchArea();
+    showAreaFilter();
   }
-  function searchHere(): void {
-    const snapshot = maplace.getSnapshot();
-    scope = scopedTo(snapshot.viewport);
+  /** Lists in `next` now; only an unscoped list can leave "This area only" to offer. */
+  function rescope(snapshot: Snapshot<Data>, next: ListScope): void {
+    scope = next;
     renderStructure(snapshot);
-    offered = false;
-    showSearchArea();
+    offered = next.kind === "unscoped" && offersAreaOnly(snapshot, listing);
+    showAreaFilter();
+  }
+  function filterToView(): void {
+    const snapshot = maplace.getSnapshot();
+    rescope(snapshot, scopedTo(snapshot.viewport));
+  }
+  function showEveryLocation(): void {
+    rescope(maplace.getSnapshot(), UNSCOPED);
   }
   let unsubscribe: () => void;
   try {
@@ -74,9 +82,12 @@ export function follow<Data>(
     throw error;
   }
   sync();
-  searchArea?.button.addEventListener("click", searchHere);
+  const listening = new AbortController();
+  const { signal } = listening;
+  areaFilter?.areaOnly.addEventListener("click", filterToView, { signal });
+  areaFilter?.showAll.addEventListener("click", showEveryLocation, { signal });
   return () => {
-    searchArea?.button.removeEventListener("click", searchHere);
+    listening.abort();
     unsubscribe();
   };
 }

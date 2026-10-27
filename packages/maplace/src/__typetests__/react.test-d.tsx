@@ -63,7 +63,12 @@ export const staticContent = <LocationList>{"Shops"}</LocationList>;
 export const headed = <LocationList heading="Choose a location:" />;
 export const onTheMap = <LocationList position="top-right" />;
 export const scoped = (
-  <LocationList scope="viewport" searchAreaLabel="Look here" emptyAreaLabel="Nothing here" />
+  <LocationList
+    scope="viewport"
+    areaOnlyLabel="Look here"
+    showAllLabel="Everything"
+    emptyAreaLabel="Nothing here"
+  />
 );
 // @ts-expect-error a position is one of the map's corners
 export const notACorner = <LocationList position="middle" />;

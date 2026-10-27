@@ -4,7 +4,11 @@ import { recordingActions, structureOf, titled } from "../testing/lists";
 import { type BlockParts, listBlock } from "./list-block";
 import { createListbox } from "./listbox";
 
-const SEARCH_AREA = { label: "Search this area", emptyLabel: "No locations in this area" };
+const AREA_FILTER = {
+  areaOnly: "This area only",
+  showAll: "Show all",
+  emptyArea: "No locations in this area",
+};
 
 function listboxIn(parts: BlockParts) {
   const listbox = createListbox(recordingActions(), {
@@ -12,23 +16,22 @@ function listboxIn(parts: BlockParts) {
     fitAllLabel: undefined,
     render: undefined,
   });
-  const { variant: block, searchArea } = listBlock(listbox, parts);
-  return { listbox, block, searchArea, children: Array.from(block.element.children) };
+  const { variant: block, areaFilter } = listBlock(listbox, parts);
+  return { listbox, block, areaFilter, children: Array.from(block.element.children) };
 }
 
 function headedListbox(text: string, namesList = true) {
-  const parts = listboxIn({ heading: { text, namesList }, searchArea: undefined });
+  const parts = listboxIn({ heading: { text, namesList }, areaFilter: undefined });
   return { ...parts, heading: parts.block.element.firstElementChild as HTMLElement };
 }
 
-/** A listbox under a search area, on the page, listing `ids`. */
-function searchedListbox(...ids: string[]) {
-  const parts = listboxIn({ heading: undefined, searchArea: SEARCH_AREA });
+/** A listbox under an area filter, on the page, listing `ids`. */
+function filteredListbox(...ids: string[]) {
+  const parts = listboxIn({ heading: undefined, areaFilter: AREA_FILTER });
   document.body.append(parts.block.element);
   parts.block.renderStructure(structureOf(titled(...ids)));
-  const [button, status] = parts.children as [HTMLButtonElement, HTMLElement];
-  if (parts.searchArea === undefined) throw new Error("no search area");
-  return { ...parts, searchArea: parts.searchArea, button, status };
+  if (parts.areaFilter === undefined) throw new Error("no area filter");
+  return { ...parts, areaFilter: parts.areaFilter };
 }
 
 afterEach(() => {
@@ -79,85 +82,38 @@ describe("listBlock with a heading", () => {
   });
 });
 
-describe("listBlock with a search area", () => {
-  it("is the variant itself with neither heading nor search area", () => {
-    const { listbox, block, searchArea } = listboxIn({ heading: undefined, searchArea: undefined });
-    expect([block, searchArea]).toEqual([listbox, undefined]);
+describe("listBlock with an area filter", () => {
+  it("is the variant itself with neither heading nor area filter", () => {
+    const { listbox, block, areaFilter } = listboxIn({ heading: undefined, areaFilter: undefined });
+    expect([block, areaFilter]).toEqual([listbox, undefined]);
   });
 
-  it("shows the heading, then the button, then the status, then the entries, in one block", () => {
+  it("shows the heading, the two buttons, the status, then the entries, in one block", () => {
     const { listbox, children } = listboxIn({
       heading: { text: "Shops", namesList: true },
-      searchArea: SEARCH_AREA,
+      areaFilter: AREA_FILTER,
     });
     expect(children.map((child) => child.className)).toEqual([
       "maplace-list-heading",
-      "maplace-search-area",
+      "maplace-area-only",
+      "maplace-show-all",
       "maplace-empty-area",
       listbox.element.className,
     ]);
   });
 
-  it("starts with the button and the status hidden, and shows their labels as text", () => {
-    const { button, status } = searchedListbox("a");
-    expect([button.hidden, button.type, button.textContent]).toEqual([
-      true,
-      "button",
-      "Search this area",
-    ]);
-    expect([status.hidden, status.getAttribute("role"), status.textContent]).toEqual([
-      true,
-      "status",
-      "No locations in this area",
-    ]);
-  });
-
-  it("shows the status only for an empty area, the block with it", () => {
-    const { block, searchArea, status } = searchedListbox();
-    expect(status.hidden).toBe(true);
-    searchArea.update({ moved: false, emptyArea: true });
-    expect([status.hidden, block.element.hidden]).toEqual([false, false]);
-    searchArea.update({ moved: false, emptyArea: false });
-    expect(status.hidden).toBe(true);
-  });
-
-  it("hides the block only while the entries, the button and the status are all hidden", () => {
-    const { block, searchArea } = searchedListbox();
+  it("hides the block only while the entries, the buttons and the status are all hidden", () => {
+    const { block, areaFilter } = filteredListbox();
     expect(block.element.hidden).toBe(true);
-    searchArea.update({ moved: true, emptyArea: false });
+    areaFilter.update({ moved: true, scoped: false, emptyArea: false });
     expect(block.element.hidden).toBe(false);
-    searchArea.update({ moved: false, emptyArea: true });
+    areaFilter.update({ moved: false, scoped: true, emptyArea: false });
     expect(block.element.hidden).toBe(false);
-    searchArea.update({ moved: false, emptyArea: false });
+    areaFilter.update({ moved: false, scoped: true, emptyArea: true });
+    expect(block.element.hidden).toBe(false);
+    areaFilter.update({ moved: false, scoped: false, emptyArea: false });
     expect(block.element.hidden).toBe(true);
     block.renderStructure(structureOf(titled("a")));
     expect(block.element.hidden).toBe(false);
-  });
-
-  it("hands focus to the entries' tab stop when it hides the focused button", () => {
-    const { listbox, searchArea, button } = searchedListbox("a", "b");
-    searchArea.update({ moved: true, emptyArea: false });
-    button.focus();
-    searchArea.update({ moved: false, emptyArea: false });
-    expect(document.activeElement).toBe(listbox.element.querySelector('[tabindex="0"]'));
-  });
-
-  it("hands focus to the status when it hides the focused button over an empty area", () => {
-    const { block, searchArea, button, status } = searchedListbox("a");
-    searchArea.update({ moved: true, emptyArea: false });
-    button.focus();
-    block.renderStructure(structureOf([]));
-    searchArea.update({ moved: false, emptyArea: true });
-    expect(document.activeElement).toBe(status);
-  });
-
-  it("moves no focus when it hides a button that had none", () => {
-    const { searchArea } = searchedListbox("a");
-    const elsewhere = document.createElement("button");
-    document.body.append(elsewhere);
-    elsewhere.focus();
-    searchArea.update({ moved: true, emptyArea: false });
-    searchArea.update({ moved: false, emptyArea: false });
-    expect(document.activeElement).toBe(elsewhere);
   });
 });

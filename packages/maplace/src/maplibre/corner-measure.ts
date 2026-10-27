@@ -1,6 +1,7 @@
 import { CONTROL_POSITIONS, type ControlPosition } from "../adapter";
+import { MAPLACE_LISTS } from "../adapter-kit/control-styles";
 import { OUTSIDE_UNSTYLED } from "../unstyled";
-import { MAPLACE_LISTS, PANEL_SELECTOR } from "./control-styles";
+import { PANEL_SELECTOR } from "./control-styles";
 import type { CornerContent, CornersOnMap, Held, Span } from "./corner-layout";
 
 /** MapLibre's four corner elements on a map, by maplace's names for them (MapLibre's own). */

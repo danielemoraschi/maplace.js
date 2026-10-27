@@ -5,8 +5,8 @@ import type { Viewport } from "../viewport";
 import { type ListedTest, listedEntries } from "./model";
 
 /**
- * What a list with `scope` lists in: every listed location until a search, then the view it was
- * last searched in.
+ * What a list with `scope` lists in: every listed location until "This area only", then the view
+ * it was last filtered to, until "Show all".
  */
 export type ListScope =
   | { readonly kind: "unscoped" }
@@ -16,19 +16,19 @@ export const UNSCOPED: ListScope = { kind: "unscoped" };
 
 /**
  * The scope once the map reports `viewport`: unscoped without a laid-out one (a detach, a hidden
- * map), else the same scope. Nothing but a search scopes a list.
+ * map), else the same scope. Nothing but "This area only" scopes a list.
  */
 export function scopeAfter(scope: ListScope, viewport: Viewport | undefined): ListScope {
   return isLaidOut(viewport) ? scope : UNSCOPED;
 }
 
-/** What a search in `viewport` makes: scoped to it, or unscoped when it isn't laid out. */
+/** What "This area only" in `viewport` makes: scoped to it, or unscoped when it isn't laid out. */
 export function scopedTo(viewport: Viewport | undefined): ListScope {
   return isLaidOut(viewport) ? { kind: "scoped", to: viewport } : UNSCOPED;
 }
 
 /**
- * Whether the map reports a view to decide "Search this area" on again: another report, and not
+ * Whether the map reports a view to decide "This area only" on again: another report, and not
  * a resize of the last one, which keeps its centre and zoom (the list's own height changing the
  * map's is one).
  */
@@ -38,10 +38,10 @@ export function isNewView(previous: Viewport | undefined, next: Viewport | undef
 }
 
 /**
- * Whether "Search this area" would change the list, which shows `listing`: once the map is
+ * Whether "This area only" would change the list, which shows `listing`: once the map is
  * ready, for a laid-out view that lists other locations.
  */
-export function offersSearch<Data>(
+export function offersAreaOnly<Data>(
   snapshot: Snapshot<Data>,
   listing: readonly Location<Data>[],
 ): boolean {

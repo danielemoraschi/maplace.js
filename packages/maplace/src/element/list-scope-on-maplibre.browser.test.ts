@@ -7,7 +7,7 @@ import { restoreScreen, showOnPhone } from "./testing/screens";
 // Its own file: it registers only `maplibre`, so a map without `provider` opens on MapLibre, on
 // the local test style, so nothing leaves the machine. Real MapLibre reports the view it opens at
 // before the store's fit, and keeps its centre and zoom through a resize: a scoped list must
-// show no "Search this area" for either.
+// show no "This area only" for either.
 
 const STYLE = JSON.stringify(TEST_STYLE);
 const LOAD = { timeout: 15_000 };
@@ -32,7 +32,7 @@ async function scopedMap(count: number) {
   const part = (selector: string) => map.querySelector(selector) as HTMLElement;
   return {
     map,
-    button: () => part(".maplace-search-area"),
+    areaOnly: () => part(".maplace-area-only"),
     entries: () => map.querySelectorAll("[role=option]").length,
   };
 }
@@ -48,31 +48,31 @@ async function fitted(map: HTMLElementTagNameMap["maplace-map"], count: number):
 }
 
 describe("<maplace-map list-scope> on MapLibre", () => {
-  it("on load, the list lists every location and the button stays hidden", async () => {
-    const { map, button, entries } = await scopedMap(5);
+  it("on load, the list lists every location and 'This area only' stays hidden", async () => {
+    const { map, areaOnly, entries } = await scopedMap(5);
     await fitted(map, 5);
-    expect([entries(), button().hidden]).toEqual([5, true]);
+    expect([entries(), areaOnly().hidden]).toEqual([5, true]);
   });
 
-  it("a list beside the map on a narrow page keeps the button hidden after a search that changes its height", async () => {
+  it("a list beside the map on a narrow page keeps the button hidden after filtering changes its height", async () => {
     await showOnPhone();
     onTestFinished(restoreScreen);
-    const { map, button, entries } = await scopedMap(20);
+    const { map, areaOnly, entries } = await scopedMap(20);
     await fitted(map, 20);
     const list = map.querySelector(".maplace-placed-list") as HTMLElement;
     const pane = map.querySelector(".maplace-map-pane") as HTMLElement;
     map.maplace.setView({ lat: 0, lng: 0 }, 8);
-    await expect.poll(button, LOAD).toHaveProperty("hidden", false);
+    await expect.poll(areaOnly, LOAD).toHaveProperty("hidden", false);
     const paneHeight = pane.getBoundingClientRect().height;
     const listHeight = list.getBoundingClientRect().height;
-    const searched = map.maplace.getSnapshot().viewport;
-    button().click();
+    const filtered = map.maplace.getSnapshot().viewport;
+    areaOnly().click();
     expect(entries()).toBeLessThan(3);
     await expect.poll(() => pane.getBoundingClientRect().height, LOAD).toBeGreaterThan(paneHeight);
     expect(list.getBoundingClientRect().height).toBeLessThan(listHeight);
-    await expect.poll(() => map.maplace.getSnapshot().viewport, LOAD).not.toBe(searched);
+    await expect.poll(() => map.maplace.getSnapshot().viewport, LOAD).not.toBe(filtered);
     const resized = map.maplace.getSnapshot().viewport;
-    expect([resized?.zoom, resized?.center]).toEqual([searched?.zoom, searched?.center]);
-    expect(button().hidden).toBe(true);
+    expect([resized?.zoom, resized?.center]).toEqual([filtered?.zoom, filtered?.center]);
+    expect(areaOnly().hidden).toBe(true);
   });
 });

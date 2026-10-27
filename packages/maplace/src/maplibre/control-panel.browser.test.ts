@@ -89,6 +89,17 @@ describe("the panel of a control on a MapLibre map", () => {
     );
   });
 
+  it("keeps a list of short titles 12em wide at the panel's 13px, and as narrow as its titles inside the opt-out", async () => {
+    const maplace = createMaplace({ locations: places() });
+    const { adapter } = await onPageMapLibre(maplace);
+    const view = createListView(maplace);
+    onTestFinished(() => view.destroy());
+    adapter.mountControl(view.element, "top-right");
+    expect(view.element.getBoundingClientRect().width).toBe(12 * 13);
+    onTestFinished(unstyledPage());
+    expect(view.element.getBoundingClientRect().width).toBeLessThan(12 * 13);
+  });
+
   it("lets the page's own rule win", async () => {
     pageRule(".maplace-control { background: rgb(1, 2, 3) }");
     const { panel } = await buttonOn();

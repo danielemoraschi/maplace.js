@@ -7,7 +7,7 @@ import {
   inViewOf,
   isNewView,
   type ListScope,
-  offersSearch,
+  offersAreaOnly,
   scopeAfter,
   scopedTo,
   UNSCOPED,
@@ -55,21 +55,21 @@ describe("scopeAfter", () => {
   });
 });
 
-describe("offersSearch", () => {
-  it("offers a search only once ready, for a laid-out view that would list other locations", () => {
-    expect(offersSearch(snapshotAt(WEST_ONLY), locations)).toBe(true);
-    expect(offersSearch(snapshotAt(WEST_ONLY, "loading"), locations)).toBe(false);
-    expect(offersSearch(snapshotAt(NO_AREA), locations)).toBe(false);
-    expect(offersSearch(snapshotAt(undefined), locations)).toBe(false);
+describe("offersAreaOnly", () => {
+  it("offers 'This area only' only once ready, for a laid-out view that would list other locations", () => {
+    expect(offersAreaOnly(snapshotAt(WEST_ONLY), locations)).toBe(true);
+    expect(offersAreaOnly(snapshotAt(WEST_ONLY, "loading"), locations)).toBe(false);
+    expect(offersAreaOnly(snapshotAt(NO_AREA), locations)).toBe(false);
+    expect(offersAreaOnly(snapshotAt(undefined), locations)).toBe(false);
   });
 
   it("offers none for a view holding exactly what is listed, as the fitted view at load does", () => {
-    expect(offersSearch(snapshotAt(WHOLE), locations)).toBe(false);
+    expect(offersAreaOnly(snapshotAt(WHOLE), locations)).toBe(false);
   });
 
   it("offers one for a view that lists other locations than shown, none for one listing the same", () => {
-    expect(offersSearch(snapshotAt(WHOLE), [west])).toBe(true);
-    expect(offersSearch(snapshotAt({ ...WEST_ONLY, zoom: 4 }), [west])).toBe(false);
+    expect(offersAreaOnly(snapshotAt(WHOLE), [west])).toBe(true);
+    expect(offersAreaOnly(snapshotAt({ ...WEST_ONLY, zoom: 4 }), [west])).toBe(false);
   });
 });
 

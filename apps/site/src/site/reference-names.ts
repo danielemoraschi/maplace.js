@@ -131,7 +131,8 @@ export const STORE_NAMES = {
     heading: true,
     render: true,
     scope: true,
-    searchAreaLabel: true,
+    areaOnlyLabel: true,
+    showAllLabel: true,
     emptyAreaLabel: true,
   }),
 } as const;

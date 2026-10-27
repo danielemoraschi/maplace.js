@@ -178,6 +178,13 @@ describe("what goes on a Google map, laid out in its panel", () => {
     expect(listbox.scrollHeight).toBeGreaterThan(listbox.clientHeight);
   });
 
+  it("gives a list a minimum width of 12em at the panel's 13px, and none inside the opt-out", async () => {
+    const { list } = await mapOnStubs();
+    expect(getComputedStyle(list()).minWidth).toBe(`${12 * 13}px`);
+    onTestFinished(unstyledPage());
+    expect(getComputedStyle(list()).minWidth).toBe("0px");
+  });
+
   it("hides the panel with the list", async () => {
     const { list, maplace } = await mapOnStubs();
     const panel = panelOf(list());

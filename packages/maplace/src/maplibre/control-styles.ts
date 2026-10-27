@@ -1,4 +1,4 @@
-import { CONTROL_CLASS, SHARED_CONTROL_STYLES } from "../adapter-kit/control-styles";
+import { CONTROL_CLASS, MAPLACE_LISTS, SHARED_CONTROL_STYLES } from "../adapter-kit/control-styles";
 import { outsideUnstyled } from "../unstyled";
 
 /** The class of the element a map maplace creates is drawn in. */
@@ -6,9 +6,6 @@ export const MAPLIBRE_MAP_CLASS = "maplace-maplibre-map";
 
 /** A maplace panel on a MapLibre map: styled here, and looked for in the corners when measured. */
 export const PANEL_SELECTOR = `.maplibregl-ctrl.${CONTROL_CLASS}`;
-
-/** maplace's own lists, whose height the corners' layout limits (`corner-watch.ts`). */
-export const MAPLACE_LISTS = ":is(.maplace-list,.maplace-listbox)";
 
 /** The height each maplace list in a corner may take, set on the corner by `corner-watch.ts`. */
 export const LIST_ROOM_PROPERTY = "--maplace-list-room";

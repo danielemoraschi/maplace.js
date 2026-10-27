@@ -101,18 +101,20 @@ describe("listFromAttributes with a list view defined by name", () => {
     expect(view.factory).not.toHaveBeenCalled();
   });
 
-  it("passes list-scope and the two labels to the list", () => {
+  it("passes list-scope and the three labels to the list", () => {
     const view = definedView();
     const host = elementWith({
       list: view.name,
       "list-scope": "viewport",
-      "search-area-label": "Look here",
+      "area-only-label": "Look here",
+      "show-all-label": "Everything",
       "empty-area-label": "Nothing here",
     });
     listFromAttributes(host, createMaplace());
     expect(view.given.setup?.options).toMatchObject({
       scope: "viewport",
-      searchAreaLabel: "Look here",
+      areaOnlyLabel: "Look here",
+      showAllLabel: "Everything",
       emptyAreaLabel: "Nothing here",
     });
   });
@@ -136,23 +138,26 @@ describe("listFromAttributes with a list view defined by name", () => {
     );
   });
 
-  it("treats list-scope and both labels as list attributes", () => {
-    for (const name of ["list-scope", "search-area-label", "empty-area-label"]) {
+  it("treats list-scope and its labels as list attributes", () => {
+    for (const name of ["list-scope", "area-only-label", "show-all-label", "empty-area-label"]) {
       expect(isListAttribute(name)).toBe(true);
     }
   });
 
-  it.each(["list-heading", "fit-all-label", "search-area-label", "empty-area-label"])(
-    "refuses a blank %s before any view is built",
-    (name) => {
-      const view = definedView();
-      const host = elementWith({ list: view.name, [name]: " " });
-      expect(() => listFromAttributes(host, createMaplace())).toThrow(
-        expect.objectContaining({ code: "invalid-input", field: name }),
-      );
-      expect(view.factory).not.toHaveBeenCalled();
-    },
-  );
+  it.each([
+    "list-heading",
+    "fit-all-label",
+    "area-only-label",
+    "show-all-label",
+    "empty-area-label",
+  ])("refuses a blank %s before any view is built", (name) => {
+    const view = definedView();
+    const host = elementWith({ list: view.name, [name]: " " });
+    expect(() => listFromAttributes(host, createMaplace())).toThrow(
+      expect.objectContaining({ code: "invalid-input", field: name }),
+    );
+    expect(view.factory).not.toHaveBeenCalled();
+  });
 
   it("refuses a name no view is defined under", () => {
     expect(() => listFromAttributes(elementWith({ list: "menu" }), createMaplace())).toThrow(

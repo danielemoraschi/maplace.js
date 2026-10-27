@@ -13,7 +13,8 @@ export const LIST_ATTRIBUTES = [
   "fit-all-label",
   "list-heading",
   "list-scope",
-  "search-area-label",
+  "area-only-label",
+  "show-all-label",
   "empty-area-label",
 ] as const;
 
@@ -77,7 +78,8 @@ function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
     fitAllLabel: textOf(host, "fit-all-label"),
     heading: textOf(host, "list-heading"),
     scope: listScope(host, name),
-    searchAreaLabel: textOf(host, "search-area-label"),
+    areaOnlyLabel: textOf(host, "area-only-label"),
+    showAllLabel: textOf(host, "show-all-label"),
     emptyAreaLabel: textOf(host, "empty-area-label"),
   };
 }
@@ -98,7 +100,7 @@ function listPosition(value: string | null): ListPosition {
   });
 }
 
-/** `list-scope`: `viewport`, for a list that can hold its "Search this area" button. */
+/** `list-scope`: `viewport`, for a list with room for its "This area only" and "Show all". */
 function listScope(host: HTMLElement, name: string): ListViewOptions["scope"] {
   const value = host.getAttribute("list-scope");
   if (value === null) return undefined;

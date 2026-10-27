@@ -4,7 +4,7 @@ import { createMapLibreMap } from "maplace/maplibre";
 
 const maplace = createMapLibreMap("#big-maplibre-vanilla-map", {
   cluster: true,
-  // On the map, top-right: a list of what is in view, with "Search this area" after a move.
+  // On the map, top-right: a list of what is in view, with "This area only" after a move, then "Show all".
   list: { scope: "viewport" },
 });
 

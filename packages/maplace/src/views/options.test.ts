@@ -16,7 +16,8 @@ describe("checkListViewOptions", () => {
       heading: "Choose a location:",
       render: () => {},
       scope: "viewport",
-      searchAreaLabel: "Search here",
+      areaOnlyLabel: "Here only",
+      showAllLabel: "Everything",
       emptyAreaLabel: "Nothing here",
     };
     expect(check(all)).not.toThrow();
@@ -29,8 +30,9 @@ describe("checkListViewOptions", () => {
     expect(check({ heading: " " })).toThrow("createListView: heading must be a non-blank string");
     expect(check({ heading: 3 })).toThrow(/heading must be a non-blank string/);
     expect(check({ scope: "world" })).toThrow(/scope must be one of/);
-    expect(check({ searchAreaLabel: " " })).toThrow(/searchAreaLabel must be a non-blank string/);
+    expect(check({ areaOnlyLabel: " " })).toThrow(/areaOnlyLabel must be a non-blank string/);
     expect(check({ emptyAreaLabel: "" })).toThrow(/emptyAreaLabel must be a non-blank string/);
+    expect(check({ showAllLabel: 1 })).toThrow(/showAllLabel must be a non-blank string/);
   });
 
   it("refuses render for a native select instead of ignoring it", () => {

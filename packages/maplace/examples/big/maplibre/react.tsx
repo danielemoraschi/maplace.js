@@ -15,7 +15,7 @@ function Big() {
   return (
     <MaplaceProvider locations={points} cluster>
       <MaplaceMap createAdapter={createMapLibreAdapter} className="map">
-        {/* A list of what is in view, with "Search this area" after a move. */}
+        {/* A list of what is in view, with "This area only" after a move, then "Show all". */}
         <LocationList scope="viewport" position="top-right" />
       </MaplaceMap>
     </MaplaceProvider>

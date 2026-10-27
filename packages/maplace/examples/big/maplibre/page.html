@@ -1,6 +1,6 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
-<!-- 4,000 points, clustered (the MapLibre build bundles its clustering), and a list on the map that follows it: "Search this area" lists what is in view. -->
+<!-- 4,000 points, clustered (the MapLibre build bundles its clustering), and a list on the map that follows it: "This area only" lists what is in view, "Show all" everything again. -->
 <maplace-map id="big-maplibre-map" cluster list list-position="top-right" list-scope="viewport"></maplace-map>
 <script type="module">
   const response = await fetch('/points-4k.json');

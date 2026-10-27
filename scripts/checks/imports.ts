@@ -35,7 +35,7 @@ const LAYERS = {
   // sees the composed store.
   testing: {
     files:
-      /^testing\/(?!(mounted|listed|lists|fake-adapter|mouse-commands|parked-pointer|touch)$|fake\/|conformance\/|examples\/)/,
+      /^testing\/(?!(mounted|listed|scoped-list|lists|fake-adapter|mouse-commands|parked-pointer|touch)$|fake\/|conformance\/|examples\/)/,
     imports: ["data", "contract", "adapter-kit"],
   },
   // The fake adapter: an in-memory map, at contract level like any adapter.
@@ -49,10 +49,11 @@ const LAYERS = {
     imports: ["data", "contract", "adapter-kit", "testing"],
     packages: ["vitest"],
   },
-  // Ready stores on the fake, and a list view beside one (which cleans up after its test).
+  // Ready stores on the fake, and a list view beside one, scoped or not (which cleans up after
+  // its test).
   scenario: {
-    files: /^testing\/(mounted|listed)$/,
-    imports: ["data", "contract", "maplace", "testing", "fake", "view"],
+    files: /^testing\/(mounted|listed|scoped-list)$/,
+    imports: ["data", "contract", "maplace", "testing", "fake", "view", "list-testing"],
     packages: ["vitest"],
   },
   // Running the examples as readers copy them: the HTML around them, the stores they make (T5),

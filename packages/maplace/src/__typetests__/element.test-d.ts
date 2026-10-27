@@ -78,7 +78,8 @@ defineListView("checks", (maplace, { options, listed }) => {
   expectTypeOf(maplace).toEqualTypeOf<Maplace>();
   expectTypeOf(options.fitAllLabel).toEqualTypeOf<string | undefined>();
   expectTypeOf(options.scope).toEqualTypeOf<"viewport" | undefined>();
-  expectTypeOf(options.searchAreaLabel).toEqualTypeOf<string | undefined>();
+  expectTypeOf(options.areaOnlyLabel).toEqualTypeOf<string | undefined>();
+  expectTypeOf(options.showAllLabel).toEqualTypeOf<string | undefined>();
   expectTypeOf(listed()).toEqualTypeOf<readonly Location[]>();
   return createListView(maplace, options);
 });

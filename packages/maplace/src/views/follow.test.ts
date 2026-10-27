@@ -3,8 +3,8 @@ import type { Location } from "../location";
 import { createMaplace } from "../maplace/create";
 import { mounted } from "../testing/mounted";
 import type { Viewport } from "../viewport";
+import type { AreaFilter } from "./area-filter";
 import { follow } from "./follow";
-import type { SearchArea } from "./list-block";
 import type { ListVariant } from "./variant";
 
 const locations: Location[] = [
@@ -25,15 +25,23 @@ function recordingVariant(): ListVariant & { readonly calls: string[] } {
 
 const rules = { groupHeadings: undefined };
 
-/** A search area that records its updates, clicked through `search()`. */
-function recordingSearchArea(): SearchArea & { readonly calls: string[]; search(): void } {
+/** An area filter that records its updates, its buttons pressed by `pressAreaOnly`, `pressShowAll`. */
+function recordingAreaFilter(): AreaFilter & {
+  readonly calls: string[];
+  pressAreaOnly(): void;
+  pressShowAll(): void;
+} {
   const calls: string[] = [];
-  const button = new EventTarget() as HTMLButtonElement;
+  const areaOnly = new EventTarget() as HTMLButtonElement;
+  const showAll = new EventTarget() as HTMLButtonElement;
   return {
     calls,
-    button,
-    update: ({ moved, emptyArea }) => calls.push(`moved:${moved}/empty:${emptyArea}`),
-    search: () => button.dispatchEvent(new Event("click")),
+    areaOnly,
+    showAll,
+    update: ({ moved, scoped, emptyArea }) =>
+      calls.push(`moved:${moved}/scoped:${scoped}/empty:${emptyArea}`),
+    pressAreaOnly: () => areaOnly.dispatchEvent(new Event("click")),
+    pressShowAll: () => showAll.dispatchEvent(new Event("click")),
   };
 }
 
@@ -92,28 +100,54 @@ describe("follow", () => {
   it("renders no new structure for a viewport while unscoped, or for a move of a scoped list", async () => {
     const { maplace, host } = await mounted({ locations });
     const variant = recordingVariant();
-    const searchArea = recordingSearchArea();
-    follow(maplace, { variant, rules, searchArea });
+    const areaFilter = recordingAreaFilter();
+    follow(maplace, { variant, rules, areaFilter });
     variant.calls.length = 0;
     host.reportViewportChange(viewportAt(0));
     expect(variant.calls).toEqual([]);
-    searchArea.search();
+    areaFilter.pressAreaOnly();
     variant.calls.length = 0;
     host.reportViewportChange(viewportAt(30));
     expect(variant.calls).toEqual([]);
-    expect(searchArea.calls.at(-1)).toBe("moved:true/empty:false");
+    expect(areaFilter.calls.at(-1)).toBe("moved:true/scoped:true/empty:false");
   });
 
   it("renders the structure again when a scoped list's viewport goes", async () => {
     const { maplace, host, detach } = await mounted({ locations });
     const variant = recordingVariant();
-    const searchArea = recordingSearchArea();
-    follow(maplace, { variant, rules, searchArea });
+    const areaFilter = recordingAreaFilter();
+    follow(maplace, { variant, rules, areaFilter });
     host.reportViewportChange(viewportAt(0));
-    searchArea.search();
+    areaFilter.pressAreaOnly();
     variant.calls.length = 0;
     detach();
     expect(variant.calls).toEqual(["structure"]);
-    expect(searchArea.calls.at(-1)).toBe("moved:false/empty:false");
+    expect(areaFilter.calls.at(-1)).toBe("moved:false/scoped:false/empty:false");
+  });
+
+  it("'Show all' renders the structure again unscoped, offering 'This area only' for the view", async () => {
+    const { maplace, host } = await mounted({ locations });
+    const variant = recordingVariant();
+    const areaFilter = recordingAreaFilter();
+    follow(maplace, { variant, rules, areaFilter });
+    host.reportViewportChange(viewportAt(30));
+    areaFilter.pressAreaOnly();
+    expect(areaFilter.calls.at(-1)).toBe("moved:false/scoped:true/empty:true");
+    variant.calls.length = 0;
+    areaFilter.pressShowAll();
+    expect(variant.calls).toEqual(["structure"]);
+    expect(areaFilter.calls.at(-1)).toBe("moved:true/scoped:false/empty:false");
+  });
+
+  it("stops listening to both buttons once unsubscribed", async () => {
+    const { maplace, host } = await mounted({ locations });
+    const variant = recordingVariant();
+    const areaFilter = recordingAreaFilter();
+    follow(maplace, { variant, rules, areaFilter })();
+    host.reportViewportChange(viewportAt(30));
+    variant.calls.length = 0;
+    areaFilter.pressAreaOnly();
+    areaFilter.pressShowAll();
+    expect(variant.calls).toEqual([]);
   });
 });

@@ -17,10 +17,13 @@ import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/co
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
 import {
+  AREA_ONLY_CLASS,
   EMPTY_AREA_CLASS,
+  SHOW_ALL_CLASS,
+} from "../../../../packages/maplace/src/views/area-filter.ts";
+import {
   LIST_CLASS,
   LIST_HEADING_CLASS,
-  SEARCH_AREA_CLASS,
 } from "../../../../packages/maplace/src/views/list-block.ts";
 import {
   FIT_ALL_CLASS,
@@ -58,7 +61,8 @@ export const STYLING_CLASSES = [
   LIST_VIEW_CLASS,
   LIST_CLASS,
   LIST_HEADING_CLASS,
-  SEARCH_AREA_CLASS,
+  AREA_ONLY_CLASS,
+  SHOW_ALL_CLASS,
   EMPTY_AREA_CLASS,
   LISTBOX_CLASS,
   GROUP_CLASS,

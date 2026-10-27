@@ -18,7 +18,8 @@ expectTypeOf(list).toEqualTypeOf<ListView>();
 expectTypeOf(list.element).toEqualTypeOf<HTMLElement>();
 createListView(shop, {
   scope: "viewport",
-  searchAreaLabel: "Search here",
+  areaOnlyLabel: "Here only",
+  showAllLabel: "Everything",
   emptyAreaLabel: "Nothing here",
 });
 
