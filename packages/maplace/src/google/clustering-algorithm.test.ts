@@ -1,7 +1,9 @@
+// @vitest-environment happy-dom
 import type { AlgorithmInput } from "@googlemaps/markerclusterer";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Bounds } from "../viewport";
 import { ClusteringAlgorithm } from "./clustering-algorithm";
+import { StubMarker } from "./testing/stub-libraries";
 
 /** A map at `zoom` showing `bounds`, as the algorithm reads one. */
 function mapShowing(zoom: number, bounds: Bounds): google.maps.Map {
@@ -20,6 +22,25 @@ class RenderedClustering extends ClusteringAlgorithm {
 }
 
 const VIEW: Bounds = { south: 10, west: 20, north: 14, east: 28 };
+
+/** Google's `LatLng`, as the library builds one from a marker's position; a cluster's isn't read. */
+class FakeLatLng {
+  constructor(
+    private readonly latitude: number,
+    private readonly longitude: number,
+  ) {}
+  lat = () => this.latitude;
+  lng = () => this.longitude;
+}
+
+const markerAt = (lat: number, lng: number) => new StubMarker({ position: { lat, lng } });
+
+/** The size of each cluster a render on `VIEW` at zoom 6 draws, and whether it draws again. */
+function clustered(clustering: ClusteringAlgorithm, markers: StubMarker[]) {
+  const input = { markers, map: mapShowing(6, VIEW) } as unknown as AlgorithmInput;
+  const { clusters, changed } = clustering.calculate(input);
+  return { sizes: clusters.map((cluster) => cluster.markers?.length), changed };
+}
 
 describe("ClusteringAlgorithm", () => {
   it("clusters nothing again for a pan inside what it clustered, at the same zoom", () => {
@@ -44,8 +65,32 @@ describe("ClusteringAlgorithm", () => {
   });
 
   it("clusters a map with no markers yet into no clusters", () => {
-    const clustering = new ClusteringAlgorithm({});
-    const input = { markers: [], map: mapShowing(6, VIEW) } as unknown as AlgorithmInput;
-    expect(clustering.calculate(input).clusters).toEqual([]);
+    expect(clustered(new ClusteringAlgorithm({}), []).sizes).toEqual([]);
+  });
+
+  describe("once a marker moved", () => {
+    beforeEach(() =>
+      vi.stubGlobal("google", {
+        maps: { LatLng: FakeLatLng, marker: { AdvancedMarkerElement: StubMarker } },
+      }),
+    );
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("clusters a list emptied in the same change into no clusters, and draws again", () => {
+      const clustering = new ClusteringAlgorithm({});
+      expect(clustered(clustering, [markerAt(12, 24), markerAt(12.1, 24.1)]).sizes).toEqual([2]);
+      clustering.forgetPositions();
+      expect(clustered(clustering, [])).toEqual({ sizes: [], changed: true });
+    });
+
+    it("clusters the same list where its markers now are", () => {
+      const clustering = new ClusteringAlgorithm({});
+      const moved = markerAt(12.1, 24.1);
+      const markers = [markerAt(12, 24), moved];
+      clustered(clustering, markers);
+      moved.position = { lat: 13.5, lng: 27 };
+      clustering.forgetPositions();
+      expect(clustered(clustering, markers)).toEqual({ sizes: [1, 1], changed: true });
+    });
   });
 });

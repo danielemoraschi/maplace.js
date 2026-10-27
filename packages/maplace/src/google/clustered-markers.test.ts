@@ -4,11 +4,8 @@ import { CLUSTER_CLASS } from "../adapter-kit/cluster-badge";
 import { lookIn } from "../adapter-kit/presentation-changes";
 import { presented } from "../testing/conformance/fixtures";
 import { clusteredMarkers } from "./clustered-markers";
-import {
-  clusterersMade,
-  type MarkerClusterer,
-  type SuperClusterViewportAlgorithm,
-} from "./testing/stub-clusterer";
+import type { ClusteringAlgorithm } from "./clustering-algorithm";
+import { clusterersMade, type MarkerClusterer } from "./testing/stub-clusterer";
 import { clusterOf } from "./testing/stub-clusters";
 import { StubMap, StubMarker, stubLibraries } from "./testing/stub-libraries";
 
@@ -27,7 +24,8 @@ function onClusteredLayer() {
   const layer = clusteredMarkers(map, stubLibraries());
   const clusterer = clusterersMade[clusterersMade.length - 1] as MarkerClusterer;
   const marker = new StubMarker() as unknown as Marker;
-  return { map, layer, clusterer, marker };
+  const algorithm = clusterer.options.algorithm as unknown as ClusteringAlgorithm;
+  return { map, layer, clusterer, marker, forgetPositions: vi.spyOn(algorithm, "forgetPositions") };
 }
 
 describe("clusteredMarkers", () => {
@@ -44,23 +42,23 @@ describe("clusteredMarkers", () => {
     expect(clusterer.render).toHaveBeenCalledOnce();
   });
 
-  it("clusters again once a clustered marker moved, every position read anew", () => {
-    const { layer, clusterer, marker } = onClusteredLayer();
-    const algorithm = clusterer.options.algorithm as SuperClusterViewportAlgorithm;
+  it("asks the algorithm to read every position again once a clustered marker moved, and clusters again", () => {
+    const { layer, clusterer, marker, forgetPositions } = onClusteredLayer();
     layer.place(marker, SHOWN);
     layer.flush();
     layer.moved(marker);
-    expect(algorithm.positionsRead()).toEqual([]);
+    expect(forgetPositions).toHaveBeenCalledOnce();
     layer.flush();
     expect(clusterer.render).toHaveBeenCalledTimes(2);
   });
 
   it("clusters nothing again when a marker not in a cluster moved", () => {
-    const { layer, clusterer, marker } = onClusteredLayer();
+    const { layer, clusterer, marker, forgetPositions } = onClusteredLayer();
     layer.place(marker, SELECTED);
     layer.flush();
     layer.moved(marker);
     layer.flush();
+    expect(forgetPositions).not.toHaveBeenCalled();
     expect(clusterer.render).toHaveBeenCalledOnce();
   });
 

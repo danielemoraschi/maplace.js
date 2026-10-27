@@ -7,22 +7,13 @@ type Marker = google.maps.marker.AdvancedMarkerElement;
 /** The clusterer's events maplace listens to, as the package names them. */
 export const MarkerClustererEvents = { CLUSTERING_END: "clusteringend" } as const;
 
-/** Google's clustering algorithm as far as maplace uses it: the markers it last read. */
+/**
+ * Google's clustering algorithm as far as maplace's layer uses it: the options it was made with,
+ * none of its clustering, as the subclass is tested on the real library
+ * (`clustering-algorithm.test.ts`).
+ */
 export class SuperClusterViewportAlgorithm {
-  protected markers: Marker[] = [];
-  protected superCluster = { load(_points: unknown[]): void {} };
-
   constructor(readonly options: object) {}
-
-  /** Reads `markers` as a render would. */
-  read(markers: Marker[]): void {
-    this.markers = [...markers];
-  }
-
-  /** The markers whose positions it holds. */
-  positionsRead(): readonly Marker[] {
-    return this.markers;
-  }
 }
 
 /** Every clusterer made since the test file loaded, the latest last. */
@@ -39,7 +30,6 @@ export class MarkerClusterer {
   clusters: { readonly markers: readonly Marker[]; marker?: Marker }[] = [];
   readonly #ended = new Set<() => void>();
   readonly render = vi.fn(() => {
-    this.options.algorithm?.read(this.markers);
     this.renderClusters();
     for (const ended of this.#ended) ended();
   });

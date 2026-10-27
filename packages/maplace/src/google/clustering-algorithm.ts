@@ -7,22 +7,29 @@ import {
 import { isInside, isWholeWorld, paddedView, WHOLE_WORLD } from "./cluster-view";
 
 /**
+ * The last list read, while none is: the library reads a list again only when it differs from the
+ * last (`deepEqual`), and no list equals `null`, not even an empty one, which `[]` would (M38).
+ * Only the library's `calculate` reads it, comparing before it copies: nothing else may.
+ */
+const NO_LIST_READ = null as never;
+
+/**
  * Google's clustering of the view and half a view around it, so markers off screen stay off the
- * map; it reads the markers' positions again only when its list changes.
+ * map; it reads the markers' positions again only when its list changes, or after a move.
  */
 export class ClusteringAlgorithm extends SuperClusterViewportAlgorithm {
-  /**
-   * Loaded with no markers, as the library loads only a list that differs from the last, and
-   * starts from an empty one: a render before any marker would cluster an index never built.
-   */
+  /** Read nothing yet: the first render loads its list, an empty one too, and clusters it. */
   constructor(options: SuperClusterViewportOptions) {
     super(options);
-    this.superCluster.load([]);
+    this.forgetPositions();
   }
 
-  /** A marker moved: the next render reads every position again. */
+  /**
+   * A marker moved: the next render reads every position again and draws, whatever its list.
+   * Otherwise an empty list after the move would keep the old clusters on the map.
+   */
   forgetPositions(): void {
-    this.markers = [];
+    this.markers = NO_LIST_READ;
   }
 
   /**
