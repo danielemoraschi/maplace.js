@@ -60,7 +60,7 @@ function Markers() {
         popupContent={popupContent}
         markerIcon={markerIcon}
       >
-        <LocationList heading="Choose a location:" position="top-right" />
+        <LocationList heading="Choose a location:" fitAllLabel="View all" position="top-right" />
       </MaplaceMap>
     </MaplaceProvider>
   );

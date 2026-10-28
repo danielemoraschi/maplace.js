@@ -30,7 +30,7 @@ const locations: Location[] = [
 
 const maplace = createGoogleMap("#markers-vanilla-map", {
   locations,
-  list: { heading: "Choose a location:" },
+  list: { heading: "Choose a location:", fitAllLabel: "View all" },
 });
 
 maplace.on("mapClick", ({ position }) => dropMarkerAt(position));

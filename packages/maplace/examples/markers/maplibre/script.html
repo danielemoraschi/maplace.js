@@ -47,7 +47,7 @@
 
   const maplace = Maplace.createMapLibreMap("#markers-maplibre-script-map", {
     locations,
-    list: { heading: "Choose a location:" },
+    list: { heading: "Choose a location:", fitAllLabel: "View all" },
   });
 
   maplace.on("mapClick", ({ position }) => dropMarkerAt(position));

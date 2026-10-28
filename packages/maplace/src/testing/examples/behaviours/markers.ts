@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { controlPositions, type ExampleBehaviour, listIn, textIn } from "./reading";
+import { byText, controlPositions, type ExampleBehaviour, listIn, textIn } from "./reading";
 
 const DROP = { lat: 43.1, lng: 13.4 };
 
@@ -7,6 +7,7 @@ export const markers: ExampleBehaviour = async (run) => {
   await expectIcons(run);
   await expectPopups(run);
   await expectListAndZoom(run);
+  await expectViewAll(run);
   await expectMapClickDrops(run);
 };
 
@@ -48,6 +49,16 @@ const expectListAndZoom: ExampleBehaviour = async ({ store, adapter, root }) => 
     id: "milan",
     zoom: 8,
   });
+};
+
+/** The list's first entry, "View all" as 0.2's, clears the selection and fits every place. */
+const expectViewAll: ExampleBehaviour = async ({ store, adapter, root }) => {
+  store.select("rome");
+  const fits = adapter.callsOf("setView").length;
+  byText(root, '[role="option"]', "View all").click();
+  await expect.poll(() => store.getSnapshot().selectedId).toBeUndefined();
+  await expect.poll(() => adapter.callsOf("setView").length).toBeGreaterThan(fits);
+  expect(adapter.callsOf("setView").at(-1)?.view.kind).toBe("fit-bounds");
 };
 
 /** A click on the map drops a marker there. */

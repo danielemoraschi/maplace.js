@@ -48,7 +48,7 @@
   const maplace = Maplace.createGoogleMap("#markers-script-map", {
     apiKey: "YOUR_KEY",
     locations,
-    list: { heading: "Choose a location:" },
+    list: { heading: "Choose a location:", fitAllLabel: "View all" },
   });
 
   maplace.on("mapClick", ({ position }) => dropMarkerAt(position));
