@@ -2,6 +2,18 @@
 <!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
 <style>
   #markers-maplibre-vanilla-map { height: 24rem; }
+  #markers-maplibre-vanilla-map .star {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #f5b301;
+    color: #fff;
+    font-size: 1.125rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 35%);
+  }
 </style>
 <div id="markers-maplibre-vanilla-map"></div>
 <script type="module" src="./vanilla.ts"></script>

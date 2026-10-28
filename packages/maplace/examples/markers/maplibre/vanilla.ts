@@ -3,6 +3,7 @@ import type { LatLng, Location } from "maplace";
 import { createMapLibreMap } from "maplace/maplibre";
 
 const star = document.createElement("span");
+star.className = "star";
 star.textContent = "★";
 
 const locations: Location[] = [

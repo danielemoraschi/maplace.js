@@ -2,6 +2,7 @@ import type { LatLng, Location } from "maplace";
 import { createGoogleMap } from "maplace/google";
 
 const star = document.createElement("span");
+star.className = "star";
 star.textContent = "★";
 
 const locations: Location[] = [

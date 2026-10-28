@@ -3,10 +3,23 @@
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <style>
   #markers-maplibre-script-map { height: 24rem; }
+  #markers-maplibre-script-map .star {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #f5b301;
+    color: #fff;
+    font-size: 1.125rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 35%);
+  }
 </style>
 <div id="markers-maplibre-script-map"></div>
 <script type="module">
   const star = document.createElement("span");
+  star.className = "star";
   star.textContent = "★";
 
   const locations = [

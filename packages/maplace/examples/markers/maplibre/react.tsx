@@ -37,7 +37,8 @@ const cities: Location<City>[] = [
 // Outside the component, so a render of the page around it doesn't render every marker again.
 const popupContent = ({ data }: Location<City>) => (data?.about ? <p>{data.about}</p> : null);
 
-const markerIcon = ({ data }: Location<City>) => (data?.starred ? <span>★</span> : null);
+const markerIcon = ({ data }: Location<City>) =>
+  data?.starred ? <span className="star">★</span> : null;
 
 /** The marker a click on the map drops, the `count`th. */
 function droppedPin(position: LatLng, count: number): Location<City> {

@@ -1,7 +1,22 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
-<!-- Image icons, a DOM icon, popups (Naples has none), Milan's own zoom, Florence on the map only,
-     the list on the map under a heading, and a click on the map dropping a marker there. -->
+<style>
+  #markers-maplibre-map .star {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #f5b301;
+    color: #fff;
+    font-size: 1.125rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 35%);
+  }
+</style>
+<!-- Image icons, a DOM icon the page's CSS styles, popups (Naples has none), Milan's own zoom,
+     Florence on the map only, the list on the map under a heading, and a click on the map dropping
+     a marker there. -->
 <maplace-map id="markers-maplibre-map" list list-position="top-right"
   list-heading="Choose a location:">
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome" icon="/icons/a.svg">
@@ -12,7 +27,7 @@
   </maplace-location>
   <maplace-location location-id="naples" lat="40.8518" lng="14.2681" title="Naples" icon="/icons/c.svg"></maplace-location>
   <maplace-location location-id="venice" lat="45.4408" lng="12.3155" title="Venice">
-    <template data-icon><span>★</span></template>
+    <template data-icon><span class="star">★</span></template>
   </maplace-location>
   <maplace-location location-id="florence" lat="43.7696" lng="11.2558" title="Florence" listed="false"></maplace-location>
 </maplace-map>

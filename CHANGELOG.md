@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-28 Changed the markers example, in every version on both providers: Venice's star is a gold disc styled by the page's own CSS (`.star`), a first look at markers of your own
 - 2026-10-28 Fixed Google's markers drawn over an open popup in Safari: the popup's pane gets a compositing layer of its own (`will-change: transform`), given back as it was when maplace lets go of a page's own map
 - 2026-10-28 Fixed a MapLibre popup covering its marker when the marker's icon grows after the popup opens, as an image icon does while it loads: the popup moves up with it
 - 2026-10-27 Fixed clusters on Google staying drawn when a clustered location moved and every clustered location was removed, hidden or selected in the same change
