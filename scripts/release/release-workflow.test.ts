@@ -18,9 +18,13 @@ it("runs only the repo's own npm scripts", () => {
 
 it("holds the release commit to every gate CI holds a push to", () => {
   const ci = readFileSync(resolve(ROOT, ".github/workflows/ci.yml"), "utf8");
+  // The gates are verify's steps: the jobs after it deploy what passed.
+  const verify = ci.split(/^ {2}(?=[\w-]+:$)/m).find((job) => job.startsWith("verify:")) ?? "";
   // CI's scan is report-only; the tests build the package for themselves, in temp dirs.
   const notGates = new Set(["npm run sonar", "npm run build"]);
-  const gates = [...ci.matchAll(/^\s+(?:- )?run: (npm .+|npx .+)$/gm)].map(([, step = ""]) => step);
+  const gates = [...verify.matchAll(/^\s+(?:- )?run: (npm .+|npx .+)$/gm)].map(
+    ([, step = ""]) => step,
+  );
   expect(gates.length).toBeGreaterThan(3);
   for (const gate of gates.filter((step) => !notGates.has(step))) expect(workflow).toContain(gate);
 });

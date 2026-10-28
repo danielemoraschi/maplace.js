@@ -33,10 +33,11 @@ const { title, description } = Astro.props;
       } catch {}
     </script>
   </head>
-  <body>
+  {/* A column at least the screen's height, so a short page's footer still sits at the bottom. */}
+  <body class="flex min-h-dvh flex-col">
     <SiteHeader />
     {/* Its own stacking context: a map's z-indexes (Google's run to millions) stay under the header. */}
-    <main class="wrap isolate"><slot /></main>
+    <main class="wrap isolate grow"><slot /></main>
     <SiteFooter />
     <script>
       import "../scripts/site.ts";

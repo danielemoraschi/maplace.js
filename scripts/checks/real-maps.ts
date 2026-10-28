@@ -5,10 +5,10 @@
 const MAPLIBRE_ONLY = /(^|\/)[^/]*maplibre[^/]*(\/|$)/i;
 
 /**
- * Whether `next`, with these `changedPaths` since CI last passed on it, runs the tests on Google's
- * real maps, each map billed: not when it changed only prose or MapLibre's own files. Changes that
- * can't be told (`undefined`: no run passed yet, a rewritten history, a run started by hand) run
- * them.
+ * Whether `next`, with these `changedPaths` since CI's `verify` last passed on it, runs the tests
+ * on Google's real maps, each map billed: not when it changed only prose or MapLibre's own files.
+ * Changes that can't be told (`undefined`: no run passed yet, a rewritten history, a run started
+ * by hand) run them.
  */
 export function needsRealMaps(changedPaths: readonly string[] | undefined): boolean {
   if (changedPaths === undefined) return true;

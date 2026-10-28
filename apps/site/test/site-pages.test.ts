@@ -26,9 +26,13 @@ import { grantConsent, loadMapsButtons, placeholder, type Visitor } from "./visi
 /** The examples' pages, the home page first (W38). */
 const EXAMPLE_PAGES = EXAMPLE_GROUPS.map(groupPath);
 
+/** What Cloudflare serves, with a 404, at an address the site has no page for (`wrangler.jsonc`). */
+const NOT_FOUND_PAGE = "/404.html";
+
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
   PRIVACY_PAGE.route,
+  NOT_FOUND_PAGE,
   CHANGELOG_PAGE.route,
   ...REPO_DOCS.map(({ id }) => docRoute(id)),
 ];
@@ -109,6 +113,23 @@ describe("the changelog page", () => {
   }, 30_000);
 });
 
+describe("the not-found page", () => {
+  it("says the address leads nowhere and links to the examples", async () => {
+    const { page, context } = await openPage(NOT_FOUND_PAGE);
+    expect(await page.getByRole("heading", { level: 1 }).textContent()).toBe("Page not found");
+    expect(
+      await article(page).getByRole("link", { name: "the examples" }).getAttribute("href"),
+    ).toBe("/");
+    await context.close();
+  }, 30_000);
+});
+
+/** How far down the screen the footer ends, in whole pixels. */
+async function footerBottom(page: Page): Promise<number> {
+  const box = await page.getByRole("contentinfo").boundingBox();
+  return Math.round((box?.y ?? 0) + (box?.height ?? 0));
+}
+
 describe("the footer", () => {
   const routes = [
     ...EXAMPLE_PAGES,
@@ -120,9 +141,13 @@ describe("the footer", () => {
     const { page, context } = await openPage("/examples/data-routes/");
     await page.mouse.wheel(0, 2500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
-    const box = await page.getByRole("contentinfo").boundingBox();
-    const height = page.viewportSize()?.height ?? 0;
-    expect(Math.round((box?.y ?? 0) + (box?.height ?? 0))).toBe(height);
+    expect(await footerBottom(page)).toBe(page.viewportSize()?.height);
+    await context.close();
+  }, 30_000);
+
+  it("sits at the bottom of the screen under a page shorter than it", async () => {
+    const { page, context } = await openPage(NOT_FOUND_PAGE);
+    expect(await footerBottom(page)).toBe(page.viewportSize()?.height);
     await context.close();
   }, 30_000);
 

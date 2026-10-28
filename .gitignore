@@ -11,3 +11,4 @@ coverage
 .vitest
 spikes
 .astro
+.wrangler

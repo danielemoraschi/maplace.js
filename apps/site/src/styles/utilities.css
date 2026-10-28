@@ -1,6 +1,8 @@
 /* The site's own looks, shared: `wrap` by its header, footer and main; `button-plain` by a
  * failure note's reload button and, in `frame.css`, an example's own buttons. */
 @utility wrap {
+  /* Full width up to the measure, in a flex column too, where auto margins would shrink it. */
+  width: 100%;
   max-width: var(--container-measure);
   margin-inline: auto;
   padding-inline: var(--spacing-gutter);

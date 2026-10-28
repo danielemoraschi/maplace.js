@@ -55,8 +55,8 @@ jobs:
           path: ~/.cache/chromium-packages
           key: ${{ steps.chromium-packages.outputs.cache-primary-key }}
       # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed, so
-      # only when next changed more than prose or MapLibre's own files since the last commit CI
-      # passed on it (scripts/real-maps.ts; a cancelled run's changes count too), or on a run
+      # only when next changed more than prose or MapLibre's own files since the last commit verify
+      # passed on (scripts/real-maps.ts; a cancelled run's changes count too), or on a run
       # started by hand. Without the key the Maps tests would only skip, so a missing secret fails.
       - id: real-maps
         if: github.ref == 'refs/heads/next' && !github.event.repository.fork
@@ -64,11 +64,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BY_HAND: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
+          # The last run whose verify passed, whatever deploy-preview did after it.
           base=""
           if [ "$BY_HAND" != "true" ]; then
-            base=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch next \
-              --status success --limit 20 --json headSha,event \
-              --jq 'map(select(.event != "pull_request"))[0].headSha // ""') || base=""
+            for run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch next \
+              --status completed --limit 20 --json databaseId,event \
+              --jq '.[] | select(.event != "pull_request") | .databaseId'); do
+              base=$(gh run view "$run" --repo "$GITHUB_REPOSITORY" --json headSha,jobs \
+                --jq 'select(any(.jobs[]; .name == "verify" and .conclusion == "success")) | .headSha') || base=""
+              [ -n "$base" ] && break
+            done
           fi
           node scripts/real-maps.ts "$base" >> "$GITHUB_OUTPUT"
       - if: steps.real-maps.outputs.run == 'true'
@@ -91,3 +96,38 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # The site from next, once it passed, as a Cloudflare version under the alias `next` (W10):
+  # next-maplacejs.<subdomain>.workers.dev, behind Cloudflare Access; production is R4's. The
+  # Worker was created once by hand: an upload can't create one.
+  deploy-preview:
+    needs: verify
+    if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # it never pushes, and npm's install scripts run here
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Without them the maps would only say the site has no key, so missing ones fail.
+      - run: |
+          test -n "$SITE_MAPS_KEY" || { echo "::error::the SITE_MAPS_KEY secret is not set"; exit 1; }
+          test -n "$SITE_MAPS_MAP_ID" || { echo "::error::the SITE_MAPS_MAP_ID variable is not set"; exit 1; }
+          npm run site:build
+        env:
+          SITE_MAPS_KEY: ${{ secrets.SITE_MAPS_KEY }}
+          SITE_MAPS_MAP_ID: ${{ vars.SITE_MAPS_MAP_ID }}
+      # Kept out of search engines until R4, whatever Access lets through; added to the site's own.
+      - run: printf '/*\n  X-Robots-Tag: noindex\n' >> apps/site/dist/_headers
+      # Wrangler and its install scripts fetched before the Cloudflare token is in the environment.
+      - run: npx --yes wrangler@4.150.0 --version
+      - working-directory: apps/site
+        run: npx --yes wrangler@4.150.0 versions upload --preview-alias next --message "$GITHUB_SHA"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}

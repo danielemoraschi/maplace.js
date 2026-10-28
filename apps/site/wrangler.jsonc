@@ -1,0 +1,11 @@
+// The site as static assets, no Worker script (D10, W10). workers_dev off, so the Worker's own
+// workers.dev address serves nothing; preview_urls on, for the `next` alias CI uploads. Only
+// `wrangler deploy` or `wrangler triggers deploy` applies these two, never CI's `versions upload`:
+// the Worker was created in Cloudflare's dashboard, both set there.
+{
+  "name": "maplacejs",
+  "compatibility_date": "2026-10-13",
+  "workers_dev": false,
+  "preview_urls": true,
+  "assets": { "directory": "./dist", "not_found_handling": "404-page" }
+}
