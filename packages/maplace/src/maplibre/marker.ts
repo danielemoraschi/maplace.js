@@ -122,7 +122,10 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     domMarker: () => dom?.marker,
     isInDom: () => dom !== undefined || frontPins.isShown(id),
     rank,
-    popupPlace: () => ({ at: pointOf(drawn), lift: dom?.height() ?? PIN_SIZE.height }),
+    popupPlace: () =>
+      dom === undefined
+        ? { at: pointOf(drawn), lift: PIN_SIZE.height }
+        : { at: pointOf(drawn), marker: dom.marker.getElement() },
     update(next) {
       const moved = next.geometry !== drawn.geometry;
       const newIcon = changesIcon(next);

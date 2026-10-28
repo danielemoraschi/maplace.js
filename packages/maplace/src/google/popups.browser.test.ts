@@ -13,6 +13,7 @@ import type { MountSettings } from "../testing/conformance/harness";
 import { unmountAll } from "../testing/conformance/harness";
 import type { GoogleMapState } from "./map-state";
 import { cameraAt } from "./testing/camera-at";
+import { drawnOverlayOn } from "./testing/map-input";
 import { drawnMarker } from "./testing/map-waits";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -35,6 +36,14 @@ async function drawn(drawables: Drawable[], settings?: MountSettings) {
   mounted.container.after(outside);
   outside.focus();
   return { ...mounted, outside };
+}
+
+/** The pane Google draws popups in, which it gives only to an overlay on the map. */
+async function floatPaneOf(map: google.maps.Map): Promise<HTMLElement> {
+  const overlay = await drawnOverlayOn(map);
+  const pane = overlay.getPanes()?.floatPane as HTMLElement;
+  overlay.setMap(null);
+  return pane;
 }
 
 /** The popup's element once its content is reported in the DOM. */
@@ -149,5 +158,14 @@ describeWithMaps("Google popups under real input", () => {
     adapter.present(presented({ selectedId: "p" }));
     await openedPopup(state);
     expect(state.popup?.window.infoWindow.getPosition()?.toJSON()).toEqual({ lat: 0, lng: 0 });
+  });
+
+  it("draws its pane, the one holding the popup, on a compositing layer of its own", async () => {
+    const { adapter, state } = await drawn([ALPHA]);
+    adapter.present(presented({ selectedId: "a" }));
+    const element = await openedPopup(state);
+    const pane = await floatPaneOf(state.mounted?.map as google.maps.Map);
+    expect(pane.contains(element)).toBe(true);
+    expect(getComputedStyle(pane).willChange).toBe("transform");
   });
 });

@@ -39,10 +39,18 @@ export async function inputOn(map: google.maps.Map): Promise<MapInput> {
 
 /** The map's pixel projection, which Google gives only to an overlay on a drawn map. */
 async function projectionOf(map: google.maps.Map): Promise<google.maps.MapCanvasProjection> {
+  return (await drawnOverlayOn(map)).getProjection();
+}
+
+/**
+ * An overlay drawing nothing on `map`, once Google has drawn it: only then does it give the map's
+ * projection and panes.
+ */
+export async function drawnOverlayOn(map: google.maps.Map): Promise<google.maps.OverlayView> {
   const overlay = new google.maps.OverlayView();
   Object.assign(overlay, { onAdd() {}, draw() {}, onRemove() {} });
   overlay.setMap(map);
   // Null until the overlay is drawn.
   await expect.poll(() => overlay.getProjection(), { timeout: 10_000 }).toBeTruthy();
-  return overlay.getProjection();
+  return overlay;
 }

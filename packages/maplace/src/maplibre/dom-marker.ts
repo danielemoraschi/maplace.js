@@ -28,8 +28,6 @@ export interface DomMarker {
    * nothing.
    */
   setDraggable(draggable: boolean): void;
-  /** How tall it is drawn, for a popup pointing at its top. */
-  height(): number;
   /** Takes it off the map for good, at once: a drag under way ends there, reporting nothing. */
   remove(): void;
 }
@@ -161,7 +159,6 @@ export function createDomMarker(
       showDragCursor(element, next);
       if (!next) cutDragShort();
     },
-    height: () => element.offsetHeight,
     remove() {
       asked = false;
       shown = false;

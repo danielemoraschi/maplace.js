@@ -49,11 +49,13 @@ describe("dragging MapLibre's markers", () => {
 
   it("puts the dragged pin's tip on its point, as the layer's pin", async () => {
     const { state, map } = await withEditableMarker();
-    const box = (elementsOf(state, "a").icon as Element).getBoundingClientRect();
+    const { element, icon } = elementsOf(state, "a");
+    const box = (icon as Element).getBoundingClientRect();
     const point = pagePointOf(map, ORIGIN);
     expect(box.left + box.width / 2).toBeCloseTo(point.x, 0);
     expect(Math.abs(box.bottom - point.y)).toBeLessThanOrEqual(1);
-    expect(placedMarker(state, "a").popupPlace().lift).toBe(PIN_SIZE.height);
+    expect(placedMarker(state, "a").popupPlace()).toMatchObject({ marker: element });
+    expect(element?.offsetHeight).toBe(PIN_SIZE.height);
   });
 
   it("keeps a page's icon node when only `editable` changes", async () => {

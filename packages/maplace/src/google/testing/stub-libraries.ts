@@ -2,7 +2,7 @@
 import { vi } from "vitest";
 import type { GoogleLibraries } from "../libraries";
 import { StubMVCArray, StubMVCObject } from "./stub-mvc";
-import { StubInfoWindow, StubSize } from "./stub-popups";
+import { StubInfoWindow, StubOverlayView, StubSize } from "./stub-popups";
 import { StubCircle, StubPolygon, StubPolyline } from "./stub-shapes";
 
 /** What a drawn Google map shows, as the stub gives it back. */
@@ -23,6 +23,8 @@ export class StubMap extends StubMVCObject {
   readonly fitBounds = vi.fn();
   /** Google's control corners, one array per `ControlPosition` value (up to 24 in Maps JS 3.66). */
   readonly controls = Array.from({ length: 25 }, () => new StubMVCArray<HTMLElement>());
+  /** The pane Google puts popups in, which it gives an overlay added to the map. */
+  readonly floatPane = document.createElement("div");
   shown: StubView | undefined;
   /** Drawn already, as a map Google has initialised; `UNINITIALIZED` until Google has said more. */
   renderingType = "RASTER";
@@ -112,6 +114,7 @@ export function stubLibraries(): GoogleLibraries {
       Polyline: StubPolyline,
       Polygon: StubPolygon,
       InfoWindow: StubInfoWindow,
+      OverlayView: StubOverlayView,
       RenderingType: STUB_RENDERING_TYPES,
     },
     marker: { AdvancedMarkerElement: StubMarker },

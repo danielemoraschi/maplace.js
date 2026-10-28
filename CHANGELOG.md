@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-28 Fixed Google's markers drawn over an open popup in Safari: the popup's pane gets a compositing layer of its own (`will-change: transform`), given back as it was when maplace lets go of a page's own map
+- 2026-10-28 Fixed a MapLibre popup covering its marker when the marker's icon grows after the popup opens, as an image icon does while it loads: the popup moves up with it
 - 2026-10-27 Fixed clusters on Google staying drawn when a clustered location moved and every clustered location was removed, hidden or selected in the same change
 - 2026-10-27 Changed hidden maps to keep their WebGL context while the page's maps hold 8 or fewer, so a map in a closed tab or a hidden panel shows again at once instead of drawing from scratch; past 8, the map hidden longest gives its context back first, as before (MapLibre, and Google's vector maps)
 - 2026-10-27 Fixed clustering on Google throwing `TypeError`s ("reading 'range'") when a clustered map drew before it had any locations, as one does while its data loads

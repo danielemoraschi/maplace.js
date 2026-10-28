@@ -8,12 +8,14 @@ import type { FeatureSets } from "./feature-set";
 import type { FrontPins } from "./front-pins";
 import type { MountedMapLibre } from "./mounted-map";
 
-/** Where a location's popup points: a point, and how far above it the popup's tip sits. */
-export interface PopupPlace {
-  readonly at: LatLng;
-  /** The height of what is drawn there, in pixels: a marker's, 0 for a shape. */
-  readonly lift: number;
-}
+/**
+ * Where a location's popup points: a point, and what is drawn there, the popup's tip above it: a
+ * height that stays (a pin's, 0 for a shape), or a DOM marker, measured while the popup is open,
+ * as its icon may grow (an image loading).
+ */
+export type PopupPlace =
+  | { readonly at: LatLng; readonly lift: number }
+  | { readonly at: LatLng; readonly marker: HTMLElement };
 
 interface Placed {
   /** The drawable it shows now. */

@@ -12,6 +12,7 @@ import type { GoogleAdapterOptions } from "./options";
 import { pageAuthHook } from "./page-auth";
 import { PLACERS } from "./placers";
 import { createPopup } from "./popup";
+import { popupPane } from "./popup-pane";
 import { createPresenting } from "./presenting";
 import { ROUTE_STOP_LIMIT } from "./route-conversions";
 import { createRouting } from "./routing";
@@ -46,6 +47,7 @@ export function assembleGoogleAdapter(
     drawing.part,
     camera.part,
     popup.part,
+    popupPane,
     routing.part,
     controls.part,
   ];

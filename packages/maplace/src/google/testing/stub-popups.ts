@@ -8,6 +8,42 @@ export class StubSize {
   ) {}
 }
 
+/** The panes Google gives an overlay, as far as the adapter reads them. */
+interface StubPanes {
+  readonly floatPane: HTMLElement;
+}
+
+/**
+ * Google's OverlayView as far as the adapter uses one: set on a map, it is given the map's panes
+ * and added (`onAdd`); set on none after that, removed (`onRemove`).
+ */
+export class StubOverlayView {
+  onAdd(): void {
+    // What the overlay does once added: its user's, set on the instance, as Google's is.
+  }
+
+  onRemove(): void {
+    // What the overlay does once removed: its user's too.
+  }
+
+  #panes: StubPanes | null = null;
+
+  getPanes(): StubPanes | null {
+    return this.#panes;
+  }
+
+  /** `map` a stub map, which holds the pane popups go in. */
+  setMap(map: StubPanes | null): void {
+    if (this.#panes !== null) {
+      this.onRemove();
+      this.#panes = null;
+    }
+    if (map === null) return;
+    this.#panes = { floatPane: map.floatPane };
+    this.onAdd();
+  }
+}
+
 /**
  * Google's InfoWindow as far as the adapter uses one: while open its heading and content are in a
  * box on the page, `domready` follows each open or new content in a microtask, and every close

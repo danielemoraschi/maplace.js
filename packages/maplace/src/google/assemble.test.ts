@@ -64,4 +64,12 @@ describe("the assembled Google adapter", () => {
     expect(await outcome).toBe("ready");
     await vi.waitFor(() => expect(clusterersMade[0]?.held()).toHaveLength(1));
   });
+
+  it("lays the map's popup pane on a compositing layer of its own once mounted", async () => {
+    stubMapsJs();
+    const { googleMap, outcome } = attachedToGoogle(createMaplace());
+    expect(await outcome).toBe("ready");
+    const map = googleMap() as unknown as StubMap;
+    expect(map.floatPane.style.willChange).toBe("transform");
+  });
 });
