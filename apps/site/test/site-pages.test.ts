@@ -17,6 +17,7 @@ import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
+import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION, THIRD_PARTIES } from "../src/site/third-parties.ts";
 import { textGluedToInline } from "./glued-text.ts";
 import { sectionPage } from "./home-sections.ts";
@@ -131,12 +132,6 @@ async function footerBottom(page: Page): Promise<number> {
 }
 
 describe("the footer", () => {
-  const routes = [
-    ...EXAMPLE_PAGES,
-    ...FOOTER_PAGES.map(({ route }) => route),
-    ...REPO_DOCS.map(({ id }) => docRoute(id)),
-  ];
-
   it("stays at the bottom of the screen as a long page scrolls", async () => {
     const { page, context } = await openPage("/examples/data-routes/");
     await page.mouse.wheel(0, 2500);
@@ -152,7 +147,7 @@ describe("the footer", () => {
   }, 30_000);
 
   it("links Privacy and Changelog from every page, marking the one shown", async () => {
-    for (const route of routes) {
+    for (const route of SITE_ROUTES) {
       const { page, context } = await openPage(route);
       const expected = FOOTER_PAGES.map(({ route: href, label }) => ({
         label,

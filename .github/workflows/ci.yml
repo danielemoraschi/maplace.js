@@ -132,3 +132,10 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      # What the edge adds, which the build never sees (W10c): every page as a browser gets it,
+      # through Access with its service token, may ask no one before consent but whom the privacy
+      # page names.
+      - run: node apps/site/src/site/offsite-check.ts https://next-maplacejs.dmoraschi-io.workers.dev
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
