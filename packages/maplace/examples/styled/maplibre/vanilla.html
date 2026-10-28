@@ -3,6 +3,11 @@
 <style>
   #styled-maplibre-vanilla-map { height: 24rem; }
 </style>
-<p><button type="button" id="styled-maplibre-vanilla-scheme">Dark theme</button></p>
+<p><label for="styled-maplibre-vanilla-style">Map style</label> <select id="styled-maplibre-vanilla-style" autocomplete="off">
+  <option value="https://tiles.openfreemap.org/styles/liberty">Liberty</option>
+  <option value="https://tiles.openfreemap.org/styles/bright">Bright</option>
+  <option value="https://tiles.openfreemap.org/styles/positron">Positron</option>
+  <option value="https://tiles.openfreemap.org/styles/dark">Dark</option>
+</select></p>
 <div id="styled-maplibre-vanilla-map"></div>
 <script type="module" src="./vanilla.ts"></script>

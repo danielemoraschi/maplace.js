@@ -9,6 +9,10 @@
 <style>
   #styled-vanilla-map { height: 24rem; }
 </style>
-<p><button type="button" id="styled-vanilla-scheme">Dark theme</button></p>
+<p><label for="styled-vanilla-scheme">Map style</label> <select id="styled-vanilla-scheme" autocomplete="off">
+  <option value="light">Light</option>
+  <option value="dark">Dark</option>
+  <option value="follow-system">Follow the system</option>
+</select></p>
 <div id="styled-vanilla-map"></div>
 <script type="module" src="./vanilla.ts"></script>

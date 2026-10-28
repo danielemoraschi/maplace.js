@@ -10,10 +10,10 @@ interface Props {
 const { current } = Astro.props;
 // Each link names its group's page; a click switches to it in place (`group-switch.ts`).
 const LINK =
-  "group/link flex shrink-0 items-start gap-1 border-b-3 border-transparent pt-1 pb-2 font-display text-xl font-bold whitespace-nowrap text-muted no-underline hover:text-ink aria-[current=page]:border-ink aria-[current=page]:text-ink max-[48rem]:text-md";
+  "group/link flex shrink-0 items-start gap-1 border-b-3 border-transparent pt-1 pb-2 font-display text-xl font-bold whitespace-nowrap text-muted no-underline hover:text-ink aria-[current=page]:border-ink aria-[current=page]:text-ink max-[48rem]:text-md max-[24rem]:text-xs";
 ---
 
-{/* Held under the header, `--spacing-group-bar` tall at every width (its scroll padding in `base.css`): one row from 48rem, its links scrolling sideways rather than wrapping; below, the toggle's row then the links'. */}
+{/* Held under the header, `--spacing-group-bar` tall at every width (its scroll padding in `base.css`): one row from 48rem, its links scrolling sideways rather than wrapping; below, the toggle's row then the links'. The links' counts are read but not drawn below 52rem, where five groups' links fit only without them, and smaller below 24rem (phones up to 375px, a margin for their fonts), so they fit down to a 320px screen. The nav is `relative`, so the links' screen-reader text stays inside it: a link scrolled out of the nav doesn't widen the page. */}
 <div
   class="sticky top-(--spacing-header-height) z-[5] mt-12 flex h-(--spacing-group-bar) items-end bg-paper"
   data-group-bar
@@ -21,7 +21,7 @@ const LINK =
   <div class="flex w-full flex-nowrap items-end gap-x-6 border-b border-ink max-[48rem]:flex-wrap">
     <nav
       aria-label="Examples"
-      class="-mb-px flex min-w-0 gap-x-6 overflow-x-auto [scrollbar-width:none] max-[48rem]:basis-full max-[48rem]:justify-between max-[48rem]:gap-x-3"
+      class="relative -mb-px flex min-w-0 gap-x-6 overflow-x-auto [scrollbar-width:none] max-[48rem]:basis-full max-[48rem]:justify-between max-[48rem]:gap-x-3 max-[24rem]:gap-x-2"
     >
       {
         EXAMPLE_GROUPS.map((group) => (
@@ -31,7 +31,7 @@ const LINK =
             class={LINK}
           >
             {group.label}{" "}
-            <span class="text-xs font-semibold text-muted group-aria-[current=page]/link:text-accent">
+            <span class="text-xs font-semibold text-muted group-aria-[current=page]/link:text-accent max-[52rem]:sr-only">
               {group.sections.length}<span class="sr-only"> examples</span>
             </span>
           </a>

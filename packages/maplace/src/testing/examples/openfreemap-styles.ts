@@ -4,5 +4,5 @@ export const OPENFREEMAP_STYLES = "https://tiles.openfreemap.org/styles/";
 /** OpenFreeMap's style a MapLibre map opens on by default. */
 export const OPENFREEMAP_LIBERTY = `${OPENFREEMAP_STYLES}liberty`;
 
-/** OpenFreeMap's dark style, which styled's theme toggle switches to. */
+/** OpenFreeMap's dark style, one styled's style select offers. */
 export const OPENFREEMAP_DARK = `${OPENFREEMAP_STYLES}dark`;

@@ -1,5 +1,7 @@
 import { big } from "./behaviours/big";
+import { brand } from "./behaviours/brand";
 import { circles } from "./behaviours/circles";
+import { cssMarkers } from "./behaviours/css-markers";
 import { customList } from "./behaviours/custom-list";
 import { markers } from "./behaviours/markers";
 import { menu } from "./behaviours/menu";
@@ -8,8 +10,9 @@ import { polygon } from "./behaviours/polygon";
 import { polyline } from "./behaviours/polyline";
 import type { ExampleBehaviour } from "./behaviours/reading";
 import { route } from "./behaviours/route";
-import { styled } from "./behaviours/styled";
+import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
+import { unstyled } from "./behaviours/unstyled";
 import type { Provider } from "./example-files";
 
 export type { ExampleBehaviour } from "./behaviours/reading";
@@ -24,15 +27,20 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   route,
   polygon,
   mixed,
-  styled,
   "custom-list": customList,
+  "css-markers": cssMarkers,
+  brand,
+  unstyled,
   big,
 };
 
-/** Where a provider's version does otherwise: on MapLibre, mixed's group C has no route. */
+/**
+ * Where a provider's version does otherwise: on MapLibre, mixed's group C has no route; styled
+ * offers each provider's own looks.
+ */
 const ON_PROVIDER: Readonly<Record<Provider, Readonly<Record<string, ExampleBehaviour>>>> = {
-  google: {},
-  maplibre: { mixed: mixedWithoutRoute },
+  google: { styled: styledOnGoogle },
+  maplibre: { mixed: mixedWithoutRoute, styled: styledOnMapLibre },
 };
 
 /** What `example`'s version on `provider` does beyond drawing its locations, if anything. */

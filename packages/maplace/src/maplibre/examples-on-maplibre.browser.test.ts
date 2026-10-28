@@ -1,8 +1,9 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { CLUSTER_CLASS } from "../adapter-kit/cluster-badge";
 import * as cdn from "../cdn/maplibre";
 import type * as Core from "../index";
 import type { Maplace } from "../index";
-import { clickButton } from "../testing/examples/behaviours/reading";
+import { chooseOption } from "../testing/examples/behaviours/reading";
 import {
   EXAMPLE_PAGES,
   onProvider,
@@ -46,11 +47,21 @@ type RealRun = Pick<ExampleRun, "store" | "root">;
 
 type RealCheck = (run: RealRun) => Promise<void>;
 
+/** The accent css-markers' CSS gives a selected pin, as a browser computes it. */
+const PIN_ACCENT = "rgb(198, 40, 40)";
+/** The background brand's palette gives a cluster badge, as a browser computes it. */
+const BRAND_BADGE = "rgb(59, 36, 22)";
+
 /**
- * What a version does on real MapLibre beyond opening: styled's toggle loads OpenFreeMap's dark
- * style.
+ * What a version does on real MapLibre beyond opening, where only a real map shows it: styled's
+ * select loads OpenFreeMap's dark style; css-markers' pins and brand's cluster badges take their
+ * looks from the page's CSS.
  */
-const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = { styled: expectDarkStyleOnToggle };
+const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = {
+  styled: expectDarkStyleOnChoosing,
+  "css-markers": expectSelectedPinLook,
+  brand: expectBadgeInBrandColours,
+};
 
 let offsite: OffsiteLog;
 let opened: Maplace | undefined;
@@ -129,9 +140,27 @@ function expectNothingElseOffsite(): void {
   expect(offsite.asked().filter((url) => !url.startsWith(OPENFREEMAP_STYLES))).toEqual([]);
 }
 
-/** "Dark theme" opens the map again on OpenFreeMap's dark style, ready. */
-async function expectDarkStyleOnToggle({ store, root }: RealRun): Promise<void> {
-  clickButton(root, "Dark theme");
+/** A selected museum's pin, drawn on the map, takes the selected look the page's CSS gives it. */
+async function expectSelectedPinLook({ store, root }: RealRun): Promise<void> {
+  store.select("rijks");
+  const selectedPin = ".pin[data-selected], [data-selected] > .pin";
+  await expect.poll(() => backgroundOf(root, selectedPin), LOAD).toBe(PIN_ACCENT);
+}
+
+/** The shops' cluster badges take the brand's colours from the custom properties around the map. */
+async function expectBadgeInBrandColours({ root }: RealRun): Promise<void> {
+  await expect.poll(() => backgroundOf(root, `.${CLUSTER_CLASS}`), LOAD).toBe(BRAND_BADGE);
+}
+
+/** The background the page's CSS gives the first `selector` inside `root`, once it is drawn. */
+function backgroundOf(root: Element, selector: string): string | undefined {
+  const element = root.querySelector(selector);
+  return element ? getComputedStyle(element).backgroundColor : undefined;
+}
+
+/** Choosing Dark opens the map again on OpenFreeMap's dark style, ready. */
+async function expectDarkStyleOnChoosing({ store, root }: RealRun): Promise<void> {
+  chooseOption(root, "Map style", "Dark");
   await expect.poll(() => offsite.asked().at(-1), LOAD).toBe(DARK);
   await expect.poll(() => store.getSnapshot().loadState, LOAD).toBe("ready");
   expectNothingElseOffsite();

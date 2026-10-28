@@ -101,13 +101,13 @@ describe("the site's examples on MapLibre", () => {
     );
   });
 
-  it("opens styled's page on OpenFreeMap's dark style from its toggle, answered locally", async () => {
+  it("opens styled's page on OpenFreeMap's dark style from its style select, answered locally", async () => {
     const { context, offsite, errors, section } = await visitSection(site, "styled");
     await loadMapsButtons(section).click();
     const version = mapLibreVersionIn(section, "html");
     await expect.poll(() => pageMapState(version), ON_MAPLIBRE).toBe("ready");
     const states = await recordLoadStates(version);
-    await section.getByRole("button", { name: "Dark theme" }).click();
+    await version.getByRole("combobox", { name: "Map style" }).selectOption({ label: "Dark" });
     await expect.poll(() => offsite().at(-1), ON_MAPLIBRE).toBe(DARK);
     // Ready again after loading anew: the map opened on the dark style, not still on the light.
     await expect.poll(states, ON_MAPLIBRE).toEqual(expect.arrayContaining(["loading"]));
@@ -136,6 +136,22 @@ describe("MapLibre's maps in the site's frame", () => {
     await expect.poll(() => list.count(), ON_MAPLIBRE).toBe(1);
     const margin = await list.evaluate((element) => getComputedStyle(element).marginInlineStart);
     expect(margin).toBe("0px");
+    await context.close();
+  }, 30_000);
+
+  it("leaves a list inside data-maplace-unstyled to the example's own CSS, out of the site's side panel", async () => {
+    const { context, section } = await visitSection(site, "unstyled");
+    await loadMapsButtons(section).click();
+    const list = mapLibreVersionIn(section, "html").locator(".maplace-list-view");
+    await expect.poll(() => list.count(), ON_MAPLIBRE).toBe(1);
+    const look = await list.evaluate((element) => {
+      const entry = element.querySelector("[role=option]");
+      return [
+        getComputedStyle(element).marginInlineStart,
+        entry && getComputedStyle(entry).borderRadius,
+      ];
+    });
+    expect(look).toEqual(["0px", "0px"]);
     await context.close();
   }, 30_000);
 

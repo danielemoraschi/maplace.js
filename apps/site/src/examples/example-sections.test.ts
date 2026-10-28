@@ -55,10 +55,11 @@ describe("EXAMPLE_GROUPS", () => {
       sections.map(({ name }) => name),
     ]);
     expect(groups).toEqual([
-      ["basics", "Basics", ["simple", "markers", "styled"]],
+      ["basics", "Basics", ["simple", "markers"]],
       ["lists", "Lists", ["menu", "custom-list", "tabs"]],
       ["shapes", "Shapes", ["circles", "polyline", "polygon"]],
       ["data-routes", "Data & routes", ["mixed", "big", "route"]],
+      ["styling", "Styling", ["styled", "css-markers", "brand", "unstyled"]],
     ]);
   });
 
@@ -73,6 +74,7 @@ describe("EXAMPLE_GROUPS", () => {
       "/examples/lists/",
       "/examples/shapes/",
       "/examples/data-routes/",
+      "/examples/styling/",
     ]);
   });
 
@@ -88,6 +90,7 @@ describe("EXAMPLE_GROUPS", () => {
       "Lists: maplacejs examples",
       "Shapes: maplacejs examples",
       "Data & routes: maplacejs examples",
+      "Styling: maplacejs examples",
     ]);
   });
 
@@ -104,9 +107,9 @@ describe("EXAMPLE_GROUPS", () => {
     expect(findGroupOfSection("main")).toBeUndefined();
   });
 
-  it("numbers the sections 1 to 12 across the groups, in order, Basics on the home page", () => {
+  it("numbers the sections 1 to 15 across the groups, in order, Basics on the home page", () => {
     const numbers = EXAMPLE_GROUPS.flatMap(({ sections }) => sections.map(sectionNumber));
-    expect(numbers).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect(numbers).toEqual(Array.from({ length: 15 }, (_, index) => index + 1));
     expect(HOME_GROUP.id).toBe("basics");
   });
 });

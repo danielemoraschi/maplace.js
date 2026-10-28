@@ -79,12 +79,12 @@ describe("switching the examples' group in place (W38)", () => {
     const { page, context } = await opened(site, "/examples/data-routes/", DESKTOP);
     await page.locator("section#route").scrollIntoViewIfNeeded();
     const deep = await page.evaluate(() => scrollY);
-    await switchTo(page, "Basics", "basics");
+    await switchTo(page, "Shapes", "shapes");
     await page.goBack();
     await expect.poll(() => shownGroups(page), ASKED).toEqual(["data-routes"]);
-    // Back deep in the group, not reset to the panel's start (~1183): that much holds in headless
-    // Chromium, which restores within the shorter group left (2333), where Chrome restores the very
-    // position (2748). The order that keeps it is pinned in `group-switch.test.ts`'s unit tests.
+    // Back deep in the group, not reset to the panel's start: that much holds in headless Chromium,
+    // which restores within the shorter group left, where Chrome restores the very position. The
+    // order that keeps it is pinned in `group-switch.test.ts`'s unit tests.
     const route = await page
       .locator("section#route")
       .evaluate((section) => (section as HTMLElement).offsetTop);

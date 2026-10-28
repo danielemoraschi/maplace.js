@@ -1,10 +1,14 @@
 <!doctype html>
-<!-- A page of your own script: the CDN script, the theme button and what the map mounts on, and the map made with Maplace's store and Google adapter, which adds Maps JS with your key. -->
+<!-- A page of your own script: the CDN script, the scheme select and what the map mounts on, and the map made with Maplace's store and Google adapter, which adds Maps JS with your key. -->
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <style>
   #styled-script-map { height: 24rem; }
 </style>
-<p><button type="button" id="styled-script-scheme">Dark theme</button></p>
+<p><label for="styled-script-scheme">Map style</label> <select id="styled-script-scheme" autocomplete="off">
+  <option value="light">Light</option>
+  <option value="dark">Dark</option>
+  <option value="follow-system">Follow the system</option>
+</select></p>
 <div id="styled-script-map"></div>
 <script type="module">
   const locations = [
@@ -15,8 +19,8 @@
   ];
 
   /**
-   * Google's own look: a light or dark map, with the map-type control. A map's Cloud styling hangs
-   * on its map ID: put your own in `mapId`.
+   * Google's own look: a light or dark map, or the reader's system scheme, with the map-type
+   * control. A map's Cloud styling hangs on its map ID: put your own in `mapId`.
    */
   const adapterIn = (colorScheme) =>
     Maplace.createGoogleAdapter({
@@ -27,18 +31,14 @@
     });
 
   const maplace = Maplace.createMaplace({ locations });
-  let dark = false;
-  let detach = maplace.attach(adapterIn("light"), "#styled-script-map");
+  const schemeSelect = document.querySelector("#styled-script-scheme");
+  let detach = maplace.attach(adapterIn(schemeSelect.value), "#styled-script-map");
 
-  // A map's colour scheme is set when it opens: the button opens a new one where this one was,
-  // and names the scheme it switches to.
-  const schemeButton = document.querySelector("#styled-script-scheme");
-  schemeButton?.addEventListener("click", () => {
-    dark = !dark;
-    schemeButton.textContent = dark ? "Light theme" : "Dark theme";
+  // A map's colour scheme is set when it opens: choosing one opens a new map where this one was.
+  schemeSelect.addEventListener("change", () => {
     const { viewport } = maplace.getSnapshot();
     detach();
     if (viewport) maplace.setView(viewport.center, viewport.zoom);
-    detach = maplace.attach(adapterIn(dark ? "dark" : "light"), "#styled-script-map");
+    detach = maplace.attach(adapterIn(schemeSelect.value), "#styled-script-map");
   });
 </script>

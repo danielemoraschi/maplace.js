@@ -1,0 +1,16 @@
+<!doctype html>
+<!-- The page react.tsx renders into: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #brand-maplibre-react-root .map-and-list { display: flex; height: 24rem; --maplace-cluster-background: #3b2416; --maplace-cluster-color: #f5ead9; }
+  #brand-maplibre-react-root .map { flex: 1 1 auto; min-width: 0; }
+  #brand-maplibre-react-root [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #brand-maplibre-react-root .map-and-list { flex-direction: column; }
+    #brand-maplibre-react-root [role="listbox"] { flex: none; max-height: 40%; }
+  }
+  #brand-maplibre-react-root .maplace-option[data-hovered] { background: #f5ead9; color: #3b2416; }
+  #brand-maplibre-react-root .maplace-option[data-selected] { background: #23735a; color: #fff; }
+</style>
+<div id="brand-maplibre-react-root"></div>
+<script type="module" src="./react.tsx"></script>

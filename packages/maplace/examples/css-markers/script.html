@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key; each pin is a node of yours, styled by the page's CSS. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #css-markers-script-map { height: 24rem; }
+  #css-markers-script-map .pin {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border: 2px solid #1d1d1b;
+    border-radius: 999px;
+    background: #fff;
+    color: #1d1d1b;
+    font: 600 0.8125rem/1.2 system-ui, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+    cursor: pointer;
+  }
+  #css-markers-script-map .pin[data-hovered] { transform: translateY(-3px); }
+  #css-markers-script-map .pin[data-selected] {
+    border-color: #c62828;
+    background: #c62828;
+    color: #fff;
+    transform: scale(1.15);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #css-markers-script-map .pin[data-selected] { animation: css-markers-script-pop 0.3s ease-out; }
+  }
+  @keyframes css-markers-script-pop { from { transform: scale(0.85); } }
+</style>
+<div id="css-markers-script-map"></div>
+<script type="module">
+  const locations = [
+    { id: "rijks", lat: 52.36, lng: 4.8852, title: "Rijksmuseum", icon: pinFor("Rijks") },
+    { id: "anne-frank", lat: 52.3752, lng: 4.884, title: "Anne Frank House", icon: pinFor("Anne Frank") },
+    { id: "hermitage", lat: 52.3654, lng: 4.9025, title: "Hermitage", icon: pinFor("Hermitage") },
+    { id: "nemo", lat: 52.3738, lng: 4.9123, title: "NEMO Science Museum", icon: pinFor("NEMO") },
+    { id: "eye", lat: 52.3843, lng: 4.9008, title: "Eye Filmmuseum", icon: pinFor("Eye") },
+  ];
+
+  Maplace.createGoogleMap("#css-markers-script-map", { apiKey: "YOUR_KEY", locations });
+
+  /**
+   * A pin of your own: one node for every state, which maplace marks `data-hovered` and
+   * `data-selected`, so the page's CSS gives each state its look.
+   */
+  function pinFor(label) {
+    const pin = document.createElement("span");
+    pin.className = "pin";
+    pin.textContent = label;
+    return pin;
+  }
+</script>

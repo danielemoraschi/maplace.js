@@ -110,8 +110,9 @@ export async function sectionOf(page: Page, example: string): Promise<Locator> {
   return section;
 }
 
-/** The examples' bar's link to the group labelled `label` (`ExampleGroupBar.astro`). */
+/** The examples' bar's nav of group links (`ExampleGroupBar.astro`). */
+export const groupNav = (page: Page) => page.getByRole("navigation", { name: "Examples" });
+
+/** The examples' bar's link to the group labelled `label`. */
 export const groupLink = (page: Page, label: string) =>
-  page
-    .getByRole("navigation", { name: "Examples" })
-    .getByRole("link", { name: new RegExp(`^${label} `) });
+  groupNav(page).getByRole("link", { name: new RegExp(`^${label} `) });

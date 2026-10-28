@@ -11,8 +11,10 @@ export interface LookPart {
   readonly style: Readonly<Record<(typeof SEEN_STYLES)[number], string>>;
 }
 
-/** The list a version shows: maplace's listbox, a native select, or a page's radio group. */
-export const LIST_SELECTOR = "[role=listbox], select, fieldset:has(input[type=radio])";
+/** maplace's own list: its listbox or native select; a page's own select is one of its controls. */
+export const MAPLACE_LIST_CONTROL = "[role=listbox], .maplace-select";
+/** The list a version shows: maplace's, or a page's radio group. */
+export const LIST_SELECTOR = `${MAPLACE_LIST_CONTROL}, fieldset:has(input[type=radio])`;
 /** A list's entries, each a location (or "fit all") a reader picks. */
 const ENTRY = "[role=option]";
 /** A page's own controls, readouts and text blocks: what it puts around the map. */
@@ -102,8 +104,14 @@ function roleOf(element: Element): string {
   return element.getAttribute("role") ?? element.localName;
 }
 
+/** The words naming `element`: a select's options left out, the choices it offers, not its name. */
 function wordsOf(element: Element): string {
-  return (element.textContent ?? "").replaceAll(/\s+/g, " ").trim().slice(0, WORDS_IN_KEY);
+  let named = element;
+  if (element.querySelector("select") !== null) {
+    named = element.cloneNode(true) as Element;
+    for (const select of named.querySelectorAll("select")) select.remove();
+  }
+  return (named.textContent ?? "").replaceAll(/\s+/g, " ").trim().slice(0, WORDS_IN_KEY);
 }
 
 function boxIn(element: Element, origin: DOMRect): LookPart["box"] {

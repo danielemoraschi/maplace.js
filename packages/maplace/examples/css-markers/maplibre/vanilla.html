@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #css-markers-maplibre-vanilla-map { height: 24rem; }
+  #css-markers-maplibre-vanilla-map .pin {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border: 2px solid #1d1d1b;
+    border-radius: 999px;
+    background: #fff;
+    color: #1d1d1b;
+    font: 600 0.8125rem/1.2 system-ui, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+    cursor: pointer;
+  }
+  #css-markers-maplibre-vanilla-map .pin[data-hovered] { transform: translateY(-3px); }
+  #css-markers-maplibre-vanilla-map .pin[data-selected] {
+    border-color: #c62828;
+    background: #c62828;
+    color: #fff;
+    transform: scale(1.15);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #css-markers-maplibre-vanilla-map .pin[data-selected] { animation: css-markers-maplibre-vanilla-pop 0.3s ease-out; }
+  }
+  @keyframes css-markers-maplibre-vanilla-pop { from { transform: scale(0.85); } }
+</style>
+<div id="css-markers-maplibre-vanilla-map"></div>
+<script type="module" src="./vanilla.ts"></script>

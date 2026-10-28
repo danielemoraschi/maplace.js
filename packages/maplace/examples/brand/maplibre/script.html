@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl, its stylesheet and its clustering, what the map and its list mount on, and the map made with Maplace; one palette across the areas, the cluster badge and the list. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #brand-maplibre-script-map-and-list { display: flex; height: 24rem; --maplace-cluster-background: #3b2416; --maplace-cluster-color: #f5ead9; }
+  #brand-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #brand-maplibre-script-list { display: contents; }
+  #brand-maplibre-script-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #brand-maplibre-script-map-and-list { flex-direction: column; }
+    #brand-maplibre-script-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+  #brand-maplibre-script-map-and-list .maplace-option[data-hovered] { background: #f5ead9; color: #3b2416; }
+  #brand-maplibre-script-map-and-list .maplace-option[data-selected] { background: #23735a; color: #fff; }
+</style>
+<div id="brand-maplibre-script-map-and-list">
+  <div id="brand-maplibre-script-map"></div>
+  <div id="brand-maplibre-script-list"></div>
+</div>
+<script type="module">
+  /**
+   * The brand's palette on a delivery area, at rest, hovered and selected: hex colours, which every
+   * provider reads (a CSS variable is the page's, not the map's).
+   */
+  const AREA = {
+    style: { stroke: "#3b2416", strokeWidth: 2, fill: "#c8a27a", fillOpacity: 0.3 },
+    hoveredStyle: { stroke: "#23735a", strokeWidth: 3 },
+    selectedStyle: { stroke: "#23735a", strokeWidth: 3, fill: "#23735a", fillOpacity: 0.4 },
+  };
+
+  const locations = [
+    { id: "north", type: "polygon", title: "North delivery area", path: [{ lat: 55.697, lng: 12.548 }, { lat: 55.697, lng: 12.598 }, { lat: 55.684, lng: 12.598 }, { lat: 55.684, lng: 12.548 }], ...AREA },
+    { id: "south", type: "polygon", title: "South delivery area", path: [{ lat: 55.677, lng: 12.548 }, { lat: 55.677, lng: 12.6 }, { lat: 55.658, lng: 12.6 }, { lat: 55.658, lng: 12.548 }], ...AREA },
+    { id: "stroget", lat: 55.6784, lng: 12.5755, title: "Kaffa Strøget" },
+    { id: "amagertorv", lat: 55.6786, lng: 12.579, title: "Kaffa Amagertorv" },
+    { id: "kobmagergade", lat: 55.6807, lng: 12.5773, title: "Kaffa Købmagergade" },
+    { id: "gammeltorv", lat: 55.6775, lng: 12.5725, title: "Kaffa Gammeltorv" },
+    { id: "nikolaj", lat: 55.6789, lng: 12.5822, title: "Kaffa Nikolaj" },
+    { id: "christianshavn", lat: 55.6729, lng: 12.5935, title: "Kaffa Christianshavn" },
+    { id: "torvegade", lat: 55.672, lng: 12.591, title: "Kaffa Torvegade" },
+    { id: "overgaden", lat: 55.6735, lng: 12.596, title: "Kaffa Overgaden" },
+    { id: "vesterbro", lat: 55.6704, lng: 12.556, title: "Kaffa Vesterbro" },
+    { id: "norrebro", lat: 55.692, lng: 12.556, title: "Kaffa Nørrebro" },
+  ];
+
+  Maplace.createMapLibreMap("#brand-maplibre-script-map", {
+    locations,
+    cluster: true,
+    list: { container: "#brand-maplibre-script-list" },
+  });
+</script>

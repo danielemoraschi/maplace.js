@@ -38,7 +38,7 @@ describe("the site's header", () => {
   }, 30_000);
 
   it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, "/examples/data-routes/", DESKTOP);
     await page.mouse.wheel(0, 2500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
     expect((await header(page).boundingBox())?.y).toBe(0);

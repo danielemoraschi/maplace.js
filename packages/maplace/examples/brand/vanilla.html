@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: Maps JS from Google's bootstrap loader, what the module mounts on, the module. -->
+<script>
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: "YOUR_KEY",
+    v: "weekly",
+  });
+</script>
+<style>
+  #brand-vanilla-map-and-list { display: flex; height: 24rem; --maplace-cluster-background: #3b2416; --maplace-cluster-color: #f5ead9; }
+  #brand-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #brand-vanilla-list { display: contents; }
+  #brand-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #brand-vanilla-map-and-list { flex-direction: column; }
+    #brand-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+  #brand-vanilla-map-and-list .maplace-option[data-hovered] { background: #f5ead9; color: #3b2416; }
+  #brand-vanilla-map-and-list .maplace-option[data-selected] { background: #23735a; color: #fff; }
+</style>
+<div id="brand-vanilla-map-and-list">
+  <div id="brand-vanilla-map"></div>
+  <div id="brand-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

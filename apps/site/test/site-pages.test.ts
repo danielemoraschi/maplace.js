@@ -117,7 +117,7 @@ describe("the footer", () => {
   ];
 
   it("stays at the bottom of the screen as a long page scrolls", async () => {
-    const { page, context } = await openPage("/");
+    const { page, context } = await openPage("/examples/data-routes/");
     await page.mouse.wheel(0, 2500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
     const box = await page.getByRole("contentinfo").boundingBox();

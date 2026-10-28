@@ -1,10 +1,16 @@
 import type { Location } from "maplace";
 import { createGoogleAdapter, type GoogleAdapterOptions } from "maplace/google";
 import { MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
-import { StrictMode, useState } from "react";
+import { type ChangeEvent, StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-type ColorScheme = GoogleAdapterOptions["colorScheme"];
+type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
+
+const SCHEMES = {
+  light: "Light",
+  dark: "Dark",
+  "follow-system": "Follow the system",
+} satisfies Record<ColorScheme, string>;
 
 const places: Location[] = [
   { id: "lisbon", lat: 38.7223, lng: -9.1393, title: "Lisbon" },
@@ -14,44 +20,45 @@ const places: Location[] = [
 ];
 
 /**
- * Google's own look: a light or dark map, with the map-type control. A map's Cloud styling hangs
- * on its map ID: put your own in `mapId`.
+ * Google's own look: a light or dark map, or the reader's system scheme, with the map-type
+ * control. A map's Cloud styling hangs on its map ID: put your own in `mapId`.
  */
 const adapterIn = (colorScheme: ColorScheme) => () =>
   createGoogleAdapter({ mapId: "DEMO_MAP_ID", colorScheme, mapOptions: { mapTypeControl: true } });
 
-/**
- * The button naming the scheme it switches to: the store keeps where the map is, for the map
- * opened in the other scheme.
- */
-function SchemeToggle({
-  dark,
-  onToggle,
+/** The scheme's select: the store keeps where the map is, for the map opened in the new scheme. */
+function SchemeSelect({
+  scheme,
+  onChoose,
 }: {
-  readonly dark: boolean;
-  readonly onToggle: () => void;
+  readonly scheme: ColorScheme;
+  readonly onChoose: (scheme: ColorScheme) => void;
 }) {
   const maplace = useMaplace();
-  const toggle = () => {
+  const choose = (event: ChangeEvent<HTMLSelectElement>) => {
     const { viewport } = maplace.getSnapshot();
     if (viewport) maplace.setView(viewport.center, viewport.zoom);
-    onToggle();
+    onChoose(event.currentTarget.value as ColorScheme);
   };
   return (
-    <button type="button" onClick={toggle}>
-      {dark ? "Light theme" : "Dark theme"}
-    </button>
+    <p>
+      <label htmlFor="styled-react-scheme">Map style</label>{" "}
+      <select id="styled-react-scheme" autoComplete="off" value={scheme} onChange={choose}>
+        {Object.entries(SCHEMES).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </p>
   );
 }
 
 function Styled() {
-  const [dark, setDark] = useState(false);
-  const scheme = dark ? "dark" : "light";
+  const [scheme, setScheme] = useState<ColorScheme>("light");
   return (
     <MaplaceProvider locations={places}>
-      <p>
-        <SchemeToggle dark={dark} onToggle={() => setDark(!dark)} />
-      </p>
+      <SchemeSelect scheme={scheme} onChoose={setScheme} />
       {/* A map's colour scheme is set when it opens: a new key opens a new one. */}
       <MaplaceMap key={scheme} createAdapter={adapterIn(scheme)} className="map" />
     </MaplaceProvider>

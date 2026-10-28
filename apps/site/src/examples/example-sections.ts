@@ -4,7 +4,7 @@ export interface ExampleSection {
   readonly name: string;
   readonly title: string;
   readonly summary: string;
-  /** Its list drawn its own way (as tabs), not in the site's panel beside the map. */
+  /** Its list drawn its own way (as tabs, or in its own CSS), not in the site's panel beside the map. */
   readonly drawsOwnList?: true;
   /** Why it runs on Google only, said in its frame while MapLibre is chosen. */
   readonly googleOnlyBecause?: string;
@@ -29,7 +29,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "basics",
     label: "Basics",
-    summary: "Places on a map: one pin, image markers with popups, and the provider's own look.",
+    summary: "Places on a map: one pin, then image markers with popups.",
     sections: [
       { name: "simple", title: "Simple", summary: "One place on a map." },
       {
@@ -37,12 +37,6 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         title: "Markers",
         summary:
           "Image icons and popups, a list on the map, one place listed nowhere: click the map to add one.",
-      },
-      {
-        name: "styled",
-        title: "Styled",
-        summary:
-          "The provider's own look: a light or dark map, and on Google the map-type control.",
       },
     ],
   },
@@ -109,6 +103,35 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         title: "Route",
         summary: "A drive through your own places, passing through one, with directions by leg.",
         googleOnlyBecause: "MapLibre has no routing.",
+      },
+    ],
+  },
+  {
+    id: "styling",
+    label: "Styling",
+    summary: "Your map's look: the provider's own styles, and maplace's parts drawn your way.",
+    sections: [
+      {
+        name: "styled",
+        title: "Basemaps",
+        summary:
+          "The provider's own looks: a choice of styles, and on Google the map-type control.",
+      },
+      {
+        name: "css-markers",
+        title: "Your markers",
+        summary: "Pins of your own markup, their hovered and selected looks in your CSS.",
+      },
+      {
+        name: "brand",
+        title: "Brand colours",
+        summary: "One palette across the delivery areas, the cluster badges and the list.",
+        drawsOwnList: true,
+      },
+      {
+        name: "unstyled",
+        title: "Unstyled",
+        summary: "maplace's own styles off: the page's CSS draws the list and the popups.",
       },
     ],
   },

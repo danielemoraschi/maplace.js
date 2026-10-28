@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #brand-maplibre-vanilla-map-and-list { display: flex; height: 24rem; --maplace-cluster-background: #3b2416; --maplace-cluster-color: #f5ead9; }
+  #brand-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #brand-maplibre-vanilla-list { display: contents; }
+  #brand-maplibre-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #brand-maplibre-vanilla-map-and-list { flex-direction: column; }
+    #brand-maplibre-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+  #brand-maplibre-vanilla-map-and-list .maplace-option[data-hovered] { background: #f5ead9; color: #3b2416; }
+  #brand-maplibre-vanilla-map-and-list .maplace-option[data-selected] { background: #23735a; color: #fff; }
+</style>
+<div id="brand-maplibre-vanilla-map-and-list">
+  <div id="brand-maplibre-vanilla-map"></div>
+  <div id="brand-maplibre-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

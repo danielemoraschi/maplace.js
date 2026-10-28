@@ -2,16 +2,16 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { Location } from "maplace";
 import { createMapLibreAdapter } from "maplace/maplibre";
 import { MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
-import { StrictMode, useState } from "react";
+import { type ChangeEvent, StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-/** OpenFreeMap's light and dark styles; any style URL works: MapTiler's, Stadia's, your own. */
+/** OpenFreeMap's styles, by name; any style URL works: MapTiler's, Stadia's, your own. */
 const STYLES = {
-  light: "https://tiles.openfreemap.org/styles/liberty",
-  dark: "https://tiles.openfreemap.org/styles/dark",
+  Liberty: "https://tiles.openfreemap.org/styles/liberty",
+  Bright: "https://tiles.openfreemap.org/styles/bright",
+  Positron: "https://tiles.openfreemap.org/styles/positron",
+  Dark: "https://tiles.openfreemap.org/styles/dark",
 } as const;
-
-type Scheme = keyof typeof STYLES;
 
 const places: Location[] = [
   { id: "lisbon", lat: 38.7223, lng: -9.1393, title: "Lisbon" },
@@ -20,47 +20,53 @@ const places: Location[] = [
   { id: "faro", lat: 37.0194, lng: -7.9304, title: "Faro" },
 ];
 
-/** MapLibre's own look: a light or dark style, with a compact attribution. */
-const adapterIn = (scheme: Scheme) => () =>
+/** MapLibre's own look: a style, with a compact attribution. */
+const adapterIn = (mapStyle: string) => () =>
   createMapLibreAdapter({
-    mapStyle: STYLES[scheme],
+    mapStyle,
     mapOptions: { attributionControl: { compact: true } },
   });
 
-/**
- * The button naming the scheme it switches to: the store keeps where the map is, for the map
- * opened in the other scheme.
- */
-function SchemeToggle({
-  dark,
-  onToggle,
+/** The style's select: the store keeps where the map is, for the map opened in the new style. */
+function StyleSelect({
+  mapStyle,
+  onChoose,
 }: {
-  readonly dark: boolean;
-  readonly onToggle: () => void;
+  readonly mapStyle: string;
+  readonly onChoose: (mapStyle: string) => void;
 }) {
   const maplace = useMaplace();
-  const toggle = () => {
+  const choose = (event: ChangeEvent<HTMLSelectElement>) => {
     const { viewport } = maplace.getSnapshot();
     if (viewport) maplace.setView(viewport.center, viewport.zoom);
-    onToggle();
+    onChoose(event.currentTarget.value);
   };
   return (
-    <button type="button" onClick={toggle}>
-      {dark ? "Light theme" : "Dark theme"}
-    </button>
+    <p>
+      <label htmlFor="styled-maplibre-react-style">Map style</label>{" "}
+      <select
+        id="styled-maplibre-react-style"
+        autoComplete="off"
+        value={mapStyle}
+        onChange={choose}
+      >
+        {Object.entries(STYLES).map(([name, url]) => (
+          <option key={url} value={url}>
+            {name}
+          </option>
+        ))}
+      </select>
+    </p>
   );
 }
 
 function Styled() {
-  const [dark, setDark] = useState(false);
-  const scheme = dark ? "dark" : "light";
+  const [mapStyle, setMapStyle] = useState<string>(STYLES.Liberty);
   return (
     <MaplaceProvider locations={places}>
-      <p>
-        <SchemeToggle dark={dark} onToggle={() => setDark(!dark)} />
-      </p>
+      <StyleSelect mapStyle={mapStyle} onChoose={setMapStyle} />
       {/* A map's style is set when it opens: a new key opens a new one. */}
-      <MaplaceMap key={scheme} createAdapter={adapterIn(scheme)} className="map" />
+      <MaplaceMap key={mapStyle} createAdapter={adapterIn(mapStyle)} className="map" />
     </MaplaceProvider>
   );
 }

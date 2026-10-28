@@ -1,0 +1,41 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<!-- No default styles: data-maplace-unstyled turns maplace's own off inside the map (its height,
+     the list's layout and looks, the popups' text), and the page's CSS draws it all: the map, the
+     places beside it as a column of underlined names, the popups in the page's own type. -->
+<style>
+  #unstyled-maplibre-map {
+    display: grid;
+    grid-template-columns: 1fr 12rem;
+    gap: 0 1.5rem;
+    height: 24rem;
+    font: 1rem/1.4 Georgia, serif;
+  }
+  #unstyled-maplibre-map .maplace-map-pane { min-width: 0; }
+  #unstyled-maplibre-map .maplace-listbox { margin: 0; padding: 0; overflow-y: auto; }
+  #unstyled-maplibre-map .maplace-option { padding: 0.375rem 0; cursor: pointer; text-decoration: underline; text-underline-offset: 0.2em; }
+  #unstyled-maplibre-map .maplace-option[data-hovered] { text-decoration-color: #e4322b; }
+  #unstyled-maplibre-map .maplace-option[data-selected] { font-weight: 700; text-decoration-thickness: 0.15em; }
+  #unstyled-maplibre-map .maplace-popup, #unstyled-maplibre-map .maplace-popup-heading { color: #1d1d1b; font: 1rem/1.4 Georgia, serif; }
+  /* MapLibre's heading without maplace's room: kept clear of the close button. */
+  #unstyled-maplibre-map .maplace-popup-heading { display: block; font-weight: 700; margin-right: 1.25rem; }
+  #unstyled-maplibre-map .maplace-popup p { margin: 0; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #unstyled-maplibre-map { grid-template-columns: 1fr; grid-template-rows: 1fr auto; height: 30rem; }
+  }
+</style>
+<maplace-map id="unstyled-maplibre-map" list data-maplace-unstyled>
+  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome">
+    <template><p>Capital of Italy.</p></template>
+  </maplace-location>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan">
+    <template><p>Finance and fashion.</p></template>
+  </maplace-location>
+  <maplace-location location-id="naples" lat="40.8518" lng="14.2681" title="Naples">
+    <template><p>Pizza's home town.</p></template>
+  </maplace-location>
+  <maplace-location location-id="venice" lat="45.4408" lng="12.3155" title="Venice">
+    <template><p>Built on water.</p></template>
+  </maplace-location>
+</maplace-map>

@@ -1,7 +1,7 @@
 import { createMaplace, type Location } from "maplace";
 import { createGoogleAdapter, type GoogleAdapterOptions } from "maplace/google";
 
-type ColorScheme = GoogleAdapterOptions["colorScheme"];
+type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
 
 const locations: Location[] = [
   { id: "lisbon", lat: 38.7223, lng: -9.1393, title: "Lisbon" },
@@ -11,24 +11,21 @@ const locations: Location[] = [
 ];
 
 /**
- * Google's own look: a light or dark map, with the map-type control. A map's Cloud styling hangs
- * on its map ID: put your own in `mapId`.
+ * Google's own look: a light or dark map, or the reader's system scheme, with the map-type
+ * control. A map's Cloud styling hangs on its map ID: put your own in `mapId`.
  */
 const adapterIn = (colorScheme: ColorScheme) =>
   createGoogleAdapter({ mapId: "DEMO_MAP_ID", colorScheme, mapOptions: { mapTypeControl: true } });
 
 const maplace = createMaplace({ locations });
-let dark = false;
-let detach = maplace.attach(adapterIn("light"), "#styled-vanilla-map");
+const schemeSelect = document.querySelector("#styled-vanilla-scheme") as HTMLSelectElement;
+const chosenScheme = () => schemeSelect.value as ColorScheme;
+let detach = maplace.attach(adapterIn(chosenScheme()), "#styled-vanilla-map");
 
-// A map's colour scheme is set when it opens: the button opens a new one where this one was,
-// and names the scheme it switches to.
-const schemeButton = document.querySelector<HTMLButtonElement>("#styled-vanilla-scheme");
-schemeButton?.addEventListener("click", () => {
-  dark = !dark;
-  schemeButton.textContent = dark ? "Light theme" : "Dark theme";
+// A map's colour scheme is set when it opens: choosing one opens a new map where this one was.
+schemeSelect.addEventListener("change", () => {
   const { viewport } = maplace.getSnapshot();
   detach();
   if (viewport) maplace.setView(viewport.center, viewport.zoom);
-  detach = maplace.attach(adapterIn(dark ? "dark" : "light"), "#styled-vanilla-map");
+  detach = maplace.attach(adapterIn(chosenScheme()), "#styled-vanilla-map");
 });

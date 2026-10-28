@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- The page react.tsx renders into: Maps JS from Google's bootstrap loader, what the module mounts on, the module. -->
+<script>
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: "YOUR_KEY",
+    v: "weekly",
+  });
+</script>
+<style>
+  #css-markers-react-root .map { height: 24rem; }
+  #css-markers-react-root .pin {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border: 2px solid #1d1d1b;
+    border-radius: 999px;
+    background: #fff;
+    color: #1d1d1b;
+    font: 600 0.8125rem/1.2 system-ui, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 30%);
+    cursor: pointer;
+  }
+  #css-markers-react-root [data-hovered] > .pin { transform: translateY(-3px); }
+  #css-markers-react-root [data-selected] > .pin {
+    border-color: #c62828;
+    background: #c62828;
+    color: #fff;
+    transform: scale(1.15);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #css-markers-react-root [data-selected] > .pin { animation: css-markers-react-pop 0.3s ease-out; }
+  }
+  @keyframes css-markers-react-pop { from { transform: scale(0.85); } }
+</style>
+<div id="css-markers-react-root"></div>
+<script type="module" src="./react.tsx"></script>

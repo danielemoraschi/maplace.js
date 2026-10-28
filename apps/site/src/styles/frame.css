@@ -26,12 +26,19 @@
 /*
  * A list beside the map, in every version, as a white panel set apart from it, under the map on a
  * phone, as the element puts it: its selected entry on the wash at the text's weight, the hovered
- * one lighter. An example drawing its list its own way (tabs) is marked `data-own-list` and left
- * out; a list on the map is in the map's own panel already.
+ * one lighter. An example drawing its list its own way (tabs, or in its own CSS) is marked
+ * `data-own-list` and left out, as is one inside maplace's own opt-out (`data-maplace-unstyled`);
+ * a list on the map is in the map's own panel already.
  */
 .version
 :where(.maplace-list-view):where(
-  :not(.maplace-google-map *, .maplace-maplibre-map *, [data-own-list] *)
+  :not(
+    .maplace-google-map *,
+    .maplace-maplibre-map *,
+    [data-own-list] *,
+    [data-maplace-unstyled],
+    [data-maplace-unstyled] *
+  )
 ) {
   margin-inline-start: 1rem;
   padding: 0.75rem 0.5rem;
@@ -71,7 +78,14 @@
  */
 .version
 :where(label:has(> input[type="checkbox"])):where(
-  :not(.maplace-google-map *, .maplace-maplibre-map *, .maplace-list-view *, [data-own-list] *)
+  :not(
+    .maplace-google-map *,
+    .maplace-maplibre-map *,
+    .maplace-list-view *,
+    [data-own-list] *,
+    [data-maplace-unstyled],
+    [data-maplace-unstyled] *
+  )
 ) {
   display: inline-flex;
   align-items: center;
