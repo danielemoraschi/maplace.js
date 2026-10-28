@@ -35,8 +35,8 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
 };
 
 /**
- * Where a provider's version does otherwise: on MapLibre, mixed's group C has no route; styled
- * offers each provider's own looks.
+ * Where a provider's version does otherwise: on MapLibre, mixed has no route, nor a button for
+ * one; styled offers each provider's own looks.
  */
 const ON_PROVIDER: Readonly<Record<Provider, Readonly<Record<string, ExampleBehaviour>>>> = {
   google: { styled: styledOnGoogle },

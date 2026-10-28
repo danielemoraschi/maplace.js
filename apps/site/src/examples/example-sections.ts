@@ -36,7 +36,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "markers",
         title: "Markers",
         summary:
-          "Image icons and popups, a list on the map, one place listed nowhere: click the map to add one.",
+          "Three kinds of pin, popups, a list on the map, one place unlisted: click the map to add one.",
       },
     ],
   },
@@ -53,7 +53,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "custom-list",
         title: "Your own list",
-        summary: "A list you build: a radio per place, and fit all, on the map.",
+        summary: "Define your own: here a radio per place, and one to fit all, on the map.",
       },
       {
         name: "tabs",
@@ -91,7 +91,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "mixed",
         title: "Mixed",
         summary:
-          "Five data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
+          "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
       },
       {
         name: "big",

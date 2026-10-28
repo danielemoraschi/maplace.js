@@ -1,16 +1,15 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
-<!-- Five data sets, each fetched by the page and swapped in live: markers, an area and a circle.
-     MapLibre has no routing, so group C, which the Google version routes, is its markers alone. -->
+<!-- Four data sets, each fetched by the page and swapped in live: markers, an area and a circle.
+     MapLibre has no routing, so the Google version's fifth, a route, isn't here. -->
 <style>
   #mixed-maplibre-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
 </style>
 <p id="mixed-maplibre-groups">
-  <button type="button" value="a">Group A</button>
-  <button type="button" value="b">Group B</button>
-  <button type="button" value="c">Group C</button>
-  <button type="button" value="d">Group D</button>
-  <button type="button" value="e">Group E</button>
+  <button type="button" value="a">Markers</button>
+  <button type="button" value="b">More markers</button>
+  <button type="button" value="d">Area</button>
+  <button type="button" value="e">Circle</button>
 </p>
 <maplace-map id="mixed-maplibre-map" list></maplace-map>
 <script type="module">

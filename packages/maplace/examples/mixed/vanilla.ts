@@ -14,8 +14,8 @@ for (const button of buttons) {
 await showGroup("a");
 
 /**
- * One of the data sets swapped in, group C with a route through it; leaving C takes it away.
- * Only the group last asked for: a slower answer to an earlier click is dropped.
+ * One of the data sets swapped in, the route's (c) with a route through it; leaving it takes
+ * the route away. Only the group last asked for: a slower answer to an earlier click is dropped.
  */
 async function showGroup(letter: string): Promise<void> {
   latestGroup = letter;

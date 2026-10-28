@@ -13,6 +13,13 @@ describe("withSiteLinks", () => {
     );
   });
 
+  it("sends a link with an anchor of its own to that anchor, on a section's page", () => {
+    const toSection = { ...links, routes: { "a/guide.md": "/examples/a/#a" } };
+    expect(withSiteLinks("[a](a/guide.md) [b](a/guide.md#more)", toSection)).toBe(
+      "[a](/examples/a/#a) [b](/examples/a/#more)",
+    );
+  });
+
   it("sends a link to any other repo path to the repo", () => {
     expect(withSiteLinks("[the RFC](docs/rfc-1.0.md)", links)).toBe(
       "[the RFC](https://github.com/o/r/blob/next/docs/rfc-1.0.md)",

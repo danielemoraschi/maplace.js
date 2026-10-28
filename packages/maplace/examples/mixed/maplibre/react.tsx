@@ -5,11 +5,12 @@ import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/r
 import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const GROUPS = ["a", "b", "c", "d", "e"];
+/** Each data set's button, by its file's letter: `/mixed-a.json` is the markers. */
+const GROUPS = { a: "Markers", b: "More markers", d: "Area", e: "Circle" };
 
 const NO_LOCATIONS: readonly Location[] = [];
 
-/** A data set: on MapLibre, which has no routing, group C is its markers alone. */
+/** A data set: on MapLibre, which has no routing, there is no route's set (c). */
 async function fetchGroup(letter: string): Promise<Location[]> {
   const response = await fetch(`/mixed-${letter}.json`);
   return response.json();
@@ -39,10 +40,10 @@ function Mixed() {
     <MaplaceProvider locations={locations}>
       <p>
         {/* A space after each button, as between buttons written in HTML. */}
-        {GROUPS.map((letter) => (
+        {Object.entries(GROUPS).map(([letter, label]) => (
           <Fragment key={letter}>
             <button type="button" aria-pressed={letter === group} onClick={() => setGroup(letter)}>
-              Group {letter.toUpperCase()}
+              {label}
             </button>{" "}
           </Fragment>
         ))}

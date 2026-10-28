@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, the group buttons and what the map and its list mount on, and the map made with Maplace; its data sets come from mixed-a.json to mixed-e.json. -->
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, the group buttons and what the map and its list mount on, and the map made with Maplace; its data sets come from mixed-a.json, -b, -d and -e (MapLibre has no routing, so no route's set, -c). -->
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <style>
   #mixed-maplibre-script-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
@@ -14,11 +14,10 @@
   }
 </style>
 <p id="mixed-maplibre-script-groups">
-  <button type="button" value="a">Group A</button>
-  <button type="button" value="b">Group B</button>
-  <button type="button" value="c">Group C</button>
-  <button type="button" value="d">Group D</button>
-  <button type="button" value="e">Group E</button>
+  <button type="button" value="a">Markers</button>
+  <button type="button" value="b">More markers</button>
+  <button type="button" value="d">Area</button>
+  <button type="button" value="e">Circle</button>
 </p>
 <div id="mixed-maplibre-script-map-and-list">
   <div id="mixed-maplibre-script-map"></div>

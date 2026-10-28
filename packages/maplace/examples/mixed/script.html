@@ -14,11 +14,11 @@
   }
 </style>
 <p id="mixed-script-groups">
-  <button type="button" value="a">Group A</button>
-  <button type="button" value="b">Group B</button>
-  <button type="button" value="c">Group C</button>
-  <button type="button" value="d">Group D</button>
-  <button type="button" value="e">Group E</button>
+  <button type="button" value="a">Markers</button>
+  <button type="button" value="b">More markers</button>
+  <button type="button" value="c">Route</button>
+  <button type="button" value="d">Area</button>
+  <button type="button" value="e">Circle</button>
 </p>
 <div id="mixed-script-map-and-list">
   <div id="mixed-script-map"></div>
@@ -39,8 +39,8 @@
   await showGroup("a");
 
   /**
-   * One of the data sets swapped in, group C with a route through it; leaving C takes it away.
-   * Only the group last asked for: a slower answer to an earlier click is dropped.
+   * One of the data sets swapped in, the route's (c) with a route through it; leaving it takes
+   * the route away. Only the group last asked for: a slower answer to an earlier click is dropped.
    */
   async function showGroup(letter) {
     latestGroup = letter;

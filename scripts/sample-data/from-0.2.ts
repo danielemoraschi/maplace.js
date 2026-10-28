@@ -23,8 +23,14 @@ export interface MixedGroup {
   readonly locations: readonly Location[];
 }
 
-/** The groups the `mixed` example swaps between, as 0.2's demo did. */
-const MIXED_GROUPS = ["Group A", "Group B", "Group C", "Group D", "Group E"] as const;
+/** The groups the `mixed` example swaps between, as 0.2's demo did, by letter: each one's kind. */
+const MIXED_GROUPS: Readonly<Record<string, string>> = {
+  a: "Markers",
+  b: "More markers",
+  c: "Route",
+  d: "Area",
+  e: "Circle",
+};
 
 /** One `echo '{…}';` of `ajax.php`: a group as JSON. */
 const ECHOED_GROUP = /echo '(\{[^']+\})';/g;
@@ -35,17 +41,16 @@ const LEGACY_POINT = /\{lat:(-?[\d.]+),lon:(-?[\d.]+)\}/g;
 /**
  * The `mixed` example's data sets, from 0.2's `website/data/ajax.php`: groups A and B as
  * markers, C's directions as markers (the example routes through them), D's points as one
- * polygon and E as a circle. `html` becomes plain-text `content` (the page has no sanitizer),
- * none where `show_infowindow` is false; `lon` is `lng`, and 0.2's icons, which were Google's
- * own `http:` images, are left out.
+ * polygon and E as a circle, each group named by its kind (`MIXED_GROUPS`). `html` becomes
+ * plain-text `content` (the page has no sanitizer), none where `show_infowindow` is false; `lon`
+ * is `lng`, and 0.2's icons, which were Google's own `http:` images, are left out.
  */
 export function mixedGroupsFromAjax(php: string): MixedGroup[] {
   const groups = Array.from(php.matchAll(ECHOED_GROUP), ([, json]) =>
     JSON.parse(json ?? "{}"),
   ) as LegacyGroup[];
-  return MIXED_GROUPS.map((title) => {
-    const group = groupTitled(groups, title);
-    const letter = letterOf(group);
+  return Object.entries(MIXED_GROUPS).map(([letter, kind]) => {
+    const group = { ...groupTitled(groups, `Group ${letter.toUpperCase()}`), title: kind };
     return { letter, locations: locationsOf(group, letter) };
   });
 }
@@ -63,11 +68,6 @@ function groupTitled(groups: readonly LegacyGroup[], title: string): LegacyGroup
   const group = groups.find((candidate) => candidate.title === title);
   if (group === undefined) throw new Error(`ajax.php has no "${title}"`);
   return group;
-}
-
-/** `Group A` → `a`. */
-function letterOf({ title }: LegacyGroup): string {
-  return title.at(-1)?.toLowerCase() ?? "";
 }
 
 /** A group's locations, with ids from its letter and 1-based places. */

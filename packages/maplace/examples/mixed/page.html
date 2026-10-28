@@ -1,16 +1,16 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- Five data sets, each fetched by the page and swapped in live: markers, markers with a route
-     through them, an area and a circle; leaving C takes its route with it. -->
+     through them, an area and a circle; leaving the route's set takes its route with it. -->
 <style>
   #mixed-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
 </style>
 <p id="mixed-groups">
-  <button type="button" value="a">Group A</button>
-  <button type="button" value="b">Group B</button>
-  <button type="button" value="c">Group C</button>
-  <button type="button" value="d">Group D</button>
-  <button type="button" value="e">Group E</button>
+  <button type="button" value="a">Markers</button>
+  <button type="button" value="b">More markers</button>
+  <button type="button" value="c">Route</button>
+  <button type="button" value="d">Area</button>
+  <button type="button" value="e">Circle</button>
 </p>
 <maplace-map id="mixed-map" api-key="YOUR_KEY" list></maplace-map>
 <script type="module">

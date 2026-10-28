@@ -72,12 +72,12 @@
 }
 
 /*
- * A page's own checkbox (menu's "North only") on a white panel, as the list beside the map: the
- * example's control, set apart from the site's own switches above it. The map's own and a list's
- * are left alone.
+ * A page's own checkbox (menu's "North only"), or select with its label (styled's "Map style"), on
+ * a white panel, as the list beside the map: the example's control, set apart from the site's own
+ * switches above it. The map's own and a list's are left alone.
  */
 .version
-:where(label:has(> input[type="checkbox"])):where(
+:where(label:has(> input[type="checkbox"]), p:has(> select)):where(
   :not(
     .maplace-google-map *,
     .maplace-maplibre-map *,
@@ -93,13 +93,24 @@
   padding: 0.5rem 1rem;
   border-radius: 0.75rem;
   background: var(--color-surface);
-  cursor: pointer;
-  &:where(:hover) {
+  &:where(label) {
+    cursor: pointer;
+  }
+  &:where(label:hover) {
     background: color-mix(in srgb, var(--color-wash) 55%, var(--color-surface));
   }
   & :where(input) {
     margin: 0;
     accent-color: var(--color-ink);
+  }
+  & :where(select) {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--color-ink);
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
 }
 

@@ -40,6 +40,12 @@ vi.mock("maplace", async (importOriginal) => {
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };
 });
 
+/** What only a Google page has, by example, left out when its MapLibre twin is held to it. */
+const GOOGLE_ONLY_PARTS: Readonly<Record<string, string>> = {
+  // MapLibre has no routing: mixed's page there has no button for the route's data set.
+  mixed: 'button[value="c"]',
+};
+
 /** The width the site gives a version at its widest. */
 const VERSION_WIDTH = "960px";
 
@@ -75,10 +81,35 @@ function describeLookAlike(): void {
   describe.each(EXAMPLES.filter(onProvider("maplibre")))(
     "the $name example on MapLibre",
     (example) => {
-      it("looks on its page as on Google's page", () =>
-        expectRunLooksAs(runsOf(example).page, runsOf(googleTwinOf(example)).page));
+      it("looks on its page as on Google's page, but for what only Google has", () =>
+        withGoogleOnlyPartsTakenOut(example, () =>
+          expectRunLooksAs(runsOf(example).page, runsOf(googleTwinOf(example)).page),
+        ));
     },
   );
+}
+
+/** Runs `compare` with the parts only `example`'s Google twin has taken out of its page. */
+async function withGoogleOnlyPartsTakenOut(
+  example: Example,
+  compare: () => Promise<void>,
+): Promise<void> {
+  const selector = GOOGLE_ONLY_PARTS[example.name];
+  const root = runsOf(googleTwinOf(example)).page.root;
+  const parts = selector === undefined ? [] : [...root.querySelectorAll(selector)];
+  const putBack = parts.map(takeOut);
+  try {
+    await compare();
+  } finally {
+    for (const put of putBack) put();
+  }
+}
+
+/** Takes `part` out of the page; returns how to put it back where it was. */
+function takeOut(part: Element): () => void {
+  const placeholder = document.createComment("taken out");
+  part.replaceWith(placeholder);
+  return () => placeholder.replaceWith(part);
 }
 
 function runsOf(example: Example): VersionRuns {

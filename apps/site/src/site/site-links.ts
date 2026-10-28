@@ -1,7 +1,10 @@
 import { withLinksResolved } from "../../../../scripts/docs/markdown.ts";
 
 export interface SiteLinks {
-  /** The site's page for each repo document it renders, by repo path. */
+  /**
+   * The site's page for each repo document it renders, by repo path: a page, or a section of one
+   * (`/examples/styling/#css-markers`), which a link's own anchor replaces.
+   */
   readonly routes: Readonly<Record<string, string>>;
   /** Where the repo's other files are read: GitHub's blob URL at a ref. */
   readonly blobBase: string;
@@ -16,6 +19,8 @@ export function withSiteLinks(markdown: string, { routes, blobBase }: SiteLinks)
     const [path = "", anchor] = link.split("#");
     const route = routes[path];
     if (route === undefined) return `${blobBase}${link}`;
-    return anchor === undefined ? route : `${route}#${anchor}`;
+    if (anchor === undefined) return route;
+    const [page] = route.split("#");
+    return `${page}#${anchor}`;
   });
 }

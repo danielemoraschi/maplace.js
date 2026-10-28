@@ -36,7 +36,7 @@ describe("mixedGroupsFromAjax", () => {
     expect(group("a")?.locations).toEqual([
       {
         id: "a1",
-        group: "Group A",
+        group: "Markers",
         title: "Title A1",
         content: "Content A1",
         lat: 45.9,
@@ -46,7 +46,7 @@ describe("mixedGroupsFromAjax", () => {
     expect(group("b")?.locations).toEqual([
       {
         id: "b1",
-        group: "Group B",
+        group: "More markers",
         title: "Title B2",
         content: "Content B2",
         lat: 51.2,
@@ -59,13 +59,13 @@ describe("mixedGroupsFromAjax", () => {
     expect(group("c")?.locations).toEqual([
       {
         id: "c1",
-        group: "Group C",
+        group: "Route",
         title: "Title A1",
         content: "Content A1",
         lat: 45.9,
         lng: 10.9,
       },
-      { id: "c2", group: "Group C", title: "Title B1", lat: 44.8, lng: 1.7 },
+      { id: "c2", group: "Route", title: "Title B1", lat: 44.8, lng: 1.7 },
     ]);
   });
 
@@ -73,8 +73,8 @@ describe("mixedGroupsFromAjax", () => {
     expect(group("d")?.locations).toEqual([
       {
         id: "d1",
-        group: "Group D",
-        title: "Group D",
+        group: "Area",
+        title: "Area",
         type: "polygon",
         path: [
           { lat: 52.1, lng: 11.3 },
@@ -89,7 +89,7 @@ describe("mixedGroupsFromAjax", () => {
     expect(group("e")?.locations).toEqual([
       {
         id: "e1",
-        group: "Group E",
+        group: "Circle",
         title: "Title A2",
         content: "Content A2 Lorem Ipsum..",
         type: "circle",

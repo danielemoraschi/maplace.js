@@ -3,6 +3,7 @@ import { type Pin, withPinnedScripts } from "../../../../scripts/build/cdn-pins.
 import { readRootFile } from "../../../../scripts/build/package.ts";
 import { cdnPin } from "./cdn-pin.ts";
 import { withLinksFromRoot } from "./doc-relative-links.ts";
+import { GUIDE_ROUTES } from "./guide-routes.ts";
 import { DOC_ROUTES, REPO_DOCS, type RepoDoc } from "./repo-docs.ts";
 import { siteBlobBase } from "./site-blob-base.ts";
 import { withSiteLinks } from "./site-links.ts";
@@ -42,12 +43,15 @@ export function repoDocMarkdown(doc: RepoDoc, { pin, blobBase }: RepoDocSettings
 
 /**
  * `markdown`, the repo file at `file`, as a page of the site shows it: without its title, which
- * the page writes, its links to repo documents going to their pages, the rest to GitHub.
+ * the page writes, its links to repo documents going to their pages, to examples' guides to their
+ * sections, the rest to GitHub.
  */
 export function siteMarkdownOf(markdown: string, file: string, blobBase: string): string {
   const fromRoot = withLinksFromRoot(withoutTitle(markdown), file);
-  return withSiteLinks(fromRoot, { routes: DOC_ROUTES, blobBase });
+  return withSiteLinks(fromRoot, { routes: SITE_ROUTES, blobBase });
 }
+
+const SITE_ROUTES = { ...DOC_ROUTES, ...GUIDE_ROUTES };
 
 /** `markdown` without its leading `# title`, which the page writes. */
 export function withoutTitle(markdown: string): string {

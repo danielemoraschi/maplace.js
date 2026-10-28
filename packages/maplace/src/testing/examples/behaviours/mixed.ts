@@ -4,47 +4,50 @@ import type { FakeAdapter } from "../../fake-adapter";
 import type { ExampleRun } from "../example-runs";
 import { type BoundsView, clickButton, type ExampleBehaviour } from "./reading";
 
-/** The group buttons shown pressed: the group on the map, or on its way. */
-const pressed = (root: Element) =>
-  [...root.querySelectorAll('button[aria-pressed="true"]')].map(({ textContent }) =>
-    textContent?.trim(),
-  );
+/** The text of the buttons `selector` finds in `root`. */
+const buttonTexts = (root: Element, selector: string) =>
+  [...root.querySelectorAll(selector)].map(({ textContent }) => textContent?.trim());
+
+/** The data sets' buttons shown pressed: the set on the map, or on its way. */
+const pressed = (root: Element) => buttonTexts(root, 'button[aria-pressed="true"]');
 
 const ids = (store: Maplace) => store.getSnapshot().locations.map(({ id }) => id);
 
 export const mixed: ExampleBehaviour = async (run) => {
-  await expectStartsOnGroupA(run);
-  await expectGroupCShown(run);
-  await expectGroupCRouted(run);
-  await expectGroupDFitted(run);
+  await expectStartsOnMarkers(run, ["Markers", "More markers", "Route", "Area", "Circle"]);
+  await expectRouteSetShown(run);
+  await expectRouteDrawn(run);
+  await expectAreaFitted(run);
 };
 
-/** On MapLibre, which has no routing: group C is its markers alone. */
+/** On MapLibre, which has no routing: no route to show, so no button for it. */
 export const mixedWithoutRoute: ExampleBehaviour = async (run) => {
-  await expectStartsOnGroupA(run);
-  await expectGroupCShown(run);
-  expect(run.store.getSnapshot().route).toBeUndefined();
-  await expectGroupDFitted(run);
+  await expectStartsOnMarkers(run, ["Markers", "More markers", "Area", "Circle"]);
+  await expectAreaFitted(run);
 };
 
-async function expectStartsOnGroupA({ store, root }: ExampleRun): Promise<void> {
+async function expectStartsOnMarkers(
+  { store, root }: ExampleRun,
+  buttons: readonly string[],
+): Promise<void> {
   await expect.poll(() => ids(store)).toEqual(["a1", "a2", "a3"]);
-  expect(pressed(root)).toEqual(["Group A"]);
+  expect(buttonTexts(root, "button[aria-pressed]")).toEqual(buttons);
+  expect(pressed(root)).toEqual(["Markers"]);
 }
 
-async function expectGroupCShown({ store, root }: ExampleRun): Promise<void> {
-  clickButton(root, "Group C");
-  await expect.poll(() => pressed(root)).toEqual(["Group C"]);
+async function expectRouteSetShown({ store, root }: ExampleRun): Promise<void> {
+  clickButton(root, "Route");
+  await expect.poll(() => pressed(root)).toEqual(["Route"]);
   await expect.poll(() => ids(store)).toEqual(["c1", "c2", "c3"]);
 }
 
-async function expectGroupCRouted({ store, adapter }: ExampleRun): Promise<void> {
+async function expectRouteDrawn({ store, adapter }: ExampleRun): Promise<void> {
   await expect.poll(() => store.getSnapshot().route?.stops).toEqual(["c1", "c2", "c3"]);
   await expect.poll(() => routedLegs(store, adapter)).toBe(2);
 }
 
-async function expectGroupDFitted({ store, adapter, root }: ExampleRun): Promise<void> {
-  clickButton(root, "Group D");
+async function expectAreaFitted({ store, adapter, root }: ExampleRun): Promise<void> {
+  clickButton(root, "Area");
   await expect.poll(() => ids(store)).toEqual(["d1"]);
   expect(store.getSnapshot().route).toBeUndefined();
   await expect.poll(() => lastFit(adapter)?.bounds.north).toBeCloseTo(52.1);

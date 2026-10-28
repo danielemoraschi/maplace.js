@@ -17,6 +17,11 @@ export interface ExampleGuideFile {
 export function exampleGuideFiles(root: string = ROOT): ExampleGuideFile[] {
   return readdirSync(join(root, EXAMPLES_DIR), { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
-    .map(({ name }) => ({ name, file: `${EXAMPLES_DIR}/${name}/${EXAMPLE_GUIDE_FILE}` }))
+    .map(({ name }) => ({ name, file: exampleGuideFile(name) }))
     .filter(({ file }) => existsSync(join(root, file)));
+}
+
+/** Where the example `name`'s guide is, or would be, in the repo. */
+export function exampleGuideFile(name: string): string {
+  return `${EXAMPLES_DIR}/${name}/${EXAMPLE_GUIDE_FILE}`;
 }

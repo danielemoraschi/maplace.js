@@ -4,9 +4,10 @@ import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/r
 import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const GROUPS = ["a", "b", "c", "d", "e"];
+/** Each data set's button, by its file's letter: `/mixed-a.json` is the markers. */
+const GROUPS = { a: "Markers", b: "More markers", c: "Route", d: "Area", e: "Circle" };
 
-/** A data set shown, group C with a route through it. */
+/** A data set shown, the route's (c) with a route through it. */
 interface Shown {
   readonly locations: readonly Location[];
   readonly route: Route | undefined;
@@ -45,10 +46,10 @@ function Mixed() {
     <MaplaceProvider locations={shown.locations} route={shown.route}>
       <p>
         {/* A space after each button, as between buttons written in HTML. */}
-        {GROUPS.map((letter) => (
+        {Object.entries(GROUPS).map(([letter, label]) => (
           <Fragment key={letter}>
             <button type="button" aria-pressed={letter === group} onClick={() => setGroup(letter)}>
-              Group {letter.toUpperCase()}
+              {label}
             </button>{" "}
           </Fragment>
         ))}

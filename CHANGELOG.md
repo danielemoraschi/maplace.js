@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-28 Changed the mixed example's buttons, and its list's group headings, from "Group A" … "Group E" to what each data set is: "Markers", "More markers", "Route", "Area" and "Circle"; on MapLibre, which has no routing, the route's button is gone
+- 2026-10-28 Changed the examples' guides: a link to another example's guide goes to that example's section on the site; the markers example has a guide, pointing at Your markers
 - 2026-10-28 Changed the markers example, in every version on both providers: Venice's star is a gold disc styled by the page's own CSS (`.star`), a first look at markers of your own
 - 2026-10-28 Fixed Google's markers drawn over an open popup in Safari: the popup's pane gets a compositing layer of its own (`will-change: transform`), given back as it was when maplace lets go of a page's own map
 - 2026-10-28 Fixed a MapLibre popup covering its marker when the marker's icon grows after the popup opens, as an image icon does while it loads: the popup moves up with it

@@ -1,7 +1,7 @@
 [
   {
     "id": "b1",
-    "group": "Group B",
+    "group": "More markers",
     "title": "Title A2",
     "content": "Content A2 Lorem Ipsum..",
     "lat": 52.1,
@@ -9,7 +9,7 @@
   },
   {
     "id": "b2",
-    "group": "Group B",
+    "group": "More markers",
     "title": "Title B2",
     "content": "Content B2 Lorem Ipsum..",
     "lat": 51.2,
@@ -17,7 +17,7 @@
   },
   {
     "id": "b3",
-    "group": "Group B",
+    "group": "More markers",
     "title": "Title C2",
     "content": "Content C2 Lorem Ipsum..",
     "lat": 49.4,
@@ -25,7 +25,7 @@
   },
   {
     "id": "b4",
-    "group": "Group B",
+    "group": "More markers",
     "title": "Title D2",
     "content": "Content D2 Lorem Ipsum..",
     "lat": 47.8,

@@ -27,6 +27,15 @@ describe("siteMarkdownOf", () => {
     expect(siteMarkdownOf(markdown, FILE, settings.blobBase)).toBe("[views](/element/#list-views)");
   });
 
+  it("sends a link to another example's guide to that example's section, on its group's page", () => {
+    expect(siteMarkdownOf("[pins](../css-markers/guide.md)", FILE, settings.blobBase)).toBe(
+      "[pins](/examples/styling/#css-markers)",
+    );
+    expect(siteMarkdownOf("[markers](../markers/guide.md)", FILE, settings.blobBase)).toBe(
+      "[markers](/#markers)",
+    );
+  });
+
   it("sends a link to another repo file to GitHub at the commit built", () => {
     expect(siteMarkdownOf("[code](./vanilla.ts)", FILE, settings.blobBase)).toBe(
       `[code](${settings.blobBase}packages/maplace/examples/custom-list/vanilla.ts)`,
