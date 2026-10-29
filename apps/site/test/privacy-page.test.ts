@@ -4,7 +4,7 @@ import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
 import { PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { PRIVACY_CHANGED_ON } from "../src/site/privacy-changed-on.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
-import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION, THIRD_PARTIES } from "../src/site/third-parties.ts";
+import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
 import { opened, siteBuiltBeforeTests } from "./site-session.ts";
 import { DESKTOP } from "./visitor.ts";
 
@@ -15,7 +15,7 @@ const privacyPage = () => opened(site, PRIVACY_PAGE.route, DESKTOP);
 describe("the privacy page", () => {
   it("has a section for every third party the site's pages contact", async () => {
     const { page, context } = await privacyPage();
-    for (const { id, name, terms } of THIRD_PARTIES) {
+    for (const { id, name, terms } of MAP_PROVIDERS) {
       expect(await page.locator(`h2#${id}`).allTextContents()).toEqual([name]);
       for (const { url } of terms) {
         expect(await page.locator(`a[href="${url}"]`).count(), url).toBe(1);

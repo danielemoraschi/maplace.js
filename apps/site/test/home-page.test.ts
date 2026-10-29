@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { STAR_COUNT_PATH } from "../src/site/star-count-api.ts";
 import {
   chooseProvider,
   chooseTab,
@@ -16,11 +17,30 @@ import { footerToggle, openHome, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
-describe("the home page's links", () => {
-  it("has GitHub's star button in place of its link, GitHub's count refused or not", async () => {
-    const { page, context } = await site.visitor();
+describe("the home page's star button", () => {
+  /** The star button's own shadow root, drawn by the page (W44). */
+  const starButton = (page: Page) => page.locator("[data-star-button]");
+
+  it("is drawn by the site, its count asked of the site itself and nothing of GitHub", async () => {
+    const { page, context, fetched, offsite } = await site.visitor();
     await page.goto(site.url);
-    await expect.poll(() => page.locator("a.github-button").count(), ASKED).toBe(0);
+    await expect(starButton(page).locator(".btn span").textContent()).resolves.toBe(
+      "Star on GitHub",
+    );
+    // The fallback link, for a browser that can't attach the shadow root, stays out of sight.
+    expect(await starButton(page).locator(":scope > a").isVisible()).toBe(false);
+    await expect.poll(() => fetched(STAR_COUNT_PATH), ASKED).toBe(true);
+    expect(offsite()).toEqual([]);
+    await context.close();
+  }, 30_000);
+
+  it("shows the site's star count beside the button", async () => {
+    const { page, context } = await site.visitor();
+    await page.route(`**${STAR_COUNT_PATH}`, (route) => route.fulfill({ json: { stars: 1234 } }));
+    await page.goto(site.url);
+    await expect
+      .poll(() => starButton(page).locator(".social-count").textContent(), ASKED)
+      .toBe("1,234");
     await context.close();
   }, 30_000);
 });

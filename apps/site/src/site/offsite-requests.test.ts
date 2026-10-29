@@ -19,8 +19,10 @@ describe("strayRequests", () => {
     ]);
   });
 
-  it("allows a third party the privacy page lets pages ask before consent: GitHub", () => {
-    expect(strayRequests('<img src="https://api.github.com/x.svg">', PAGE)).toEqual([]);
+  it("names a request to GitHub's API: the star count comes from the site itself (W44)", () => {
+    expect(strayRequests('<img src="https://api.github.com/x.svg">', PAGE)).toEqual([
+      "https://api.github.com/x.svg",
+    ]);
   });
 
   it("names what the edge adds under /cdn-cgi/, but not its bot check", () => {

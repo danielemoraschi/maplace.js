@@ -13,7 +13,7 @@ import {
 } from "../src/examples/example-sections.ts";
 import { exampleProviders } from "../src/examples/example-sources.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { GOOGLE_MAPS, thirdPartyOf } from "../src/site/third-parties.ts";
+import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 import { chooseProvider, groupLink } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { duplicateIds, grantConsent } from "./visitor.ts";
@@ -166,7 +166,7 @@ describe("the examples' pages, shown (W38)", () => {
     await scrollPastEveryGroupsMaps();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
     await pause(SETTLE_MS);
-    expect(offsite().filter((url) => thirdPartyOf(url) === undefined)).toEqual([]);
+    expect(offsite().filter((url) => !goesToMapProvider(url))).toEqual([]);
     await context.close();
   }, 120_000);
 });

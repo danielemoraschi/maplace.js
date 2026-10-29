@@ -6,10 +6,10 @@ import { PREBUNDLED_DEPS } from "./prebundled-deps.ts";
 const SRC = join(import.meta.dirname, "..");
 const PACKAGE = join(import.meta.dirname, "../../../../packages/maplace");
 
-/** A package a module imports: `from "react-dom"`, `import("github-buttons")`. */
+/** A package a module imports: `from "react-dom"`, `import("maplibre-gl")`. */
 const IMPORTED_PACKAGE = /(?:from |import\()"([^"./][^"]*)"/g;
 
-/** A dependency a site module imports on demand: `import("github-buttons")`. */
+/** A dependency a site module imports on demand: `import("maplibre-gl")`. */
 const IMPORTED_ON_DEMAND = /import\("([^"./][^"]*)"\)/g;
 
 /** Every module under `dir` whose path `matches`, but its tests and their helpers (`testing/`). */

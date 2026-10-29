@@ -1,5 +1,3 @@
-import { mayAskBeforeConsent } from "./third-parties.ts";
-
 /** A page of the deployed site as a browser was served it, and the origin that finally answered. */
 export interface ServedPage {
   readonly url: string;
@@ -10,9 +8,9 @@ export interface ServedPage {
 /**
  * What is wrong with a deployed page, as lines to report (W10c). A page answered from elsewhere
  * (Access's login, another site) isn't the site's page, whatever it loads; otherwise, each request
- * its HTML makes that the privacy page doesn't allow before consent. The edge can add scripts the
- * build never sees: on the day wavelace's domain went live, Cloudflare injected its Web Analytics
- * beacon into every page.
+ * its HTML makes off the site: the privacy page allows none before consent. The edge can add
+ * scripts the build never sees: on the day wavelace's domain went live, Cloudflare injected its
+ * Web Analytics beacon into every page.
  */
 export function problemsOf({ url, html, servedFrom }: ServedPage): string[] {
   if (servedFrom !== new URL(url).origin) {
@@ -56,6 +54,5 @@ const ADDED_BY_THE_EDGE = /^\/cdn-cgi\/(?!challenge-platform\/)/;
 
 function isStray(url: URL, origin: string): boolean {
   if (!url.protocol.startsWith("http")) return false;
-  if (url.origin === origin) return ADDED_BY_THE_EDGE.test(url.pathname);
-  return !mayAskBeforeConsent(url.href);
+  return url.origin !== origin || ADDED_BY_THE_EDGE.test(url.pathname);
 }

@@ -1,14 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { mapsScriptUrl } from "../../../../packages/maplace/src/google/maps-script-url.ts";
 import {
-  GITHUB,
   GOOGLE_MAPS,
   goesToMapProvider,
   MAP_PROVIDER_NAMES,
-  MAP_PROVIDERS,
-  mayAskBeforeConsent,
   OPENFREEMAP,
-  THIRD_PARTIES,
   thirdPartyOf,
 } from "./third-parties.ts";
 
@@ -37,8 +33,8 @@ describe("thirdPartyOf", () => {
     expect(requests.map(thirdPartyOf)).toEqual(requests.map(() => OPENFREEMAP));
   });
 
-  it("GitHub receives the star button's question for the repo's count", () => {
-    expect(thirdPartyOf("https://api.github.com/repos/danielemoraschi/maplace.js")).toBe(GITHUB);
+  it("names no third party for GitHub, which the pages no longer contact (W44)", () => {
+    expect(thirdPartyOf("https://api.github.com/repos/danielemoraschi/maplace.js")).toBeUndefined();
   });
 
   it("no one receives the site's own requests or a lookalike host", () => {
@@ -46,7 +42,6 @@ describe("thirdPartyOf", () => {
       "http://127.0.0.1:4390/privacy/",
       "https://google.com.example.org/x",
       "https://notgoogle.com/x",
-      "https://github.com.example.org/x",
       "https://tiles.openfreemap.org.example.org/x",
       "https://openfreemap.org/privacy/",
     ];
@@ -61,17 +56,6 @@ describe("the maps' consent", () => {
 
   it("names Google Maps and OpenFreeMap as the placeholder shows them", () => {
     expect(MAP_PROVIDER_NAMES).toBe("Google Maps and OpenFreeMap");
-  });
-
-  it("has every map provider wait for the maps' consent", () => {
-    expect(MAP_PROVIDERS.every(({ askedBeforeConsent }) => !askedBeforeConsent)).toBe(true);
-    expect(MAP_PROVIDERS.every((provider) => THIRD_PARTIES.includes(provider))).toBe(true);
-  });
-
-  it("lets a page ask GitHub before consent, and no map provider", () => {
-    expect(mayAskBeforeConsent(githubApi)).toBe(true);
-    const waiting = [mapsScript, openFreeMapTile, "https://unknown.example.org/x"];
-    expect(waiting.map(mayAskBeforeConsent)).toEqual([false, false, false]);
   });
 
   it("says which requests go to a map provider", () => {

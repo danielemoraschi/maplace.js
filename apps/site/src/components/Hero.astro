@@ -2,10 +2,8 @@
 import quickStartMapLibre from "../../../../packages/maplace/examples/quick-start/maplibre/page.html?raw";
 import quickStart from "../../../../packages/maplace/examples/quick-start/page.html?raw";
 import { REPOSITORY_URL } from "../site/repo-docs.ts";
+import { starButtonShadow } from "../site/star-button-markup.ts";
 import SourceCode from "./SourceCode.astro";
-
-/** `owner/repo`, as GitHub names it. */
-const REPOSITORY = new URL(REPOSITORY_URL).pathname.slice(1);
 ---
 
 <div class="relative pt-10 pb-4">
@@ -27,12 +25,10 @@ const REPOSITORY = new URL(REPOSITORY_URL).pathname.slice(1);
     a Maps key on Google and none on MapLibre; npm and React too.
   </p>
   <p class="relative mt-0 mb-6 h-7">
-    <a
-      class="github-button"
-      href={REPOSITORY_URL}
-      data-size="large"
-      data-show-count="true"
-      aria-label={`Star ${REPOSITORY} on GitHub`}>Star on GitHub</a
+    <span data-star-button
+      ><template shadowrootmode="open" set:html={starButtonShadow(REPOSITORY_URL)} /><a
+        href={REPOSITORY_URL}>Star on GitHub</a
+      ></span
     >
   </p>
   <div class="overflow-x-auto">

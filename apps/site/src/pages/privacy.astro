@@ -10,7 +10,7 @@ import {
   SITE_HOST,
   SITE_MAINTAINER,
 } from "../site/site-owner.ts";
-import { GITHUB, GOOGLE_MAPS, MAP_PROVIDERS_SECTION, OPENFREEMAP } from "../site/third-parties.ts";
+import { GOOGLE_MAPS, MAP_PROVIDERS_SECTION, OPENFREEMAP } from "../site/third-parties.ts";
 
 const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
 ---
@@ -93,22 +93,6 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     </ul>
   </section>
 
-  <section aria-labelledby={GITHUB.id}>
-    <h2 id={GITHUB.id}>{GITHUB.name}</h2>
-    <p>
-      The star button on the home and example pages shows how many people starred maplacejs on
-      GitHub. To show it, your browser asks GitHub's API for the repository's count when the page
-      opens, without cookies; with that request GitHub receives your IP address, your browser's
-      user agent and this site's address. The site asks for the count on the basis of its
-      legitimate interest in showing the project's star count (Article 6(1)(f) of the GDPR).
-      GitHub is a US company, certified under the EU-U.S. Data Privacy Framework. Its Privacy
-      Statement says what it does with what it receives:
-    </p>
-    <ul>
-      {GITHUB.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
-    </ul>
-  </section>
-
   <section aria-labelledby="host">
     <h2 id="host">Who serves this site</h2>
     <p>
@@ -145,9 +129,9 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       and can't tell which requests were yours, so it can't show, correct or delete them (Article
       11 of the GDPR); {SITE_HOST.name}'s privacy policy, above, says how to ask {SITE_HOST.name}.
       If you write, you can ask for your message to be shown to you, corrected or deleted, or
-      object to it being kept: write to the address above. What {GOOGLE_MAPS.name},{" "}
-      {OPENFREEMAP.name} and {GITHUB.name} do with what they receive is under their own policies,
-      linked above; to exercise your rights over it, ask them.
+      object to it being kept: write to the address above. What {GOOGLE_MAPS.name} and{" "}
+      {OPENFREEMAP.name} do with what they receive is under their own policies, linked above; to
+      exercise your rights over it, ask them.
     </p>
     <p>
       No law or contract requires you to give anything. What {SITE_HOST.name} receives with each

@@ -12,7 +12,6 @@
     "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@fontsource/bricolage-grotesque": "5.3.0",
     "astro": "7.3.5",
-    "github-buttons": "2.33.1",
     "maplace": "*",
     "maplibre-gl": "^6.15.0",
     "react": "^19.3.1",
@@ -20,6 +19,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
+    "github-buttons": "2.33.1",
     "tailwindcss": "4.3.3"
   }
 }

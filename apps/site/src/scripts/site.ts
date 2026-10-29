@@ -21,7 +21,7 @@ import { importAsModule, scriptVersionStart } from "./script-version.ts";
 import { followSectionAnchor } from "./section-anchor.ts";
 import { sectionStarter } from "./section-start.ts";
 import { installMaplace } from "./site-maplace.ts";
-import { startStarButtons } from "./star-buttons.ts";
+import { showStarCount } from "./star-count.ts";
 import { versionStarter } from "./version-start.ts";
 import { startProviderToggle } from "./version-switch.ts";
 
@@ -91,7 +91,7 @@ revealCurrentNavLink(document);
 followNavFocus(document);
 startSections(document);
 startGroupSwitch({ document, startSections, fetchPanel: fetchGroupPanel, leave: location });
-void startStarButtons(document);
+void showStarCount(document);
 startConsent({
   document,
   store: createConsentStore(() => localStorage),

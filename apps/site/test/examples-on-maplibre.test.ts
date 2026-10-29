@@ -7,7 +7,6 @@ import {
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { exampleProviders } from "../src/examples/example-sources.ts";
 import { VERSION_LABELS } from "../src/examples/example-versions.ts";
-import { mayAskBeforeConsent } from "../src/site/third-parties.ts";
 import {
   mapLibreDrawn,
   mapLibreVersionIn,
@@ -81,9 +80,7 @@ describe("the site's examples on MapLibre", () => {
           if (index === 0) await loadMapsButtons(section).click();
           await drawnOnMapLibre(version, askedBefore);
         }
-        const otherwise = offsite().filter(
-          (url) => !mayAskBeforeConsent(url) && !url.startsWith(OPENFREEMAP_STYLES),
-        );
+        const otherwise = offsite().filter((url) => !url.startsWith(OPENFREEMAP_STYLES));
         expect(otherwise, "asked offsite but OpenFreeMap's styles").toEqual([]);
         expect(mapsJsRequests()).toEqual([]);
         await expect

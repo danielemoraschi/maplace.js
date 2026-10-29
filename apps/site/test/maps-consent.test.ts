@@ -1,7 +1,6 @@
 import type { BrowserContext } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
-import { mayAskBeforeConsent } from "../src/site/third-parties.ts";
 import { chooseProvider, chooseVersion, groupLink, sectionPage } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, settled, siteBuiltBeforeTests } from "./site-session.ts";
 import { firstMap, footerToggle, openHome, placeholder } from "./visitor.ts";
@@ -23,7 +22,7 @@ describe("the site's consent to its maps", () => {
     await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
     expect(mapProviders()).toEqual([]);
-    expect(offsite().filter((url) => !mayAskBeforeConsent(url))).toEqual([]);
+    expect(offsite()).toEqual([]);
     expect(fetched("/points-4k.json")).toBe(false);
     await expect.poll(() => placeholder(page).isVisible()).toBe(true);
     await placeholder(page).click();
@@ -51,7 +50,7 @@ describe("the site's consent to its maps", () => {
     }
     await page.waitForTimeout(SETTLE_MS);
     expect(mapProviders()).toEqual([]);
-    expect(offsite().filter((url) => !mayAskBeforeConsent(url))).toEqual([]);
+    expect(offsite()).toEqual([]);
     await context.close();
   }, 60_000);
 
