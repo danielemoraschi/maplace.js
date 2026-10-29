@@ -80,11 +80,11 @@ describeWithMaps("Google drags the browser ends", () => {
   it("cuts short a polygon handle's drag when the window loses focus: nothing reported, the polygon as the store has it, editable again once let go", async () => {
     const p = polygonDrawable("p", { editable: true });
     const mounted = await mountedAround(7, p);
-    const { state, host, map } = mounted;
+    const { state, host } = mounted;
     const stored = await controlDrag(mounted, p);
     const reported = dragReportsOf(host, "p").length;
 
-    const drag = await holdHandleDrag(map, CUT_CORNER);
+    const drag = await holdHandleDrag(mounted, "p", CUT_CORNER);
     blurWindow();
     await drag.moveOn();
     await drag.release();

@@ -13,7 +13,6 @@ import {
   controlDrag,
   dragReportsOf,
   expectMarkerAt,
-  HANDLES_DRAWN_MS,
   holdHandleDrag,
   holdMarkerDrag,
   mountedAround,
@@ -56,11 +55,11 @@ describeWithMaps("Google drags the page ends", () => {
   it("cuts short a polygon handle's drag when the page turns its `editable` off or removes it: nothing reported, the polygon as the store has it", async () => {
     const p = polygonDrawable("p", { editable: true });
     const mounted = await mountedAround(7, p);
-    const { adapter, state, host, map } = mounted;
+    const { adapter, state, host } = mounted;
     const stored = await controlDrag(mounted, p);
     const reported = dragReportsOf(host, "p").length;
 
-    const cutByEditable = await holdHandleDrag(map, CUT_CORNER);
+    const cutByEditable = await holdHandleDrag(mounted, "p", CUT_CORNER);
     await adapter.apply(updating({ ...stored, editable: false }));
     await cutByEditable.moveOn();
     await cutByEditable.release();
@@ -69,8 +68,7 @@ describeWithMaps("Google drags the page ends", () => {
     expect(shapeTarget(polygonOn(state, "p")).read().geometry).toEqual(stored.geometry);
 
     await adapter.apply(updating(stored));
-    await wait(HANDLES_DRAWN_MS);
-    const cutByRemoval = await holdHandleDrag(map, CUT_CORNER);
+    const cutByRemoval = await holdHandleDrag(mounted, "p", CUT_CORNER);
     await adapter.apply(removing("p"));
     await cutByRemoval.moveOn();
     await cutByRemoval.release();

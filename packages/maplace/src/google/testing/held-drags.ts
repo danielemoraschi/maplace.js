@@ -6,13 +6,14 @@ import { adding, ORIGIN, reshaped, updating } from "../../testing/conformance/fi
 import type { RecordingHost } from "../../testing/conformance/recording-host";
 import type { ViewportPoint } from "../../testing/mouse-commands";
 import type { GoogleMapState } from "../map-state";
-import type { PlacedShape } from "../placed-location";
+import type { GoogleShape, PlacedShape } from "../placed-location";
 import { cameraAt } from "./camera-at";
 import { holdMouseAt } from "./held-mouse";
 import { inputOn } from "./map-input";
 import { drawnMarker, QUIET_MS, wait } from "./map-waits";
 import { steadyPoint } from "./page-input";
 import { probedPoint } from "./probe-target";
+import { pointerTakenByHandle } from "./shape-pointer";
 import { mountedGoogle, TEST_OPTIONS } from "./subject";
 
 /** A drag a test holds under way: moved on further, then let go. */
@@ -32,9 +33,6 @@ const CONTROL_CORNER: LatLng = { lat: 1, lng: -1 };
 
 /** The polygon fixture's corner a cut drag starts on. */
 export const CUT_CORNER: LatLng = { lat: 1, lng: 1 };
-
-/** How long Google takes to draw a shape's handles once its editing comes back. */
-export const HANDLES_DRAWN_MS = 500;
 
 /** Google drawing `drawables` around the origin at `zoom`, with the map they're on. */
 export async function mountedAround(zoom: number, ...drawables: Drawable[]) {
@@ -76,11 +74,17 @@ export async function holdMarkerDrag(
 }
 
 /**
- * A held drag of the shape's handle at `from`, checked to have caught it: the map hasn't panned.
- * Google reports nothing of it until let go, so a test also begins with a drag it lets go.
+ * A held drag of the handle at `from` of the polygon placed for `id`, pressed once Google takes
+ * the pointer there for it, and checked to have caught it: the map hasn't panned. Google reports
+ * nothing of it until let go, so a test also begins with a drag it lets go.
  */
-export async function holdHandleDrag(map: google.maps.Map, from: LatLng): Promise<HeldDrag> {
+export async function holdHandleDrag(
+  { map, state }: { readonly map: google.maps.Map; readonly state: GoogleMapState },
+  id: string,
+  from: LatLng,
+): Promise<HeldDrag> {
   const input = await inputOn(map);
+  await pointerTakenByHandle(input, polygonOn(state, id), from);
   const centre = map.getCenter()?.toJSON();
   const held = await input.hold(from);
   const leg = (legs: number) => ({
@@ -98,10 +102,11 @@ export async function holdHandleDrag(map: google.maps.Map, from: LatLng): Promis
  * distances and timing reach a handle on this map. Returns the polygon as the store has it then.
  */
 export async function controlDrag(
-  { map, host, adapter }: Awaited<ReturnType<typeof mountedAround>>,
+  mounted: Awaited<ReturnType<typeof mountedAround>>,
   polygon: Drawable,
 ): Promise<Drawable> {
-  const drag = await holdHandleDrag(map, CONTROL_CORNER);
+  const { host, adapter } = mounted;
+  const drag = await holdHandleDrag(mounted, polygon.id, CONTROL_CORNER);
   await drag.moveOn();
   await drag.release();
   await expect.poll(() => changesOf(host, polygon.id).length).toBe(1);
@@ -113,9 +118,14 @@ export async function controlDrag(
   return stored;
 }
 
+/** The shape placed for `id`. */
+export function placedShapeOn(state: GoogleMapState, id: string): GoogleShape {
+  return (state.placed.get(id) as PlacedShape).shape;
+}
+
 /** The polygon placed for `id`. */
 export function polygonOn(state: GoogleMapState, id: string): google.maps.Polygon {
-  return (state.placed.get(id) as PlacedShape).shape as google.maps.Polygon;
+  return placedShapeOn(state, id) as google.maps.Polygon;
 }
 
 /** Checks that Google draws the marker for `id` at `at`, and returns it. */

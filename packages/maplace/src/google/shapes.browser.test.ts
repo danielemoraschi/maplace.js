@@ -14,8 +14,10 @@ import {
 import { unmountAll } from "../testing/conformance/harness";
 import type { RecordingHost } from "../testing/conformance/recording-host";
 import { cameraAt } from "./testing/camera-at";
+import { placedShapeOn, polygonOn } from "./testing/held-drags";
 import { inputOn } from "./testing/map-input";
 import { clickHoldPassed } from "./testing/map-waits";
+import { pointerTakenByHandle, pointerTakenByShape } from "./testing/shape-pointer";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -48,7 +50,8 @@ describeWithMaps("Google shapes under real input", () => {
   afterEach(unmountAll);
 
   it("reports a click on a shape once, as the shape's and not the map's", async () => {
-    const { input, host } = await drawnOnMap(polygonDrawable("p"));
+    const { input, host, state } = await drawnOnMap(polygonDrawable("p"));
+    await pointerTakenByShape(input, placedShapeOn(state, "p"), IN_RING);
     await input.click(IN_RING);
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
     await clickHoldPassed();
@@ -86,8 +89,9 @@ describeWithMaps("Google shapes under real input", () => {
     const small = circleDrawable("q", {
       geometry: { type: "circle", center: IN_RING, radius: 10_000 },
     });
-    const { adapter, input, host } = await drawnOnMap(small, polygonDrawable("p"));
+    const { adapter, input, host, state } = await drawnOnMap(small, polygonDrawable("p"));
     adapter.present(presented({ selectedId: "p" }));
+    await pointerTakenByShape(input, placedShapeOn(state, "q"), IN_RING);
     await input.click(IN_RING);
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["q"]]);
     await clickHoldPassed();
@@ -114,12 +118,16 @@ describeWithMaps("Google shapes under real input", () => {
 
   it("reports a moved and an added polygon corner, the second after the store wrote back the first (0.2 #64, #164)", async () => {
     const polygon = polygonDrawable("p", { editable: true });
-    const { adapter, input, host } = await drawnOnMap(polygon);
-    await input.drag({ from: { lat: 1, lng: 1 }, to: { lat: 1.3, lng: 1.2 } });
+    const { adapter, input, host, state } = await drawnOnMap(polygon);
+    const corner = { lat: 1, lng: 1 };
+    await pointerTakenByHandle(input, polygonOn(state, "p"), corner);
+    await input.drag({ from: corner, to: { lat: 1.3, lng: 1.2 } });
     const [, moved] = await changeReported(host, 1);
     await adapter.apply(updating(reshaped(polygon, structuredClone(moved))));
     // The midpoint of the side from (-1, -1) to (-1, 1).
-    await input.drag({ from: { lat: -1, lng: 0 }, to: { lat: -1.3, lng: 0 } });
+    const midpoint = { lat: -1, lng: 0 };
+    await pointerTakenByHandle(input, polygonOn(state, "p"), midpoint);
+    await input.drag({ from: midpoint, to: { lat: -1.3, lng: 0 } });
     expect(await changeReported(host, 2)).toMatchObject([
       "p",
       { type: "polygon", path: { length: 5 } },
@@ -128,8 +136,10 @@ describeWithMaps("Google shapes under real input", () => {
   });
 
   it("reports a moved polyline point (0.2 #178)", async () => {
-    const { input, host } = await drawnOnMap(polylineDrawable("l", { editable: true }));
-    await input.drag({ from: { lat: 1, lng: 1 }, to: { lat: 1.2, lng: 0.8 } });
+    const { input, host, state } = await drawnOnMap(polylineDrawable("l", { editable: true }));
+    const point = { lat: 1, lng: 1 };
+    await pointerTakenByHandle(input, placedShapeOn(state, "l") as google.maps.Polyline, point);
+    await input.drag({ from: point, to: { lat: 1.2, lng: 0.8 } });
     expect(await changeReported(host, 1)).toMatchObject(["l", { type: "polyline" }]);
   });
 });
