@@ -11,15 +11,12 @@ import {
   untilNextHeading,
 } from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
-import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
-import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
 import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
-import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
-import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION, THIRD_PARTIES } from "../src/site/third-parties.ts";
-import { textGluedToInline } from "./glued-text.ts";
+import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
+import { gluedText } from "./glued-text.ts";
 import { sectionPage } from "./home-sections.ts";
 import { SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
 import { grantConsent, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
@@ -170,48 +167,11 @@ describe("the footer", () => {
   }, 30_000);
 });
 
-describe("the privacy page", () => {
-  it("has a section for every third party the site's pages contact", async () => {
-    const { page, context } = await openPage(PRIVACY_PAGE.route);
-    for (const { id, name, terms } of THIRD_PARTIES) {
-      expect(await page.locator(`h2#${id}`).allTextContents()).toEqual([name]);
-      for (const { url } of terms) {
-        expect(await page.locator(`a[href="${url}"]`).count(), url).toBe(1);
-      }
-    }
-    await context.close();
-  }, 30_000);
-
-  it("says what the site keeps in the browser, and how to reach who runs it", async () => {
-    const { page, context } = await openPage(PRIVACY_PAGE.route);
-    const text = await page.locator("main").textContent();
-    expect(text).toContain(CONSENT_KEY);
-    expect(text).toContain(CONSENT_GRANTED);
-    expect(text).toContain(PROVIDER_CHOICE_KEY);
-    expect(text).toContain(SITE_HOST.securityCookie);
-    const contact = page.locator(`a[href="mailto:${PRIVACY_CONTACT_EMAIL}"]`);
-    expect(await contact.allTextContents()).toEqual([PRIVACY_CONTACT_EMAIL]);
-    await context.close();
-  }, 30_000);
-
-  it("explains the one consent the maps wait for: its button, and a link to each provider's section", async () => {
-    const { page, context } = await openPage(PRIVACY_PAGE.route);
-    const section = page.locator(`section[aria-labelledby="${MAP_PROVIDERS_SECTION}"]`);
-    const copy = await section.textContent();
-    expect(copy).toContain("“Load maps”");
-    expect(copy).toMatch(/two services: Google Maps/);
-    for (const { id, name } of MAP_PROVIDERS) {
-      expect(await section.locator(`a[href="#${id}"]`).allTextContents()).toEqual([name]);
-    }
-    await context.close();
-  }, 30_000);
-});
-
 describe("the site's copy", () => {
   it("keeps a space between text and the link or code after it, on every page", async () => {
     for (const route of [...EXAMPLE_PAGES, ...PAGES_WITHOUT_MAPS]) {
       const { page, context } = await openPage(route);
-      expect({ route, glued: await textGluedToInline(page) }).toEqual({ route, glued: [] });
+      expect({ route, glued: await gluedText(page) }).toEqual({ route, glued: [] });
       await context.close();
     }
   }, 60_000);

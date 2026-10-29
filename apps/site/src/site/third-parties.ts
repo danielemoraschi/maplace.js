@@ -61,10 +61,11 @@ export const GITHUB: ThirdParty = {
 export const MAP_PROVIDERS: readonly ThirdParty[] = [GOOGLE_MAPS, OPENFREEMAP];
 
 /**
- * Every third party the site's pages contact: the privacy page has a section for each, and after
- * consent every request must go to one of these (W10c's allowlist after consent):
- * test/site-pages.test.ts fails when a built page asks a host none of these names (the pages' own
- * requests: that test refuses them, so what Maps JS would fetch next is checked live).
+ * Every third party the site's pages contact: the privacy page has a section for each
+ * (test/privacy-page.test.ts), and after consent every request must go to one of these (W10c's
+ * allowlist after consent): test/group-pages.test.ts fails when a built page asks a host none of
+ * these names (the pages' own requests: that test refuses them, so what Maps JS would fetch next
+ * is checked live).
  */
 export const THIRD_PARTIES: readonly ThirdParty[] = [...MAP_PROVIDERS, GITHUB];
 

@@ -3,6 +3,7 @@ import ProsePage from "../components/ProsePage.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { PROVIDER_CHOICE_KEY } from "../scripts/provider-choice.ts";
 import { PRIVACY_PAGE } from "../site/footer-pages.ts";
+import { PRIVACY_CHANGED_ON } from "../site/privacy-changed-on.ts";
 import {
   contactAddress,
   PRIVACY_CONTACT_EMAIL,
@@ -16,9 +17,11 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
 
 <ProsePage
   title={PRIVACY_PAGE.label}
-  description="What maplacejs's site sends where, and what it keeps in your browser."
+  description="What maplacejs's site sends where, what it keeps in your browser, and your rights."
 >
-  <Fragment slot="lede">What this site sends where, and what it keeps in your browser.</Fragment>
+  <Fragment slot="lede">
+    What this site sends where, what it keeps in your browser, and your rights.
+  </Fragment>
 
   <section aria-labelledby="in-your-browser">
     <h2 id="in-your-browser">In your browser</h2>
@@ -48,8 +51,10 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       until you turn the maps off. Pages without a map load neither.
     </p>
     <p>
-      The maps switch in the footer of every page turns them off: it forgets your choice and
-      reloads the page, since a loaded map can't be removed from an open page.
+      Loading the maps rests on your consent (Article 6(1)(a) of the GDPR). You can withdraw it at
+      any time with the maps switch in the footer of every page: it forgets your choice and reloads
+      the page, since a loaded map can't be removed from an open page. Withdrawing doesn't affect
+      what the maps loaded before.
     </p>
   </section>
 
@@ -64,8 +69,8 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       your location.
     </p>
     <p>
-      Google may use its own cookies under its terms, and its Privacy Policy says what it does
-      with what it receives:
+      Google is a US company, certified under the EU-U.S. Data Privacy Framework. It may use its
+      own cookies under its terms, and its Privacy Policy says what it does with what it receives:
     </p>
     <ul>
       {GOOGLE_MAPS.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
@@ -91,10 +96,13 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby={GITHUB.id}>
     <h2 id={GITHUB.id}>{GITHUB.name}</h2>
     <p>
-      The star button on the home and example pages shows how many people starred maplacejs on GitHub. To show it,
-      your browser asks GitHub's API for the repository's count when the page opens, without
-      cookies; with that request GitHub receives your IP address, your browser's user agent and
-      this site's address. Its Privacy Statement says what it does with what it receives:
+      The star button on the home and example pages shows how many people starred maplacejs on
+      GitHub. To show it, your browser asks GitHub's API for the repository's count when the page
+      opens, without cookies; with that request GitHub receives your IP address, your browser's
+      user agent and this site's address. The site asks for the count on the basis of its
+      legitimate interest in showing the project's star count (Article 6(1)(f) of the GDPR).
+      GitHub is a US company, certified under the EU-U.S. Data Privacy Framework. Its Privacy
+      Statement says what it does with what it receives:
     </p>
     <ul>
       {GITHUB.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
@@ -105,8 +113,14 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     <h2 id="host">Who serves this site</h2>
     <p>
       {SITE_HOST.name} serves this site's pages. As with any website, it receives each request
-      your browser makes here: your IP address, your browser's user agent and the page asked for.
-      To tell people from automated traffic, it may set a short-lived security cookie,{" "}
+      your browser makes here: your IP address, your browser's user agent and the page asked for.{" "}
+      {SITE_HOST.name} also keeps statistics of those requests for the site, so its maintainer can
+      see which pages are read. Both rest on legitimate interest (Article 6(1)(f) of the GDPR): in
+      delivering the site and keeping it safe from abuse, and in knowing which pages are read.{" "}
+      {SITE_HOST.name} keeps the requests for as long as its privacy policy sets, and the
+      statistics for the period its analytics keep them on the site's plan, at least 31 days.{" "}
+      {SITE_HOST.name} is a US company, certified under the EU-U.S. Data Privacy Framework. To tell
+      people from automated traffic, it may set a short-lived security cookie,{" "}
       <code>{SITE_HOST.securityCookie}</code>, which {SITE_HOST.name} keeps, not this site. Its{" "}
       <a href={SITE_HOST.privacyPolicy}>privacy policy</a> says what it does with what it receives.
     </p>
@@ -115,8 +129,39 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
   <section aria-labelledby="contact">
     <h2 id="contact">Who runs it</h2>
     <p>
-      maplacejs and this site are maintained by {SITE_MAINTAINER}. Questions about this page go to{" "}
-      <a href={`mailto:${contact}`}>{contact}</a>.
+      maplacejs and this site are maintained by {SITE_MAINTAINER}, who is responsible for what
+      this page describes (its controller). Questions about this page, or about your data, go to{" "}
+      <a href={`mailto:${contact}`}>{contact}</a>. If you write, your message is kept as long as
+      answering it needs, on the basis of legitimate interest in answering (Article 6(1)(f) of the
+      GDPR).
     </p>
+  </section>
+
+  <section aria-labelledby="your-rights">
+    <h2 id="your-rights">Your rights</h2>
+    <p>
+      The site keeps no personal data of its own. The only personal data handled for it are what{" "}
+      {SITE_HOST.name} receives with each request (your IP address, your browser's user agent and
+      the page asked for) and any email you send. For those, you can ask for access, correction or
+      deletion, for their use to be restricted, or for a copy, and you can object to what rests on
+      legitimate interest: write to the address above. What {GOOGLE_MAPS.name},{" "}
+      {OPENFREEMAP.name} and {GITHUB.name} do with what they receive is under their own policies,
+      linked above. For what this site has your browser send them, you can also exercise your
+      rights with the site.
+    </p>
+    <p>
+      No law or contract requires you to give anything. What {SITE_HOST.name} receives with each
+      request is needed for any page to load; without your consent the maps don't load, and nothing else
+      changes.
+    </p>
+    <p>
+      You can also complain to a data protection authority: in the EU, the one where you live or
+      work; in the UK, the Information Commissioner's Office.
+    </p>
+  </section>
+
+  <section aria-labelledby="changes">
+    <h2 id="changes">Changes</h2>
+    <p>Last changed: <time datetime={PRIVACY_CHANGED_ON}>{PRIVACY_CHANGED_ON}</time>.</p>
   </section>
 </ProsePage>

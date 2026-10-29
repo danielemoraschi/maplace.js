@@ -22,9 +22,11 @@ jobs:
     # Room for a run whose Chromium packages come from a slow mirror, the cache cold (T23).
     timeout-minutes: 20
     steps:
+      # Full history: SonarQube reads blame to find new code, and privacy-changed-on.test.ts the
+      # privacy page's last change.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0 # full history: SonarQube reads blame to find new code
+          fetch-depth: 0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
