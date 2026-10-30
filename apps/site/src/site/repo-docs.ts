@@ -35,7 +35,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/setup.md",
     title: "Setup",
     description:
-      "What a map needs: on Google a key, Maps JS and, for production, a map ID; on MapLibre maplibre-gl and a style, OpenFreeMap's by default, with no key. With the element, a script of your own, or npm.",
+      "What a map needs: on Google a key, Maps JS and, for production, a map ID; on MapLibre maplibre-gl and a style. With the element, a script of your own, or npm.",
     label: "Setup",
   },
   {
@@ -50,14 +50,16 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     id: "locations",
     file: "docs/reference/locations.md",
     title: "Locations",
-    description: "Every location field, by type: markers, circles, polylines and polygons.",
+    description:
+      "Every location field, by type: markers, circles, polylines and polygons, with what each one draws and takes.",
     label: "Locations",
   },
   {
     id: "store",
     file: "docs/reference/store.md",
     title: "Store and list view",
-    description: "The headless store's options, methods, state and events, and its list view.",
+    description:
+      "The headless store: its options, methods, state and events, the first view of a map, and its list view.",
     label: "Store",
   },
   {
@@ -80,7 +82,8 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     id: "react",
     file: "docs/reference/react.md",
     title: "React",
-    description: "The React binding: provider, map, list, map controls and the store hook.",
+    description:
+      "The React binding of maplacejs: provider, map, list, map controls and the hook that reads the store.",
     label: "React",
   },
   {
@@ -95,7 +98,8 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     id: "api",
     file: "docs/reference/api.md",
     title: "API reference",
-    description: "Every export of every entry, the error codes and the capabilities.",
+    description:
+      "Every export of every entry of the maplace package, with its error codes and the capabilities of each map provider.",
     label: "API",
   },
   {

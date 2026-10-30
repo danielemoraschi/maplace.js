@@ -15,14 +15,15 @@ export const PRIVACY_PAGE: SitePage = {
 export const CHANGELOG_PAGE: SitePage = {
   route: "/changelog/",
   label: "Changelog",
-  description: "Every change to maplacejs a reader would notice, newest first.",
+  description:
+    "Every change to maplacejs a reader would notice, newest first, with the issue it closed if any.",
 };
 
 export const AGENTS_PAGE: SitePage = {
   route: "/agents/",
   label: "AI agents",
   description:
-    "How AI agents can read maplacejs's site: its docs and examples in Markdown, llms.txt, and what robots.txt allows.",
+    "How AI agents can read maplacejs's site: its docs and examples in Markdown, llms.txt, its agent skill, and what robots.txt allows.",
 };
 
 /** The footer's links, in order. */

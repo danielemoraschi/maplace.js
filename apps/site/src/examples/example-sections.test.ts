@@ -78,10 +78,10 @@ describe("EXAMPLE_GROUPS", () => {
     ]);
   });
 
-  it("describes the first group's page as the home page, the others by their summary", () => {
-    const [home, ...others] = EXAMPLE_GROUPS.map(groupDescription);
-    expect(home).toMatch(/^A list of locations becomes a map/);
-    expect(others).toEqual(EXAMPLE_GROUPS.slice(1).map(({ summary }) => summary));
+  it("describes each group's page by its own description, not the summary it shows", () => {
+    const descriptions = EXAMPLE_GROUPS.map(groupDescription);
+    expect(descriptions).toEqual(EXAMPLE_GROUPS.map(({ description }) => description));
+    expect(descriptions[0]).toMatch(/^A list of locations becomes a map/);
   });
 
   it("titles the first group's page as the home page, the others by their label", () => {
