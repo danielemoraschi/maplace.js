@@ -142,7 +142,7 @@ describe("what the skill teaches", () => {
     for (const { id } of REPO_DOCS) expect(skill).toContain(`](${SITE}${docRoute(id)})`);
   });
 
-  it("tells 0.2's API from 1.0's", () => {
+  it("tells 0.2's API from today's", () => {
     expect(skill).toContain("new Maplace(options).Load()");
     expect(skill).toContain(`${SITE}/migrating/`);
   });

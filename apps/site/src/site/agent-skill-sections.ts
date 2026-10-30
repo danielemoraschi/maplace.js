@@ -27,7 +27,7 @@ function intro({ site }: AgentSkillSettings): string {
 
 maplacejs turns a list of locations into a map with a synced list, on Google Maps or on MapLibre. It keeps what is selected and hovered in one store that the map, the list and your code all read.
 
-This is 1.0, a rewrite. There is no jQuery and no \`new Maplace(options).Load()\`: that is 0.2, so never write it. To move a 0.2 page, read [Migrating](${pageUrl(docRoute("migrating"), site)}).
+This is a rewrite. There is no jQuery and no \`new Maplace(options).Load()\`: that is 0.2, so never write it. To move a 0.2 page, read [Migrating](${pageUrl(docRoute("migrating"), site)}).
 
 The docs:
 

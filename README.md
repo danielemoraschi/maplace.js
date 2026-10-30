@@ -2,7 +2,7 @@
 
 A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it and opens it.
 
-maplacejs 1.0 is a rewrite: no jQuery, no global state, a small headless store with adapters for Google Maps and MapLibre, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
+maplacejs is a rewrite: no jQuery, no global state, a small headless store with adapters for Google Maps and MapLibre, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
 
 ## Quick start
 
