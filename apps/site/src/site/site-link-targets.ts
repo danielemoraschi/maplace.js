@@ -8,7 +8,7 @@ export interface DocPage {
 
 // The target of a link to the site itself: rooted, `](/locations/#markers)`, or to a heading of
 // the page, `](#markers)`; a title after it, `](#markers "Markers")`, is no part of it.
-const SITE_LINK = /\]\(([/#][^)\s]*)(?:\s+"[^"]*")?\)/g;
+export const SITE_LINK = /\]\(([/#][^)\s]*)(?:\s+"[^"]*")?\)/g;
 // What github-slugger, which Astro uses for heading ids, drops: all but letters, digits, spaces, - and _.
 const NOT_IN_SLUG = /[^\p{L}\p{N} _-]/gu;
 // An ATX heading's opening: up to three spaces, one to six `#`, then a space or the line's end.
