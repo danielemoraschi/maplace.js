@@ -52,7 +52,7 @@ export function markdownTwins({ docs, changelog, guides }: StoredPages): Markdow
         markdownPage(
           doc.title,
           doc.description,
-          requiredBody(docs, doc.id, "docs").replace(SNIPPET_MARKER, ""),
+          requiredBody(docs, doc.id, "docs").replaceAll(SNIPPET_MARKER, ""),
         ),
       ),
     ),
