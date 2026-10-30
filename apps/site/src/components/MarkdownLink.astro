@@ -1,0 +1,11 @@
+---
+import { markdownAddress } from "../site/markdown-routes.ts";
+
+interface Props {
+  route: string;
+}
+
+const { route } = Astro.props;
+---
+
+<a href={markdownAddress(route)} type="text/markdown" aria-label="This page in Markdown">Markdown</a>

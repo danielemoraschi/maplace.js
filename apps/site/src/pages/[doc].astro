@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from "astro:content";
+import MarkdownLink from "../components/MarkdownLink.astro";
 import Base from "../layouts/Base.astro";
+import { docRoute } from "../site/repo-docs.ts";
 
 // A page per repo document the site renders (src/site/repo-docs.ts).
 export async function getStaticPaths() {
@@ -29,7 +31,8 @@ const sections = headings.filter(({ depth }) => depth === 2);
       </ol>
     </nav>
     <article class="doc-content max-w-text">
-      <h1 class="mt-0 mb-6 text-title">{doc.data.title}</h1>
+      <h1 class="mt-0 mb-2 text-title">{doc.data.title}</h1>
+      <p class="mt-0 mb-6 text-sm"><MarkdownLink route={docRoute(doc.id)} /></p>
       <Content />
     </article>
   </div>

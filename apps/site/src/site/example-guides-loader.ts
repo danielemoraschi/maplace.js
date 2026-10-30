@@ -23,8 +23,9 @@ export function exampleGuidesLoader(): Loader {
       const blobBase = siteBlobBase();
       store.clear();
       for (const { name, file, markdown } of exampleGuides()) {
-        const rendered = await renderMarkdown(siteMarkdownOf(markdown, file, blobBase));
-        store.set({ id: name, data: {}, rendered });
+        const body = siteMarkdownOf(markdown, file, blobBase);
+        const rendered = await renderMarkdown(body);
+        store.set({ id: name, data: {}, body, rendered });
       }
     },
   };

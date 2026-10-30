@@ -9,6 +9,8 @@ import faviconUrl from "../assets/favicon.svg?no-inline";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
+import { LLMS_TXT_ROUTE } from "../site/agent-links.ts";
+import { markdownAddressAt } from "../site/markdown-routes.ts";
 
 interface Props {
   title: string;
@@ -16,6 +18,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -25,6 +28,8 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {ownMarkdown && <link rel="alternate" type="text/markdown" href={ownMarkdown} />}
+    <link rel="describedby" href={LLMS_TXT_ROUTE} />
     <link rel="icon" href={faviconUrl} type="image/svg+xml" />
     {/* Before the first paint, so a returning visitor's placeholders never show. */}
     <script is:inline define:vars={{ key: CONSENT_KEY, granted: CONSENT_GRANTED }}>

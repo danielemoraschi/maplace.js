@@ -1,0 +1,41 @@
+---
+import ProsePage from "../components/ProsePage.astro";
+import { AGENT_LINKS } from "../site/agent-links.ts";
+import { AGENTS_PAGE } from "../site/footer-pages.ts";
+---
+
+<ProsePage title={AGENTS_PAGE.label} description={AGENTS_PAGE.description}>
+  <Fragment slot="lede">What this site offers an AI agent reading it.</Fragment>
+
+  <section aria-labelledby="start-here">
+    <h2 id="start-here">Start here</h2>
+    <ul>
+      {
+        AGENT_LINKS.map(({ href, label, what }) => (
+          <li>
+            <a href={href}>{label}</a>:{" "}{what}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section aria-labelledby="in-markdown">
+    <h2 id="in-markdown">In Markdown</h2>
+    <p>
+      Every reference page, the migration guide, the changelog and each group of examples, with its
+      guides and code, is also at its address plus <code>index.md</code>, as{" "}
+      <a href="/setup/index.md">/setup/index.md</a>; written from the repo's Markdown, not converted
+      from the page. Each page names its own in a <code>&lt;link rel="alternate"&gt;</code> in its
+      head, a <code>Link</code> header and a visible link.
+    </p>
+  </section>
+
+  <section aria-labelledby="what-ai-may-do">
+    <h2 id="what-ai-may-do">What AI may do</h2>
+    <p>
+      <a href="/robots.txt"><code>robots.txt</code></a> says search, AI input and AI training are all
+      welcome: the library gains from models knowing 1.0's API.
+    </p>
+  </section>
+</ProsePage>

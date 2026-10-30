@@ -12,7 +12,12 @@ import {
 } from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
-import { CHANGELOG_PAGE, FOOTER_PAGES, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
+import {
+  AGENTS_PAGE,
+  CHANGELOG_PAGE,
+  FOOTER_PAGES,
+  PRIVACY_PAGE,
+} from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
@@ -30,6 +35,7 @@ const NOT_FOUND_PAGE = "/404.html";
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
   PRIVACY_PAGE.route,
+  AGENTS_PAGE.route,
   NOT_FOUND_PAGE,
   CHANGELOG_PAGE.route,
   ...REPO_DOCS.map(({ id }) => docRoute(id)),
@@ -143,7 +149,7 @@ describe("the footer", () => {
     await context.close();
   }, 30_000);
 
-  it("links Privacy and Changelog from every page, marking the one shown", async () => {
+  it("links the footer's pages from every page, marking the one shown", async () => {
     for (const route of SITE_ROUTES) {
       const { page, context } = await openPage(route);
       const expected = FOOTER_PAGES.map(({ route: href, label }) => ({

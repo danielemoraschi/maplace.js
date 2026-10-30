@@ -1,3 +1,39 @@
 # Cloudflare Workers static assets: what Astro writes under /_astro/ is named by its content.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Each page with Markdown behind it names it, for agents that read headers (W41).
+/
+  Link: </index.md>; rel="alternate"; type="text/markdown"
+/examples/lists/
+  Link: </examples/lists/index.md>; rel="alternate"; type="text/markdown"
+/examples/shapes/
+  Link: </examples/shapes/index.md>; rel="alternate"; type="text/markdown"
+/examples/data-routes/
+  Link: </examples/data-routes/index.md>; rel="alternate"; type="text/markdown"
+/examples/styling/
+  Link: </examples/styling/index.md>; rel="alternate"; type="text/markdown"
+/changelog/
+  Link: </changelog/index.md>; rel="alternate"; type="text/markdown"
+/getting-started/
+  Link: </getting-started/index.md>; rel="alternate"; type="text/markdown"
+/setup/
+  Link: </setup/index.md>; rel="alternate"; type="text/markdown"
+/element/
+  Link: </element/index.md>; rel="alternate"; type="text/markdown"
+/locations/
+  Link: </locations/index.md>; rel="alternate"; type="text/markdown"
+/store/
+  Link: </store/index.md>; rel="alternate"; type="text/markdown"
+/google/
+  Link: </google/index.md>; rel="alternate"; type="text/markdown"
+/maplibre/
+  Link: </maplibre/index.md>; rel="alternate"; type="text/markdown"
+/react/
+  Link: </react/index.md>; rel="alternate"; type="text/markdown"
+/styling/
+  Link: </styling/index.md>; rel="alternate"; type="text/markdown"
+/api/
+  Link: </api/index.md>; rel="alternate"; type="text/markdown"
+/migrating/
+  Link: </migrating/index.md>; rel="alternate"; type="text/markdown"
