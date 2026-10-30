@@ -3,9 +3,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { captures } from "../../../scripts/docs/markdown.ts";
+import { LLMS_TXT_ROUTE } from "../src/site/agent-links.ts";
 import { AGENT_SKILL_PATH, AGENT_SKILLS_INDEX_PATH } from "../src/site/agent-skill-paths.ts";
+import { AGENTS_PAGE } from "../src/site/footer-pages.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
-import { siteBuiltBeforeTests } from "./site-session.ts";
+import { opened, siteBuiltBeforeTests } from "./site-session.ts";
+import { DESKTOP } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -73,5 +76,19 @@ describe("the served skill", () => {
       const page = await served(pathname);
       if (hash !== "") expect(await page.text(), target).toContain(`id="${hash.slice(1)}"`);
     }
+  }, 30_000);
+
+  it("is linked from the AI agents page with real links", async () => {
+    const { page, context } = await opened(site, AGENTS_PAGE.route, DESKTOP);
+    for (const path of [AGENT_SKILL_PATH, AGENT_SKILLS_INDEX_PATH]) {
+      expect(await page.locator(`main a[href="${path}"]`).count(), path).toBe(1);
+    }
+    await context.close();
+  }, 30_000);
+
+  it("is named by llms.txt", async () => {
+    const llms = await (await served(LLMS_TXT_ROUTE)).text();
+    expect(llms).toContain(`${AGENT_SKILL_PATH})`);
+    expect(llms).toContain(`${AGENT_SKILLS_INDEX_PATH})`);
   }, 30_000);
 });
