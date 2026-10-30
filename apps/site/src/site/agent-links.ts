@@ -15,7 +15,7 @@ export const AGENT_LINKS: readonly AgentLink[] = [
   {
     href: LLMS_TXT_ROUTE,
     label: "llms.txt",
-    what: "The site in a paragraph, then every page's address, in Markdown where it has it, with a line on what it holds.",
+    what: "The site in a paragraph, then every page's address, in Markdown where it has it, with a line on what it holds, and the agent skill's addresses.",
   },
   {
     href: AGENT_SKILL_PATH,

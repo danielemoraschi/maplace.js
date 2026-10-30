@@ -21,6 +21,16 @@ describe("llmsTxt", () => {
     expect(TEXT.startsWith("# maplacejs\n\n> ")).toBe(true);
   });
 
+  it("says, in its paragraph, that the Agents section holds the skill", () => {
+    const paragraph = TEXT.split("\n")[2];
+    expect(paragraph).toContain("Agents");
+    expect(paragraph).toContain("agent skill");
+  });
+
+  it("says what the file holds, on the AI agents page, Agents section included", () => {
+    expect(OWN_LINK.what).toContain("agent skill");
+  });
+
   it("lists every route of the site and only those, by its Markdown where it has one", () => {
     expect(pageLinks(TEXT)).toEqual(
       SITE_ROUTES.map((route) => new URL(markdownAddressAt(route) ?? route, SITE).href),
