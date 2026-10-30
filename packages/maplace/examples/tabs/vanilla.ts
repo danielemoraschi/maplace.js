@@ -7,8 +7,8 @@ const notes: Readonly<Record<string, string>> = {
 const maplace = createGoogleMap("#tabs-vanilla-map", {
   selectedId: "rome",
   locations: [
-    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
-    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", zoom: 6 },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", zoom: 6 },
   ],
   list: { container: "#tabs-vanilla-list" },
 });

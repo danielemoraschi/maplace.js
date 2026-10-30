@@ -30,15 +30,24 @@ function expectDetailsBetweenTabsAndMap(root: Element, map: Element | undefined)
   expect(mapBox?.top).toBeGreaterThanOrEqual(details?.bottom ?? Number.POSITIVE_INFINITY);
 }
 
-/** Tabs that start on the first place, its details shown right below them, and follow the selection after. */
+/**
+ * Tabs that start on the first place, its details shown right below them, and follow the selection
+ * after, each place shown at its own zoom.
+ */
 export const tabs: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(store.getSnapshot().selectedId).toBe("rome");
+  expect(store.getSnapshot().locations.map(({ zoom }) => zoom)).toEqual([6, 6]);
   await expect.poll(() => chosenTab(root)?.textContent).toBe("Rome");
   await expect.poll(() => textIn(root, "aside")).toBe("Capital since 1871.");
   expectDrawnAsTabs(tabIn(root, "Rome"), tabIn(root, "Milan"));
   expectTabsFitTheirRow(root);
   expectDetailsBetweenTabsAndMap(root, adapter.mounted?.container);
   store.select("milan");
+  expect(adapter.callsOf("setView").at(-1)?.view).toEqual({
+    kind: "location",
+    id: "milan",
+    zoom: 6,
+  });
   await expect.poll(() => textIn(root, "aside")).toBe("Finance and fashion.");
   await expect.poll(() => chosenTab(root)?.textContent).toBe("Milan");
 };

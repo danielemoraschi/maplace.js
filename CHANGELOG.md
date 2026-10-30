@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-30 Changed the Tabs example: both places have `zoom: 6`, so changing tab swaps the map to the other place at once instead of reloading it at zoom 15
 - 2026-10-30 Changed the home page's GitHub button from "Star on GitHub" to "GitHub", so it reads as a plain link to the repository when its star count can't load
 - 2026-10-30 Changed the site's footer on phones: it sits at the end of the page instead of staying on the screen, and its maps switch shows only "Maps: off" or "Maps: on", still named for what it does.
 - 2026-10-30 Added the site's search metadata: structured data, a canonical address, Open Graph and Twitter tags with an image, /sitemap.xml with each page's last change, and each Markdown page's canonical in a `Link` header
