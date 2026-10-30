@@ -86,5 +86,5 @@ export function structuredData(page: DescribedPage, library: LibraryFacts) {
 
 /** `data` as the text of a `<script>`: with no `<`, nothing in it can close the script. */
 export function jsonLdText(data: object): string {
-  return JSON.stringify(data).replaceAll("<", "\\u003c");
+  return JSON.stringify(data).replaceAll("<", String.raw`\u003c`);
 }
