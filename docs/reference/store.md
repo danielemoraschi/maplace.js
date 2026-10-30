@@ -70,7 +70,7 @@ Once the map is open, selecting a marker pans to it at the map's zoom, and selec
 | `setLocations` | Replaces all locations; only the differences reach the map. Throws on invalid input |
 | `select` | `select(id, options?)` selects a location, or clears the selection with `undefined`; selecting a hidden one throws. `{ zoom }` shows it at that zoom, `{ pan: false }` leaves the map where it is (not both): [the first view](#the-first-view) |
 | `hover` | `hover(id)` marks the location under the pointer or keyboard focus, or none with `undefined`; an unknown or hidden id throws, as for `select` |
-| `setFilter` | `setFilter(groups)` shows only these groups, or every group with `undefined` |
+| `setFilter` | `setFilter(["North"])` shows only these groups; `setFilter({ groups, tags })` what is in any of the groups and has all of the tags, both when both are given; `undefined` shows everything. A location without a group, or without tags, hides while those are asked for. `{ tags: [] }` asks for nothing, so a page can pass its ticked boxes as they are; `[]` or `{ groups: [] }` hides everything. Hiding the selected location deselects it |
 | `fitAll` | `fitAll(options?)` fits all shown locations; `{ padding }` in pixels |
 | `fitBounds` | `fitBounds(bounds, options?)` shows a box; throws when south is above north or a coordinate is out of range |
 | `setView` | `setView(center, zoom)` centres the map at a zoom |
@@ -91,7 +91,7 @@ The snapshot is immutable and replaced on every change, while unchanged parts ke
 | `locations` | Every location, in data order |
 | `selectedId` | The selected location's id, or `undefined` |
 | `hoveredId` | The hovered location's id, or `undefined` |
-| `filter` | The groups shown, or `undefined` for every group |
+| `filter` | What `setFilter` asked for, always as `{ groups, tags }`, or `undefined` for everything |
 | `view` | The last view asked for |
 | `viewport` | What the map shows, as the provider reports it; `undefined` until the map is ready |
 | `route` | The route asked for, or `undefined` |

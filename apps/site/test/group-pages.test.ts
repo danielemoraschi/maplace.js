@@ -86,7 +86,7 @@ describe("the examples' pages, as built (W38)", () => {
     pages = await onEveryGroupPage(builtFacts);
   }, 60_000);
 
-  it("number the sections 01–15 across the pages, each its group's", () => {
+  it("number the sections 01–16 across the pages, each its group's", () => {
     let number = 0;
     const expected = EXAMPLE_GROUPS.map(({ sections }) =>
       sections.map(({ name, title }) => {

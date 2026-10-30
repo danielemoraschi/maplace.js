@@ -14,6 +14,15 @@ import { expectTypeOf } from "vitest";
 
 const shops = [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }];
 
+export const filters = (
+  <>
+    <MaplaceProvider locations={shops} filter={["North"]} />
+    <MaplaceProvider locations={shops} filter={{ groups: ["North"], tags: ["parking"] }} />
+    {/* @ts-expect-error a filter's fields are groups and tags */}
+    <MaplaceProvider locations={shops} filter={{ tag: ["parking"] }} />
+  </>
+);
+
 export const typed = (
   <MaplaceProvider
     locations={shops}

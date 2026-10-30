@@ -42,16 +42,16 @@ describe("isShown", () => {
 
   it("hides a location with visible: false, filter or not", () => {
     expect(isShown({ id: "a", ...at, visible: false }, undefined)).toBe(false);
-    expect(isShown({ id: "a", ...at, visible: false, group: "N" }, ["N"])).toBe(false);
+    expect(isShown({ id: "a", ...at, visible: false, group: "N" }, { groups: ["N"] })).toBe(false);
   });
 
   it("with a filter, shows only locations in its groups", () => {
-    expect(isShown({ id: "a", ...at, group: "N" }, ["N"])).toBe(true);
-    expect(isShown({ id: "a", ...at, group: "S" }, ["N"])).toBe(false);
+    expect(isShown({ id: "a", ...at, group: "N" }, { groups: ["N"] })).toBe(true);
+    expect(isShown({ id: "a", ...at, group: "S" }, { groups: ["N"] })).toBe(false);
   });
 
   it("with a filter, hides locations without a group", () => {
-    expect(isShown({ id: "a", ...at }, ["N"])).toBe(false);
+    expect(isShown({ id: "a", ...at }, { groups: ["N"] })).toBe(false);
   });
 });
 
@@ -66,6 +66,6 @@ describe("isListed", () => {
 
   it("never lists a location that isn't shown, whatever listed says", () => {
     expect(isListed({ id: "a", ...at, visible: false, listed: true }, undefined)).toBe(false);
-    expect(isListed({ id: "a", ...at, group: "S", listed: true }, ["N"])).toBe(false);
+    expect(isListed({ id: "a", ...at, group: "S", listed: true }, { groups: ["N"] })).toBe(false);
   });
 });

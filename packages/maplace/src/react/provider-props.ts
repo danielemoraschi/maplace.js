@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Listener, MaplaceEventName } from "../events";
 import type { Location } from "../location";
+import type { FilterRequest } from "../location-state";
 import type { MaplaceOptions } from "../options";
 import type { Snapshot } from "../store";
 
@@ -18,7 +19,10 @@ export type MaplaceEventProps<Data = unknown> = {
  * render passes it back. A `filter` or `route` prop is applied when its value changes, as
  * `locations` is.
  */
-export type MaplaceControlledProps = Partial<Pick<Snapshot, "selectedId" | "filter" | "route">>;
+export type MaplaceControlledProps = Partial<Pick<Snapshot, "selectedId" | "route">> & {
+  /** What `setFilter` takes: a list of groups, or `{ groups, tags }`. */
+  readonly filter?: FilterRequest;
+};
 
 /** The options read once, when the store is made: changing them later changes nothing. */
 export type MountOptions<Data = unknown> = Omit<MaplaceOptions<Data>, "locations" | "selectedId">;

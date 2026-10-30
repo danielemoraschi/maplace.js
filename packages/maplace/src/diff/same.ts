@@ -1,3 +1,4 @@
+import type { LocationFilter } from "../location-state";
 import { type Route, sameComputation } from "../route";
 
 /**
@@ -22,12 +23,14 @@ export function sameOptional<T>(
   return a === undefined || b === undefined ? a === b : same(a, b);
 }
 
-/** The same groups in the same order, or both no filter. */
-export function sameFilter(
-  a: readonly string[] | undefined,
-  b: readonly string[] | undefined,
-): boolean {
-  return sameOptional(a, b, sameItems);
+/** The same groups and tags in the same order, or both no filter. */
+export function sameFilter(a: LocationFilter | undefined, b: LocationFilter | undefined): boolean {
+  return sameOptional(
+    a,
+    b,
+    (x, y) =>
+      sameOptional(x.groups, y.groups, sameItems) && sameOptional(x.tags, y.tags, sameItems),
+  );
 }
 
 /** The same route: the same computation and the same style. */

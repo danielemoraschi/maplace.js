@@ -36,7 +36,7 @@ Makes one store on mount and keeps it as long as it is mounted. `locations` and 
 | `locations` | Required. Applied again when the array changes, never otherwise, so an edit on the map outlives a render |
 | `selectedId` | A [controlled selection](#controlled-selection) |
 | `defaultSelectedId` | The selection at start, when `selectedId` is not controlled |
-| `filter` | The groups shown; applied when its value changes |
+| `filter` | What [`setFilter`](store.md#methods) takes: a list of groups, or `{ groups, tags }`; applied when its value changes, so a fresh object of the same value costs nothing |
 | `route` | The [route](store.md#routes); applied when its value changes, so it is computed, and billed, once per change |
 | `sanitize`, `popup`, `style`, `selectedStyle`, `hoveredStyle`, `cluster`, `view` | The [store's options](store.md#options), read on mount |
 | `children` | What uses the store: `<MaplaceMap>`, `<LocationList>`, your components |

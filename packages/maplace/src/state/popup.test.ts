@@ -16,7 +16,9 @@ describe("popupOpened", () => {
 
   it("changes nothing for a location the store no longer has or shows", () => {
     expect(popupOpened(snapshot, { id: "gone", element })).toBe(NO_CHANGE);
-    expect(popupOpened({ ...snapshot, filter: ["none"] }, { id: "a", element })).toBe(NO_CHANGE);
+    expect(popupOpened({ ...snapshot, filter: { groups: ["none"] } }, { id: "a", element })).toBe(
+      NO_CHANGE,
+    );
   });
 });
 

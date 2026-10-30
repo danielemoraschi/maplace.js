@@ -1,14 +1,9 @@
 import { expect } from "vitest";
 import { isListed } from "../../../location-state";
-import { clickButton, controlPositions, type ExampleBehaviour } from "./reading";
+import { clickButton, controlPositions, type ExampleBehaviour, listedIn } from "./reading";
 
 const ALL = "All";
 const THIS_AREA = "This area";
-
-/** The titles the list inside `root` lists. */
-function listedIn(root: Element): (string | null)[] {
-  return Array.from(root.querySelectorAll("[role=option]"), (option) => option.textContent);
-}
 
 /** The list's entries inside `root`. */
 function entriesIn(root: Element): number {

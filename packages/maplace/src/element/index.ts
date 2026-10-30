@@ -112,13 +112,14 @@ export interface MaplaceMapElement extends HTMLElement {
 }
 
 /**
- * `<maplace-location location-id="…" lat lng title type group radius icon zoom listed editable
- * shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's position or a circle's
- * centre, `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `listed="false"`
- * keeps it out of the list (on the map still), `editable` lets the user drag or reshape it (both
- * true when present with no value, or `"true"`), and the three style attributes a shape's
- * `style`, `selectedStyle` and `hoveredStyle` as JSON; a `<template>` child is trusted popup
- * content, and a `<template data-icon>` child the marker, in place of `icon`.
+ * `<maplace-location location-id="…" lat lng title type group tags radius icon zoom listed
+ * editable shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's position or a
+ * circle's centre, `tags` its tags split on spaces, `icon` a marker's image URL, `zoom` the zoom
+ * selecting it shows it at, `listed="false"` keeps it out of the list (on the map still),
+ * `editable` lets the user drag or reshape it (both true when present with no value, or `"true"`),
+ * and the three style attributes a shape's `style`, `selectedStyle` and `hoveredStyle` as JSON; a
+ * `<template>` child is trusted popup content, and a `<template data-icon>` child the marker, in
+ * place of `icon`.
  */
 export interface MaplaceLocationElement extends HTMLElement {
   readonly location: Location;

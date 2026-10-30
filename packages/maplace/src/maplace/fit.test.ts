@@ -46,13 +46,13 @@ describe("resolveView", () => {
       bounds: { south: 10, west: 10, north: 20, east: 20 },
       padding: 24,
     });
-    expect(resolveView(fitAll, { locations, filter: ["S"] })).toMatchObject({
+    expect(resolveView(fitAll, { locations, filter: { groups: ["S"] } })).toMatchObject({
       bounds: { south: 20, west: 20, north: 20, east: 20 },
     });
   });
 
   it("resolves to nothing when no location is shown", () => {
-    expect(resolveView(fitAll, { locations, filter: ["none"] })).toBeUndefined();
+    expect(resolveView(fitAll, { locations, filter: { groups: ["none"] } })).toBeUndefined();
   });
 
   it("resolves a selected shape to a box around it, with the fit padding", () => {
@@ -137,7 +137,7 @@ describe("createViewSender", () => {
     const adapter = createFakeAdapter();
     const send = createViewSender(adapter);
     const empty: Snapshot = initialSnapshot(undefined);
-    const filtered = { ...empty, locations, filter: ["none"] };
+    const filtered = { ...empty, locations, filter: { groups: ["none"] } };
     const shown = { ...filtered, filter: undefined };
     send(empty, undefined);
     send(filtered, empty);

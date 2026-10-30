@@ -1,10 +1,14 @@
 import { sameFilter, sameOptional, sameRoute } from "../diff/same";
 import { MaplaceError } from "../index";
-import { isSelectable, isShown } from "../location-state";
+import { isSelectable, isShown, type LocationFilter } from "../location-state";
 import type { Maplace } from "../store";
+import { child, root } from "../validate/fail";
+import { filterFrom } from "../validate/filter";
 import type { MaplaceControlledProps, MaplaceProviderProps } from "./provider-props";
 
 type Props<Data> = MaplaceProviderProps<Data>;
+
+const FILTER_PROP = child(root("<MaplaceProvider>"), "filter");
 
 /** Brings the store in step with a provider's props, after each render. */
 export interface PropFollower<Data> {
@@ -21,10 +25,9 @@ export interface PropFollower<Data> {
 /** The selection to create the store with: the wanted id, if the first locations show it. */
 export function initialSelectedId<Data>(props: Props<Data>): string | undefined {
   const id = isControlled(props) ? props.selectedId : props.defaultSelectedId;
+  const filter = filterFrom(props.filter, FILTER_PROP);
   // The caller's own array, not a frozen snapshot list, so not looked up through the cached index.
-  const shown = props.locations.some(
-    (location) => location.id === id && isShown(location, props.filter),
-  );
+  const shown = props.locations.some((location) => location.id === id && isShown(location, filter));
   return shown ? id : undefined;
 }
 
@@ -39,7 +42,7 @@ export function createPropFollower<Data>(
   }
   let appliedLocations = initial.locations;
   let waitingDefault = initial.defaultSelectedId;
-  let appliedFilter: Props<Data>["filter"];
+  let appliedFilter: LocationFilter | undefined;
   let appliedRoute: Props<Data>["route"];
   let following = false;
 
@@ -72,9 +75,12 @@ export function createPropFollower<Data>(
       store.setLocations(props.locations);
       appliedLocations = props.locations;
     }
-    if (Object.hasOwn(props, "filter") && !sameFilter(props.filter, appliedFilter)) {
-      store.setFilter(props.filter);
-      appliedFilter = props.filter;
+    if (Object.hasOwn(props, "filter")) {
+      const filter = filterFrom(props.filter, FILTER_PROP);
+      if (!sameFilter(filter, appliedFilter)) {
+        store.setFilter(filter);
+        appliedFilter = filter;
+      }
     }
     if (Object.hasOwn(props, "route") && !sameOptional(props.route, appliedRoute, sameRoute)) {
       store.setRoute(props.route);

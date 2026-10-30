@@ -39,6 +39,7 @@ export type {
   PolygonLocation,
   PolylineLocation,
 } from "./location";
+export type { FilterRequest, LocationFilter } from "./location-state";
 export { createMaplace } from "./maplace/create";
 export type { MaplaceOptions } from "./options";
 export type { PopupOptions, ResolvedPopupOptions } from "./popup";

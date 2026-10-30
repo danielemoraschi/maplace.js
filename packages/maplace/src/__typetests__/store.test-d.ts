@@ -27,6 +27,15 @@ maplace.select("a", true);
 // @ts-expect-error zoom needs panning
 maplace.select("a", { pan: false, zoom: 3 });
 
+maplace.setFilter(["North"]);
+maplace.setFilter({ groups: ["North"], tags: ["parking"] });
+maplace.setFilter({ tags: [] });
+maplace.setFilter(undefined);
+// @ts-expect-error a filter's fields are groups and tags
+maplace.setFilter({ tag: ["parking"] });
+// @ts-expect-error absence is undefined, never null
+maplace.setFilter(null);
+
 maplace.hover("a");
 maplace.hover(undefined);
 // @ts-expect-error absence is undefined, never null

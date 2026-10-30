@@ -39,8 +39,10 @@ interface LocationBase<Data> {
   readonly content?: Content<Data> | undefined;
   /** Untrusted HTML for the popup, instead of `content`; rendered only through the `sanitize` option. */
   readonly html?: string | undefined;
-  /** Grouping key for list headings and `setFilter`. */
+  /** Grouping key for list headings and `setFilter`: one per location. */
   readonly group?: string | undefined;
+  /** What `setFilter` also filters on, as many as it has: "parking", "open-late". */
+  readonly tags?: readonly string[] | undefined;
   /**
    * The zoom selecting it shows it at, centred where its popup points (a shape too, instead of
    * being fitted); a select's own `zoom` wins. Zooms as in `Viewport`.

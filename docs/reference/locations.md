@@ -38,7 +38,8 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `title` | `string` | Plain text: the list label, the accessible name on the map and its popup's heading | `title` |
 | `content` | [`Content`](#content) | The popup's content | a `<template>` child |
 | `html` | `string` | Untrusted HTML for the popup instead of `content`, rendered only through the store's `sanitize` | |
-| `group` | `string` | Grouping key for list headings and `setFilter` | `group` |
+| `group` | `string` | Grouping key for list headings and `setFilter`: one per location | `group` |
+| `tags` | `string[]` | What [`setFilter`](store.md#methods) also filters on, as many as it has; never a heading | `tags`, split on spaces |
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
 | `visible` | `boolean` | `false` keeps it in the data but not drawn, listed or selected. Default `true` | |
 | `listed` | `boolean` | `false` leaves it out of every list view; the map still draws it and it is selected there. Default `true` | `listed` |
@@ -138,9 +139,10 @@ Each feature becomes one location:
 - positions are GeoJSON's `[lng, lat]`, turned into `{ lat, lng }`; an altitude is dropped, and so is a ring's closing point (a last point equal to the first);
 - `id` is the feature's `id`, a number becoming its string;
 - `title` and `group` are the properties' own: strings, or `null` or absent for none;
-- `data` is the properties whole, `title` and `group` included; `null` or no properties means no `data`.
+- `tags` are the properties' own when they are a list; anything else called `tags`, such as an OpenStreetMap export's object, stays in `data` alone;
+- `data` is the properties whole, `title`, `group` and `tags` included; `null` or no properties means no `data`.
 
-A feature without an `id`, or with another geometry (`MultiPoint`, `MultiLineString`, `MultiPolygon`, a `GeometryCollection`, none), is `invalid-input` naming it, such as `features[2].geometry.type`. The values are checked as any location's are, when the store takes them. Map the features across first when the file doesn't fit, on the JSON as loaded (with your own types, cast `properties` to them):
+A feature without an `id`, or with another geometry (`MultiPoint`, `MultiLineString`, `MultiPolygon`, a `GeometryCollection`, none), or a `title`, a `group` or a list of `tags` that isn't text, is `invalid-input` naming it, such as `features[2].geometry.type`. The values are checked as any location's are, when the store takes them. Map the features across first when the file doesn't fit, on the JSON as loaded (with your own types, cast `properties` to them):
 
 - ids kept in a property: `locationsFromGeoJSON({ ...collection, features: collection.features.map((feature) => ({ ...feature, id: feature.properties?.code })) })`;
 - no ids at all, as files from many tools have: the same call with `map((feature, index) => ({ ...feature, id: String(index) }))`; such ids stay the same only while the file keeps its order;

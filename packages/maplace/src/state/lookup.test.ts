@@ -21,7 +21,7 @@ describe("isUnselectableId", () => {
     const scope = { locations, filter: undefined };
     expect(isUnselectableId(scope, undefined)).toBe(false);
     expect(isUnselectableId(scope, "a")).toBe(false);
-    expect(isUnselectableId({ locations, filter: ["S"] }, "a")).toBe(true);
+    expect(isUnselectableId({ locations, filter: { groups: ["S"] } }, "a")).toBe(true);
     expect(isUnselectableId(scope, "b")).toBe(true);
     expect(isUnselectableId(scope, "gone")).toBe(true);
   });

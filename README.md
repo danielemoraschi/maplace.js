@@ -270,7 +270,7 @@ export function CityMap() {
 ## Documentation
 
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): fifteen scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
+- [Examples](packages/maplace/examples/): sixteen scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 

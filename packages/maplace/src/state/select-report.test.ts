@@ -17,7 +17,7 @@ describe("selectReported", () => {
   });
 
   it("changes nothing for an id the store no longer shows, where select would throw", () => {
-    const filtered = { ...AB, filter: ["S"] };
+    const filtered = { ...AB, filter: { groups: ["S"] } };
     expect(selectReported(filtered, "b")).toBe(NO_CHANGE);
     expect(selectReported(AB, "gone")).toBe(NO_CHANGE);
   });

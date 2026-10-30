@@ -4,6 +4,21 @@ import { locationFromAttributes } from "./location-attributes";
 import { elementWith as element } from "./testing/dom";
 
 describe("locationFromAttributes", () => {
+  it("reads tags from a space-separated attribute", () => {
+    const tagged = element({ "location-id": "a", tags: "parking open-late" });
+    expect(locationFromAttributes(tagged).tags).toEqual(["parking", "open-late"]);
+  });
+
+  it("ignores stray whitespace in tags", () => {
+    const tagged = element({ "location-id": "a", tags: "  parking \n open-late " });
+    expect(locationFromAttributes(tagged).tags).toEqual(["parking", "open-late"]);
+    expect(locationFromAttributes(element({ "location-id": "a", tags: " " })).tags).toEqual([]);
+  });
+
+  it("no attribute, no tags", () => {
+    expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("tags");
+  });
+
   it("reads a marker, leaving out what isn't written", () => {
     const marker = element({ "location-id": "rome", lat: "41.9", lng: "12.5", title: "Rome" });
     expect(locationFromAttributes(marker)).toEqual({

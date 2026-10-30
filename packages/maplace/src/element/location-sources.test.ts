@@ -44,6 +44,18 @@ describe("readLocationSource", () => {
     expect(readLocationSource(host)[0]).toMatchObject({ lat: 42 });
   });
 
+  it("reads a location again once its tags changed", () => {
+    const host = hostWith(ROME);
+    const [first] = readLocationSource(host);
+    host.querySelector("maplace-location")?.setAttribute("tags", "parking open-late");
+    expect(readLocationSource(host)[0]).not.toBe(first);
+    expect(readLocationSource(host)[0]?.tags).toEqual(["parking", "open-late"]);
+  });
+
+  it("watches the tags attribute, so a change reaches the store", () => {
+    expect(MaplaceLocation.observedAttributes).toContain("tags");
+  });
+
   it("gives a template child as popup content, a fresh copy for each popup", () => {
     const host = hostWith(
       '<maplace-location location-id="a" lat="1" lng="2"><template><b>A</b></template></maplace-location>',

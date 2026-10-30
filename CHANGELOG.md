@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-30 Added `tags` on a location (the `tags` attribute, GeoJSON's `properties.tags`) and `setFilter({ groups, tags })`, with a Tags example: a place shows when it has all the tags asked for
+- 2026-10-30 Changed `snapshot.filter` to always be `{ groups, tags }`, or `undefined`; `setFilter` and React's `filter` prop still take a plain list of groups
 - 2026-10-30 Added the copyright line to the site's footer, after the licence: © 2026 Daniele Moraschi
 - 2026-10-30 Changed the Tabs example: both places have `zoom: 6`, so changing tab swaps the map to the other place at once instead of reloading it at zoom 15
 - 2026-10-30 Changed the home page's GitHub button from "Star on GitHub" to "GitHub", so it reads as a plain link to the repository when its star count can't load

@@ -23,13 +23,13 @@ describe("clearHidden", () => {
   });
 
   it("deselects a location the filter now hides", () => {
-    expect(clearHidden({ ...AB, selectedId: "a", filter: ["N"] }).patch).toEqual({
+    expect(clearHidden({ ...AB, selectedId: "a", filter: { groups: ["N"] } }).patch).toEqual({
       selectedId: undefined,
     });
   });
 
   it("clears the hover of a location that is gone or hidden", () => {
-    expect(clearHidden({ ...AB, hoveredId: "a", filter: ["N"] })).toEqual({
+    expect(clearHidden({ ...AB, hoveredId: "a", filter: { groups: ["N"] } })).toEqual({
       patch: { hoveredId: undefined },
       events: [{ name: "hoverChange", payload: { id: undefined } }],
     });

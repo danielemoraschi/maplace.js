@@ -2,6 +2,7 @@ import type { Adapter } from "./adapter";
 import type { Listener, ListenOptions, MaplaceEventName, Unsubscribe } from "./events";
 import type { LatLng } from "./geometry";
 import type { Location } from "./location";
+import type { FilterRequest, LocationFilter } from "./location-state";
 import type { Route, RouteResult } from "./route";
 import type { Bounds, FitOptions, SelectOptions, View, Viewport } from "./viewport";
 
@@ -16,8 +17,8 @@ export interface Snapshot<Data = unknown> {
   readonly locations: readonly Location<Data>[];
   readonly selectedId: string | undefined;
   readonly hoveredId: string | undefined;
-  /** Visible groups; undefined shows every group. */
-  readonly filter: readonly string[] | undefined;
+  /** The groups and tags shown; undefined shows everything. */
+  readonly filter: LocationFilter | undefined;
   /** Last requested view. */
   readonly view: View;
   /** Last reported visible area; undefined until the map is ready. */
@@ -52,10 +53,12 @@ export interface Maplace<Data = unknown> {
    */
   hover(id: string | undefined): void;
   /**
-   * Shows only these groups; locations without a group hide while a filter is set. Hiding the
-   * selected location deselects it.
+   * Shows only what is in any of these groups (a list, or `{ groups }`) and has all of these tags
+   * (`{ tags }`), both when both are given; locations without a group, or without tags, hide while
+   * those are asked for. An empty list of tags asks for nothing; an empty list of groups, in either
+   * form, shows nothing. Hiding the selected location deselects it.
    */
-  setFilter(groups: readonly string[] | undefined): void;
+  setFilter(filter: FilterRequest): void;
   fitAll(options?: FitOptions): void;
   /** Shows a box; throws when south is above north or a coordinate is out of range. */
   fitBounds(bounds: Bounds, options?: FitOptions): void;

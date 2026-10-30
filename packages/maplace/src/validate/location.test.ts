@@ -23,6 +23,7 @@ describe("validateLocation: valid locations", () => {
       title: "M",
       content: node,
       group: "g",
+      tags: ["t"],
       visible: false,
       listed: false,
       zoom: 12,
@@ -49,6 +50,15 @@ describe("validateLocation: valid locations", () => {
     expect(
       check({ id: "h", lat: 1, lng: 2, html: "<b>x</b>" }, { index: 0, sanitize }),
     ).not.toThrow();
+  });
+});
+
+describe("validateLocation: tags", () => {
+  it("names a location's bad tags", () => {
+    expect(check({ id: "m", ...point, tags: "parking" })).toThrow(/tags must be an array of tags/);
+    expect(check({ id: "m", ...point, tags: ["parking", 2] })).toThrow(
+      /tags\[1\] must be a string, got 2/,
+    );
   });
 });
 

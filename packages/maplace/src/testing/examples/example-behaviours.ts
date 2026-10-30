@@ -12,6 +12,7 @@ import type { ExampleBehaviour } from "./behaviours/reading";
 import { route } from "./behaviours/route";
 import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
+import { tags } from "./behaviours/tags";
 import { unstyled } from "./behaviours/unstyled";
 import type { Provider } from "./example-files";
 
@@ -23,6 +24,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   circles,
   menu,
   tabs,
+  tags,
   polyline,
   route,
   polygon,

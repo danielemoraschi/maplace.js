@@ -13,7 +13,10 @@ const first: Snapshot = initialSnapshot({ locations });
 
 describe("presentationOf", () => {
   it("lists the ids hidden by visible: false or the filter", () => {
-    const state = presentationOf({ ...first, filter: ["N"], selectedId: "a" }, undefined);
+    const state = presentationOf(
+      { ...first, filter: { groups: ["N"] }, selectedId: "a" },
+      undefined,
+    );
     expect(state.selectedId).toBe("a");
     expect([...state.hiddenIds].sort()).toEqual(["b", "c"]);
   });
@@ -34,7 +37,10 @@ describe("presentationOf", () => {
     const after = presentationOf(next, { snapshot: first, state });
     expect(after).not.toBe(state);
     expect(after.hiddenIds).toBe(state.hiddenIds);
-    const filtered = presentationOf({ ...next, filter: ["N"] }, { snapshot: next, state: after });
+    const filtered = presentationOf(
+      { ...next, filter: { groups: ["N"] } },
+      { snapshot: next, state: after },
+    );
     expect(filtered.hiddenIds).not.toBe(state.hiddenIds);
   });
 });

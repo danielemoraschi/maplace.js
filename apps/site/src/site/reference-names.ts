@@ -34,6 +34,7 @@ export const LOCATION_FIELDS = {
     content: true,
     html: true,
     group: true,
+    tags: true,
     zoom: true,
     visible: true,
     listed: true,

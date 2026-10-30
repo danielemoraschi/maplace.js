@@ -62,7 +62,7 @@ export function createInternalState<Data = unknown>(
       run("setLocations", () => setLocations(getSnapshot(), locations, context)),
     select: (id, selectOptions) => run("select", () => select(getSnapshot(), id, selectOptions)),
     hover: (id) => run("hover", () => hover(getSnapshot(), id)),
-    setFilter: (groups) => run("setFilter", () => setFilter(getSnapshot(), groups)),
+    setFilter: (filter) => run("setFilter", () => setFilter(getSnapshot(), filter)),
     fitAll: (fitOptions) => run("fitAll", () => fitAll(fitOptions)),
     fitBounds: (bounds, fitOptions) => run("fitBounds", () => fitBounds(bounds, fitOptions)),
     setView: (center, zoom) => run("setView", () => setView(center, zoom)),

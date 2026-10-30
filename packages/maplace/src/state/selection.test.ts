@@ -89,7 +89,9 @@ describe("select", () => {
         field: "id",
       }),
     );
-    expect(() => select({ ...AB, filter: ["N"] }, "a")).toThrow(/names a hidden location/);
+    expect(() => select({ ...AB, filter: { groups: ["N"] } }, "a")).toThrow(
+      /names a hidden location/,
+    );
   });
 
   it("rejects an empty id and bad options", () => {

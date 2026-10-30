@@ -100,6 +100,7 @@ With React, or a store of your own, read and write the address around `select`.
 | `title` | Its `title`: the list label, the accessible name on the map and its popup's heading |
 | `type` | `marker` (the default) or `circle`; a polyline or polygon needs a `path`, so it goes in the map's inline JSON ([data](#data)) |
 | `group` | Its `group` |
+| `tags` | Its `tags`, split on spaces, as `class` is: a tag written here can't hold a space |
 | `radius` | A circle's radius, in metres |
 | `icon` | A marker's image URL |
 | `zoom` | The zoom selecting it shows it at |

@@ -35,6 +35,18 @@ export function byText(root: Element, selector: string, text: string): HTMLEleme
   return found;
 }
 
+/** The titles the list inside `root` lists, in order. */
+export function listedIn(root: Element): (string | null)[] {
+  return Array.from(root.querySelectorAll("[role=option]"), (option) => option.textContent);
+}
+
+/** The input of the `<label>` inside `root` whose text is `text`, failing when there is none. */
+export function inputLabelled(root: Element, text: string): HTMLInputElement {
+  const input = byText(root, "label", text).querySelector("input");
+  if (input === null) throw new Error(`the label "${text}" has no input`);
+  return input;
+}
+
 /** Clicks the button inside `root` whose text is `text`. */
 export function clickButton(root: Element, text: string): void {
   byText(root, "button", text).click();

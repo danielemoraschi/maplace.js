@@ -1,9 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Location } from "../location";
+import { createMaplace } from "../maplace/create";
+import { createPropFollower, initialSelectedId } from "./controlled-props";
 import { boundStore } from "./testing/bound-store";
 import { TOWNS } from "./testing/towns";
 
 const NORTH = { locations: TOWNS, selectedId: "north" };
+const TAGGED: readonly Location[] = [
+  { id: "garage", lat: 46, lng: 11, tags: ["parking"] },
+  { id: "bar", lat: 40, lng: 16, tags: ["late"] },
+];
 
 describe("a controlled selectedId", () => {
   it("takes a selection the parent passes back, panning once", async () => {
@@ -162,8 +168,39 @@ describe("locations, filter and route props", () => {
     render(props(["N", "S"]));
     expect(adapter.calls).toHaveLength(calls);
     render(props(["N"]));
-    expect(store.getSnapshot().filter).toEqual(["N"]);
+    expect(store.getSnapshot().filter).toEqual({ groups: ["N"] });
     expect(adapter.callsOf("setRoute")).toHaveLength(1);
+  });
+
+  it("apply a filter of tags by its value, a fresh object of the same one costing nothing", async () => {
+    const props = (tags: string[]) => ({ locations: TAGGED, filter: { tags } });
+    const { store, adapter, render } = await boundStore(props(["parking"]));
+    const calls = adapter.calls.length;
+    render(props(["parking"]));
+    expect(adapter.calls).toHaveLength(calls);
+    render(props(["late"]));
+    expect(store.getSnapshot().filter).toEqual({ tags: ["late"] });
+  });
+
+  it("start with a selection the first filter of tags shows, and without one it hides", () => {
+    const props = (tag: string) => ({
+      locations: TAGGED,
+      filter: { tags: [tag] },
+      defaultSelectedId: "garage",
+    });
+    expect(initialSelectedId(props("parking"))).toBe("garage");
+    expect(initialSelectedId(props("late"))).toBeUndefined();
+  });
+
+  it.each([
+    ["an unknown key", { tag: ["parking"] }],
+    ["null", null],
+  ])("throw on %s as a filter, before and after the first render", (_, filter) => {
+    const bad = { locations: TAGGED, filter: filter as never };
+    const message = /^<MaplaceProvider>: filter/;
+    expect(() => initialSelectedId(bad)).toThrow(message);
+    const follower = createPropFollower(createMaplace(), { locations: TAGGED }, () => {});
+    expect(() => follower.follow(bad)).toThrow(message);
   });
 
   it("apply a route whose stops passed through alone change", async () => {
@@ -184,7 +221,7 @@ describe("locations, filter and route props", () => {
     store.setRoute({ stops: ["south", "east"] });
     render(props(["north", "south"]));
     expect(store.getSnapshot()).toMatchObject({
-      filter: ["S"],
+      filter: { groups: ["S"] },
       route: { stops: ["south", "east"] },
     });
     render(props(["east", "north"]));

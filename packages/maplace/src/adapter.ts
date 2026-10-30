@@ -34,7 +34,7 @@ export interface LocationDiff {
 export interface PresentationState {
   readonly selectedId: string | undefined;
   readonly hoveredId: string | undefined;
-  /** Ids hidden by the group filter or `visible: false`. */
+  /** Ids hidden by the filter or `visible: false`. */
   readonly hiddenIds: ReadonlySet<string>;
 }
 

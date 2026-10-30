@@ -8,11 +8,13 @@ const loose: Location = { id: "l", lat: 0, lng: 0, title: "Loose" };
 const hidden: Location = { id: "h", lat: 0, lng: 0, group: "N", visible: false };
 const locations = [north, south, loose, hidden];
 
-function sections(rules: ListRules, filter?: string[], list = locations) {
-  return listStructureOf({ locations: list, filter }, rules).sections.map((section) => ({
-    heading: section.heading,
-    ids: section.locations.map((location) => location.id),
-  }));
+function sections(rules: ListRules, groups?: string[], list = locations) {
+  return listStructureOf({ locations: list, filter: groups && { groups } }, rules).sections.map(
+    (section) => ({
+      heading: section.heading,
+      ids: section.locations.map((location) => location.id),
+    }),
+  );
 }
 
 describe("listStructureOf", () => {
@@ -67,7 +69,7 @@ describe("labelOf", () => {
 
 describe("listedEntries", () => {
   it("lists what listStructureOf lists, in data order, narrowed to what it keeps", () => {
-    const filtered = { locations, filter: ["N", "S"] };
+    const filtered = { locations, filter: { groups: ["N", "S"] } };
     const structure = listStructureOf(filtered, { groupHeadings: false });
     expect(listedEntries(filtered)).toEqual(structure.sections[0]?.locations);
     const kept = (location: Location) => location.id !== "s";

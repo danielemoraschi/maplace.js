@@ -110,6 +110,28 @@ describe("locationsFromGeoJSON", () => {
     expect(() => createMaplace({ locations })).not.toThrow();
   });
 
+  it("takes tags from a list in the properties", () => {
+    const point = { type: "Point", coordinates: [1, 2] };
+    const [tagged] = locationsFromGeoJSON(collection(feature("a", point, { tags: ["parking"] })));
+    expect(tagged?.tags).toEqual(["parking"]);
+  });
+
+  it("leaves `tags` that aren't a list to data, as an OpenStreetMap export's object is", () => {
+    const point = { type: "Point", coordinates: [1, 2] };
+    for (const tags of [null, "parking", { amenity: "cafe" }]) {
+      const [location] = locationsFromGeoJSON(collection(feature("a", point, { tags })));
+      expect(location).not.toHaveProperty("tags");
+      expect(location?.data).toEqual({ tags });
+    }
+  });
+
+  it("names a list of tags that aren't strings", () => {
+    const point = { type: "Point", coordinates: [1, 2] };
+    expect(() => locationsFromGeoJSON(collection(feature("a", point, { tags: [1] })))).toThrow(
+      /features\[0\]\.properties\.tags\[0\] must be a string/,
+    );
+  });
+
   it("gives a feature with null or no properties no title, group or data", () => {
     const point = { type: "Point", coordinates: [1, 2] };
     const locations = locationsFromGeoJSON(

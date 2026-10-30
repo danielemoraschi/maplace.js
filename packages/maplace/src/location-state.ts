@@ -26,21 +26,40 @@ export function changedIds(previous: SelectionAndHover, next: SelectionAndHover)
   );
 }
 
-/** Drawn and selectable: not `visible: false`, and with a filter, in one of its groups. */
-export function isShown(location: Location, filter: readonly string[] | undefined): boolean {
+/** What is shown: locations in any of the `groups` and with all of the `tags`, each when given. */
+export interface LocationFilter {
+  readonly groups?: readonly string[] | undefined;
+  readonly tags?: readonly string[] | undefined;
+}
+
+/** What `setFilter` takes: a list of groups, a filter, or undefined to show everything. */
+export type FilterRequest = readonly string[] | LocationFilter | undefined;
+
+/** Drawn and selectable: not `visible: false`, and with a filter, what it asks for. */
+export function isShown(location: Location, filter: LocationFilter | undefined): boolean {
   if (location.visible === false) return false;
-  return filter === undefined || (location.group !== undefined && filter.includes(location.group));
+  return (
+    filter === undefined || (inGroups(location, filter.groups) && hasTags(location, filter.tags))
+  );
+}
+
+function inGroups({ group }: Location, groups: LocationFilter["groups"]): boolean {
+  return groups === undefined || (group !== undefined && groups.includes(group));
+}
+
+function hasTags(location: Location, tags: LocationFilter["tags"]): boolean {
+  return tags === undefined || tags.every((tag) => location.tags?.includes(tag));
 }
 
 /** In the list views: shown, and not `listed: false`. */
-export function isListed(location: Location, filter: readonly string[] | undefined): boolean {
+export function isListed(location: Location, filter: LocationFilter | undefined): boolean {
   return location.listed !== false && isShown(location, filter);
 }
 
 /** What decides whether a location is shown: the locations and the filter over them. */
 export interface FilteredLocations {
   readonly locations: readonly Location[];
-  readonly filter: readonly string[] | undefined;
+  readonly filter: LocationFilter | undefined;
 }
 
 /** Known and shown: an id a map report, or a selection, may name. Lists must be frozen. */

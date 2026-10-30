@@ -99,6 +99,9 @@ export function arrayOf(expected: string, check: Check): Check {
   };
 }
 
+/** A location's tags, or those a filter asks for. */
+export const checkTags = arrayOf("an array of tags", checkString);
+
 /** Runs `check` unless the value is absent; optional fields accept an explicit `undefined`. */
 export function optional(check: Check): Check {
   return (value, field) => {

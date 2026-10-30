@@ -21,6 +21,7 @@ export const LOCATION_ATTRIBUTES = [
   "title",
   "type",
   "group",
+  "tags",
   "radius",
   "icon",
   "zoom",
@@ -52,6 +53,7 @@ export function locationFromAttributes(
     id: element.getAttribute("location-id") ?? undefined,
     title: element.getAttribute("title") ?? undefined,
     group: element.getAttribute("group") ?? undefined,
+    tags: tagsFrom(element),
     zoom: numberOrRaw(element, "zoom"),
     listed: booleanOrRaw(element, "listed"),
     editable: booleanOrRaw(element, "editable"),
@@ -60,6 +62,11 @@ export function locationFromAttributes(
     ...geometry,
     ...stylesFromAttributes(element),
   }) as unknown as Location;
+}
+
+/** The `tags` attribute's words, as `class` holds its: a tag there can't hold a space. */
+function tagsFrom(element: Element): string[] | undefined {
+  return element.getAttribute("tags")?.split(/\s+/).filter(Boolean);
 }
 
 function stylesFromAttributes(element: Element): Record<string, unknown> {

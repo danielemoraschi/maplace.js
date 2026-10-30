@@ -35,7 +35,7 @@ describe("bindStore", () => {
       onRouteChange,
     });
     expect(store.getSnapshot()).toMatchObject({
-      filter: ["N", "S"],
+      filter: { groups: ["N", "S"] },
       route: { stops: ["north", "south"] },
       selectedId: "north",
     });

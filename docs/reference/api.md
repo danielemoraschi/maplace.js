@@ -12,6 +12,7 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 | `MaplaceOptions` | type | [Store options](store.md#options) |
 | `Maplace` | type | [Methods](store.md#methods) |
 | `Snapshot`, `LoadState` | types | [Snapshot](store.md#snapshot) |
+| `FilterRequest`, `LocationFilter` | types | [`setFilter`](store.md#methods) |
 | `PopupOptions` | type | [Popup options](store.md#popup-options) |
 | `View`, `Viewport`, `Bounds`, `FitOptions`, `SelectOptions` | types | [The first view](store.md#the-first-view), [methods](store.md#methods) |
 | `MaplaceEvents`, `MaplaceEventName`, `Listener`, `ListenOptions`, `Unsubscribe` | types | [Events](store.md#events) |

@@ -25,14 +25,16 @@ describe("checkKnownId", () => {
 
 describe("checkSelectable", () => {
   it("accepts a shown location", () => {
-    expect(() => checkSelectable({ locations, filter: ["N"] }, "a", field)).not.toThrow();
+    expect(() =>
+      checkSelectable({ locations, filter: { groups: ["N"] } }, "a", field),
+    ).not.toThrow();
   });
 
   it("rejects a hidden one, by visible: false or by the filter", () => {
     const hidden =
       /^caller: id names a hidden location \(visible: false, or outside the filter\), got "b"$/;
     expect(() => checkSelectable({ locations, filter: undefined }, "b", field)).toThrow(hidden);
-    expect(() => checkSelectable({ locations, filter: ["S"] }, "a", field)).toThrow(
+    expect(() => checkSelectable({ locations, filter: { groups: ["S"] } }, "a", field)).toThrow(
       expect.objectContaining({ code: "invalid-input" }),
     );
   });

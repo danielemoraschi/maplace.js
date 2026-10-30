@@ -1,7 +1,7 @@
 import type { LatLng } from "./geometry";
 import type { Location } from "./location";
 import { child, type Field, item, mustBe, root } from "./validate/fail";
-import { checkObject, checkOneOf, checkString } from "./validate/values";
+import { checkObject, checkOneOf, checkString, checkTags } from "./validate/values";
 
 /**
  * A GeoJSON FeatureCollection, as `locationsFromGeoJSON` reads it. Its strings are wide and a
@@ -28,13 +28,15 @@ const POSITION = "a position, [lng, lat] in numbers";
  * A GeoJSON FeatureCollection as locations, ready for `setLocations`: a `Point` becomes a marker,
  * a `LineString` a polyline, a `Polygon` a polygon (its first ring the path, the others its
  * holes, each without GeoJSON's closing point). Positions are `[lng, lat]`; an altitude is
- * dropped. The `id` is the feature's (a number as its string), `title` and `group` its
- * properties', and `data` its properties whole, typed `Data` as `createMaplace<Data>()` types it.
+ * dropped. The `id` is the feature's (a number as its string), `title`, `group` and a list of
+ * `tags` its properties', and `data` its properties whole, typed `Data` as `createMaplace<Data>()`
+ * types it.
  *
  * @throws `MaplaceError` `invalid-input` at the GeoJSON path (`features[2].geometry.type`) for a
  *   shape it can't read: not a FeatureCollection, a feature without an `id`, another geometry (a
- *   Multi* one, a `GeometryCollection`, none), a non-string `title` or `group`, a bad position.
- *   Values, such as ranges, are the store's to check when the locations are set.
+ *   Multi* one, a `GeometryCollection`, none), a non-string `title` or `group`, a list of `tags`
+ *   that aren't strings, a bad position. Values, such as ranges, are the store's to check when the
+ *   locations are set.
  */
 export function locationsFromGeoJSON<Data = unknown>(
   collection: GeoJSONFeatureCollection,
@@ -73,12 +75,30 @@ function idOf(id: unknown, field: Field): string {
 }
 
 /** The labels the properties hold, leaving out those they don't. */
-function labelsOf(properties: unknown, field: Field): { title?: string; group?: string } {
+function labelsOf(
+  properties: unknown,
+  field: Field,
+): { title?: string; group?: string; tags?: readonly string[] } {
   if (properties === null || properties === undefined) return {};
   checkObject(properties, field);
   const title = textOf(properties.title, child(field, "title"));
   const group = textOf(properties.group, child(field, "group"));
-  return { ...(title !== undefined && { title }), ...(group !== undefined && { group }) };
+  const tags = tagsOf(properties.tags, child(field, "tags"));
+  return {
+    ...(title !== undefined && { title }),
+    ...(group !== undefined && { group }),
+    ...(tags !== undefined && { tags }),
+  };
+}
+
+/**
+ * Tags, from a list only: anything else named `tags` is the file's own, as an OpenStreetMap
+ * export's object of keys is, and stays in `data` without failing the file.
+ */
+function tagsOf(value: unknown, field: Field): readonly string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  checkTags(value, field);
+  return value as readonly string[];
 }
 
 /** A label, `null` meaning none: GIS tools write an empty attribute as `null`. */

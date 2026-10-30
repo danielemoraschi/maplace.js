@@ -45,14 +45,20 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "lists",
     label: "Lists",
-    summary: "The list beside the map, your way: a menu, your own markup, or tabs outside the map.",
+    summary:
+      "The list beside the map, your way: a menu, tags to filter it, your own markup, or tabs outside the map.",
     description:
-      "Lists beside a map with maplacejs: a native menu, your own markup through a list view, or tabs outside the map.",
+      "Lists beside a map with maplacejs: a native menu, filtering by tag, your own markup through a list view, or tabs outside the map.",
     sections: [
       {
         name: "menu",
         title: "Menu",
         summary: "A native select on the map, grouped by region, with an entry for all.",
+      },
+      {
+        name: "tags",
+        title: "Tags",
+        summary: "Places with several tags: tick some to see those with all of them.",
       },
       {
         name: "custom-list",
