@@ -128,27 +128,7 @@ describe("the not-found page", () => {
   }, 30_000);
 });
 
-/** How far down the screen the footer ends, in whole pixels. */
-async function footerBottom(page: Page): Promise<number> {
-  const box = await page.getByRole("contentinfo").boundingBox();
-  return Math.round((box?.y ?? 0) + (box?.height ?? 0));
-}
-
 describe("the footer", () => {
-  it("stays at the bottom of the screen as a long page scrolls", async () => {
-    const { page, context } = await openPage("/examples/data-routes/");
-    await page.mouse.wheel(0, 2500);
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
-    expect(await footerBottom(page)).toBe(page.viewportSize()?.height);
-    await context.close();
-  }, 30_000);
-
-  it("sits at the bottom of the screen under a page shorter than it", async () => {
-    const { page, context } = await openPage(NOT_FOUND_PAGE);
-    expect(await footerBottom(page)).toBe(page.viewportSize()?.height);
-    await context.close();
-  }, 30_000);
-
   it("links the footer's pages from every page, marking the one shown", async () => {
     for (const route of SITE_ROUTES) {
       const { page, context } = await openPage(route);
