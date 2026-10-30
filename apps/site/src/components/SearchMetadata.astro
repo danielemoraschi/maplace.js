@@ -1,0 +1,43 @@
+---
+import { getEntry } from "astro:content";
+// As the favicon: named by its content, so a new image is a new URL.
+import ogImage from "../assets/og-image.png?no-inline";
+import { headMetaTags } from "../site/head-meta-tags.ts";
+import { SEARCH_FACTS_ENTRY } from "../site/search-facts-loader.ts";
+import { SITE_ROUTES } from "../site/site-routes.ts";
+import { jsonLdText, structuredData } from "../site/structured-data.ts";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const route = Astro.url.pathname;
+const isSiteRoute = SITE_ROUTES.includes(route);
+const facts = isSiteRoute ? await getEntry("searchFacts", SEARCH_FACTS_ENTRY) : undefined;
+if (isSiteRoute && facts === undefined) {
+  throw new Error("the searchFacts collection has no entry (content.config.ts)");
+}
+const url = new URL(route, Astro.site).href;
+const imageUrl = new URL(ogImage, Astro.site).href;
+---
+
+{
+  facts && (
+    <>
+      <link rel="canonical" href={url} />
+      {headMetaTags({ url, title, description, imageUrl }).map((tag) => <meta {...tag} />)}
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={jsonLdText(
+          structuredData(
+            { url, title, description, modifiedOn: facts.data.modifiedOn[route] },
+            facts.data.library,
+          ),
+        )}
+      />
+    </>
+  )
+}

@@ -1,3 +1,4 @@
 User-agent: *
 Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
+Sitemap: https://maplacejs.com/sitemap.xml

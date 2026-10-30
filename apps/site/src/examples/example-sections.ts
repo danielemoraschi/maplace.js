@@ -16,13 +16,13 @@ export interface ExampleGroup {
   readonly id: string;
   readonly label: string;
   readonly summary: string;
+  /** Its page's description, for search and sharing: 80 to 160 characters, unlike the summary it shows. */
+  readonly description: string;
   readonly sections: readonly ExampleSection[];
 }
 
-/** The home page's title and description, the first group's page. */
+/** The home page's title, the first group's page. */
 const HOME_TITLE = "maplacejs: a JavaScript library for Google Maps and MapLibre";
-const HOME_DESCRIPTION =
-  "A list of locations becomes a map plus a synced list, in a few lines, on Google Maps or MapLibre.";
 
 /** The examples in their groups, each group a page; the sections numbered in this order (W38). */
 export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
@@ -30,6 +30,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "basics",
     label: "Basics",
     summary: "Places on a map: one pin, then image markers with popups.",
+    description:
+      "A list of locations becomes a map plus a synced list, in a few lines, on Google Maps or MapLibre.",
     sections: [
       { name: "simple", title: "Simple", summary: "One place on a map." },
       {
@@ -44,6 +46,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "lists",
     label: "Lists",
     summary: "The list beside the map, your way: a menu, your own markup, or tabs outside the map.",
+    description:
+      "Lists beside a map with maplacejs: a native menu, your own markup through a list view, or tabs outside the map.",
     sections: [
       {
         name: "menu",
@@ -67,6 +71,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "shapes",
     label: "Shapes",
     summary: "Circles, lines and areas, drawn in their own colours, some of them to edit.",
+    description:
+      "Shapes on a map with maplacejs: circles, lines and areas in their own colours, some of them to edit and save.",
     sections: [
       {
         name: "circles",
@@ -86,6 +92,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     label: "Data & routes",
     summary:
       "Data fetched and swapped in live, thousands of points clustered, and a drive through your own places.",
+    description:
+      "Data fetched and swapped in live with maplacejs, thousands of points clustered, and a drive through your own places.",
     sections: [
       {
         name: "mixed",
@@ -110,6 +118,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "styling",
     label: "Styling",
     summary: "Your map's look: the provider's own styles, and maplace's parts drawn your way.",
+    description:
+      "Style a map with maplacejs: the provider's own basemaps, your own markers and colours, or none of maplace's styles.",
     sections: [
       {
         name: "styled",
@@ -162,9 +172,9 @@ export function groupTitle(group: ExampleGroup): string {
   return isHomeGroup(group) ? HOME_TITLE : `${group.label}: maplacejs examples`;
 }
 
-/** The description of `group`'s page: the home page's for the first group. */
+/** The description of `group`'s page. */
 export function groupDescription(group: ExampleGroup): string {
-  return isHomeGroup(group) ? HOME_DESCRIPTION : group.summary;
+  return group.description;
 }
 
 /** The group whose page is at `path`, if any: `location.pathname`, say. */

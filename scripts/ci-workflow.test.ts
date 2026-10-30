@@ -37,3 +37,10 @@ it("keeps the packages before the tests run, so a run they cut short has warmed 
     stepWith("run: npm test"),
   );
 });
+
+it("gives every job that builds the site its full history, or every page is dated at the last commit", () => {
+  const jobs = workflow.split(/^ {2}(?=[\w-]+:$)/m);
+  const buildingTheSite = jobs.filter((job) => job.includes("npm run site:build"));
+  expect(buildingTheSite.length).toBeGreaterThan(0);
+  for (const job of buildingTheSite) expect(job).toContain("fetch-depth: 0");
+});

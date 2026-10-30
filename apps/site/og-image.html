@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>maplacejs: the Open Graph image</title>
+    <style>
+      @font-face {
+        font-family: "Bricolage Grotesque";
+        font-weight: 800;
+        src: url("../../node_modules/@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-800-normal.woff2");
+      }
+      @font-face {
+        font-family: "Instrument Sans";
+        font-weight: 400 700;
+        src: url("../../node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2");
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        position: relative; width: 1200px; height: 630px; overflow: hidden;
+        background: #fafaf7; color: #111;
+        font-family: "Instrument Sans", sans-serif;
+      }
+      .name {
+        position: absolute; top: 44px; left: 64px;
+        font: 800 44px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -0.03em;
+      }
+      .rule { position: absolute; top: 112px; left: 0; width: 100%; height: 6px; background: #111; }
+      .route {
+        position: absolute; top: 176px; right: 0; width: 400px; height: 225px;
+        fill: none; stroke: #e4322b; stroke-width: 12;
+      }
+      .route .ink { stroke: #111; }
+      .route circle { fill: #fafaf7; stroke: #111; stroke-width: 5; }
+      h1 {
+        position: absolute; top: 164px; left: 64px; margin: 0;
+        font: 800 78px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -0.02em;
+      }
+      p {
+        position: absolute; top: 446px; left: 64px; margin: 0;
+        font-size: 30px; line-height: 1.3; font-weight: 500;
+      }
+      footer {
+        position: absolute; left: 0; bottom: 0; width: 100%; height: 72px; padding: 0 64px;
+        display: flex; align-items: center; justify-content: space-between;
+        background: #111; color: #fafaf7; font-size: 26px; font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="name">maplacejs</div>
+    <div class="rule"></div>
+    <svg class="route" viewBox="0 0 320 180" aria-hidden="true">
+      <path d="M0 48 H170 L214 92 H320" />
+      <path class="ink" d="M90 180 V126 L134 82 H320" />
+      <circle cx="170" cy="48" r="11" />
+    </svg>
+    <h1>A JavaScript library<br />for Google Maps<br />and MapLibre.</h1>
+    <p>Your locations on a map, and the list that goes with them, in sync.</p>
+    <footer><span>maplacejs.com</span><span>One script tag · npm · React</span></footer>
+  </body>
+</html>

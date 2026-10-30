@@ -41,3 +41,39 @@
 # Agent Skills Discovery: agents in a browser read the skill and its index from other origins.
 /.well-known/agent-skills/*
   Access-Control-Allow-Origin: *
+
+# Each page's Markdown names the page as the one to index, so search lists the page alone.
+/index.md
+  Link: <https://maplacejs.com/>; rel="canonical"
+/examples/lists/index.md
+  Link: <https://maplacejs.com/examples/lists/>; rel="canonical"
+/examples/shapes/index.md
+  Link: <https://maplacejs.com/examples/shapes/>; rel="canonical"
+/examples/data-routes/index.md
+  Link: <https://maplacejs.com/examples/data-routes/>; rel="canonical"
+/examples/styling/index.md
+  Link: <https://maplacejs.com/examples/styling/>; rel="canonical"
+/changelog/index.md
+  Link: <https://maplacejs.com/changelog/>; rel="canonical"
+/getting-started/index.md
+  Link: <https://maplacejs.com/getting-started/>; rel="canonical"
+/setup/index.md
+  Link: <https://maplacejs.com/setup/>; rel="canonical"
+/element/index.md
+  Link: <https://maplacejs.com/element/>; rel="canonical"
+/locations/index.md
+  Link: <https://maplacejs.com/locations/>; rel="canonical"
+/store/index.md
+  Link: <https://maplacejs.com/store/>; rel="canonical"
+/google/index.md
+  Link: <https://maplacejs.com/google/>; rel="canonical"
+/maplibre/index.md
+  Link: <https://maplacejs.com/maplibre/>; rel="canonical"
+/react/index.md
+  Link: <https://maplacejs.com/react/>; rel="canonical"
+/styling/index.md
+  Link: <https://maplacejs.com/styling/>; rel="canonical"
+/api/index.md
+  Link: <https://maplacejs.com/api/>; rel="canonical"
+/migrating/index.md
+  Link: <https://maplacejs.com/migrating/>; rel="canonical"

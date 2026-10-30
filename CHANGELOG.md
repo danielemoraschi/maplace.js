@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-30 Added the site's search metadata: structured data, a canonical address, Open Graph and Twitter tags with an image, /sitemap.xml with each page's last change, and each Markdown page's canonical in a `Link` header
 - 2026-10-30 Added the site in Markdown: every reference page, the migration guide, the changelog and each group of examples, with its guides and code, at its address plus `index.md`, named in its head, a `Link` header and a visible link; `/llms.txt`, `/robots.txt` with its `Content-Signal`, and an AI agents page linked from the footer.
 - 2026-10-30 Added an agent skill at `/.well-known/agent-skills/maplace/SKILL.md`, generated at each build from what the API states, and its Agent Skills Discovery index beside it, named by every page's head, the AI agents page and `llms.txt`
 - 2026-10-30 Changed MapLibre's default style, for a map that names none, from OpenFreeMap's `liberty` to its `bright`; every example opens on it, the styled example's Map style list starting with Bright
