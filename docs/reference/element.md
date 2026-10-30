@@ -51,6 +51,8 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 
 The store is created when the element first connects (or `maplace`, `locations` or `route` is first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
 
+No attribute sets a centre and zoom. `selected-id` on a location with a `zoom` opens the map there, at that zoom, the location selected; for a view of your own, a script calls `map.maplace.setView({ lat: 41.9, lng: 12.5 }, 6)`, before the map opens or after ([the first view](store.md#the-first-view)). A selection made later, such as a `selected-id` location arriving afterwards, moves the map to it.
+
 ## Events
 
 The store's [events](store.md#events), as DOM events on the element, named in lower case. They bubble, and their `detail` is the store event's payload.

@@ -16,7 +16,7 @@
 | `region` | `string` | The region Google biases its answers to; with `apiKey` |
 | `nonce` | `string` | The nonce your content security policy asks the Maps JS tag for; with `apiKey` |
 
-`center` and `zoom` are left out of `mapOptions` because only the store's `view` sets them, and JSON `styles` because Google ignores them on a map with a map ID ([map ID and styling](#map-id-and-styling)). An option the adapter doesn't know is `invalid-input`.
+`center` and `zoom` are left out of `mapOptions` because only the store sets them ([the first view](store.md#the-first-view)), and JSON `styles` because Google ignores them on a map with a map ID ([map ID and styling](#map-id-and-styling)). An option the adapter doesn't know is `invalid-input`.
 
 ## `createGoogleMap`
 

@@ -19,7 +19,7 @@ One script, no build step. On Google Maps:
 
 - `api-key` is your Google Maps JavaScript API key. The element loads Maps JS itself, once per page.
 - `map-id` is optional: without it the map uses Google's `DEMO_MAP_ID`, for development, and warns once in the console; set your own for production ([key and map ID](docs/reference/setup.md#key-and-map-id)).
-- `color-scheme` (`light`, `dark` or `follow-system`) and `map-options` (Google's map options as JSON, e.g. `'{"mapTypeControl":false}'`: not centre, zoom, map ID, colour scheme or `styles`) set the map Google creates; change either and the map opens again where it was.
+- `color-scheme` (`light`, `dark` or `follow-system`) and `map-options` (Google's map options as JSON, e.g. `'{"mapTypeControl":false}'`: not centre, zoom, map ID, colour scheme or `styles`: [centre and zoom](docs/reference/element.md#properties-and-methods)) set the map Google creates; change either and the map opens again where it was.
 
 On MapLibre, with no key and no map ID:
 
@@ -32,7 +32,7 @@ On MapLibre, with no key and no map ID:
 </maplace-map>
 ```
 
-- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
+- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: [centre and zoom](docs/reference/element.md#properties-and-methods)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
 
 On either:
 

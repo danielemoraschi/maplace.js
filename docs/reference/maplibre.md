@@ -10,7 +10,7 @@ The store, its list, its events and its errors are the same as on Google; what d
 |---|---|---|
 | `mapStyle` | `string \| StyleSpecification` | The map's style: a style URL or a style object; OpenFreeMap's `bright` when left out ([styles and tiles](#styles-and-tiles)). Named `mapStyle` because the store's `style` is the shapes' default style |
 | `map` | `maplibregl.Map` | Your own map to draw on, instead of one maplacejs creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
-| `mapOptions` | `MapOptions` | Extra options for a map maplacejs creates; not `container`, `style`, `center`, `zoom` or `bounds`, which maplacejs sets. `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
+| `mapOptions` | `MapOptions` | Extra options for a map maplacejs creates; not `container`, `style`, `center`, `zoom` or `bounds`, which maplacejs sets ([the first view](store.md#the-first-view)). `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
 
 An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` maplacejs sets, saying where it goes (`style` is `mapStyle`).
 

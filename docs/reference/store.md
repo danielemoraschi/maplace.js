@@ -43,7 +43,23 @@ A popup follows the selection (or the hover, with `openOn: "hover"`). On a shape
 
 ## The first view
 
-The first view is the `view` option when given, else the selected location, else all locations fitted. Fit padding defaults to 40 px. A fit never zooms in past 15: a box that would need more (one location, or locations metres apart) is centred at 15. Selecting a marker pans to it, and selecting a shape fits it; `select(id, { zoom })`, or a location's own `zoom`, brings either to the point its popup points at, at that zoom; `{ pan: false }` leaves the map where it is.
+The first view is the `view` option when given, else the selected location (at its own `zoom`; a marker without one is centred at 15, a shape fitted), else all locations fitted, with 40 px of padding, as `fitAll` and `fitBounds` use by default. A fit never zooms in past 15: a box that would need more (one location, or locations metres apart) is centred at 15.
+
+`view` is one of four shapes, every field required:
+
+- `{ kind: "center", center, zoom }`: centred at `center`, a `{ lat, lng }`, at `zoom`.
+- `{ kind: "fit-all", padding }`: every shown location fitted, `padding` in pixels.
+- `{ kind: "fit-bounds", bounds, padding }`: a box fitted, `bounds` a `{ south, west, north, east }`.
+- `{ kind: "location", id, zoom }`: one location, by a known `id`, brought into view, not selected, at `zoom`; with `zoom: undefined`, as the selected location is.
+
+```ts
+createMaplace({
+  locations,
+  view: { kind: "center", center: { lat: 41.9, lng: 12.5 }, zoom: 6 },
+});
+```
+
+Once the map is open, selecting a marker pans to it at the map's zoom, and selecting a shape fits it; `select(id, { zoom })`, or a location's own `zoom`, brings either to the point its popup points at, at that zoom; `{ pan: false }` leaves the map where it is.
 
 ## Methods
 
@@ -52,7 +68,7 @@ The first view is the `view` option when given, else the selected location, else
 | `subscribe` | `subscribe(onChange)` calls `onChange` after every change; returns an unsubscribe function. Works with React's `useSyncExternalStore` |
 | `getSnapshot` | The current [snapshot](#snapshot) |
 | `setLocations` | Replaces all locations; only the differences reach the map. Throws on invalid input |
-| `select` | `select(id, options?)` selects a location, or clears the selection with `undefined`; selecting a hidden one throws |
+| `select` | `select(id, options?)` selects a location, or clears the selection with `undefined`; selecting a hidden one throws. `{ zoom }` shows it at that zoom, `{ pan: false }` leaves the map where it is (not both): [the first view](#the-first-view) |
 | `hover` | `hover(id)` marks the location under the pointer or keyboard focus, or none with `undefined`; an unknown or hidden id throws, as for `select` |
 | `setFilter` | `setFilter(groups)` shows only these groups, or every group with `undefined` |
 | `fitAll` | `fitAll(options?)` fits all shown locations; `{ padding }` in pixels |
