@@ -1,6 +1,7 @@
 import * as changelog from "./checks/changelog.ts";
 import * as docLinks from "./checks/doc-links.ts";
 import * as docSnippets from "./checks/doc-snippets.ts";
+import * as gluedExpressions from "./checks/glued-expressions.ts";
 import * as imports from "./checks/imports.ts";
 import * as migrationEvents from "./checks/migration-events.ts";
 import * as rfc from "./checks/rfc.ts";
@@ -16,6 +17,7 @@ const CHECKS: Readonly<Record<string, () => string[] | Promise<string[]>>> = {
   CHANGELOG: changelog.check,
   "doc links": docLinks.check,
   "doc snippets": docSnippets.check,
+  "glued expressions": gluedExpressions.check,
   workflows: workflows.check,
 };
 

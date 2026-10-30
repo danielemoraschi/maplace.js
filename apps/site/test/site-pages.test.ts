@@ -19,6 +19,7 @@ import {
   PRIVACY_PAGE,
 } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
+import { SITE_MAINTAINER } from "../src/site/site-owner.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
 import { gluedText } from "./glued-text.ts";
@@ -138,6 +139,9 @@ describe("the footer", () => {
         current: href === route ? "page" : null,
       }));
       expect(await footerLinks(page), route).toEqual(expect.arrayContaining(expected));
+      expect(await page.getByRole("contentinfo").textContent(), route).toMatch(
+        new RegExp(`MIT licence © \\d{4} ${SITE_MAINTAINER}`),
+      );
       await context.close();
     }
   }, 60_000);

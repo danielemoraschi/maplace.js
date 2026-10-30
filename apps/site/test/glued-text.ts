@@ -5,7 +5,8 @@ import type { Page } from "playwright";
  * "maplace-site:mapsset to": Astro's `"jsx"` HTML compression trims the line-break whitespace at
  * both edges of a text run, so a space a template means to keep there is written `{" "}`. Each is
  * the two sides, joined by a bar. Text glued to an `{expression}` becomes one text node with it,
- * told apart only where a sentence then runs into the next, as "the page asked for.Cloudflare".
+ * told apart only where a sentence then runs into the next, as "the page asked for.Cloudflare";
+ * `scripts/checks/glued-expressions.ts` finds the rest in the templates.
  */
 export function gluedText(page: Page): Promise<string[]> {
   return page.evaluate(() => {
