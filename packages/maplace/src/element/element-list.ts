@@ -1,6 +1,7 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
 import { adoptCarriedStyles } from "../adopted-styles";
 import { type ListViewOptions, listedLocations, type Maplace } from "../index";
+import { booleanOrRaw } from "./attribute-values";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
 import type { ElementListOptions, ListPosition } from "./index";
@@ -12,6 +13,7 @@ export const LIST_ATTRIBUTES = [
   "list-position",
   "fit-all-label",
   "list-heading",
+  "group-counts",
   "list-scope",
   "area-only-label",
   "show-all-label",
@@ -77,6 +79,7 @@ function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
   return {
     fitAllLabel: textOf(host, "fit-all-label"),
     heading: textOf(host, "list-heading"),
+    groupCounts: groupCounts(host),
     scope: listScope(host, name),
     areaOnlyLabel: textOf(host, "area-only-label"),
     showAllLabel: textOf(host, "show-all-label"),
@@ -89,6 +92,15 @@ function textOf(host: HTMLElement, name: string): string | undefined {
   const text = host.getAttribute(name) ?? undefined;
   if (text?.trim() === "") throw elementMisuse(`${name} must not be blank`, { field: name });
   return text;
+}
+
+/** `group-counts`, as HTML writes a boolean. */
+function groupCounts(host: HTMLElement): boolean | undefined {
+  const value = booleanOrRaw(host, "group-counts");
+  if (typeof value !== "string") return value;
+  throw elementMisuse(`group-counts must be true or false, got "${value}"`, {
+    field: "group-counts",
+  });
 }
 
 /** Beside the map unless a corner is named. */

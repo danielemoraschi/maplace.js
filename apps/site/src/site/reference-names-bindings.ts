@@ -105,6 +105,7 @@ export const REACT_PROPS = {
   list: everyName<keyof LocationListProps>({
     as: true,
     groupHeadings: true,
+    groupCounts: true,
     fitAllLabel: true,
     label: true,
     heading: true,

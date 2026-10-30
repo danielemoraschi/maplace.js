@@ -17,21 +17,22 @@ function headingsIn(root: Element): (string | null)[] {
 
 /**
  * A list on the map that the page's checkboxes filter: one tag keeps the places with it, both
- * keep the places with both, none lists every place, and the headings stay the places' groups.
+ * keep the places with both, none lists every place, and the headings stay the places' groups,
+ * each counting what is listed under it.
  */
 export const tags: ExampleBehaviour = async ({ adapter, root }) => {
   const toggle = (label: string) => inputLabelled(root, label).click();
   expect(controlPositions(adapter)).toEqual(["top-right"]);
   await expect.poll(() => listedIn(root)).toEqual(ALL);
-  expect(headingsIn(root)).toEqual(["Centre", "North", "South"]);
+  expect(headingsIn(root)).toEqual(["Centre (2)", "North (2)", "South (1)"]);
 
   toggle("Parking");
   await expect.poll(() => listedIn(root)).toEqual(["Rome", "Milan", "Naples"]);
-  expect(headingsIn(root)).toEqual(["Centre", "North", "South"]);
+  expect(headingsIn(root)).toEqual(["Centre (1)", "North (1)", "South (1)"]);
 
   toggle("Open late");
   await expect.poll(() => listedIn(root)).toEqual(["Rome", "Naples"]);
-  expect(headingsIn(root)).toEqual(["Centre", "South"]);
+  expect(headingsIn(root)).toEqual(["Centre (1)", "South (1)"]);
 
   toggle("Parking");
   await expect.poll(() => listedIn(root)).toEqual(["Rome", "Turin", "Naples"]);

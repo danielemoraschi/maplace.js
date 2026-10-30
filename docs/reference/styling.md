@@ -70,7 +70,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-empty-area` | The status of a list with `scope`, empty but over an empty area, when it says so |
 | `maplace-listbox` | The list of entries |
 | `maplace-group` | A group of entries |
-| `maplace-group-heading` | A group's heading |
+| `maplace-group-heading` | A group's heading, with its count in the same text (`groupCounts`) |
 | `maplace-option` | A location's entry |
 | `maplace-fit-all` | The entry that fits all locations (`fitAllLabel`) |
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |

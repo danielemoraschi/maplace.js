@@ -71,6 +71,7 @@ export const instance = <MaplaceMap createAdapter={adapter} />;
 export const staticContent = <LocationList>{"Shops"}</LocationList>;
 export const headed = <LocationList heading="Choose a location:" />;
 export const onTheMap = <LocationList position="top-right" />;
+export const counted = <LocationList groupCounts />;
 export const scoped = (
   <LocationList
     scope="viewport"

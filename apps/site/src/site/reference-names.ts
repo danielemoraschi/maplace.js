@@ -127,6 +127,7 @@ export const STORE_NAMES = {
   listViewOptions: everyName<keyof ListViewOptions>({
     as: true,
     groupHeadings: true,
+    groupCounts: true,
     fitAllLabel: true,
     label: true,
     heading: true,

@@ -61,6 +61,35 @@ describe("listStructureOf: locations not listed", () => {
   });
 });
 
+describe("listStructureOf: counts", () => {
+  const labels = (list: readonly Location[], groupCounts?: boolean, groups?: string[]) =>
+    listStructureOf(
+      { locations: list, filter: groups && { groups } },
+      { groupHeadings: undefined, groupCounts },
+    ).sections.map((section) => section.label);
+  const inNorth = (id: string, more?: Partial<Location>): Location =>
+    ({ id, lat: 0, lng: 0, group: "N", ...more }) as Location;
+
+  it("with groupCounts a heading's label is its name and how many are listed", () => {
+    expect(labels([inNorth("a"), inNorth("b"), north, south], true)).toEqual(["N (3)", "S (1)"]);
+  });
+
+  it("counts only what is listed: the filter and listed: false lower it", () => {
+    const list = [inNorth("a"), inNorth("b", { listed: false }), south];
+    expect(labels(list, true)).toEqual(["N (1)", "S (1)"]);
+    expect(labels(list, true, ["S"])).toEqual(["S (1)"]);
+  });
+
+  it("gives ungrouped places no label", () => {
+    expect(labels([loose], true)).toEqual([undefined]);
+  });
+
+  it("gives no label without groupCounts", () => {
+    expect(labels([north, south])).toEqual([undefined, undefined]);
+    expect(labels([north, south], false)).toEqual([undefined, undefined]);
+  });
+});
+
 describe("labelOf", () => {
   it("is the title when it has text, else the id", () => {
     expect([north, south, loose].map(labelOf)).toEqual(["North", "s", "Loose"]);

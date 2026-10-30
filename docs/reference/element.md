@@ -25,6 +25,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
 | `fit-all-label` | The label of a first list entry that clears the selection and fits all locations |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
+| `group-counts` | After each group heading, how many are listed under it now, following the filter and `list-scope`: "North (3)". Present, empty or `"true"` is on, `"false"` off, anything else misuse |
 | `list-scope` | `viewport`: a switch above the list, "All" or "This area", which lists only what is in the map's view and follows it, wherever the list is placed ([List view options](store.md#list-view-options)); not with `list="select"` |
 | `area-only-label` | The label of the switch's "This area"; default "This area" |
 | `show-all-label` | The label of the switch's "All"; default "All" |
@@ -36,7 +37,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address wins |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
-`list`, `list-position`, `fit-all-label`, `list-heading`, `list-scope`, `area-only-label`, `show-all-label` and `empty-area-label` are live: a change builds the list again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
+`list`, `list-position`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`, `area-only-label`, `show-all-label` and `empty-area-label` are live: a change builds the list again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
 
 ## Properties and methods
 
@@ -142,7 +143,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## List views
 
-`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`, `scope`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is.
+`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`, `groupCounts`, `scope`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is.
 
 A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
 

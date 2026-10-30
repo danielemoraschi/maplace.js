@@ -39,6 +39,12 @@ export function optionsIn(element: Element): HTMLElement[] {
   return Array.from(element.querySelectorAll<HTMLElement>('[role="option"]'));
 }
 
+/** The names of the groups in a list element, in document order; a switch's group is no list's. */
+export function groupNamesIn(element: Element): (string | null)[] {
+  const groups = element.querySelectorAll('[role="listbox"] [role="group"]');
+  return Array.from(groups, (group) => group.getAttribute("aria-label"));
+}
+
 /** A container in `parent` with `count` focusable, untabbable options. */
 export function focusableList(count: number, parent: ParentNode = document.body) {
   const container = document.createElement("div");

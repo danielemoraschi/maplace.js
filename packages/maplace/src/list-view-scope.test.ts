@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
+import { groupNamesIn } from "./testing/lists";
 import { movedTo, PLACES, readyScopedList, SCOPED, scopedList } from "./testing/scoped-list";
 import { listedLocations } from "./views/listed-locations";
 
@@ -25,6 +26,17 @@ describe("createListView with scope: 'viewport'", () => {
     await movedTo(maplace, adapter, -40);
     area.click();
     expect([ids(), pressed()]).toEqual([["far-west"], ["false", "true"]]);
+  });
+
+  it("counts what the view lists under each heading, in 'This area'", async () => {
+    const { list, maplace, adapter, area } = await readyScopedList(
+      {},
+      { scope: "viewport", groupCounts: true },
+    );
+    expect(groupNamesIn(list.element)).toEqual(["S (4)", "N (1)"]);
+    await movedTo(maplace, adapter, -40);
+    area.click();
+    expect(groupNamesIn(list.element)).toEqual(["S (1)"]);
   });
 
   it("'This area' follows the map: each new view lists what it holds", async () => {

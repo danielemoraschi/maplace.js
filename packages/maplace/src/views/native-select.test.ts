@@ -98,3 +98,31 @@ describe("createNativeSelect", () => {
     expect(view.element.hidden).toBe(false);
   });
 });
+
+describe("createNativeSelect: group names", () => {
+  const inNorth: Location[] = [
+    { id: "a", lat: 0, lng: 0, group: "N" },
+    { id: "b", lat: 0, lng: 0, group: "N" },
+  ];
+
+  function shownWith(rules: { groupHeadings: undefined; groupCounts?: boolean }) {
+    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
+    view.renderStructure(structureOf(inNorth, rules));
+    const group = view.element.querySelector("optgroup");
+    return { group, showOne: () => view.renderStructure(structureOf(inNorth.slice(0, 1), rules)) };
+  }
+
+  it("carries the count in an optgroup's label", () => {
+    const { group, showOne } = shownWith({ groupHeadings: undefined, groupCounts: true });
+    expect(group?.label).toBe("N (2)");
+    showOne();
+    expect(group?.label).toBe("N (1)");
+  });
+
+  it("leaves a label the page or a translation changed while its name doesn't change", () => {
+    const { group, showOne } = shownWith({ groupHeadings: undefined });
+    if (group) group.label = "Nord";
+    showOne();
+    expect(group?.label).toBe("Nord");
+  });
+});

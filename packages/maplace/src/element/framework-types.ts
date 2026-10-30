@@ -37,12 +37,19 @@ type NamedMapAttribute =
   | "language"
   | "region";
 
-type MapAttribute = (typeof LIST_ATTRIBUTES)[number] | MapSettingAttribute | NamedMapAttribute;
+type MapAttribute =
+  | Exclude<(typeof LIST_ATTRIBUTES)[number], "group-counts">
+  | MapSettingAttribute
+  | NamedMapAttribute;
 
 /** The properties a template sets on the map; both frameworks set a defined element's own. */
 type MapProperties = Partial<Pick<MaplaceMapElement, "locations" | "route" | "sanitize">>;
 
-type MapTemplate = Attributes<MapAttribute> & MapProperties & OtherAttributes;
+/** `group-counts` reads `"false"` as off, so `false` is its off value. */
+type MapTemplate = Attributes<MapAttribute> &
+  Attributes<"group-counts", AttributeValue | false> &
+  MapProperties &
+  OtherAttributes;
 /** A location reads `"false"` as false (`listed`, `editable`), so `false` is its off value. */
 type LocationTemplate = Attributes<(typeof LOCATION_ATTRIBUTES)[number], AttributeValue | false> &
   OtherAttributes;

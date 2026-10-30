@@ -112,6 +112,10 @@ export const leftOut: SvelteMap = {
 // @ts-expect-error a location's lat is a number, as in the store
 export const badLocations: SvelteMap = { locations: [{ id: "a", lat: "1", lng: 2 }] };
 
+// group-counts reads "false" as off, so a template's false is fine on it.
+export const noCounts: VueMap = { "group-counts": false };
+export const noCountsInSvelte: SvelteMap = { "group-counts": debug };
+
 // @ts-expect-error false is written as "false", which turns a presence attribute such as cluster on
 export const falseCluster: VueMap = { cluster: false };
 

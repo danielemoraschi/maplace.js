@@ -11,6 +11,7 @@ describe("checkListViewOptions", () => {
     const all = {
       as: "list",
       groupHeadings: true,
+      groupCounts: true,
       fitAllLabel: "All",
       label: "Shops",
       heading: "Choose a location:",
@@ -21,6 +22,19 @@ describe("checkListViewOptions", () => {
       emptyAreaLabel: "Nothing here",
     };
     expect(check(all)).not.toThrow();
+  });
+
+  it("refuses a groupCounts that isn't a boolean", () => {
+    expect(check({ groupCounts: "yes" })).toThrow(/groupCounts must be/);
+  });
+
+  it("refuses groupCounts with groupHeadings false, and takes it otherwise", () => {
+    expect(check({ groupCounts: true, groupHeadings: false })).toThrow(
+      "createListView: groupCounts needs group headings",
+    );
+    expect(check({ groupCounts: true, groupHeadings: true })).not.toThrow();
+    expect(check({ groupCounts: true })).not.toThrow();
+    expect(check({ groupCounts: false, groupHeadings: false })).not.toThrow();
   });
 
   it("refuses unknown options and bad values", () => {

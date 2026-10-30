@@ -22,6 +22,11 @@ export interface ListViewOptions<Data = unknown> {
   readonly as?: "list" | "select" | undefined;
   /** Show group headings. Default true when any location has a `group`. */
   readonly groupHeadings?: boolean | undefined;
+  /**
+   * Shows after each group heading how many are listed under it now, following the filter and
+   * `scope`: "North (3)". Off by default; refused with `groupHeadings: false`.
+   */
+  readonly groupCounts?: boolean | undefined;
   /** Adds a first entry with this label that clears the selection and fits all locations. */
   readonly fitAllLabel?: string | undefined;
   /**
@@ -107,7 +112,7 @@ export function createListView<Data>(
   const { variant, areaSwitch } = listBlock(list, blockPartsOf(options, label));
   const stopFollowing = follow(maplace, {
     variant,
-    rules: { groupHeadings: options?.groupHeadings },
+    rules: { groupHeadings: options?.groupHeadings, groupCounts: options?.groupCounts },
     areaSwitch,
   });
   let destroyed = false;

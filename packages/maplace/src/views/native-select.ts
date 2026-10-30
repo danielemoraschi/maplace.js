@@ -32,10 +32,15 @@ export function createNativeSelect<Data>(
     fill: (option, location) => {
       option.textContent = labelOf(location);
     },
-    group: (heading) => {
+    group: () => {
       const group = document.createElement("optgroup");
-      group.label = heading;
-      return { element: group, head: [] };
+      return {
+        element: group,
+        head: [],
+        name(text) {
+          group.label = text;
+        },
+      };
     },
   });
   let selectedId: string | undefined;

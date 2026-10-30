@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ListEntry } from "../list-view";
 import type { Location } from "../location";
-import { optionsIn, recordingActions, structureOf } from "../testing/lists";
+import { groupNamesIn, optionsIn, recordingActions, structureOf } from "../testing/lists";
 import { createListbox } from "./listbox";
 
 const locations: Location[] = [
@@ -36,9 +36,7 @@ describe("createListbox: structure", () => {
     expect(view.element.getAttribute("role")).toBe("listbox");
     expect(view.element.getAttribute("aria-label")).toBe("Shops");
     expect(labels()).toEqual(["All", "Gamma", "Alpha", "Beta"]);
-    const groups = Array.from(document.querySelectorAll('[role="group"]'), (g) =>
-      g.getAttribute("aria-label"),
-    );
+    const groups = groupNamesIn(document.body);
     expect(groups).toEqual(["N", "S"]);
   });
 
@@ -117,5 +115,44 @@ describe("createListbox: state", () => {
     view.destroy();
     expect(actions.calls).toContain("unhover:c");
     expect(view.element.isConnected).toBe(false);
+  });
+});
+
+describe("createListbox: group names", () => {
+  const inNorth: Location[] = [
+    { id: "a", lat: 0, lng: 0, group: "N" },
+    { id: "b", lat: 0, lng: 0, group: "N" },
+  ];
+  const counted = (list: Location[]) =>
+    structureOf(list, { groupHeadings: undefined, groupCounts: true });
+
+  function shownWith(structure: ReturnType<typeof structureOf>) {
+    const view = createListbox(recordingActions(), {
+      label: "Shops",
+      fitAllLabel: undefined,
+      render: undefined,
+    });
+    document.body.replaceChildren(view.element);
+    view.renderStructure(structure);
+    return view;
+  }
+
+  it("changes the heading and the group's name together, keeping focus on an option", () => {
+    const view = shownWith(counted(inNorth));
+    expect(textsOf(".maplace-group-heading")).toEqual(["N (2)"]);
+    const option = options()[0];
+    option?.focus();
+    view.renderStructure(counted(inNorth.slice(0, 1)));
+    expect(textsOf(".maplace-group-heading")).toEqual(["N (1)"]);
+    expect(groupNamesIn(document.body)).toEqual(["N (1)"]);
+    expect(document.activeElement).toBe(option);
+  });
+
+  it("leaves a heading the page or a translation changed while its name doesn't change", () => {
+    const view = shownWith(structureOf(inNorth));
+    const heading = document.querySelector(".maplace-group-heading");
+    if (heading) heading.innerHTML = "<font>Nord</font>";
+    view.renderStructure(structureOf(inNorth.slice(0, 1)));
+    expect(textsOf(".maplace-group-heading")).toEqual(["Nord"]);
   });
 });

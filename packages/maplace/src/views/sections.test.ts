@@ -9,20 +9,24 @@ const loose: Location = { id: "l", lat: 0, lng: 0 };
 
 function sectionsIn(container: HTMLElement) {
   const fills: string[] = [];
+  const names: string[] = [];
   const sections = createSections<unknown, HTMLElement>(container, {
     option: () => document.createElement("span"),
     fill: (option, location) => {
       fills.push(location.id);
       option.textContent = location.id;
     },
-    group: (heading) => {
+    group: () => {
       const element = document.createElement("section");
       const head = document.createElement("h3");
-      head.textContent = heading;
-      return { element, head: [head] };
+      const name = (text: string) => {
+        names.push(text);
+        head.textContent = text;
+      };
+      return { element, head: [head], name };
     },
   });
-  return { sections, fills };
+  return { sections, fills, names };
 }
 
 describe("createSections", () => {
@@ -51,6 +55,26 @@ describe("createSections", () => {
     expect(container.querySelector("section")).toBe(group);
     expect(fills).toEqual(["l", "n", "l"]);
     expect(sections.locationOf(option as Element)).toBe(north);
+  });
+
+  it("names a group again when its label changes, keeping its element", () => {
+    const container = document.createElement("div");
+    const { sections } = sectionsIn(container);
+    const counted = (list: Location[]) =>
+      sections.render(structureOf(list, { groupHeadings: undefined, groupCounts: true }), []);
+    counted([north, { ...north, id: "m" }]);
+    const group = container.querySelector("section");
+    expect(group?.querySelector("h3")?.textContent).toBe("N (2)");
+    counted([north]);
+    expect(container.querySelector("section")).toBe(group);
+    expect(group?.querySelector("h3")?.textContent).toBe("N (1)");
+  });
+
+  it("doesn't give a group the same name twice", () => {
+    const { sections, names } = sectionsIn(document.createElement("div"));
+    sections.render(structureOf([north]), []);
+    sections.render(structureOf([north, loose]), []);
+    expect(names).toEqual(["N"]);
   });
 
   it("forgets options and groups no longer listed", () => {

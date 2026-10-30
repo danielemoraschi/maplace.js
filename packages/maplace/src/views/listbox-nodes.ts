@@ -39,14 +39,19 @@ export function fitAllElement(label: string): HTMLElement {
  * A group of options, named by `aria-label`. Its visible heading is hidden from assistive tech, so
  * it isn't read twice, and needs no generated id for `aria-labelledby`.
  */
-export function groupElement(heading: string): MadeGroup {
+export function groupElement(): MadeGroup {
   const group = element("div", GROUP_CLASS);
   group.setAttribute("role", "group");
-  group.setAttribute("aria-label", heading);
   const title = element("div", HEADING_CLASS);
   title.setAttribute("aria-hidden", "true");
-  title.textContent = heading;
-  return { element: group, head: [title] };
+  return {
+    element: group,
+    head: [title],
+    name(text) {
+      group.setAttribute("aria-label", text);
+      title.textContent = text;
+    },
+  };
 }
 
 /** What tells a listbox's options apart from the rest of its content. */

@@ -138,10 +138,47 @@ describe("listFromAttributes with a list view defined by name", () => {
     );
   });
 
-  it("treats list-scope and its labels as list attributes", () => {
-    for (const name of ["list-scope", "area-only-label", "show-all-label", "empty-area-label"]) {
+  it("treats list-scope, its labels and group-counts as list attributes", () => {
+    for (const name of [
+      "list-scope",
+      "area-only-label",
+      "show-all-label",
+      "empty-area-label",
+      "group-counts",
+    ]) {
       expect(isListAttribute(name)).toBe(true);
     }
+  });
+
+  it.each([
+    ["", true],
+    ["true", true],
+    ["false", false],
+  ])('reads group-counts="%s" as HTML writes a boolean', (written, groupCounts) => {
+    const view = definedView();
+    listFromAttributes(elementWith({ list: view.name, "group-counts": written }), createMaplace());
+    expect(view.given.setup?.options.groupCounts).toBe(groupCounts);
+  });
+
+  it("shows the counts on the built-in lists", () => {
+    const host = elementWith({ list: "", "group-counts": "" });
+    listFromAttributes(host, storeWithGroups());
+    expect(host.querySelector('[role="group"]')?.getAttribute("aria-label")).toBe("north (1)");
+    const select = elementWith({ list: "select", "group-counts": "" });
+    listFromAttributes(select, storeWithGroups());
+    expect(select.querySelector("optgroup")?.label).toBe("north (1)");
+  });
+
+  it("refuses any other group-counts, naming it", () => {
+    const view = definedView();
+    const host = elementWith({ list: view.name, "group-counts": "yes" });
+    expect(() => listFromAttributes(host, createMaplace())).toThrow(
+      expect.objectContaining({
+        field: "group-counts",
+        message: expect.stringContaining('group-counts must be true or false, got "yes"'),
+      }),
+    );
+    expect(view.factory).not.toHaveBeenCalled();
   });
 
   it.each([

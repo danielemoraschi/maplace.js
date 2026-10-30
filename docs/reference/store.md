@@ -139,6 +139,7 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 |---|---|---|
 | `as` | `"list" \| "select"` | A listbox (default) or a native `<select>` |
 | `groupHeadings` | `boolean` | Shows group headings; default `true` when any location has a `group` |
+| `groupCounts` | `boolean` | After each group heading, how many are listed under it now, following the filter and `scope`: "North (3)". Off by default; refused with `groupHeadings: false` |
 | `fitAllLabel` | `string` | Adds a first entry with this label that clears the selection and fits all locations |
 | `label` | `string` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | `string` | A visible heading above the entries |

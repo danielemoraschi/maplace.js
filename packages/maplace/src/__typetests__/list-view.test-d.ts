@@ -23,6 +23,10 @@ createListView(shop, {
   emptyAreaLabel: "Nothing here",
 });
 
+createListView(shop, { groupCounts: true });
+// @ts-expect-error groupCounts is on or off
+createListView(shop, { groupCounts: "yes" });
+
 // @ts-expect-error the list is a listbox or a native select
 createListView(shop, { as: "dropdown" });
 // @ts-expect-error render returns a node, never an HTML string

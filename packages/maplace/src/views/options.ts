@@ -17,6 +17,7 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
   checks: {
     as: optional(oneOf(AS)),
     groupHeadings: optional(checkBoolean),
+    groupCounts: optional(checkBoolean),
     fitAllLabel: optional(checkNonBlankString),
     label: optional(checkNonBlankString),
     heading: optional(checkNonBlankString),
@@ -29,13 +30,19 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
   unknown: "is not a list view option",
 });
 
-/** `createListView` options; `render` or `scope` with `as: 'select'` is refused, never ignored. */
+/**
+ * `createListView` options; `render` or `scope` with `as: 'select'`, and `groupCounts` with
+ * `groupHeadings: false`, are refused, never ignored.
+ */
 export function checkListViewOptions(
   value: unknown,
   field: Field,
 ): asserts value is ListViewOptions | undefined {
   if (value === undefined) return;
   checkFields(value, field);
+  if (value.groupCounts && value.groupHeadings === false) {
+    reject(field, "groupCounts needs group headings, and groupHeadings is false");
+  }
   if (value.as === "select") refuseForSelect(value, field);
 }
 

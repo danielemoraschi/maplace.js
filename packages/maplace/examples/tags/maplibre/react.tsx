@@ -54,7 +54,7 @@ function Tags() {
         ))}
       </p>
       <MaplaceMap createAdapter={createMapLibreAdapter} className="map">
-        <LocationList heading="Places" position="top-right" />
+        <LocationList heading="Places" groupCounts position="top-right" />
       </MaplaceMap>
     </MaplaceProvider>
   );

@@ -19,14 +19,20 @@ export { defineProvider } from "./define";
 /** The list options `<maplace-map>` reads from its attributes and gives every list view. */
 export type ElementListOptions = Pick<
   ListViewOptions,
-  "fitAllLabel" | "heading" | "scope" | "areaOnlyLabel" | "showAllLabel" | "emptyAreaLabel"
+  | "fitAllLabel"
+  | "heading"
+  | "groupCounts"
+  | "scope"
+  | "areaOnlyLabel"
+  | "showAllLabel"
+  | "emptyAreaLabel"
 >;
 
 /** What `<maplace-map>` gives a list view besides its store. */
 export interface ListViewSetup {
   /**
-   * The list options from the attributes (`fit-all-label`, `list-heading`, `list-scope`,
-   * `area-only-label`, `show-all-label`, `empty-area-label`).
+   * The list options from the attributes (`fit-all-label`, `list-heading`, `group-counts`,
+   * `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`).
    */
   readonly options: ElementListOptions;
   /**
@@ -60,12 +66,14 @@ export { defineListView } from "./list-views";
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
  * - `fit-all-label`: label of a first list entry that fits all locations.
  * - `list-heading`: a heading above the list, beside the map or on it; the list's accessible name.
+ * - `group-counts`: shows after each group heading how many are listed under it now (a boolean, as
+ *   HTML writes one: present, empty or `"true"` is on, `"false"` off).
  * - `list-scope`: `viewport` shows a switch above the list, "All" (at load) or "This area",
  *   which lists only what is in the map's view and follows it, wherever the list is.
  * - `area-only-label`, `show-all-label`: the labels of "This area" and "All".
  * - `empty-area-label`: what the list says when nothing is in its view.
- *   (`list`, `list-position`, `fit-all-label`, `list-heading`, `list-scope`, `area-only-label`,
- *   `show-all-label` and `empty-area-label` are live: the list is built again.)
+ *   (`list`, `list-position`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`,
+ *   `area-only-label`, `show-all-label` and `empty-area-label` are live: the list is built again.)
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
  *   changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.

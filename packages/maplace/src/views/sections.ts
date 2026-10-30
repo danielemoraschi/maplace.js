@@ -8,11 +8,15 @@ export interface SectionMakers<Data, E extends Element> {
   /** Fills an option for a location it shows for the first time, or a new object for it. */
   fill(option: E, location: Location<Data>): void;
   /** A group and what stays before its options (the listbox's heading). */
-  group(heading: string): MadeGroup;
+  group(): MadeGroup;
 }
 
-/** A made group: its element, and what stays before its options. */
-export type MadeGroup = { readonly element: Element; readonly head: readonly Element[] };
+/** A made group: its element, what stays before its options, and what names it. */
+export type MadeGroup = {
+  readonly element: Element;
+  readonly head: readonly Element[];
+  name(text: string): void;
+};
 
 /** What one render builds before it replaces the kept options and groups. */
 interface Pass<E extends Element> {
@@ -41,6 +45,9 @@ export function createSections<Data, E extends Element>(
   let options = new Map<string, E>();
   let groups = new Map<string, MadeGroup>();
   const shown = new WeakMap<Element, Location<Data>>();
+  // The name each group was last given: compared here, never read back from the DOM, so a group
+  // whose name doesn't change is left alone, with a browser's translation of it.
+  const named = new WeakMap<MadeGroup, string>();
 
   function optionFor(location: Location<Data>): E {
     const option = options.get(location.id) ?? makers.option();
@@ -55,15 +62,21 @@ export function createSections<Data, E extends Element>(
    * A group made for this render, placed in the list at once: its members then move in within
    * the page, keeping focus and state where the browser can (`moveBefore`); the order comes after.
    */
-  function newGroup(heading: string): MadeGroup {
-    const group = makers.group(heading);
+  function newGroup(): MadeGroup {
+    const group = makers.group();
     container.append(group.element);
     return group;
   }
 
+  function nameGroup(group: MadeGroup, name: string): void {
+    if (named.get(group) === name) return;
+    named.set(group, name);
+    group.name(name);
+  }
+
   /** One section's options, at the top or in their group, recorded in this render's pass. */
-  function renderSection(pass: Pass<E>, { heading, locations }: ListSection<Data>): void {
-    const group = heading === undefined ? undefined : (groups.get(heading) ?? newGroup(heading));
+  function renderSection(pass: Pass<E>, { heading, label, locations }: ListSection<Data>): void {
+    const group = heading === undefined ? undefined : (groups.get(heading) ?? newGroup());
     const members: Element[] = group ? [...group.head] : pass.top;
     for (const location of locations) {
       const option = optionFor(location);
@@ -72,6 +85,7 @@ export function createSections<Data, E extends Element>(
       pass.ordered.push(option);
     }
     if (group === undefined || heading === undefined) return;
+    nameGroup(group, label ?? heading);
     reconcile(group.element, members);
     pass.groups.set(heading, group);
     pass.top.push(group.element);

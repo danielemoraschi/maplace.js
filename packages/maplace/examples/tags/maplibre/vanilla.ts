@@ -23,7 +23,7 @@ const maplace = createMapLibreMap("#tags-maplibre-vanilla-map", {
       tags: ["parking", "open-late"],
     },
   ],
-  list: { heading: "Places" },
+  list: { heading: "Places", groupCounts: true },
 });
 
 const filters = document.querySelector("#tags-maplibre-vanilla-filters");

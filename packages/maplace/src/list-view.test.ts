@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createListView, LIST_VIEW_CLASS } from "./list-view";
 import { createMaplace } from "./maplace/create";
 import { listed } from "./testing/listed";
-import { optionsIn, titled } from "./testing/lists";
+import { groupNamesIn, optionsIn, titled } from "./testing/lists";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -22,6 +22,38 @@ describe("a list view's element", () => {
   ] as const)("carries the class a page styles it by, as %s", async (_, view) => {
     const { list } = await listed({ locations }, view);
     expect(list.element.classList.contains(LIST_VIEW_CLASS)).toBe(true);
+  });
+});
+
+describe("createListView with groupCounts", () => {
+  const places = [
+    { id: "a", lat: 0, lng: 0, group: "North" },
+    { id: "b", lat: 0, lng: 0, group: "North" },
+    { id: "c", lat: 0, lng: 0, group: "South" },
+  ];
+
+  it("counts what is listed under each heading, following the filter, in a list", async () => {
+    const { list, maplace } = await listed({ locations: places }, { groupCounts: true });
+    expect(groupNamesIn(list.element)).toEqual(["North (2)", "South (1)"]);
+    maplace.setFilter({ groups: ["South"] });
+    expect(groupNamesIn(list.element)).toEqual(["South (1)"]);
+  });
+
+  it("counts in a native select too", async () => {
+    const { list } = await listed({ locations: places }, { as: "select", groupCounts: true });
+    const labels = Array.from(list.element.querySelectorAll("optgroup"), ({ label }) => label);
+    expect(labels).toEqual(["North (2)", "South (1)"]);
+  });
+
+  it("names no group for a blank group's places", async () => {
+    const blank = [...places, { id: "d", lat: 0, lng: 0, group: " " }];
+    const { list } = await listed({ locations: blank }, { groupCounts: true });
+    expect(groupNamesIn(list.element)).toEqual(["North (2)", "South (1)"]);
+  });
+
+  it("shows no counts unless asked", async () => {
+    const { list } = await listed({ locations: places });
+    expect(groupNamesIn(list.element)[0]).toBe("North");
   });
 });
 

@@ -71,6 +71,7 @@ function useListView<Data>(
   {
     as,
     groupHeadings,
+    groupCounts,
     fitAllLabel,
     label,
     heading,
@@ -91,6 +92,7 @@ function useListView<Data>(
     const listOptions = {
       as,
       groupHeadings,
+      groupCounts,
       fitAllLabel,
       label,
       heading,
@@ -114,6 +116,7 @@ function useListView<Data>(
     portals,
     as,
     groupHeadings,
+    groupCounts,
     fitAllLabel,
     label,
     heading,

@@ -77,6 +77,7 @@ defineProvider("mine", () => "google");
 defineListView("checks", (maplace, { options, listed }) => {
   expectTypeOf(maplace).toEqualTypeOf<Maplace>();
   expectTypeOf(options.fitAllLabel).toEqualTypeOf<string | undefined>();
+  expectTypeOf(options.groupCounts).toEqualTypeOf<boolean | undefined>();
   expectTypeOf(options.scope).toEqualTypeOf<"viewport" | undefined>();
   expectTypeOf(options.areaOnlyLabel).toEqualTypeOf<string | undefined>();
   expectTypeOf(options.showAllLabel).toEqualTypeOf<string | undefined>();

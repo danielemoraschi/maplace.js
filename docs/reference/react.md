@@ -86,6 +86,7 @@ The store's [list view](store.md#list-view-options). A change of an option build
 |---|---|
 | `as` | `"list"` (a listbox, the default) or `"select"` (a native select) |
 | `groupHeadings` | Shows group headings; default `true` when any location has a `group` |
+| `groupCounts` | After each group heading, how many are listed under it now, following the filter and `scope`: "North (3)". Off by default; refused with `groupHeadings: false` |
 | `fitAllLabel` | Adds a first entry with this label that clears the selection and fits all locations |
 | `label` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | A visible heading above the entries |

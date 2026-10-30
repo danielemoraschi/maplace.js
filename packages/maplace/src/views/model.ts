@@ -4,6 +4,8 @@ import { type FilteredLocations, isListed } from "../location-state";
 /** Locations under one group heading, or none (`heading` undefined). */
 export interface ListSection<Data = unknown> {
   readonly heading: string | undefined;
+  /** The heading as read, when not just `heading`; unread without a `heading`. */
+  readonly label?: string | undefined;
   readonly locations: readonly Location<Data>[];
 }
 
@@ -15,6 +17,8 @@ export interface ListStructure<Data = unknown> {
 /** How listed locations become a structure. */
 export interface ListRules {
   readonly groupHeadings: boolean | undefined;
+  /** Shows after each heading how many are listed under it. */
+  readonly groupCounts?: boolean | undefined;
 }
 
 /** Whether a listed location is kept: in the map's view, for a list with `scope`. */
@@ -37,7 +41,7 @@ export function structureOf<Data>(
   if (!headingsShown(locations, rules)) {
     return { sections: [{ heading: undefined, locations: entries }] };
   }
-  return { sections: byGroup(entries) };
+  return { sections: byGroup(entries, rules) };
 }
 
 /** The listed locations, those `kept` keeps when given (`viewport-scope.ts`), in data order. */
@@ -61,7 +65,10 @@ function headingsShown(locations: readonly Location[], rules: ListRules): boolea
 }
 
 /** Groups in first-appearance order, ungrouped first; a blank group name gets no heading. */
-function byGroup<Data>(locations: readonly Location<Data>[]): ListSection<Data>[] {
+function byGroup<Data>(
+  locations: readonly Location<Data>[],
+  rules: ListRules,
+): ListSection<Data>[] {
   const ungrouped: Location<Data>[] = [];
   const groups = new Map<string, Location<Data>[]>();
   for (const location of locations) {
@@ -76,6 +83,7 @@ function byGroup<Data>(locations: readonly Location<Data>[]): ListSection<Data>[
   }
   const sections = [...groups].map(([group, members]) => ({
     heading: group.trim() ? group : undefined,
+    label: rules.groupCounts ? `${group} (${members.length})` : undefined,
     locations: members,
   }));
   return ungrouped.length > 0

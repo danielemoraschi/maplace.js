@@ -45,6 +45,19 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(listboxes(container)[0]?.getAttribute("aria-label")).toBe("Towns");
   });
 
+  it("shows counts with groupCounts, and builds the list again when it changes", async () => {
+    const app = (groupCounts: boolean) => (
+      <MaplaceProvider locations={[{ id: "a", lat: 0, lng: 0, group: "North" }]}>
+        <LocationList groupCounts={groupCounts} />
+      </MaplaceProvider>
+    );
+    const { container, render } = await renderInto(app(true), root);
+    const groupName = () => container.querySelector('[role="group"]')?.getAttribute("aria-label");
+    expect(groupName()).toBe("North (1)");
+    await render(app(false));
+    expect(groupName()).toBe("North");
+  });
+
   it("keeps its view across renders with the same options", async () => {
     const app = () => (
       <MaplaceProvider locations={TOWNS}>
