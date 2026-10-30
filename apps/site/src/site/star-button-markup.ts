@@ -41,8 +41,8 @@ export function starButtonShadow(repositoryUrl: string): string {
   const repository = new URL(repositoryUrl).pathname.slice(1);
   return (
     `<style>${LICENSE_NOTICE}${BUTTON_CSS}</style><div class="widget widget-lg">` +
-    `<a class="btn" href="${repositoryUrl}" rel="noopener" target="_blank" aria-label="Star ${repository} on GitHub">` +
-    `${MARK_GITHUB}&nbsp;<span>Star on GitHub</span></a></div>`
+    `<a class="btn" href="${repositoryUrl}" rel="noopener" target="_blank" aria-label="${repository} on GitHub">` +
+    `${MARK_GITHUB}&nbsp;<span>GitHub</span></a></div>`
   );
 }
 

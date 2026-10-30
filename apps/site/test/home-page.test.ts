@@ -24,9 +24,7 @@ describe("the home page's star button", () => {
   it("is drawn by the site, its count asked of the site itself and nothing of GitHub", async () => {
     const { page, context, fetched, offsite } = await site.visitor();
     await page.goto(site.url);
-    await expect(starButton(page).locator(".btn span").textContent()).resolves.toBe(
-      "Star on GitHub",
-    );
+    await expect(starButton(page).locator(".btn span").textContent()).resolves.toBe("GitHub");
     // The fallback link, for a browser that can't attach the shadow root, stays out of sight.
     expect(await starButton(page).locator(":scope > a").isVisible()).toBe(false);
     await expect.poll(() => fetched(STAR_COUNT_PATH), ASKED).toBe(true);

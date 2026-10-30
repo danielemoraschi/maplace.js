@@ -24,7 +24,7 @@ describe("starCountMarkup", () => {
 describe("starButtonShadow", () => {
   it("links the button to the repository, named for a screen reader", () => {
     expect(starButtonShadow(REPO)).toContain(
-      '<a class="btn" href="https://github.com/o/r" rel="noopener" target="_blank" aria-label="Star o/r on GitHub">',
+      '<a class="btn" href="https://github.com/o/r" rel="noopener" target="_blank" aria-label="o/r on GitHub">',
     );
   });
 });

@@ -8,7 +8,7 @@ const GITHUB_BUTTONS = createRequire(import.meta.url).resolve("github-buttons/di
 const STARS = 1234;
 
 /** The hero's link as github-buttons took it: it draws GitHub's button in its place. */
-const GITHUB_LINK = `<a class="github-button" href="${REPOSITORY_URL}" data-size="large" data-show-count="true" aria-label="Star danielemoraschi/maplace.js on GitHub">Star on GitHub</a>`;
+const GITHUB_LINK = `<a class="github-button" href="${REPOSITORY_URL}" data-size="large" data-show-count="true" aria-label="danielemoraschi/maplace.js on GitHub">GitHub</a>`;
 
 /** A page holding `content` at its top-left corner, so both buttons are drawn at one spot. */
 const pageOf = (content: string) =>
