@@ -5,7 +5,8 @@ import { REPOSITORY_URL } from "../site/repo-docs.ts";
 const here = Astro.url.pathname;
 ---
 
-<footer class="sticky bottom-0 z-10 mt-16 bg-ink text-sm text-paper">
+{/* Held on the screen from 48rem up: on a phone it would take too much of it. */}
+<footer class="mt-16 bg-ink text-sm text-paper min-[48rem]:sticky min-[48rem]:bottom-0 min-[48rem]:z-10">
   <div class="wrap flex flex-wrap justify-between gap-x-6 gap-y-2 py-4">
     <span>maplacejs · MIT licence</span>
     <span class="flex flex-wrap gap-x-5 gap-y-2">
@@ -14,8 +15,8 @@ const here = Astro.url.pathname;
         class="border-0 bg-transparent p-0 underline decoration-2 underline-offset-3"
         data-maps-toggle
       >
-        <span class="in-data-[maps=on]:hidden">Maps: off · turn on</span>
-        <span class="not-in-data-[maps=on]:hidden">Maps: on · turn off</span>
+        <span class="in-data-[maps=on]:hidden">Maps: off<span class="max-[48rem]:sr-only"> · turn on</span></span>
+        <span class="not-in-data-[maps=on]:hidden">Maps: on<span class="max-[48rem]:sr-only"> · turn off</span></span>
       </button>
       {
         FOOTER_PAGES.map(({ route, label }) => (
