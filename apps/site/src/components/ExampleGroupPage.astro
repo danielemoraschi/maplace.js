@@ -2,6 +2,7 @@
 import {
   type ExampleGroup,
   groupDescription,
+  groupPath,
   groupTitle,
   sectionNumber,
 } from "../examples/example-sections.ts";
@@ -10,6 +11,7 @@ import ExampleGroupBar from "./ExampleGroupBar.astro";
 import ExampleSection from "./ExampleSection.astro";
 import Hero from "./Hero.astro";
 import InstallBox from "./InstallBox.astro";
+import MarkdownLink from "./MarkdownLink.astro";
 
 interface Props {
   group: ExampleGroup;
@@ -26,6 +28,7 @@ const { group } = Astro.props;
   {/* Its own top padding, not its summary's margin: a switch lands the panel's top under the bar. */}
   <div class="pt-5" data-group-panel={group.id}>
     <p class="m-0 max-w-text text-lg text-muted">{group.summary}</p>
+    <p class="mt-1 mb-0 text-sm"><MarkdownLink route={groupPath(group)} /></p>
     {
       group.sections.map((section) => (
         <ExampleSection number={sectionNumber(section)} {...section} />

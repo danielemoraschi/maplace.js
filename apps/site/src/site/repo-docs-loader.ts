@@ -17,10 +17,12 @@ export function repoDocsLoader(): Loader {
       const blobBase = siteBlobBase();
       store.clear();
       for (const doc of REPO_DOCS) {
-        const rendered = await renderMarkdown(repoDocMarkdown(doc, { pin, blobBase }));
+        const body = repoDocMarkdown(doc, { pin, blobBase });
+        const rendered = await renderMarkdown(body);
         store.set({
           id: doc.id,
           data: { title: doc.title, description: doc.description },
+          body,
           rendered,
         });
       }

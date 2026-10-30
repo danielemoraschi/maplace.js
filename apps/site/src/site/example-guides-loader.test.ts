@@ -21,7 +21,7 @@ describe("an example's guide", () => {
 
 describe("exampleGuidesLoader", () => {
   it("stores each guide by its example's name, rendered with its links working on the site", async () => {
-    const entries: { id: string; rendered: { html: string } }[] = [];
+    const entries: { id: string; body: string; rendered: { html: string } }[] = [];
     const context = {
       store: {
         clear: () => entries.splice(0),
@@ -34,5 +34,6 @@ describe("exampleGuidesLoader", () => {
     const customList = entries.find(({ id }) => id === "custom-list");
     expect(customList?.rendered.html).toContain("](/element/#list-views)");
     expect(customList?.rendered.html).not.toMatch(/^# /);
+    expect(customList?.body).toBe(customList?.rendered.html);
   });
 });

@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import type { LoaderContext } from "astro/loaders";
+import { describe, expect, it, vi } from "vitest";
 import { REPO_DOCS } from "./repo-docs.ts";
-import { repoDocMarkdown, siteMarkdownOf, withoutTitle } from "./repo-docs-loader.ts";
+import {
+  repoDocMarkdown,
+  repoDocsLoader,
+  siteMarkdownOf,
+  withoutTitle,
+} from "./repo-docs-loader.ts";
 
 const doc = (id: string) => REPO_DOCS.find((each) => each.id === id) as (typeof REPO_DOCS)[number];
 
@@ -8,6 +14,8 @@ const settings = {
   pin: { version: "1.2.3", integrityOf: (file: string) => `sha384-of-${file}` },
   blobBase: "https://github.com/o/r/blob/abc123/",
 };
+
+vi.mock("./cdn-pin.ts", () => ({ cdnPin: async () => settings.pin }));
 
 describe("withoutTitle", () => {
   it("drops the document's own title, which the page writes", () => {
@@ -68,5 +76,22 @@ describe("repoDocMarkdown of a reference page", () => {
     const markdown = repoDocMarkdown(doc("locations"), settings);
     expect(markdown).toContain("](/migrating/#location-fields)");
     expect(markdown).toContain("](https://github.com/o/r/blob/abc123/docs/rfc-1.0.md#shape)");
+  });
+});
+
+describe("repoDocsLoader", () => {
+  it("stores each doc by id with its Markdown as its body", async () => {
+    const entries: { id: string; body: string }[] = [];
+    const context = {
+      store: {
+        clear: () => entries.splice(0),
+        set: (entry: (typeof entries)[number]) => entries.push(entry),
+      },
+      renderMarkdown: async (markdown: string) => ({ html: markdown }),
+    };
+    await repoDocsLoader().load(context as unknown as LoaderContext);
+    expect(entries.map(({ id }) => id)).toEqual(REPO_DOCS.map(({ id }) => id));
+    const gettingStarted = entries.find(({ id }) => id === "getting-started");
+    expect(gettingStarted?.body).toContain("](/migrating/)");
   });
 });

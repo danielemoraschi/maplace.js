@@ -1,5 +1,6 @@
 ---
 import { getEntry, render } from "astro:content";
+import MarkdownLink from "../components/MarkdownLink.astro";
 import ProsePage from "../components/ProsePage.astro";
 import { CHANGELOG_ENTRY } from "../site/changelog-loader.ts";
 import { CHANGELOG_PAGE } from "../site/footer-pages.ts";
@@ -13,11 +14,12 @@ const { Content } = await render(changelog);
 
 <ProsePage
   title={CHANGELOG_PAGE.label}
-  description="Every change to maplacejs a reader would notice, newest first."
+  description={CHANGELOG_PAGE.description}
 >
   <Fragment slot="lede">
     Every change to maplacejs a reader would notice, newest first, with the issue it closed if any.
     Written in <a href={changelog.data.source}>CHANGELOG.md</a> with each change.
   </Fragment>
+  <p class="mt-0 mb-6 text-sm"><MarkdownLink route={CHANGELOG_PAGE.route} /></p>
   <div class="changelog-entries"><Content /></div>
 </ProsePage>

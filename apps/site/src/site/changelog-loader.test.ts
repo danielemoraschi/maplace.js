@@ -8,6 +8,7 @@ import { CHANGELOG_ENTRY, changelogLoader } from "./changelog-loader.ts";
 interface StoredEntry {
   readonly id: string;
   readonly data: { readonly source: string };
+  readonly body: string;
   readonly rendered: { readonly html: string };
 }
 
@@ -38,6 +39,10 @@ describe("changelogLoader", () => {
     expect(calls[0]).toBe("clear");
     expect(entry.id).toBe(CHANGELOG_ENTRY);
     expect(entry.rendered.html.startsWith("## ")).toBe(true);
+  });
+
+  it("stores the Markdown it renders as the entry's body", () => {
+    expect(entry.body).toBe(entry.rendered.html);
   });
 
   it("links the source and the issues to the repository the manifest names", () => {

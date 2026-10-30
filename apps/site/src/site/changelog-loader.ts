@@ -22,6 +22,7 @@ export function changelogLoader(): Loader {
       store.set({
         id: CHANGELOG_ENTRY,
         data: { source: `${blobBase}${CHANGELOG_FILE}` },
+        body: markdown,
         rendered,
       });
     },
