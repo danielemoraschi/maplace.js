@@ -8,7 +8,7 @@ import { MAPLIBRE_MAP_SETTINGS, mapLibreSettingsOf } from "./maplibre-attributes
  * bundled, with maplibre-gl, its worker and its stylesheet.
  *
  * Provider attributes, read when the map opens, a change of either opening the map again where it
- * was: `map-style` (a style URL, or a JSON style object, as `mapStyle`; OpenFreeMap's `liberty`
+ * was: `map-style` (a style URL, or a JSON style object, as `mapStyle`; OpenFreeMap's `bright`
  * when left out) and `map-options` (a JSON object of MapLibre's map options, as `mapOptions`: not
  * its container, style, centre, zoom or bounds). `color-scheme` isn't read: the style sets the
  * colours. An npm page installs maplibre-gl and imports its stylesheet; the CDN script needs

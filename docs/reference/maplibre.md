@@ -1,6 +1,6 @@
 # MapLibre adapter
 
-`createMapLibreAdapter(options)` from `maplace/maplibre` draws a store on MapLibre GL JS; `maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `liberty` style unless you give another, so it needs no key and no map ID.
+`createMapLibreAdapter(options)` from `maplace/maplibre` draws a store on MapLibre GL JS; `maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `bright` style unless you give another, so it needs no key and no map ID.
 
 The store, its list, its events and its errors are the same as on Google; what differs is in [capabilities](api.md#capabilities): no routes. Provider options belong to the adapter, never to the store. On Google: [Google adapter](google.md).
 
@@ -8,7 +8,7 @@ The store, its list, its events and its errors are the same as on Google; what d
 
 | Option | Type | What |
 |---|---|---|
-| `mapStyle` | `string \| StyleSpecification` | The map's style: a style URL or a style object; OpenFreeMap's `liberty` when left out ([styles and tiles](#styles-and-tiles)). Named `mapStyle` because the store's `style` is the shapes' default style |
+| `mapStyle` | `string \| StyleSpecification` | The map's style: a style URL or a style object; OpenFreeMap's `bright` when left out ([styles and tiles](#styles-and-tiles)). Named `mapStyle` because the store's `style` is the shapes' default style |
 | `map` | `maplibregl.Map` | Your own map to draw on, instead of one maplacejs creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
 | `mapOptions` | `MapOptions` | Extra options for a map maplacejs creates; not `container`, `style`, `center`, `zoom` or `bounds`, which maplacejs sets. `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
 
@@ -70,7 +70,7 @@ The element's MapLibre provider reads these attributes of `<maplace-map>` when t
 
 | Attribute | What |
 |---|---|
-| `map-style` | A style URL, or a JSON style object, as `mapStyle`; OpenFreeMap's `liberty` when left out |
+| `map-style` | A style URL, or a JSON style object, as `mapStyle`; OpenFreeMap's `bright` when left out |
 | `map-options` | A JSON object of MapLibre's map options, as `mapOptions`, with the same exclusions |
 
 A change of either opens the map again where it was, keeping the store's state. A bad value is `invalid-input` naming the attribute (`map-options.center`; `map-options.style` is told to use `map-style`). `color-scheme` isn't read: the style sets the colours.
@@ -100,7 +100,7 @@ From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-g
 
 ## Styles and tiles
 
-The style says where the tiles, fonts and icons come from. OpenFreeMap's `https://tiles.openfreemap.org/styles/liberty` is the default: free, no key, OpenStreetMap data. Any provider's style URL works the same way, such as MapTiler, Stadia Maps, Protomaps or your own server, with its key in the URL where it needs one.
+The style says where the tiles, fonts and icons come from. OpenFreeMap's `https://tiles.openfreemap.org/styles/bright` is the default: free, no key, OpenStreetMap data. Any provider's style URL works the same way, such as MapTiler, Stadia Maps, Protomaps or your own server, with its key in the URL where it needs one.
 
 A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log.
 

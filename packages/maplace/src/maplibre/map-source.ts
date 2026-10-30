@@ -7,8 +7,8 @@ import type { MapLibre } from "./library";
 import type { MapLibreAdapterOptions } from "./options";
 import { whenStyleLoaded } from "./style-load";
 
-/** OpenFreeMap's `liberty` style: free, no key, OpenStreetMap data. */
-const OPENFREEMAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+/** OpenFreeMap's `bright` style: free, no key, OpenStreetMap data. */
+const OPENFREEMAP_STYLE = "https://tiles.openfreemap.org/styles/bright";
 
 /** A map in use, and how to give it back. */
 export interface MapInUse {

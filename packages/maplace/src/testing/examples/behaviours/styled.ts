@@ -45,4 +45,4 @@ const offering =
 export const styledOnGoogle = offering(["Light", "Dark", "Follow the system"]);
 
 /** On MapLibre, four of OpenFreeMap's styles. */
-export const styledOnMapLibre = offering(["Liberty", "Bright", "Positron", "Dark"]);
+export const styledOnMapLibre = offering(["Bright", "Liberty", "Positron", "Dark"]);

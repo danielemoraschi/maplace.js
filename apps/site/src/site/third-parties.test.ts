@@ -24,7 +24,7 @@ describe("thirdPartyOf", () => {
 
   it("OpenFreeMap receives MapLibre's default style and what it fetches", () => {
     const requests = [
-      "https://tiles.openfreemap.org/styles/liberty",
+      "https://tiles.openfreemap.org/styles/bright",
       "https://tiles.openfreemap.org/planet",
       "https://tiles.openfreemap.org/natural_earth/ne2sr/3/4/2.png",
       "https://tiles.openfreemap.org/fonts/Noto%20Sans%20Regular/0-255.pbf",

@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-30 Changed MapLibre's default style, for a map that names none, from OpenFreeMap's `liberty` to its `bright`; every example opens on it, the styled example's Map style list starting with Bright
 - 2026-10-29 Changed the site's star button: drawn by the site as GitHub's was, its count asked of the site itself (cached for 48 hours), so visitors' browsers no longer contact GitHub; the privacy page no longer lists GitHub
 - 2026-10-29 Changed the site's privacy page: who is responsible for it, the legal basis of each use, transfers outside the EU, how long the host keeps what it receives, the reader's rights and how to complain, Cloudflare's request statistics for the site (no analytics script runs), and the date it last changed
 - 2026-10-28 Changed the markers example, in every version on both providers: its list starts with "View all", as 0.2's menu did, which clears the selection and fits every place (`fitAllLabel`)

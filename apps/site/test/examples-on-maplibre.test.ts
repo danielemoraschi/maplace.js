@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  OPENFREEMAP_BRIGHT as BRIGHT,
   OPENFREEMAP_DARK as DARK,
-  OPENFREEMAP_LIBERTY as LIBERTY,
   OPENFREEMAP_STYLES,
 } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
@@ -71,7 +71,7 @@ describe("the site's examples on MapLibre", () => {
           await expect.poll(() => mapLibreDrawn(version), waitingFor("map")).toBe(true);
           await expect
             .poll(() => offsite().slice(askedBefore), waitingFor("style"))
-            .toContain(LIBERTY);
+            .toContain(BRIGHT);
         }
 
         for (const [index, version] of order.entries()) {

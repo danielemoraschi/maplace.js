@@ -22,7 +22,7 @@ Google checks the key as the first map opens. A key it refuses (an invalid key, 
 
 ## Style URL
 
-On MapLibre a map's look and its tiles come from its style: a URL (or a JSON style object) the element's `map-style` or the adapter's `mapStyle` takes. Left out, it is OpenFreeMap's `liberty` style: free, no key, OpenStreetMap data.
+On MapLibre a map's look and its tiles come from its style: a URL (or a JSON style object) the element's `map-style` or the adapter's `mapStyle` takes. Left out, it is OpenFreeMap's `bright` style: free, no key, OpenStreetMap data.
 
 Another provider's style URL works the same way, its key in the URL where it needs one, and kept safe as that provider says. A style its server refuses (HTTP 401 or 403) is `provider-auth-failed`, and one that fails to load is `provider-load-failed` ([styles and tiles](maplibre.md#styles-and-tiles)).
 

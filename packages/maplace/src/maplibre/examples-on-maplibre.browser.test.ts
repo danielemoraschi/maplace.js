@@ -15,8 +15,8 @@ import { openPage } from "../testing/examples/example-page";
 import { type ExampleRun, openVersion } from "../testing/examples/example-runs";
 import { type OffsiteLog, serveExamplesOffline } from "../testing/examples/example-surroundings";
 import {
+  OPENFREEMAP_BRIGHT as BRIGHT,
   OPENFREEMAP_DARK as DARK,
-  OPENFREEMAP_LIBERTY as LIBERTY,
   OPENFREEMAP_STYLES,
 } from "../testing/examples/openfreemap-styles";
 import { recordErrors } from "../testing/examples/page-errors";
@@ -126,13 +126,9 @@ async function expectReadyOffline(
 ): Promise<void> {
   await expect.poll(() => run.store.getSnapshot().loadState, LOAD).toBe("ready");
   await expect.poll(() => shownIds(run.store).length, LOAD).toBeGreaterThan(0);
-  expectAskedForDefaultStyleSince(askedBefore);
-  await ON_MAPLIBRE[example]?.(run);
-}
-
-function expectAskedForDefaultStyleSince(askedBefore: number): void {
-  expect(offsite.asked().slice(askedBefore)).toContain(LIBERTY);
+  expect(offsite.asked().slice(askedBefore)).toContain(BRIGHT);
   expectNothingElseOffsite();
+  await ON_MAPLIBRE[example]?.(run);
 }
 
 /** Nothing asked offsite but OpenFreeMap's styles, which the local style answers. */

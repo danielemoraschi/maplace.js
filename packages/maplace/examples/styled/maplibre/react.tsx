@@ -7,8 +7,8 @@ import { createRoot } from "react-dom/client";
 
 /** OpenFreeMap's styles, by name; any style URL works: MapTiler's, Stadia's, your own. */
 const STYLES = {
-  Liberty: "https://tiles.openfreemap.org/styles/liberty",
   Bright: "https://tiles.openfreemap.org/styles/bright",
+  Liberty: "https://tiles.openfreemap.org/styles/liberty",
   Positron: "https://tiles.openfreemap.org/styles/positron",
   Dark: "https://tiles.openfreemap.org/styles/dark",
 } as const;
@@ -61,7 +61,7 @@ function StyleSelect({
 }
 
 function Styled() {
-  const [mapStyle, setMapStyle] = useState<string>(STYLES.Liberty);
+  const [mapStyle, setMapStyle] = useState<string>(STYLES.Bright);
   return (
     <MaplaceProvider locations={places}>
       <StyleSelect mapStyle={mapStyle} onChoose={setMapStyle} />

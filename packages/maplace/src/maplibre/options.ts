@@ -10,7 +10,7 @@ type SetElsewhere = "container" | "style" | "center" | "zoom" | "bounds";
 export interface MapLibreAdapterOptions {
   /**
    * The map's style: a style URL, or a style object. Left out, a map maplace creates draws
-   * OpenFreeMap's `liberty` style (free, no key, OpenStreetMap data).
+   * OpenFreeMap's `bright` style (free, no key, OpenStreetMap data).
    */
   readonly mapStyle?: string | StyleSpecification | undefined;
   /**
