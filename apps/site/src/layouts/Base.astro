@@ -10,6 +10,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { LLMS_TXT_ROUTE } from "../site/agent-links.ts";
+import { AGENT_SKILLS_INDEX_PATH } from "../site/agent-skill-paths.ts";
 import { markdownAddressAt } from "../site/markdown-routes.ts";
 
 interface Props {
@@ -30,6 +31,7 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
     <meta name="description" content={description} />
     {ownMarkdown && <link rel="alternate" type="text/markdown" href={ownMarkdown} />}
     <link rel="describedby" href={LLMS_TXT_ROUTE} />
+    <link rel="describedby" href={AGENT_SKILLS_INDEX_PATH} type="application/json" />
     <link rel="icon" href={faviconUrl} type="image/svg+xml" />
     {/* Before the first paint, so a returning visitor's placeholders never show. */}
     <script is:inline define:vars={{ key: CONSENT_KEY, granted: CONSENT_GRANTED }}>

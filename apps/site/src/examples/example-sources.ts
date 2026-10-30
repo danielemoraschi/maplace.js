@@ -105,6 +105,6 @@ export function exampleNames(): readonly string[] {
   return Object.keys(FILES).flatMap((path) => TOP_LEVEL_PAGE.exec(path)?.[1] ?? []);
 }
 
-function langOf(file: string): ExampleFile["lang"] {
+export function langOf(file: string): ExampleFile["lang"] {
   return file.slice(file.lastIndexOf(".") + 1) as ExampleFile["lang"];
 }

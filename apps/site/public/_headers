@@ -37,3 +37,7 @@
   Link: </api/index.md>; rel="alternate"; type="text/markdown"
 /migrating/
   Link: </migrating/index.md>; rel="alternate"; type="text/markdown"
+
+# Agent Skills Discovery: agents in a browser read the skill and its index from other origins.
+/.well-known/agent-skills/*
+  Access-Control-Allow-Origin: *

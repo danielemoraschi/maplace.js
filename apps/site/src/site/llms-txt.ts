@@ -6,7 +6,7 @@ import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { SITE_ROUTES } from "./site-routes.ts";
 
 const SITE_IN_A_PARAGRAPH =
-  "A JavaScript library that turns a list of locations into a map plus a synced list, in a few lines, on Google Maps or MapLibre. These pages hold its documentation, its changelog and its examples, each with its code; every link below is Markdown where the page has Markdown behind it.";
+  "A JavaScript library that turns a list of locations into a map plus a synced list, in a few lines, on Google Maps or MapLibre. These pages hold its documentation, its changelog and its examples, each with its code; every page's link below is Markdown where the page has Markdown behind it. The Agents section links the agent skill and its index.";
 
 interface ListedPage {
   readonly name: string;
