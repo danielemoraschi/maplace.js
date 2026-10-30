@@ -4,7 +4,7 @@ maplacejs 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in t
 
 ## What changed
 
-- **No jQuery and no global state.** One CDN script defines the `<maplace-map>` element and sets `Maplace`, a namespace of functions (`Maplace.createGoogleMap(...)` is 0.2's `new Maplace(...).Load()`), or you import ES modules from npm.
+- **No jQuery, and one store per map.** One CDN script defines the `<maplace-map>` element and sets `Maplace`, a namespace of functions (`Maplace.createGoogleMap(...)` is 0.2's `new Maplace(...).Load()`), or you import ES modules from npm.
 - **Google Maps or MapLibre.** 0.2 drew on Google only. 1.0 draws the same locations, list and events on either, and MapLibre on OpenFreeMap's tiles needs no key ([MapLibre adapter](docs/reference/maplibre.md)).
 - **Locations have an `id`.** Selection, events and updates name a location by its id, not its position in the array.
 - **`lon` is `lng`**, as Google and MapLibre name it, with no alias.
