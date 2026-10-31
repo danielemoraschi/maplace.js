@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { CDN_SCRIPTS } from "./cdn-builds.ts";
-import { pinnedScriptsIn, pinnedSnippetOf, withPinnedScripts } from "./cdn-pins.ts";
+import {
+  pinnedIntegritiesIn,
+  pinnedScriptsIn,
+  pinnedSnippetOf,
+  withPinnedScripts,
+} from "./cdn-pins.ts";
 import { readRootFile } from "./package.ts";
 
 const PINNED = (file: string) =>
@@ -52,6 +57,24 @@ describe("pinnedScriptsIn", () => {
       "maplace-element-cluster.iife.js",
       "maplace-element-maplibre.iife.js",
     ]);
+  });
+});
+
+describe("pinnedIntegritiesIn", () => {
+  const published = withPinnedScripts(README, { version: "1.2.0", integrityOf });
+
+  it("reads back each integrity withPinnedScripts wrote", () => {
+    expect([...pinnedIntegritiesIn(published, "1.2.0")]).toEqual(
+      pinnedScriptsIn(README).map((file) => [file, integrityOf(file)]),
+    );
+  });
+
+  it("reads nothing from the repo's README, which holds placeholders", () => {
+    expect(pinnedIntegritiesIn(readRootFile("README.md"), "1.2.0").size).toBe(0);
+  });
+
+  it("leaves out another version's pins", () => {
+    expect(pinnedIntegritiesIn(published, "1.2.1").size).toBe(0);
   });
 });
 

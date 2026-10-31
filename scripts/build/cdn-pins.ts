@@ -40,6 +40,18 @@ export function withPinnedScripts(readme: string, { version, integrityOf }: Pin)
     .replaceAll(ANY_VERSION, `maplace@${version}`);
 }
 
+const PUBLISHED_PIN = /maplace@([^/"\s]+)\/dist\/([^"/]+)"\s+integrity="(sha384-[^"]+)"/g;
+
+/** The inverse of `withPinnedScripts`: file name to integrity, in a published README, for `version`. */
+export function pinnedIntegritiesIn(readme: string, version: string): ReadonlyMap<string, string> {
+  const pins = Array.from(readme.matchAll(PUBLISHED_PIN));
+  return new Map(
+    pins
+      .filter(([, pinned]) => pinned === version)
+      .map(([, , file, integrity]) => [file as string, integrity as string]),
+  );
+}
+
 /** The README's snippet that pins `file` (with its integrity), as the README writes it. */
 export function pinnedSnippetOf(readme: string, file: string): string {
   const snippet = fencedBlocks(readme, "html").find(

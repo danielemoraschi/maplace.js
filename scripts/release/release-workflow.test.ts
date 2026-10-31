@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { ROOT } from "../build/package.ts";
+import { CDN_DEADLINE_MS, LONGEST_CDN_ATTEMPT_MS } from "./cdn-check.ts";
 
 /** Holds the workflow, which can't run before R3, to the code and to its safety rules. */
 const workflow = readFileSync(resolve(ROOT, ".github/workflows/release.yml"), "utf8");
@@ -9,6 +10,13 @@ const lines = workflow.split("\n");
 const scripts = Object.keys(
   JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf8")).scripts as object,
 );
+
+/** A job's text, from its name to the next job's. */
+function jobNamed(name: string, text = workflow): string {
+  return text.split(/^ {2}(?=[\w-]+:$)/m).find((job) => job.startsWith(`${name}:`)) ?? "";
+}
+
+const CDN_CHECK = "run: npm run --silent release-cdn";
 
 it("runs only the repo's own npm scripts", () => {
   const called = [...workflow.matchAll(/npm run (?:--silent )?([\w-]+)/g)].map(([, name]) => name);
@@ -19,7 +27,7 @@ it("runs only the repo's own npm scripts", () => {
 it("holds the release commit to every gate CI holds a push to", () => {
   const ci = readFileSync(resolve(ROOT, ".github/workflows/ci.yml"), "utf8");
   // The gates are verify's steps: the jobs after it deploy what passed.
-  const verify = ci.split(/^ {2}(?=[\w-]+:$)/m).find((job) => job.startsWith("verify:")) ?? "";
+  const verify = jobNamed("verify", ci);
   // CI's scan is report-only; the tests build the package for themselves, in temp dirs.
   const notGates = new Set(["npm run sonar", "npm run build"]);
   const gates = [...verify.matchAll(/^\s+(?:- )?run: (npm .+|npx .+)$/gm)].map(
@@ -51,4 +59,29 @@ it("refuses a new version while the last one isn't on npm, before committing it"
   const guard = workflow.indexOf('npm view "maplace@$LAST" version');
   expect(guard).toBeGreaterThan(-1);
   expect(guard).toBeLessThan(workflow.indexOf("commit -q -m"));
+});
+
+it("checks the CDN before making the GitHub release", () => {
+  const announce = jobNamed("announce");
+  expect(announce.indexOf(CDN_CHECK)).toBeGreaterThan(-1);
+  expect(announce.indexOf(CDN_CHECK)).toBeLessThan(announce.indexOf("gh release create"));
+});
+
+it("gives the CDN check no token", () => {
+  const announce = jobNamed("announce");
+  const [beforeCheck = "", afterCheck = ""] = announce.split(CDN_CHECK);
+  expect(workflow.slice(0, workflow.indexOf("\njobs:"))).not.toContain("GH_TOKEN");
+  expect(beforeCheck).not.toContain("GH_TOKEN");
+  expect(afterCheck).toContain("GH_TOKEN");
+});
+
+it("leaves the CDN check's retries room inside announce's timeout", () => {
+  const minutes = Number(/timeout-minutes: (\d+)/.exec(jobNamed("announce"))?.[1]);
+  expect(minutes * 60_000).toBeGreaterThan(CDN_DEADLINE_MS + LONGEST_CDN_ATTEMPT_MS);
+});
+
+it("builds what it publishes from the lockfile", () => {
+  const publish = jobNamed("publish");
+  expect(publish.indexOf("npm ci")).toBeGreaterThan(-1);
+  expect(publish.indexOf("npm ci")).toBeLessThan(publish.indexOf("npm run build"));
 });
