@@ -2,7 +2,7 @@ import { given, givenAttribute } from "./attribute-values";
 
 /**
  * The attributes a provider may read its map settings from; each provider names those it reads
- * (`provider-map-settings.ts`).
+ * (`provider-description.ts`).
  */
 export const MAP_SETTING_ATTRIBUTES = {
   colorScheme: "color-scheme",

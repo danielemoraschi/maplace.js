@@ -38,6 +38,8 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `skip-map-label`, `selected-label` | The store's [`skipMapLabel` and `selectedLabel`](store.md#on-every-map); can't change once the store exists; a blank one is misuse |
 | `hold` | Stays idle, with no provider request and no list built, until `release()` |
 | `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
+| `load-label` | The words of the [load panel](#load-states)'s button; "Load map" when blank or left out; live |
+| `load-from-label` | The words before the name on that panel; "Loads from" when blank or left out; live |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address wins |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
@@ -78,6 +80,20 @@ The store's [events](store.md#events), as DOM events on the element, named in lo
 ## Load states
 
 The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles; its default styles, and how to turn them off, are on [Styling](styling.md). A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too. A map with `loading="lazy"` stays idle until it comes near the viewport, so a map below the fold costs no map load (Google bills each) until the visitor scrolls to it; one in a hidden panel (a closed tab, `<details>`, `display: none`) loads once shown. Its list is built at once; with `hold` as well, it waits for `release()`, which loads it wherever it is.
+
+While it waits, with `hold` or off-screen with `loading="lazy"`, a map shows a panel in its pane: a button calling `release()` and a line naming whom it loads from. The panel asks no provider anything, and leaves as the map opens, focus passing to the pane if it held it. A placeholder a page draws with `:state(idle)` shows beside it, unless the page replaces or hides the panel, and in the `error` state the panel is hidden until the misuse is corrected.
+
+| The map | The line |
+|---|---|
+| On Google | "Loads from Google" |
+| On MapLibre with no `map-style` | "Loads from OpenFreeMap" |
+| On MapLibre, `map-style` an `http` or `https` URL | "Loads from" and the URL's host, its port kept |
+| On MapLibre with a JSON style, a relative URL or another scheme | None, only the button: there is no one host to name |
+| On a provider of your own (`defineProvider`) | Its registered name |
+| With `provider` naming one not registered yet | That name, then the provider's own once it registers |
+| With no `provider`, and none or several registered | None, only the button |
+
+`load-label` and `load-from-label` word it. A blank one takes the default words, unlike the other labels, where blank is misuse: an error would hide the panel, and with it the way to load the map. A direct child marked `data-maplace-idle` replaces the panel: the page's own, which stays where the page put it, shows only in `:state(idle)`, and calls `release()` itself. On a lazy map starting in view, it shows for the map's first frame, as `:state(idle)` is true then; the ready-made panel doesn't. A lazy map hidden at first (a closed tab) gets no panel, and opens as it nears the viewport. To look different, or to go, see [Styling](styling.md#classes).
 
 ## URL state
 

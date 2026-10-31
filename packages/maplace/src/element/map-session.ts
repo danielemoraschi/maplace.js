@@ -3,7 +3,7 @@ import { runPageCode } from "./element-error";
 import type { ElementList } from "./element-list";
 import type { MaplaceMapElement, ProviderFactory } from "./index";
 import type { MapSettingAttribute } from "./map-settings-watch";
-import { mapSettingsReadBy } from "./provider-map-settings";
+import { mapSettingsReadBy } from "./provider-description";
 import { providerFor } from "./providers";
 
 /** One map on the element: its provider's adapter, attached to the store, with the list on it. */

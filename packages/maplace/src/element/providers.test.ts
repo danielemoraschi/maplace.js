@@ -76,3 +76,42 @@ describe("registerProvider", () => {
     expect(() => providers.registerProvider("x", "google" as never)).toThrow(/must be a function/);
   });
 });
+
+describe("loadSourceOf", () => {
+  /** A provider saying `source` for whom it loads from. */
+  async function describedAs(source: string): Promise<ProviderFactory> {
+    const { describeProvider } = await import("./provider-description");
+    const provider = factory();
+    describeProvider(provider, { mapSettings: [], loadSource: () => source });
+    return provider;
+  }
+
+  it("uses the named provider's own source", async () => {
+    providers.registerProvider("google", await describedAs("Google"));
+    expect(providers.loadSourceOf(hostWith("google"))).toBe("Google");
+  });
+
+  it("falls back to the registered name for a provider that describes none", () => {
+    providers.registerProvider("acme", factory());
+    expect(providers.loadSourceOf(hostWith("acme"))).toBe("acme");
+  });
+
+  it("gives the only one's, none named", async () => {
+    providers.registerProvider("google", await describedAs("Google"));
+    expect(providers.loadSourceOf(hostWith())).toBe("Google");
+  });
+
+  it("gives the name written for one not registered", () => {
+    expect(providers.loadSourceOf(hostWith("later"))).toBe("later");
+  });
+
+  it("names no one with none registered", () => {
+    expect(providers.loadSourceOf(hostWith())).toBeUndefined();
+  });
+
+  it("names no one with several and none named", () => {
+    providers.registerProvider("one", factory());
+    providers.registerProvider("two", factory());
+    expect(providers.loadSourceOf(hostWith())).toBeUndefined();
+  });
+});

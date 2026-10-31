@@ -70,6 +70,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | Class | What it marks |
 |---|---|
 | `maplace-map-pane` | Inside `<maplace-map>`, the element the map is drawn in |
+| `maplace-load-panel` | In the pane of a map waiting to load, the [panel](element.md#load-states) with its line and button; `.maplace-load-panel { display: none; }` removes it |
 | `maplace-placed-list` | The list `<maplace-map>` places beside the map or on it |
 | `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
 | `maplace-list` | With a heading, `scope` or `searchLabel`, the block holding them and the entries |
@@ -93,6 +94,8 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |
 | `maplace-google-map` | The element a Google map maplacejs creates is drawn in |
 | `maplace-maplibre-map` | The element a MapLibre map maplacejs creates is drawn in |
+
+A direct child of `<maplace-map>` marked `data-maplace-idle` replaces the load panel, taking the pane's place in `:state(idle)` and hidden in every other state, whatever `display` the page gives it. The default styles are adopted on the document: for a map inside a shadow root, the page hides its own child with a `:state(idle)` rule of its own.
 
 ## States
 

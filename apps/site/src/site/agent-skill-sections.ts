@@ -82,7 +82,7 @@ A shape's points don't fit an attribute: a polygon or polyline goes in a JSON sc
 
 ${exampleSnippet("polygon", "page.html")}
 
-\`save\` is your own function: nothing defines it for you.
+\`save\` is your own function.
 
 - \`<maplace-map>\` reads ${codeList(MAP_ATTRIBUTES)}.
 - On Google it also reads ${codeList(GOOGLE_PROVIDER_ATTRIBUTES)}.
@@ -96,7 +96,7 @@ What each does: [the element](${pageUrl(docRoute("element"), site)}).`;
 function ownScript(): string {
   return `## A script of your own
 
-The CDN script also sets the page's \`Maplace\`, for a map made in your own script.
+The CDN script also sets the page's \`Maplace\`.
 
 ${exampleSnippet("simple", "script.html")}
 

@@ -95,6 +95,7 @@ export const vueMap: VueMap = {
 export const svelteMap: SvelteMap = {
   hold: true,
   loading: "lazy",
+  "load-label": "Karte laden",
   "url-state": true,
   id: "m",
   "data-x": "1",

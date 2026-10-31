@@ -19,6 +19,7 @@ export interface Registry<Entry extends Factory> {
   add(name: string, entry: Entry): void;
   get(name: string): Entry | undefined;
   values(): MapIterator<Entry>;
+  entries(): MapIterator<[string, Entry]>;
   /** The names registered, quoted, in the order added: `"a", "b"`. */
   names(): string;
   /** Calls `callback` whenever an entry is added, until the returned function is called. */
@@ -54,6 +55,7 @@ export function createRegistry<Entry extends Factory>(kind: RegistryKind): Regis
     },
     get: (name) => registered.get(name),
     values: () => registered.values(),
+    entries: () => registered.entries(),
     names: () => Array.from(registered.keys(), (name) => `"${name}"`).join(", "),
     onAdded(callback) {
       waiting.add(callback);

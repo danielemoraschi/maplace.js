@@ -3,7 +3,7 @@ import { nextTask } from "../adapter-kit/chunks";
 import "../maplibre/testing/stylesheet";
 import { TEST_STYLE } from "../maplibre/testing/test-style";
 import "./maplibre";
-import { errorsOn } from "./testing/dom";
+import { box, errorsOn } from "./testing/dom";
 
 // Its own file: it registers only `maplibre`, so a map without `provider` opens on MapLibre.
 // Every map here draws the local test style, so nothing leaves the machine; a failure for want of
@@ -100,5 +100,24 @@ describe("<maplace-map> on MapLibre", () => {
     map.setAttribute("map-options", '{"maxZoom":18}');
     await expect.poll(() => map.loadState, LOAD).toBe("ready");
     expect(map.querySelector(".maplibregl-canvas")).not.toBeNull();
+  });
+
+  it("opens from its panel's button, drawing at the pane's full size", async () => {
+    const map = mapWith(`${styled()} hold`);
+    await nextTask();
+    map.querySelector<HTMLButtonElement>(".maplace-load-panel>button")?.click();
+    await map.maplace.whenReady();
+    expect(map.querySelector(".maplace-load-panel")).toBeNull();
+    expect(box(map.querySelector(".maplace-map-pane"))).toEqual({ width: 600, height: 300 });
+    expect(box(map.querySelector(".maplibregl-canvas"))).toEqual({ width: 600, height: 300 });
+  });
+
+  it("opens at full size beside the page's own child", async () => {
+    const map = mapWith(`${styled()} hold`);
+    map.insertAdjacentHTML("beforeend", '<div data-maplace-idle style="display: grid">Ask</div>');
+    await nextTask();
+    map.release();
+    await map.maplace.whenReady();
+    expect(box(map.querySelector(".maplibregl-canvas"))).toEqual({ width: 600, height: 300 });
   });
 });

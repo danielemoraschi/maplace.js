@@ -31,6 +31,9 @@ const ELEMENT = root("<maplace-map>");
 
 const UNPARSED_JSON = /^\s*[[{]/;
 
+/** An absolute style URL's host and port, no user info; a backslash ends a host as a slash does. */
+const STYLE_URL_HOST = /^https?:\/\/(?:[^/\\?#]*@)?([^/\\?#@]+)(?=[/\\?#]|$)/i;
+
 const checkMapOptionsAttribute: Assert<MapLibreMapOptionsAttribute> = refusedKeysCheck(
   REFUSED_IN_MAP_OPTIONS,
   "a JSON object",
@@ -39,6 +42,17 @@ const checkMapOptionsAttribute: Assert<MapLibreMapOptionsAttribute> = refusedKey
 /** `map-style` and `map-options` as `element` writes them; a bad value is misuse naming it. */
 export function mapLibreSettingsOf(element: Element): MapLibreAdapterOptions {
   return { mapStyle: mapStyleOf(element), mapOptions: mapOptionsOf(element) };
+}
+
+/**
+ * Whom a map on `element` loads from: OpenFreeMap by default (a word, as `map-source.ts` is
+ * reached only through MapLibre's entry), or a style URL's host. A relative URL, another scheme
+ * or a style object has no one host to name; a bad value stays misuse when the map opens.
+ */
+export function mapStyleHostOf(element: Element): string | undefined {
+  const style = jsonOrRaw(givenAttribute(element, MAP_SETTING_ATTRIBUTES.mapStyle));
+  if (style === undefined) return "OpenFreeMap";
+  return typeof style === "string" ? STYLE_URL_HOST.exec(style)?.[1] : undefined;
 }
 
 function mapStyleOf(element: Element): MapLibreStyle | undefined {

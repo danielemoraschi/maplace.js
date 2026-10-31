@@ -4,6 +4,7 @@ import { createMapLibreAdapter } from "../maplibre/index";
 import {
   MAPLIBRE_MAP_SETTINGS,
   mapLibreSettingsOf,
+  mapStyleHostOf,
   REFUSED_IN_MAP_OPTIONS,
 } from "./maplibre-attributes";
 import { elementWith } from "./testing/dom";
@@ -91,4 +92,56 @@ describe("mapLibreSettingsOf", () => {
       );
     },
   );
+});
+
+describe("mapStyleHostOf", () => {
+  const hostOf = (mapStyle?: string) =>
+    mapStyleHostOf(elementWith(mapStyle === undefined ? {} : { "map-style": mapStyle }));
+
+  it("names OpenFreeMap with no map-style, or an empty one", () => {
+    expect(hostOf()).toBe("OpenFreeMap");
+    expect(hostOf("")).toBe("OpenFreeMap");
+  });
+
+  it("names the host of an http(s) URL, its port kept", () => {
+    expect(hostOf("https://tiles.example.com/style.json?key=1")).toBe("tiles.example.com");
+    expect(hostOf("http://localhost:8080/style.json")).toBe("localhost:8080");
+    expect(hostOf("https://tiles.example.com")).toBe("tiles.example.com");
+  });
+
+  it("names the host alone of a URL with user info", () => {
+    expect(hostOf("https://user:secret@tiles.example.com/style.json")).toBe("tiles.example.com");
+    expect(hostOf("https://good.example@evil.example/style.json")).toBe("evil.example");
+  });
+
+  it("names the host a fetch would reach, a backslash ending it as a slash does", () => {
+    expect(hostOf("https://evil.example\\@good.example/style.json")).toBe("evil.example");
+  });
+
+  it("names no one for user info with no host", () => {
+    expect(hostOf("https://user:secret@/style.json")).toBeUndefined();
+  });
+
+  it("reads an upper-case scheme", () => {
+    expect(hostOf("HTTPS://tiles.example.com/style.json")).toBe("tiles.example.com");
+  });
+
+  it("names no one for a JSON style object", () => {
+    expect(hostOf('{"version":8,"sources":{},"layers":[]}')).toBeUndefined();
+  });
+
+  it("names no one for a relative URL", () => {
+    expect(hostOf("/styles/bright.json")).toBeUndefined();
+    expect(hostOf("//tiles.example.com/style.json")).toBeUndefined();
+  });
+
+  it("names no one for another scheme", () => {
+    expect(hostOf("mapbox://styles/mapbox/streets-v12")).toBeUndefined();
+  });
+
+  it("names no one for unparsed JSON, blank, or a number", () => {
+    expect(hostOf("{not json")).toBeUndefined();
+    expect(hostOf("   ")).toBeUndefined();
+    expect(hostOf("5")).toBeUndefined();
+  });
 });

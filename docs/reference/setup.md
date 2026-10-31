@@ -166,4 +166,13 @@ On MapLibre, from the CDN script or npm, a policy allows `img-src data: blob:`, 
 
 ## Consent
 
-A map with `hold` asks nothing of its provider (Google, or the style's servers on MapLibre), and adds no script, until `release()`. A page that needs a visitor's consent before loading a map renders its map with `hold`, styles the placeholder with `:state(idle)`, and calls `release()` once the visitor agrees ([load states](element.md#load-states)). A map below the fold can also wait to be seen: with `loading="lazy"` it asks nothing of its provider until it nears the viewport ([load states](element.md#load-states)).
+A map with `hold` asks nothing of its provider (Google, or the style's servers on MapLibre), and adds no script, until `release()`. A page that needs a visitor's consent before loading a map renders its map with `hold`, which shows a ready-made panel naming whom the map loads from, with a "Load map" button that calls `release()` ([load states](element.md#load-states)). The button releases at once and remembers nothing: a page recording consent writes a child of its own, marked `data-maplace-idle`, which replaces the panel, and calls `release()` once the visitor agrees. A map below the fold can also wait to be seen: with `loading="lazy"` it asks nothing of its provider until it nears the viewport ([load states](element.md#load-states)).
+
+A preview is an image in the page's own CSS, fetched only while the panel shows, with the panel's words on a background so they read in either colour scheme:
+
+```css
+#rome .maplace-load-panel { background: url(rome.png) center / cover; }
+#rome .maplace-load-panel > * { padding: .25rem .5rem; background: Canvas; color: CanvasText; }
+```
+
+Use an image of your own: a Static Maps URL there asks Google before the visitor agrees. To remove the panel: `.maplace-load-panel { display: none; }`.

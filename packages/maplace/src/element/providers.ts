@@ -1,5 +1,6 @@
 import { elementMisuse } from "./element-error";
 import type { ProviderFactory } from "./index";
+import { loadSourceNamedBy } from "./provider-description";
 import { createRegistry } from "./registry";
 
 const PROVIDER_FIELD = { field: "provider" };
@@ -34,6 +35,23 @@ export function providerFor(host: Element): ProviderFactory {
     );
   }
   return only;
+}
+
+/** Whom a panel names for `host`, without `providerFor`'s misuse: a held page may register one later. */
+export function loadSourceOf(host: Element): string | undefined {
+  const named = host.getAttribute("provider");
+  if (named !== null) return sourceOf(named, providers.get(named), host);
+  const [only, ...others] = providers.entries();
+  return only === undefined || others.length > 0 ? undefined : sourceOf(only[0], only[1], host);
+}
+
+function sourceOf(
+  name: string,
+  provider: ProviderFactory | undefined,
+  host: Element,
+): string | undefined {
+  const loadSource = provider && loadSourceNamedBy(provider);
+  return loadSource ? loadSource(host) : name;
 }
 
 function namedProvider(name: string): ProviderFactory {
