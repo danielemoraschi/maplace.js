@@ -55,7 +55,13 @@ describe("the fake beyond the contract", () => {
       host,
       signal: new AbortController().signal,
       cluster: false,
-      popup: { maxWidth: undefined, offset: [0, 0], openOn: "click" },
+      popup: {
+        maxWidth: undefined,
+        offset: [0, 0],
+        openOn: "click",
+        openInMapsLabel: undefined,
+        directionsLabel: undefined,
+      },
     });
     await adapter.apply(adding(withContent(markerDrawable("a"), "A")));
     adapter.present(presented({ selectedId: "a" }));

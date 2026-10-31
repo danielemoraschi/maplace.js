@@ -3,6 +3,8 @@
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
 - 2026-10-31 Added a ready-made "Load map" panel on a held or lazy map, naming Google or the MapLibre style's host, or your own child marked `data-maplace-idle` (`load-label`, `load-from-label`)
+- 2026-10-31 Added an Open in Maps and a directions link at the end of a popup (`popup.openInMapsLabel`, `popup.directionsLabel`; `open-in-maps-label`, `directions-label` on the element): Google Maps on Google, OpenStreetMap on MapLibre
+- 2026-10-31 Fixed a popup staying at the old place when its location moved and got new content in one update, as a `<maplace-location>` with a template always does
 - 2026-10-31 Fixed a popup's inset on Google on a right-to-left page: its text now lines up with its heading, with the inset on the far side
 - 2026-10-31 Added a link to skip the map and an announcement of each selection on every map, worded by `skipMapLabel` and `selectedLabel` (`skip-map-label`, `selected-label` on the element)
 - 2026-10-31 Added a search box over the list (`searchLabel`, `search-label` on the element) with `setFilter({ query })`, `searchText` on a location (`search-text`), and a Search example

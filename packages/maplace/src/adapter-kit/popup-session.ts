@@ -3,6 +3,7 @@ import type { Geometry } from "../geometry";
 import type { ResolvedPopupOptions } from "../popup";
 import { createPopupChoice } from "./popup-choice";
 import { type PopupStep, popupContent, popupStep } from "./popup-content";
+import type { PopupLinkSettings } from "./popup-links";
 import type { PopupTarget, PopupWindow, PopupWindowEvents, SessionPopup } from "./popup-window";
 
 /** The open map as the popup session sees it. */
@@ -12,6 +13,7 @@ export interface PopupSessionSite<Place, Window extends PopupWindow<Place>> {
   openWindow(events: PopupWindowEvents): Window;
   readonly document: Document;
   readonly openOn: ResolvedPopupOptions["openOn"];
+  readonly links: PopupLinkSettings;
   live(): AdapterHost | undefined;
   /**
    * The popup the session tracks now (its content perhaps not yet in the DOM), or none: the live
@@ -56,7 +58,7 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
     else if (step === "reopen") reopen(placed);
     else {
       retitle(open, placed);
-      if (step === "refresh") refresh(placed);
+      if (step === "refresh") refresh(open, placed);
       else follow(open, placed);
     }
   }
@@ -84,6 +86,7 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
     const { geometry } = placed.drawable();
     if (geometry === current.followed) return;
     current.followed = geometry;
+    current.links?.pointAt(geometry);
     window.follow(placed.popupPlace());
   }
 
@@ -95,13 +98,14 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
     window.retitle(title);
   }
 
-  /** New content where the popup is: the window reports it in the DOM again. */
-  function refresh(placed: PopupTarget<Place>): void {
+  /** New content where the location is now: the window reports it in the DOM again. */
+  function refresh(current: OpenPopup<Place, Window>, placed: PopupTarget<Place>): void {
     const next = render(placed);
     if (next === undefined) close();
     else {
       track(next);
       window.refresh(next.element);
+      if (next.followed !== current.followed) window.follow(placed.popupPlace());
     }
   }
 
@@ -151,7 +155,7 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
 
   function render(placed: PopupTarget<Place>): OpenPopup<Place, Window> | undefined {
     const drawable = placed.drawable();
-    const content = popupContent(drawable, site.document);
+    const content = popupContent(drawable, site.document, site.links);
     if (content === undefined) return undefined;
     const followed = drawable.geometry;
     const heading = drawable.title;

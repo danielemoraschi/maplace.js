@@ -66,6 +66,18 @@ const opened = (host: ReturnType<typeof popupsOn>["host"]) =>
   host.reportsOf("reportPopupOpen").map(([id, element]) => [id, element.textContent]);
 
 describe("createPopup", () => {
+  it("sends a popup's links to Google's Maps URLs", () => {
+    const at = withContent(markerDrawable("a", { lat: 41.9, lng: 12.5 }), "Alpha");
+    const labels = { openInMapsLabel: "Open", directionsLabel: "Go" };
+    const popups = popupsOn([at], labels);
+    popups.present({ selectedId: "a" });
+    const links = popups.state.popup?.element.querySelectorAll("a") ?? [];
+    expect([...links].map(({ href }) => href)).toEqual([
+      "https://www.google.com/maps/search/?api=1&query=41.900000%2C12.500000",
+      "https://www.google.com/maps/dir/?api=1&destination=41.900000%2C12.500000",
+    ]);
+  });
+
   it("heads the popup with its location's title, beside the close button", () => {
     const popups = popupsOn([{ ...ALPHA, title: "Alpha town" }, BETA]);
     popups.present({ selectedId: "a" });
@@ -198,6 +210,29 @@ describe("createPopup", () => {
     popups.present({ selectedId: "p" });
     expect(lastOpen(popups.window())?.anchor).toBeNull();
     expect(popups.window()?.get("position")).toEqual({ lat: 0, lng: 0 });
+  });
+
+  it("moves a shape's popup that gets new content and a new place at once", () => {
+    const shape = withContent(polygonDrawable("p"), "Pi");
+    const popups = popupsOn([shape]);
+    popups.present({ selectedId: "p" });
+    const setPosition = vi.spyOn(popups.window() as StubInfoWindow, "setPosition");
+    const path = [
+      { lat: 10, lng: 10 },
+      { lat: 12, lng: 10 },
+      { lat: 12, lng: 12 },
+    ];
+    popups.update(withContent({ ...shape, geometry: { type: "polygon", path } }, "Pi again"));
+    expect(setPosition).toHaveBeenCalledWith({ lat: 11, lng: 11 });
+  });
+
+  it("leaves a shape's popup where it is when only its content is new", () => {
+    const shape = withContent(polygonDrawable("p"), "Pi");
+    const popups = popupsOn([shape]);
+    popups.present({ selectedId: "p" });
+    const setPosition = vi.spyOn(popups.window() as StubInfoWindow, "setPosition");
+    popups.update(withContent(shape, "Pi again"));
+    expect(setPosition).not.toHaveBeenCalled();
   });
 
   it("moves a shape's popup only when the shape's geometry changes", () => {

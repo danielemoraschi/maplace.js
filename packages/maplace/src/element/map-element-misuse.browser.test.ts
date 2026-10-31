@@ -148,6 +148,40 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     expect(map.loadState).toBe("loading");
   });
 
+  it("reads the link labels into the store's popup options", async () => {
+    await mapFrom(
+      `<maplace-map open-in-maps-label="Apri" directions-label="Vai">${ROME}</maplace-map>`,
+    );
+    expect(lastAdapter().mounted?.popup).toMatchObject({
+      openInMapsLabel: "Apri",
+      directionsLabel: "Vai",
+    });
+  });
+
+  it("a blank link label stands as misuse, naming it", async () => {
+    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    map.setAttribute("directions-label", " ");
+    expect(errors.map(({ message }) => message)).toEqual([
+      expect.stringMatching(/directions-label must not be blank/),
+    ]);
+    expect(map.loadState).toBe("error");
+    map.removeAttribute("directions-label");
+    expect(map.loadState).toBe("idle");
+  });
+
+  it("refuses a link label changed once the map is created, until put back", async () => {
+    const map = await mapFrom(`<maplace-map open-in-maps-label="Apri">${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    map.setAttribute("open-in-maps-label", "Altro");
+    expect(errors.map(({ message }) => message)).toEqual([
+      expect.stringMatching(/open-in-maps-label.* can't change once the map is created/),
+    ]);
+    expect(map.loadState).toBe("error");
+    map.setAttribute("open-in-maps-label", "Apri");
+    expect(map.loadState).toBe("loading");
+  });
+
   it("refuses a route the store refuses, keeping the one before", async () => {
     const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
     const errors = errorsOn(map);

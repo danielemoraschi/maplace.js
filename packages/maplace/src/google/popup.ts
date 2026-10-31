@@ -6,6 +6,7 @@ import {
 } from "../adapter-kit/popup-session";
 import { adoptStyles } from "../adopted-styles";
 import type { GoogleMapState } from "./map-state";
+import { GOOGLE_MAPS_PAGES } from "./maps-pages";
 import type { MountedMap } from "./mounted-map";
 import { POPUP_STYLES } from "./popup-styles";
 import { createPopupWindow } from "./popup-window";
@@ -31,6 +32,7 @@ function startGooglePopups(state: GoogleMapState, mounted: MountedMap): PopupSes
     openWindow: (events) => createPopupWindow(mounted, events),
     document,
     openOn: mounted.popup.openOn,
+    links: { options: mounted.popup, pages: GOOGLE_MAPS_PAGES },
     live: mounted.live,
     onTracked(popup) {
       state.popup = popup;

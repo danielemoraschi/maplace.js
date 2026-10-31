@@ -92,7 +92,13 @@ export const STORE_NAMES = {
     skipMapLabel: true,
     selectedLabel: true,
   }),
-  popupOptions: everyName<keyof PopupOptions>({ maxWidth: true, offset: true, openOn: true }),
+  popupOptions: everyName<keyof PopupOptions>({
+    maxWidth: true,
+    offset: true,
+    openOn: true,
+    openInMapsLabel: true,
+    directionsLabel: true,
+  }),
   methods: everyName<keyof Maplace>({
     subscribe: true,
     getSnapshot: true,

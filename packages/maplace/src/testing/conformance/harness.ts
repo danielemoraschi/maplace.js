@@ -21,10 +21,12 @@ export interface MountedSubject {
   destroy(): void;
 }
 
-/** How the store would mount: clustering, and when popups open. */
+/** How the store would mount: clustering, when popups open, and the links they end in. */
 export interface MountSettings {
   readonly cluster?: boolean;
   readonly openOn?: ResolvedPopupOptions["openOn"];
+  readonly openInMapsLabel?: string;
+  readonly directionsLabel?: string;
 }
 
 /** What cleanup takes down after each check. */
@@ -45,7 +47,7 @@ export async function mountSubject(
 /** Starts mounting without waiting for it, as the store does before a load completes. */
 export function startMount(
   subject: ConformanceSubject,
-  { cluster = false, openOn = "click" }: MountSettings = {},
+  { cluster = false, openOn = "click", openInMapsLabel, directionsLabel }: MountSettings = {},
 ): MountedSubject {
   const container = sizedContainer();
   const { adapter, probe } = subject.create(container);
@@ -55,7 +57,13 @@ export function startMount(
   const destroy = destroyOnce(adapter);
   // Registered before mounting, so a mount that throws still leaves nothing behind.
   live.push({ controller, container, destroy });
-  const popup = { maxWidth: undefined, offset: [0, 0] as const, openOn };
+  const popup = {
+    maxWidth: undefined,
+    offset: [0, 0] as const,
+    openOn,
+    openInMapsLabel,
+    directionsLabel,
+  };
   const mounting = adapter.mount({ container, host, signal: controller.signal, cluster, popup });
   return { adapter, probe, host, container, pageChildren, controller, mounting, destroy };
 }

@@ -28,6 +28,8 @@ type NamedMapAttribute =
   | "cluster"
   | "skip-map-label"
   | "selected-label"
+  | "open-in-maps-label"
+  | "directions-label"
   | "hold"
   | "loading"
   | "load-label"

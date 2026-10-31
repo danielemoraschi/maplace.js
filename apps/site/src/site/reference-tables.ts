@@ -5,6 +5,7 @@ import {
   POPUP_CLASS,
   POPUP_HEADING_CLASS,
 } from "../../../../packages/maplace/src/adapter-kit/popup-content.ts";
+import { POPUP_LINKS_CLASS } from "../../../../packages/maplace/src/adapter-kit/popup-links.ts";
 import {
   LOAD_PANEL_CLASS,
   PANE_CLASS,
@@ -82,6 +83,7 @@ export const STYLING_CLASSES = [
   SELECT_CLASS,
   POPUP_CLASS,
   POPUP_HEADING_CLASS,
+  POPUP_LINKS_CLASS,
   CLUSTER_CLASS,
   CONTROL_CLASS,
   SKIP_MAP_CLASS,

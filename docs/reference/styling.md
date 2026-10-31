@@ -8,7 +8,7 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
-- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its start; on MapLibre, the heading on a line of its own, clear of the close button.
+- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its start; on MapLibre, the heading on a line of its own, clear of the close button; its links in a row at the end, each 1.5rem tall.
 - **Clusters:** a round badge with the count, blue with white text. `--maplace-cluster-background` and `--maplace-cluster-color`, set on the map or anything above it, change its colours.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
 - **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint ([MapLibre adapter](maplibre.md#on-map-controls)).
@@ -89,6 +89,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |
 | `maplace-popup` | A popup's content |
 | `maplace-popup-heading` | A popup's heading, its location's title |
+| `maplace-popup-links` | A popup's links (`openInMapsLabel`, `directionsLabel`); a page's `a` rule colours them, so a pale one needs `.maplace-popup-links a` for the white bubble |
 | `maplace-cluster` | A cluster's badge, the count, on either provider |
 | `maplace-control` | The panel holding what is placed on a Google or MapLibre map |
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |

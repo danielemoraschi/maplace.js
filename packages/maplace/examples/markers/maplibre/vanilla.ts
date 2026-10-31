@@ -32,6 +32,7 @@ const locations: Location[] = [
 const maplace = createMapLibreMap("#markers-maplibre-vanilla-map", {
   locations,
   list: { heading: "Choose a location:", fitAllLabel: "View all" },
+  popup: { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" },
 });
 
 maplace.on("mapClick", ({ position }) => dropMarkerAt(position));

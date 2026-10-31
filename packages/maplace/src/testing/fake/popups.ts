@@ -1,6 +1,7 @@
 import type { AdapterHost } from "../../adapter";
 import { createPopupChoice } from "../../adapter-kit/popup-choice";
 import { type PopupContent, popupContent, popupStep } from "../../adapter-kit/popup-content";
+import type { PopupLinkSettings } from "../../adapter-kit/popup-links";
 import type { Drawable } from "../../drawable";
 import type { ResolvedPopupOptions } from "../../popup";
 import type { ShownPopup } from "../map-probe";
@@ -13,6 +14,7 @@ export interface PopupSettings {
   readonly openOn: ResolvedPopupOptions["openOn"];
   /** What popup elements are placed in; without one (no DOM), no popup opens. */
   readonly layer: HTMLElement | undefined;
+  readonly links: PopupLinkSettings;
 }
 
 /**
@@ -29,7 +31,7 @@ export interface FakePopups {
 /** The open popup: which location, and its content. */
 interface OpenPopup extends ShownPopup, PopupContent {}
 
-export function createPopups({ map, host, openOn, layer }: PopupSettings): FakePopups {
+export function createPopups({ map, host, openOn, layer, links }: PopupSettings): FakePopups {
   const choice = createPopupChoice(openOn);
   let shown: OpenPopup | undefined;
 
@@ -41,7 +43,7 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
 
   /** `drawable`'s popup in the layer; none without content or without a DOM. */
   function render(drawable: Drawable): OpenPopup | undefined {
-    const content = layer && popupContent(drawable, layer.ownerDocument);
+    const content = layer && popupContent(drawable, layer.ownerDocument, links);
     return content && { id: drawable.id, heading: drawable.title, ...content };
   }
 
@@ -79,7 +81,10 @@ export function createPopups({ map, host, openOn, layer }: PopupSettings): FakeP
       else if (step === "replace") {
         close();
         if (next) open(next);
-      } else if (shown && next) shown = { ...shown, heading: next.title };
+      } else if (shown && next) {
+        shown = { ...shown, heading: next.title };
+        shown.links?.pointAt(next.geometry);
+      }
     },
     closeByUser() {
       if (shown) choice.dismiss(shown.id);
