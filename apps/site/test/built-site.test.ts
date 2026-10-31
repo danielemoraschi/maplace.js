@@ -1,5 +1,8 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
-import { servedSite } from "./built-site.ts";
+import { SITE_WAIT_MS, servedSite } from "./built-site.ts";
 
 const serving = (local: string[]) => ({
   resolvedUrls: { local, network: [] },
@@ -18,5 +21,20 @@ describe("servedSite", () => {
       "the site served from /tmp/site has no local URL",
     );
     expect(server.close).toHaveBeenCalledOnce();
+  });
+});
+
+describe("SITE_WAIT_MS", () => {
+  /** A build on a slow, busy machine; about 6 s on a quiet one. */
+  const WORST_BUILD_MS = 30_000;
+  const BUILD_CALL = /\b(?:\w+BeforeTests|builtSiteSession|buildAndServeSite)\(/g;
+
+  it("outlasts a build of every test file that builds, one at a time", () => {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const builds = readdirSync(here)
+      .filter((file) => file.endsWith(".test.ts") && file !== "built-site.test.ts")
+      .flatMap((file) => [...readFileSync(join(here, file), "utf8").matchAll(BUILD_CALL)]);
+    expect(builds.length).toBeGreaterThan(10);
+    expect(SITE_WAIT_MS).toBeGreaterThanOrEqual(builds.length * WORST_BUILD_MS);
   });
 });

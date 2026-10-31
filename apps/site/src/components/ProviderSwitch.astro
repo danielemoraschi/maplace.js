@@ -4,9 +4,11 @@ import { FIRST_PROVIDER, PROVIDER_LABELS } from "../examples/example-providers.t
 interface Props {
   /** Where the page places it. */
   class?: string;
+  /** What the choice is for, to a screen reader. */
+  legend?: string;
 }
 
-const { class: placement } = Astro.props;
+const { class: placement, legend = "Run the examples on" } = Astro.props;
 ---
 
 <fieldset
@@ -16,7 +18,7 @@ const { class: placement } = Astro.props;
     placement,
   ]}
 >
-  <legend class="sr-only">Run the examples on</legend>
+  <legend class="sr-only">{legend}</legend>
   {/* The chosen provider's ground, sliding under the second segment when that one is checked. */}
   <span
     aria-hidden="true"

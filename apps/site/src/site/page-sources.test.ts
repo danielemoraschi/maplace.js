@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { PACKAGE_DIR, ROOT } from "../../../../scripts/build/package.ts";
 import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
 import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
-import { AGENTS_PAGE, CHANGELOG_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
+import { AGENTS_PAGE, BUILDER_PAGE, CHANGELOG_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { PRIVACY_SOURCES, pageSources } from "./page-sources.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { SITE_ROUTES } from "./site-routes.ts";
@@ -44,6 +44,10 @@ describe("pageSources", () => {
       "apps/site/src/pages/agents.astro",
       "apps/site/src/site/agent-links.ts",
     ]);
+  });
+
+  it("dates the builder's page from the page", () => {
+    expect(pageSources(BUILDER_PAGE.route)).toEqual(["apps/site/src/pages/builder.astro"]);
   });
 
   it("dates the privacy page from what it says", () => {

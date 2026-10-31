@@ -5,7 +5,7 @@ import { packageManifest, readRootFile } from "../../../scripts/build/package.ts
 import { CHANGELOG_FILE, listLines } from "../../../scripts/docs/changelog-lines.ts";
 import { captures, section } from "../../../scripts/docs/markdown.ts";
 import { AGENT_LINKS, LLMS_TXT_ROUTE } from "../src/site/agent-links.ts";
-import { AGENTS_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
+import { AGENTS_PAGE, BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import {
   MARKDOWN_ROUTES,
   markdownAddress,
@@ -138,7 +138,7 @@ describe("a page's head and its link", () => {
   }, 60_000);
 
   it("names none on a page without Markdown", async () => {
-    for (const route of [PRIVACY_PAGE.route, AGENTS_PAGE.route]) {
+    for (const route of [BUILDER_PAGE.route, PRIVACY_PAGE.route, AGENTS_PAGE.route]) {
       const { page, context } = await open(route);
       expect(await page.locator('link[type="text/markdown"]').count(), route).toBe(0);
       expect(await page.locator('main a[type="text/markdown"]').count(), route).toBe(0);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
 import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
-import { PRIVACY_PAGE } from "../src/site/footer-pages.ts";
+import { BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { PRIVACY_CHANGED_ON } from "../src/site/privacy-changed-on.ts";
 import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
@@ -54,6 +54,17 @@ describe("the privacy page", () => {
     expect(copy).toMatch(/two services: Google Maps/);
     for (const { id, name } of MAP_PROVIDERS) {
       expect(await section.locator(`a[href="#${id}"]`).allTextContents()).toEqual([name]);
+    }
+    await context.close();
+  }, 30_000);
+
+  it("says what the snippet builder does with what you paste", async () => {
+    const { page, context } = await privacyPage();
+    const section = page.locator('section[aria-labelledby="builder"]');
+    expect(await section.locator(`a[href="${BUILDER_PAGE.route}"]`).count()).toBe(1);
+    const copy = await section.textContent();
+    for (const statement of ["sends it nowhere", "keeps none of it", "doesn't fetch it"]) {
+      expect(copy).toContain(statement);
     }
     await context.close();
   }, 30_000);

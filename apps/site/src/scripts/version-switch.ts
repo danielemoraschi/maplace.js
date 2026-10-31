@@ -146,7 +146,7 @@ function showProviderFiles(section: ParentNode, provider: Provider): void {
 }
 
 /** The provider the page's toggle has checked, if any. */
-function chosenProvider(toggle: ParentNode): Provider | undefined {
+export function chosenProvider(toggle: ParentNode): Provider | undefined {
   const checked = checkedRadioIn(toggle, "provider")?.value;
   return checked !== undefined && isProvider(checked) ? checked : undefined;
 }

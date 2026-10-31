@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { AGENTS_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
+import { AGENTS_PAGE, BUILDER_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { MARKDOWN_ROUTES, markdownAddress, markdownAddressAt } from "./markdown-routes.ts";
 import { SITE_ROUTES } from "./site-routes.ts";
 
 describe("MARKDOWN_ROUTES", () => {
-  it("is every route but the privacy and AI agents pages", () => {
+  it("is every route but the builder, privacy and AI agents pages", () => {
     expect(SITE_ROUTES.filter((route) => !MARKDOWN_ROUTES.includes(route))).toEqual([
+      BUILDER_PAGE.route,
       PRIVACY_PAGE.route,
       AGENTS_PAGE.route,
     ]);
