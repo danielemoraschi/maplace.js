@@ -86,6 +86,8 @@ export { defineListView } from "./list-views";
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
  *   changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
+ * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
+ *   of a selection; can't change afterwards.
  * - `hold`: stay idle, with no provider request and no list built, until `release()`.
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as

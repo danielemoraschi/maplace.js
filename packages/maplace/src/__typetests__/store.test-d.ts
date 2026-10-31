@@ -99,6 +99,10 @@ maplace.setRoute({ stops: ["a", "b"], avoid: ["bridges"] });
 shop.on("viewportChange", ({ viewport }) => viewport.center.lon);
 
 // The store's default styles for shapes, at rest and in each state.
+createMaplace({ skipMapLabel: "Skip", selectedLabel: "Chosen" });
+// @ts-expect-error a label is text
+createMaplace({ selectedLabel: 1 });
+
 createMaplace({
   style: { fill: "blue" },
   selectedStyle: { fill: "red" },

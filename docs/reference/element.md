@@ -35,6 +35,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `matches-label` | What its status says before the count; default "Locations found" |
 | `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
 | `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
+| `skip-map-label`, `selected-label` | The store's [`skipMapLabel` and `selectedLabel`](store.md#on-every-map); can't change once the store exists; a blank one is misuse |
 | `hold` | Stays idle, with no provider request and no list built, until `release()` |
 | `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address wins |

@@ -74,6 +74,11 @@ describe("checkGoogleMapOptions", () => {
 });
 
 describe("splitGoogleMapOptions", () => {
+  it("leaves the words of what a map adds to the store", () => {
+    const split = splitGoogleMapOptions({ skipMapLabel: "Oltre", selectedLabel: "Scelto" });
+    expect(split.storeOptions).toEqual({ skipMapLabel: "Oltre", selectedLabel: "Scelto" });
+  });
+
   it("hands the adapter its three keys, the store the rest, and keeps the list apart", () => {
     const list = { heading: "Cities" };
     const split = splitGoogleMapOptions({

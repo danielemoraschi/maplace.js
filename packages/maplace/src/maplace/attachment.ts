@@ -8,6 +8,7 @@ import { checkAttachable } from "./attachable";
 import type { SupportCheck } from "./capabilities";
 import { createHost } from "./host";
 import { createLoadStates } from "./load";
+import { addMapAids } from "./map-aids";
 import { resolvePopup } from "./popup";
 import type { Readiness } from "./ready";
 import { createReports } from "./reports";
@@ -32,6 +33,8 @@ interface Connection {
   readonly host: AdapterHost;
   readonly checkSupport: SupportCheck;
   readonly sync: AdapterSync;
+  /** Set once the map has mounted. */
+  removeAids?: (() => void) | undefined;
 }
 
 export function createAttacher<Data>({
@@ -82,6 +85,8 @@ export function createAttacher<Data>({
       // Awaited inside the try, so a mount that throws instead of rejecting fails the load too.
       await adapter.mount({ container, host, signal, cluster, popup });
       if (signal.aborted) return;
+      // No failure of these should cost a page its map.
+      connection.removeAids = runSafely(() => addMapAids(container, state.store, options));
       await sync.start();
       if (!signal.aborted) loadStates.ready();
     } catch (error) {
@@ -93,6 +98,7 @@ export function createAttacher<Data>({
     if (connection === undefined || connection !== current) return;
     current = undefined;
     connection.controller.abort();
+    connection.removeAids?.();
     runSafely(() => connection.adapter.destroy());
     loadStates.idle();
   }

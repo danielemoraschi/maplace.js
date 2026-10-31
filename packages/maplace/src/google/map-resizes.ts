@@ -52,7 +52,8 @@ export function watchMapResizes(map: google.maps.Map, onResized: () => void): ()
 
 /** Makes Google measure the map again: its root's width changes for a moment, then is restored. */
 async function remeasure(element: HTMLElement): Promise<void> {
-  const root = element.firstElementChild;
+  // Past what the store's `attach` puts first in a container, on a page's own map too.
+  const root = element.querySelector(":scope > :not(a,[aria-live])");
   if (!(root instanceof HTMLElement)) return frames(1);
   const width = root.style.width;
   root.style.width = "99.9%";

@@ -32,7 +32,7 @@ export function mountMap(context: MountContext, map: MapState): MountedMap {
  * and controls need.
  */
 function layerIn(container: HTMLElement): HTMLElement | undefined {
-  if (typeof container.append !== "function") return undefined;
+  if (typeof container.querySelector !== "function") return undefined;
   const layer = container.ownerDocument.createElement("div");
   container.append(layer);
   return layer;

@@ -11,6 +11,7 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `list`: the list's attributes (`LIST_ATTRIBUTES`), or a list view not defined yet (tried
  *   again when one is);
  * - `cluster`: the attribute, which the store took when it was created;
+ * - `labels`: `skip-map-label` and `selected-label`, which it took then too;
  * - `sanitize`: the property, which the store also took when it was created.
  */
 export type MisuseCause =
@@ -20,6 +21,7 @@ export type MisuseCause =
   | "route"
   | "list"
   | "cluster"
+  | "labels"
   | "sanitize";
 
 /** The misuse standing on an element, which is in error while any does. */

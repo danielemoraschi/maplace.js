@@ -13,6 +13,7 @@ import { reapplyOwnProperties } from "./own-properties";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
 import { type Sanitize, StoreFeed } from "./store-feed";
+import { isStoreLabelAttribute, LABEL_ATTRIBUTES } from "./store-labels";
 import { createUrlState } from "./url-state";
 import { MAPLACE_VERSION } from "./version";
 
@@ -22,7 +23,12 @@ import { MAPLACE_VERSION } from "./version";
  */
 export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   static readonly maplaceVersion = MAPLACE_VERSION;
-  static readonly observedAttributes = [...LIST_ATTRIBUTES, "provider", "cluster"];
+  static readonly observedAttributes = [
+    ...LIST_ATTRIBUTES,
+    "provider",
+    "cluster",
+    ...LABEL_ATTRIBUTES,
+  ];
 
   readonly #internals = this.attachInternals();
   readonly #misuse = createStandingMisuse(this, () => this.#showLoadState());
@@ -98,6 +104,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   attributeChangedCallback(name: string, previous: string | null, value: string | null): void {
     if (previous === value || this.#feed.created === undefined) return;
     if (name === "cluster") this.#feed.checkClusterUnchanged();
+    else if (isStoreLabelAttribute(name)) this.#feed.checkLabels();
     else if (name === "provider") this.#reopenSession();
     else if (isListAttribute(name)) this.#lists?.rebuildSoon();
   }

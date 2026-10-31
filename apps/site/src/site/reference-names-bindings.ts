@@ -94,6 +94,8 @@ export const REACT_PROPS = {
     hoveredStyle: true,
     cluster: true,
     view: true,
+    skipMapLabel: true,
+    selectedLabel: true,
   }),
   map: everyName<keyof MaplaceMapProps>({
     createAdapter: true,

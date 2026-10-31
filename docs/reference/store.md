@@ -30,6 +30,8 @@ createGoogleMap("#simple-vanilla-map", {
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while a shape is hovered and not selected |
 | `cluster` | `boolean` | Clusters markers; needs the `cluster` capability; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `view` | `View` | The first view (see below) |
+| `skipMapLabel` | `string` | The words of the [link past the map](#on-every-map); default "Skip the map" |
+| `selectedLabel` | `string` | Said before a selected location's name, "Selected: Rome"; default "Selected" |
 
 ## Popup options
 
@@ -162,8 +164,15 @@ The list sets the store's hover from the pointer and keyboard focus, so the map 
 
 `listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's. The map's view never narrows it: a list with `scope` narrows them to its view in "This area".
 
+## On every map
+
+Once a map has mounted, `attach` adds two things to its container, for a keyboard and a screen reader, whichever provider draws it; `detach` takes them away.
+
+- **A link past the map**, first in the container, so Tab reaches it before the map's own stops; hidden until focused. It sends focus to the first thing that takes it in a control on the map, such as a list there, else just past the map, so the next Tab goes on to what follows. `.maplace-skip-map` styles its look, though its place and stacking are set on it; `display: none` removes it.
+- **A live region** saying each new selection, by the location's title, else its id: "Selected: Rome". It stays silent on the selection the map opens with, when a selection is cleared, and while focus is in a list (`role="listbox"`) or a `select`, as a screen reader speaks the change there.
+
 ## Adapters
 
-An adapter is the bridge to a map provider; the store drives it, and it reports back through its host. Writing one is for a new provider: the contract is in [RFC §3 Shape](../rfc-1.0.md#shape).
+An adapter is the bridge to a map provider; the store drives it, and it reports back through its host. Writing one is for a new provider: the contract is in [RFC §3 Shape](../rfc-1.0.md#shape). Its container also holds [what `attach` adds](#on-every-map) once `mount` resolves, so an adapter leaves other nodes there alone.
 
 Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. maplacejs's own lists on the map go there the same way.

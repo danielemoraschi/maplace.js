@@ -26,4 +26,8 @@ export interface MaplaceOptions<Data = unknown> {
   /** Cluster markers; needs the `cluster` capability. */
   readonly cluster?: boolean | undefined;
   readonly view?: View | undefined;
+  /** The link a keyboard skips the map by. Default "Skip the map". */
+  readonly skipMapLabel?: string | undefined;
+  /** Said before a selected location's name, as "Selected: Rome". Default "Selected". */
+  readonly selectedLabel?: string | undefined;
 }

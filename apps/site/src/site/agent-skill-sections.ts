@@ -25,7 +25,7 @@ function intro({ site }: AgentSkillSettings): string {
   );
   return `# Make a map with maplacejs
 
-maplacejs turns a list of locations into a map with a synced list, on Google Maps or on MapLibre. It keeps what is selected and hovered in one store that the map, the list and your code all read.
+maplacejs turns a list of locations into a map with a synced list, on Google Maps or MapLibre. It keeps selection and hover in one store the map, the list and your code read.
 
 This is a rewrite. There is no jQuery and no \`new Maplace(options).Load()\`: that is 0.2, so never write it. To move a 0.2 page, read [Migrating](${pageUrl(docRoute("migrating"), site)}).
 

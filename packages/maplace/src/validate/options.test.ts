@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { validateOptions } from "./options";
 
 describe("validateOptions", () => {
+  it.each(["skipMapLabel", "selectedLabel"])("names a blank %s", (name) => {
+    expect(() => validateOptions({ [name]: " " })).toThrow(name);
+  });
+
   it("accepts no options and every documented option", () => {
     expect(() => validateOptions(undefined)).not.toThrow();
     const options = {
@@ -14,6 +18,8 @@ describe("validateOptions", () => {
       hoveredStyle: { strokeWidth: 3 },
       cluster: true,
       view: { kind: "fit-all", padding: 40 },
+      skipMapLabel: "Skip",
+      selectedLabel: "Chosen",
     };
     expect(() => validateOptions(options)).not.toThrow();
   });

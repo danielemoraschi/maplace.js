@@ -89,6 +89,8 @@ export const STORE_NAMES = {
     hoveredStyle: true,
     cluster: true,
     view: true,
+    skipMapLabel: true,
+    selectedLabel: true,
   }),
   popupOptions: everyName<keyof PopupOptions>({ maxWidth: true, offset: true, openOn: true }),
   methods: everyName<keyof Maplace>({

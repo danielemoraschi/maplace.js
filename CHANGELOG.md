@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-10-31 Added a link to skip the map and an announcement of each selection on every map, worded by `skipMapLabel` and `selectedLabel` (`skip-map-label`, `selected-label` on the element)
 - 2026-10-31 Added a search box over the list (`searchLabel`, `search-label` on the element) with `setFilter({ query })`, `searchText` on a location (`search-text`), and a Search example
 - 2026-10-30 Added `groupCounts` (`group-counts` on the element): each group heading shows how many places are listed under it now, in a list or a native select, following the filter and "This area"; the Tags example turns it on
 - 2026-10-30 Added `tags` on a location (the `tags` attribute, GeoJSON's `properties.tags`) and `setFilter({ groups, tags })`, with a Tags example: a place shows when it has all the tags asked for

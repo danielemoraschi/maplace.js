@@ -20,6 +20,20 @@ describe("useMaplace", () => {
 });
 
 describe.each(ROOT_MODES)("MaplaceProvider, in $mode", (root) => {
+  it("passes the words of what a map adds on to the store", async () => {
+    const adapters = fakeAdapters();
+    const { container } = await renderInto(
+      <MaplaceProvider locations={TOWNS} skipMapLabel="Oltre" selectedLabel="Scelto">
+        <MaplaceMap createAdapter={adapters.createAdapter} />
+      </MaplaceProvider>,
+      root,
+    );
+    await inAct(() => adapters.live().finishMount());
+    expect(container.querySelector(".maplace-skip-map")?.textContent).toBe("Oltre");
+    await inAct(() => adapters.live().host().reportSelectionChange("south"));
+    expect(container.querySelector("[aria-live]")?.textContent).toMatch(/^Scelto: /);
+  });
+
   it("gives its children one store, kept across renders, with state through useSyncExternalStore", async () => {
     const seen = new Set<Maplace>();
     function Selected() {
@@ -77,7 +91,7 @@ describe.each(ROOT_MODES)("MaplaceProvider, in $mode", (root) => {
     await inAct(() => adapter.finishMount());
     const pans = adapter.callsOf("setView").length;
     await inAct(() => adapter.host().reportSelectionChange("south"));
-    expect(container.textContent).toBe("south");
+    expect(container.querySelector("output")?.textContent).toBe("south");
     expect(store().getSnapshot().selectedId).toBe("south");
     expect(adapter.callsOf("setView")).toHaveLength(pans + 1);
   });

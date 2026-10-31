@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { MaplaceMapElement } from "./index";
 import { adaptersMade, errorsOn, lastAdapter, mapFrom, nextTask, ROME } from "./testing/fake-maps";
 
 describe("<maplace-map> misuse, never silent, standing until corrected", () => {
@@ -91,6 +92,60 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     map.removeAttribute("cluster");
     expect(map.loadState).toBe("loading");
     expect(lastAdapter().mounted?.cluster).toBe(false);
+  });
+
+  it("reads the labels when the store is created", async () => {
+    const map = await mapFrom(
+      `<maplace-map skip-map-label="Oltre" selected-label="Scelto">${ROME}</maplace-map>`,
+    );
+    lastAdapter().finishMount();
+    await map.maplace.whenReady();
+    expect(map.querySelector(".maplace-skip-map")?.textContent).toBe("Oltre");
+    map.maplace.select("rome");
+    expect(map.querySelector("[aria-live]")?.textContent).toMatch(/^Scelto: /);
+  });
+
+  it("a blank label stands as misuse, keeping the other label and a valid sanitize", async () => {
+    const page = document.createElement("div");
+    page.innerHTML = `<maplace-map selected-label=" " skip-map-label="Oltre" hold>${ROME}</maplace-map>`;
+    const map = page.firstElementChild as MaplaceMapElement;
+    const sanitize = (html: string) => html;
+    map.sanitize = sanitize;
+    const errors = errorsOn(map);
+    document.body.append(page);
+    await nextTask();
+    expect(errors.map(({ message }) => message)).toEqual([
+      expect.stringMatching(/selected-label must not be blank/),
+    ]);
+    expect(map.sanitize).toBe(sanitize);
+    expect(map.loadState).toBe("error");
+    map.removeAttribute("selected-label");
+    expect(map.loadState).toBe("idle");
+    page.remove();
+  });
+
+  it("gives a listener hearing of a blank label the one store", async () => {
+    const page = document.createElement("div");
+    page.innerHTML = `<maplace-map selected-label=" " hold>${ROME}</maplace-map>`;
+    const map = page.firstElementChild as MaplaceMapElement;
+    const stores: unknown[] = [];
+    map.addEventListener("maplace-error", () => stores.push(map.maplace));
+    document.body.append(page);
+    await nextTask();
+    expect(stores).toEqual([map.maplace]);
+    page.remove();
+  });
+
+  it("refuses a label changed once the map is created, until put back", async () => {
+    const map = await mapFrom(`<maplace-map selected-label="Scelto">${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    map.setAttribute("selected-label", "Altro");
+    expect(errors.map(({ message }) => message)).toEqual([
+      expect.stringMatching(/can't change once the map is created/),
+    ]);
+    expect(map.loadState).toBe("error");
+    map.setAttribute("selected-label", "Scelto");
+    expect(map.loadState).toBe("loading");
   });
 
   it("refuses a route the store refuses, keeping the one before", async () => {

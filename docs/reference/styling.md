@@ -80,6 +80,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-popup-heading` | A popup's heading, its location's title |
 | `maplace-cluster` | A cluster's badge, the count, on either provider |
 | `maplace-control` | The panel holding what is placed on a Google or MapLibre map |
+| `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |
 | `maplace-google-map` | The element a Google map maplacejs creates is drawn in |
 | `maplace-maplibre-map` | The element a MapLibre map maplacejs creates is drawn in |
 

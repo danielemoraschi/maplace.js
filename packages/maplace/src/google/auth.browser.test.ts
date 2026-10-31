@@ -23,7 +23,7 @@ describeWithRefusedKey("Google refusing the page's key", () => {
     await expect.poll(() => first.maplace.getSnapshot().loadState, { timeout: 5000 }).toBe("error");
     expect(first.errors).toEqual([refused]);
     // Google's own message stays on its map; nothing maplace asks of it later throws or reports.
-    expect(first.container.children).toHaveLength(1);
+    expect(first.container.querySelector(".maplace-google-map")).not.toBeNull();
     first.maplace.setLocations([ROME, PARIS]);
     first.maplace.select("paris");
     first.adapter.mountControl(document.createElement("button"), "bottom-left");

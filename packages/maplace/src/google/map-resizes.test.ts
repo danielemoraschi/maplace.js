@@ -13,7 +13,10 @@ function resizedMap(width = 512) {
   stubResizeObserver();
   const element = document.createElement("div");
   const googleRoot = document.createElement("div");
-  element.append(googleRoot);
+  const region = document.createElement("div");
+  region.setAttribute("aria-live", "polite");
+  // A link past the map and a live region go first in the container, on a page's own map too.
+  element.append(document.createElement("a"), region, googleRoot);
   const size = sizeable(element, width, 512);
   const map = new StubMap(element) as unknown as google.maps.Map;
   const widths: string[] = [];

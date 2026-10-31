@@ -7,7 +7,16 @@ import { MAPLIBRE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/
  * The attributes the element reads by a literal name, kept in no list of its own:
  * element-attributes.test.ts finds each in the element's source, so a rename fails there.
  */
-const MAP_READS = ["provider", "cluster", "hold", "loading", "selected-id", "url-state"] as const;
+const MAP_READS = [
+  "provider",
+  "cluster",
+  "skip-map-label",
+  "selected-label",
+  "hold",
+  "loading",
+  "selected-id",
+  "url-state",
+] as const;
 const GOOGLE_PROVIDER_READS = ["map-id"] as const;
 
 export const ATTRIBUTES_READ_BY_NAME: readonly string[] = [...MAP_READS, ...GOOGLE_PROVIDER_READS];

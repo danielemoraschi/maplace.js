@@ -3,6 +3,7 @@ import { afterEach, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
 import { createListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
+import { SKIP_MAP_CLASS } from "../maplace/map-aids";
 import { queried } from "../testing/queried";
 import type { ColorScheme } from "./options";
 import { darkPage } from "./testing/dark-page";
@@ -34,6 +35,20 @@ async function listOnGoogle({ colorScheme, count, ...options }: ListSetting = {}
 
 describeWithMaps("controls on a Google map", () => {
   afterEach(() => document.body.replaceChildren());
+
+  it("reaches the link past the map first, on top of a list, and it goes to the list", async () => {
+    const { container, view } = await listOnGoogle();
+    const link = queried(container, `.${SKIP_MAP_CLASS}`) as HTMLAnchorElement;
+    const before = document.createElement("button");
+    container.before(before);
+    before.focus();
+    await userEvent.keyboard("{Tab}");
+    expect(document.activeElement).toBe(link);
+    const { left, top, width, height } = link.getBoundingClientRect();
+    expect(document.elementFromPoint(left + width / 2, top + height / 2)).toBe(link);
+    await userEvent.keyboard("{Enter}");
+    expect(view.contains(document.activeElement)).toBe(true);
+  });
 
   it("types in a search box without zooming the map", async () => {
     const maplace = createMaplace({ locations: places(5) });

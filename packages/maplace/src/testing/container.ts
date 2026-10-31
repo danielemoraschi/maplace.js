@@ -1,7 +1,20 @@
 import { MAP_SIZE } from "./map-probe";
 
-/** An element as far as `attach` checks one, so tests run without a DOM. */
-export const CONTAINER = { nodeType: 1 } as HTMLElement;
+/** An element as far as `attach` checks one and adds to it, so tests run without a DOM. */
+export const CONTAINER = {
+  nodeType: 1,
+  ownerDocument: {
+    createElement: () => ({
+      style: {},
+      setAttribute() {},
+      addEventListener() {},
+      remove() {},
+    }),
+  },
+  prepend() {},
+  append() {},
+  getRootNode: () => ({ activeElement: null }),
+} as unknown as HTMLElement;
 
 /** A real map container of `MAP_SIZE`, on the page. */
 export function sizedContainer(): HTMLElement {

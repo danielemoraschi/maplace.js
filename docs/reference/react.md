@@ -38,7 +38,7 @@ Makes one store on mount and keeps it as long as it is mounted. `locations` and 
 | `defaultSelectedId` | The selection at start, when `selectedId` is not controlled |
 | `filter` | What [`setFilter`](store.md#methods) takes: a list of groups, or `{ groups, tags, query }`; applied when its value changes, so a fresh object of the same value costs nothing. It replaces the whole filter, so a change clears what a search box typed: with a box, leave it out and have a child call `useMaplace().setFilter({ ...getSnapshot().filter, tags })` |
 | `route` | The [route](store.md#routes); applied when its value changes, so it is computed, and billed, once per change |
-| `sanitize`, `popup`, `style`, `selectedStyle`, `hoveredStyle`, `cluster`, `view` | The [store's options](store.md#options), read on mount |
+| `sanitize`, `popup`, `style`, `selectedStyle`, `hoveredStyle`, `cluster`, `view`, `skipMapLabel`, `selectedLabel` | The [store's options](store.md#options), read on mount |
 | `children` | What uses the store: `<MaplaceMap>`, `<LocationList>`, your components |
 
 An id in `selectedId` or `defaultSelectedId` not shown yet (locations still loading, or filtered out) waits until it is; one the filter hid is tried again at the next render, as the provider follows its props only then. A `filter` or `route` that app code sets through the store stands until the prop next changes.

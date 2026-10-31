@@ -73,9 +73,10 @@ describe("a headed list view in a browser", () => {
       { heading: HEADING },
     );
     adapter.mountControl(list.element, "top-left");
+    await userEvent.keyboard("{Tab}");
     const reachedMap: string[] = [];
     map.addEventListener("keydown", (event) => reachedMap.push(event.key));
-    await userEvent.keyboard("{Tab}{ArrowDown}{End}");
+    await userEvent.keyboard("{ArrowDown}{End}");
     expect(map.contains(document.activeElement)).toBe(true);
     expect(reachedMap).toEqual([]);
   });

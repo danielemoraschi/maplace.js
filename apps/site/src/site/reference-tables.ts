@@ -13,6 +13,7 @@ import { elementEventName } from "../../../../packages/maplace/src/element/event
 import { LOCATION_ATTRIBUTES } from "../../../../packages/maplace/src/element/location-attributes.ts";
 import { GOOGLE_MAP_CLASS } from "../../../../packages/maplace/src/google/control-styles.ts";
 import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
+import { SKIP_MAP_CLASS } from "../../../../packages/maplace/src/maplace/map-aids.ts";
 import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/control-styles.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
@@ -82,6 +83,7 @@ export const STYLING_CLASSES = [
   POPUP_HEADING_CLASS,
   CLUSTER_CLASS,
   CONTROL_CLASS,
+  SKIP_MAP_CLASS,
   GOOGLE_MAP_CLASS,
   MAPLIBRE_MAP_CLASS,
 ];

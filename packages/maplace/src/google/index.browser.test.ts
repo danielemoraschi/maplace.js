@@ -12,7 +12,7 @@ describeWithMaps("a store on Google Maps", () => {
     const detach = maplace.attach(createGoogleAdapter({ mapId: "DEMO_MAP_ID" }), container);
     await maplace.whenReady();
     expect(maplace.getSnapshot().loadState).toBe("ready");
-    const map = container.firstElementChild as HTMLElement;
+    const map = container.querySelector(".maplace-google-map") as HTMLElement;
     expect([map.offsetWidth, map.offsetHeight]).toEqual([MAP_SIZE.width, MAP_SIZE.height]);
     detach();
     expect(container.children).toHaveLength(0);

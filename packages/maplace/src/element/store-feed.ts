@@ -10,6 +10,7 @@ import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
 import { PendingSelection } from "./pending-selection";
 import type { StandingMisuse } from "./standing-misuse";
+import { checkStoreLabels, readStoreLabels, type StoreLabels } from "./store-labels";
 
 /** What the store renders `html` through, as its `sanitize` option. */
 export type Sanitize = NonNullable<MaplaceOptions["sanitize"]>;
@@ -25,6 +26,8 @@ export class StoreFeed {
   readonly #onStoreChange: () => void;
   #store: Maplace | undefined;
   #clusters = false;
+  /** What the store took from the label attributes. */
+  #labels: StoreLabels = {};
   /** Given before the store exists, or what the store was created with. */
   #sanitize: Sanitize | undefined;
   #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
@@ -110,29 +113,36 @@ export class StoreFeed {
     }
   }
 
+  /** A blank label stands as misuse, as does a change once the store has taken them. */
+  checkLabels(): void {
+    checkStoreLabels(this.#host, this.#labels, this.#misuse);
+  }
+
   /**
-   * The store from `cluster` and `sanitize`, fixed for its life, then fed what waited for it. It
-   * is listened to only then: the state the store starts from is no event, as an <input value>
-   * is no change.
+   * The store from `cluster`, the labels and `sanitize`, fixed for its life, then fed what waited
+   * for it. It is listened to only then: the state the store starts from is no event, as an
+   * <input value> is no change. A bad label is said last, as a listener may read the store.
    */
   #create(): Maplace {
     this.#clusters = this.#host.hasAttribute("cluster");
+    this.#labels = readStoreLabels(this.#host);
     const store = this.#createStore();
     this.#store = store;
     this.#feedPending();
     this.#listenTo(store);
+    this.checkLabels();
     return store;
   }
 
   /** A store always exists: one `sanitize` the store refuses is left out, standing as misuse. */
   #createStore(): Maplace {
-    const cluster = this.#clusters;
+    const fixed = { cluster: this.#clusters, ...this.#labels };
     const sanitize = this.#sanitize;
-    if (sanitize === undefined) return createMaplace({ cluster });
-    const store = this.#misuse.attempt("sanitize", () => createMaplace({ cluster, sanitize }));
+    if (sanitize === undefined) return createMaplace(fixed);
+    const store = this.#misuse.attempt("sanitize", () => createMaplace({ ...fixed, sanitize }));
     if (store !== undefined) return store;
     this.#sanitize = undefined;
-    return createMaplace({ cluster });
+    return createMaplace(fixed);
   }
 
   /**

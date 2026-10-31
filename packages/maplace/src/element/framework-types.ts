@@ -26,6 +26,8 @@ type OtherAttributes = { [attribute: string]: unknown };
 type NamedMapAttribute =
   | "provider"
   | "cluster"
+  | "skip-map-label"
+  | "selected-label"
   | "hold"
   | "loading"
   | "selected-id"
