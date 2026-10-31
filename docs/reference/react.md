@@ -74,7 +74,7 @@ Renders a div you size and attaches a fresh adapter to it on mount, detaching on
 | `className` | Size the map through it: a map fills its container |
 | `popupContent` | `(location) => ReactNode`: a popup's content as React content |
 | `markerIcon` | `(location, state) => ReactNode`: a marker's icon as React content |
-| `children` | What goes on the map: `<MapControl>`s and `<LocationList position>`s, rendered beside the map's div, never in it |
+| `children` | What goes on the map: `<MapControl>`s, `<LocationList position>`s and `<MyLocation>`, rendered beside the map's div, never in it |
 
 `popupContent` and `markerIcon` render through a portal into one host per location (an icon's host carries `data-selected` and `data-hovered`, as core icons do), with the provider's context, keeping their state. Returning nothing (`null`, `undefined`, a boolean) leaves the location's own `content` or `icon`. Whether either is given is read on mount. Content that throws is an `invalid-input` error event naming the field, and renders nothing.
 
@@ -94,6 +94,8 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `areaOnlyLabel` | The label of the switch's "This area"; default "This area" |
 | `showAllLabel` | The label of the switch's "All"; default "All" |
 | `emptyAreaLabel` | What a scoped list says when nothing is in its view; default "No locations in this area" |
+| `sort` | `"distance"`: once the store has an origin, nearest first, each entry saying how far, and a render function gets `distance` and `distanceLabel` ([Distances](store.md#distances)) |
+| `distanceUnit` | What `sort` writes a distance in: `"kilometer"` (the default) or `"mile"` |
 | `searchLabel` | Shows a search box above the entries, named by this; for `as: "list"` only ([List view options](store.md#list-view-options)) |
 | `noMatchesLabel` | What the box's status says when nothing matches; default "No locations match" |
 | `matchesLabel` | What its status says before the count; default "Locations found" |
@@ -108,6 +110,16 @@ Inside a `<MaplaceMap>`, puts its children on the map in a corner, through the a
 |---|---|
 | `position` | The corner: `"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"` |
 | `children` | What goes on the map |
+
+## `<MyLocation>`
+
+Inside a `<MaplaceMap>`, puts the ["My location" control](store.md#the-my-location-control) on the map while the map is attached. Outside a `<MaplaceMap>` it is misuse; on a server it renders nothing. There is no `origin` prop: for any other point, a child calls `setOrigin` on what `useMaplace()` returns.
+
+| Prop | What |
+|---|---|
+| `position` | The corner: `"top-left"` (the default), `"top-right"`, `"bottom-left"` or `"bottom-right"` |
+| `label` | The button's words; "My location" by default |
+| `unavailableLabel` | What it says when no position comes; "Location unavailable" by default |
 
 ## `useMaplace()`
 

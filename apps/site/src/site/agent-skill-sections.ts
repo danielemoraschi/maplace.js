@@ -130,6 +130,7 @@ It runs on a page like the npm one: an element with the id it renders into, a he
 - \`MaplaceMap\` takes ${codeList(REACT_PROPS.map)}.
 - \`LocationList\` takes ${codeList(REACT_PROPS.list)}.
 - \`MapControl\` takes ${codeList(REACT_PROPS.control)}.
+- \`MyLocation\` takes ${codeList(REACT_PROPS.myLocation)}.
 
 Inside the provider, \`useMaplace\` gives a component the store.`;
 }

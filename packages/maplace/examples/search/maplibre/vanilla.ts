@@ -40,5 +40,10 @@ createMapLibreMap("#search-maplibre-vanilla-map", {
       searchText: "harbour",
     },
   ],
-  list: { container: "#search-maplibre-vanilla-list", searchLabel: "Find a place" },
+  list: {
+    container: "#search-maplibre-vanilla-list",
+    searchLabel: "Find a place",
+    sort: "distance",
+  },
+  myLocation: true,
 });

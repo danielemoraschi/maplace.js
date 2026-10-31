@@ -19,6 +19,9 @@ export const CONTROL_POSITIONS = {
   "bottom-right": true,
 } as const satisfies Record<ControlPosition, true>;
 
+/** Where the "My location" control goes unless a page says: the shortcut, the element and React. */
+export const MY_LOCATION_CORNER: ControlPosition = "top-left";
+
 /**
  * What changed since the last `apply`; adapters touch only these locations. Apply `removed`
  * first: a location whose `type` changed is in `removed` and in `added`, never in `updated`. An
@@ -36,6 +39,12 @@ export interface PresentationState {
   readonly hoveredId: string | undefined;
   /** Ids hidden by the filter or `visible: false`. */
   readonly hiddenIds: ReadonlySet<string>;
+  /**
+   * Where to draw the origin's dot: no location, in no cluster and no stack order, taking no input.
+   * Where it stacks is the provider's: on Google below every marker; on MapLibre above the canvas's
+   * pin layer, below DOM markers and the selected or hovered pin.
+   */
+  readonly origin: LatLng | undefined;
 }
 
 /**

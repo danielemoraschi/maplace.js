@@ -47,6 +47,8 @@ Its own options, beside the store's:
 | `list` | `true \| MapLibreMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner the list goes in; default `top-right` |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map; not with `position` |
+| `myLocation` | `true \| MapLibreMapMyLocation` | A ["My location" control](store.md#the-my-location-control) on the map: `true`, or its `label`, `unavailableLabel` and `position` |
+| `myLocation.position` | `ControlPosition` | The corner it goes in; default `top-left` |
 
 A style URL given as `style` is `invalid-input`, telling you it is `mapStyle`: the store's `style` is the shapes'. Misuse names the part, as on Google: `createMaplace: options…`, `createMapLibreAdapter: options…`, `attach: container…`, `createListView: options…`.
 
@@ -123,6 +125,10 @@ A marker with an `icon` is a DOM marker, focusable and pressed by Enter or Space
 Circles are polygons of 128 points on the sphere, their radius in metres as on Google. Polylines and polygons across ±180 are drawn the short way.
 
 An `editable` shape gets Google's handles: one on each point and one between each two, and a circle's centre and four radius handles. They work with the pointer only. A shape's `locationEdit` comes as the drag goes, and its `locationChange` on release.
+
+### The origin's dot
+
+The dot at the store's [origin](store.md#distances) is a DOM marker of its own, with no feature, so nothing finds it as a location, and takes no input. It stacks above the canvas's pin layer and below DOM markers and the selected or hovered pin.
 
 ## Popups
 

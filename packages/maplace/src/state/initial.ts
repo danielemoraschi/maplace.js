@@ -25,6 +25,7 @@ export function initialSnapshot<Data>(options: MaplaceOptions<Data> | undefined)
     viewport: undefined,
     route: undefined,
     routeResult: undefined,
+    origin: undefined,
     loadState: "idle",
   });
 }

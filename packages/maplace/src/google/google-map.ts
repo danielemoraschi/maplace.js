@@ -10,7 +10,7 @@ import {
 } from "./google-map-options";
 import type { GoogleAdapterOptions } from "./options";
 
-export type { GoogleMapList, GoogleMapOptions } from "./google-map-options";
+export type { GoogleMapList, GoogleMapMyLocation, GoogleMapOptions } from "./google-map-options";
 
 type AdapterFactory = (options: GoogleAdapterOptions) => Adapter;
 

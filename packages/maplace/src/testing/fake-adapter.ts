@@ -5,6 +5,7 @@ import { createControl } from "./fake/control";
 import { createDrawing } from "./fake/drawing";
 import { createMapState } from "./fake/map-state";
 import { type MountedMap, mountMap } from "./fake/mounted-map";
+import { createFakeOriginDot } from "./fake/origin-dot";
 import { createProbe } from "./fake/probe";
 import { createRouting } from "./fake/route";
 import type { FakeAdapter, FakeAdapterOptions, FakeCall } from "./fake/types";
@@ -31,6 +32,7 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
   const drawing = createDrawing(map, () => destroyed);
   const live = () => (destroyed ? undefined : mountedMap?.live());
   const probe = createProbe({ map, live, camera, routing });
+  const originDot = createFakeOriginDot(() => mountedMap?.layer);
 
   return {
     capabilities: new Set(options.capabilities ?? EVERY_CAPABILITY),
@@ -45,6 +47,7 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
     mount(mountContext) {
       context = mountContext;
       mountedMap = mountMap(mountContext, map);
+      originDot(map.presented.origin);
       return control.mounting;
     },
     apply(diff) {
@@ -55,6 +58,7 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
     present(state) {
       recorder.record({ method: "present", state });
       drawing.present(state);
+      originDot(state.origin);
     },
     setView(view) {
       recorder.record({ method: "setView", view });

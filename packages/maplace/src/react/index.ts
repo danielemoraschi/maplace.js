@@ -9,6 +9,8 @@ export { MapControl } from "./map-control";
 export type { MaplaceMapProps } from "./maplace-map";
 export { MaplaceMap } from "./maplace-map";
 export { MaplaceProvider, useMaplace } from "./maplace-provider";
+export type { MyLocationProps } from "./my-location";
+export { MyLocation } from "./my-location";
 export type {
   MaplaceControlledProps,
   MaplaceEventProps,

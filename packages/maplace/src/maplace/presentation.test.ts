@@ -31,6 +31,22 @@ describe("presentationOf", () => {
     ).toBe(state);
   });
 
+  it("keeps the last state while the origin is the same", () => {
+    const origin = Object.freeze({ lat: 1, lng: 2 });
+    const state = presentationOf({ ...first, origin }, undefined);
+    const again = { ...first, origin, view: { kind: "fit-all", padding: 1 } } as const;
+    expect(presentationOf(again, { snapshot: first, state })).toBe(state);
+  });
+
+  it("a new origin gives a new state, with the hidden ids' reference kept", () => {
+    const state = presentationOf(first, undefined);
+    const origin = { lat: 1, lng: 2 };
+    const after = presentationOf({ ...first, origin }, { snapshot: first, state });
+    expect(after).not.toBe(state);
+    expect(after.origin).toBe(origin);
+    expect(after.hiddenIds).toBe(state.hiddenIds);
+  });
+
   it("keeps hiddenIds when the same ids are hidden, even with new locations or filter", () => {
     const state = presentationOf(first, undefined);
     const next = { ...first, locations: [...locations], selectedId: "a" };

@@ -1,3 +1,4 @@
+import type { LatLng } from "../geometry";
 import type { ListActions } from "./actions";
 import { createHoverIntent } from "./hover-intent";
 import { heldFocus, keepFocus } from "./kept-focus";
@@ -40,6 +41,7 @@ export function createListbox<Data>(
   // The focus order, rebuilt once per structure change, never per hover.
   let ordered: readonly HTMLElement[] = fixed;
   const painter = createOptionPainter({ render: settings.render, state: () => state });
+  let sortedFrom: LatLng | undefined;
   const sections = createSections<Data, HTMLElement>(listbox, {
     option: optionElement,
     fill: painter.fill,
@@ -72,6 +74,10 @@ export function createListbox<Data>(
       listbox.hidden = ordered.length === 0;
       placeTabStop();
       keepFocus(roving, { held, order: ordered });
+      // A new origin puts the nearest first: show it, unless the visitor is among the entries.
+      const from = structure.distances?.from;
+      if (from && from !== sortedFrom && !held) listbox.scrollTop = 0;
+      sortedFrom = from;
     },
     renderState(next) {
       const previous = state;

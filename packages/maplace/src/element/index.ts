@@ -23,6 +23,8 @@ export type ElementListOptions = Pick<
   | "heading"
   | "groupCounts"
   | "scope"
+  | "sort"
+  | "distanceUnit"
   | "areaOnlyLabel"
   | "showAllLabel"
   | "emptyAreaLabel"

@@ -8,6 +8,9 @@ import { areaOf } from "./shape-area";
  */
 const ON_TOP = 1e9;
 
+/** Google's rank for the origin's dot: below every marker, whose ranks start at 1. */
+export const ORIGIN_DOT_RANK = 0;
+
 /**
  * Where a marker stacks (higher in front): the hovered one on top, then the selected one, the
  * rest the later added in front (RFC #60). `order` is its place in the order added, from 1.

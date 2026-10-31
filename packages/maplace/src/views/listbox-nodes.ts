@@ -7,6 +7,21 @@ export const GROUP_CLASS = "maplace-group";
 export const HEADING_CLASS = "maplace-group-heading";
 export const FIT_ALL_CLASS = "maplace-fit-all";
 
+/** A status, always on the page and empty until it speaks, so a screen reader hears its text arrive. */
+export function statusElement(className: string): HTMLElement {
+  const status = element("div", className);
+  status.setAttribute("role", "status");
+  return status;
+}
+
+/** A button that says whether it is pressed, its `aria-pressed` the caller's. */
+export function toggleButton(label: string, className = ""): HTMLButtonElement {
+  const node = element("button", className) as HTMLButtonElement;
+  node.type = "button";
+  node.textContent = label;
+  return node;
+}
+
 /** The listbox, named by `label`; it holds options and groups directly (no list markup between). */
 export function listboxElement(label: string): HTMLElement {
   const listbox = element("div", LISTBOX_CLASS);

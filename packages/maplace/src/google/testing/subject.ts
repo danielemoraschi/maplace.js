@@ -44,7 +44,16 @@ export const PAGE_MAP_SUBJECT: ConformanceSubject = {
   name: "google on the page's map",
   provedOn: {
     subject: GOOGLE_SUBJECT,
-    groups: ["drawing", "presentation", "popups", "reports", "editing", "route", "cluster"],
+    groups: [
+      "drawing",
+      "presentation",
+      "popups",
+      "reports",
+      "editing",
+      "route",
+      "cluster",
+      "origin",
+    ],
   },
   create: (container) => googleParts({ ...TEST_OPTIONS, map: pageMapIn(container) }),
 };

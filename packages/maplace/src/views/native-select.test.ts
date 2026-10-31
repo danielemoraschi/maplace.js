@@ -126,3 +126,17 @@ describe("createNativeSelect: group names", () => {
     expect(group?.label).toBe("Nord");
   });
 });
+
+describe("createNativeSelect: distances", () => {
+  it("writes the distance in the option's text", () => {
+    const { view, select } = mounted();
+    view.renderStructure({
+      ...structureOf(locations),
+      distances: {
+        from: { lat: 0, lng: 0 },
+        of: new Map([["b", { metres: 5, label: "5 m" }]]),
+      },
+    });
+    expect(Array.from(select.options, (o) => o.textContent)).toContain("Beta (5 m)");
+  });
+});

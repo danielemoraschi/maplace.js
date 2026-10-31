@@ -1,25 +1,26 @@
-import type { Geometry, LatLng } from "../geometry";
-import { arcSpan, narrowestArc, wrapLongitude } from "../longitude-arc";
+import type { Geometry, LatLng } from "./geometry";
+import type { Location } from "./location";
+import { arcSpan, narrowestArc, wrapLongitude } from "./longitude-arc";
+import { RADIANS_PER_DEGREE } from "./sphere";
 
 type Path = readonly LatLng[];
-
-export const RADIANS_PER_DEGREE = Math.PI / 180;
 
 /**
  * The point a location's popup points at, on every map alike: a marker's point, a circle's
  * centre, the centre of a polygon's bounds (crossing ±180 as fit-all does), and the point
  * halfway along a polyline, which is always on the line.
  */
-export function anchorOf(geometry: Geometry): LatLng {
-  switch (geometry.type) {
+export function anchorOf(where: Geometry | Location): LatLng {
+  switch (where.type) {
+    case undefined:
     case "marker":
-      return { lat: geometry.lat, lng: geometry.lng };
+      return { lat: where.lat, lng: where.lng };
     case "circle":
-      return geometry.center;
+      return where.center;
     case "polygon":
-      return centreOfBounds(geometry.path);
+      return centreOfBounds(where.path);
     case "polyline":
-      return halfwayAlong(geometry.path);
+      return halfwayAlong(where.path);
   }
 }
 

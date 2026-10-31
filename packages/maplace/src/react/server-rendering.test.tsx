@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { fakeAdapters } from "../testing/fake/adapters";
-import { LocationList, MapControl, MaplaceMap, MaplaceProvider } from "./index";
+import { LocationList, MapControl, MaplaceMap, MaplaceProvider, MyLocation } from "./index";
 import { TOWNS } from "./testing/towns";
 
 // No DOM in this file: importing the binding, and rendering it on a server, must not need one.
@@ -20,6 +20,7 @@ describe("maplace/react on a server", () => {
             <LocationList as="select" />
           </MapControl>
           <LocationList position="top-left" />
+          <MyLocation />
         </MaplaceMap>
         <LocationList>{({ location }) => location.id}</LocationList>
       </MaplaceProvider>,

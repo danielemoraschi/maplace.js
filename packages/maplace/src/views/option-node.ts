@@ -8,6 +8,9 @@ import { labelOf } from "./model";
 /** A `render` function, as `ListViewOptions` takes it. */
 export type ListRender<Data> = NonNullable<ListViewOptions<Data>["render"]>;
 
+/** The class of an entry's distance. */
+export const DISTANCE_CLASS = "maplace-distance";
+
 const RENDER = child(root("createListView"), "render");
 
 /** An option's content: the entry, and the page's `render` if it has one. */
@@ -31,6 +34,8 @@ export function setOptionContent<Data>(
   // A `render` giving the same node for its id again leaves it in place, its own state kept.
   if (option.firstChild !== content || option.childNodes.length !== 1)
     option.replaceChildren(content);
+  if (!render && entry.distanceLabel !== undefined)
+    option.append(" ", distanceNode(entry.distanceLabel));
   nameOption(option, label);
 }
 
@@ -41,6 +46,13 @@ export function setOptionContent<Data>(
 export function nameOption(option: HTMLElement, label: string): void {
   if (option.textContent?.trim()) option.removeAttribute("aria-label");
   else option.setAttribute("aria-label", label);
+}
+
+function distanceNode(text: string): HTMLElement {
+  const distance = document.createElement("span");
+  distance.className = DISTANCE_CLASS;
+  distance.textContent = text;
+  return distance;
 }
 
 /** Selection and hover as ARIA and data attributes; only the selected option has aria-selected. */

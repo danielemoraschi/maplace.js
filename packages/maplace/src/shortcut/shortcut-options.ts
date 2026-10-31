@@ -1,5 +1,5 @@
 import { CONTROL_POSITIONS, type ControlPosition } from "../adapter";
-import type { ListViewOptions } from "../index";
+import type { ListViewOptions, MyLocationOptions } from "../index";
 import type { MaplaceOptions } from "../options";
 import { child, type Field, reject, root } from "../validate/fail";
 import { checkObject, checkOneOf, members, optional } from "../validate/values";
@@ -16,6 +16,13 @@ export interface MapList<Data = unknown> extends ListViewOptions<Data> {
 export interface ShortcutOptions<Data = unknown> extends MaplaceOptions<Data> {
   /** maplace's list: `true` for the default one on the map, or its options and place. */
   readonly list?: true | MapList<Data> | undefined;
+  /** A "My location" control on the map: `true`, or its words and corner (default top-left). */
+  readonly myLocation?: true | MapMyLocation | undefined;
+}
+
+/** The control on a shortcut's map: its words, and the corner it goes in. */
+export interface MapMyLocation extends MyLocationOptions {
+  readonly position?: ControlPosition | undefined;
 }
 
 /** A shortcut and the adapter factory it stands for, as its misuse names them. */
@@ -30,6 +37,8 @@ export interface SplitOptions<Data, AdapterOptions> {
   readonly adapterOptions: AdapterOptions;
   /** The list asked for: `true` for the default one, no options, top-right. */
   readonly list: ShortcutOptions<Data>["list"];
+  /** The control asked for: `true` for its default words, top-left. */
+  readonly myLocation?: ShortcutOptions<Data>["myLocation"];
 }
 
 const CORNERS = members(CONTROL_POSITIONS);
@@ -58,6 +67,7 @@ export function checkShortcutOptions<Data = unknown>(
     reject(child(field, "map"), `is for ${names.adapterFactory}: attach it to a store of your own`);
   }
   checkList(options.list, child(field, "list"));
+  checkMyLocation(options.myLocation, child(field, "myLocation"));
 }
 
 const checkList = optional((list, field) => {
@@ -67,6 +77,12 @@ const checkList = optional((list, field) => {
   if (list.position !== undefined && list.container !== undefined) {
     reject(child(field, "container"), "is for a list in the page: leave out position");
   }
+});
+
+const checkMyLocation = optional((asked, field) => {
+  if (asked === true) return;
+  checkObject(asked, field, "true or an object");
+  checkCorner(asked.position, child(field, "position"));
 });
 
 /** The list asked for: `true` is the default one, with no options. */

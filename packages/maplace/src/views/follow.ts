@@ -3,7 +3,8 @@ import { isListed } from "../location-state";
 import type { Maplace, Snapshot } from "../store";
 import type { Viewport } from "../viewport";
 import type { AreaSwitch } from "./area-switch";
-import { type ListRules, listedEntries, structureOf } from "./model";
+import { distanceLabelIn, sortedByDistance } from "./distance";
+import { type Distances, type ListRules, listedEntries, structureOf } from "./model";
 import type { SearchBox, SearchFound } from "./search-box";
 import type { ListVariant } from "./variant";
 import { type AreaMode, inViewOf, scopeIn } from "./viewport-scope";
@@ -18,10 +19,16 @@ export interface Following<Data> {
   readonly searchBox?: SearchBox | undefined;
 }
 
+/** What a list keeps, in its order, and how far each is when it sorts. */
+interface OrderedListing<Data> {
+  readonly listing: readonly Location<Data>[];
+  readonly distances?: Distances;
+}
+
 /**
- * Renders now, then on every change: the structure only when locations, filter or the list's
- * scope changed, the state only when selection or hover did. With an area switch, "This area"
- * scopes the list to each new view (`scopeIn`), and a press of either button lists again. Each
+ * Renders now, then on every change: the structure only when locations, filter, the list's
+ * scope or a sorted list's origin changed, the state only when selection or hover did. With an
+ * area switch, "This area" scopes the list to each new view (`scopeIn`), and a press of either button lists again. Each
  * pass reads the snapshot as it is then, because commits made during delivery are queued.
  */
 export function follow<Data>(
@@ -29,15 +36,24 @@ export function follow<Data>(
   { variant, rules, areaSwitch, searchBox }: Following<Data>,
 ): () => void {
   let shown: Snapshot<Data> | undefined;
+  const distanceLabel = rules.sort && distanceLabelIn(rules.distanceUnit);
   let mode: AreaMode = "all";
   let scope: Viewport | undefined;
   function sync(): void {
     const snapshot = maplace.getSnapshot();
     const next = scopeIn(mode, scope, snapshot.viewport);
-    if (next !== scope || structureChanged(shown, snapshot)) {
+    if (
+      next !== scope ||
+      structureChanged(shown, snapshot) ||
+      (rules.sort && originChanged(shown, snapshot))
+    ) {
       scope = next;
-      const listing = listedEntries<Data>(snapshot, inViewOf(scope));
-      variant.renderStructure(structureOf(listing, snapshot.locations, rules));
+      const kept = listedEntries<Data>(snapshot, inViewOf(scope));
+      const { listing, distances }: OrderedListing<Data> =
+        distanceLabel && snapshot.origin
+          ? sortedByDistance(kept, snapshot.origin, distanceLabel)
+          : { listing: kept };
+      variant.renderStructure({ ...structureOf(listing, snapshot.locations, rules), distances });
       const found = searchBox && foundFor(snapshot, listing);
       searchBox?.show(snapshot.filter?.query, found);
       areaSwitch?.showEmptyArea(scope !== undefined && listing.length === 0 && found !== 0);
@@ -74,6 +90,11 @@ function foundFor(snapshot: Snapshot, listing: readonly Location[]): SearchFound
   if (snapshot.filter?.query === undefined) return undefined;
   if (listing.length > 0) return listing.length;
   return snapshot.locations.some((location) => isListed(location, snapshot.filter)) ? undefined : 0;
+}
+
+/** Whether a sorted list measures from elsewhere. */
+function originChanged(shown: Snapshot | undefined, snapshot: Snapshot): boolean {
+  return snapshot.origin !== shown?.origin;
 }
 
 /** Whether the list shows other entries: its locations or filter changed. */

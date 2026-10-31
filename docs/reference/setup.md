@@ -158,6 +158,10 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 });
 ```
 
+## The visitor's location
+
+The ["My location" control](store.md#the-my-location-control) needs HTTPS and the visitor's permission, and asks only when pressed. A page that sends `Permissions-Policy: geolocation=()`, or a frame without `allow="geolocation"`, gets a refusal, so the control says "Location unavailable". maplacejs itself sends the position to no server, but moving the map there shows the map's provider the area around the visitor, and the provider's code running in the page is handed the position to draw the dot: say so in your privacy policy.
+
 ## Content Security Policy
 
 The script the element adds carries its `<maplace-map>`'s nonce, read from the element's `nonce` property (which a framework may set, and which keeps the attribute's value once a policy sent as a header hides it), and the one an adapter given `apiKey` adds carries its `nonce` option, so a page with a nonce-based policy lets it load. The element never writes inline styles: its default styles are an adopted stylesheet, and a shape's styles are JSON attributes, not `style`.

@@ -1,10 +1,8 @@
 import type { CircleGeometry } from "../geometry";
 import type { Location } from "../location";
 import { narrowestArc, wrapLongitude } from "../longitude-arc";
+import { EARTH_RADIUS, RADIANS_PER_DEGREE } from "../sphere";
 import type { Bounds } from "../viewport";
-
-const EARTH_RADIUS_METRES = 6_371_008.8;
-const DEGREES_PER_RADIAN = 180 / Math.PI;
 
 /** What the locations reach so far; a circle over a pole reaches every longitude. */
 interface Extent {
@@ -51,10 +49,10 @@ function includePoint(extent: Extent, lat: number, lng: number): void {
 
 /** On a sphere: degrees of latitude are even, degrees of longitude shrink towards the poles. */
 function includeCircle(extent: Extent, { center, radius }: CircleGeometry): void {
-  const latitudeSpan = (radius / EARTH_RADIUS_METRES) * DEGREES_PER_RADIAN;
+  const latitudeSpan = radius / EARTH_RADIUS / RADIANS_PER_DEGREE;
   const south = center.lat - latitudeSpan;
   const north = center.lat + latitudeSpan;
-  const longitudeSpan = latitudeSpan / Math.cos(center.lat / DEGREES_PER_RADIAN);
+  const longitudeSpan = latitudeSpan / Math.cos(center.lat * RADIANS_PER_DEGREE);
   includePoint(extent, Math.max(south, -90), wrapLongitude(center.lng - longitudeSpan));
   includePoint(extent, Math.min(north, 90), wrapLongitude(center.lng + longitudeSpan));
   if (south <= -90 || north >= 90 || longitudeSpan >= 180) extent.everyLongitude = true;

@@ -46,6 +46,6 @@ export function checkStoreLabels(
   }
 }
 
-function nonBlank(text: string | null): string | undefined {
+export function nonBlank(text: string | null): string | undefined {
   return text?.trim() ? text : undefined;
 }

@@ -1,6 +1,6 @@
+import { anchorOf } from "../anchor";
 import type { Geometry, LatLng } from "../geometry";
 import type { Bounds, ResolvedView } from "../viewport";
-import { anchorOf } from "./anchor";
 import { fitBox, type MapSize } from "./web-mercator";
 
 /**

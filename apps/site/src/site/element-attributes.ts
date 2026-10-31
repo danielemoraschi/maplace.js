@@ -20,6 +20,9 @@ const MAP_READS = [
   "load-from-label",
   "selected-id",
   "url-state",
+  "my-location-label",
+  "my-location-unavailable-label",
+  "my-location-position",
 ] as const;
 const GOOGLE_PROVIDER_READS = ["map-id"] as const;
 

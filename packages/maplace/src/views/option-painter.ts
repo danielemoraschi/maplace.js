@@ -1,5 +1,6 @@
 import type { Location } from "../location";
 import { changedIds, stateIn } from "../location-state";
+import type { EntryDistance } from "./model";
 import { type ListRender, setOptionContent, setOptionState } from "./option-node";
 import type { Sections } from "./sections";
 import type { ListState, StateChange } from "./variant";
@@ -12,7 +13,7 @@ export interface PainterSources<Data> {
 
 /** Fills options with content and state, and repaints the few whose state changed. */
 export interface OptionPainter<Data> {
-  fill(option: HTMLElement, location: Location<Data>): void;
+  fill(option: HTMLElement, location: Location<Data>, distance?: EntryDistance): void;
   repaintChanged(sections: Sections<Data, HTMLElement>, change: StateChange): void;
 }
 
@@ -20,9 +21,15 @@ export function createOptionPainter<Data>({
   render,
   state,
 }: PainterSources<Data>): OptionPainter<Data> {
-  function fill(option: HTMLElement, location: Location<Data>): void {
+  function fill(option: HTMLElement, location: Location<Data>, distance?: EntryDistance): void {
     const itemState = stateIn(state(), location.id);
-    setOptionContent(option, { entry: { location, ...itemState }, render });
+    const entry = {
+      location,
+      ...itemState,
+      distance: distance?.metres,
+      distanceLabel: distance?.label,
+    };
+    setOptionContent(option, { entry, render });
     setOptionState(option, itemState);
   }
 
@@ -34,7 +41,7 @@ export function createOptionPainter<Data>({
         const option = sections.optionOf(id);
         const location = option && sections.locationOf(option);
         if (!option || !location) continue;
-        if (render) fill(option, location);
+        if (render) fill(option, location, sections.distanceOf(option));
         else setOptionState(option, stateIn(change.next, id));
       }
     },

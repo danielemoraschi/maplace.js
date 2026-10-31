@@ -1,6 +1,7 @@
 import {
   checkShortcutOptions,
   type MapList,
+  type MapMyLocation,
   type ShortcutNames,
   type ShortcutOptions,
   type SplitOptions,
@@ -10,6 +11,9 @@ import type { GoogleAdapterOptions } from "./options";
 
 /** maplace's list on the map, in a corner, or in an element of the page. */
 export type GoogleMapList<Data = unknown> = MapList<Data>;
+
+/** The "My location" control on the map: its words and corner. */
+export type GoogleMapMyLocation = MapMyLocation;
 
 /**
  * A store's options and a Google adapter's, and the list to show. The page's own `map` is left
@@ -43,6 +47,7 @@ export function splitGoogleMapOptions<Data>(
     colorScheme,
     mapOptions,
     list,
+    myLocation,
     apiKey,
     version,
     language,
@@ -60,5 +65,5 @@ export function splitGoogleMapOptions<Data>(
     region,
     nonce,
   };
-  return { storeOptions, adapterOptions, list };
+  return { storeOptions, adapterOptions, list, myLocation };
 }

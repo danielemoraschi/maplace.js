@@ -15,17 +15,18 @@ export interface Presented {
  */
 export function presentationOf(snapshot: Snapshot, last: Presented | undefined): PresentationState {
   const hiddenIds = hiddenIdsOf(snapshot, last);
-  const { selectedId, hoveredId } = snapshot;
+  const { selectedId, hoveredId, origin } = snapshot;
   const previous = last?.state;
   if (
     previous !== undefined &&
     previous.selectedId === selectedId &&
     previous.hoveredId === hoveredId &&
-    previous.hiddenIds === hiddenIds
+    previous.hiddenIds === hiddenIds &&
+    previous.origin === origin
   ) {
     return previous;
   }
-  return Object.freeze({ selectedId, hoveredId, hiddenIds });
+  return Object.freeze({ selectedId, hoveredId, hiddenIds, origin });
 }
 
 function hiddenIdsOf(snapshot: Snapshot, last: Presented | undefined): ReadonlySet<string> {

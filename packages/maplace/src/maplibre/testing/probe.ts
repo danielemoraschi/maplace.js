@@ -90,6 +90,10 @@ function createMapLibreProbe(state: MapLibreState, sources: ProbeSources): MapPr
           return target ? [{ id, isMarker: target.isMarker, stack: target.stack() }] : [];
         }),
       ),
+    originDot() {
+      const at = state.originMarker?.getLngLat();
+      return at && { lat: at.lat, lng: at.lng };
+    },
     shownPopup() {
       const popup = state.popup;
       const element = popup?.window.popup.getElement();

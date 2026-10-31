@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { createMaplace } from "../maplace/create";
+import { CONTAINER } from "../testing/container";
+import { createFakeAdapter } from "../testing/fake-adapter";
 import { mounted } from "../testing/mounted";
 import type { Viewport } from "../viewport";
 import type { AreaSwitch } from "./area-switch";
 import { follow } from "./follow";
+import { listedLocations } from "./listed-locations";
+import type { ListRules, ListStructure } from "./model";
 import type { ListVariant } from "./variant";
 import type { AreaMode } from "./viewport-scope";
 
@@ -25,6 +29,21 @@ function recordingVariant(): ListVariant & { readonly calls: string[] } {
 }
 
 const rules = { groupHeadings: undefined };
+
+/** A variant keeping the last structure it was given, read as ids per section. */
+function keepingVariant(): ListVariant & { structure(): ListStructure | undefined } {
+  let last: ListStructure | undefined;
+  return {
+    ...recordingVariant(),
+    renderStructure: (structure) => {
+      last = structure;
+    },
+    structure: () => last,
+  };
+}
+
+const idsIn = (structure: ListStructure | undefined) =>
+  structure?.sections.map(({ locations: listed }) => listed.map(({ id }) => id));
 
 /** An area switch that records what its status says, its buttons pressed by `choose`. */
 function recordingAreaSwitch(): AreaSwitch & {
@@ -160,5 +179,92 @@ describe("follow", () => {
     variant.calls.length = 0;
     areaSwitch.choose("area");
     expect(variant.calls).toEqual([]);
+  });
+});
+
+describe("follow: sorted by distance", () => {
+  const places: Location[] = [
+    { id: "far", lat: 9, lng: 0 },
+    { id: "north-far", lat: 8, lng: 0, group: "N" },
+    { id: "south-near", lat: 1, lng: 0, group: "S" },
+    { id: "north-near", lat: 2, lng: 0, group: "N" },
+    { id: "near", lat: 3, lng: 0 },
+  ];
+  const sorted = { ...rules, sort: "distance" } as const;
+
+  function following(listRules: ListRules = sorted) {
+    const maplace = createMaplace({ locations: places });
+    const variant = keepingVariant();
+    follow(maplace, { variant, rules: listRules });
+    return { maplace, variant };
+  }
+
+  it("an origin alone reorders nothing, and says no distance", () => {
+    const { maplace, variant } = following(rules);
+    const before = idsIn(variant.structure());
+    maplace.setOrigin({ lat: 0, lng: 0 });
+    expect(idsIn(variant.structure())).toEqual(before);
+    expect(variant.structure()?.distances).toBeUndefined();
+  });
+
+  it("a list with sort sorts once there is an origin, and goes back to data order when cleared", () => {
+    const { maplace, variant } = following();
+    const dataOrder = idsIn(variant.structure());
+    expect(variant.structure()?.distances).toBeUndefined();
+    maplace.setOrigin({ lat: 0, lng: 0 });
+    expect(idsIn(variant.structure())?.[0]).toEqual(["near", "far"]);
+    expect(variant.structure()?.distances?.of.get("near")?.metres).toBeGreaterThan(0);
+    maplace.setOrigin(undefined);
+    expect(idsIn(variant.structure())).toEqual(dataOrder);
+    expect(variant.structure()?.distances).toBeUndefined();
+  });
+
+  it("sorts within groups, groups in their nearest member's order, ungrouped first", () => {
+    const { maplace, variant } = following();
+    maplace.setOrigin({ lat: 0, lng: 0 });
+    expect(idsIn(variant.structure())).toEqual([
+      ["near", "far"],
+      ["south-near"],
+      ["north-near", "north-far"],
+    ]);
+  });
+
+  it("sorts what the query keeps", () => {
+    const { maplace, variant } = following();
+    maplace.setOrigin({ lat: 0, lng: 0 });
+    maplace.setFilter({ groups: ["N"] });
+    expect(idsIn(variant.structure())).toEqual([["north-near", "north-far"]]);
+  });
+
+  it("sorts what the scope keeps", () => {
+    const maplace = createMaplace({ locations: places });
+    const variant = keepingVariant();
+    const areaSwitch = recordingAreaSwitch();
+    follow(maplace, { variant, rules: sorted, areaSwitch });
+    const adapter = createFakeAdapter();
+    maplace.attach(adapter, CONTAINER);
+    void adapter.finishMount();
+    return maplace.whenReady().then(() => {
+      adapter.host().reportViewportChange({
+        center: { lat: 5, lng: 0 },
+        zoom: 5,
+        bounds: { south: 0, west: -1, north: 8.5, east: 1 },
+      });
+      areaSwitch.choose("area");
+      maplace.setOrigin({ lat: 9, lng: 0 });
+      expect(idsIn(variant.structure())).toEqual([
+        ["near"],
+        ["north-far", "north-near"],
+        ["south-near"],
+      ]);
+    });
+  });
+
+  it("leaves listedLocations in data order", () => {
+    const { maplace } = following();
+    maplace.setOrigin({ lat: 0, lng: 0 });
+    expect(listedLocations(maplace.getSnapshot()).map(({ id }) => id)).toEqual(
+      places.map(({ id }) => id),
+    );
   });
 });

@@ -23,6 +23,8 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     heading: optional(checkNonBlankString),
     render: optional(checkFunction),
     scope: optional(oneOf(SCOPES)),
+    sort: optional(oneOf(members({ distance: true }))),
+    distanceUnit: optional(oneOf(members({ kilometer: true, mile: true }))),
     areaOnlyLabel: optional(checkNonBlankString),
     showAllLabel: optional(checkNonBlankString),
     emptyAreaLabel: optional(checkNonBlankString),

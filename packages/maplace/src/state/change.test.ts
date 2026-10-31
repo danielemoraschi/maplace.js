@@ -11,6 +11,7 @@ const snapshot: Snapshot = {
   viewport: undefined,
   route: undefined,
   routeResult: undefined,
+  origin: undefined,
   loadState: "idle",
 };
 

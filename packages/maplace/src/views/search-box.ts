@@ -1,4 +1,4 @@
-import { element } from "./listbox-nodes";
+import { element, statusElement } from "./listbox-nodes";
 
 export const SEARCH_CLASS = "maplace-search";
 export const SEARCH_STATUS_CLASS = "maplace-search-status";
@@ -64,8 +64,7 @@ export function createSearchBox(labels: SearchBoxLabels): SearchBoxParts {
   input.addEventListener("compositionend", () => {
     composing = false;
   });
-  const status = element("div", SEARCH_STATUS_CLASS);
-  status.setAttribute("role", "status");
+  const status = statusElement(SEARCH_STATUS_CLASS);
   return {
     input,
     status,

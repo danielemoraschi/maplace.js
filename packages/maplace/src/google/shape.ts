@@ -1,9 +1,10 @@
 /// <reference types="google.maps" preserve="true" />
-import { anchorOf } from "../adapter-kit/anchor";
+
 import { editReportsFor } from "../adapter-kit/edit-reports";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
 import { shapeStackRank } from "../adapter-kit/stacking";
+import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
 import { sameState } from "../location-state";
 import { cutOnBlur, type GiveBack, takeEditingAway } from "./blur-cuts";

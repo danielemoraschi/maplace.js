@@ -20,6 +20,8 @@ export interface GoogleMapState {
   popup: ShownGooglePopup | undefined;
   /** Settles once the route asked for is shown, failed or dropped; undefined before any. */
   routeSettling: Promise<void> | undefined;
+  /** The dot at the store's origin, while one shows. */
+  originMarker: google.maps.marker.AdvancedMarkerElement | undefined;
 }
 
 export function createMapState(): GoogleMapState {
@@ -29,5 +31,6 @@ export function createMapState(): GoogleMapState {
     presented: NOTHING_PRESENTED,
     popup: undefined,
     routeSettling: undefined,
+    originMarker: undefined,
   };
 }

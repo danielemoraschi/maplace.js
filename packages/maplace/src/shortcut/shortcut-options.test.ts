@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { listAskedFor, listViewOptionsOf } from "./shortcut-options";
+import { checkShortcutOptions, listAskedFor, listViewOptionsOf } from "./shortcut-options";
 
 describe("listAskedFor", () => {
   it("takes true for the default list, with no options, and none for none", () => {
@@ -14,5 +14,23 @@ describe("listViewOptionsOf", () => {
   it("gives the list view its own options, without where the list goes", () => {
     const list = { as: "select", position: "top-left", container: "#side" } as const;
     expect(listViewOptionsOf(list)).toEqual({ as: "select" });
+  });
+});
+
+describe("checkShortcutOptions: myLocation", () => {
+  const NAMES = { shortcut: "createGoogleMap", adapterFactory: "createGoogleAdapter" };
+  const check = (myLocation: unknown) => () => checkShortcutOptions({ myLocation } as never, NAMES);
+
+  it("takes true, or its words and a corner", () => {
+    expect(check(true)).not.toThrow();
+    expect(check({ label: "Near me", position: "bottom-left" })).not.toThrow();
+  });
+
+  it("refuses a bad position, naming it", () => {
+    expect(check({ position: "middle" })).toThrow(/createGoogleMap: options\.myLocation\.position/);
+  });
+
+  it("refuses false: it isn't true or an object", () => {
+    expect(check(false)).toThrow(/createGoogleMap: options\.myLocation/);
   });
 });

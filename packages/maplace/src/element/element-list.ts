@@ -15,6 +15,8 @@ export const LIST_ATTRIBUTES = [
   "list-heading",
   "group-counts",
   "list-scope",
+  "list-sort",
+  "distance-unit",
   "area-only-label",
   "show-all-label",
   "empty-area-label",
@@ -30,7 +32,7 @@ export function isListAttribute(name: string): boolean {
   return LIST_ATTRIBUTE_NAMES.has(name);
 }
 
-const CORNERS: readonly string[] = Object.keys(CONTROL_POSITIONS);
+export const CORNERS = Object.keys(CONTROL_POSITIONS) as readonly ControlPosition[];
 
 /** The element's list, beside the map or on it. */
 export interface ElementList {
@@ -84,6 +86,8 @@ function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
     heading: textOf(host, "list-heading"),
     groupCounts: groupCounts(host),
     scope: listScope(host, name),
+    sort: oneOfAttribute(host, "list-sort", ["distance"]),
+    distanceUnit: oneOfAttribute(host, "distance-unit", ["kilometer", "mile"]),
     areaOnlyLabel: textOf(host, "area-only-label"),
     showAllLabel: textOf(host, "show-all-label"),
     emptyAreaLabel: textOf(host, "empty-area-label"),
@@ -91,6 +95,19 @@ function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
     noMatchesLabel: textOf(host, "no-matches-label"),
     matchesLabel: textOf(host, "matches-label"),
   };
+}
+
+/** `name`'s value, one of `allowed`, or nothing when it isn't there; misuse naming it otherwise. */
+export function oneOfAttribute<Value extends string>(
+  host: HTMLElement,
+  name: string,
+  allowed: readonly Value[],
+): Value | undefined {
+  const value = host.getAttribute(name);
+  if (value === null) return undefined;
+  if ((allowed as readonly string[]).includes(value)) return value as Value;
+  const problem = `${name} must be ${allowed.map((one) => `"${one}"`).join(" or ")}, got "${value}"`;
+  throw elementMisuse(problem, { field: name });
 }
 
 /** `name`'s text, refused when blank: for every view, the page's own as maplace's. */
@@ -123,7 +140,7 @@ function searchLabel(host: HTMLElement, name: string): string | undefined {
 /** Beside the map unless a corner is named. */
 function listPosition(value: string | null): ListPosition {
   if (value === null || value === "outside") return "outside";
-  if (CORNERS.includes(value)) return value as ControlPosition;
+  if ((CORNERS as readonly string[]).includes(value)) return value as ControlPosition;
   throw elementMisuse(`list-position must be a corner or "outside", got "${value}"`, {
     field: "list-position",
   });

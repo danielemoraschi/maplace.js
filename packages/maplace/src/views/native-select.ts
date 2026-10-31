@@ -29,8 +29,10 @@ export function createNativeSelect<Data>(
   const nothingSelected = fitAll ?? blankPlaceholder();
   const sections = createSections<Data, HTMLOptionElement>(select, {
     option: () => textOption(""),
-    fill: (option, location) => {
-      option.textContent = labelOf(location);
+    fill: (option, location, distance) => {
+      option.textContent = distance
+        ? `${labelOf(location)} (${distance.label})`
+        : labelOf(location);
     },
     group: () => {
       const group = document.createElement("optgroup");

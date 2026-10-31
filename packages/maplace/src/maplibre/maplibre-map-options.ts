@@ -1,6 +1,7 @@
 import {
   checkShortcutOptions,
   type MapList,
+  type MapMyLocation,
   optionsField,
   type ShortcutNames,
   type ShortcutOptions,
@@ -11,6 +12,9 @@ import type { MapLibreAdapterOptions } from "./options";
 
 /** maplace's list on the map, in a corner, or in an element of the page. */
 export type MapLibreMapList<Data = unknown> = MapList<Data>;
+
+/** The "My location" control on the map: its words and corner. */
+export type MapLibreMapMyLocation = MapMyLocation;
 
 /**
  * A store's options and a MapLibre adapter's, and the list to show. The page's own `map` is left
@@ -46,6 +50,6 @@ export function checkMapLibreMapOptions<Data = unknown>(
 export function splitMapLibreMapOptions<Data>(
   options: MapLibreMapOptions<Data>,
 ): SplitOptions<Data, Pick<MapLibreAdapterOptions, AdapterKey>> {
-  const { mapStyle, mapOptions, list, ...storeOptions } = options;
-  return { storeOptions, adapterOptions: { mapStyle, mapOptions }, list };
+  const { mapStyle, mapOptions, list, myLocation, ...storeOptions } = options;
+  return { storeOptions, adapterOptions: { mapStyle, mapOptions }, list, myLocation };
 }

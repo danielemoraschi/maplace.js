@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { LatLng } from "../geometry";
 import { anchorOf } from "./anchor";
+import type { LatLng } from "./geometry";
 
 function square(center: LatLng, half: number): LatLng[] {
   const { lat, lng } = center;
@@ -13,6 +13,22 @@ function square(center: LatLng, half: number): LatLng[] {
 }
 
 describe("anchorOf", () => {
+  it("reads a location without a type as a marker", () => {
+    expect(anchorOf({ id: "a", lat: 1, lng: 2 })).toEqual({ lat: 1, lng: 2 });
+  });
+
+  it("reads a circle, polygon and polyline location as their geometries", () => {
+    const center = { lat: 3, lng: 4 };
+    expect(anchorOf({ id: "c", type: "circle", center, radius: 10 })).toEqual(center);
+    const path = square({ lat: 10, lng: 20 }, 1);
+    expect(anchorOf({ id: "p", type: "polygon", path })).toEqual({ lat: 10, lng: 20 });
+    const ends = [
+      { lat: 0, lng: 0 },
+      { lat: 2, lng: 0 },
+    ];
+    expect(anchorOf({ id: "l", type: "polyline", path: ends })).toEqual({ lat: 1, lng: 0 });
+  });
+
   it("anchors a marker at its point, and a circle at its centre", () => {
     expect(anchorOf({ type: "marker", lat: 1, lng: 2 })).toEqual({ lat: 1, lng: 2 });
     expect(anchorOf({ type: "circle", center: { lat: 3, lng: 4 }, radius: 10 })).toEqual({

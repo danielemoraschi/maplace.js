@@ -6,6 +6,7 @@ import {
   createGoogleMap,
   type GoogleAdapterOptions,
   type GoogleMapList,
+  type GoogleMapMyLocation,
 } from "maplace/google";
 import { expectTypeOf } from "vitest";
 
@@ -48,3 +49,11 @@ createGoogleMap(42, { mapId: "id" });
 createGoogleMap("#map", { apiKey: "KEY", language: "it", locations: [] });
 // @ts-expect-error a language is a string
 createGoogleMap("#map", { apiKey: "KEY", language: 1 });
+
+createGoogleMap(side, { myLocation: true });
+export const googleMyLocation: GoogleMapMyLocation = { label: "Near me", position: "bottom-left" };
+createGoogleMap(side, { myLocation: googleMyLocation });
+// @ts-expect-error true or its options; leave it out for none
+createGoogleMap(side, { myLocation: false });
+// @ts-expect-error a corner
+createGoogleMap(side, { myLocation: { position: "middle" } });

@@ -18,6 +18,8 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 | `MaplaceEvents`, `MaplaceEventName`, `Listener`, `ListenOptions`, `Unsubscribe` | types | [Events](store.md#events) |
 | `Route`, `RouteResult`, `RouteLeg`, `RouteStep`, `TravelMode` | types | [Routes](store.md#routes) |
 | `createListView` | function | [List view options](store.md#list-view-options) |
+| `distanceTo` | function | [Distances](store.md#distances) |
+| `createMyLocationControl`, `MyLocationControl`, `MyLocationOptions` | function, types | [The "My location" control](store.md#the-my-location-control) |
 | `ListViewOptions`, `ListView`, `ListEntry` | types | [List view options](store.md#list-view-options) |
 | `listedLocations` | function | [Listed locations](store.md#listed-locations) |
 | `locationsFromGeoJSON` | function | [From GeoJSON](locations.md#from-geojson) |
@@ -42,7 +44,7 @@ The Google Maps adapter: the only entry that knows `google.maps`.
 | `createGoogleAdapter` | function | [Google adapter](google.md) |
 | `GoogleAdapterOptions` | type | [Options](google.md#options) |
 | `createGoogleMap` | function | [`createGoogleMap`](google.md#creategooglemap) |
-| `GoogleMapOptions`, `GoogleMapList` | types | [`createGoogleMap`](google.md#creategooglemap) |
+| `GoogleMapOptions`, `GoogleMapList`, `GoogleMapMyLocation` | types | [`createGoogleMap`](google.md#creategooglemap) |
 
 ## `maplace/maplibre`
 
@@ -53,7 +55,7 @@ The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise
 | `createMapLibreAdapter` | function | [MapLibre adapter](maplibre.md) |
 | `MapLibreAdapterOptions` | type | [Options](maplibre.md#options) |
 | `createMapLibreMap` | function | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
-| `MapLibreMapOptions`, `MapLibreMapList` | types | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
+| `MapLibreMapOptions`, `MapLibreMapList`, `MapLibreMapMyLocation` | types | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
 
 ## `maplace/element`
 
@@ -99,6 +101,7 @@ The React binding, a client boundary (`"use client"`).
 | `MaplaceMap`, `MaplaceMapProps`, `PopupContentRender`, `MarkerIconRender` | component, types | [`<MaplaceMap>`](react.md#maplacemap) |
 | `LocationList`, `LocationListProps` | component, type | [`<LocationList>`](react.md#locationlist) |
 | `MapControl`, `MapControlProps` | component, type | [`<MapControl>`](react.md#mapcontrol) |
+| `MyLocation`, `MyLocationProps` | component, type | [`<MyLocation>`](react.md#mylocation) |
 | `useMaplace` | hook | [`useMaplace()`](react.md#usemaplace) |
 
 ## Errors

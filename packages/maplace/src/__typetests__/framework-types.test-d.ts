@@ -115,6 +115,12 @@ export const badLocations: SvelteMap = { locations: [{ id: "a", lat: "1", lng: 2
 
 // group-counts reads "false" as off, so a template's false is fine on it.
 export const noCounts: VueMap = { "group-counts": false };
+export const myLocationInVue: VueMap = {
+  "my-location-label": "Near me",
+  "my-location-unavailable-label": "No position",
+  "my-location-position": "top-left",
+};
+export const myLocationInSvelte: SvelteMap = { "my-location-label": "Near me" };
 export const noCountsInSvelte: SvelteMap = { "group-counts": debug };
 
 // @ts-expect-error false is written as "false", which turns a presence attribute such as cluster on
