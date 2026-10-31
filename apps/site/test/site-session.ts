@@ -1,7 +1,7 @@
 import { setTimeout as pause } from "node:timers/promises";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll } from "vitest";
-import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
+import { type BuiltSite, buildAndServeSite, SITE_WAIT_MS } from "./built-site.ts";
 import { type Visitor, type VisitorOptions, visitor } from "./visitor.ts";
 
 /**
@@ -80,7 +80,7 @@ export function builtSiteSession(env: Record<string, string>, seen: SeenSite = {
   let browser: Browser | undefined;
   beforeAll(async () => {
     [site, browser] = await Promise.all([buildAndServeSite(env), chromium.launch()]);
-  }, 120_000);
+  }, SITE_WAIT_MS);
   afterAll(async () => {
     await browser?.close();
     await site?.close();

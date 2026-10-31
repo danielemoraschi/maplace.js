@@ -7,7 +7,7 @@ import { ROOT } from "../../../scripts/build/package.ts";
 import { integrityOf } from "../../../scripts/build/subresource-integrity.ts";
 import { tempDir } from "../../../scripts/build/temp-dir.ts";
 import { packedPackage } from "../../../scripts/release/fake-registry.ts";
-import { type BuiltSite, buildAndServeSite } from "./built-site.ts";
+import { type BuiltSite, buildAndServeSite, SITE_WAIT_MS } from "./built-site.ts";
 
 const VERSION = "1.2.0";
 const PRELOAD = resolve(ROOT, "apps/site/test/published-package-preload.ts");
@@ -28,7 +28,7 @@ describe("a site build at a published version", () => {
   afterAll(() => site?.close());
 
   it("a site built after a change to a script keeps the released hash", {
-    timeout: 120_000,
+    timeout: SITE_WAIT_MS,
   }, async () => {
     const scripts = Object.values(CDN_SCRIPTS);
     const tarball = join(tarballDir, "maplace.tgz");
@@ -50,7 +50,7 @@ describe("a site build at a published version", () => {
   });
 
   it("a site build fails, naming npm, while npm can't be reached", {
-    timeout: 120_000,
+    timeout: SITE_WAIT_MS,
   }, async () => {
     await expect(buildAndServeSite({ ...preloaded, PUBLISHED_TARBALL: "" })).rejects.toThrow(
       "can't be read from npm",

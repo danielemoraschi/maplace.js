@@ -12,6 +12,16 @@ const run = promisify(execFile);
 /** Held while the site builds: test files build it one at a time (`withLock`). */
 const BUILD_LOCK = resolve(ROOT, ".vitest/site-build.lock");
 
+/** How long one build may take before it is killed, freeing the lock for the next. */
+const BUILD_LIMIT_MS = 120_000;
+
+/**
+ * How long a test file may wait for its site, the queue for the lock included: builds run one at
+ * a time, every file that builds starts at once, and the lock isn't first come, first served, so
+ * a file can wait for nearly all the others. `built-site.test.ts` holds it to their number.
+ */
+export const SITE_WAIT_MS = 15 * 60_000;
+
 /** The site, built into a temp dir and served there. */
 export interface BuiltSite {
   readonly url: string;
@@ -61,7 +71,11 @@ export async function servedSite(
 /** Astro logs a failed build to stdout: the error carries both streams. */
 async function buildSite(outDir: string, env: Record<string, string>): Promise<void> {
   try {
-    await run(ASTRO, ["build", "--outDir", outDir], { cwd: SITE, env: { ...process.env, ...env } });
+    await run(ASTRO, ["build", "--outDir", outDir], {
+      cwd: SITE,
+      env: { ...process.env, ...env },
+      timeout: BUILD_LIMIT_MS,
+    });
   } catch (error) {
     const { stdout = "", stderr = "" } = error as { stdout?: string; stderr?: string };
     throw new Error(`the site failed to build:\n${stdout}${stderr}`, { cause: error });
