@@ -32,6 +32,17 @@ describe("PendingSelection", () => {
     expect(store.getSnapshot().selectedId).toBeUndefined();
   });
 
+  it.each([
+    ["an id the locations don't have", "typo", undefined],
+    ["an id the page's own filter hides", "rome", ["Nowhere"]],
+  ])("still tries %s under a query, so its misuse is reported", (_, id, groups) => {
+    const { store, pending, retry } = waitingFor(id);
+    retry.mockReturnValue(false);
+    store.setFilter({ query: "milan", groups });
+    pending.trySelect();
+    expect(retry).toHaveBeenCalledOnce();
+  });
+
   it("selects it under a query that shows it", () => {
     const { store, pending } = waitingFor("rome");
     store.setFilter({ query: "rome" });

@@ -85,7 +85,7 @@ describe("createSearchBox", () => {
     const { box } = boxTyped();
     box.show("rome", 3);
     expect(box.status.textContent).toBe("Found: 3");
-    box.show("rome", "nowhere");
+    box.show("rome", 0);
     expect(box.status.textContent).toBe("None here");
     box.show("rome", undefined);
     expect(box.status.textContent).toBe("");

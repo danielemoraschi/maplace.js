@@ -15,8 +15,8 @@ export interface SearchBoxLabels {
   readonly matches: string;
 }
 
-/** How many a query found, or "nowhere" when nothing matches; undefined says nothing. */
-export type SearchFound = number | "nowhere" | undefined;
+/** How many a query found, 0 when nothing matches anywhere; undefined says nothing. */
+export type SearchFound = number | undefined;
 
 /** The box a list is narrowed from. */
 export interface SearchBox {
@@ -103,5 +103,5 @@ export function createSearchBox(labels: SearchBoxLabels): SearchBoxParts {
 
 function saidFor(found: SearchFound, { noMatches, matches }: SearchBoxLabels): string {
   if (found === undefined) return "";
-  return found === "nowhere" ? noMatches : `${matches}: ${found}`;
+  return found === 0 ? noMatches : `${matches}: ${found}`;
 }

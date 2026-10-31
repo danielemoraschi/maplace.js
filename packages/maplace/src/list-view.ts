@@ -80,7 +80,8 @@ export interface ListView {
    * The listbox or select itself, or with `heading`, `scope` or `searchLabel` a block holding the
    * heading, the search box, the "All" and "This area" switch, their statuses and the listbox, each
    * with the class `maplace-list-view`: place it with `mountControl`. Label it from the page only
-   * without any of those: the block is no list, so a label on it names nothing (give `label` instead).
+   * without any of those: the block is no list, so a label on it names nothing (give `label`
+   * instead).
    */
   readonly element: HTMLElement;
   /**

@@ -50,7 +50,9 @@ export class PendingSelection {
 
   /** What a visitor typed in the box is no misuse of the page's: `id` waits for the next locations. */
   #hiddenByQuery(store: Maplace, id: string): boolean {
-    return store.getSnapshot().filter?.query !== undefined && !isShownIn(store, id);
+    const { locations, filter } = store.getSnapshot();
+    if (filter?.query === undefined || isShownIn(store, id)) return false;
+    return isSelectable({ locations, filter: { ...filter, query: undefined } }, id);
   }
 
   /** Selects the address's location if shown; whether it was. */

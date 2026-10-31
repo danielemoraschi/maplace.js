@@ -40,7 +40,7 @@ export function follow<Data>(
       variant.renderStructure(structureOf(listing, snapshot.locations, rules));
       const found = searchBox && foundFor(snapshot, listing);
       searchBox?.show(snapshot.filter?.query, found);
-      areaSwitch?.showEmptyArea(scope !== undefined && listing.length === 0 && found !== "nowhere");
+      areaSwitch?.showEmptyArea(scope !== undefined && listing.length === 0 && found !== 0);
     }
     if (stateChanged(shown, snapshot)) {
       variant.renderState({ selectedId: snapshot.selectedId, hoveredId: snapshot.hoveredId });
@@ -66,13 +66,14 @@ export function follow<Data>(
   };
 }
 
-/** What a query found: how many are listed, or "nowhere"; nothing to say when a scope hides it all. */
+/**
+ * What a query found: how many are listed, 0 if none anywhere; nothing to say when a scope hides
+ * it all.
+ */
 function foundFor(snapshot: Snapshot, listing: readonly Location[]): SearchFound {
   if (snapshot.filter?.query === undefined) return undefined;
   if (listing.length > 0) return listing.length;
-  return snapshot.locations.some((location) => isListed(location, snapshot.filter))
-    ? undefined
-    : "nowhere";
+  return snapshot.locations.some((location) => isListed(location, snapshot.filter)) ? undefined : 0;
 }
 
 /** Whether the list shows other entries: its locations or filter changed. */
