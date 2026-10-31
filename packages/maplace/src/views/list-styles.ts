@@ -20,9 +20,9 @@ const SWITCH_BUTTON = `.${AREA_SWITCH_CLASS}>button`;
 const LINE = "color-mix(in srgb,currentColor 30%,transparent)";
 
 /**
- * The line around the switch. Between its buttons, each draws one on its left and top, where the
- * switch clips those of the first in a row and of the first row: side by side when the labels
- * fit, else one above the other, never cut.
+ * The line around the switch. Between its buttons, each draws one on its left and top, and the
+ * switch clips those at its own edges, in either direction: side by side when the labels fit, else
+ * one above the other, never cut.
  */
 const SWITCH_LINE = `1px solid ${LINE}`;
 

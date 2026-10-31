@@ -24,8 +24,14 @@ function outerMargins(popup: HTMLElement): string[] {
 }
 
 describe("POPUP_STYLES in a browser", () => {
-  it("insets its content from the bubble's right and bottom as Google does its left", () => {
+  it("insets its content from a left-to-right bubble's right and bottom as Google does its left", () => {
     expect(getComputedStyle(popupHolding("<p>One</p>")).padding).toBe("0px 12px 12px 0px");
+  });
+
+  it("insets the inline end on a right-to-left page, not the right", () => {
+    const popup = popupHolding("<p>One</p>");
+    popup.dir = "rtl";
+    expect(getComputedStyle(popup).padding).toBe("0px 0px 12px 12px");
   });
 
   it("keeps the browser's paragraph margins out of the bubble, between paragraphs only", () => {

@@ -20,7 +20,7 @@ const { class: placement } = Astro.props;
   {/* The chosen provider's ground, sliding under the second segment when that one is checked. */}
   <span
     aria-hidden="true"
-    class="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-ink transition-transform duration-150 ease-out group-has-[label:last-of-type>input:checked]/provider:translate-x-full motion-reduce:transition-none"
+    class="pointer-events-none absolute inset-y-0 start-0 w-1/2 bg-ink transition-transform duration-150 ease-out group-has-[label:last-of-type>input:checked]/provider:translate-x-full rtl:group-has-[label:last-of-type>input:checked]/provider:-translate-x-full motion-reduce:transition-none"
   ></span>
   {
     PROVIDER_LABELS.map(({ provider, label }) => (

@@ -82,6 +82,21 @@ describe("the examples' provider toggle, on a section", () => {
     expect(await radio(other, "MapLibre").isChecked()).toBe(true);
     await context.close();
   }, 30_000);
+
+  it("keeps the dark ground under the chosen provider on a right-to-left page", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    await page.evaluate(() => {
+      document.documentElement.dir = "rtl";
+    });
+    const toggle = providerToggle(page);
+    const groundAt = async () => (await boxOf(toggle.locator("span[aria-hidden]"))).x;
+    for (const name of ["Google", "MapLibre"]) {
+      await chooseProvider(page, name);
+      const chosen = await boxOf(toggle.locator("label", { hasText: name }));
+      await expect.poll(groundAt).toBeCloseTo(chosen.x, 0);
+    }
+    await context.close();
+  }, 30_000);
 });
 
 describe("route, on Google only", () => {

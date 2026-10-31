@@ -8,12 +8,22 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
-- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its left side; on MapLibre, the heading on a line of its own, clear of the close button.
+- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its start; on MapLibre, the heading on a line of its own, clear of the close button.
 - **Clusters:** a round badge with the count, blue with white text. `--maplace-cluster-background` and `--maplace-cluster-color`, set on the map or anything above it, change its colours.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
 - **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint ([MapLibre adapter](maplibre.md#on-map-controls)).
 
 Every selector is wrapped in `:where()` and weighs nothing, so any rule of the page wins: `.maplace-option { padding: 0 }` is enough to change the entries' padding.
+
+## Right to left
+
+With `dir="rtl"` on the page or anything above the map, lists, panels, popups and the link past the map follow it, with nothing to turn on. Three things stay where they are:
+
+- **Corners:** `top-left` is the top left in either direction, so choose the corner you want. A list's default, `top-right`, is where a right-to-left reader starts.
+- **MapLibre's close button** stays at the popup's top right, as MapLibre draws it, so a popup's heading sits clear of it, a little in from the text below. Google mirrors its own.
+- **Your words:** the labels are English until you set them.
+
+Map labels in Arabic and Hebrew need no plugin on MapLibre 6.
 
 ## Cluster badges
 
