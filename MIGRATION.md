@@ -82,6 +82,8 @@ On MapLibre, `createMapLibreMap` from `maplace/maplibre` takes the same options,
 
 ## Converting your locations
 
+The [snippet builder](https://maplacejs.com/builder/) does this in the browser: paste a 0.2 config, get a `<maplace-map>` with a preview, and a list of what wasn't carried over.
+
 0.2 locations become 1.0 locations in a few lines: an id from the old 1-based position, `lon` renamed, `zoom` kept, and anything else of yours in `data`. This snippet is [`packages/maplace/examples/migrate/from-0.2.ts`](packages/maplace/examples/migrate/from-0.2.ts), type-checked in CI:
 
 <!-- example: packages/maplace/examples/migrate/from-0.2.ts -->

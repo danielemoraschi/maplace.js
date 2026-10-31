@@ -1,7 +1,7 @@
 import { PACKAGE_DIR } from "../../../../scripts/build/package.ts";
 import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
 import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
-import { AGENTS_PAGE, CHANGELOG_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
+import { AGENTS_PAGE, BUILDER_PAGE, CHANGELOG_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
 /** What the privacy page says: the page, and who runs the site. */
@@ -30,6 +30,7 @@ const SOURCES_BY_ROUTE: ReadonlyMap<string, readonly string[]> = new Map([
     [...group.sections.map(({ name }) => `${PACKAGE_DIR}/examples/${name}`), ...EXAMPLE_PAGE_TEXT],
   ]),
   ...REPO_DOCS.map(({ id, file }): [string, readonly string[]] => [docRoute(id), [file]]),
+  [BUILDER_PAGE.route, ["apps/site/src/pages/builder.astro"]],
   [PRIVACY_PAGE.route, PRIVACY_SOURCES],
   [CHANGELOG_PAGE.route, [CHANGELOG_FILE]],
   [AGENTS_PAGE.route, ["apps/site/src/pages/agents.astro", "apps/site/src/site/agent-links.ts"]],

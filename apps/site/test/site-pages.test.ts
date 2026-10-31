@@ -14,6 +14,7 @@ import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
 import {
   AGENTS_PAGE,
+  BUILDER_PAGE,
   CHANGELOG_PAGE,
   FOOTER_PAGES,
   PRIVACY_PAGE,
@@ -159,7 +160,7 @@ describe("the footer", () => {
 
 describe("the site's copy", () => {
   it("keeps a space between text and the link or code after it, on every page", async () => {
-    for (const route of [...EXAMPLE_PAGES, ...PAGES_WITHOUT_MAPS]) {
+    for (const route of [...EXAMPLE_PAGES, ...PAGES_WITHOUT_MAPS, BUILDER_PAGE.route]) {
       const { page, context } = await openPage(route);
       expect({ route, glued: await gluedText(page) }).toEqual({ route, glued: [] });
       await context.close();

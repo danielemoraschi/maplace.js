@@ -1,0 +1,124 @@
+---
+import { getEntry } from "astro:content";
+import { SITE_MAPS_MAP_ID } from "astro:env/client";
+import { SITE_MAPS_KEY } from "astro:env/server";
+import ConsentPlaceholder from "../components/ConsentPlaceholder.astro";
+import ProviderSwitch from "../components/ProviderSwitch.astro";
+import { FIRST_PROVIDER } from "../examples/example-providers.ts";
+import Base from "../layouts/Base.astro";
+import { previewMapsMarkup } from "../site/builder-maps.ts";
+import { BUILDER_PAGE, PRIVACY_PAGE } from "../site/footer-pages.ts";
+
+const install = await getEntry("install", "element");
+if (install === undefined) throw new Error("the install collection has no element entry");
+const previews = previewMapsMarkup({ apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID });
+const SAMPLE = `name,lat,lng
+Rome,41.9028,12.4964
+Milan,45.4642,9.19
+Venice,45.4408,12.3155`;
+const BLOCK = "min-w-0 border-t-3 border-ink pt-4";
+const HEADING = "m-0 text-2xl";
+const NUMBER = "text-accent";
+---
+
+<Base title={`${BUILDER_PAGE.label} · maplacejs`} description={BUILDER_PAGE.description}>
+  <div class="pt-8 pb-12">
+    <h1 class="mt-0 mb-4 text-title">{BUILDER_PAGE.label}</h1>
+    <p class="mt-0 mb-8 max-w-text text-muted">
+      Paste a CSV, JSON, GeoJSON or a 0.2 config, and get a <code>&lt;maplace-map&gt;</code> to
+      copy. It all stays in <a href={`${PRIVACY_PAGE.route}#builder`}>your browser</a>.
+    </p>
+
+    <div class="grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-x-8 gap-y-10 max-[60rem]:grid-cols-[minmax(0,1fr)]">
+      <section class={BLOCK}>
+        <div class="mb-3 flex min-h-(--spacing-toggle-height) items-center">
+          <h2 class={HEADING}><label for="builder-paste"><span class={NUMBER}>01</span> Paste</label></h2>
+        </div>
+        <p class="mt-0 mb-3 text-sm text-muted">
+          A CSV's header row names <code>lat</code> and <code>lng</code>, and may name{" "}
+          <code>id</code>, <code>title</code>, <code>html</code>, <code>icon</code>,{" "}
+          <code>zoom</code>, <code>group</code> and <code>tags</code>.
+        </p>
+        <textarea
+          id="builder-paste"
+          data-builder-paste
+          class="block h-(--spacing-map) w-full resize-y border-2 border-ink bg-surface p-3 font-code text-sm text-ink max-[60rem]:h-64"
+          spellcheck="false"
+          autocomplete="off"
+        >{SAMPLE}</textarea>
+        <p role="status" data-builder-status class="mt-2 mb-0 text-sm data-refused:border-l-3 data-refused:border-accent data-refused:pl-3"></p>
+      </section>
+
+      <section class={BLOCK}>
+        <div class="mb-3 flex items-center justify-between gap-4">
+          <h2 class={HEADING}><span class={NUMBER}>02</span> Preview</h2>
+          <ProviderSwitch legend="Preview and write the snippet for" />
+        </div>
+        <div data-version-switch="builder" data-builder-preview>
+          <div class="map-frame relative">
+            {
+              previews.map(({ provider, markup }) => (
+                <div
+                  class="version min-h-map"
+                  data-live-version="html"
+                  data-provider={provider}
+                  data-maps-key-missing={provider === "google" && SITE_MAPS_KEY === undefined ? "" : undefined}
+                  hidden={provider !== FIRST_PROVIDER}
+                >
+                  <Fragment set:html={markup} />
+                </div>
+                <div data-version-notes>
+                  <p class="map-note loading">Loading the map…</p>
+                  <p class="map-note failed">
+                    <span data-map-failure>The map couldn't load.</span>{" "}
+                    <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
+                  </p>
+                </div>
+              ))
+            }
+            <ConsentPlaceholder />
+          </div>
+        </div>
+        <p data-builder-preview-note hidden class="mt-2 mb-0 text-sm text-muted">
+          The preview fetches no icons and shows popups as plain text.
+        </p>
+      </section>
+    </div>
+
+    <section aria-labelledby="builder-copy-heading" class={`${BLOCK} mt-10`}>
+      <div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <h2 id="builder-copy-heading" class={HEADING}><span class={NUMBER}>03</span> Copy</h2>
+        <button type="button" class="button-plain disabled:cursor-not-allowed disabled:opacity-50" data-builder-copy>Copy</button>
+        <span role="status" data-builder-copied class="text-sm"></span>
+      </div>
+      <div data-builder-notes hidden class="mb-3 border-l-3 border-ink pl-3">
+        <h3 class="mt-0 mb-1 text-md">Not carried over</h3>
+        <ul data-builder-notes-list class="m-0 ps-5 text-sm"></ul>
+      </div>
+      <p data-builder-trust-note hidden class="mt-0 mb-3 text-sm text-muted">
+        The popups are used as written, scripts included: keep only HTML you trust.
+      </p>
+      <p data-builder-text-note hidden class="mt-0 mb-3 text-sm text-muted">
+        The popups are written as plain text, as their HTML couldn't go beside these locations; one with no text has no popup.
+      </p>
+      <p data-builder-key-note hidden class="mt-0 mb-3 text-sm text-muted">
+        Put your own key in <code>api-key</code>: <a href="/setup/#key-and-map-id">how to get one</a>.
+      </p>
+      <pre
+        data-builder-code
+        class="m-0 max-h-[28rem] overflow-auto border-2 border-ink bg-surface px-4 py-3 whitespace-pre data-long:pb-12 data-long:[mask-image:linear-gradient(to_bottom,black_calc(100%-3rem),transparent)]"
+      ></pre>
+    </section>
+
+    {install.data.providers.map(({ provider, cdnSnippet }) => (
+      <code hidden data-pinned-script={provider}>{cdnSnippet}</code>
+    ))}
+  </div>
+</Base>
+
+<script>
+  import { startBuilder } from "../scripts/builder-page.ts";
+
+  // After every module's synchronous start, so site.ts has restored the kept provider.
+  document.addEventListener("DOMContentLoaded", () => startBuilder(document));
+</script>

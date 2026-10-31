@@ -2,7 +2,7 @@
 import ProsePage from "../components/ProsePage.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { PROVIDER_CHOICE_KEY } from "../scripts/provider-choice.ts";
-import { PRIVACY_PAGE } from "../site/footer-pages.ts";
+import { BUILDER_PAGE, PRIVACY_PAGE } from "../site/footer-pages.ts";
 import { PRIVACY_CHANGED_ON } from "../site/privacy-changed-on.ts";
 import {
   contactAddress,
@@ -33,7 +33,7 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       you made it on.
     </p>
     <p>
-      Choosing Google or MapLibre for the examples keeps one more entry, in session storage,{" "}
+      Choosing Google or MapLibre for the examples or the snippet builder keeps one more entry, in session storage,{" "}
       <code>{PROVIDER_CHOICE_KEY}</code>, so the examples open on it again while the tab stays
       open; the browser drops it when the session ends.
     </p>
@@ -98,6 +98,17 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
     <ul>
       {OPENFREEMAP.terms.map(({ label, url }) => <li><a href={url}>{label}</a></li>)}
     </ul>
+  </section>
+
+  <section aria-labelledby="builder">
+    <h2 id="builder">The snippet builder</h2>
+    <p>
+      What you paste into the <a href={BUILDER_PAGE.route}>snippet builder</a> stays in your
+      browser: the page reads and converts it there, sends it nowhere and keeps none of it. The map
+      it previews waits for the same choice as every other map; once on, your browser asks that
+      map's provider, as above, for the area your locations cover. An icon's address you paste goes
+      in the snippet, and the preview doesn't fetch it.
+    </p>
   </section>
 
   <section aria-labelledby="host">

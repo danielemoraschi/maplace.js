@@ -1,5 +1,6 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { FOOTER_PAGES } from "../src/site/footer-pages.ts";
 import { opened, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, footerToggle, PHONE } from "./visitor.ts";
 
@@ -54,6 +55,26 @@ describe("the footer on a phone", () => {
     expect(await actionWidth(page, "· turn off")).toBeLessThanOrEqual(1);
     await context.close();
   }, 30_000);
+});
+
+describe("the footer's links on a narrow screen", () => {
+  it.each([375, 320])(
+    "holds every link on the screen at %i px, the builder's among them",
+    async (width) => {
+      const { page, context } = await opened(site, SHORT_PAGE, { width, height: 700 });
+      for (const { label } of FOOTER_PAGES) {
+        const link = page.getByRole("contentinfo").getByRole("link", { name: label, exact: true });
+        const { x, width: wide } = await boxOf(link);
+        expect(x, label).toBeGreaterThanOrEqual(0);
+        expect(x + wide, label).toBeLessThanOrEqual(width);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        width,
+      );
+      await context.close();
+    },
+    30_000,
+  );
 });
 
 describe("the footer at the phone breakpoint", () => {
