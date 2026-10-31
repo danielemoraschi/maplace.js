@@ -23,6 +23,7 @@
     "coverage": "node scripts/coverage.ts",
     "release": "node scripts/release.ts",
     "release-notes": "node scripts/release-notes.ts",
+    "release-cdn": "node scripts/release-cdn.ts",
     "site:dev": "npm run dev -w site",
     "site:build": "npm run build -w site"
   },

@@ -7,11 +7,15 @@
 #             call for, or the last release isn't on npm.
 #   publish   the tag built and published to npm through trusted publishing (OIDC, provenance included),
 #             `next` for a pre-release, `latest` otherwise. A version already on npm is skipped.
-#   announce  the GitHub release, its notes the version's CHANGELOG lines (npm run release-notes). An existing
-#             release is skipped.
+#   announce  jsDelivr checked against the published README (npm run release-cdn, retrying while it lags), then the
+#             GitHub release, its notes the version's CHANGELOG lines (npm run release-notes). An existing release
+#             is skipped.
 # Recovery: a publish or announce that failed is re-run (it starts again from the tag); a push refused because
 # main moved is dispatched again; a release tagged whose publish can't be made to pass blocks the next dispatch
-# until it is on npm.
+# until it is on npm. An announce stopped by the CDN check comes after an irreversible publish, and the GitHub
+# release isn't made until it passes: re-run it when the CDN lagged or was down; a hash that stays different or an
+# origin that stays refused can't be fixed on this version: the fix ships as the next patch release, and that one's
+# dispatch isn't blocked, as this one is on npm.
 # A push made with GITHUB_TOKEN starts no CI run: the release job's own checks are the release commit's gate.
 name: Release
 
@@ -133,14 +137,12 @@ jobs:
   announce:
     needs: [release, publish]
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20 # the CDN check's retries (scripts/release/cdn-check.ts), then the release
     permissions:
       contents: write # the GitHub release
     env:
       TAG: ${{ needs.release.outputs.tag }}
       PRERELEASE: ${{ needs.release.outputs.prerelease }}
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -149,7 +151,13 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
+      # Node alone runs it, the tag's code and nothing from npm's packages.
+      - name: jsDelivr serves what the published README pins
+        run: npm run --silent release-cdn -- "$VERSION"
       - name: The GitHub release, unless a run before made it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "$TAG is already released: this is a re-run"
