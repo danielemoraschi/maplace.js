@@ -5,6 +5,7 @@ import { adoptDefaultStyles, PANE_CLASS } from "./default-styles";
 import { isListAttribute, LIST_ATTRIBUTES } from "./element-list";
 import type { MaplaceMapElement } from "./index";
 import { createListKeeper, type ListKeeper } from "./list-keeper";
+import { createLoadPanel } from "./load-panel";
 import { showLoadState } from "./load-state";
 import { type MapSession, openSession } from "./map-session";
 import { createMapSettingsWatch } from "./map-settings-watch";
@@ -33,10 +34,18 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   readonly #internals = this.attachInternals();
   readonly #misuse = createStandingMisuse(this, () => this.#showLoadState());
   readonly #pane = paneIn(this.ownerDocument);
+  readonly #panel = createLoadPanel(this, this.#pane);
   readonly #setupRetry = createSetupRetry(this, () => this.#openSession());
   readonly #settingsWatch = createMapSettingsWatch(this, () => this.#reopenAtCamera());
-  readonly #ownNodesWatch = new MutationObserver(() => this.#keepOwnNodes());
-  readonly #nearView = createNearViewWait(this, () => this.#openSession());
+  readonly #ownNodesWatch = new MutationObserver(() => {
+    this.#keepOwnNodes();
+    this.#panel.refresh();
+  });
+  readonly #nearView = createNearViewWait(
+    this,
+    () => this.#openSession(),
+    () => this.#panel.show(),
+  );
   readonly #feed = new StoreFeed(this, this.#misuse, () => this.#showLoadState());
   readonly #urlState = createUrlState(this, this.#feed);
   #lists: ListKeeper | undefined;
@@ -122,7 +131,10 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #open(): void {
     if (!this.isConnected) return;
     const store = this.#feed.store();
-    if (this.#isHeld()) return;
+    if (this.#isHeld()) {
+      this.#panel.show();
+      return;
+    }
     this.#lists ??= createListKeeper(this, {
       store,
       misuse: this.#misuse,
@@ -141,6 +153,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #openSession(): void {
     if (!this.isConnected || this.#isHeld() || this.#nearView.waiting) return;
     if (this.#session !== undefined) return;
+    this.#panel.hide();
     const parts = { store: this.#feed.store(), pane: this.#pane, list: this.#lists?.list };
     // Before attaching: an adapter may report where it opened while it mounts.
     this.#camera?.opening();
@@ -154,6 +167,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   #stop(): void {
+    this.#panel.hide();
     this.#closeSession();
     this.#setupRetry.stop();
     this.#nearView.stop();

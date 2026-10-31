@@ -93,4 +93,19 @@ describe("the site's consent to its maps", () => {
     await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
     await context.close();
   }, 30_000);
+
+  it("shows no load panel of the library's on a map still held after consent", async () => {
+    const { page, context } = await site.visitor();
+    await openHome(page, site.url, sectionPage("route"));
+    await placeholder(page).click();
+    const panels = page.locator("maplace-map:state(idle) .maplace-load-panel");
+    await expect.poll(() => panels.count(), ASKED).toBeGreaterThan(0);
+    const displays = await panels.evaluateAll((nodes) =>
+      nodes.map((node) => getComputedStyle(node).display),
+    );
+    expect(new Set(displays)).toEqual(new Set(["none"]));
+    expect(await placeholder(page).isVisible()).toBe(false);
+    expect(await page.getByRole("button", { name: "Load map", exact: true }).count()).toBe(0);
+    await context.close();
+  }, 30_000);
 });

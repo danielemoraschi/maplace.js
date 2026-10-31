@@ -18,7 +18,8 @@ import type { ProviderFactory } from "./index";
  * keeps its value when a header CSP hides the attribute).
  * The first map to open adds Maps JS to the page, once however many maps; a map asking for
  * another `api-key`, `version`, `language` or `region` than the page loaded is misuse (error
- * state and `maplace-error`). A held map adds nothing until released.
+ * state and `maplace-error`). A held map adds nothing until released, and its panel says it loads
+ * from Google.
  */
 const googleProvider: ProviderFactory = (element) => {
   const { adapterOptions, script } = googleSettingsOf(element);
@@ -26,6 +27,9 @@ const googleProvider: ProviderFactory = (element) => {
   return mountAfter(createGoogleAdapter(adapterOptions), () => loading);
 };
 
-defineBuiltInProvider("google", googleProvider, GOOGLE_MAP_SETTINGS);
+defineBuiltInProvider("google", googleProvider, {
+  mapSettings: GOOGLE_MAP_SETTINGS,
+  loadSource: () => "Google",
+});
 
 export type { MaplaceMapElement } from "./index";

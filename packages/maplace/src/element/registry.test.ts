@@ -17,6 +17,17 @@ describe("createRegistry", () => {
     expect([...registry.values()]).toEqual([one]);
   });
 
+  it("lists its entries by name, in the order added", () => {
+    const registry = createRegistry<Factory>(KIND);
+    const [one, two] = [factory(), factory()];
+    registry.add("one", one);
+    registry.add("two", two);
+    expect([...registry.entries()]).toEqual([
+      ["one", one],
+      ["two", two],
+    ]);
+  });
+
   it("takes the same entry twice, but not another under its name", () => {
     const registry = createRegistry<Factory>(KIND);
     const one = factory();

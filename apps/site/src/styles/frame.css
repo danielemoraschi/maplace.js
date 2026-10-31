@@ -17,6 +17,13 @@
   height: var(--spacing-map);
 }
 /*
+ * A held map's own "Load map" panel never shows here: the consent placeholder asks first, and the
+ * element is defined with the first map released, while other maps on the page stay held.
+ */
+.version :where(.maplace-load-panel) {
+  display: none;
+}
+/*
  * Around the map Google or MapLibre draws, in every version: the lists and controls stay outside
  * it.
  */

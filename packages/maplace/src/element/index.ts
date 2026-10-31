@@ -92,6 +92,11 @@ export { defineListView } from "./list-views";
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as
  *   `hold` is.
+ * - `load-label`, `load-from-label`: the words of the button and of the line before the name in the
+ *   panel a map shows in `:state(idle)` while it waits with `hold`, or off-screen with
+ *   `loading="lazy"`; blank, the default words (Load map; Loads from). The panel
+ *   (`.maplace-load-panel`) names whom the provider loads from, and its button calls `release()`; a
+ *   direct child marked `data-maplace-idle` replaces it, showing only in `:state(idle)`.
  * - `url-state`: keeps the selection in the page's address while connected: the parameter it
  *   names (`location` when bare or `"true"`) selects on load, over `selected-id` and never as
  *   misuse; each selection is a history entry, and back and forward select again. Read on

@@ -1,7 +1,7 @@
 import { expect, it, onTestFinished } from "vitest";
 import "../element/google";
 import { defineListView, type ListViewSetup } from "../element";
-import { errorsOn } from "../element/testing/dom";
+import { box, errorsOn } from "../element/testing/dom";
 import { MAPS_JS_VERSION } from "./testing/maps-loader";
 import { mapsTags } from "./testing/maps-tags";
 import { TILES_TIMEOUT_MS } from "./testing/store-on-google";
@@ -44,6 +44,17 @@ describeWithKey("<maplace-map> loading Google Maps itself", (key) => {
     map.release();
     expect(mapsTags().map(({ nonce }) => nonce)).toEqual(["n0"]);
     await ready(map);
+  });
+
+  it("opens from its panel's button, at the pane's full size", async () => {
+    const map = ownMapWith(`${settings} hold`);
+    await new Promise((resolve) => setTimeout(resolve));
+    map.querySelector<HTMLButtonElement>(".maplace-load-panel>button")?.click();
+    await ready(map);
+    expect(map.querySelector(".maplace-load-panel")).toBeNull();
+    const drawn = box(map.querySelector(".maplace-google-map"));
+    expect(drawn).toEqual(box(map.querySelector(".maplace-map-pane")));
+    expect(drawn.height).toBe(240);
   });
 
   it("shares the page's Maps JS with a second map, which needs no key", async () => {

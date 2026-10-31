@@ -30,6 +30,8 @@ type NamedMapAttribute =
   | "selected-label"
   | "hold"
   | "loading"
+  | "load-label"
+  | "load-from-label"
   | "selected-id"
   | "url-state"
   | "api-key"

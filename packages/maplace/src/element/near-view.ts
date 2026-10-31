@@ -7,14 +7,20 @@ export interface NearViewWait {
   readonly waiting: boolean;
   /**
    * With `loading="lazy"`, waits until `host` comes within NEAR_VIEW_MARGIN of the viewport (in a
-   * frame, until it shows in the frame; hidden, until shown), then stops and calls `onNear`.
+   * frame, until it shows in the frame; hidden, until shown), then stops and calls `onNear`. Each
+   * report of `host` laid out but not near calls `onFar`: width tells, as an unstyled map may have
+   * no height yet, and a hidden one has neither.
    */
   start(): void;
   stop(): void;
 }
 
 /** One observer per element, made on `start()` and gone once near or stopped. */
-export function createNearViewWait(host: Element, onNear: () => void): NearViewWait {
+export function createNearViewWait(
+  host: Element,
+  onNear: () => void,
+  onFar: () => void,
+): NearViewWait {
   let observer: IntersectionObserver | undefined;
 
   function stop(): void {
@@ -23,13 +29,17 @@ export function createNearViewWait(host: Element, onNear: () => void): NearViewW
   }
 
   /** A stopped observer may still deliver what it queued before: only the current one counts. */
-  function stopOnceNear(
+  function report(
     entries: readonly IntersectionObserverEntry[],
     reporter: IntersectionObserver,
   ): void {
-    if (reporter !== observer || !entries.some(({ isIntersecting }) => isIntersecting)) return;
-    stop();
-    onNear();
+    if (reporter !== observer) return;
+    if (entries.some(({ isIntersecting }) => isIntersecting)) {
+      stop();
+      onNear();
+    } else if (entries.some(({ boundingClientRect }) => boundingClientRect.width > 0)) {
+      onFar();
+    }
   }
 
   return {
@@ -38,7 +48,7 @@ export function createNearViewWait(host: Element, onNear: () => void): NearViewW
     },
     start() {
       if (observer !== undefined || host.getAttribute("loading") !== "lazy") return;
-      observer = new IntersectionObserver(stopOnceNear, { rootMargin: NEAR_VIEW_MARGIN });
+      observer = new IntersectionObserver(report, { rootMargin: NEAR_VIEW_MARGIN });
       observer.observe(host);
     },
     stop,

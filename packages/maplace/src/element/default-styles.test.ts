@@ -16,6 +16,8 @@ describe("DEFAULT_STYLES", () => {
       ":where(maplace-map)",
       ":where(maplace-location)",
       ":where(.maplace-map-pane)",
+      ":where(maplace-map:not(:state(idle))>[data-maplace-idle],maplace-map:not(:state(idle)) .maplace-load-panel)",
+      ":where(maplace-map:state(idle):has(>[data-maplace-idle])>.maplace-map-pane)",
     ]);
   });
 });
