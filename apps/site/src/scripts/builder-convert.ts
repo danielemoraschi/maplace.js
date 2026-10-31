@@ -30,7 +30,7 @@ export interface Conversion {
 type Read = Pick<Conversion, "format" | "locations" | "attributes">;
 
 /** GeoJSON's other objects: their `type` isn't 0.2's. */
-const GEOJSON_PIECES: ReadonlySet<unknown> = new Set([
+const GEOJSON_PIECES: ReadonlySet<string> = new Set([
   "Feature",
   "Point",
   "LineString",
@@ -61,7 +61,7 @@ function fromLiteral(value: Literal, report: Report): Read {
   if (Array.isArray(value)) return fromRecords("a list of locations", value, report);
   if (isRecord(value)) {
     if (value.type === "FeatureCollection") return fromGeoJSON(value);
-    if (GEOJSON_PIECES.has(value.type)) {
+    if (typeof value.type === "string" && GEOJSON_PIECES.has(value.type)) {
       throw new PasteRefused(
         `This is a GeoJSON ${value.type}: this page reads a FeatureCollection, so put it in one`,
       );
@@ -72,8 +72,13 @@ function fromLiteral(value: Literal, report: Report): Read {
     throw new PasteRefused(`${WHAT_THIS_READS}; this object is none of them`);
   }
   const code = firstRefusedIn(value);
-  const what = code === undefined ? String(value) : refusalWords(code);
+  const what = code === undefined ? scalarWords(value) : refusalWords(code);
   throw new PasteRefused(`${WHAT_THIS_READS}; this is ${what}`);
+}
+
+/** A value that is neither a list, an object nor code, as a sentence quotes it. */
+function scalarWords(value: Literal): string {
+  return typeof value === "string" ? value : (JSON.stringify(value) ?? "undefined");
 }
 
 function fromRecords(format: string, values: readonly unknown[], report: Report): Read {

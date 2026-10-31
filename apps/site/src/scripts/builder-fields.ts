@@ -47,7 +47,7 @@ export const RENAMED_FIELDS: Readonly<Record<string, string>> = {
 /** Fields read elsewhere: the id on its own, `show_infowindow` with the popup. */
 const IMPLIED_FIELDS: ReadonlySet<string> = new Set(["id", "show_infowindow"]);
 
-const CIRCLE_OPTIONS = ["stroke_options", "circle_options"];
+const CIRCLE_OPTIONS: ReadonlySet<string> = new Set(["stroke_options", "circle_options"]);
 
 const isId = (id: unknown): id is string | number =>
   typeof id === "string" || typeof id === "number";
@@ -97,7 +97,7 @@ function fieldsOf(record: PastedRecord, index: number, report: Report): Record<s
   const fields: Record<string, unknown> = {};
   const keepsOptions = isLegacyCircle(record);
   for (const [name, value] of Object.entries(record)) {
-    if (keepsOptions && CIRCLE_OPTIONS.includes(name)) {
+    if (keepsOptions && CIRCLE_OPTIONS.has(name)) {
       // Read key by key (`styleFromLegacy`), which names the code in them.
       if (hasValue(value)) fields[name] = value;
     } else if (hasValue(value) && !reportCode(name, value, report) && !IMPLIED_FIELDS.has(name)) {

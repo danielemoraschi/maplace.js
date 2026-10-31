@@ -25,7 +25,7 @@ interface SnippetRequest {
 const TRUST_COMMENT = "<!-- The popups below are used as written: keep only HTML you trust. -->";
 
 /** JSON's own escape of `<`: a backslash, `u`, and its four hex digits. */
-const LESS_THAN_ESCAPE = `\\u${"<".charCodeAt(0).toString(16).padStart(4, "0")}`;
+const LESS_THAN_ESCAPE = String.raw`\u${"003c"}`;
 
 /** Fields a `<maplace-location>` writes in its attributes, beside `html` and `content`. */
 const ATTRIBUTE_OF: readonly (readonly [
@@ -146,7 +146,7 @@ function attributesOf(location: PastedLocation): readonly (readonly [string, str
   const written = ATTRIBUTE_OF.flatMap(([field, attribute]): [string, string][] => {
     const value = fields[field];
     if (value === undefined || value === "") return [];
-    return [[attribute, typeof value === "object" ? JSON.stringify(value) : String(value)]];
+    return [[attribute, typeof value === "string" ? value : JSON.stringify(value)]];
   });
   return [["location-id", location.id], ...written];
 }

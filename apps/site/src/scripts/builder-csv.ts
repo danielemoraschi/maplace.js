@@ -18,7 +18,7 @@ const READ_COLUMNS: ReadonlySet<string> = new Set([
 
 const NUMBER_COLUMNS: ReadonlySet<string> = new Set(["lat", "lng", "zoom"]);
 
-const BOM = String.fromCharCode(0xfeff);
+const BOM = String.fromCodePoint(0xfeff);
 
 /** What can part a header's cells, the first winning a tie: a spreadsheet's paste has tabs. */
 const DELIMITERS = ["\t", ";", ","] as const;

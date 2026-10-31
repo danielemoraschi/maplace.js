@@ -31,7 +31,7 @@ export function plainTextOf(html: string): string {
   const { content } = parsed(html);
   for (const code of content.querySelectorAll("script, style")) code.remove();
   for (const block of content.querySelectorAll(BLOCKS)) block.after(" ");
-  return (content.textContent ?? "").replace(/\s+/g, " ").trim();
+  return (content.textContent ?? "").replaceAll(/\s+/g, " ").trim();
 }
 
 /**

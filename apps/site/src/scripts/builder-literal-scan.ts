@@ -2,7 +2,9 @@ import { PasteRefused } from "./builder-report.ts";
 
 const WHITESPACE = /\s/;
 const WORD = /[A-Za-z_$][\w$]*/y;
-const NUMBER = /(?:0[xX][\da-fA-F]+|(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/y;
+const HEX_NUMBER = /0[xX][\da-fA-F]+/y;
+const DECIMAL_DIGITS = /\d+\.?\d*|\.\d+/y;
+const EXPONENT = /[eE][-+]?\d+/y;
 const SIMPLE_ESCAPES: Readonly<Record<string, string>> = {
   n: "\n",
   t: "\t",
@@ -109,12 +111,20 @@ export class LiteralScanner {
     const start = this.#at;
     const sign = this.peek();
     if (sign === "-" || sign === "+") this.#at += 1;
-    const digits = this.#matchHere(NUMBER);
+    const digits = this.#readDigits();
     if (digits === undefined) {
       this.#at = start;
       return undefined;
     }
     return sign === "-" ? -Number(digits) : Number(digits);
+  }
+
+  /** The unsigned number's text here, or `undefined`. */
+  #readDigits(): string | undefined {
+    const hex = this.#matchHere(HEX_NUMBER);
+    if (hex !== undefined) return hex;
+    const digits = this.#matchHere(DECIMAL_DIGITS);
+    return digits === undefined ? undefined : digits + (this.#matchHere(EXPONENT) ?? "");
   }
 
   /** The identifier here, or `undefined`. */
@@ -189,7 +199,7 @@ export class LiteralScanner {
     if (this.peek() !== "{") return this.#readHex(4);
     const end = this.#text.indexOf("}", this.#at);
     const code = Number.parseInt(this.#text.slice(this.#at + 1, end), 16);
-    if (end === -1 || !(code >= 0 && code <= 0x10ffff)) this.fail("a bad \\u escape");
+    if (end === -1 || !(code >= 0 && code <= 0x10ffff)) this.fail(String.raw`a bad \u escape`);
     this.#at = end + 1;
     return String.fromCodePoint(code);
   }
@@ -198,7 +208,7 @@ export class LiteralScanner {
     const hex = this.#text.slice(this.#at, this.#at + length);
     if (hex.length !== length || !/^[\da-fA-F]+$/.test(hex)) this.fail("a bad escape in a string");
     this.#at += length;
-    return String.fromCharCode(Number.parseInt(hex, 16));
+    return String.fromCodePoint(Number.parseInt(hex, 16));
   }
 
   #matchHere(pattern: RegExp): string | undefined {

@@ -60,7 +60,7 @@ function valueAt(scanner: LiteralScanner, depth: number): Literal {
   const value = plainValueAt(scanner, depth);
   scanner.skipTrivia();
   if (value !== NOT_PLAIN && (scanner.atEnd() || VALUE_ENDS.has(scanner.peek()))) {
-    return value as Literal;
+    return value;
   }
   scanner.moveTo(start);
   return new Refused(scanner.skipExpression());
@@ -157,12 +157,16 @@ export function isRecord(value: unknown): value is Readonly<Record<string, unkno
 /** The first code in `value`, however deep. */
 export function firstRefusedIn(value: unknown): Refused | undefined {
   if (value instanceof Refused) return value;
-  const children = Array.isArray(value) ? value : isRecord(value) ? Object.values(value) : [];
-  for (const child of children) {
+  for (const child of childrenOf(value)) {
     const found = firstRefusedIn(child);
     if (found !== undefined) return found;
   }
   return undefined;
+}
+
+function childrenOf(value: unknown): readonly unknown[] {
+  if (Array.isArray(value)) return value;
+  return isRecord(value) ? Object.values(value) : [];
 }
 
 /** What to call `refused` to a reader. */
