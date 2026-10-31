@@ -1,3 +1,4 @@
+import type { LatLng } from "../geometry";
 import type { Location } from "../location";
 import { type FilteredLocations, isListed } from "../location-state";
 
@@ -14,13 +15,30 @@ export interface ListSection<Data = unknown> {
 /** What the list shows, apart from selection and hover. */
 export interface ListStructure<Data = unknown> {
   readonly sections: readonly ListSection<Data>[];
+  /** With a list sorted by distance and an origin to measure from. */
+  readonly distances?: Distances | undefined;
+}
+
+/** How far an entry is, in metres and as the list writes it. */
+export interface EntryDistance {
+  readonly metres: number;
+  readonly label: string;
+}
+
+/** How far each entry is, by id, and where from. */
+export interface Distances {
+  readonly from: LatLng;
+  readonly of: ReadonlyMap<string, EntryDistance>;
 }
 
 /** How listed locations become a structure. */
 export interface ListRules {
-  readonly groupHeadings: boolean | undefined;
+  readonly groupHeadings?: boolean | undefined;
   /** Shows after each heading how many are listed under it. */
   readonly groupCounts?: boolean | undefined;
+  /** `distance`: nearest first once the store has an origin, each entry saying how far. */
+  readonly sort?: "distance" | undefined;
+  readonly distanceUnit?: "kilometer" | "mile" | undefined;
 }
 
 /** Whether a listed location is kept: in the map's view, for a list with `scope`. */

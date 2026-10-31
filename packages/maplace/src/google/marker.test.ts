@@ -36,7 +36,12 @@ describe("placeMarker", () => {
     const { site, state } = stubSite();
     const icon = document.createElement("i");
     const renderIcon = vi.fn((_: LocationState) => icon);
-    state.presented = { selectedId: "a", hoveredId: undefined, hiddenIds: new Set(["a"]) };
+    state.presented = {
+      selectedId: "a",
+      hoveredId: undefined,
+      hiddenIds: new Set(["a"]),
+      origin: undefined,
+    };
     const { marker } = placeMarker(markerDrawable("a", ORIGIN, { renderIcon }), site);
     expect(marker.hidden).toBe(true);
     expect(renderIcon.mock.calls).toEqual([[{ selected: true, hovered: false }]]);

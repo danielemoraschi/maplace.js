@@ -214,3 +214,27 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(store().getSnapshot().hoveredId).toBeUndefined();
   });
 });
+
+describe("LocationList: sort", () => {
+  it("a change of sort builds the list again; children get distanceLabel", async () => {
+    const { Keep, store } = storeCatcher();
+    const seen: (string | undefined)[] = [];
+    const app = (sort: "distance" | undefined) => (
+      <MaplaceProvider locations={TOWNS}>
+        <Keep />
+        <LocationList sort={sort} distanceUnit="mile">
+          {({ location, distanceLabel }: ListEntry) => {
+            seen.push(distanceLabel);
+            return location.id;
+          }}
+        </LocationList>
+      </MaplaceProvider>
+    );
+    const { container, render } = await renderInto(app(undefined));
+    await inAct(() => store().setOrigin({ lat: 0, lng: 0 }));
+    expect(seen.some((label) => label !== undefined)).toBe(false);
+    await render(app("distance"));
+    await expect.poll(() => seen.some((label) => label?.includes("mi"))).toBe(true);
+    expect(optionsIn(container)).toHaveLength(TOWNS.length);
+  });
+});

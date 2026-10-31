@@ -1,8 +1,8 @@
-import { anchorOf } from "../adapter-kit/anchor";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { sameGeometry } from "../adapter-kit/same-geometry";
 import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
 import { shapeStackRank } from "../adapter-kit/stacking";
+import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
 import type { Geometry } from "../geometry";
 import { sameState } from "../location-state";

@@ -1,5 +1,6 @@
 // Compile-time checks of the adapter contract: each @ts-expect-error must stay an error.
-import type { Adapter, AdapterHost, Drawable } from "maplace";
+import type { Adapter, AdapterHost, Drawable, LatLng } from "maplace";
+import { expectTypeOf } from "vitest";
 
 declare const host: AdapterHost;
 declare const drawable: Drawable;
@@ -53,3 +54,8 @@ adapter.setView({ kind: "fit-all", padding: 40 });
 adapter.pageMapElement satisfies HTMLElement | undefined;
 // @ts-expect-error the store reads the page map's element, never sets it
 adapter.pageMapElement = document.createElement("div");
+
+// An adapter ignoring the origin still compiles: `present` takes the state, read or not.
+export const presentsWithoutOrigin: Adapter["present"] = (state) => {
+  expectTypeOf(state.origin).toEqualTypeOf<LatLng | undefined>();
+};

@@ -9,6 +9,7 @@ import { setFilter } from "./filter";
 import { hover } from "./hover";
 import { initialSnapshot } from "./initial";
 import { setLocations } from "./locations";
+import { setOrigin } from "./origin";
 import { setRoute } from "./route";
 import { select } from "./selection";
 import { fitAll, fitBounds, setView } from "./views";
@@ -67,6 +68,7 @@ export function createInternalState<Data = unknown>(
     fitBounds: (bounds, fitOptions) => run("fitBounds", () => fitBounds(bounds, fitOptions)),
     setView: (center, zoom) => run("setView", () => setView(center, zoom)),
     setRoute: (route) => run("setRoute", () => setRoute(getSnapshot(), route)),
+    setOrigin: (origin) => run("setOrigin", () => setOrigin(getSnapshot(), origin)),
     on(event, listener, listenOptions) {
       checkNotDestroyed("on");
       return emitter.on(event, listener, listenOptions);

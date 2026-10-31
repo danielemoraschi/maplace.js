@@ -11,6 +11,7 @@ import type { MapLibreState } from "./map-state";
 import { markerStacking } from "./marker-stacking";
 import { createMapLifecycle } from "./mount";
 import type { MapLibreAdapterOptions } from "./options";
+import { createMapLibreOriginDot } from "./origin-dot";
 import { PLACERS } from "./placers";
 import { locationAt } from "./pointer-targets";
 import { createPopup } from "./popup";
@@ -36,6 +37,7 @@ export function assembleMapLibreAdapter(
   const drawing = createDrawing(state, PLACERS);
   const present = createPresenting(state);
   const popup = createPopup(state);
+  const originDot = createMapLibreOriginDot(state);
   const camera = createCamera(state, drawing);
   const controls = createControls();
   const pointedAt = (event: MapMouseEvent) => locationAt(state, event.point);
@@ -49,6 +51,7 @@ export function assembleMapLibreAdapter(
     camera.part,
     popup.part,
     controls.part,
+    originDot.part,
   ];
   const lifecycle = createMapLifecycle({
     source: mapSourceFor(options),
@@ -66,6 +69,7 @@ export function assembleMapLibreAdapter(
     present(next) {
       present(next);
       popup.sync();
+      originDot.sync();
     },
     setView: camera.setView,
     // Routes aren't a capability: the store never asks for one, and clears none.

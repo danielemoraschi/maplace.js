@@ -1,4 +1,4 @@
-import { element } from "./listbox-nodes";
+import { element, statusElement, toggleButton } from "./listbox-nodes";
 import type { AreaMode } from "./viewport-scope";
 
 export const AREA_SWITCH_CLASS = "maplace-area-switch";
@@ -38,8 +38,8 @@ export interface AreaSwitchParts extends AreaSwitch {
  */
 export function createAreaSwitch(labels: AreaSwitchLabels): AreaSwitchParts {
   const buttons = new Map<AreaMode, HTMLButtonElement>([
-    ["all", toggleButton(SHOW_ALL_CLASS, labels.showAll)],
-    ["area", toggleButton(AREA_ONLY_CLASS, labels.areaOnly)],
+    ["all", toggleButton(labels.showAll, SHOW_ALL_CLASS)],
+    ["area", toggleButton(labels.areaOnly, AREA_ONLY_CLASS)],
   ]);
   let pressed: AreaMode = "all";
   const press = (chosen: AreaMode) => {
@@ -53,8 +53,7 @@ export function createAreaSwitch(labels: AreaSwitchLabels): AreaSwitchParts {
   group.setAttribute("role", "group");
   group.setAttribute("aria-label", labels.name);
   group.append(...buttons.values());
-  const status = element("div", EMPTY_AREA_CLASS);
-  status.setAttribute("role", "status");
+  const status = statusElement(EMPTY_AREA_CLASS);
   return {
     group,
     status,
@@ -77,11 +76,4 @@ export function createAreaSwitch(labels: AreaSwitchLabels): AreaSwitchParts {
       if (status.textContent !== said) status.textContent = said;
     },
   };
-}
-
-function toggleButton(className: string, label: string): HTMLButtonElement {
-  const node = element("button", className) as HTMLButtonElement;
-  node.type = "button";
-  node.textContent = label;
-  return node;
 }

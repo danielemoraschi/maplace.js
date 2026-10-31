@@ -63,7 +63,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "search",
         title: "Search",
-        summary: "A box above the list: type to narrow the list and the map.",
+        summary: "A box to narrow the list and the map, and a button to sort it by distance.",
       },
       {
         name: "custom-list",

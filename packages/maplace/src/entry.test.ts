@@ -8,6 +8,8 @@ describe("the maplace entry", () => {
       "MaplaceError",
       "createListView",
       "createMaplace",
+      "createMyLocationControl",
+      "distanceTo",
       "listedLocations",
       "locationsFromGeoJSON",
     ]);

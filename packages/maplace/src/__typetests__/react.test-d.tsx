@@ -9,7 +9,7 @@ import type {
   RouteResult,
 } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
+import { LocationList, MaplaceMap, MaplaceProvider, MyLocation, useMaplace } from "maplace/react";
 import { expectTypeOf } from "vitest";
 
 const shops = [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }];
@@ -112,4 +112,16 @@ const node = document.createElement("b");
 export const nodeContent = (
   // @ts-expect-error content is React content: a DOM node is the core's `content`, not React's
   <MaplaceMap createAdapter={createAdapter} popupContent={() => node} />
+);
+
+export const myLocationDefault = <MyLocation />;
+export const myLocationNamed = (
+  <MyLocation position="bottom-left" label="Near me" unavailableLabel="No position" />
+);
+// @ts-expect-error a corner
+export const myLocationBad = <MyLocation position="middle" />;
+export const sortedList = (
+  <LocationList sort="distance" distanceUnit="mile">
+    {({ distanceLabel }) => distanceLabel}
+  </LocationList>
 );

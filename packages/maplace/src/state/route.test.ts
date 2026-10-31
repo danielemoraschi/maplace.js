@@ -18,6 +18,7 @@ function snapshotOf(ids: string[], fields: Partial<Snapshot> = {}): Snapshot {
     viewport: undefined,
     route: undefined,
     routeResult: undefined,
+    origin: undefined,
     loadState: "idle",
     ...fields,
   };

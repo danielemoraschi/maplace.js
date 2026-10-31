@@ -40,6 +40,14 @@ export function listedIn(root: Element): (string | null)[] {
   return Array.from(root.querySelectorAll("[role=option]"), (option) => option.textContent);
 }
 
+/** The labels of the entries inside `root`, in order, without what else an entry says. */
+export function labelsIn(root: Element): (string | null | undefined)[] {
+  return Array.from(
+    root.querySelectorAll("[role=option]"),
+    (option) => option.firstChild?.textContent,
+  );
+}
+
 /** The input of the `<label>` inside `root` whose text is `text`, failing when there is none. */
 export function inputLabelled(root: Element, text: string): HTMLInputElement {
   const input = byText(root, "label", text).querySelector("input");

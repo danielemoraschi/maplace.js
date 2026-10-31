@@ -24,6 +24,16 @@ describe("the privacy page", () => {
     await context.close();
   }, 30_000);
 
+  it("says the location is asked for only on a press, goes to no server of the site's, and what the provider sees", async () => {
+    const { page, context } = await privacyPage();
+    const text = (await page.locator("main").textContent())?.replace(/\s+/g, " ");
+    expect(text).toContain("Only when you press it does your browser ask");
+    expect(text).toContain("sends it to no server of its own");
+    expect(text).toContain("Google's code running in the page is handed the position");
+    expect(text).not.toContain("never asks for your location");
+    await context.close();
+  }, 30_000);
+
   it("says what the site keeps in the browser, and how to reach who runs it", async () => {
     const { page, context } = await privacyPage();
     const text = await page.locator("main").textContent();

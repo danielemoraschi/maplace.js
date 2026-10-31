@@ -121,3 +121,10 @@ shop.attach(adapter);
 declare const current: Snapshot;
 // @ts-expect-error the snapshot's viewport is the map's report, read-only
 current.viewport = undefined;
+
+declare const originStore: Maplace;
+originStore.setOrigin({ lat: 1, lng: 2 });
+originStore.setOrigin(undefined);
+// @ts-expect-error an origin is a point
+originStore.setOrigin("rome");
+expectTypeOf(originStore.getSnapshot().origin).toEqualTypeOf<LatLng | undefined>();

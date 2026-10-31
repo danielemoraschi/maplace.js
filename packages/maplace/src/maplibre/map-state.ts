@@ -1,3 +1,4 @@
+import type { Marker } from "maplibre-gl";
 import type { PresentationState } from "../adapter";
 import type { SessionPopup } from "../adapter-kit/popup-window";
 import { NOTHING_PRESENTED } from "../adapter-kit/presentation-changes";
@@ -20,6 +21,8 @@ export interface MapLibreState {
   /** What maplace sends MapLibre, once the map is open. */
   features: FeatureSets | undefined;
   popup: ShownMapLibrePopup | undefined;
+  /** The dot at the store's origin, while one shows. */
+  originMarker: Marker | undefined;
 }
 
 export function createMapState(): MapLibreState {
@@ -29,5 +32,6 @@ export function createMapState(): MapLibreState {
     presented: NOTHING_PRESENTED,
     features: undefined,
     popup: undefined,
+    originMarker: undefined,
   };
 }

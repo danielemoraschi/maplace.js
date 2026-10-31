@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { optionElement } from "./listbox-nodes";
-import { nameOption, setOptionContent, setOptionState } from "./option-node";
+import { DISTANCE_CLASS, nameOption, setOptionContent, setOptionState } from "./option-node";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -32,6 +32,26 @@ describe("setOptionContent", () => {
     setOptionContent(option, { entry, render: () => "text" as never });
     expect(option.textContent).toBe(title);
     expect(() => queued[0]?.()).toThrow('createListView: render must return a Node, got "text"');
+  });
+});
+
+describe("setOptionContent: distance", () => {
+  const plain = { ...entry, location: { id: "a", lat: 0, lng: 0, title: "Rome" } };
+
+  it("shows the distance after the label, gone when cleared", () => {
+    const option = optionElement();
+    setOptionContent(option, { entry: { ...plain, distanceLabel: "1.2 km" }, render: undefined });
+    expect(option.textContent).toBe("Rome 1.2 km");
+    expect(option.querySelector(`.${DISTANCE_CLASS}`)?.textContent).toBe("1.2 km");
+    setOptionContent(option, { entry: plain, render: undefined });
+    expect(option.textContent).toBe("Rome");
+  });
+
+  it("leaves a render's content alone: it shows the distance itself, or doesn't", () => {
+    const option = optionElement();
+    const render = () => document.createElement("img");
+    setOptionContent(option, { entry: { ...plain, distanceLabel: "1.2 km" }, render });
+    expect(option.querySelector(`.${DISTANCE_CLASS}`)).toBeNull();
   });
 });
 

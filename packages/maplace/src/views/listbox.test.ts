@@ -156,3 +156,42 @@ describe("createListbox: group names", () => {
     expect(textsOf(".maplace-group-heading")).toEqual(["Nord"]);
   });
 });
+
+describe("createListbox: distances", () => {
+  const at = (metres: number) => ({
+    ...structureOf(locations),
+    distances: {
+      from: { lat: 0, lng: 0 },
+      of: new Map([["a", { metres, label: `${metres} m` }]]),
+    },
+  });
+
+  it("gives render distance and distanceLabel, and renders again when they change", () => {
+    const seen: (number | string | undefined)[][] = [];
+    const render = ({ location, distance, distanceLabel }: ListEntry) => {
+      if (location.id === "a") seen.push([distance, distanceLabel]);
+      return document.createTextNode(location.id);
+    };
+    const { view } = listbox({ render });
+    seen.length = 0;
+    view.renderStructure(at(5));
+    view.renderStructure(at(6));
+    expect(seen).toEqual([
+      [5, "5 m"],
+      [6, "6 m"],
+    ]);
+  });
+
+  it("gives render the same distance when only the state changes", () => {
+    const seen: (string | undefined)[] = [];
+    const render = ({ location, distanceLabel }: ListEntry) => {
+      if (location.id === "a") seen.push(distanceLabel);
+      return document.createTextNode(location.id);
+    };
+    const { view } = listbox({ render });
+    view.renderStructure(at(5));
+    seen.length = 0;
+    view.renderState({ selectedId: "a", hoveredId: undefined });
+    expect(seen).toEqual(["5 m"]);
+  });
+});

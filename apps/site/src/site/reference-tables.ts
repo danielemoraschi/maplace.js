@@ -1,6 +1,7 @@
 import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
 import { CLUSTER_CLASS } from "../../../../packages/maplace/src/adapter-kit/cluster-badge.ts";
 import { CONTROL_CLASS } from "../../../../packages/maplace/src/adapter-kit/control-styles.ts";
+import { ORIGIN_DOT_CLASS } from "../../../../packages/maplace/src/adapter-kit/origin-dot.ts";
 import {
   POPUP_CLASS,
   POPUP_HEADING_CLASS,
@@ -36,7 +37,13 @@ import {
   LISTBOX_CLASS,
   OPTION_CLASS,
 } from "../../../../packages/maplace/src/views/listbox-nodes.ts";
+import {
+  MY_LOCATION_BOX_CLASS,
+  MY_LOCATION_CLASS,
+  MY_LOCATION_STATUS_CLASS,
+} from "../../../../packages/maplace/src/views/my-location-nodes.ts";
 import { SELECT_CLASS } from "../../../../packages/maplace/src/views/native-select.ts";
+import { DISTANCE_CLASS } from "../../../../packages/maplace/src/views/option-node.ts";
 import {
   SEARCH_CLASS,
   SEARCH_STATUS_CLASS,
@@ -75,10 +82,14 @@ export const STYLING_CLASSES = [
   SHOW_ALL_CLASS,
   AREA_ONLY_CLASS,
   EMPTY_AREA_CLASS,
+  MY_LOCATION_CLASS,
+  MY_LOCATION_BOX_CLASS,
+  MY_LOCATION_STATUS_CLASS,
   LISTBOX_CLASS,
   GROUP_CLASS,
   HEADING_CLASS,
   OPTION_CLASS,
+  DISTANCE_CLASS,
   FIT_ALL_CLASS,
   SELECT_CLASS,
   POPUP_CLASS,
@@ -86,6 +97,7 @@ export const STYLING_CLASSES = [
   POPUP_LINKS_CLASS,
   CLUSTER_CLASS,
   CONTROL_CLASS,
+  ORIGIN_DOT_CLASS,
   SKIP_MAP_CLASS,
   LOAD_PANEL_CLASS,
   GOOGLE_MAP_CLASS,
@@ -145,6 +157,7 @@ export function referenceTables(): ReferenceTable[] {
       ["## `<MaplaceMap>`", REACT_PROPS.map, "MaplaceMapProps"],
       ["## `<LocationList>`", REACT_PROPS.list, "LocationListProps"],
       ["## `<MapControl>`", REACT_PROPS.control, "MapControlProps"],
+      ["## `<MyLocation>`", REACT_PROPS.myLocation, "MyLocationProps"],
     ]),
     ...tablesOn("styling.md", [
       ["## Turning them off", [UNSTYLED_ATTRIBUTE], "unstyled.ts"],

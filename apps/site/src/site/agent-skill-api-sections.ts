@@ -1,15 +1,14 @@
-import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
-import { elementEventName } from "../../../../packages/maplace/src/element/event-forwarding.ts";
-import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import {
   type AgentSkillSection,
   type AgentSkillSettings,
   codeList,
   docSection,
   exampleSnippet,
+  pageUrl,
 } from "./agent-skill-sources.ts";
 import { LOCATION_FIELDS, SHAPE_STYLE_FIELDS, STORE_NAMES } from "./reference-names.ts";
 import { GOOGLE_MAP_OPTIONS, MAPLIBRE_MAP_OPTIONS } from "./reference-names-bindings.ts";
+import { docRoute } from "./repo-docs.ts";
 
 function locations(): string {
   return `## Locations
@@ -42,28 +41,14 @@ function capabilities(settings: AgentSkillSettings): string {
 ${docSection("api", "## Capabilities", settings)}`;
 }
 
-function events(settings: AgentSkillSettings): string {
-  return `## Events
+function eventsAndErrors({ site }: AgentSkillSettings): string {
+  const link = (label: string, id: string, anchor: string) =>
+    `[${label}](${pageUrl(docRoute(id), site)}#${anchor})`;
+  return `## Events and errors
 
-${docSection("store", "## Events", settings)}
+Events: ${link("the store's", "store", "events")}, ${link("the element's", "element", "events")}, ${link("React's props", "react", "event-props")}.
 
-The element dispatches them as ${codeList(API_LISTS.events.map(elementEventName))}.
-
-In React, \`MaplaceProvider\` takes them as props: ${codeList(API_LISTS.events.map(eventPropName))}.`;
-}
-
-function errors(settings: AgentSkillSettings): string {
-  return `## Errors
-
-${docSection("api", "## Errors", settings)}
-
-### Misuse codes
-
-${docSection("api", "## Misuse codes", settings)}
-
-### Runtime failures
-
-${docSection("api", "## Runtime failures", settings)}`;
+Errors: ${link("what they carry", "api", "errors")}, ${link("misuse codes", "api", "misuse-codes")}, ${link("runtime failures", "api", "runtime-failures")}.`;
 }
 
 function rules(settings: AgentSkillSettings): string {
@@ -77,7 +62,6 @@ export const API_SECTIONS: readonly AgentSkillSection[] = [
   locations,
   options,
   capabilities,
-  events,
-  errors,
+  eventsAndErrors,
   rules,
 ];

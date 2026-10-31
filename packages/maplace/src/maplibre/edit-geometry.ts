@@ -1,6 +1,7 @@
 import { latOf, yOf } from "../adapter-kit/web-mercator";
 import type { CircleGeometry, Geometry, LatLng } from "../geometry";
-import { metresBetween, pointAtBearing } from "./circle-sphere";
+import { metresBetween } from "../sphere";
+import { pointAtBearing } from "./circle-sphere";
 import { nearestLongitude, wrappedLongitude } from "./conversions";
 
 /**

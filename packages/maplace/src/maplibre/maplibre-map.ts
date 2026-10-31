@@ -10,7 +10,11 @@ import {
 } from "./maplibre-map-options";
 import type { MapLibreAdapterOptions } from "./options";
 
-export type { MapLibreMapList, MapLibreMapOptions } from "./maplibre-map-options";
+export type {
+  MapLibreMapList,
+  MapLibreMapMyLocation,
+  MapLibreMapOptions,
+} from "./maplibre-map-options";
 
 type AdapterFactory = (options: MapLibreAdapterOptions) => Adapter;
 

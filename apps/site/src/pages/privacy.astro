@@ -56,6 +56,14 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       the page, since a loaded map can't be removed from an open page. Withdrawing doesn't affect
       what the maps loaded before.
     </p>
+    <p>
+      The Search example has a “My location” button. Only when you press it does your browser ask
+      whether to share your position. If you agree, the site keeps the position nowhere and sends it
+      to no server of its own: the example sorts its list by it, marks it on the map and moves the
+      map there. Moving the map there shows whichever service draws the map the area around you,
+      as any map view does, and on Google, Google's code running in the page is handed the position
+      to draw the mark. Nothing else on this site asks for your location.
+    </p>
   </section>
 
   <section aria-labelledby={GOOGLE_MAPS.id}>
@@ -65,8 +73,7 @@ const contact = contactAddress(PRIVACY_CONTACT_EMAIL);
       map's tiles, images and fonts as you look around. With each request Google receives your IP
       address, what your browser says about itself (its user agent), the address of the page the
       map is on, and which part of the map you're viewing. The examples with a route also ask
-      Google's Routes service for directions between their own stops. The site never asks for
-      your location.
+      Google's Routes service for directions between their own stops.
     </p>
     <p>
       Google is a US company, certified under the EU-U.S. Data Privacy Framework. It may use its

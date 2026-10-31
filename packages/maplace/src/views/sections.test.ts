@@ -86,3 +86,30 @@ describe("createSections", () => {
     expect(container.querySelector("section")).toBeNull();
   });
 });
+
+describe("createSections: distances", () => {
+  const withMetres = (metres: number) => ({
+    ...structureOf([north]),
+    distances: {
+      from: { lat: 0, lng: 0 },
+      of: new Map([["n", { metres, label: `${metres} m` }]]),
+    },
+  });
+
+  it("fills an entry again only when its metres changed", () => {
+    const { sections, fills } = sectionsIn(document.createElement("div"));
+    sections.render(withMetres(5), []);
+    sections.render(withMetres(5), []);
+    expect(fills).toEqual(["n"]);
+    sections.render(withMetres(6), []);
+    expect(fills).toEqual(["n", "n"]);
+    sections.render(structureOf([north]), []);
+    expect(fills).toEqual(["n", "n", "n"]);
+  });
+
+  it("says how far the entry an option shows is", () => {
+    const { sections } = sectionsIn(document.createElement("div"));
+    const [option] = sections.render(withMetres(5), []);
+    expect(option && sections.distanceOf(option)?.label).toBe("5 m");
+  });
+});

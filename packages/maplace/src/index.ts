@@ -54,4 +54,7 @@ export type {
   View,
   Viewport,
 } from "./viewport";
+export { distanceTo } from "./views/distance";
 export { listedLocations } from "./views/listed-locations";
+export type { MyLocationControl, MyLocationOptions } from "./views/my-location";
+export { createMyLocationControl } from "./views/my-location";

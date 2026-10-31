@@ -1,7 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 
-import { anchorOf } from "../adapter-kit/anchor";
 import { type Journey, journeyOf, sameJourney } from "../adapter-kit/journey";
+import { anchorOf } from "../anchor";
 import { MaplaceError } from "../errors";
 import { type Route, sameComputation } from "../route";
 import type { Drawing } from "./drawing";

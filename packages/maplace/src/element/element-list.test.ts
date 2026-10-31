@@ -258,3 +258,25 @@ describe("listFromAttributes in a frame", () => {
     expect(listStyledIn(frame)).toBe(true);
   });
 });
+
+describe("listFromAttributes: sort and unit", () => {
+  it("reads list-sort and distance-unit, for a view of the page's too", () => {
+    const { name, given } = definedView();
+    const host = elementWith({ list: name, "list-sort": "distance", "distance-unit": "mile" });
+    listFromAttributes(host, storeWithGroups());
+    expect(given.setup?.options).toMatchObject({ sort: "distance", distanceUnit: "mile" });
+  });
+
+  it("refuses others, naming the attribute", () => {
+    const store = storeWithGroups();
+    const sort = elementWith({ list: "", "list-sort": "name" });
+    expect(() => listFromAttributes(sort, store)).toThrow(/list-sort/);
+    const unit = elementWith({ list: "", "distance-unit": "yard" });
+    expect(() => listFromAttributes(unit, store)).toThrow(/distance-unit/);
+  });
+
+  it("watches both", () => {
+    expect(isListAttribute("list-sort")).toBe(true);
+    expect(isListAttribute("distance-unit")).toBe(true);
+  });
+});

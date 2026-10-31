@@ -1,7 +1,7 @@
+import { anchorOf } from "../anchor";
 import type { Geometry } from "../geometry";
 import type { ResolvedPopupOptions } from "../popup";
 import { outsideUnstyled } from "../unstyled";
-import { anchorOf } from "./anchor";
 
 /** The class of a popup's row of links. */
 export const POPUP_LINKS_CLASS = "maplace-popup-links";

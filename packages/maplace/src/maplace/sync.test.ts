@@ -86,3 +86,14 @@ describe("createAdapterSync", () => {
     ]);
   });
 });
+
+describe("createAdapterSync: the origin", () => {
+  it("sends a set origin through present", async () => {
+    const { adapter, sync, change } = setup();
+    await sync.start();
+    const origin = { lat: 1, lng: 2 };
+    change({ origin });
+    const presents = adapter.callsOf("present");
+    expect(presents.at(-1)?.state.origin).toBe(origin);
+  });
+});

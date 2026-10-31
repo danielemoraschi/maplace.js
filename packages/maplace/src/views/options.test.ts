@@ -33,6 +33,12 @@ describe("checkListViewOptions", () => {
     expect(check({ as: "select", searchLabel: "Find" })).toThrow(/searchLabel needs as: 'list'/);
   });
 
+  it("takes sort and distanceUnit on either kind of list, refusing others", () => {
+    expect(check({ as: "select", sort: "distance", distanceUnit: "mile" })).not.toThrow();
+    expect(check({ sort: "name" })).toThrow(/sort/);
+    expect(check({ distanceUnit: "yard" })).toThrow(/distanceUnit/);
+  });
+
   it("refuses a groupCounts that isn't a boolean", () => {
     expect(check({ groupCounts: "yes" })).toThrow(/groupCounts must be/);
   });

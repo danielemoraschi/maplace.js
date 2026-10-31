@@ -81,6 +81,7 @@ Once the map is open, selecting a marker pans to it at the map's zoom, and selec
 | `fitBounds` | `fitBounds(bounds, options?)` shows a box; throws when south is above north or a coordinate is out of range |
 | `setView` | `setView(center, zoom)` centres the map at a zoom |
 | `setRoute` | `setRoute(route)` computes a [route](#routes), or clears it with `undefined` |
+| `setOrigin` | `setOrigin(point)` sets the point [distances](#distances) are measured from, any point on the map, or clears it with `undefined`; the map draws a dot there |
 | `on` | `on(event, listener, options?)` listens to an [event](#events); returns an unsubscribe function |
 | `attach` | `attach(adapter, container)` connects a map provider in `container`, an element or a selector, and starts loading; returns `detach` |
 | `whenReady` | Resolves once the provider loaded and the first locations are drawn; rejects on a load error |
@@ -102,6 +103,7 @@ The snapshot is immutable and replaced on every change, while unchanged parts ke
 | `viewport` | What the map shows, as the provider reports it; `undefined` until the map is ready |
 | `route` | The route asked for, or `undefined` |
 | `routeResult` | The computed route: its legs, distance, duration and path; `undefined` until computed |
+| `origin` | The point distances are measured from (`setOrigin`); `undefined` until one is set |
 | `loadState` | `idle` until attached, then `loading`, then `ready` or `error` |
 
 ## Events
@@ -154,6 +156,8 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `areaOnlyLabel` | `string` | The label of the switch's "This area"; default "This area" |
 | `showAllLabel` | `string` | The label of the switch's "All"; default "All" |
 | `emptyAreaLabel` | `string` | What a scoped list says when nothing is in its view; default "No locations in this area" |
+| `sort` | `"distance"` | Once the store has an origin, nearest first, each entry saying how far ([Distances](#distances)) |
+| `distanceUnit` | `"kilometer" \| "mile"` | What `sort` writes a distance in; default `kilometer` |
 | `searchLabel` | `string` | Shows a search box above the entries, named by this; for `as: "list"` only |
 | `noMatchesLabel` | `string` | What the box's status says when nothing matches; default "No locations match" |
 | `matchesLabel` | `string` | What its status says before the count while a query is on; default "Locations found", as "Locations found: 3" |
@@ -163,6 +167,24 @@ With `scope: "viewport"` the list shows a switch above its entries, always: two 
 With `searchLabel`, typing sets the filter's `query` once it pauses for 150 ms, and keeps the rest of the filter, so the map narrows with the list; the camera stays, and choosing an entry pans to it. The box follows the store: a page's `setFilter` without a query empties it, so a page with its own controls too spreads `getSnapshot().filter`. A query outlives the box, and a location it hides can't be selected, as for any filter: a page's own `select` throws, so check `listedLocations(getSnapshot())` or clear the query first. A `listed: false` location that matches stays on the map, while the status counts only the list. With a `scope`, a match outside "This area" leaves the empty-area status to speak.
 
 The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins; its element carries `maplace-list-view`, and [Styling](styling.md) lists its classes and how to turn the defaults off.
+
+## Distances
+
+A list with `sort: "distance"` lists nearest first once there is an origin, after the filter and `scope` have narrowed it, ties in data order. With no origin, or once it is cleared, it is back in data order, with no distances. Focus stays on its entry through a sort, and a new origin scrolls the list to its top unless focus is in it.
+
+- **The distance** is a straight line on the sphere, with no provider service or quota. A shape is measured to the point its popup points at: a circle's centre, the centre of a polygon's bounds, halfway along a line. So a visitor inside a big polygon reads the distance to its centre.
+- **Groups** keep their rule: within each group nearest first, groups in the order of their nearest member, ungrouped entries first.
+- **The words** are two significant figures in the browser's language: "0.85 km", "12 km", "1,200 km". A `render` gets `distance` (metres) and `distanceLabel`, and shows either.
+- **`distanceTo(origin, location)`** gives the metres, for a page's own list; `listedLocations` stays in data order. An origin that isn't a point is `invalid-input`.
+- **Any point** can be the origin. A click: `map.on("mapClick", ({ position }) => map.setOrigin(position))`. A location: `map.setOrigin({ lat: rome.lat, lng: rome.lng })`.
+
+### The "My location" control
+
+`createMyLocationControl(maplace, { label, unavailableLabel })` returns `{ element, destroy }`, a view like a list view: put `element` on the map with `mountControl` or anywhere in the page. `createGoogleMap` and `createMapLibreMap` take it as `myLocation`, the element as `my-location-label`, React as `<MyLocation>`.
+
+It is a toggle button, "My location" by default. Pressed, it asks the browser for the position, once, then makes it the origin and centres the map there at its zoom (with no view yet it moves nothing). Pressed again, it clears the origin. Nothing is asked until a press. An origin your page set shows it unpressed, and a press replaces it.
+
+Refused, unavailable, timed out, not on HTTPS, or no geolocation at all: its status says `unavailableLabel`, "Location unavailable" by default, and any origin already there stands. That isn't an event or an error: it is the visitor's choice or the device's, not a failure of the page. [Setup](setup.md#the-visitors-location) says what a page needs.
 
 ## Listed locations
 

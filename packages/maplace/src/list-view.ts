@@ -15,6 +15,10 @@ import type { ListVariant } from "./views/variant";
 /** One entry of a list view, as passed to a custom `render`. */
 export interface ListEntry<Data = unknown> extends LocationState {
   readonly location: Location<Data>;
+  /** With `sort: 'distance'` and an origin: metres from it, in a straight line. */
+  readonly distance?: number | undefined;
+  /** The distance as the list writes it. */
+  readonly distanceLabel?: string | undefined;
 }
 
 export interface ListViewOptions<Data = unknown> {
@@ -50,6 +54,13 @@ export interface ListViewOptions<Data = unknown> {
    * view (not attached, not laid out) every location until one comes. For `as: 'list'` only.
    */
   readonly scope?: "viewport" | undefined;
+  /**
+   * `distance`: once the store has an origin (`setOrigin`), nearest first, within each group, and
+   * each entry says how far.
+   */
+  readonly sort?: "distance" | undefined;
+  /** What a distance is written in. Default `kilometer`. */
+  readonly distanceUnit?: "kilometer" | "mile" | undefined;
   /** The label of the switch's "This area". Default "This area". */
   readonly areaOnlyLabel?: string | undefined;
   /** The label of the switch's "All". Default "All". */
@@ -128,7 +139,7 @@ export function createListView<Data>(
   const stopSearching = searchBox?.onSearch(actions.search);
   const stopFollowing = follow(maplace, {
     variant,
-    rules: { groupHeadings: options?.groupHeadings, groupCounts: options?.groupCounts },
+    rules: options ?? {},
     areaSwitch,
     searchBox,
   });

@@ -16,6 +16,7 @@ function snapshotOf(locations: Location[], fields: Partial<Snapshot> = {}): Snap
     viewport: undefined,
     route: undefined,
     routeResult: undefined,
+    origin: undefined,
     loadState: "idle",
     ...fields,
   };

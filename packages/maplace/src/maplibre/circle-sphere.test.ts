@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { EARTH_RADIUS } from "../adapter-kit/shape-area";
 import type { LatLng } from "../geometry";
+import { EARTH_RADIUS, metresBetween } from "../sphere";
 import { ORIGIN } from "../testing/conformance/fixtures";
-import { CIRCLE_SEGMENTS, circleRing, metresBetween, pointAtBearing } from "./circle-sphere";
+import { CIRCLE_SEGMENTS, circleRing, pointAtBearing } from "./circle-sphere";
 
 /** Metres in a degree of a great circle on the sphere maplace measures on. */
 const METRES_PER_DEGREE = (EARTH_RADIUS * Math.PI) / 180;
@@ -114,16 +114,5 @@ describe("pointAtBearing", () => {
   it("wraps a point past 180 back to -180..180", () => {
     const east = pointAtBearing({ lat: 0, lng: 179.5 }, METRES_PER_DEGREE, 90);
     expect(east.lng).toBeCloseTo(-179.5, 6);
-  });
-});
-
-describe("metresBetween", () => {
-  it("measures a degree of longitude on the equator as a degree's metres", () => {
-    expect(metresBetween(ORIGIN, { lat: 0, lng: 1 })).toBeCloseTo(METRES_PER_DEGREE, 3);
-  });
-
-  it("measures across ±180 the short way", () => {
-    const across = metresBetween({ lat: 0, lng: 179.5 }, { lat: 0, lng: -179.5 });
-    expect(across).toBeCloseTo(METRES_PER_DEGREE, 3);
   });
 });

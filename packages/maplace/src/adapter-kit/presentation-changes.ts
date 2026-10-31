@@ -23,6 +23,7 @@ export const NOTHING_PRESENTED: PresentationState = {
   selectedId: undefined,
   hoveredId: undefined,
   hiddenIds: new Set(),
+  origin: undefined,
 };
 
 /** The ids hidden or shown again; none when the hidden ids kept their reference. */

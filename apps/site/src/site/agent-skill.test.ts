@@ -1,9 +1,8 @@
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
-import { elementEventName } from "../../../../packages/maplace/src/element/event-forwarding.ts";
 import { LOCATION_ATTRIBUTES } from "../../../../packages/maplace/src/element/location-attributes.ts";
-import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import {
   EXAMPLE_PAGES,
   EXAMPLES,
@@ -18,7 +17,7 @@ import {
   AGENT_SKILL_NAME,
   AGENT_SKILL_PATH,
 } from "./agent-skill-paths.ts";
-import { codeList } from "./agent-skill-sources.ts";
+import { codeList, pageUrl } from "./agent-skill-sources.ts";
 import {
   GOOGLE_PROVIDER_ATTRIBUTES,
   MAP_ATTRIBUTES,
@@ -35,7 +34,9 @@ import {
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
 const SITE = "https://example.test";
-const pin = { version: "1.2.3", integrityOf: (file: string) => `sha384-of-${file}` };
+/** A real SHA-384's length in base64, so the size test measures what ships. */
+const hashOf = (file: string) => `sha384-${createHash("sha384").update(file).digest("base64")}`;
+const pin = { version: "1.2.3", integrityOf: hashOf };
 const settings = { pin, blobBase: "https://github.com/o/r/blob/abc123/", site: SITE };
 const skill = agentSkillMarkdown(settings);
 
@@ -74,15 +75,20 @@ describe("the skill's frontmatter", () => {
 });
 
 describe("the skill's lists", () => {
-  it("lists every event, in the store's, the element's and React's names", () => {
-    expectAllNamed(API_LISTS.events);
-    expectListed(API_LISTS.events.map(elementEventName));
-    expectListed(API_LISTS.events.map(eventPropName));
+  it("links the Events and Errors pages", () => {
+    for (const [id, anchor] of [
+      ["store", "events"],
+      ["element", "events"],
+      ["react", "event-props"],
+      ["api", "errors"],
+      ["api", "misuse-codes"],
+      ["api", "runtime-failures"],
+    ] as const) {
+      expect(skill).toContain(`${pageUrl(docRoute(id), SITE)}#${anchor})`);
+    }
   });
 
-  it("lists every error code and capability", () => {
-    expectAllNamed(API_LISTS.misuseCodes);
-    expectAllNamed(API_LISTS.runtimeCodes);
+  it("lists every capability", () => {
     expectAllNamed(API_LISTS.capabilities);
   });
 
@@ -174,9 +180,9 @@ describe("the skill's snippets", () => {
   });
 
   it("have the version and integrity filled in", () => {
-    expect(skill).toContain("sha384-of-maplace-element-cluster.iife.js");
+    expect(skill).toContain(hashOf("maplace-element-cluster.iife.js"));
     expect(skill).toContain("maplace@1.2.3/dist/");
-    expect(skill).toContain('integrity="sha384-of-');
+    expect(skill).toContain('integrity="sha384-');
     expect(skill).not.toContain("x.y.z");
   });
 });

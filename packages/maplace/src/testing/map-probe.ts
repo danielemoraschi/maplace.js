@@ -38,6 +38,8 @@ export interface MapProbe {
   /** The shown locations, front first: markers, then shapes, which every map draws below them. */
   stackOrder(): readonly string[];
   shownPopup(): ShownPopup | undefined;
+  /** Where the map shows the origin's dot, if it does. */
+  originDot(): LatLng | undefined;
   click(id: string): void;
   /** Clicks the map itself at `at`, away from every location. */
   clickMap(at: LatLng): void;

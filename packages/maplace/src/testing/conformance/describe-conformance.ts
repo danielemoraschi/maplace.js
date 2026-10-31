@@ -8,6 +8,7 @@ import { drawingChecks } from "./drawing";
 import { editingChecks } from "./editing";
 import { capabilitiesOf, unmountAll } from "./harness";
 import { lifecycleChecks } from "./lifecycle";
+import { originChecks } from "./origin";
 import { popupChecks } from "./popups";
 import { presentationChecks } from "./presentation";
 import { reportChecks } from "./reports";
@@ -52,4 +53,5 @@ const GROUPS: Readonly<Record<ConformanceGroup, CheckGroup>> = {
   route: routeChecks,
   cluster: clusterChecks,
   controls: controlChecks,
+  origin: originChecks,
 };

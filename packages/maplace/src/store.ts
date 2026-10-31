@@ -25,6 +25,8 @@ export interface Snapshot<Data = unknown> {
   readonly viewport: Viewport | undefined;
   readonly route: Route | undefined;
   readonly routeResult: RouteResult | undefined;
+  /** The point distances are measured from; undefined until one is set. */
+  readonly origin: LatLng | undefined;
   readonly loadState: LoadState;
 }
 
@@ -66,6 +68,8 @@ export interface Maplace<Data = unknown> {
   fitBounds(bounds: Bounds, options?: FitOptions): void;
   setView(center: LatLng, zoom: number): void;
   setRoute(route: Route | undefined): void;
+  /** Any point: a list with `sort: 'distance'` measures from it, and the map draws a dot there. */
+  setOrigin(origin: LatLng | undefined): void;
   on<K extends MaplaceEventName>(
     event: K,
     listener: Listener<K, Data>,

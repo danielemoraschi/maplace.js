@@ -1,7 +1,7 @@
 import type { AdapterHost } from "../../adapter";
-import { anchorOf } from "../../adapter-kit/anchor";
 import { editReportsFor } from "../../adapter-kit/edit-reports";
 import { styleInState } from "../../adapter-kit/shape-looks";
+import { anchorOf } from "../../anchor";
 import type { LatLng } from "../../geometry";
 import { stateIn } from "../../location-state";
 import type { MapProbe } from "../map-probe";
@@ -52,6 +52,7 @@ export function createProbe({ map, live, camera, routing }: ProbeSources): MapPr
     locationIds: () => [...map.entries.keys()],
     stackOrder: () => stackOrder(map),
     shownPopup: () => live()?.popups.shown(),
+    originDot: () => (live() ? map.presented.origin : undefined),
     click: (id) => ifShown(id, (to) => to.reportSelectionChange(id)),
     clickMap: (at) => host()?.reportMapClick(at),
     pointerOver: (id) => ifShown(id, (to) => to.reportHoverChange(id)),

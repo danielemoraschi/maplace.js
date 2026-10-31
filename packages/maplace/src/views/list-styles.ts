@@ -8,13 +8,16 @@ import {
   LISTBOX_CLASS,
   OPTION_CLASS,
 } from "./listbox-nodes";
+import { MY_LOCATION_BOX_CLASS, MY_LOCATION_STATUS_CLASS } from "./my-location-nodes";
+import { DISTANCE_CLASS } from "./option-node";
 import { SEARCH_CLASS, SEARCH_STATUS_CLASS } from "./search-box";
 
 /** Both kinds of entry: a location's option, and "fit all". */
 const ENTRY = `:is(.${OPTION_CLASS},.${FIT_ALL_CLASS})`;
 
-/** Both buttons of a list's area switch: "All" and "This area". */
-const SWITCH_BUTTON = `.${AREA_SWITCH_CLASS}>button`;
+/** The area switch's look, shared by the "My location" control's box. */
+const SWITCH = `:is(.${AREA_SWITCH_CLASS},.${MY_LOCATION_BOX_CLASS})`;
+const SWITCH_BUTTON = `${SWITCH}>button`;
 
 /** The colour of the line around the switch and between its buttons. */
 const LINE = "color-mix(in srgb,currentColor 30%,transparent)";
@@ -41,14 +44,16 @@ ${outsideUnstyled(`.${LISTBOX_CLASS}`)}{padding:.25rem;overflow:auto}
 ${outsideUnstyled(`.${LIST_CLASS}:not([hidden])`)}{display:flex;flex-direction:column}
 ${outsideUnstyled(`.${LIST_CLASS}>.${LISTBOX_CLASS}`)}{min-height:0}
 ${outsideUnstyled(`.${LIST_HEADING_CLASS}`)}{flex:none;padding:.5rem .75rem .25rem;font-weight:600}
-${outsideUnstyled(`.${AREA_SWITCH_CLASS}:not([hidden])`)}{display:flex;flex-wrap:wrap;flex:none;margin:.25rem;border:${SWITCH_LINE};border-radius:.375rem;overflow:hidden}
+${outsideUnstyled(`${SWITCH}:not([hidden])`)}{display:flex;flex-wrap:wrap;flex:none;margin:.25rem;border:${SWITCH_LINE};border-radius:.375rem;overflow:hidden}
 ${outsideUnstyled(SWITCH_BUTTON)}{flex:1 1 0;white-space:nowrap;padding:.375rem .5rem;border:0;box-shadow:-1px 0 0 ${LINE},0 -1px 0 ${LINE};background:none;color:inherit;font:inherit;font-weight:600;cursor:pointer}
 ${outsideUnstyled(`${SWITCH_BUTTON}:hover`)}{background:color-mix(in srgb,currentColor 8%,transparent)}
 ${outsideUnstyled(`${SWITCH_BUTTON}[aria-pressed=true]`)}{background:color-mix(in srgb,currentColor 16%,transparent)}
+${outsideUnstyled(`${SWITCH_BUTTON}[aria-busy=true]`)}{opacity:.6;cursor:progress}
 ${outsideUnstyled(`.${SEARCH_CLASS}`)}{flex:none;box-sizing:border-box;contain:inline-size;margin:.25rem;padding:.375rem .5rem;border:${SWITCH_LINE};border-radius:.375rem;background:none;color:inherit;font:inherit}
 @media (pointer:coarse){${outsideUnstyled(`.${SEARCH_CLASS}`)}{font-size:16px}}
 ${outsideUnstyled(`:is(${SWITCH_BUTTON},.${SEARCH_CLASS},${ENTRY}):focus-visible`)}{outline:2px solid currentColor;outline-offset:-2px}
-${outsideUnstyled(`:is(.${EMPTY_AREA_CLASS},.${SEARCH_STATUS_CLASS}):not(:empty)`)}{flex:none;padding:.5rem 1rem;opacity:.7;contain:inline-size}
+${outsideUnstyled(`:is(.${EMPTY_AREA_CLASS},.${SEARCH_STATUS_CLASS},.${MY_LOCATION_STATUS_CLASS}):not(:empty)`)}{flex:none;padding:.5rem 1rem;opacity:.7;contain:inline-size}
+${outsideUnstyled(`.${DISTANCE_CLASS}`)}{float:inline-end;margin-inline-start:.75rem;opacity:.7}
 ${outsideUnstyled(`.${GROUP_CLASS}`)}{padding-top:.25rem}
 ${outsideUnstyled(`.${HEADING_CLASS}`)}{padding:.5rem .75rem .25rem;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;opacity:.7}
 ${outsideUnstyled(ENTRY)}{display:block;padding:.5rem .75rem;border-radius:.375rem;cursor:pointer}

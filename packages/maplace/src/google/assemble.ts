@@ -9,6 +9,7 @@ import { mapSourceFor } from "./map-source";
 import type { GoogleMapState } from "./map-state";
 import { createMapLifecycle } from "./mount";
 import type { GoogleAdapterOptions } from "./options";
+import { createGoogleOriginDot } from "./origin-dot";
 import { pageAuthHook } from "./page-auth";
 import { PLACERS } from "./placers";
 import { createPopup } from "./popup";
@@ -38,6 +39,7 @@ export function assembleGoogleAdapter(
   const drawing = createDrawing(state, PLACERS);
   const present = createPresenting(state);
   const popup = createPopup(state);
+  const originDot = createGoogleOriginDot(state);
   const camera = createCamera(state, drawing);
   const routing = createRouting(state, drawing);
   const controls = createControls(options.colorScheme);
@@ -50,6 +52,7 @@ export function assembleGoogleAdapter(
     popupPane,
     routing.part,
     controls.part,
+    originDot.part,
   ];
   const lifecycle = createMapLifecycle({
     source: mapSourceFor(options),
@@ -70,6 +73,7 @@ export function assembleGoogleAdapter(
     present(next) {
       present(next);
       popup.sync();
+      originDot.sync();
     },
     setView: camera.setView,
     setRoute: routing.setRoute,

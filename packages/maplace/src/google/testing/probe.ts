@@ -9,7 +9,7 @@ import { controlsPlaced } from "./controls-placed";
 import { wait } from "./map-waits";
 import { markerTarget } from "./marker-target";
 import { headingOf } from "./popup-heading";
-import type { ProbeTarget } from "./probe-target";
+import { type ProbeTarget, probedPoint } from "./probe-target";
 import { shapeTarget } from "./shape-target";
 
 /**
@@ -88,6 +88,10 @@ function createGoogleProbe({ state, targets, map, camera }: ProbeSources): MapPr
           .filter(([, target]) => target.shown())
           .map(([id, target]) => ({ id, isMarker: target.isMarker, stack: target.stack() })),
       ),
+    originDot() {
+      const position = state.originMarker?.position;
+      return position ? probedPoint(position) : undefined;
+    },
     shownPopup() {
       const popup = state.popup;
       if (!popup?.window.infoWindow.isOpen) return undefined;

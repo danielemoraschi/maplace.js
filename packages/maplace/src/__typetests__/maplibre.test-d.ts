@@ -6,6 +6,7 @@ import {
   createMapLibreMap,
   type MapLibreAdapterOptions,
   type MapLibreMapList,
+  type MapLibreMapMyLocation,
 } from "maplace/maplibre";
 import { expectTypeOf } from "vitest";
 
@@ -44,3 +45,13 @@ createMapLibreAdapter({ mapOptions: { center: [0, 0] } });
 createMapLibreAdapter({ mapOptions: { style: "https://tiles.example/style.json" } });
 // @ts-expect-error a style is a URL or a style object
 createMapLibreAdapter({ mapStyle: 42 });
+
+declare const mapLibreSide: HTMLElement;
+createMapLibreMap(mapLibreSide, { myLocation: true });
+export const mapLibreMyLocation: MapLibreMapMyLocation = {
+  label: "Near me",
+  position: "bottom-left",
+};
+createMapLibreMap(mapLibreSide, { myLocation: mapLibreMyLocation });
+// @ts-expect-error true or its options; leave it out for none
+createMapLibreMap(mapLibreSide, { myLocation: false });

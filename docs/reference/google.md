@@ -53,6 +53,8 @@ Its own options, beside the store's:
 | `list` | `true \| GoogleMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right`, where 0.2 put its controls |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map (0.2's `controls_div`); not with `position` |
+| `myLocation` | `true \| GoogleMapMyLocation` | A ["My location" control](store.md#the-my-location-control) on the map: `true`, or its `label`, `unavailableLabel` and `position` |
+| `myLocation.position` | `ControlPosition` | The corner it goes in; default `top-left` |
 
 Each part checks what it is handed, so misuse names the part: `createMaplace: options…`, `createGoogleAdapter: options…`, `attach: container…` (a selector matching nothing), `createListView: options…`. A store that can't be attached is destroyed before the error goes on.
 
@@ -115,6 +117,10 @@ A click on the map is reported 250 ms after it, unless a double-click comes firs
 ## Popups
 
 A popup is Google's InfoWindow, headed by the location's title. One opened by a click or from the list pans the map to show it, once Google's own pan ends, clear of what the map's corners hold when there is room (never over Google's logo or terms; with no room, Google's own pan stands). A hover's popup doesn't pan.
+
+## The origin's dot
+
+The dot at the store's [origin](store.md#distances) is an advanced marker straight on the map, not clickable, below every marker, in no cluster.
 
 ## Hidden maps
 

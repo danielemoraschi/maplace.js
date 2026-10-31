@@ -16,7 +16,8 @@ export type ConformanceGroup =
   | "editing"
   | "route"
   | "cluster"
-  | "controls";
+  | "controls"
+  | "origin";
 
 /** An adapter under test, with the probe that sees and drives its map. */
 export interface ConformanceSubject {

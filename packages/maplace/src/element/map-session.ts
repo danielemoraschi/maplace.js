@@ -1,7 +1,13 @@
-import type { Adapter, Maplace } from "../index";
+import {
+  type Adapter,
+  createMyLocationControl,
+  type Maplace,
+  type MyLocationControl,
+} from "../index";
 import { runPageCode } from "./element-error";
 import type { ElementList } from "./element-list";
 import type { MaplaceMapElement, ProviderFactory } from "./index";
+import { myLocationAsked } from "./map-my-location";
 import type { MapSettingAttribute } from "./map-settings-watch";
 import { mapSettingsReadBy } from "./provider-description";
 import { providerFor } from "./providers";
@@ -29,6 +35,7 @@ export function openSession(
   },
 ): MapSession {
   const provider = providerFor(host);
+  const myLocation = myLocationAsked(host);
   const adapter = adapterFrom(provider, host);
   let detach: () => void;
   try {
@@ -38,6 +45,11 @@ export function openSession(
     throw error;
   }
   let hideList = parts.list?.showOn(adapter);
+  let control: MyLocationControl | undefined;
+  if (myLocation) {
+    control = createMyLocationControl(parts.store, myLocation.options);
+    adapter.mountControl(control.element, myLocation.corner);
+  }
   return {
     mapSettings: mapSettingsReadBy(provider),
     showList(list) {
@@ -46,6 +58,7 @@ export function openSession(
     },
     close() {
       hideList?.();
+      control?.destroy();
       detach();
     },
   };

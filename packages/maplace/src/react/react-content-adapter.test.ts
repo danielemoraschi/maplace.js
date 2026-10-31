@@ -149,7 +149,12 @@ describe("withReactContent", () => {
     const raw = new ClassAdapter();
     const { adapter } = wrapping(raw satisfies Adapter, settings());
     expect([adapter.capabilities, adapter.routeStopLimit]).toEqual([raw.capabilities, 3]);
-    adapter.present({ selectedId: undefined, hoveredId: undefined, hiddenIds: new Set() });
+    adapter.present({
+      selectedId: undefined,
+      hoveredId: undefined,
+      hiddenIds: new Set(),
+      origin: undefined,
+    });
     adapter.setView({ kind: "center", center: { lat: 0, lng: 0 }, zoom: 3 });
     adapter.setRoute(undefined);
     adapter.mountControl(document.createElement("div"), "top-left");

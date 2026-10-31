@@ -8,6 +8,7 @@ import type {
   MaplaceEventProps,
   MaplaceMapProps,
   MaplaceProviderProps,
+  MyLocationProps,
 } from "maplace/react";
 import { everyName } from "./reference-names.ts";
 
@@ -40,11 +41,13 @@ export const GOOGLE_MAP_OPTIONS = [
     region: true,
     nonce: true,
     list: true,
+    myLocation: true,
   }),
   ...everyName<Exclude<keyof GoogleMapList, keyof ListViewOptions>>({
     position: true,
     container: true,
   }).map((name) => `list.${name}`),
+  "myLocation.position",
 ];
 
 export const MAPLIBRE_OPTIONS = everyName<keyof MapLibreAdapterOptions>({
@@ -59,11 +62,13 @@ export const MAPLIBRE_MAP_OPTIONS = [
     mapStyle: true,
     mapOptions: true,
     list: true,
+    myLocation: true,
   }),
   ...everyName<Exclude<keyof MapLibreMapList, keyof ListViewOptions>>({
     position: true,
     container: true,
   }).map((name) => `list.${name}`),
+  "myLocation.position",
 ];
 
 /** What `<maplace-map>` adds to an HTML element. */
@@ -112,6 +117,8 @@ export const REACT_PROPS = {
     label: true,
     heading: true,
     scope: true,
+    sort: true,
+    distanceUnit: true,
     areaOnlyLabel: true,
     showAllLabel: true,
     emptyAreaLabel: true,
@@ -122,4 +129,9 @@ export const REACT_PROPS = {
     position: true,
   }),
   control: everyName<keyof MapControlProps>({ position: true, children: true }),
+  myLocation: everyName<keyof MyLocationProps>({
+    position: true,
+    label: true,
+    unavailableLabel: true,
+  }),
 } as const;
