@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  /* On a phone the list goes under the map, its half staying that size as the places narrow. */
+  @media (width < 40rem) {
+    #search-map { height: 36rem; }
+    #search-map > .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<!-- Places in a list beside the map, under a search box: typing narrows the list and the map by name, group or search-text. -->
+<maplace-map id="search-map" api-key="YOUR_KEY" list search-label="Find a place">
+  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome" group="Centre"></maplace-location>
+  <maplace-location location-id="bologna" lat="44.4949" lng="11.3426" title="Bologna" group="Centre" search-text="pasta"></maplace-location>
+  <maplace-location location-id="forli" lat="44.2227" lng="12.0407" title="Forlì" group="Centre"></maplace-location>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan" group="North"></maplace-location>
+  <maplace-location location-id="turin" lat="45.0703" lng="7.6869" title="Turin" group="North"></maplace-location>
+  <maplace-location location-id="genoa" lat="44.4056" lng="8.9463" title="Genoa" group="North" search-text="pasta, harbour"></maplace-location>
+  <maplace-location location-id="naples" lat="40.8518" lng="14.2681" title="Naples" group="South" search-text="pizza, harbour"></maplace-location>
+  <maplace-location location-id="bari" lat="41.1171" lng="16.8719" title="Bari" group="South" search-text="harbour"></maplace-location>
+</maplace-map>

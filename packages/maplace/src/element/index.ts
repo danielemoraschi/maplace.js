@@ -26,13 +26,17 @@ export type ElementListOptions = Pick<
   | "areaOnlyLabel"
   | "showAllLabel"
   | "emptyAreaLabel"
+  | "searchLabel"
+  | "noMatchesLabel"
+  | "matchesLabel"
 >;
 
 /** What `<maplace-map>` gives a list view besides its store. */
 export interface ListViewSetup {
   /**
    * The list options from the attributes (`fit-all-label`, `list-heading`, `group-counts`,
-   * `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`).
+   * `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`, `search-label`,
+   * `no-matches-label`, `matches-label`).
    */
   readonly options: ElementListOptions;
   /**
@@ -72,8 +76,13 @@ export { defineListView } from "./list-views";
  *   which lists only what is in the map's view and follows it, wherever the list is.
  * - `area-only-label`, `show-all-label`: the labels of "This area" and "All".
  * - `empty-area-label`: what the list says when nothing is in its view.
+ * - `search-label`: shows a search box above a list, named by this; typing sets the filter's query
+ *   once it pauses.
+ * - `no-matches-label`, `matches-label`: what the box's status says when nothing matches, and
+ *   before the count.
  *   (`list`, `list-position`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`,
- *   `area-only-label`, `show-all-label` and `empty-area-label` are live: the list is built again.)
+ *   `area-only-label`, `show-all-label`, `empty-area-label`, `search-label`, `no-matches-label` and
+ *   `matches-label` are live: the list is built again.)
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
  *   changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.

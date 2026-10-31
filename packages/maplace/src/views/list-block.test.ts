@@ -11,13 +11,13 @@ const AREA_SWITCH = {
   emptyArea: "No locations in this area",
 };
 
-function listboxIn(parts: BlockParts) {
+function listboxIn(parts: Omit<BlockParts, "search"> & Partial<BlockParts>) {
   const listbox = createListbox(recordingActions(), {
     label: "Shops",
     fitAllLabel: undefined,
     render: undefined,
   });
-  const { variant: block, areaSwitch } = listBlock(listbox, parts);
+  const { variant: block, areaSwitch } = listBlock(listbox, { search: undefined, ...parts });
   return { listbox, block, areaSwitch, children: Array.from(block.element.children) };
 }
 
@@ -89,6 +89,21 @@ describe("listBlock with an area switch", () => {
       "maplace-list-heading",
       "maplace-area-switch",
       "maplace-empty-area",
+      listbox.element.className,
+    ]);
+  });
+
+  it("puts the box above the switch, and its status after the switch's", () => {
+    const { listbox, children } = listboxIn({
+      heading: undefined,
+      areaSwitch: AREA_SWITCH,
+      search: { label: "Find", noMatches: "None", matches: "Found" },
+    });
+    expect(children.map((child) => child.className)).toEqual([
+      "maplace-search",
+      "maplace-area-switch",
+      "maplace-empty-area",
+      "maplace-search-status",
       listbox.element.className,
     ]);
   });

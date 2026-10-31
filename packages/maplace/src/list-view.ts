@@ -56,6 +56,18 @@ export interface ListViewOptions<Data = unknown> {
   readonly showAllLabel?: string | undefined;
   /** What a scoped list says when nothing is in its view. Default "No locations in this area". */
   readonly emptyAreaLabel?: string | undefined;
+  /**
+   * Shows a search box above the entries, named by this, for `as: 'list'` only: typing sets the
+   * filter's `query` once it pauses for 150 ms, keeping the rest of the filter, so the map narrows
+   * too and the camera stays.
+   * It follows the store, emptying when a page's `setFilter` takes the query away, and a query
+   * outlives the box.
+   */
+  readonly searchLabel?: string | undefined;
+  /** What the box's status says when nothing matches. Default "No locations match". */
+  readonly noMatchesLabel?: string | undefined;
+  /** What the box's status says before the count while a query is on. Default "Locations found". */
+  readonly matchesLabel?: string | undefined;
 }
 
 /**
@@ -65,10 +77,10 @@ export interface ListViewOptions<Data = unknown> {
  */
 export interface ListView {
   /**
-   * The listbox or select itself, or with `heading` or `scope` a block holding the heading, the
-   * "All" and "This area" switch, the empty-area status and the listbox, each with the class
-   * `maplace-list-view`: place it with `mountControl`. Label it from the page only without either:
-   * the block is no list, so a label on it names nothing (give `label` instead).
+   * The listbox or select itself, or with `heading`, `scope` or `searchLabel` a block holding the
+   * heading, the search box, the "All" and "This area" switch, their statuses and the listbox, each
+   * with the class `maplace-list-view`: place it with `mountControl`. Label it from the page only
+   * without any of those: the block is no list, so a label on it names nothing (give `label` instead).
    */
   readonly element: HTMLElement;
   /**
@@ -83,6 +95,8 @@ const DEFAULT_LABEL = "Locations";
 const DEFAULT_AREA_ONLY_LABEL = "This area";
 const DEFAULT_SHOW_ALL_LABEL = "All";
 const DEFAULT_EMPTY_AREA_LABEL = "No locations in this area";
+const DEFAULT_NO_MATCHES_LABEL = "No locations match";
+const DEFAULT_MATCHES_LABEL = "Locations found";
 
 /** The class of every list view's element `createListView` builds, whichever it is: the class a page styles it by. */
 export const LIST_VIEW_CLASS = "maplace-list-view";
@@ -109,16 +123,19 @@ export function createListView<Data>(
     fitAllLabel: options?.fitAllLabel,
     render: options?.render,
   });
-  const { variant, areaSwitch } = listBlock(list, blockPartsOf(options, label));
+  const { variant, areaSwitch, searchBox } = listBlock(list, blockPartsOf(options, label));
+  const stopSearching = searchBox?.onSearch(actions.search);
   const stopFollowing = follow(maplace, {
     variant,
     rules: { groupHeadings: options?.groupHeadings, groupCounts: options?.groupCounts },
     areaSwitch,
+    searchBox,
   });
   let destroyed = false;
   destroy = () => {
     if (destroyed) return;
     destroyed = true;
+    stopSearching?.();
     stopFollowing();
     variant.destroy();
   };
@@ -127,12 +144,21 @@ export function createListView<Data>(
 }
 
 /**
- * What the view shows above its entries: the heading and the area switch, each when asked for;
- * the switch named as the list, whose way of showing its locations it switches.
+ * What the view shows above its entries: the heading, the search box and the area switch, each
+ * when asked for; the switch named as the list, whose way of showing its locations it switches.
  */
 function blockPartsOf(options: ListViewOptions<never> | undefined, name: string): BlockParts {
   const heading = options?.heading;
+  const searchLabel = options?.searchLabel;
   return {
+    search:
+      searchLabel === undefined
+        ? undefined
+        : {
+            label: searchLabel,
+            noMatches: options?.noMatchesLabel ?? DEFAULT_NO_MATCHES_LABEL,
+            matches: options?.matchesLabel ?? DEFAULT_MATCHES_LABEL,
+          },
     heading:
       heading === undefined
         ? undefined

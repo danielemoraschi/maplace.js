@@ -45,6 +45,20 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(listboxes(container)[0]?.getAttribute("aria-label")).toBe("Towns");
   });
 
+  it("shows a search box with searchLabel, and builds the list again for its labels", async () => {
+    const app = (matchesLabel: string) => (
+      <MaplaceProvider locations={TOWNS}>
+        <LocationList searchLabel="Find" noMatchesLabel="None" matchesLabel={matchesLabel} />
+      </MaplaceProvider>
+    );
+    const { container, render } = await renderInto(app("Found"), root);
+    const input = () => container.querySelector("input");
+    const first = input();
+    expect(first?.getAttribute("aria-label")).toBe("Find");
+    await render(app("Hits"));
+    expect(input()).not.toBe(first);
+  });
+
   it("shows counts with groupCounts, and builds the list again when it changes", async () => {
     const app = (groupCounts: boolean) => (
       <MaplaceProvider locations={[{ id: "a", lat: 0, lng: 0, group: "North" }]}>

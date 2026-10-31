@@ -24,6 +24,13 @@ describe("listActionsFor", () => {
     expect(fitAll).toHaveBeenCalledOnce();
   });
 
+  it("searches, keeping the rest of the filter", () => {
+    const store = createMaplace({ locations });
+    store.setFilter({ tags: ["parking"] });
+    listActionsFor(store, vi.fn()).search("rome");
+    expect(store.getSnapshot().filter).toMatchObject({ tags: ["parking"], query: "rome" });
+  });
+
   it("clears only the hover it is told about", () => {
     const store = createMaplace({ locations });
     const actions = listActionsFor(store, vi.fn());

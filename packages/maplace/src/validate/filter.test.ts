@@ -14,7 +14,7 @@ describe("filterFrom", () => {
     expect(filterFrom(undefined, filter)).toBeUndefined();
   });
 
-  it("accepts a list of groups, an object of groups and tags, or undefined", () => {
+  it("accepts a list of groups, an object of groups, tags and a query, or undefined", () => {
     expect(() => filterFrom(["North", "Centre"], filter)).not.toThrow();
     expect(() => filterFrom([], filter)).not.toThrow();
     expect(() => filterFrom({ groups: ["North"], tags: ["parking"] }, filter)).not.toThrow();
@@ -24,7 +24,7 @@ describe("filterFrom", () => {
 
   it("rejects something that is neither a list nor an object", () => {
     expect(() => filterFrom("North" as never, filter)).toThrow(
-      /^setFilter: filter must be a list of groups, or an object of groups and tags, got "North"$/,
+      /^setFilter: filter must be a list of groups, or an object of groups, tags and a query, got "North"$/,
     );
     expect(() => filterFrom(null as never, filter)).toThrow(/^setFilter: filter must be /);
   });
@@ -45,6 +45,18 @@ describe("filterFrom", () => {
     expect(() => filterFrom({ tags: ["parking", 2] } as never, filter)).toThrow(
       /filter\.tags\[1\] must be a string, got 2/,
     );
+  });
+
+  it("names a bad query", () => {
+    expect(() => filterFrom({ query: 2 } as never, filter)).toThrow(
+      /filter\.query must be a string, got 2/,
+    );
+  });
+
+  it("trims a query, and leaves out a blank one", () => {
+    expect(filterFrom({ query: " rome " }, filter)).toEqual({ query: "rome" });
+    expect(filterFrom({ query: " " }, filter)).toBeUndefined();
+    expect(filterFrom({ query: "", tags: ["parking"] }, filter)).toEqual({ tags: ["parking"] });
   });
 
   it("rejects an unknown key, which would otherwise show everything", () => {

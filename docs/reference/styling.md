@@ -62,7 +62,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-map-pane` | Inside `<maplace-map>`, the element the map is drawn in |
 | `maplace-placed-list` | The list `<maplace-map>` places beside the map or on it |
 | `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
-| `maplace-list` | With a heading or `scope`, the block holding them and the entries |
+| `maplace-list` | With a heading, `scope` or `searchLabel`, the block holding them and the entries |
 | `maplace-list-heading` | That heading |
 | `maplace-area-switch` | The switch of a list with `scope`: a group of two buttons, the one in use `[aria-pressed=true]` |
 | `maplace-show-all` | The switch's "All" button |
@@ -70,6 +70,8 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-empty-area` | The status of a list with `scope`, empty but over an empty area, when it says so |
 | `maplace-listbox` | The list of entries |
 | `maplace-group` | A group of entries |
+| `maplace-search` | The search box (`searchLabel`) |
+| `maplace-search-status` | The box's status: how many are found, or that none is; empty with no query |
 | `maplace-group-heading` | A group's heading, with its count in the same text (`groupCounts`) |
 | `maplace-option` | A location's entry |
 | `maplace-fit-all` | The entry that fits all locations (`fitAllLabel`) |

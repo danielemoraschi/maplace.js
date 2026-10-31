@@ -34,6 +34,7 @@ export const LOCATION_FIELDS = {
     content: true,
     html: true,
     group: true,
+    searchText: true,
     tags: true,
     zoom: true,
     visible: true,
@@ -136,5 +137,8 @@ export const STORE_NAMES = {
     areaOnlyLabel: true,
     showAllLabel: true,
     emptyAreaLabel: true,
+    searchLabel: true,
+    noMatchesLabel: true,
+    matchesLabel: true,
   }),
 } as const;

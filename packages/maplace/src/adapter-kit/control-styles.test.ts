@@ -10,6 +10,13 @@ describe("SHARED_CONTROL_STYLES", () => {
     expect(selectors.filter((selector) => !weighsNothing(selector))).toEqual([]);
   });
 
+  it("sizes a search box on a touch screen after the panel's font, so a phone doesn't zoom on focus", () => {
+    const font = SHARED_CONTROL_STYLES.indexOf("{font:inherit}");
+    const touch = SHARED_CONTROL_STYLES.indexOf("@media (pointer:coarse)");
+    expect(touch).toBeGreaterThan(font);
+    expect(SHARED_CONTROL_STYLES.slice(touch)).toMatch(/\[type=search\][^{]*\{font-size:16px\}\}/);
+  });
+
   it("styles every provider's panel by the class they share, and by no provider's own", () => {
     const selectors = selectorsOf(SHARED_CONTROL_STYLES);
     const providers = /maplibregl|\[data-color-scheme|maplace-google-map/;

@@ -19,6 +19,13 @@ describe("locationFromAttributes", () => {
     expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("tags");
   });
 
+  it("reads search-text", () => {
+    const location = locationFromAttributes(
+      element({ "location-id": "a", "search-text": "pasta" }),
+    );
+    expect(location.searchText).toBe("pasta");
+  });
+
   it("reads a marker, leaving out what isn't written", () => {
     const marker = element({ "location-id": "rome", lat: "41.9", lng: "12.5", title: "Rome" });
     expect(locationFromAttributes(marker)).toEqual({

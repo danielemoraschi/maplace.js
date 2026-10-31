@@ -43,6 +43,8 @@ interface LocationBase<Data> {
   readonly group?: string | undefined;
   /** What `setFilter` also filters on, as many as it has: "parking", "open-late". */
   readonly tags?: readonly string[] | undefined;
+  /** What a filter's `query` also looks in, beside the name and group: an address, say. */
+  readonly searchText?: string | undefined;
   /**
    * The zoom selecting it shows it at, centred where its popup points (a shape too, instead of
    * being fitted); a select's own `zoom` wins. Zooms as in `Viewport`.

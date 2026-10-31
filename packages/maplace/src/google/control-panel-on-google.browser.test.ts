@@ -35,6 +35,19 @@ async function listOnGoogle({ colorScheme, count, ...options }: ListSetting = {}
 describeWithMaps("controls on a Google map", () => {
   afterEach(() => document.body.replaceChildren());
 
+  it("types in a search box without zooming the map", async () => {
+    const maplace = createMaplace({ locations: places(5) });
+    const list = createListView(maplace, { searchLabel: "Find" });
+    await listMountedOnGoogle({ maplace, list });
+    const zoom = maplace.getSnapshot().viewport?.zoom;
+    const box = queried(list.element, "input") as HTMLInputElement;
+    box.focus();
+    await userEvent.keyboard("+-=");
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(box.value).toBe("+-=");
+    expect(maplace.getSnapshot().viewport?.zoom).toBe(zoom);
+  });
+
   it("puts a list on a light map in a panel like Google's own, at 13px, on a dark page", async () => {
     darkPage();
     const { container, panel, view } = await listOnGoogle({ heading: "Choose a location:" });

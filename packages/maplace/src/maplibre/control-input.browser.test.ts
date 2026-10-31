@@ -42,6 +42,16 @@ async function listOnMap(options: ListViewOptions = {}) {
 const tabInto = (list: HTMLElement) => tabUntil(() => list.contains(document.activeElement));
 
 describe("input in a panel on a MapLibre map", () => {
+  it("types in a search box without moving or zooming the map", async () => {
+    const { map, list } = await listOnMap({ searchLabel: "Find" });
+    const before = cameraOf(map);
+    list.element.querySelector("input")?.focus();
+    await userEvent.keyboard("+-=");
+    await wait(QUIET_MS);
+    expect(list.element.querySelector("input")?.value).toBe("+-=");
+    expect(cameraOf(map)).toEqual(before);
+  });
+
   it("is reached with Tab, and its keys never move or zoom the map", async () => {
     const { map, list } = await listOnMap();
     const before = cameraOf(map);

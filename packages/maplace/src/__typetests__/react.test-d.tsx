@@ -18,6 +18,7 @@ export const filters = (
   <>
     <MaplaceProvider locations={shops} filter={["North"]} />
     <MaplaceProvider locations={shops} filter={{ groups: ["North"], tags: ["parking"] }} />
+    <MaplaceProvider locations={shops} filter={{ query: "rome" }} />
     {/* @ts-expect-error a filter's fields are groups and tags */}
     <MaplaceProvider locations={shops} filter={{ tag: ["parking"] }} />
   </>
@@ -72,6 +73,9 @@ export const staticContent = <LocationList>{"Shops"}</LocationList>;
 export const headed = <LocationList heading="Choose a location:" />;
 export const onTheMap = <LocationList position="top-right" />;
 export const counted = <LocationList groupCounts />;
+export const searched = (
+  <LocationList searchLabel="Find" noMatchesLabel="None" matchesLabel="Hits" />
+);
 export const scoped = (
   <LocationList
     scope="viewport"

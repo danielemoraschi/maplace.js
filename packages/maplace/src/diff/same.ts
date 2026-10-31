@@ -23,13 +23,15 @@ export function sameOptional<T>(
   return a === undefined || b === undefined ? a === b : same(a, b);
 }
 
-/** The same groups and tags in the same order, or both no filter. */
+/** The same groups and tags in the same order and the same query, or both no filter. */
 export function sameFilter(a: LocationFilter | undefined, b: LocationFilter | undefined): boolean {
   return sameOptional(
     a,
     b,
     (x, y) =>
-      sameOptional(x.groups, y.groups, sameItems) && sameOptional(x.tags, y.tags, sameItems),
+      sameOptional(x.groups, y.groups, sameItems) &&
+      sameOptional(x.tags, y.tags, sameItems) &&
+      x.query === y.query,
   );
 }
 

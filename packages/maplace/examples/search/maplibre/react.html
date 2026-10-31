@@ -1,0 +1,14 @@
+<!doctype html>
+<!-- The page react.tsx renders into: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #search-maplibre-react-root .map-and-list { display: flex; height: 24rem; }
+  #search-maplibre-react-root .map { flex: 1 1 auto; min-width: 0; }
+  #search-maplibre-react-root .maplace-list { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size as the places narrow. */
+  @media (width < 40rem) {
+    #search-maplibre-react-root .map-and-list { flex-direction: column; height: 36rem; }
+    #search-maplibre-react-root .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="search-maplibre-react-root"></div>
+<script type="module" src="./react.tsx"></script>

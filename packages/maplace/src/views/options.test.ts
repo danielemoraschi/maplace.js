@@ -24,6 +24,15 @@ describe("checkListViewOptions", () => {
     expect(check(all)).not.toThrow();
   });
 
+  it("takes the search labels, refusing a blank one and the box on a select", () => {
+    const labels = { searchLabel: "Find", noMatchesLabel: "None", matchesLabel: "Found" };
+    expect(check(labels)).not.toThrow();
+    expect(check({ searchLabel: " " })).toThrow(/searchLabel must be a non-blank string/);
+    expect(check({ noMatchesLabel: " " })).toThrow(/noMatchesLabel must be a non-blank string/);
+    expect(check({ matchesLabel: " " })).toThrow(/matchesLabel must be a non-blank string/);
+    expect(check({ as: "select", searchLabel: "Find" })).toThrow(/searchLabel needs as: 'list'/);
+  });
+
   it("refuses a groupCounts that isn't a boolean", () => {
     expect(check({ groupCounts: "yes" })).toThrow(/groupCounts must be/);
   });

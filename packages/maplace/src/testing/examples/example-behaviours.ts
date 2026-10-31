@@ -10,6 +10,7 @@ import { polygon } from "./behaviours/polygon";
 import { polyline } from "./behaviours/polyline";
 import type { ExampleBehaviour } from "./behaviours/reading";
 import { route } from "./behaviours/route";
+import { search } from "./behaviours/search";
 import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
 import { tags } from "./behaviours/tags";
@@ -24,6 +25,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   circles,
   menu,
   tabs,
+  search,
   tags,
   polyline,
   route,

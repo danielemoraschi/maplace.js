@@ -8,6 +8,7 @@ import {
   LISTBOX_CLASS,
   OPTION_CLASS,
 } from "./listbox-nodes";
+import { SEARCH_CLASS, SEARCH_STATUS_CLASS } from "./search-box";
 
 /** Both kinds of entry: a location's option, and "fit all". */
 const ENTRY = `:is(.${OPTION_CLASS},.${FIT_ALL_CLASS})`;
@@ -28,10 +29,10 @@ const SWITCH_LINE = `1px solid ${LINE}`;
 /**
  * The listbox as a column of buttons, on a light page or a dark one: its colours are mixed from
  * the text's own (`currentColor`). Every selector is in `:where()`, so any rule of the page wins;
- * the native `<select>` keeps the browser's look. A heading, the area switch (a segmented control:
- * two joined buttons, the pressed one filled like a selected entry) and the empty-area status
- * (room only while it says something, wrapping within the list's width rather than widening it)
- * stay in view over entries that scroll; a `display` is set only on what isn't `hidden`, so
+ * the native `<select>` keeps the browser's look. A heading, the search box and its status, the
+ * area switch (a segmented control: two joined buttons, the pressed one filled like a selected
+ * entry) and the empty-area status (room only while it says something, wrapping within the
+ * list's width rather than widening it) stay in view over entries that scroll; a `display` is set only on what isn't `hidden`, so
  * `hidden` holds. They apply wherever the list is (on the map, beside or under it, in a container
  * of the page's); all of it turns off inside the opt-out (`unstyled.ts`).
  */
@@ -45,7 +46,10 @@ ${outsideUnstyled(SWITCH_BUTTON)}{flex:1 1 0;white-space:nowrap;padding:.375rem 
 ${outsideUnstyled(`${SWITCH_BUTTON}:hover`)}{background:color-mix(in srgb,currentColor 8%,transparent)}
 ${outsideUnstyled(`${SWITCH_BUTTON}[aria-pressed=true]`)}{background:color-mix(in srgb,currentColor 16%,transparent)}
 ${outsideUnstyled(`${SWITCH_BUTTON}:focus-visible`)}{outline:2px solid currentColor;outline-offset:-2px}
-${outsideUnstyled(`.${EMPTY_AREA_CLASS}:not(:empty)`)}{flex:none;padding:.5rem 1rem;opacity:.7;contain:inline-size}
+${outsideUnstyled(`.${SEARCH_CLASS}`)}{flex:none;box-sizing:border-box;contain:inline-size;margin:.25rem;padding:.375rem .5rem;border:${SWITCH_LINE};border-radius:.375rem;background:none;color:inherit;font:inherit}
+@media (pointer:coarse){${outsideUnstyled(`.${SEARCH_CLASS}`)}{font-size:16px}}
+${outsideUnstyled(`.${SEARCH_CLASS}:focus-visible`)}{outline:2px solid currentColor;outline-offset:-2px}
+${outsideUnstyled(`:is(.${EMPTY_AREA_CLASS},.${SEARCH_STATUS_CLASS}):not(:empty)`)}{flex:none;padding:.5rem 1rem;opacity:.7;contain:inline-size}
 ${outsideUnstyled(`.${GROUP_CLASS}`)}{padding-top:.25rem}
 ${outsideUnstyled(`.${HEADING_CLASS}`)}{padding:.5rem .75rem .25rem;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;opacity:.7}
 ${outsideUnstyled(ENTRY)}{display:block;padding:.5rem .75rem;border-radius:.375rem;cursor:pointer}

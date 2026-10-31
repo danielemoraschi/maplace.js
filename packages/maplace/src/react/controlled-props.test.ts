@@ -98,6 +98,16 @@ describe("a controlled selectedId", () => {
     expect(store.getSnapshot().selectedId).toBe("north");
   });
 
+  it("selects an id a query hid at the next render, not when the query clears", async () => {
+    const { store, render } = await boundStore(NORTH);
+    store.setFilter({ query: "south" });
+    expect(store.getSnapshot().selectedId).toBeUndefined();
+    store.setFilter(undefined);
+    expect(store.getSnapshot().selectedId).toBeUndefined();
+    render(NORTH);
+    expect(store.getSnapshot().selectedId).toBe("north");
+  });
+
   it("can't become uncontrolled", async () => {
     const { render } = await boundStore(NORTH);
     expect(() => render({ locations: TOWNS })).toThrow(
@@ -180,6 +190,22 @@ describe("locations, filter and route props", () => {
     expect(adapter.calls).toHaveLength(calls);
     render(props(["late"]));
     expect(store.getSnapshot().filter).toEqual({ tags: ["late"] });
+  });
+
+  it("keep a query typed in the box through a render, and replace it when the prop changes", async () => {
+    const { store, render } = await boundStore({ locations: TOWNS, filter: { tags: ["a"] } });
+    store.setFilter({ tags: ["a"], query: "north" });
+    render({ locations: TOWNS, filter: { tags: ["a"] } });
+    expect(store.getSnapshot().filter?.query).toBe("north");
+    render({ locations: TOWNS, filter: { tags: ["b"] } });
+    expect(store.getSnapshot().filter).toEqual({ tags: ["b"] });
+  });
+
+  it("apply a query by its value, a fresh object of the same one costing nothing", async () => {
+    const { store, render } = await boundStore({ locations: TOWNS, filter: { query: "north" } });
+    const before = store.getSnapshot().filter;
+    render({ locations: TOWNS, filter: { query: "north" } });
+    expect(store.getSnapshot().filter).toBe(before);
   });
 
   it("start with a selection the first filter of tags shows, and without one it hides", () => {

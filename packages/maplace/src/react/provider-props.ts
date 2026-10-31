@@ -20,7 +20,11 @@ export type MaplaceEventProps<Data = unknown> = {
  * `locations` is.
  */
 export type MaplaceControlledProps = Partial<Pick<Snapshot, "selectedId" | "route">> & {
-  /** What `setFilter` takes: a list of groups, or `{ groups, tags }`. */
+  /**
+   * What `setFilter` takes: a list of groups, or `{ groups, tags, query }`. Like `setFilter` it
+   * replaces the whole filter, so a change clears what a search box typed: with a box, leave it out
+   * and have a child call `setFilter` from `useMaplace`, spreading the snapshot's filter.
+   */
   readonly filter?: FilterRequest;
 };
 

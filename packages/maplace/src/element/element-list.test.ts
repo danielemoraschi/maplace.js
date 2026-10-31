@@ -150,6 +150,32 @@ describe("listFromAttributes with a list view defined by name", () => {
     }
   });
 
+  it("passes the search labels, and treats them as list attributes", () => {
+    const view = definedView();
+    const host = elementWith({
+      list: view.name,
+      "search-label": "Find",
+      "no-matches-label": "None",
+      "matches-label": "Found",
+    });
+    listFromAttributes(host, createMaplace());
+    expect(view.given.setup?.options).toMatchObject({
+      searchLabel: "Find",
+      noMatchesLabel: "None",
+      matchesLabel: "Found",
+    });
+    for (const name of ["search-label", "no-matches-label", "matches-label"]) {
+      expect(isListAttribute(name)).toBe(true);
+    }
+  });
+
+  it("refuses search-label with list='select', naming it", () => {
+    const host = elementWith({ list: "select", "search-label": "Find" });
+    expect(() => listFromAttributes(host, createMaplace())).toThrow(
+      expect.objectContaining({ code: "invalid-input", field: "search-label" }),
+    );
+  });
+
   it.each([
     ["", true],
     ["true", true],

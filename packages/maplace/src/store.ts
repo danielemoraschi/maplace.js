@@ -17,7 +17,7 @@ export interface Snapshot<Data = unknown> {
   readonly locations: readonly Location<Data>[];
   readonly selectedId: string | undefined;
   readonly hoveredId: string | undefined;
-  /** The groups and tags shown; undefined shows everything. */
+  /** The groups, tags and query shown; undefined shows everything. */
   readonly filter: LocationFilter | undefined;
   /** Last requested view. */
   readonly view: View;
@@ -53,10 +53,12 @@ export interface Maplace<Data = unknown> {
    */
   hover(id: string | undefined): void;
   /**
-   * Shows only what is in any of these groups (a list, or `{ groups }`) and has all of these tags
-   * (`{ tags }`), both when both are given; locations without a group, or without tags, hide while
-   * those are asked for. An empty list of tags asks for nothing; an empty list of groups, in either
-   * form, shows nothing. Hiding the selected location deselects it.
+   * Shows only what is in any of these groups (a list, or `{ groups }`), has all of these tags
+   * (`{ tags }`) and every word of this `{ query }`, ignoring case and accents, all that are given;
+   * locations without a group, or without tags, hide while those are asked for. It replaces the
+   * whole filter, so spread `getSnapshot().filter` to change one part. An empty list of tags and a
+   * blank query ask for nothing; an empty list of groups, in either form, shows nothing. Hiding the
+   * selected location deselects it.
    */
   setFilter(filter: FilterRequest): void;
   fitAll(options?: FitOptions): void;

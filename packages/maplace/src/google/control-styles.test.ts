@@ -38,7 +38,7 @@ describe("CONTROL_STYLES", () => {
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(CONTROL_STYLES);
     const lookAndHeight = Array.from(sheet.cssRules as Iterable<CSSStyleRule>)
-      .filter((rule) => /box-shadow|max-height/.test(rule.style.cssText))
+      .filter((rule) => /box-shadow|max-height/.test(rule.cssText))
       .map((rule) => rule.selectorText);
     expect(lookAndHeight.length).toBeGreaterThan(0);
     expect(

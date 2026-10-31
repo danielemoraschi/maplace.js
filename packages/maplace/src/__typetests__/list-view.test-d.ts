@@ -24,6 +24,9 @@ createListView(shop, {
 });
 
 createListView(shop, { groupCounts: true });
+createListView(shop, { searchLabel: "Find", noMatchesLabel: "None", matchesLabel: "Found" });
+// @ts-expect-error the box is named by text
+createListView(shop, { searchLabel: true });
 // @ts-expect-error groupCounts is on or off
 createListView(shop, { groupCounts: "yes" });
 

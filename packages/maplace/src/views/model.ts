@@ -1,6 +1,8 @@
 import type { Location } from "../location";
 import { type FilteredLocations, isListed } from "../location-state";
 
+export { labelOf } from "../location-state";
+
 /** Locations under one group heading, or none (`heading` undefined). */
 export interface ListSection<Data = unknown> {
   readonly heading: string | undefined;
@@ -52,11 +54,6 @@ export function listedEntries<Data>(
   return (filtered.locations as readonly Location<Data>[]).filter(
     (location) => isListed(location, filtered.filter) && (kept?.(location) ?? true),
   );
-}
-
-/** What an entry is called: its title if it has text, else its id. */
-export function labelOf(location: Location): string {
-  return location.title?.trim() ? location.title : location.id;
 }
 
 /** Default: on when any location, shown or not, has a group, so headings don't flicker. */

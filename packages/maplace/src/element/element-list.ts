@@ -18,6 +18,9 @@ export const LIST_ATTRIBUTES = [
   "area-only-label",
   "show-all-label",
   "empty-area-label",
+  "search-label",
+  "no-matches-label",
+  "matches-label",
 ] as const;
 
 const LIST_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(LIST_ATTRIBUTES);
@@ -84,6 +87,9 @@ function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
     areaOnlyLabel: textOf(host, "area-only-label"),
     showAllLabel: textOf(host, "show-all-label"),
     emptyAreaLabel: textOf(host, "empty-area-label"),
+    searchLabel: searchLabel(host, name),
+    noMatchesLabel: textOf(host, "no-matches-label"),
+    matchesLabel: textOf(host, "matches-label"),
   };
 }
 
@@ -101,6 +107,17 @@ function groupCounts(host: HTMLElement): boolean | undefined {
   throw elementMisuse(`group-counts must be true or false, got "${value}"`, {
     field: "group-counts",
   });
+}
+
+/** `search-label`, for a list with room for its box. */
+function searchLabel(host: HTMLElement, name: string): string | undefined {
+  const label = textOf(host, "search-label");
+  if (label !== undefined && name === "select") {
+    throw elementMisuse('search-label needs a list: list="select" is a native select', {
+      field: "search-label",
+    });
+  }
+  return label;
 }
 
 /** Beside the map unless a corner is named. */

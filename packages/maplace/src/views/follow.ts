@@ -1,8 +1,10 @@
 import type { Location } from "../location";
+import { isListed } from "../location-state";
 import type { Maplace, Snapshot } from "../store";
 import type { Viewport } from "../viewport";
 import type { AreaSwitch } from "./area-switch";
 import { type ListRules, listedEntries, structureOf } from "./model";
+import type { SearchBox, SearchFound } from "./search-box";
 import type { ListVariant } from "./variant";
 import { type AreaMode, inViewOf, scopeIn } from "./viewport-scope";
 
@@ -12,6 +14,8 @@ export interface Following<Data> {
   readonly rules: ListRules;
   /** With `scope`: the switch between every location and those in the map's view. */
   readonly areaSwitch?: AreaSwitch | undefined;
+  /** With `searchLabel`: the box, which follows the store's query and says what it found. */
+  readonly searchBox?: SearchBox | undefined;
 }
 
 /**
@@ -22,25 +26,26 @@ export interface Following<Data> {
  */
 export function follow<Data>(
   maplace: Maplace<Data>,
-  { variant, rules, areaSwitch }: Following<Data>,
+  { variant, rules, areaSwitch, searchBox }: Following<Data>,
 ): () => void {
   let shown: Snapshot<Data> | undefined;
   let mode: AreaMode = "all";
   let scope: Viewport | undefined;
-  let listing: readonly Location<Data>[] = [];
   function sync(): void {
     const snapshot = maplace.getSnapshot();
     const next = scopeIn(mode, scope, snapshot.viewport);
     if (next !== scope || structureChanged(shown, snapshot)) {
       scope = next;
-      listing = listedEntries(snapshot, inViewOf(scope));
+      const listing = listedEntries<Data>(snapshot, inViewOf(scope));
       variant.renderStructure(structureOf(listing, snapshot.locations, rules));
+      const found = searchBox && foundFor(snapshot, listing);
+      searchBox?.show(snapshot.filter?.query, found);
+      areaSwitch?.showEmptyArea(scope !== undefined && listing.length === 0 && found !== "nowhere");
     }
     if (stateChanged(shown, snapshot)) {
       variant.renderState({ selectedId: snapshot.selectedId, hoveredId: snapshot.hoveredId });
     }
     shown = snapshot;
-    areaSwitch?.showEmptyArea(scope !== undefined && listing.length === 0);
   }
   let unsubscribe: () => void;
   try {
@@ -59,6 +64,15 @@ export function follow<Data>(
     stopChoosing?.();
     unsubscribe();
   };
+}
+
+/** What a query found: how many are listed, or "nowhere"; nothing to say when a scope hides it all. */
+function foundFor(snapshot: Snapshot, listing: readonly Location[]): SearchFound {
+  if (snapshot.filter?.query === undefined) return undefined;
+  if (listing.length > 0) return listing.length;
+  return snapshot.locations.some((location) => isListed(location, snapshot.filter))
+    ? undefined
+    : "nowhere";
 }
 
 /** Whether the list shows other entries: its locations or filter changed. */

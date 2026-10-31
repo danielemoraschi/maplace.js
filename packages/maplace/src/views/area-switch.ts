@@ -28,7 +28,7 @@ export interface AreaSwitchParts extends AreaSwitch {
   readonly group: HTMLElement;
   readonly status: HTMLElement;
   /** Puts focus on the button pressed. */
-  focusPressed(): void;
+  focus(): void;
 }
 
 /**
@@ -69,7 +69,7 @@ export function createAreaSwitch(labels: AreaSwitchLabels): AreaSwitchParts {
       }
       return () => listening.abort();
     },
-    focusPressed() {
+    focus() {
       buttons.get(pressed)?.focus({ preventScroll: true });
     },
     showEmptyArea(empty) {

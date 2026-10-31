@@ -9,9 +9,11 @@ export interface ListActions {
   hover(id: string): void;
   /** Clears the hover only if it is still `id`, so a view never clears the map's or another's. */
   unhover(id: string): void;
+  /** Sets the filter's query, keeping the rest of what the page asked for. */
+  search(text: string): void;
 }
 
-type ListStore = Pick<Maplace, "select" | "fitAll" | "hover" | "getSnapshot">;
+type ListStore = Pick<Maplace, "select" | "fitAll" | "hover" | "setFilter" | "getSnapshot">;
 
 /**
  * Store commands for one view; `onStoreGone` hears, once, that the store was destroyed under it.
@@ -46,5 +48,7 @@ export function listActionsFor(
       whileStoreLives(() => {
         if (store.getSnapshot().hoveredId === id) store.hover(undefined);
       }),
+    search: (text) =>
+      whileStoreLives(() => store.setFilter({ ...store.getSnapshot().filter, query: text })),
   };
 }

@@ -49,6 +49,7 @@ const COMMON_CHECKS = {
   html: optional(checkString),
   group: optional(checkString),
   tags: optional(checkTags),
+  searchText: optional(checkString),
   visible: optional(checkBoolean),
   listed: optional(checkBoolean),
   zoom: optional(checkZoom),

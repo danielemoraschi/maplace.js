@@ -79,6 +79,9 @@ function useListView<Data>(
     areaOnlyLabel,
     showAllLabel,
     emptyAreaLabel,
+    searchLabel,
+    noMatchesLabel,
+    matchesLabel,
     position,
   }: LocationListProps<Data>,
   portals: EntryPortals<Data> | undefined,
@@ -100,6 +103,9 @@ function useListView<Data>(
       areaOnlyLabel,
       showAllLabel,
       emptyAreaLabel,
+      searchLabel,
+      noMatchesLabel,
+      matchesLabel,
       render,
     } satisfies Record<keyof ListViewOptions<Data>, unknown>;
     const view = createListView(store, listOptions);
@@ -124,6 +130,9 @@ function useListView<Data>(
     areaOnlyLabel,
     showAllLabel,
     emptyAreaLabel,
+    searchLabel,
+    noMatchesLabel,
+    matchesLabel,
     position,
     mountControl,
   ]);

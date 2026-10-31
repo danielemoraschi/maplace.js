@@ -34,6 +34,10 @@ import {
   OPTION_CLASS,
 } from "../../../../packages/maplace/src/views/listbox-nodes.ts";
 import { SELECT_CLASS } from "../../../../packages/maplace/src/views/native-select.ts";
+import {
+  SEARCH_CLASS,
+  SEARCH_STATUS_CLASS,
+} from "../../../../packages/maplace/src/views/search-box.ts";
 import { PACKAGE_ENTRIES, readRootFile } from "../../../../scripts/build/package.ts";
 import {
   GOOGLE_PROVIDER_ATTRIBUTES,
@@ -62,6 +66,8 @@ export const STYLING_CLASSES = [
   LIST_VIEW_CLASS,
   LIST_CLASS,
   LIST_HEADING_CLASS,
+  SEARCH_CLASS,
+  SEARCH_STATUS_CLASS,
   AREA_SWITCH_CLASS,
   SHOW_ALL_CLASS,
   AREA_ONLY_CLASS,

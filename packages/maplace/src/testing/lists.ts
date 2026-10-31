@@ -14,6 +14,7 @@ export function recordingActions(): ListActions & { readonly calls: string[] } {
     showAll: record("showAll"),
     hover: record("hover"),
     unhover: record("unhover"),
+    search: record("search"),
   };
 }
 

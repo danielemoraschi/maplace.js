@@ -53,6 +53,13 @@ describe("validateLocation: valid locations", () => {
   });
 });
 
+describe("validateLocation: searchText", () => {
+  it("names a bad searchText", () => {
+    expect(check({ id: "m", ...point, searchText: 2 })).toThrow(/searchText must be a string/);
+    expect(check({ id: "m", ...point, searchText: "pasta" })).not.toThrow();
+  });
+});
+
 describe("validateLocation: tags", () => {
   it("names a location's bad tags", () => {
     expect(check({ id: "m", ...point, tags: "parking" })).toThrow(/tags must be an array of tags/);

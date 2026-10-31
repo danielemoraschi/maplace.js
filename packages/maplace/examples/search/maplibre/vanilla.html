@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #search-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #search-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #search-maplibre-vanilla-list { display: contents; }
+  #search-maplibre-vanilla-list .maplace-list { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size as the places narrow. */
+  @media (width < 40rem) {
+    #search-maplibre-vanilla-map-and-list { flex-direction: column; height: 36rem; }
+    #search-maplibre-vanilla-list .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="search-maplibre-vanilla-map-and-list">
+  <div id="search-maplibre-vanilla-map"></div>
+  <div id="search-maplibre-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

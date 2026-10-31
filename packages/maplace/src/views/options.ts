@@ -26,13 +26,16 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     areaOnlyLabel: optional(checkNonBlankString),
     showAllLabel: optional(checkNonBlankString),
     emptyAreaLabel: optional(checkNonBlankString),
+    searchLabel: optional(checkNonBlankString),
+    noMatchesLabel: optional(checkNonBlankString),
+    matchesLabel: optional(checkNonBlankString),
   },
   unknown: "is not a list view option",
 });
 
 /**
- * `createListView` options; `render` or `scope` with `as: 'select'`, and `groupCounts` with
- * `groupHeadings: false`, are refused, never ignored.
+ * `createListView` options; `render`, `scope` or `searchLabel` with `as: 'select'`, and
+ * `groupCounts` with `groupHeadings: false`, are refused, never ignored.
  */
 export function checkListViewOptions(
   value: unknown,
@@ -52,5 +55,8 @@ function refuseForSelect(value: ListViewOptions, field: Field): void {
   }
   if (value.scope !== undefined) {
     reject(field, "scope needs as: 'list'; a native select has no room for its button");
+  }
+  if (value.searchLabel !== undefined) {
+    reject(field, "searchLabel needs as: 'list'; a native select has no room for its box");
   }
 }

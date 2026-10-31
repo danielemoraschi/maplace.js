@@ -40,6 +40,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `html` | `string` | Untrusted HTML for the popup instead of `content`, rendered only through the store's `sanitize` | |
 | `group` | `string` | Grouping key for list headings and `setFilter`: one per location | `group` |
 | `tags` | `string[]` | What [`setFilter`](store.md#methods) also filters on, as many as it has; never a heading | `tags`, split on spaces |
+| `searchText` | `string` | What a [`setFilter`](store.md#methods) query also looks in, beside the name and group: an address, say; `data` isn't searched | `search-text` |
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
 | `visible` | `boolean` | `false` keeps it in the data but not drawn, listed or selected. Default `true` | |
 | `listed` | `boolean` | `false` leaves it out of every list view; the map still draws it and it is selected there. Default `true` | `listed` |

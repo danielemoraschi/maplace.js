@@ -13,9 +13,10 @@ export function setFilter<Data>(snapshot: Snapshot<Data>, request: FilterRequest
   return andThen(snapshot, patchOnly({ filter: asked && frozenCopy(asked) }), clearHidden);
 }
 
-function frozenCopy({ groups, tags }: LocationFilter): LocationFilter {
+function frozenCopy({ groups, tags, query }: LocationFilter): LocationFilter {
   return Object.freeze({
     groups: groups && Object.freeze([...groups]),
     tags: tags && Object.freeze([...tags]),
+    query,
   });
 }

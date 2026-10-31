@@ -36,12 +36,12 @@ Makes one store on mount and keeps it as long as it is mounted. `locations` and 
 | `locations` | Required. Applied again when the array changes, never otherwise, so an edit on the map outlives a render |
 | `selectedId` | A [controlled selection](#controlled-selection) |
 | `defaultSelectedId` | The selection at start, when `selectedId` is not controlled |
-| `filter` | What [`setFilter`](store.md#methods) takes: a list of groups, or `{ groups, tags }`; applied when its value changes, so a fresh object of the same value costs nothing |
+| `filter` | What [`setFilter`](store.md#methods) takes: a list of groups, or `{ groups, tags, query }`; applied when its value changes, so a fresh object of the same value costs nothing. It replaces the whole filter, so a change clears what a search box typed: with a box, leave it out and have a child call `useMaplace().setFilter({ ...getSnapshot().filter, tags })` |
 | `route` | The [route](store.md#routes); applied when its value changes, so it is computed, and billed, once per change |
 | `sanitize`, `popup`, `style`, `selectedStyle`, `hoveredStyle`, `cluster`, `view` | The [store's options](store.md#options), read on mount |
 | `children` | What uses the store: `<MaplaceMap>`, `<LocationList>`, your components |
 
-An id in `selectedId` or `defaultSelectedId` not shown yet (locations still loading, or filtered out) waits until it is. A `filter` or `route` that app code sets through the store stands until the prop next changes.
+An id in `selectedId` or `defaultSelectedId` not shown yet (locations still loading, or filtered out) waits until it is; one the filter hid is tried again at the next render, as the provider follows its props only then. A `filter` or `route` that app code sets through the store stands until the prop next changes.
 
 ## Event props
 
@@ -94,6 +94,9 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `areaOnlyLabel` | The label of the switch's "This area"; default "This area" |
 | `showAllLabel` | The label of the switch's "All"; default "All" |
 | `emptyAreaLabel` | What a scoped list says when nothing is in its view; default "No locations in this area" |
+| `searchLabel` | Shows a search box above the entries, named by this; for `as: "list"` only ([List view options](store.md#list-view-options)) |
+| `noMatchesLabel` | What the box's status says when nothing matches; default "No locations match" |
+| `matchesLabel` | What its status says before the count; default "Locations found" |
 | `children` | For `as: "list"`, a function rendering an entry's content: plain content, since the entry itself is the option |
 | `position` | A corner, inside a `<MaplaceMap>`: the list itself goes on the map there while the map is attached, as the element's `list-position`, so its panel hides with it and its entries scroll under its heading. Without a `<MaplaceMap>` it is misuse |
 

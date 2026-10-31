@@ -30,6 +30,7 @@ maplace.select("a", { pan: false, zoom: 3 });
 maplace.setFilter(["North"]);
 maplace.setFilter({ groups: ["North"], tags: ["parking"] });
 maplace.setFilter({ tags: [] });
+maplace.setFilter({ query: "rome", tags: ["parking"] });
 maplace.setFilter(undefined);
 // @ts-expect-error a filter's fields are groups and tags
 maplace.setFilter({ tag: ["parking"] });

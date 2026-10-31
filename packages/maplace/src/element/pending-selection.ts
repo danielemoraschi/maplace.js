@@ -33,7 +33,7 @@ export class PendingSelection {
     const store = this.#store();
     if (store === undefined || this.#selectAddressLocation(store)) return;
     const id = this.#fromAttribute;
-    if (id === undefined) return;
+    if (id === undefined || this.#hiddenByQuery(store, id)) return;
     const selected = this.#misuse.retry("selection", () => {
       store.select(id);
       return true;
@@ -46,6 +46,11 @@ export class PendingSelection {
     this.#fromAttribute = undefined;
     this.#fromAddress = undefined;
     this.#misuse.clear("selection");
+  }
+
+  /** What a visitor typed in the box is no misuse of the page's: `id` waits for the next locations. */
+  #hiddenByQuery(store: Maplace, id: string): boolean {
+    return store.getSnapshot().filter?.query !== undefined && !isShownIn(store, id);
   }
 
   /** Selects the address's location if shown; whether it was. */
