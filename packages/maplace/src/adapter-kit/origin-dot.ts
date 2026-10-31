@@ -5,9 +5,11 @@ import { outsideUnstyled } from "../unstyled";
 /** The class of the dot a map draws at the store's origin. */
 export const ORIGIN_DOT_CLASS = "maplace-origin-dot";
 
+const ORIGIN_DOT_SELECTOR = `.${ORIGIN_DOT_CLASS}`;
+
 /** The dot's look, off inside the opt-out; it takes no input anywhere, so a click reaches the map. */
-const ORIGIN_DOT_STYLES = `:where(.${ORIGIN_DOT_CLASS}){pointer-events:none}
-${outsideUnstyled(`.${ORIGIN_DOT_CLASS}`)}{box-sizing:border-box;width:18px;height:18px;border:3px solid #fff;border-radius:50%;background:#1a73e8;box-shadow:0 0 2px 1px #0006}`;
+const ORIGIN_DOT_STYLES = `:where(${ORIGIN_DOT_SELECTOR}){pointer-events:none}
+${outsideUnstyled(ORIGIN_DOT_SELECTOR)}{box-sizing:border-box;width:18px;height:18px;border:3px solid #fff;border-radius:50%;background:#1a73e8;box-shadow:0 0 2px 1px #0006}`;
 
 /** The dot's element in `document`, its styles adopted there. */
 export function originDotElement(document: Document): HTMLElement {

@@ -106,7 +106,8 @@ export function oneOfAttribute<Value extends string>(
   const value = host.getAttribute(name);
   if (value === null) return undefined;
   if ((allowed as readonly string[]).includes(value)) return value as Value;
-  const problem = `${name} must be ${allowed.map((one) => `"${one}"`).join(" or ")}, got "${value}"`;
+  const choices = allowed.map((one) => JSON.stringify(one)).join(" or ");
+  const problem = `${name} must be ${choices}, got "${value}"`;
   throw elementMisuse(problem, { field: name });
 }
 
