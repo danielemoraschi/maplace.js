@@ -1,4 +1,5 @@
 import type { Drawable } from "../drawable";
+import { createPopupLinks, type PopupLinkSettings, type PopupLinks } from "./popup-links";
 
 /** The class of a popup's content element, which the adapters' popup styles name. */
 export const POPUP_CLASS = "maplace-popup";
@@ -11,17 +12,25 @@ export interface PopupContent {
   readonly element: HTMLElement;
   /** The builder it came from: a location with another one has new content. */
   readonly builtWith: Drawable["renderContent"];
+  /** The links it ends in, if the map has any. */
+  readonly links: PopupLinks | undefined;
 }
 
 /** None when the location has no content or its builder built nothing: no popup opens. */
-export function popupContent(drawable: Drawable, document: Document): PopupContent | undefined {
+export function popupContent(
+  drawable: Drawable,
+  document: Document,
+  linkSettings: PopupLinkSettings,
+): PopupContent | undefined {
   const builtWith = drawable.renderContent;
   const content = builtWith?.();
   if (content === undefined) return undefined;
   const element = document.createElement("div");
   element.className = POPUP_CLASS;
   element.append(content);
-  return { element, builtWith };
+  const links = createPopupLinks(linkSettings, document, drawable.geometry);
+  if (links !== undefined) element.append(links.element);
+  return { element, builtWith, links };
 }
 
 /**

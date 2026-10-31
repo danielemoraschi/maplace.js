@@ -1,4 +1,5 @@
 import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
+import { POPUP_LINKS_RULE } from "../adapter-kit/popup-links";
 import { POPUP_TEXT_RULE } from "../adapter-kit/popup-text";
 import { outsideUnstyled } from "../unstyled";
 
@@ -10,5 +11,6 @@ import { outsideUnstyled } from "../unstyled";
  */
 export const POPUP_STYLES =
   POPUP_TEXT_RULE +
+  POPUP_LINKS_RULE +
   outsideUnstyled(`.maplibregl-popup-content .${POPUP_HEADING_CLASS}`) +
   "{display:block;margin:0 1.25rem .25rem 0;font-weight:600}";

@@ -12,6 +12,8 @@ export const CLICK_POPUPS: ResolvedPopupOptions = {
   maxWidth: undefined,
   offset: [0, 0],
   openOn: "click",
+  openInMapsLabel: undefined,
+  directionsLabel: undefined,
 };
 
 /**

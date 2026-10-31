@@ -6,6 +6,7 @@ import {
   polygonDrawable,
   presented,
   removing,
+  reshaped,
   updating,
   withContent,
 } from "./fixtures";
@@ -16,6 +17,14 @@ const withPopups = [
   withContent(markerDrawable("a"), "Alpha"),
   withContent(markerDrawable("b"), "Beta"),
 ];
+
+/** Both links, in the words the checks read back. */
+const BOTH_LINKS = { openInMapsLabel: "Open it", directionsLabel: "Go there" };
+
+/** Alpha's marker at the point the link checks read back in its URLs. */
+const LINKED = withContent(markerDrawable("a", { lat: 41.9, lng: 12.5 }), "Alpha");
+
+const linksIn = (element: HTMLElement | undefined) => [...(element?.querySelectorAll("a") ?? [])];
 
 /** Alpha's marker with popup content, and `title`. */
 const alphaTitled = (title: string) => withContent(markerDrawable("a", ORIGIN, { title }), "Alpha");
@@ -143,6 +152,38 @@ export function popupChecks(subject: ConformanceSubject): void {
       await probe.settle();
       expect(probe.shownPopup()).toBeUndefined();
       expect(host.reportsOf("reportPopupClose")).toEqual([]);
+    });
+
+    it("gives a popup one link per label after its content, to where it points", async () => {
+      const { adapter, probe } = await mountSubject(subject, BOTH_LINKS);
+      await adapter.apply(adding(LINKED));
+      adapter.present(presented({ selectedId: "a" }));
+      await probe.settle();
+      const links = linksIn(probe.shownPopup()?.element);
+      expect(links.map(({ textContent }) => textContent)).toEqual(["Open it", "Go there"]);
+      for (const link of links) {
+        expect(link.href).toContain("41.900000");
+        expect(link.href).toContain("12.500000");
+        expect([link.target, link.rel]).toEqual(["_blank", "noreferrer"]);
+      }
+      expect(probe.shownPopup()?.element.textContent?.indexOf("Alpha")).toBe(0);
+    });
+
+    it("keeps an open popup's links on its location as it moves, reporting no open again", async () => {
+      const { adapter, probe, host } = await mountSubject(subject, BOTH_LINKS);
+      await adapter.apply(adding(LINKED));
+      adapter.present(presented({ selectedId: "a" }));
+      await probe.settle();
+      const before = linksIn(probe.shownPopup()?.element);
+      await adapter.apply(updating(reshaped(LINKED, { type: "marker", lat: 40, lng: 14 })));
+      await probe.settle();
+      const links = linksIn(probe.shownPopup()?.element);
+      expect(links).toEqual(before);
+      for (const link of links) {
+        expect(link.href).toContain("40.000000");
+        expect(link.href).toContain("14.000000");
+      }
+      expect(host.reportsOf("reportPopupOpen")).toHaveLength(1);
     });
 
     it("opens nothing for a location without content, or whose content built nothing", async () => {

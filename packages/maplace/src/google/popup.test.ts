@@ -66,6 +66,18 @@ const opened = (host: ReturnType<typeof popupsOn>["host"]) =>
   host.reportsOf("reportPopupOpen").map(([id, element]) => [id, element.textContent]);
 
 describe("createPopup", () => {
+  it("sends a popup's links to Google's Maps URLs", () => {
+    const at = withContent(markerDrawable("a", { lat: 41.9, lng: 12.5 }), "Alpha");
+    const labels = { openInMapsLabel: "Open", directionsLabel: "Go" };
+    const popups = popupsOn([at], labels);
+    popups.present({ selectedId: "a" });
+    const links = popups.state.popup?.element.querySelectorAll("a") ?? [];
+    expect([...links].map(({ href }) => href)).toEqual([
+      "https://www.google.com/maps/search/?api=1&query=41.900000%2C12.500000",
+      "https://www.google.com/maps/dir/?api=1&destination=41.900000%2C12.500000",
+    ]);
+  });
+
   it("heads the popup with its location's title, beside the close button", () => {
     const popups = popupsOn([{ ...ALPHA, title: "Alpha town" }, BETA]);
     popups.present({ selectedId: "a" });

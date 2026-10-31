@@ -51,6 +51,13 @@ describe("attach", () => {
     expect(Object.isFrozen(offsetAdapter.mounted?.popup.offset)).toBe(true);
   });
 
+  it("mounts with the popup's link labels", () => {
+    const adapter = createFakeAdapter();
+    const popup = { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" };
+    createMaplace({ popup }).attach(adapter, container());
+    expect(adapter.mounted?.popup).toMatchObject(popup);
+  });
+
   it("mounts in the element a selector matches", () => {
     const element = container();
     element.id = "map";

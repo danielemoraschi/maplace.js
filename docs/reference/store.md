@@ -40,8 +40,12 @@ createGoogleMap("#simple-vanilla-map", {
 | `maxWidth` | `number` | The popup's maximum width, in pixels |
 | `offset` | `[x, y]` | Pixel offset from the anchor. Default `[0, 0]` |
 | `openOn` | `"click" \| "hover"` | What opens it. Default `"click"`; with `"click"`, closing it deselects |
+| `openInMapsLabel` | `string` | Adds a link with these words at the end of a popup, to the location on the provider's maps site: Google Maps on Google, OpenStreetMap on MapLibre |
+| `directionsLabel` | `string` | Adds one to directions to the location, from wherever the site starts |
 
 A popup follows the selection (or the hover, with `openOn: "hover"`). On a shape it points at a centre point: a circle's centre, the centre of a polygon's bounds, halfway along a polyline. A touch hovers no list entry and no DOM marker (every Google marker, and MapLibre's with an icon or `editable`), so with `openOn: "hover"` a tap opens no popup on them; MapLibre's pins and shapes can still be hovered by the mouse events a browser sends after a tap.
+
+Each link goes to the point the popup points at, as coordinates, opens in a new tab and sends no referrer: nothing loads until it is clicked, and no key or billing is involved. They end the element `popupOpen` gives, after the content. A location with no content has no popup, so no link. With `openOn: "hover"` a label is `invalid-input`: a pointer can't reach a link that closes as it leaves. An adapter of your own ([Adapters](#adapters)) draws its own from `popup`.
 
 ## The first view
 

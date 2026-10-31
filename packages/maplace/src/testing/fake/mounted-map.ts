@@ -1,6 +1,13 @@
 import type { AdapterHost, MountContext } from "../../adapter";
+import type { MapsPages } from "../../adapter-kit/popup-links";
 import type { MapState } from "./map-state";
 import { createPopups, type FakePopups } from "./popups";
+
+/** The fake's own maps site: nothing a test could load by accident. */
+const FAKE_MAPS_PAGES: MapsPages = {
+  openInMaps: (lat, lng) => `https://maps.test/open/${lat},${lng}`,
+  directions: (lat, lng) => `https://maps.test/directions/${lat},${lng}`,
+};
 
 /** A mounted fake map whose load wasn't cancelled: whom it reports to, and its popup. */
 export interface LiveMap {
@@ -17,7 +24,13 @@ export interface MountedMap {
 
 export function mountMap(context: MountContext, map: MapState): MountedMap {
   const layer = layerIn(context.container);
-  const popups = createPopups({ map, host: context.host, openOn: context.popup.openOn, layer });
+  const popups = createPopups({
+    map,
+    host: context.host,
+    openOn: context.popup.openOn,
+    layer,
+    links: { options: context.popup, pages: FAKE_MAPS_PAGES },
+  });
   const live: LiveMap = { host: context.host, popups };
   return {
     layer,

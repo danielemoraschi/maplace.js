@@ -6,5 +6,11 @@ export function resolvePopup(options: MaplaceOptions | undefined): ResolvedPopup
   const popup = options?.popup;
   const [x, y] = popup?.offset ?? [0, 0];
   const offset: readonly [number, number] = Object.freeze([x, y]);
-  return Object.freeze({ maxWidth: popup?.maxWidth, offset, openOn: popup?.openOn ?? "click" });
+  return Object.freeze({
+    maxWidth: popup?.maxWidth,
+    offset,
+    openOn: popup?.openOn ?? "click",
+    openInMapsLabel: popup?.openInMapsLabel,
+    directionsLabel: popup?.directionsLabel,
+  });
 }

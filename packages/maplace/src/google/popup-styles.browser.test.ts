@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { POPUP_CLASS, POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
+import { POPUP_LINKS_CLASS } from "../adapter-kit/popup-links";
 import { unstyledPage } from "../testing/unstyled-page";
 import { GOOGLE_POPUP_ATTRIBUTE, POPUP_STYLES } from "./popup-styles";
 
@@ -42,6 +43,28 @@ describe("POPUP_STYLES in a browser", () => {
 
   it("does so through one wrapper too, as React's content sits in its portal's element", () => {
     expect(outerMargins(popupHolding("<div><p>One</p><p>Two</p></div>"))).toEqual(["0px", "0px"]);
+  });
+
+  it("keeps a wrapped first paragraph's margin out of the bubble beside the links", () => {
+    const popup = popupHolding(`<div><p>One</p></div><div class="${POPUP_LINKS_CLASS}"></div>`);
+    expect(getComputedStyle(popup.querySelector("p") as Element).marginTop).toBe("0px");
+  });
+
+  it("keeps the first child's first paragraph's margin out of the bubble, whatever follows", () => {
+    const popup = popupHolding("<div><p>A</p></div><p>B</p>");
+    expect(getComputedStyle(popup.querySelector("p") as Element).marginTop).toBe("0px");
+  });
+
+  it("parts the links' row from the content above it", () => {
+    const popup = popupHolding(`<p>One</p><div class="${POPUP_LINKS_CLASS}"></div>`);
+    const row = popup.querySelector(`.${POPUP_LINKS_CLASS}`) as Element;
+    expect(getComputedStyle(row).marginTop).toBe("8px");
+  });
+
+  it("parts the links' row from plain text content, where the row is the first element", () => {
+    const popup = popupHolding(`One<div class="${POPUP_LINKS_CLASS}"></div>`);
+    const row = popup.querySelector(`.${POPUP_LINKS_CLASS}`) as Element;
+    expect(getComputedStyle(row).marginTop).toBe("8px");
   });
 
   it("turns off inside the opt-out: the page's text colour, no inset", () => {

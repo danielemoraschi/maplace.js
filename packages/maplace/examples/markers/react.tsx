@@ -36,6 +36,8 @@ const cities: Location<City>[] = [
 // Outside the component, so a render of the page around it doesn't render every marker again.
 const popupContent = ({ data }: Location<City>) => (data?.about ? <p>{data.about}</p> : null);
 
+const popup = { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" };
+
 const markerIcon = ({ data }: Location<City>) =>
   data?.starred ? <span className="star">★</span> : null;
 
@@ -53,7 +55,7 @@ function Markers() {
       droppedPin(position, current.length - cities.length + 1),
     ]);
   return (
-    <MaplaceProvider locations={locations} onMapClick={dropPin}>
+    <MaplaceProvider locations={locations} onMapClick={dropPin} popup={popup}>
       <MaplaceMap
         createAdapter={createGoogleAdapter}
         className="map"

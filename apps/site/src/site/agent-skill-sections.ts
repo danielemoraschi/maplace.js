@@ -72,7 +72,7 @@ From npm the page loads Maps JS: pass \`apiKey\` to \`createGoogleMap\`, or load
 function element({ site }: AgentSkillSettings): string {
   return `## The element
 
-One script, no build step. In a bundled app, \`import "maplace/element/google"\` or \`"maplace/element/maplibre"\` defines the same elements instead; on MapLibre, also import \`maplibre-gl/dist/maplibre-gl.css\`.
+In a bundled app, \`import "maplace/element/google"\` or \`"maplace/element/maplibre"\` defines the same elements; on MapLibre, also import \`maplibre-gl/dist/maplibre-gl.css\`.
 
 ${exampleSnippet("quick-start", "page.html")}
 
@@ -106,7 +106,7 @@ The MapLibre script's \`Maplace\` has \`createMapLibreMap\`, called the same way
 function npm(): string {
   return `## npm and a bundler
 
-Each module runs on a page that gives it what it mounts on, and on Google loads Maps JS.
+Each module runs on a page like this one.
 
 ${exampleSnippet("simple", "vanilla.html")}
 

@@ -38,7 +38,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "markers",
         title: "Markers",
         summary:
-          "Three kinds of pin, popups, a list on the map, one place unlisted: click the map to add one.",
+          "Three kinds of pin, popups with directions, a list on the map, one place unlisted: click the map to add one.",
       },
     ],
   },

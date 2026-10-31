@@ -7,6 +7,7 @@ import {
 import { adoptStyles } from "../adopted-styles";
 import type { MapLibreState } from "./map-state";
 import type { MountedMapLibre } from "./mounted-map";
+import { OPENSTREETMAP_PAGES } from "./openstreetmap-pages";
 import { POPUP_STYLES } from "./popup-styles";
 import { createPopupWindow } from "./popup-window";
 
@@ -28,6 +29,7 @@ function startMapLibrePopups(state: MapLibreState, mounted: MountedMapLibre): Po
     openWindow: (events) => createPopupWindow(mounted, events),
     document,
     openOn: mounted.popup.openOn,
+    links: { options: mounted.popup, pages: OPENSTREETMAP_PAGES },
     live: mounted.live,
     onTracked(popup) {
       state.popup = popup;

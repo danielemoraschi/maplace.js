@@ -70,6 +70,20 @@ describe.each(ROOT_MODES)("React content on the map, in $mode", (root) => {
     expect(shown).toHaveBeenCalledOnce();
   });
 
+  it("puts a popup's links after React's content, and popupOpen still waits for it", async () => {
+    const shown = vi.fn();
+    const onPopupOpen = ({ element }: { element: HTMLElement }) => shown(element.textContent);
+    const popup = { openInMapsLabel: "Open", directionsLabel: "Go" };
+    const popupContent = (location: Location) => <p>{location.id}</p>;
+    const map = await renderMap(root, { popupContent }, { onPopupOpen, popup });
+    await inAct(() => map.probe.click("north"));
+    await map.settled();
+    expect(shown.mock.calls[0]?.[0]).toMatch(/^north/);
+    const element = map.probe.shownPopup()?.element;
+    expect(element?.lastElementChild?.className).toBe("maplace-popup-links");
+    expect(element?.querySelector("p")?.textContent).toBe("north");
+  });
+
   it("unmounts a popup's content when it closes, or another location's opens", async () => {
     const mounted = new Set<string>();
     const popupContent = (location: Location) => <Mounted id={location.id} in={mounted} />;

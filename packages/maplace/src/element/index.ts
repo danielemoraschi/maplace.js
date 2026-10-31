@@ -88,6 +88,8 @@ export { defineListView } from "./list-views";
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
  *   of a selection; can't change afterwards.
+ * - `open-in-maps-label`, `directions-label`: a link in each popup with these words, to the
+ *   provider's maps site (a location with no content has no popup); can't change afterwards.
  * - `hold`: stay idle, with no provider request and no list built, until `release()`.
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as
