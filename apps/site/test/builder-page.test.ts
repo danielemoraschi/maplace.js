@@ -1,6 +1,7 @@
 import type { MaplaceMapElement } from "maplace/element";
 import type { Locator, Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { PREVIEW_FIT_PADDING } from "../src/scripts/builder-page.ts";
 import { BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { pageMapState } from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
@@ -19,6 +20,7 @@ async function openBuilder(options: Parameters<typeof site.visitor>[0] = {}) {
   return visit;
 }
 
+const MAPLIBRE_VERSION = (page: Page) => page.locator('[data-provider="maplibre"]');
 const status = (page: Page) => page.locator("[data-builder-status]");
 const code = (page: Page) => page.locator("[data-builder-code]");
 const copyButton = (page: Page) => page.locator("[data-builder-copy]");
@@ -116,6 +118,21 @@ describe("the builder's map", () => {
     await expect.poll(() => contains(map, 39.74, -104.99), ON_MAPLIBRE).toBe(true);
     await context.close();
   }, 60_000);
+
+  it("asks for room around the pins on the first view, defined late, and after a paste", async () => {
+    const { page, context } = await openBuilder();
+    const paddingAsked = () =>
+      shownMap(page).evaluate((element) => {
+        const { view } = (element as MaplaceMapElement).maplace.getSnapshot();
+        return view.kind === "fit-all" ? view.padding : undefined;
+      });
+    await placeholder(page).click();
+    await expect.poll(() => pageMapState(MAPLIBRE_VERSION(page)), ON_MAPLIBRE).toBe("ready");
+    expect(await paddingAsked()).toBe(PREVIEW_FIT_PADDING);
+    await paste(page, "name,lat,lng\nDenver,39.74,-104.99\nBoston,42.36,-71.06");
+    expect(await paddingAsked()).toBe(PREVIEW_FIT_PADDING);
+    await context.close();
+  }, 40_000);
 
   it("on Google asks for Maps JS only after consent and writes the placeholder key, never the site's", async () => {
     const { page, context, mapsJsRequests } = await openBuilder({ google: "stubbed" });

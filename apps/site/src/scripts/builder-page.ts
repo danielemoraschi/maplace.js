@@ -7,6 +7,12 @@ import { type Note, PasteRefused } from "./builder-report.ts";
 import { writeSnippet } from "./builder-snippet.ts";
 import { chosenProvider } from "./version-switch.ts";
 
+/**
+ * Pixels around the preview's locations: clears a pin's height above a point, and the attribution
+ * box, up to about 75 tall in the narrowest frame, below one. The default 40 leaves both on them.
+ */
+export const PREVIEW_FIT_PADDING = 80;
+
 /** A preview map, which may not be defined yet: then it has no `maplace`. */
 type PreviewMap = HTMLElement & {
   locations: unknown;
@@ -109,6 +115,7 @@ export function startBuilder(page: Document): void {
     });
   });
   render();
+  fitWhenDefined(maps);
 }
 
 /** Copies `text`, and what to tell the reader; a page off HTTPS has no clipboard at all. */
@@ -143,10 +150,17 @@ function showPreview(maps: readonly PreviewMap[], conversion: Conversion | undef
 
 /**
  * New locations leave the camera where it is, so a paste would stay on the sample; a map not
- * defined yet has no `maplace`, and its first view fits anyway.
+ * defined yet has no `maplace`, and `fitWhenDefined` gives it its first view.
  */
 function fitPreview(map: PreviewMap, count: number): void {
-  if (count > 0) map.maplace?.fitAll();
+  if (count > 0) map.maplace?.fitAll({ padding: PREVIEW_FIT_PADDING });
+}
+
+/** A map's opening view is the store's own, with the default padding, unless asked for first. */
+function fitWhenDefined(maps: readonly PreviewMap[]): void {
+  void customElements.whenDefined("maplace-map").then(() => {
+    for (const map of maps) map.maplace?.fitAll({ padding: PREVIEW_FIT_PADDING });
+  });
 }
 
 function showNotes(block: HTMLElement, list: HTMLElement, notes: readonly Note[]): void {

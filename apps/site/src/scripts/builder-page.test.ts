@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { startBuilder } from "./builder-page.ts";
+import { PREVIEW_FIT_PADDING, startBuilder } from "./builder-page.ts";
 
 const FIXTURE = `
   <fieldset data-provider-choice>
@@ -103,7 +103,7 @@ describe("startBuilder", () => {
     const fitAll = vi.fn();
     map.maplace = { fitAll };
     paste("lat,lng\n5,6");
-    expect(fitAll).toHaveBeenCalledOnce();
+    expect(fitAll).toHaveBeenCalledExactlyOnceWith({ padding: PREVIEW_FIT_PADDING });
   });
 
   it("writes a note's name as text", () => {
