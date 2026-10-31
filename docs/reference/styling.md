@@ -89,7 +89,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |
 | `maplace-popup` | A popup's content |
 | `maplace-popup-heading` | A popup's heading, its location's title |
-| `maplace-popup-links` | A popup's links (`openInMapsLabel`, `directionsLabel`) |
+| `maplace-popup-links` | A popup's links (`openInMapsLabel`, `directionsLabel`); a page's `a` rule colours them, so a pale one needs `.maplace-popup-links a` for the white bubble |
 | `maplace-cluster` | A cluster's badge, the count, on either provider |
 | `maplace-control` | The panel holding what is placed on a Google or MapLibre map |
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |

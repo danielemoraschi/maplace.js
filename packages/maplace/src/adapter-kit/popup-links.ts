@@ -16,9 +16,12 @@ const COORDINATE_DIGITS = 6;
 
 /** A provider's maps site: its page showing a point, and its page of directions to one. */
 export interface MapsPages {
-  openInMaps(lat: string, lng: string): string;
-  directions(lat: string, lng: string): string;
+  readonly openInMaps: MapsPage;
+  readonly directions: MapsPage;
 }
+
+/** The address of a provider's page about a point. */
+type MapsPage = (lat: string, lng: string) => string;
 
 export interface PopupLinkSettings {
   readonly options: Pick<ResolvedPopupOptions, "openInMapsLabel" | "directionsLabel">;
@@ -42,9 +45,9 @@ export function createPopupLinks(
   if (openInMapsLabel === undefined && directionsLabel === undefined) return undefined;
   const element = document.createElement("div");
   element.className = POPUP_LINKS_CLASS;
-  const aimed: Array<[HTMLAnchorElement, MapsPages[keyof MapsPages]]> = [];
+  const aimed: Array<[HTMLAnchorElement, MapsPage]> = [];
 
-  function addLink(label: string | undefined, page: MapsPages[keyof MapsPages]): void {
+  function addLink(label: string | undefined, page: MapsPage): void {
     if (label === undefined) return;
     const link = document.createElement("a");
     link.textContent = label;

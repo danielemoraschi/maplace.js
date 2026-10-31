@@ -58,7 +58,7 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
     else if (step === "reopen") reopen(placed);
     else {
       retitle(open, placed);
-      if (step === "refresh") refresh(placed);
+      if (step === "refresh") refresh(open, placed);
       else follow(open, placed);
     }
   }
@@ -98,13 +98,14 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
     window.retitle(title);
   }
 
-  /** New content where the popup is: the window reports it in the DOM again. */
-  function refresh(placed: PopupTarget<Place>): void {
+  /** New content where the location is now: the window reports it in the DOM again. */
+  function refresh(current: OpenPopup<Place, Window>, placed: PopupTarget<Place>): void {
     const next = render(placed);
     if (next === undefined) close();
     else {
       track(next);
       window.refresh(next.element);
+      if (next.followed !== current.followed) window.follow(placed.popupPlace());
     }
   }
 

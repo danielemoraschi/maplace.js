@@ -1,7 +1,13 @@
 import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { userEvent } from "vitest/browser";
 import { POPUP_LINKS_CLASS } from "../adapter-kit/popup-links";
-import { adding, markerDrawable, presented, withContent } from "../testing/conformance/fixtures";
+import {
+  adding,
+  markerDrawable,
+  presented,
+  updating,
+  withContent,
+} from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { unstyledPage } from "../testing/unstyled-page";
 import { wait } from "./testing/map-settle";
@@ -56,6 +62,15 @@ describe("a popup's links on MapLibre", () => {
     expect(document.activeElement).toBe(links[1]);
     await userEvent.tab();
     expect(document.activeElement).toBe(document.querySelector(".maplibregl-popup-close-button"));
+  });
+
+  it("moves the popup with its links when its location moves and gets new content at once", async () => {
+    const { adapter, probe, state } = await popupWithLinks();
+    const moved = withContent(markerDrawable("a", { lat: 10, lng: 20 }), "Alpha again");
+    await adapter.apply(updating(moved));
+    await probe.settle();
+    expect(state.popup?.window.popup.getLngLat()).toMatchObject({ lat: 10, lng: 20 });
+    expect(probe.shownPopup()?.element.querySelector("a")?.href).toContain("10.000000");
   });
 
   it("a link is at least 24px tall", async () => {

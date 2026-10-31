@@ -19,8 +19,8 @@ const LAST_CHILD = `${CONTENT}>:last-child,${CONTENT}>:only-child>:last-child`;
  * provider's (`popup-text.ts`). Google insets content 12px from the bubble's inline start and not at
  * all from its inline end or bottom: the content gets the same inset there, and its first and last
  * child (a paragraph, say, or one inside a wrapper, as React's portal element, the last only with
- * no links' row after it) no outer margin of their own. In `:where()`, so any rule of the page wins; all of it off inside the opt-out
- * (`unstyled.ts`).
+ * no links' row after it) no outer margin of their own. In `:where()`, so any rule of the page
+ * wins; all of it off inside the opt-out (`unstyled.ts`).
  */
 export const POPUP_STYLES =
   POPUP_TEXT_RULE +
