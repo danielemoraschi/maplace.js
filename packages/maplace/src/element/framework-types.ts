@@ -12,8 +12,8 @@ import type { MapSettingAttribute } from "./map-settings-watch";
 
 /**
  * What a template gives an attribute: written as text; a bare attribute arrives as `true`, and
- * `null` or `undefined` leaves it out. Not `false`, which both frameworks write as `"false"`,
- * turning a presence attribute (`cluster`) on.
+ * `null` or `undefined` leaves it out. Not `false`, which both frameworks write as `"false"`:
+ * only a switch reads that as off.
  */
 type AttributeValue = string | number | true | null | undefined;
 
@@ -25,7 +25,6 @@ type OtherAttributes = { [attribute: string]: unknown };
 /** Attributes read by a name in no list this entry can import: the map's own, then Google's. */
 type NamedMapAttribute =
   | "provider"
-  | "cluster"
   | "skip-map-label"
   | "selected-label"
   | "open-in-maps-label"
@@ -33,7 +32,6 @@ type NamedMapAttribute =
   | "my-location-label"
   | "my-location-unavailable-label"
   | "my-location-position"
-  | "hold"
   | "loading"
   | "load-label"
   | "load-from-label"
@@ -53,7 +51,9 @@ type SwitchAttribute =
   | "search"
   | "my-location"
   | "open-in-maps-link"
-  | "directions-link";
+  | "directions-link"
+  | "cluster"
+  | "hold";
 
 type MapAttribute =
   | Exclude<(typeof LIST_ATTRIBUTES)[number], SwitchAttribute>

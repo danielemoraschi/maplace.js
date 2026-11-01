@@ -10,8 +10,8 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `route`: the `route` property;
  * - `list`: the list's attributes (`LIST_ATTRIBUTES`), or a list view not defined yet (tried
  *   again when one is);
- * - `cluster`: the attribute, which the store took when it was created;
- * - `labels`: the store's attributes (`STORE_ATTRIBUTES`), which it took then too;
+ * - `store`: the store's attributes (`STORE_ATTRIBUTES`), which it took when it was created;
+ * - `hold`: the attribute, a value neither true nor false, until corrected or the map is released;
  * - `sanitize`: the property, which the store also took when it was created.
  */
 export type MisuseCause =
@@ -20,8 +20,8 @@ export type MisuseCause =
   | "selection"
   | "route"
   | "list"
-  | "cluster"
-  | "labels"
+  | "hold"
+  | "store"
   | "sanitize";
 
 /** The misuse standing on an element, which is in error while any does. */

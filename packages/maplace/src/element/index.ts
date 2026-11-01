@@ -92,7 +92,8 @@ export { defineListView } from "./list-views";
  *   `search-label`, `no-matches-label` and `matches-label` are live: the list is built again.)
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
  *   changes go through `maplace`.
- * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
+ * - `cluster`: cluster markers (a boolean, as `group-counts`; a CDN page needs the cluster build);
+ *   can't change afterwards.
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
  *   of a selection; can't change afterwards.
  * - `my-location`: puts the "My location" button on the map, which asks for the visitor's position
@@ -104,7 +105,8 @@ export { defineListView } from "./list-views";
  *   can't change afterwards.
  * - `open-in-maps-label`, `directions-label`: the words of the popup's two links, "Open in Maps" and "Directions"
  *   by default; do nothing without their switch; can't change afterwards.
- * - `hold`: stay idle, with no provider request and no list built, until `release()`.
+ * - `hold`: stay idle, with no provider request and no list built, until `release()` (a boolean,
+ *   as `group-counts`; any other value holds too, and is misuse).
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as
  *   `hold` is.

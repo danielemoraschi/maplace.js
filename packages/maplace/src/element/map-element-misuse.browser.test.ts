@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { MaplaceMapElement } from "./index";
 import { adaptersMade, errorsOn, lastAdapter, mapFrom, nextTask, ROME } from "./testing/fake-maps";
 
@@ -87,7 +87,7 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     const errors = errorsOn(map);
     map.setAttribute("cluster", "");
     expect(errors.map(({ message }) => message)).toEqual([
-      expect.stringMatching(/cluster can't change/),
+      expect.stringMatching(/\bcluster\b.* can't change/),
     ]);
     map.removeAttribute("cluster");
     expect(map.loadState).toBe("loading");
@@ -145,74 +145,6 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     ]);
     expect(map.loadState).toBe("error");
     map.setAttribute("selected-label", "Scelto");
-    expect(map.loadState).toBe("loading");
-  });
-
-  it("reads the link switches and labels into the store's popup options", async () => {
-    await mapFrom(
-      `<maplace-map open-in-maps-link directions-link directions-label="Vai">${ROME}</maplace-map>`,
-    );
-    expect(lastAdapter().mounted?.popup).toMatchObject({
-      openInMapsLabel: "Open in Maps",
-      directionsLabel: "Vai",
-    });
-  });
-
-  it("draws no link from its label alone", async () => {
-    await mapFrom(
-      `<maplace-map open-in-maps-label="Apri" directions-link="false">${ROME}</maplace-map>`,
-    );
-    expect(lastAdapter().mounted?.popup).toMatchObject({
-      openInMapsLabel: undefined,
-      directionsLabel: undefined,
-    });
-  });
-
-  it("a link switch neither true nor false stands as misuse, naming it", async () => {
-    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
-    const errors = errorsOn(map);
-    map.setAttribute("open-in-maps-link", "maybe");
-    expect(errors).toEqual([
-      expect.objectContaining({
-        field: "open-in-maps-link",
-        message: expect.stringContaining('open-in-maps-link must be true or false, got "maybe"'),
-      }),
-    ]);
-    expect(map.loadState).toBe("error");
-    map.setAttribute("open-in-maps-link", "false");
-    expect(map.loadState).toBe("idle");
-  });
-
-  it("a bad my-location keeps the map from opening until it is fixed", async () => {
-    const map = await mapFrom(`<maplace-map hold my-location="maybe">${ROME}</maplace-map>`);
-    const errors = errorsOn(map);
-    map.release();
-    await nextTask();
-    expect(errors.map(({ field }) => field)).toEqual(["my-location"]);
-    expect(map.loadState).toBe("error");
-    map.setAttribute("my-location", "false");
-    await vi.waitFor(() => expect(map.loadState).not.toBe("error"));
-  });
-
-  it("a bad link switch at creation leaves the link off and stands as misuse", async () => {
-    const map = await mapFrom(`<maplace-map hold open-in-maps-link="maybe">${ROME}</maplace-map>`);
-    expect(map.loadState).toBe("error");
-    map.removeAttribute("open-in-maps-link");
-    expect(map.loadState).toBe("idle");
-    map.release();
-    await nextTask();
-    expect(lastAdapter().mounted?.popup.openInMapsLabel).toBeUndefined();
-  });
-
-  it("refuses a link switched on once the map is created, until put back", async () => {
-    const map = await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
-    const errors = errorsOn(map);
-    map.setAttribute("directions-link", "");
-    expect(errors.map(({ message }) => message)).toEqual([
-      expect.stringMatching(/directions-link.* can't change once the map is created/),
-    ]);
-    expect(map.loadState).toBe("error");
-    map.setAttribute("directions-link", "false");
     expect(map.loadState).toBe("loading");
   });
 

@@ -16,7 +16,7 @@ const ELEMENT_SOURCES = globSync("packages/maplace/src/element/*.ts", { cwd: ROO
   .map((file) => readFileSync(join(ROOT, file), "utf8"))
   .join("\n");
 
-// An attribute read by a literal name: `getAttribute("hold")`, `hasAttribute("cluster")`,
+// An attribute read by a literal name: `getAttribute("provider")`, `booleanOrRaw(host, "cluster")`,
 // `givenAttribute(element, "map-id")`, `numberOrRaw(element, "zoom")`, `textOf(host, "list-heading")`,
 // `read("map-id")`.
 const READ_BY_LITERAL = /(?:(?:Attribute|OrRaw|textOf)\((?:[\w.#]+, )?|\bread\()"([a-z-]+)"/g;

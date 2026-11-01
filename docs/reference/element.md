@@ -23,7 +23,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 |---|---|
 | `list` | Present: a list of the locations (empty, or `"true"`, as Svelte 5 writes a bare `list`); `list="select"`: a native select; `list="<name>"`: a [list view of yours](#list-views). Absent: no list |
 | `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
-| `fit-all` | Adds a first entry to the list, which clears the selection and fits all locations. Present, empty or `"true"` is on, `"false"` off, anything else misuse, as for `search`, `my-location`, `open-in-maps-link` and `directions-link` |
+| `fit-all` | Adds a first entry to the list, which clears the selection and fits all locations. Present, empty or `"true"` is on, `"false"` off, anything else misuse, as for `search`, `my-location`, `open-in-maps-link`, `directions-link`, `cluster` and `hold` |
 | `fit-all-label` | The words of the list's first entry, which clears the selection and fits all locations; "All locations" when left out; does nothing without `fit-all`; a blank one is misuse |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
 | `group-counts` | After each group heading, how many are listed under it now, following the filter and `list-scope`: "North (3)". Present, empty or `"true"` is on, `"false"` off, anything else misuse |
@@ -42,14 +42,14 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `no-matches-label` | What the line under the search box says when nothing matches; default "No locations match" |
 | `matches-label` | What the line under the search box says before the count of matches; default "Locations found", as "Locations found: 3" |
 | `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
-| `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
+| `cluster` | Groups nearby markers into a cluster with a count (on Google's CDN, the cluster script; the MapLibre script clusters as it is). A switch, as `fit-all` is; can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `skip-map-label` | The words of the [link past the map](store.md#on-every-map), which keyboard users reach first; default "Skip the map"; can't change once the store exists; a blank one is misuse |
 | `selected-label` | The word announced before a selected location's name, "Selected: Rome"; default "Selected"; can't change once the store exists; a blank one is misuse |
 | `open-in-maps-link` | Adds a [link at the end of each popup](store.md#popup-options), to the location on the provider's maps site: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
 | `open-in-maps-label` | The words of the link to the provider's maps site; "Open in Maps" when left out; does nothing without `open-in-maps-link`; can't change once the store exists; a blank one is misuse |
 | `directions-link` | Adds a link at the end of each popup, to directions to the location: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
 | `directions-label` | The words of the link to directions; "Directions" when left out; does nothing without `directions-link`; can't change once the store exists; a blank one is misuse |
-| `hold` | Stays idle, with no provider request and no list built, until `release()` |
+| `hold` | Stays idle, with no provider request and no list built, until `release()`. A switch, as `fit-all` is, except that a value neither true nor false holds too, as well as being misuse, so a typo can't load a map before consent. Read when the map would open: writing `false` later opens nothing, `release()` does |
 | `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
 | `load-label` | The words of the [load panel](#load-states)'s button; "Load map" when blank or left out; live |
 | `load-from-label` | The words before the name on that panel; "Loads from" when blank or left out; live |
@@ -226,7 +226,7 @@ Svelte takes the tags as they are:
   onmaplace-selectionchange={(event) => console.log(event.detail.id)}></maplace-map>
 ```
 
-- **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. An attribute read by its presence, such as `cluster` or `hold`, is written or left out, never given `false`, which both frameworks write as `"false"`. Svelte 5 writes a bare attribute as `"true"`, which `list` takes as the built-in list. A location's `listed` and `editable` take `false` as `"false"`, their off value.
+- **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. A switch, such as `cluster` or `hold`, takes `false` as `"false"`, which is how both frameworks write it, and that is off (`hold` only as the map would open: `release()` opens a held map); other attributes are written or left out, never given `false`. Svelte 5 writes a bare attribute as `"true"`, which `list` takes as the built-in list. A location's `listed` and `editable` take `false` as `"false"`, their off value.
 - **`locations`** is a property, as are `route` and `sanitize`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
 - **Events** are listened to by their [names](#events): `@maplace-selectionchange` in Vue, `onmaplace-selectionchange` in Svelte 5 and `on:maplace-selectionchange` in Svelte 4, the event typed with its `detail`; a listener for another event, such as a page's own, types its parameter itself.
 - **Popups and icons** in Vue come through `locations`, not a `<maplace-location>`'s `<template>` child: Vue renders a template's children into the element, not its content, so the child arrives empty.

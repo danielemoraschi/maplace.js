@@ -1,8 +1,9 @@
 import type { LoadState, Location, Maplace, Route } from "../index";
 import { afterParsing } from "./after-parsing";
+import { booleanOrRaw } from "./attribute-values";
 import { type CameraKeeper, createCameraKeeper } from "./camera-keeper";
 import { adoptDefaultStyles, PANE_CLASS } from "./default-styles";
-import { isListAttribute, LIST_ATTRIBUTES } from "./element-list";
+import { isListAttribute, LIST_ATTRIBUTES, switchAttribute } from "./element-list";
 import type { MaplaceMapElement } from "./index";
 import { createListKeeper, type ListKeeper } from "./list-keeper";
 import { createLoadPanel } from "./load-panel";
@@ -13,8 +14,8 @@ import { createNearViewWait } from "./near-view";
 import { reapplyOwnProperties } from "./own-properties";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
+import { isStoreAttribute, STORE_ATTRIBUTES } from "./store-attributes";
 import { type Sanitize, StoreFeed } from "./store-feed";
-import { isStoreAttribute, STORE_ATTRIBUTES } from "./store-labels";
 import { createUrlState } from "./url-state";
 import { MAPLACE_VERSION } from "./version";
 
@@ -27,7 +28,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   static readonly observedAttributes = [
     ...LIST_ATTRIBUTES,
     "provider",
-    "cluster",
+    "hold",
     ...STORE_ATTRIBUTES,
   ];
 
@@ -53,6 +54,8 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #session: MapSession | undefined;
   #shownState: LoadState = "idle";
   #released = false;
+  /** Held when it last opened: only `release()` or connecting again lets a held map go. */
+  #heldAtOpen = false;
 
   constructor() {
     super();
@@ -112,14 +115,15 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
 
   attributeChangedCallback(name: string, previous: string | null, value: string | null): void {
     if (previous === value || this.#feed.created === undefined) return;
-    if (name === "cluster") this.#feed.checkClusterUnchanged();
-    else if (isStoreAttribute(name)) this.#feed.checkLabels();
+    if (name === "hold") this.#checkHold();
+    else if (isStoreAttribute(name)) this.#feed.checkAttributes();
     else if (name === "provider") this.#reopenSession();
     else if (isListAttribute(name)) this.#lists?.rebuildSoon();
   }
 
   release(): void {
     this.#released = true;
+    this.#misuse.clear("hold");
     this.#nearView.stop();
     this.#open();
   }
@@ -131,6 +135,8 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #open(): void {
     if (!this.isConnected) return;
     const store = this.#feed.store();
+    this.#checkHold();
+    this.#heldAtOpen = this.#holdsAsWritten();
     if (this.#isHeld()) {
       this.#panel.show();
       return;
@@ -146,8 +152,18 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#openSession();
   }
 
+  /** Only reports: a held map opens on `release()`, whatever its `hold` says later. */
+  #checkHold(): void {
+    if (!this.#released) this.#misuse.retry("hold", () => switchAttribute(this, "hold"));
+  }
+
   #isHeld(): boolean {
-    return this.hasAttribute("hold") && !this.#released;
+    return !this.#released && (this.#heldAtOpen || this.#holdsAsWritten());
+  }
+
+  /** On for anything but off: a typo must not load a map the page meant to keep back. */
+  #holdsAsWritten(): boolean {
+    return Boolean(booleanOrRaw(this, "hold"));
   }
 
   #openSession(): void {

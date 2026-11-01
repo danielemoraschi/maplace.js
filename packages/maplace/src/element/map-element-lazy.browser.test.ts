@@ -37,6 +37,17 @@ describe('<maplace-map loading="lazy">', () => {
     expect(listboxIn(map)?.textContent).toContain("Rome");
   });
 
+  it("with a bad hold, in view, asks no provider until release()", async () => {
+    lazyPage();
+    const before = adaptersMade.length;
+    const map = await mapFrom(mapWith('loading="lazy" hold="maybe"'));
+    await twoFrames();
+    expect(adaptersMade.length).toBe(before);
+    map.release();
+    await nextTask();
+    expect(adaptersMade.length).toBe(before + 1);
+  });
+
   it("opens its map as it scrolls into view", async () => {
     lazyPage();
     const before = adaptersMade.length;

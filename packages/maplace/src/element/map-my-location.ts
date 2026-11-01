@@ -1,7 +1,7 @@
 import { type ControlPosition, MY_LOCATION_CORNER } from "../adapter";
 import type { MyLocationOptions } from "../index";
 import { CORNERS, oneOfAttribute, switchAttribute } from "./element-list";
-import { nonBlank } from "./store-labels";
+import { nonBlank } from "./store-attributes";
 
 /** The control `my-location` asks for, and its corner. */
 export interface MyLocationAsked {

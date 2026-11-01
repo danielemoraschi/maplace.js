@@ -10,7 +10,11 @@ import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
 import { PendingSelection } from "./pending-selection";
 import type { StandingMisuse } from "./standing-misuse";
-import { checkStoreLabels, readStoreLabels, type StoreLabels } from "./store-labels";
+import {
+  checkStoreAttributes,
+  readStoreAttributes,
+  type StoreAttributes,
+} from "./store-attributes";
 
 /** What the store renders `html` through, as its `sanitize` option. */
 export type Sanitize = NonNullable<MaplaceOptions["sanitize"]>;
@@ -25,9 +29,8 @@ export class StoreFeed {
   readonly #misuse: StandingMisuse;
   readonly #onStoreChange: () => void;
   #store: Maplace | undefined;
-  #clusters = false;
-  /** What the store took from its attributes: the link switches and the labels. */
-  #labels: StoreLabels = {};
+  /** What the store took from its attributes: `cluster`, the link switches and the labels. */
+  #attributes: StoreAttributes = {};
   /** Given before the store exists, or what the store was created with. */
   #sanitize: Sanitize | undefined;
   #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
@@ -104,18 +107,9 @@ export class StoreFeed {
     this.#stopWatching = undefined;
   }
 
-  /** `cluster` changed: misuse, unless it is back to what the store was created with. */
-  checkClusterUnchanged(): void {
-    if (this.#host.hasAttribute("cluster") === this.#clusters) this.#misuse.clear("cluster");
-    else {
-      const problem = "cluster can't change once the map is created";
-      this.#misuse.fail("cluster", elementMisuse(problem));
-    }
-  }
-
   /** A blank label or a bad switch stands as misuse, as does a change once the store took them. */
-  checkLabels(): void {
-    checkStoreLabels(this.#host, this.#labels, this.#misuse);
+  checkAttributes(): void {
+    checkStoreAttributes(this.#host, this.#attributes, this.#misuse);
   }
 
   /**
@@ -125,25 +119,25 @@ export class StoreFeed {
    * may read the store.
    */
   #create(): Maplace {
-    this.#clusters = this.#host.hasAttribute("cluster");
-    this.#labels = readStoreLabels(this.#host);
+    this.#attributes = readStoreAttributes(this.#host);
     const store = this.#createStore();
     this.#store = store;
     this.#feedPending();
     this.#listenTo(store);
-    this.checkLabels();
+    this.checkAttributes();
     return store;
   }
 
   /** A store always exists: one `sanitize` the store refuses is left out, standing as misuse. */
   #createStore(): Maplace {
-    const fixed = { cluster: this.#clusters, ...this.#labels };
     const sanitize = this.#sanitize;
-    if (sanitize === undefined) return createMaplace(fixed);
-    const store = this.#misuse.attempt("sanitize", () => createMaplace({ ...fixed, sanitize }));
+    if (sanitize === undefined) return createMaplace(this.#attributes);
+    const store = this.#misuse.attempt("sanitize", () =>
+      createMaplace({ ...this.#attributes, sanitize }),
+    );
     if (store !== undefined) return store;
     this.#sanitize = undefined;
-    return createMaplace(fixed);
+    return createMaplace(this.#attributes);
   }
 
   /**

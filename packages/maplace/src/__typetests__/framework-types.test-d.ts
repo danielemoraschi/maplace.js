@@ -121,6 +121,8 @@ export const noSwitches: VueMap = {
   "my-location": false,
   "open-in-maps-link": false,
   "directions-link": false,
+  cluster: false,
+  hold: false,
 };
 export const myLocationInVue: VueMap = {
   "my-location": "",
@@ -130,9 +132,6 @@ export const myLocationInVue: VueMap = {
 };
 export const myLocationInSvelte: SvelteMap = { "my-location": "", "my-location-label": "Near me" };
 export const noCountsInSvelte: SvelteMap = { "group-counts": debug };
-
-// @ts-expect-error false is written as "false", which turns a presence attribute such as cluster on
-export const falseCluster: VueMap = { cluster: false };
 
 // @ts-expect-error false is written as "false", which names a parameter "false"
 export const falseUrlState: SvelteMap = { "url-state": false };

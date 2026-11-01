@@ -5,7 +5,10 @@ import { switchAttribute } from "./element-list";
 import type { StandingMisuse } from "./standing-misuse";
 
 /** What the store's map adds and its words, as the store's options, a popup's links among them. */
-export type StoreLabels = Pick<MaplaceOptions, "skipMapLabel" | "selectedLabel" | "popup">;
+export type StoreAttributes = Pick<
+  MaplaceOptions,
+  "cluster" | "skipMapLabel" | "selectedLabel" | "popup"
+>;
 
 const LABEL_ATTRIBUTES = [
   "skip-map-label",
@@ -14,20 +17,19 @@ const LABEL_ATTRIBUTES = [
   "directions-label",
 ] as const;
 
+const SWITCH_ATTRIBUTES = ["open-in-maps-link", "directions-link", "cluster"] as const;
+
 /** Every attribute the store takes something from when it is created. */
-export const STORE_ATTRIBUTES: readonly string[] = [
-  ...LABEL_ATTRIBUTES,
-  "open-in-maps-link",
-  "directions-link",
-];
+export const STORE_ATTRIBUTES: readonly string[] = [...LABEL_ATTRIBUTES, ...SWITCH_ATTRIBUTES];
 
 export function isStoreAttribute(name: string): boolean {
   return STORE_ATTRIBUTES.includes(name);
 }
 
 /** The attributes as written, a blank label left out and a bad switch off: misuse says them later. */
-export function readStoreLabels(host: HTMLElement): StoreLabels {
+export function readStoreAttributes(host: HTMLElement): StoreAttributes {
   return {
+    cluster: booleanOrRaw(host, "cluster") === true,
     skipMapLabel: nonBlank(host.getAttribute("skip-map-label")),
     selectedLabel: nonBlank(host.getAttribute("selected-label")),
     popup: {
@@ -40,18 +42,16 @@ export function readStoreLabels(host: HTMLElement): StoreLabels {
 }
 
 /** A blank label or a bad switch stands as misuse, as does a change from what the store `taken`. */
-export function checkStoreLabels(
+export function checkStoreAttributes(
   host: HTMLElement,
-  taken: StoreLabels,
+  taken: StoreAttributes,
   misuse: StandingMisuse,
 ): void {
-  misuse.attempt("labels", () => {
+  misuse.attempt("store", () => {
     const blank = LABEL_ATTRIBUTES.find((name) => host.getAttribute(name)?.trim() === "");
     if (blank !== undefined) throw elementMisuse(`${blank} must not be blank`, { field: blank });
-    // Read for its refusal: `readStoreLabels` has them off.
-    switchAttribute(host, "open-in-maps-link");
-    switchAttribute(host, "directions-link");
-    if (JSON.stringify(readStoreLabels(host)) !== JSON.stringify(taken)) {
+    for (const name of SWITCH_ATTRIBUTES) switchAttribute(host, name);
+    if (JSON.stringify(readStoreAttributes(host)) !== JSON.stringify(taken)) {
       const problem = `${STORE_ATTRIBUTES.join(", ")} can't change once the map is created`;
       throw elementMisuse(problem);
     }
