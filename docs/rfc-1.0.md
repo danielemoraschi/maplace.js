@@ -74,7 +74,7 @@ Either is a map with two markers, a list beside it, and selection kept in sync: 
 |---|---|
 | A GIS or layer toolkit (KML, traffic, heatmaps, data layers) | Add them to the underlying map object, which maplace exposes; they don't serve "list of places ↔ map". |
 | Drawing tools | An editor is a different product; locations can be moved and reshaped, not drawn from scratch. |
-| Geocoding addresses | Needs a provider service and quotas; locations come with coordinates in 1.0. A page with addresses geocodes them once, before it ships ([the recipe](reference/locations.md#addresses-to-coordinates)), with a provider whose terms let it keep the results; that is a reader's script, not maplace's, since the terms are each provider's to change. |
+| Geocoding addresses | Needs a provider service and quotas; locations come with coordinates in 1.0. A page with addresses geocodes them once, before it ships ([the recipe](reference/locations.md#addresses-to-coordinates)), with a provider whose terms let it keep the results; that is a reader's script, not maplace's, since the terms are each provider's to change. An address a visitor types is the page's too: a form and its own geocoder, setting the origin ([the recipe](reference/locations.md#a-visitors-address), tracker V32). |
 | A store-locator product (distance matrix, opening hours, booking) | Store locators are one use case; those features are app logic or a dedicated component (see below). |
 | Route alternatives or several routes per map | One route through your own locations covers the 0.2 use; more turns maplace into a routing UI. |
 | Other provider services (places search, distance, elevation) | Not in 1.0; Places integration is a likely later addition. |
@@ -345,7 +345,7 @@ Demand = items + reactions + comments.
 | Single location renders blank map | 52, 55, 65 | 15 (3+0+12) | the initial-view order; kept as a regression test |
 | List view and programmatic select | 5, 75, 84, 115, 122 | 14 (5+0+9) | list view and `select` (§3 Shape) |
 | Mixed location types on one map | 10, 43, 90, 158, 179, 193 | 13 (6+0+7) | `type` per location (§3 Shape) |
-| Geocoding and address input | 8, 24, 126, 131, 170 | 13 (5+0+8) | addresses geocoded once, before the page ships: the recipe (Locations, Addresses to coordinates); at run time a non-goal (§1) |
+| Geocoding and address input | 8, 24, 126, 131, 170 | 13 (5+0+8) | addresses geocoded once, before the page ships: the recipe (Locations, Addresses to coordinates); at run time a non-goal (§1), a visitor's address being a page's own form and geocoder (Locations, A visitor's address) |
 | Setup errors and input validation | 63, 125, 145, 175 | 13 (4+0+9) | misuse throws with code, id and field (§3 Errors) |
 | Places and location search (search box, place details, save a place) | 41, 98, 152, 165 | 12 (4+0+8) | later: Places integration (§1) |
 | Editable/draggable geometry sync | 48, 49, 64, 107, 155, 164, 178 | 11 (7+0+4) | `editable`, written back, `locationChange` event (§3 Decisions) |

@@ -182,7 +182,7 @@ A list with `sort: "distance"` lists nearest first once there is an origin, afte
 - **Groups** keep their rule: within each group nearest first, groups in the order of their nearest member, ungrouped entries first.
 - **The words** are two significant figures in the browser's language: "0.85 km", "12 km", "1,200 km". A `render` gets `distance` (metres) and `distanceLabel`, and shows either.
 - **`distanceTo(origin, location)`** gives the metres, for a page's own list; `listedLocations` stays in data order. An origin that isn't a point is `invalid-input`.
-- **Any point** can be the origin. A click: `map.on("mapClick", ({ position }) => map.setOrigin(position))`. A location: `map.setOrigin({ lat: rome.lat, lng: rome.lng })`.
+- **Any point** can be the origin. A click: `map.on("mapClick", ({ position }) => map.setOrigin(position))`. A location: `map.setOrigin({ lat: rome.lat, lng: rome.lng })`. An address a visitor types: [your own form](locations.md#a-visitors-address).
 
 ### The "My location" control
 

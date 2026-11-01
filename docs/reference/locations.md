@@ -154,7 +154,7 @@ On `<maplace-map>`, set the `locations` property to the result. With React, comp
 
 ## Addresses to coordinates
 
-maplacejs takes coordinates, never addresses, at run time: no provider quota, no key in your page, nothing sent about your readers. A page with addresses geocodes them once, before it ships, and keeps the result if its geocoder allows it.
+maplacejs itself takes coordinates, never addresses, at run time. A page with addresses geocodes them once, before it ships, and keeps the result if its geocoder allows it: no provider quota, no key in your page, nothing sent about your readers. For an address a visitor types, see [A visitor's address](#a-visitors-address).
 
 ### May you keep the results?
 
@@ -240,6 +240,114 @@ Swap `geocoder` for another one whose terms let you keep the results: its reques
 | MapTiler (free plan non-commercial) | `` `https://api.maptiler.com/geocoding/${encodeURIComponent(address)}.json?limit=1&key=${encodeURIComponent(key)}` `` | `answer.features[0] && { lat: answer.features[0].center[1], lng: answer.features[0].center[0] }` |
 
 Change `pointIn`'s parameter type to the new answer's shape, the wait to the new geocoder's rate, and drop the key check for a self-hosted geocoder that takes none.
+
+## A visitor's address
+
+The "My location" button needs a visitor who shares their position. For anyone who refuses, or is planning from somewhere else, a form of your own can take an address and sort the [list by distance](store.md#distances) from there. maplacejs sends nothing itself: the geocoder is yours.
+
+<!-- example: scripts/recipes/address-origin.html -->
+```html
+<form id="from-address">
+  <label for="address">Your address</label>
+  <input id="address" name="address" autocomplete="street-address">
+  <button type="submit" disabled>Sort by distance</button>
+  <p role="status"></p>
+</form>
+```
+
+<!-- example: scripts/recipes/address-origin.ts -->
+```ts
+// An address typed into your own form becomes the point the list measures from. `geocode` is yours;
+// a blank address clears the point. The button stays disabled until this runs: a submit without it
+// would put the address in the page's URL. Returns what stops listening.
+import type { LatLng, Maplace } from "maplace";
+
+/** Your geocoder: the address's point, or `undefined` when it finds none. */
+export type Geocode = (address: string) => Promise<LatLng | undefined>;
+
+function partOf<Part extends Element>(form: HTMLFormElement, selector: string): Part {
+  const part = form.querySelector<Part>(selector);
+  if (!part) throw new Error(`The form needs an element matching ${selector}`);
+  return part;
+}
+
+export function searchFromAddress(
+  form: HTMLFormElement,
+  map: Maplace,
+  geocode: Geocode,
+): () => void {
+  const input = partOf<HTMLInputElement>(form, '[name="address"]');
+  const status = partOf(form, '[role="status"]');
+  const button = partOf<HTMLButtonElement>(form, '[type="submit"]');
+  let latest = 0;
+
+  function measureFrom(point: LatLng): void {
+    map.setOrigin(point);
+    const { viewport } = map.getSnapshot();
+    if (viewport) map.setView(point, viewport.zoom);
+  }
+
+  async function search(address: string, ask: number): Promise<void> {
+    form.setAttribute("aria-busy", "true");
+    const point = await geocode(address);
+    if (ask !== latest) return;
+    if (point) measureFrom(point);
+    status.textContent = point ? `Nearest to ${address}` : "Address not found";
+  }
+
+  async function submitted(event: Event): Promise<void> {
+    event.preventDefault();
+    latest += 1;
+    const ask = latest;
+    status.textContent = "";
+    const address = input.value.trim();
+    try {
+      if (address) await search(address, ask);
+      else map.setOrigin(undefined);
+    } catch (error) {
+      console.error(error);
+      if (ask === latest) status.textContent = "Search unavailable";
+    } finally {
+      if (ask === latest) form.removeAttribute("aria-busy");
+    }
+  }
+
+  form.addEventListener("submit", submitted);
+  button.disabled = false;
+  return () => {
+    button.disabled = true;
+    form.removeEventListener("submit", submitted);
+    latest += 1;
+    form.removeAttribute("aria-busy");
+  };
+}
+```
+
+On `<maplace-map>`, the store is `.maplace` once the element is defined:
+
+```js
+await customElements.whenDefined("maplace-map");
+const map = document.querySelector("maplace-map").maplace;
+searchFromAddress(document.querySelector("#from-address"), map, geocode);
+```
+
+That goes in one `<script type="module">`, after the recipe (its `import type`, types and `export` dropped) and your `geocode`. In React, call it in an effect, with the store from [`useMaplace()`](react.md#usemaplace) and a `geocode` declared outside the component, and return what it returns.
+
+`geocode` runs in the visitor's browser, so any key it holds is public, and most geocoders bill each search, which is why the form asks on submit and never per keystroke:
+
+- **On Google**: Maps JS's geocoder, with the Geocoding API enabled in your key's project, as a key restricted to Maps JS alone fails every search. Its results shown on a map must be on a Google map, and shown off one carry Google's attribution ([policies](https://developers.google.com/maps/documentation/geocoding/policies), read on 2026-11-01). It needs Maps JS on the page, so wait for the map first, `await map.whenReady()` before `searchFromAddress`: the button then stays disabled until the map opens, however long it is loading, held for consent or off-screen with `loading="lazy"`. Not run here, as each search is billed:
+
+  ```js
+  const geocode = async (address) => {
+    const { Geocoder } = await google.maps.importLibrary("geocoding");
+    const { results } = await new Geocoder().geocode({ address, fulfillOnZeroResults: true });
+    return results[0]?.geometry.location.toJSON();
+  };
+  ```
+
+- **On MapLibre**: another geocoder ([the table above](#may-you-keep-the-results) has some), or your own server calling one, so the key stays there. OpenStreetMap-based results keep their attribution.
+
+A typed address may be the visitor's home, and it goes to that geocoder: say so in your privacy notice. The button starts disabled, as a submit before your script runs would put the address in the page's URL, so a script that fails leaves the form unusable, not leaking. An answer arriving late can replace an origin set since by other means, such as "My location", and the status keeps saying "Nearest to" the address if something else sets the origin afterwards. The recipe's own checks use a stub geocoder; it hasn't run against a real one.
 
 ## From 0.2
 

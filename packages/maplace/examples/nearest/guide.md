@@ -6,4 +6,4 @@ The **My location** button on the map asks the browser for the visitor's positio
 - **HTML**: `list-sort="distance"` and `my-location` on `<maplace-map>`, with `distance-unit="mile"` for miles ([Map attributes](../../../../docs/reference/element.md#map-attributes)).
 - **Script** and **Bundler**: `sort: "distance"` in `list`, and `myLocation: true` in the map's options ([Distances](../../../../docs/reference/store.md#distances)).
 - **React**: `<LocationList sort="distance" />`, and `<MyLocation />` inside the `<MaplaceMap>` ([`<MyLocation>`](../../../../docs/reference/react.md#mylocation)).
-- **Another point**: [`setOrigin`](../../../../docs/reference/store.md#methods) takes any point, so a click measures from there: `map.on("mapClick", ({ position }) => map.setOrigin(position))`.
+- **Another point**: [`setOrigin`](../../../../docs/reference/store.md#methods) takes any point, so a click measures from there: `map.on("mapClick", ({ position }) => map.setOrigin(position))`, and [a form of your own](../../../../docs/reference/locations.md#a-visitors-address) measures from a typed address.
