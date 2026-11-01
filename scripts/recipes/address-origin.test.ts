@@ -44,7 +44,7 @@ function searching(geocode: Geocode, { withView = true } = {}) {
   const setView = vi.spyOn(map, "setView");
   const form = formOnPage();
   const stop = searchFromAddress(form, map, geocode);
-  const status = form.querySelector('[role="status"]');
+  const status = form.querySelector("output");
   /** Whether a browser would go on to send the form, the address in its URL. */
   const submit = (address: string) => {
     const input = form.querySelector("input");
@@ -222,10 +222,10 @@ describe("searchFromAddress", () => {
   it("a form missing its status or input throws, naming it", () => {
     const map = createMaplace();
     const withoutStatus = '<form><input name="address"><button type="submit"></button></form>';
-    const withoutInput = '<form><p role="status"></p><button type="submit"></button></form>';
-    expect(() => searchFromAddress(formOnPage(withoutStatus), map, found)).toThrow('role="status"');
+    const withoutInput = '<form><output></output><button type="submit"></button></form>';
+    expect(() => searchFromAddress(formOnPage(withoutStatus), map, found)).toThrow("output");
     expect(() => searchFromAddress(formOnPage(withoutInput), map, found)).toThrow('name="address"');
-    const withoutButton = '<form><input name="address"><p role="status"></p></form>';
+    const withoutButton = '<form><input name="address"><output></output></form>';
     expect(() => searchFromAddress(formOnPage(withoutButton), map, found)).toThrow('type="submit"');
   });
 

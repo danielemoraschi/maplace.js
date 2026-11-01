@@ -18,9 +18,6 @@ const LINK = `.${SKIP_MAP_CLASS}`;
 /** What takes focus in a control on the map: `.maplace-control` is `CONTROL_CLASS`'s. */
 const CONTROL_STOPS = '.maplace-control :is(a[href],button,input,select,textarea,[tabindex="0"])';
 
-/** Lists that speak a change of their own selection, while focused. */
-const LISTS = '[role="listbox"],select';
-
 const FOCUSED_LINK = outsideUnstyled(`${LINK}:focus`);
 
 /** A focused link's look: its being hidden until then is set on it, so it holds without a sheet. */
@@ -86,7 +83,10 @@ function focusPast(container: HTMLElement, end: HTMLElement): void {
   end.focus();
 }
 
-/** Says each new selection, but for a list holding focus: a screen reader speaks the change there. */
+/**
+ * Says each new selection, but for a native select holding focus, whose change a screen reader
+ * speaks; on a listbox VoiceOver gave no word of it (2026-11-01).
+ */
 function saySelections(
   container: HTMLElement,
   region: HTMLElement,
@@ -95,7 +95,7 @@ function saySelections(
 ): () => void {
   return store.on("selectionChange", ({ id }) => {
     const location = id === undefined ? undefined : locationById(store.getSnapshot().locations, id);
-    const speaks = location !== undefined && !focusedAround(container)?.closest(LISTS);
+    const speaks = location !== undefined && !focusedAround(container)?.closest("select");
     region.textContent = speaks ? `${label}: ${labelOf(location)}` : "";
   });
 }

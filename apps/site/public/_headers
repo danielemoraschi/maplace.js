@@ -33,6 +33,8 @@
   Link: </react/index.md>; rel="alternate"; type="text/markdown"
 /styling/
   Link: </styling/index.md>; rel="alternate"; type="text/markdown"
+/accessibility/
+  Link: </accessibility/index.md>; rel="alternate"; type="text/markdown"
 /api/
   Link: </api/index.md>; rel="alternate"; type="text/markdown"
 /migrating/
@@ -73,6 +75,8 @@
   Link: <https://maplacejs.com/react/>; rel="canonical"
 /styling/index.md
   Link: <https://maplacejs.com/styling/>; rel="canonical"
+/accessibility/index.md
+  Link: <https://maplacejs.com/accessibility/>; rel="canonical"
 /api/index.md
   Link: <https://maplacejs.com/api/>; rel="canonical"
 /migrating/index.md

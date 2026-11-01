@@ -249,9 +249,9 @@ The "My location" button needs a visitor who shares their position. For anyone w
 ```html
 <form id="from-address">
   <label for="address">Your address</label>
-  <input id="address" name="address" autocomplete="street-address">
+  <input id="address" name="address">
   <button type="submit" disabled>Sort by distance</button>
-  <p role="status"></p>
+  <output></output>
 </form>
 ```
 
@@ -277,7 +277,7 @@ export function searchFromAddress(
   geocode: Geocode,
 ): () => void {
   const input = partOf<HTMLInputElement>(form, '[name="address"]');
-  const status = partOf(form, '[role="status"]');
+  const status = partOf(form, "output");
   const button = partOf<HTMLButtonElement>(form, '[type="submit"]');
   let latest = 0;
 

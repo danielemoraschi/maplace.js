@@ -201,7 +201,7 @@ Refused, unavailable, timed out, not on HTTPS, or no geolocation at all: the lin
 Once a map has mounted, `attach` adds two things to its container, for a keyboard and a screen reader, whichever provider draws it; `detach` takes them away.
 
 - **A link past the map**, first in the container, so Tab reaches it before the map's own stops; hidden until focused. It sends focus to the first thing that takes it in a control on the map, such as a list there, else just past the map, so the next Tab goes on to what follows. `.maplace-skip-map` styles its look, though its place and stacking are set on it; `display: none` removes it.
-- **A live region** saying each new selection, by the location's title, else its id: "Selected: Rome". It stays silent on the selection the map opens with, when a selection is cleared, and while focus is in a list (`role="listbox"`) or a `select`, as a screen reader speaks the change there.
+- **A live region** saying each new selection, by the location's title, else its id: "Selected: Rome". It stays silent on the selection the map opens with, when a selection is cleared, and while focus is in a native `select`, as a screen reader speaks the change there.
 
 ## Adapters
 

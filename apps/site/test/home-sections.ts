@@ -116,4 +116,4 @@ export const groupNav = (page: Page) => page.getByRole("navigation", { name: "Ex
 
 /** The examples' bar's link to the group labelled `label`. */
 export const groupLink = (page: Page, label: string) =>
-  groupNav(page).getByRole("link", { name: new RegExp(`^${label} `) });
+  groupNav(page).getByRole("link", { name: new RegExp(`^${label},`) });

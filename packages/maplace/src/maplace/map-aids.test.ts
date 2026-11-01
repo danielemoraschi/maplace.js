@@ -100,18 +100,23 @@ describe("the map's link and announcements", () => {
     expect(said()).toBe("Selected: Rome");
   });
 
-  it.each(["select", "div"] as const)(
-    "says nothing while focus is in a %s list, and doesn't repeat when it leaves",
-    async (tag) => {
-      const { maplace, said } = await onMap();
-      const list = focusedList(tag);
-      maplace.select("rome");
-      expect(said()).toBe("");
-      list.blur();
-      maplace.hover("milan");
-      expect(said()).toBe("");
-    },
-  );
+  it("says nothing while focus is in a native select, and doesn't repeat when it leaves", async () => {
+    const { maplace, said } = await onMap();
+    const list = focusedList("select");
+    maplace.select("rome");
+    expect(said()).toBe("");
+    list.blur();
+    maplace.hover("milan");
+    expect(said()).toBe("");
+  });
+
+  // VoiceOver on Safari gave no word of it there (2026-11-01, W48).
+  it("says a selection made in a listbox holding focus", async () => {
+    const { maplace, said } = await onMap();
+    focusedList("div");
+    maplace.select("rome");
+    expect(said()).toBe("Selected: Rome");
+  });
 
   it("takes the labels", async () => {
     const { maplace, said, link } = await onMap({ skipMapLabel: "Oltre", selectedLabel: "Scelto" });

@@ -140,12 +140,17 @@ describe("the examples' bar and its provider toggle (W38)", () => {
   it("names each group's link by its label and number of examples", async () => {
     const { page, context } = await home(DESKTOP);
     const links = groupNav(page).getByRole("link");
-    const names = await links.evaluateAll((anchors) =>
+    const shown = await links.evaluateAll((anchors) =>
       anchors.map((anchor) => anchor.textContent?.replace(/\s+/g, " ").trim()),
     );
-    expect(names).toEqual(
-      EXAMPLE_GROUPS.map(({ label, sections }) => `${label} ${sections.length} examples`),
+    expect(shown).toEqual(
+      EXAMPLE_GROUPS.map(({ label, sections }) => `${label} ${sections.length}`),
     );
+    // The comma is for a screen reader, which otherwise runs the label into the number.
+    for (const { label, sections } of EXAMPLE_GROUPS) {
+      const name = `${label}, ${sections.length} examples`;
+      expect(await groupNav(page).getByRole("link", { name, exact: true }).count()).toBe(1);
+    }
     expect(await links.first().getAttribute("aria-current")).toBe("page");
     await context.close();
   }, 30_000);

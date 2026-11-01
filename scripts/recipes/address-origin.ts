@@ -18,7 +18,7 @@ export function searchFromAddress(
   geocode: Geocode,
 ): () => void {
   const input = partOf<HTMLInputElement>(form, '[name="address"]');
-  const status = partOf(form, '[role="status"]');
+  const status = partOf(form, "output");
   const button = partOf<HTMLButtonElement>(form, '[type="submit"]');
   let latest = 0;
 

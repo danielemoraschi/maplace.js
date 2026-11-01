@@ -95,6 +95,14 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     label: "Styling",
   },
   {
+    id: "accessibility",
+    file: "docs/reference/accessibility.md",
+    title: "Accessibility",
+    description:
+      "What maplacejs does for a keyboard and a screen reader, what was tested and on what, and what wasn't.",
+    label: "Accessibility",
+  },
+  {
     id: "api",
     file: "docs/reference/api.md",
     title: "API reference",
