@@ -74,5 +74,7 @@ export function openPages(htmls: readonly string[], { apiKey }: PageOptions = {}
   if (maps.length !== htmls.length) {
     throw new Error(`${htmls.length} pages opened ${maps.length} maps: each page has one`);
   }
+  // A page that holds its map opens it on a press: a test of that page goes on from there.
+  for (const map of maps) if (map.hasAttribute("hold")) map.release();
   return { maps, roots, errors };
 }

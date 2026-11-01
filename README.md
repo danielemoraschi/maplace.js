@@ -212,7 +212,7 @@ createRoot(document.getElementById("simple-react-root") as HTMLElement).render(
 );
 ```
 
-The file renders its own root, into [the page beside it](packages/maplace/examples/simple/react.html), which loads Maps JS as the vanilla page does and sizes the map's div. `<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelectionChange` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` and `markerIcon` give popups and markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content (inside `<MaplaceMap>`, its `position="top-right"` puts it on the map, and `<MapControl position>` puts your own content there), and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
+The file renders its own root, into [the page beside it](packages/maplace/examples/simple/react.html), which loads Maps JS as the vanilla page does and sizes the map's div. `<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelectionChange` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` gives popups React content, as [the popups example](packages/maplace/examples/popups/react.tsx) does, and its `markerIcon` gives markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content (inside `<MaplaceMap>`, its `position="top-right"` puts it on the map, and `<MapControl position>` puts your own content there), and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
 On MapLibre, `createAdapter={createMapLibreAdapter}` from `maplace/maplibre` is the only change, the module importing maplibre-gl's stylesheet ([MapLibre adapter](docs/reference/maplibre.md#react)).
 
@@ -270,7 +270,7 @@ export function CityMap() {
 ## Documentation
 
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): seventeen scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
+- [Examples](packages/maplace/examples/): twenty-three scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 

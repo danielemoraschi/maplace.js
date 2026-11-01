@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-01 Changed the examples to show one idea each, 23 of them: Popups, Click to add, Nearest first and This area split out of Markers, Search and Cluster, Load on demand and Link to a place new, each with a guide below its map naming the options it uses
 - 2026-11-01 Changed `cluster` and `hold` on the element to read `"false"` as off, as every other switch does; a bad value is misuse, and a bad `hold` still holds
 - 2026-11-01 Changed how the search box, the fit-all entry, a popup's two links and the element's "My location" control turn on: each has a switch of its own (`search`, `fitAll`, `popup.openInMapsLink`, `popup.directionsLink`; on the element `search`, `fit-all`, `open-in-maps-link`, `directions-link`, `my-location`) with default words, and its label only changes those words
 - 2026-10-31 Added a "My location" control (`createMyLocationControl`, `myLocation`, `my-location-label` on the element, `<MyLocation>` in React) that asks for the visitor's position only on a press, and sorting a list by distance from any point (`setOrigin`, `sort: "distance"`, `list-sort`), each entry saying how far, on Google and MapLibre

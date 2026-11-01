@@ -94,7 +94,7 @@ The store's [events](store.md#events), as DOM events on the element, named in lo
 
 The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles; its default styles, and how to turn them off, are on [Styling](styling.md). A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too. A map with `loading="lazy"` stays idle until it comes near the viewport, so a map below the fold costs no map load (Google bills each) until the visitor scrolls to it; one in a hidden panel (a closed tab, `<details>`, `display: none`) loads once shown. Its list is built at once; with `hold` as well, it waits for `release()`, which loads it wherever it is.
 
-While it waits, with `hold` or off-screen with `loading="lazy"`, a map shows a panel in its pane: a button calling `release()` and a line naming whom it loads from. The panel asks no provider anything, and leaves as the map opens, focus passing to the pane if it held it. A placeholder a page draws with `:state(idle)` shows beside it, unless the page replaces or hides the panel, and in the `error` state the panel is hidden until the misuse is corrected.
+The [Load on demand](../../packages/maplace/examples/load-on-demand/guide.md) example shows it. While it waits, with `hold` or off-screen with `loading="lazy"`, a map shows a panel in its pane: a button calling `release()` and a line naming whom it loads from. The panel asks no provider anything, and leaves as the map opens, focus passing to the pane if it held it. A placeholder a page draws with `:state(idle)` shows beside it, unless the page replaces or hides the panel, and in the `error` state the panel is hidden until the misuse is corrected.
 
 | The map | The line |
 |---|---|
@@ -123,7 +123,7 @@ With `url-state`, the page's address says which location is selected, so a link 
 - A bare `url-state` (or `"true"`) is the `location` parameter. With several maps on a page, give each its own: `url-state="office"`.
 - The attribute is read when the element connects.
 
-With React, or a store of your own, read and write the address around `select`.
+With React, or a store of your own, read and write the address around `select`, as the [Link to a place](../../packages/maplace/examples/link-to-place/guide.md) example does.
 
 ## Location attributes
 

@@ -1,7 +1,9 @@
 # Markers
 
-- **Image icons**: Rome, Milan and Naples, each an `icon` that is an image's URL ([Icons](../../../../docs/reference/locations.md#icons)).
-- **Venice's star**: an `icon` that is a node of yours, a gold disc drawn by the page's CSS (`.star`). For pins whose hovered and selected looks are in your CSS too, see [Your markers](../css-markers/guide.md).
-- **Milan's zoom**: selecting Milan, on the map or in the list, shows it at zoom 8, its own `zoom`; the others are panned to at the map's zoom ([Every location](../../../../docs/reference/locations.md#every-location)).
-- **View all**: the list's first entry, as 0.2's "View All", clears the selection and fits every place, Florence too (`fitAll` turns it on and `fitAllLabel` sets its words; on the element, `fit-all` and `fit-all-label`).
-- **Open in Maps, Directions**: at the end of a popup, on Google to Google Maps, on MapLibre to OpenStreetMap (`popup.openInMapsLink`, `popup.directionsLink`, on the element `open-in-maps-link`, `directions-link`, each with an optional label for other words: [Popup options](../../../../docs/reference/store.md#popup-options)). Naples has no content, so no popup and no links.
+Pins of your own: three image files, one icon drawn by the page's CSS, and one place that opens closer than the others.
+
+- **Try it**: pick Milan's pin, and the map goes to it at zoom 8, its own; the others are panned to at the map's zoom.
+- **HTML**: `icon="/icons/a.svg"` on a `<maplace-location>` for an image, a `<template data-icon>` inside it for your own markup, as Venice's gold star, and `zoom="8"` for its zoom ([Location attributes](../../../../docs/reference/element.md#location-attributes)).
+- **Script** and **Bundler**: an `icon` on a location that is an image's URL or a node of yours ([Icons](../../../../docs/reference/locations.md#icons)), and its `zoom` ([Every location](../../../../docs/reference/locations.md#every-location)).
+- **React**: `icon` for the images, and `markerIcon` on `<MaplaceMap>` for your own markup ([`<MaplaceMap>`](../../../../docs/reference/react.md#maplacemap)).
+- **Their states**: for hovered and selected looks in your CSS, see [Your markers](../css-markers/guide.md).

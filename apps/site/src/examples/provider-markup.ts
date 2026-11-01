@@ -1,5 +1,6 @@
 import type { Provider } from "./example-providers.ts";
 import { attributeValue, requireOnce } from "./page-markup.ts";
+import { HELD_BY_EXAMPLE_ATTRIBUTE } from "./page-scripts.ts";
 import type { SiteMapSettings } from "./site-map-settings.ts";
 
 /** What a provider rewrites in an example's markup for the site to run it. */
@@ -20,6 +21,12 @@ const MAP_KEY_ATTRIBUTE = / api-key="YOUR_KEY"/g;
 
 /** A map ID the page's map sets itself. */
 const OWN_MAP_ID_ATTRIBUTE = /\smap-id=/;
+
+/** A `hold` the page's map sets itself, for its reader to press. */
+const OWN_HOLD_ATTRIBUTE = /\shold(?=[\s>=])/;
+
+/** An attribute's quoted value, whose words are no attributes. */
+const QUOTED_VALUE = /"[^"]*"|'[^']*'/g;
 
 /**
  * Each provider's rewrite of its examples, with the site's settings:
@@ -48,10 +55,18 @@ export const PROVIDER_MARKUP: Readonly<
 
 /**
  * `map` held, naming its `provider` (both providers register on the site's page, and a map
- * without `provider` then refuses to load), with `attributes` added after.
+ * without `provider` then refuses to load), with `attributes` added after. A map holding itself
+ * is marked as such, as consent then opens its panel, not the map.
  */
 function heldBy(map: string, provider: Provider, attributes = ""): string {
-  return map.replace("<maplace-map", `<maplace-map hold provider="${provider}"${attributes}`);
+  const unquoted = ownTagOf(map).replaceAll(QUOTED_VALUE, "");
+  const holding = OWN_HOLD_ATTRIBUTE.test(unquoted) ? HELD_BY_EXAMPLE_ATTRIBUTE : "hold";
+  return map.replace("<maplace-map", `<maplace-map ${holding} provider="${provider}"${attributes}`);
+}
+
+/** `map`'s own opening tag, whose attributes are the map's. */
+function ownTagOf(map: string): string {
+  return MAP_TAG.exec(map)?.[0] ?? "";
 }
 
 function heldGoogleMap(map: string, { apiKey, mapId }: SiteMapSettings): string {
@@ -63,8 +78,7 @@ function heldGoogleMap(map: string, { apiKey, mapId }: SiteMapSettings): string 
 
 /** ` map-id="<mapId>"` for a map whose own tag sets none, or nothing. */
 function siteMapIdFor(map: string, mapId: string | undefined): string {
-  const ownTag = MAP_TAG.exec(map)?.[0] ?? "";
-  if (mapId === undefined || OWN_MAP_ID_ATTRIBUTE.test(ownTag)) return "";
+  if (mapId === undefined || OWN_MAP_ID_ATTRIBUTE.test(ownTagOf(map))) return "";
   return ` map-id="${attributeValue(mapId)}"`;
 }
 

@@ -1,6 +1,6 @@
 import type { MaplaceMapElement } from "maplace/element";
 import type { Provider } from "../examples/example-providers.ts";
-import { runPageScripts } from "../examples/page-scripts.ts";
+import { HELD_BY_EXAMPLE_ATTRIBUTE, PANEL_OPEN, runPageScripts } from "../examples/page-scripts.ts";
 import { byProvider } from "./by-provider.ts";
 import { releaseOnceDefined } from "./element-loader.ts";
 import { clearScriptFailure, noteScriptFailure } from "./map-failures.ts";
@@ -27,7 +27,12 @@ function releaserFor(load: () => Promise<unknown>): (map: MaplaceMapElement) => 
     load,
     release(map) {
       runPageScripts(map.closest("[data-live-page]") ?? map);
-      map.release();
+      // A map holding itself opens on its reader's press, on its own panel.
+      if (map.hasAttribute(HELD_BY_EXAMPLE_ATTRIBUTE)) {
+        map.setAttribute(HELD_BY_EXAMPLE_ATTRIBUTE, PANEL_OPEN);
+      } else {
+        map.release();
+      }
     },
     failed(map, error) {
       console.error("maplace: the map element's script didn't load", error);

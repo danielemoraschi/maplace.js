@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_SECTIONS } from "./example-sections.ts";
 import { liveVersions } from "./live-versions.ts";
+import { HELD_BY_EXAMPLE_ATTRIBUTE } from "./page-scripts.ts";
 import { PROVIDER_MARKUP } from "./provider-markup.ts";
 
 const GOOGLE_MAP = `<maplace-map api-key="YOUR_KEY" map-id="DEMO_MAP_ID">
@@ -20,6 +21,25 @@ const google = PROVIDER_MARKUP.google;
 const maplibre = PROVIDER_MARKUP.maplibre({ apiKey: "site-key", mapId: "site-map" });
 
 describe("Google's markup", () => {
+  it("marks a map with its own hold, and leaves it one hold", () => {
+    const held = google({ apiKey: "site-key" }).holdMap(
+      '<maplace-map id="m" api-key="YOUR_KEY" hold></maplace-map>',
+    );
+    expect(held).toContain(HELD_BY_EXAMPLE_ATTRIBUTE);
+    expect(held.match(/\shold\b/g)).toHaveLength(1);
+    expect(google({ apiKey: "site-key" }).holdMap(GOOGLE_MAP)).not.toContain(
+      HELD_BY_EXAMPLE_ATTRIBUTE,
+    );
+  });
+
+  it("doesn't take a word in a quoted value for a map's own hold", () => {
+    const held = google({ apiKey: "site-key" }).holdMap(
+      '<maplace-map api-key="YOUR_KEY" title="on hold now"></maplace-map>',
+    );
+    expect(held).toContain('<maplace-map hold provider="google"');
+    expect(held).not.toContain(HELD_BY_EXAMPLE_ATTRIBUTE);
+  });
+
   it("holds the map under its provider, with the site's key", () => {
     expect(google({ apiKey: "site-key" }).holdMap(GOOGLE_MAP)).toBe(
       GOOGLE_MAP.replace(
@@ -103,7 +123,10 @@ describe("every page map on the site", () => {
       liveVersions(name, { apiKey: "k" }).filter(({ kind }) => kind === "html"),
     );
     for (const { provider, markup } of pages) {
-      expect(markup).toContain(`<maplace-map hold provider="${provider}"`);
+      // A map holding itself has the mark here, its own `hold` further along.
+      expect(markup).toMatch(
+        new RegExp(`<maplace-map (hold|${HELD_BY_EXAMPLE_ATTRIBUTE}) provider="${provider}"`),
+      );
     }
     expect(new Set(pages.map(({ provider }) => provider))).toEqual(new Set(["google", "maplibre"]));
   });

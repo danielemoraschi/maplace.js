@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- A click on the map adds a pin there, and every pin drags: editable, written back to the store. -->
+<maplace-map id="click-to-add-map" api-key="YOUR_KEY">
+  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome" editable></maplace-location>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan" editable></maplace-location>
+</maplace-map>
+<script>
+  let clickToAddPins = 0;
+  document.getElementById('click-to-add-map').addEventListener('maplace-mapclick', (event) => {
+    clickToAddPins += 1;
+    const map = event.currentTarget;
+    const pin = { id: `pin-${clickToAddPins}`, ...event.detail.position, title: `Pin ${clickToAddPins}`, editable: true };
+    map.locations = [...map.locations, pin];
+  });
+</script>

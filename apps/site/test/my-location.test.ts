@@ -41,10 +41,10 @@ describe("the My location control on the built site", () => {
     await context.addInitScript(countAsks);
     const asks = () => page.evaluate(() => (window as unknown as { asks: number }).asks);
 
-    await page.goto(new URL(`${sectionPage("search")}#search`, site.url).href);
-    await leaveOnlySection(page, "search");
-    const section = await sectionOf(page, "search");
-    await chooseVersion(page, "search", versionChoice("html").label);
+    await page.goto(new URL(`${sectionPage("nearest")}#nearest`, site.url).href);
+    await leaveOnlySection(page, "nearest");
+    const section = await sectionOf(page, "nearest");
+    await chooseVersion(page, "nearest", versionChoice("html").label);
     await loadMapsButtons(section).click();
     const version = mapLibreVersionIn(section, "html");
     await expect.poll(() => pageMapState(version), ON_MAPLIBRE).toBe("ready");

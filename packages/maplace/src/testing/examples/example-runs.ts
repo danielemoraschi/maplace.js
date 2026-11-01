@@ -1,6 +1,7 @@
 import { expect, vi } from "vitest";
 import type { Maplace } from "../../index";
 import type { FakeAdapter } from "../fake-adapter";
+import { clickButton } from "./behaviours/reading";
 import { behaviourOf } from "./example-behaviours";
 import { parse } from "./example-dom";
 import { type ExampleHost, pageOf } from "./example-files";
@@ -80,8 +81,22 @@ export async function expectVersionRuns(
 
 /** `version` opened on the test document: a host's nodes and module, or a script version's. */
 export function openVersion(version: ExampleHost | ScriptVersion): OpenedVersion {
-  if (version.kind === "script") return openScript(version);
-  return { root: openHost(version.html), run: version.run };
+  const opened =
+    version.kind === "script"
+      ? openScript(version)
+      : { root: openHost(version.html), run: version.run };
+  return pageHolds(version) ? pressingLoadMap(opened) : opened;
+}
+
+/** `opened`, its run also pressing the "Load map" button its program makes. */
+function pressingLoadMap({ root, run }: OpenedVersion): OpenedVersion {
+  return {
+    root,
+    run: async () => {
+      await run();
+      await vi.waitFor(() => clickButton(root, "Load map"));
+    },
+  };
 }
 
 /** The run's map draws what its store shows, at least one location (large diffs come in chunks). */
@@ -96,8 +111,20 @@ export function hasList(root: Element): boolean {
 }
 
 /** Whether `host`'s page shows a list: its `<maplace-map>` has `list`, whatever its value. */
-function pageShowsList({ example, provider }: ExampleHost | ScriptVersion): boolean {
-  return parse(pageOf(example, provider).html).querySelector("maplace-map[list]") !== null;
+function pageShowsList(version: ExampleHost | ScriptVersion): boolean {
+  return pageMatches(version, "maplace-map[list]");
+}
+
+/** Whether `version`'s page holds its map until a press: its `<maplace-map>` has `hold`. */
+function pageHolds(version: ExampleHost | ScriptVersion): boolean {
+  return pageMatches(version, "maplace-map[hold]");
+}
+
+function pageMatches(
+  { example, provider }: ExampleHost | ScriptVersion,
+  selector: string,
+): boolean {
+  return parse(pageOf(example, provider).html).querySelector(selector) !== null;
 }
 
 /** A root named by the first id inside it, for a failure's message. */

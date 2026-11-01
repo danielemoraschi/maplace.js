@@ -110,7 +110,7 @@ function bubblesSettled(map: google.maps.Map, container: HTMLElement) {
 
 /**
  * A 375 × 600 map on a phone, bordered as the site borders every version's, fitted to
- * `locations`, with a list headed as the markers example's in its top-right corner.
+ * `locations`, with a list under a heading in its top-right corner.
  */
 async function phoneMapWithList(locations: Location[]) {
   const before = { width: window.innerWidth, height: window.innerHeight };

@@ -43,7 +43,5 @@ createGoogleMap("#search-vanilla-map", {
     container: "#search-vanilla-list",
     search: true,
     searchLabel: "Find a place",
-    sort: "distance",
   },
-  myLocation: true,
 });

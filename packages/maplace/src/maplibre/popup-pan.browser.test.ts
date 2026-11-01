@@ -96,8 +96,7 @@ async function centredOnP0(moveEnds: PhoneMap["moveEnds"]) {
 }
 
 /**
- * A phone-width map of `count` places sized to a known bubble, a list headed as the markers
- * example's in its top-right corner, and what the map's `moveend`s saw from here on.
+ * A phone-width map of `count` places sized to a known bubble, a list under a heading in its top-right corner, and what the map's `moveend`s saw from here on.
  */
 async function phoneMapWithList(count: number) {
   const locations = places(count).map((place) => ({ ...place, content: sizedContent }));

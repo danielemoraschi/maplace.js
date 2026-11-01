@@ -1,19 +1,24 @@
-import { big } from "./behaviours/big";
 import { brand } from "./behaviours/brand";
 import { circles } from "./behaviours/circles";
+import { clickToAdd } from "./behaviours/click-to-add";
 import { cssMarkers } from "./behaviours/css-markers";
 import { customList } from "./behaviours/custom-list";
+import { linkToPlace } from "./behaviours/link-to-place";
+import { loadOnDemand } from "./behaviours/load-on-demand";
 import { markers } from "./behaviours/markers";
 import { menu } from "./behaviours/menu";
 import { mixed, mixedWithoutRoute } from "./behaviours/mixed";
+import { nearest } from "./behaviours/nearest";
 import { polygon } from "./behaviours/polygon";
 import { polyline } from "./behaviours/polyline";
+import { popups } from "./behaviours/popups";
 import type { ExampleBehaviour } from "./behaviours/reading";
 import { route } from "./behaviours/route";
 import { search } from "./behaviours/search";
 import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
 import { tags } from "./behaviours/tags";
+import { thisArea } from "./behaviours/this-area";
 import { unstyled } from "./behaviours/unstyled";
 import type { Provider } from "./example-files";
 
@@ -22,20 +27,25 @@ export type { ExampleBehaviour } from "./behaviours/reading";
 /** What each example does beyond drawing its locations, by name (`behaviours/<name>.ts`). */
 const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   markers,
+  popups,
+  "click-to-add": clickToAdd,
   circles,
   menu,
   tabs,
   search,
+  nearest,
+  "this-area": thisArea,
   tags,
   polyline,
   route,
   polygon,
   mixed,
+  "load-on-demand": loadOnDemand,
+  "link-to-place": linkToPlace,
   "custom-list": customList,
   "css-markers": cssMarkers,
   brand,
   unstyled,
-  big,
 };
 
 /**

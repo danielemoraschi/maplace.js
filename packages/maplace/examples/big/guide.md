@@ -1,8 +1,9 @@
 # Cluster
 
-The list on the map has a switch: all 4,000 points, or only those in view.
+4,000 points fetched by the page: those near each other are drawn as one badge counting them, so the map stays fast and readable.
 
-- **Try it**: above the list, a switch: "All", pressed at first, lists every point. Press "This area", and the list holds the points in view, listing again as you pan or zoom; choosing an entry moves the map too. Over an empty patch of sea, the list says so. "All" lists all 4,000 again. The switch works the same with the list beside the map, under it on a phone, or anywhere on the page.
-- **HTML**: `list-scope="viewport"` on `<maplace-map>`, beside `list` and `list-position` ([Map attributes](../../../../docs/reference/element.md#map-attributes)); `area-only-label`, `show-all-label` and `empty-area-label` change its wording.
-- **Script** and **Bundler**: `list: { scope: "viewport" }` in the map's options, a [list view option](../../../../docs/reference/store.md#list-view-options), with `areaOnlyLabel`, `showAllLabel` and `emptyAreaLabel`.
-- **React**: `<LocationList scope="viewport" position="top-right" />` inside the `<MaplaceMap>` ([`<LocationList>`](../../../../docs/reference/react.md#locationlist)).
+- **Try it**: zoom in on a badge, and it splits into smaller badges, then single pins.
+- **HTML**: `cluster` on `<maplace-map>`, on a CDN script that bundles clustering: `maplace-element-cluster.iife.js` on Google, while MapLibre's script always does ([Map attributes](../../../../docs/reference/element.md#map-attributes)). The element never fetches: a script assigns `locations`.
+- **Script** and **Bundler**: `cluster: true` in the map's options, then [`setLocations`](../../../../docs/reference/store.md#methods) with the points ([Options](../../../../docs/reference/store.md#options)). The Script version on Google is on the same cluster script; from npm, each provider loads its clustering only for a map that clusters ([on Google](../../../../docs/reference/google.md#clustering), [on MapLibre](../../../../docs/reference/maplibre.md#clustering)).
+- **React**: the `cluster` prop of `<MaplaceProvider>` ([`<MaplaceProvider>`](../../../../docs/reference/react.md#maplaceprovider)).
+- **Their look**: [Cluster badges](../../../../docs/reference/styling.md#cluster-badges) has the badge's colours, as [Brand colours](../brand/guide.md) uses them.

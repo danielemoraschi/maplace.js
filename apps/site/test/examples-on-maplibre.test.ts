@@ -29,7 +29,7 @@ import {
 import { expectLeftOpensAsShown, LEFT_WHILE_LOADING } from "./left-while-loading.ts";
 import { ON_MAPLIBRE, SECTION_MS, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { MAPLIBRE_GL_CHUNKS, mapLibreLibraryChunk, VANILLA_CHUNK } from "./site-chunks.ts";
-import { loadMapsButtons } from "./visitor.ts";
+import { holdsItself, loadMapButton, loadMapsButtons } from "./visitor.ts";
 
 /**
  * Each section with MapLibre versions, its versions in the order the test opens them: the first
@@ -65,6 +65,14 @@ describe("the site's examples on MapLibre", () => {
         async function drawnOnMapLibre({ kind, label }: VersionChoice, askedBefore: number) {
           const version = mapLibreVersionIn(section, kind);
           const waitingFor = (what: string) => polled(name, `its ${label} version's ${what}`);
+          const opensOnPress = await holdsItself(section);
+          if (opensOnPress) {
+            // Past consent, a map holding itself draws nothing and asks for no style until pressed.
+            await loadMapButton(version).waitFor();
+            expect(await mapLibreDrawn(version)).toBe(false);
+            expect(offsite().slice(askedBefore)).not.toContain(BRIGHT);
+            await loadMapButton(version).click();
+          }
           if (kind === "html") {
             await expect.poll(() => pageMapState(version), waitingFor("state")).toBe("ready");
           }
@@ -72,6 +80,12 @@ describe("the site's examples on MapLibre", () => {
           await expect
             .poll(() => offsite().slice(askedBefore), waitingFor("style"))
             .toContain(BRIGHT);
+          if (opensOnPress) {
+            expect(await loadMapButton(version).count()).toBe(0);
+            expect(await version.evaluate((node) => node.contains(document.activeElement))).toBe(
+              true,
+            );
+          }
         }
 
         for (const [index, version] of order.entries()) {
@@ -127,7 +141,7 @@ describe("MapLibre's maps in the site's frame", () => {
   }, 30_000);
 
   it("leaves a list on MapLibre's map out of the site's side panel", async () => {
-    const { context, section } = await visitSection(site, "markers");
+    const { context, section } = await visitSection(site, "tags");
     await loadMapsButtons(section).click();
     const list = mapLibreVersionIn(section, "html").locator(".maplace-list-view");
     await expect.poll(() => list.count(), ON_MAPLIBRE).toBe(1);

@@ -64,13 +64,6 @@ const panel = (tab: string) => `example-${name}-${tab}`;
       </p>
     )
   }
-  {
-    Guide && (
-      <div class="example-guide mt-3 max-w-text">
-        <Guide />
-      </div>
-    )
-  }
   <div
     class="mt-4 mb-3 flex flex-wrap"
     role="tablist"
@@ -110,5 +103,12 @@ const panel = (tab: string) => `example-${name}-${tab}`;
         ))}
       </div>
     ))
+  }
+  {
+    Guide && (
+      <div class="example-guide mt-6 max-w-text">
+        <Guide />
+      </div>
+    )
   }
 </section>

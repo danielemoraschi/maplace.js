@@ -41,7 +41,7 @@ Makes one store on mount and keeps it as long as it is mounted. `locations` and 
 | `sanitize`, `popup`, `style`, `selectedStyle`, `hoveredStyle`, `cluster`, `view`, `skipMapLabel`, `selectedLabel` | The [store's options](store.md#options), read on mount |
 | `children` | What uses the store: `<MaplaceMap>`, `<LocationList>`, your components |
 
-An id in `selectedId` or `defaultSelectedId` not shown yet (locations still loading, or filtered out) waits until it is; one the filter hid is tried again at the next render, as the provider follows its props only then. A `filter` or `route` that app code sets through the store stands until the prop next changes.
+An id in `selectedId` or `defaultSelectedId` not shown yet (locations still loading, or filtered out) waits until it is; one the filter hid is tried again at the next render, as the provider follows its props only then. A `filter` or `route` that app code sets through the store stands until the prop next changes. To keep the selection in the page's address, see the [Link to a place](../../packages/maplace/examples/link-to-place/guide.md) example.
 
 ## Event props
 

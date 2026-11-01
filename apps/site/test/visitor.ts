@@ -2,6 +2,7 @@ import type { Browser, BrowserContext, ConsoleMessage, Locator, Page } from "pla
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 import { TEST_STYLE } from "../../../packages/maplace/src/maplibre/testing/test-style.ts";
 import { OPENFREEMAP_STYLES } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
+import { HELD_BY_EXAMPLE_ATTRIBUTE } from "../src/examples/page-scripts.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 
 /**
@@ -199,6 +200,14 @@ export async function openHome(page: Page, siteUrl: string, route = "/"): Promis
 /** The consent placeholders' "Load maps" buttons within `scope`. */
 export const loadMapsButtons = (scope: Page | Locator) =>
   scope.getByRole("button", { name: "Load maps", exact: true });
+
+/** The button a version of the Load on demand example opens its map with. */
+export const loadMapButton = (version: Locator) =>
+  version.getByRole("button", { name: "Load map", exact: true });
+
+/** Whether the map of `section`'s example holds itself, so each version opens on a press. */
+export const holdsItself = async (section: Locator) =>
+  (await section.locator(`[${HELD_BY_EXAMPLE_ATTRIBUTE}]`).count()) > 0;
 
 /** Screens the tests lay the site out on. */
 export const PHONE = { width: 375, height: 812 };

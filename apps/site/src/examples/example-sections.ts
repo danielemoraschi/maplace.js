@@ -29,16 +29,25 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "basics",
     label: "Basics",
-    summary: "Places on a map: one pin, then image markers with popups.",
+    summary: "Places on a map: one pin, your own markers, popups, and a click to add one.",
     description:
-      "A list of locations becomes a map plus a synced list, in a few lines, on Google Maps or MapLibre.",
+      "A list of locations becomes a map in a few lines, with your own markers, popups and a click to add one, on Google Maps or MapLibre.",
     sections: [
       { name: "simple", title: "Simple", summary: "One place on a map." },
       {
         name: "markers",
         title: "Markers",
-        summary:
-          "Three kinds of pin, popups with directions, a list on the map, one place unlisted: click the map to add one.",
+        summary: "Image icons, an icon of your own markup, and a place with its own zoom.",
+      },
+      {
+        name: "popups",
+        title: "Popups",
+        summary: "Each place's text in a popup, ending in links to open it in Maps or get there.",
+      },
+      {
+        name: "click-to-add",
+        title: "Click to add",
+        summary: "A click on the map adds a pin there, and every pin drags to a new place.",
       },
     ],
   },
@@ -46,9 +55,9 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "lists",
     label: "Lists",
     summary:
-      "The list beside the map, your way: a menu, tags to filter it, a search box, your own markup, or tabs outside the map.",
+      "The list beside the map, your way: a menu, tags, a search box, nearest first, what's in view, your own markup, or tabs.",
     description:
-      "Lists beside a map with maplacejs: a native menu, filtering by tag, a search box, your own markup, or tabs outside the map.",
+      "Lists beside a map with maplacejs: a native menu, tags, a search box, nearest first, what's in view, your own markup, or tabs.",
     sections: [
       {
         name: "menu",
@@ -63,7 +72,17 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "search",
         title: "Search",
-        summary: "A box to narrow the list and the map, and a button to sort it by distance.",
+        summary: "A box above the list that narrows the list and the map as you type.",
+      },
+      {
+        name: "nearest",
+        title: "Nearest first",
+        summary: "A button on the map that sorts the list by distance from the visitor.",
+      },
+      {
+        name: "this-area",
+        title: "This area",
+        summary: "A switch above the list: every place, or only those in view as the map moves.",
       },
       {
         name: "custom-list",
@@ -102,9 +121,9 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "data-routes",
     label: "Data & routes",
     summary:
-      "Data fetched and swapped in live, thousands of points clustered, and a drive through your own places.",
+      "Data fetched and swapped in live, thousands of points clustered, a drive through your places, a map loaded on a press, a link to a place.",
     description:
-      "Data fetched and swapped in live with maplacejs, thousands of points clustered, and a drive through your own places.",
+      "Data swapped in live with maplacejs, thousands of points clustered, a drive, a map loaded on a press, and a link to a place.",
     sections: [
       {
         name: "mixed",
@@ -115,13 +134,23 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "big",
         title: "Cluster",
-        summary: "4,000 points, clustered, listing what is in view.",
+        summary: "4,000 points, those near each other drawn as one badge counting them.",
       },
       {
         name: "route",
         title: "Route",
         summary: "A drive through your own places, passing through one, with directions by leg.",
         googleOnlyBecause: "MapLibre has no routing.",
+      },
+      {
+        name: "load-on-demand",
+        title: "Load on demand",
+        summary: "A button in the map's place: nothing draws until the visitor presses it.",
+      },
+      {
+        name: "link-to-place",
+        title: "Link to a place",
+        summary: "A link to the place picked, shown under the map, that opens the map on it.",
       },
     ],
   },

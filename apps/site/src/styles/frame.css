@@ -18,9 +18,10 @@
 }
 /*
  * A held map's own "Load map" panel never shows here: the consent placeholder asks first, and the
- * element is defined with the first map released, while other maps on the page stay held.
+ * element is defined with the first map released, while other maps on the page stay held. A map
+ * holding itself shows it once the site has released it, as that is what its example shows.
  */
-.version :where(.maplace-load-panel) {
+.version :where(maplace-map:not([data-held-by-example="open"]) .maplace-load-panel) {
   display: none;
 }
 /*

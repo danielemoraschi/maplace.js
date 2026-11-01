@@ -36,14 +36,15 @@ export function sectionPage(name: string): string {
 
 /**
  * A fresh visitor on the examples' page of `site` holding `name`'s section, with only that section
- * left, scrolled to it.
+ * left, scrolled to it; `addressTail`, what follows the page's path, is its anchor unless given.
  */
 export async function visitSection(
   site: SiteSession,
   name: string,
+  addressTail = `#${name}`,
 ): Promise<Visitor & { readonly section: Locator }> {
   const visit = await site.visitor();
-  await visit.page.goto(new URL(`${sectionPage(name)}#${name}`, site.url).href);
+  await visit.page.goto(new URL(`${sectionPage(name)}${addressTail}`, site.url).href);
   await leaveOnlySection(visit.page, name);
   return { ...visit, section: await sectionOf(visit.page, name) };
 }

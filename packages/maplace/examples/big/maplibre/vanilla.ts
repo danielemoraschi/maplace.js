@@ -4,8 +4,6 @@ import { createMapLibreMap } from "maplace/maplibre";
 
 const maplace = createMapLibreMap("#big-maplibre-vanilla-map", {
   cluster: true,
-  // On the map, top-right: a list switched between "All" and "This area", what is in view.
-  list: { scope: "viewport" },
 });
 
 const response = await fetch("/points-4k.json");

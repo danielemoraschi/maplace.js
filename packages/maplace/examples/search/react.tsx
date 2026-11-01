@@ -1,6 +1,6 @@
 import type { Location } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
-import { LocationList, MaplaceMap, MaplaceProvider, MyLocation } from "maplace/react";
+import { LocationList, MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -40,10 +40,8 @@ function Search() {
   return (
     <MaplaceProvider locations={cities}>
       <div className="map-and-list">
-        <MaplaceMap createAdapter={createGoogleAdapter} className="map">
-          <MyLocation />
-        </MaplaceMap>
-        <LocationList search searchLabel="Find a place" sort="distance" />
+        <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
+        <LocationList search searchLabel="Find a place" />
       </div>
     </MaplaceProvider>
   );

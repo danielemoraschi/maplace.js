@@ -1,0 +1,28 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #load-on-demand-script-map { height: 24rem; }
+  #load-on-demand-script-map:has(> button) { display: grid; place-content: center; }
+</style>
+<div id="load-on-demand-script-map"></div>
+<script type="module">
+  const box = document.getElementById("load-on-demand-script-map");
+  const locations = [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
+  ];
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = "Load map";
+  button.addEventListener("click", () => {
+    // The button goes as it's pressed: focus stays here, not at the top of the page.
+    box.tabIndex = -1;
+    box.focus({ preventScroll: true });
+    button.remove();
+    Maplace.createGoogleMap(box, { apiKey: "YOUR_KEY", locations });
+  });
+  box.append(button);
+</script>

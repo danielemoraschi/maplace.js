@@ -1,7 +1,11 @@
 // @vitest-environment happy-dom
 import type { MaplaceMapElement } from "maplace/element";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { INERT_SCRIPT_TYPE } from "../examples/page-scripts.ts";
+import {
+  HELD_BY_EXAMPLE_ATTRIBUTE,
+  INERT_SCRIPT_TYPE,
+  PANEL_OPEN,
+} from "../examples/page-scripts.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 
 const released: string[] = [];
@@ -37,6 +41,16 @@ beforeEach(() => {
 });
 
 describe("pageMapRelease", () => {
+  it("leaves a map an example holds to its own panel, its scripts run", async () => {
+    const held = map("rome");
+    held.setAttribute(HELD_BY_EXAMPLE_ATTRIBUTE, "");
+    await releaseWith()(held);
+    expect(released).toEqual([]);
+    expect(held.getAttribute(HELD_BY_EXAMPLE_ATTRIBUTE)).toBe(PANEL_OPEN);
+    const page = held.closest("[data-live-page]");
+    expect(page?.querySelector(`script[type="${INERT_SCRIPT_TYPE}"]`)).toBeNull();
+  });
+
   it("releases a Google map once Google's element loaded, a MapLibre map once MapLibre's", async () => {
     const load = loaders();
     const release = releaseWith(load);

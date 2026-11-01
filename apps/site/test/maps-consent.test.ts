@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
 import { chooseProvider, chooseVersion, groupLink, sectionPage } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, settled, siteBuiltBeforeTests } from "./site-session.ts";
-import { firstMap, footerToggle, openHome, placeholder } from "./visitor.ts";
+import { firstMap, footerToggle, loadMapButton, openHome, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -98,14 +98,25 @@ describe("the site's consent to its maps", () => {
     const { page, context } = await site.visitor();
     await openHome(page, site.url, sectionPage("route"));
     await placeholder(page).click();
-    const panels = page.locator("maplace-map:state(idle) .maplace-load-panel");
+    // Load on demand's map keeps its panel: it holds itself, for its reader to press.
+    const others = "maplace-map:not([data-held-by-example])";
+    const panels = page.locator(`${others}:state(idle) .maplace-load-panel`);
     await expect.poll(() => panels.count(), ASKED).toBeGreaterThan(0);
     const displays = await panels.evaluateAll((nodes) =>
       nodes.map((node) => getComputedStyle(node).display),
     );
     expect(new Set(displays)).toEqual(new Set(["none"]));
+    // One not released yet hides its panel too, until pressing it can load the map.
+    const unreleased = page.locator(
+      '[data-held-by-example]:not([data-held-by-example="open"]) .maplace-load-panel',
+    );
+    await expect.poll(() => unreleased.count(), ASKED).toBeGreaterThan(0);
+    const unreleasedDisplays = await unreleased.evaluateAll((nodes) =>
+      nodes.map((node) => getComputedStyle(node).display),
+    );
+    expect(new Set(unreleasedDisplays)).toEqual(new Set(["none"]));
     expect(await placeholder(page).isVisible()).toBe(false);
-    expect(await page.getByRole("button", { name: "Load map", exact: true }).count()).toBe(0);
+    expect(await loadMapButton(page.locator(others)).count()).toBe(0);
     await context.close();
   }, 30_000);
 });

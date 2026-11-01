@@ -1,0 +1,75 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map and its list mount on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #link-to-place-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #link-to-place-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #link-to-place-maplibre-script-list { display: contents; }
+  #link-to-place-maplibre-script-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #link-to-place-maplibre-script-map-and-list { flex-direction: column; }
+    #link-to-place-maplibre-script-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+</style>
+<div id="link-to-place-maplibre-script-map-and-list">
+  <div id="link-to-place-maplibre-script-map"></div>
+  <div id="link-to-place-maplibre-script-list"></div>
+</div>
+<p id="link-to-place-maplibre-script-link"></p>
+<script type="module">
+  const PLACE = "place-maplibre-script";
+  const locations = [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
+    { id: "turin", lat: 45.0703, lng: 7.6869, title: "Turin" },
+  ];
+
+  /** The place the address names, if there is one: a link can name anything. */
+  function placeInAddress() {
+    const id = new URLSearchParams(location.search).get(PLACE);
+    return locations.find((place) => place.id === id)?.id;
+  }
+
+  /** A new history entry for a place picked, unless the address says so already. */
+  function writeAddress({ id }) {
+    if (id === placeInAddress()) return;
+    const address = new URL(location.href);
+    if (id === undefined) address.searchParams.delete(PLACE);
+    else address.searchParams.set(PLACE, id);
+    history.pushState(null, "", address);
+  }
+
+  /** The line under the map: a link opening on the place `id`, on this map, or a prompt for one. */
+  function showLink(id) {
+    const line = document.getElementById("link-to-place-maplibre-script-link");
+    if (id === undefined) {
+      line.textContent = "Pick a place for a link to it.";
+      return;
+    }
+    const address = new URL(location.href);
+    address.searchParams.set(PLACE, id);
+    address.hash = "link-to-place-maplibre-script-map";
+    const link = document.createElement("a");
+    link.href = address.href;
+    link.textContent = address.search;
+    line.replaceChildren("Link to this place: ", link);
+  }
+
+  const maplace = Maplace.createMapLibreMap("#link-to-place-maplibre-script-map", {
+    locations,
+    selectedId: placeInAddress(),
+    list: { container: "#link-to-place-maplibre-script-list", fitAll: true, fitAllLabel: "View all" },
+  });
+  showLink(maplace.getSnapshot().selectedId);
+  maplace.on("selectionChange", (change) => {
+    writeAddress(change);
+    showLink(change.id);
+  });
+  // Only on a change: selecting the selected place again would pan back to it.
+  addEventListener("popstate", () => {
+    const place = placeInAddress();
+    if (place !== maplace.getSnapshot().selectedId) maplace.select(place);
+  });
+</script>

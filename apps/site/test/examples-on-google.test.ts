@@ -24,7 +24,7 @@ import {
   visitSection,
 } from "./home-sections.ts";
 import { expectLeftOpensAsShown, LEFT_WHILE_LOADING } from "./left-while-loading.ts";
-import { addedByBootstrap, loadMapsButtons } from "./visitor.ts";
+import { addedByBootstrap, holdsItself, loadMapButton, loadMapsButtons } from "./visitor.ts";
 
 /** The versions the site runs from its own bundle, beside the page's. */
 const LIVE_VERSIONS = VERSION_LABELS.filter(({ kind }) => kind !== "html");
@@ -57,6 +57,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
         async function drawnOnGoogle({ kind, label }: VersionChoice): Promise<void> {
           const drawn = `${name}'s ${label} version`;
           const version = versionIn(section, kind);
+          if (await holdsItself(section)) await loadMapButton(version).click();
           if (kind === "html") {
             await expect
               .poll(() => pageMapState(version), {

@@ -1,9 +1,9 @@
 import { expect } from "vitest";
-import { isListed } from "../../../location-state";
 import { clickButton, controlPositions, type ExampleBehaviour, listedIn } from "./reading";
 
 const ALL = "All";
 const THIS_AREA = "This area";
+const EVERY_CAPITAL = 12;
 
 /** The list's entries inside `root`. */
 function entriesIn(root: Element): number {
@@ -15,40 +15,29 @@ function entriesIn(root: Element): number {
  * list kept as it was after a move; "This area" listing what is in view, and listing again after
  * the next move; "All" listing every point again.
  */
-export const big: ExampleBehaviour = async ({ store, adapter, root }) => {
+export const thisArea: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(controlPositions(adapter)).toEqual(["top-right"]);
-  const listedCount = () => {
-    const { locations, filter } = store.getSnapshot();
-    return locations.filter((location) => isListed(location, filter)).length;
-  };
   const moveTo = async (lat: number, lng: number) => {
     store.setView({ lat, lng }, 5);
     await adapter.probe().settle();
   };
-  // A React version sets its points after its first render: settle again until all are listed.
-  await expect.poll(listedCount).toBeGreaterThan(0);
-  await expect
-    .poll(async () => {
-      await adapter.probe().settle();
-      return entriesIn(root);
-    })
-    .toBe(listedCount());
+  await expect.poll(() => entriesIn(root)).toBe(EVERY_CAPITAL);
   const pressed = (name: string) =>
     root.querySelector(`.maplace-${name}`)?.getAttribute("aria-pressed");
   expect([pressed("show-all"), pressed("area-only")]).toEqual(["true", "false"]);
 
-  await moveTo(40, -100);
-  expect(entriesIn(root)).toBe(listedCount());
+  await moveTo(48.85, 2.35);
+  expect(entriesIn(root)).toBe(EVERY_CAPITAL);
 
   clickButton(root, THIS_AREA);
-  await expect.poll(() => entriesIn(root)).toBeLessThan(listedCount());
+  await expect.poll(() => entriesIn(root)).toBeLessThan(EVERY_CAPITAL);
   expect(entriesIn(root)).toBeGreaterThan(0);
   expect([pressed("show-all"), pressed("area-only")]).toEqual(["false", "true"]);
   const inFirstArea = listedIn(root);
-  await moveTo(35, -85);
+  await moveTo(41.9, 12.5);
   await expect.poll(() => listedIn(root)).not.toEqual(inFirstArea);
 
   clickButton(root, ALL);
-  await expect.poll(() => entriesIn(root)).toBe(listedCount());
+  await expect.poll(() => entriesIn(root)).toBe(EVERY_CAPITAL);
   expect(pressed("show-all")).toBe("true");
 };

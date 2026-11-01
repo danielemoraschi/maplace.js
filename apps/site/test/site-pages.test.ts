@@ -85,6 +85,8 @@ describe("an example's guide", () => {
     const { page, context } = await openPage(sectionPage("custom-list"));
     const guide = page.locator("section#custom-list .example-guide");
     expect(await guide.textContent()).toContain("defineListView");
+    const last = await guide.evaluate((node) => node === node.parentElement?.lastElementChild);
+    expect(last, "the guide follows the map and its code").toBe(true);
     const link = guide.getByRole("link", { name: "defineListView(name, factory)" });
     expect(await link.getAttribute("href")).toBe("/element/#list-views");
     await context.close();

@@ -17,6 +17,26 @@ describe("an example's guide", () => {
       expect(markdown.split("\n")[0], name).toBe(`# ${section?.title}`);
     }
   });
+
+  it("exists for every section", () => {
+    const guided = exampleGuides().map(({ name }) => name);
+    expect([...guided].sort()).toEqual(EXAMPLE_SECTIONS.map(({ name }) => name).sort());
+  });
+
+  it("opens with a sentence, then names HTML, Script, Bundler and React, in that order", () => {
+    for (const { name, markdown } of exampleGuides()) {
+      const [, opening] = markdown.split("\n\n");
+      expect(opening, name).toMatch(/^[^-#].*[.:]$/);
+      const named = ["**HTML**", "**Script**", "**Bundler**", "**React**"].map((version) =>
+        markdown.indexOf(version),
+      );
+      expect(
+        named.every((at) => at >= 0),
+        name,
+      ).toBe(true);
+      expect(named, name).toEqual([...named].sort((a, b) => a - b));
+    }
+  });
 });
 
 describe("exampleGuidesLoader", () => {

@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #click-to-add-maplibre-script-map { height: 24rem; }
+</style>
+<div id="click-to-add-maplibre-script-map"></div>
+<script type="module">
+  const maplace = Maplace.createMapLibreMap("#click-to-add-maplibre-script-map", {
+    locations: [
+      { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", editable: true },
+      { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", editable: true },
+    ],
+  });
+
+  let pins = 0;
+  maplace.on("mapClick", ({ position }) => {
+    pins += 1;
+    const pin = { id: `pin-${pins}`, ...position, title: `Pin ${pins}`, editable: true };
+    maplace.setLocations([...maplace.getSnapshot().locations, pin]);
+  });
+</script>
