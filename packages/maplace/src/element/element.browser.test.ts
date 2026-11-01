@@ -94,7 +94,7 @@ describe("<maplace-map> on the page", () => {
     });
     watch.observe(map, { childList: true });
     onTestFinished(() => watch.disconnect());
-    map.setAttribute("fit-all-label", "All towns");
+    map.setAttribute("fit-all", "");
     map.setAttribute("list-heading", "Towns");
     await nextTask();
     expect(added).toEqual([map.querySelector(".maplace-list")]);

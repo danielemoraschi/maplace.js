@@ -30,8 +30,8 @@ const locations: Location[] = [
 
 const maplace = createGoogleMap("#markers-vanilla-map", {
   locations,
-  list: { heading: "Choose a location:", fitAllLabel: "View all" },
-  popup: { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" },
+  list: { heading: "Choose a location:", fitAll: true, fitAllLabel: "View all" },
+  popup: { openInMapsLink: true, directionsLink: true },
 });
 
 maplace.on("mapClick", ({ position }) => dropMarkerAt(position));

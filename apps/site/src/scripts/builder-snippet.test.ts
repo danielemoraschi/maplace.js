@@ -114,10 +114,11 @@ describe("writeSnippet's map tag", () => {
       [{ id: "1", lat: 1, lng: 2 }],
       [
         ["list", ""],
+        ["fit-all", ""],
         ["fit-all-label", 'a"b'],
       ],
     );
-    expect(text).toContain('<maplace-map list fit-all-label="a&quot;b">');
+    expect(text).toContain('<maplace-map list fit-all fit-all-label="a&quot;b">');
   });
 
   it("gives Google's the reader's placeholder, and MapLibre's no key", () => {

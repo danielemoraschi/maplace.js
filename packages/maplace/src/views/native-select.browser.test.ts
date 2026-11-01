@@ -13,7 +13,7 @@ describe("a native select while a location it leaves out is selected", () => {
   it("shows no option, and choosing fit all clears the selection", async () => {
     const { maplace, host, list } = await listed(
       { locations },
-      { as: "select", fitAllLabel: "All" },
+      { as: "select", fitAll: true, fitAllLabel: "All" },
     );
     const select = list.element as HTMLSelectElement;
     host.reportSelectionChange("x");

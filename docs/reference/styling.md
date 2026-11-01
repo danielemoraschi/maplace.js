@@ -80,22 +80,22 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-show-all` | The switch's "All" button |
 | `maplace-area-only` | The switch's "This area" button |
 | `maplace-empty-area` | What a list with `scope` says when no location is in the map's view (`emptyAreaLabel`); empty otherwise |
-| `maplace-my-location` | The whole "My location" control: the box with its button, and its status |
+| `maplace-my-location` | The whole "My location" control: the box with its button, and the line under it that says when no position comes |
 | `maplace-my-location-box` | The box around the control's button; the button is `[aria-pressed=true]` while the visitor's position is in use |
 | `maplace-my-location-status` | What the control says when it gets no position (`unavailableLabel`); empty otherwise |
 | `maplace-listbox` | The element holding a list's entries, without its heading, switch or search box |
 | `maplace-group` | A group's heading and entries in the list |
-| `maplace-search` | The search box (`searchLabel`) |
+| `maplace-search` | The search box (`search`) |
 | `maplace-search-status` | What the search box says: how many locations match, or that none does; empty with no query |
 | `maplace-group-heading` | A group's heading, with its count in the same text (`groupCounts`) |
 | `maplace-option` | A location's entry in the list |
 | `maplace-distance` | An entry's distance, after its label, in a list with `sort: "distance"`; a custom `render` shows its own instead |
-| `maplace-fit-all` | The list's first entry, which clears the selection and fits all locations (`fitAllLabel`) |
+| `maplace-fit-all` | The list's first entry, which clears the selection and fits all locations (`fitAll`) |
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |
 | `maplace-origin-dot` | The dot on the map where distances are measured from: the visitor's position after the ["My location" control](store.md#the-my-location-control), or a point the page gives to `setOrigin`; `{ display: none }` removes it |
 | `maplace-popup` | A popup's content |
 | `maplace-popup-heading` | A popup's heading, its location's title |
-| `maplace-popup-links` | A popup's links (`openInMapsLabel`, `directionsLabel`); a page's `a` rule colours them, so a pale one needs `.maplace-popup-links a` for the white bubble |
+| `maplace-popup-links` | The links at the end of a popup (`openInMapsLink`, `directionsLink`); a page's `a` rule colours them, so a pale one needs `.maplace-popup-links a` for the white bubble |
 | `maplace-cluster` | The badge with the count on a cluster of markers, on either provider |
 | `maplace-control` | The panel around anything placed on a Google or MapLibre map: a list, a select, the "My location" control, your own controls |
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |

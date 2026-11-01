@@ -23,25 +23,32 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 |---|---|
 | `list` | Present: a list of the locations (empty, or `"true"`, as Svelte 5 writes a bare `list`); `list="select"`: a native select; `list="<name>"`: a [list view of yours](#list-views). Absent: no list |
 | `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
-| `fit-all-label` | The label of a first list entry that clears the selection and fits all locations |
+| `fit-all` | Adds a first entry to the list, which clears the selection and fits all locations. Present, empty or `"true"` is on, `"false"` off, anything else misuse, as for `search`, `my-location`, `open-in-maps-link` and `directions-link` |
+| `fit-all-label` | The words of the list's first entry, which clears the selection and fits all locations; "All locations" when left out; does nothing without `fit-all`; a blank one is misuse |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
 | `group-counts` | After each group heading, how many are listed under it now, following the filter and `list-scope`: "North (3)". Present, empty or `"true"` is on, `"false"` off, anything else misuse |
 | `list-scope` | `viewport`: a switch above the list, "All" or "This area", which lists only what is in the map's view and follows it, wherever the list is placed ([List view options](store.md#list-view-options)); not with `list="select"` |
-| `area-only-label` | The label of the switch's "This area"; default "This area" |
-| `show-all-label` | The label of the switch's "All"; default "All" |
-| `empty-area-label` | What the list says when nothing is in its view; default "No locations in this area" |
+| `area-only-label` | The words of the `list-scope` switch's button that lists only the map's view; default "This area" |
+| `show-all-label` | The words of the `list-scope` switch's button that lists every location; default "All" |
+| `empty-area-label` | What a list with `list-scope` says when no location is in the map's view; default "No locations in this area" |
 | `list-sort` | `distance`: once the store has an origin, a list nearest first, each entry saying how far ([Distances](store.md#distances)) |
 | `distance-unit` | What `list-sort` writes a distance in: `kilometer` (the default) or `mile` |
-| `my-location-label` | Puts the ["My location" control](store.md#the-my-location-control) on the map, named by this; bare or blank, its default words |
-| `my-location-unavailable-label` | What the control says when no position comes; "Location unavailable" when blank or left out |
-| `my-location-position` | The corner the control goes in; `top-left` when left out |
-| `search-label` | Shows a search box above a list, named by this; typing sets the filter's query once it pauses. Misuse with `list="select"` |
-| `no-matches-label` | What the box's status says when nothing matches; default "No locations match" |
-| `matches-label` | What its status says before the count; default "Locations found" |
+| `my-location` | Puts the ["My location" control](store.md#the-my-location-control) on the map: a button that asks for the visitor's position only when pressed. A value neither true nor false keeps the map from opening until it is fixed |
+| `my-location-label` | The words on the "My location" button; "My location" when blank or left out; does nothing without `my-location` |
+| `my-location-unavailable-label` | What the "My location" control says under its button when no position comes; "Location unavailable" when blank or left out |
+| `my-location-position` | The corner of the map the "My location" control goes in; `top-left` when left out |
+| `search` | Shows a search box above the list; typing narrows the list and the map once it pauses. A switch, as `fit-all` is; misuse with `list="select"` |
+| `search-label` | The search box's placeholder and accessible name; "Search" when left out; does nothing without `search`; a blank one is misuse |
+| `no-matches-label` | What the line under the search box says when nothing matches; default "No locations match" |
+| `matches-label` | What the line under the search box says before the count of matches; default "Locations found", as "Locations found: 3" |
 | `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
 | `cluster` | Clusters markers (on Google's CDN, the cluster script; the MapLibre script clusters as it is); can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
-| `skip-map-label`, `selected-label` | The store's [`skipMapLabel` and `selectedLabel`](store.md#on-every-map); can't change once the store exists; a blank one is misuse |
-| `open-in-maps-label`, `directions-label` | The store's [`popup.openInMapsLabel` and `popup.directionsLabel`](store.md#popup-options); can't change once the store exists; a blank one is misuse |
+| `skip-map-label` | The words of the [link past the map](store.md#on-every-map), which keyboard users reach first; default "Skip the map"; can't change once the store exists; a blank one is misuse |
+| `selected-label` | The word announced before a selected location's name, "Selected: Rome"; default "Selected"; can't change once the store exists; a blank one is misuse |
+| `open-in-maps-link` | Adds a [link at the end of each popup](store.md#popup-options), to the location on the provider's maps site: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
+| `open-in-maps-label` | The words of the link to the provider's maps site; "Open in Maps" when left out; does nothing without `open-in-maps-link`; can't change once the store exists; a blank one is misuse |
+| `directions-link` | Adds a link at the end of each popup, to directions to the location: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
+| `directions-label` | The words of the link to directions; "Directions" when left out; does nothing without `directions-link`; can't change once the store exists; a blank one is misuse |
 | `hold` | Stays idle, with no provider request and no list built, until `release()` |
 | `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
 | `load-label` | The words of the [load panel](#load-states)'s button; "Load map" when blank or left out; live |
@@ -49,7 +56,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address wins |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
-`list`, `list-position`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`, `list-sort`, `distance-unit`, `area-only-label`, `show-all-label`, `empty-area-label`, `search-label`, `no-matches-label` and `matches-label` are live: a change builds the list again. The `my-location-*` attributes are read when the map opens: a later change does nothing until it opens again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
+`list`, `list-position`, `fit-all`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`, `list-sort`, `distance-unit`, `area-only-label`, `show-all-label`, `empty-area-label`, `search`, `search-label`, `no-matches-label` and `matches-label` are live: a change builds the list again. `my-location` and the `my-location-*` attributes are read when the map opens: a later change does nothing until it opens again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
 
 ## Properties and methods
 
@@ -170,7 +177,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## List views
 
-`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAllLabel`, `heading`, `groupCounts`, `scope`, `sort`, `distanceUnit`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`, `searchLabel`, `noMatchesLabel`, `matchesLabel`), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is. `listed()` stays in data order: a view with `sort` sorts itself, with [`distanceTo`](store.md#distances).
+`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAll`, `fitAllLabel`, `heading`, `groupCounts`, `scope`, `sort`, `distanceUnit`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`, `search`, `searchLabel`, `noMatchesLabel`, `matchesLabel`; a switch and its label come as written, so a view of yours that shows a fit-all entry or a search box checks `fitAll` or `search`, and brings its own words when the label is missing), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is. `listed()` stays in data order: a view with `sort` sorts itself, with [`distanceTo`](store.md#distances).
 
 A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
 

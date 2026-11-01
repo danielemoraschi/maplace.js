@@ -51,11 +51,34 @@ describe("attach", () => {
     expect(Object.isFrozen(offsetAdapter.mounted?.popup.offset)).toBe(true);
   });
 
-  it("mounts with the popup's link labels", () => {
+  it("mounts with no link's words when only labels are given", () => {
     const adapter = createFakeAdapter();
-    const popup = { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" };
+    const popup = { openInMapsLabel: "See it", directionsLabel: "Go there" };
     createMaplace({ popup }).attach(adapter, container());
-    expect(adapter.mounted?.popup).toMatchObject(popup);
+    expect(adapter.mounted?.popup).toMatchObject({
+      openInMapsLabel: undefined,
+      directionsLabel: undefined,
+    });
+  });
+
+  it("mounts with the links' default words when only switched on", () => {
+    const adapter = createFakeAdapter();
+    const popup = { openInMapsLink: true, directionsLink: true };
+    createMaplace({ popup }).attach(adapter, container());
+    expect(adapter.mounted?.popup).toMatchObject({
+      openInMapsLabel: "Open in Maps",
+      directionsLabel: "Directions",
+    });
+  });
+
+  it("mounts with the labels' words when switched on with them", () => {
+    const adapter = createFakeAdapter();
+    const popup = { openInMapsLink: true, openInMapsLabel: "See it", directionsLabel: "Go there" };
+    createMaplace({ popup }).attach(adapter, container());
+    expect(adapter.mounted?.popup).toMatchObject({
+      openInMapsLabel: "See it",
+      directionsLabel: undefined,
+    });
   });
 
   it("mounts in the element a selector matches", () => {

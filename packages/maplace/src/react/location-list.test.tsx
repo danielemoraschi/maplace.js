@@ -45,10 +45,10 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(listboxes(container)[0]?.getAttribute("aria-label")).toBe("Towns");
   });
 
-  it("shows a search box with searchLabel, and builds the list again for its labels", async () => {
+  it("shows a search box with search, and builds the list again for its labels", async () => {
     const app = (matchesLabel: string) => (
       <MaplaceProvider locations={TOWNS}>
-        <LocationList searchLabel="Find" noMatchesLabel="None" matchesLabel={matchesLabel} />
+        <LocationList search searchLabel="Find" noMatchesLabel="None" matchesLabel={matchesLabel} />
       </MaplaceProvider>
     );
     const { container, render } = await renderInto(app("Found"), root);
@@ -72,10 +72,26 @@ describe.each(ROOT_MODES)("LocationList, in $mode", (root) => {
     expect(groupName()).toBe("North");
   });
 
+  it("builds the list again when fitAll or search changes", async () => {
+    const app = (fitAll: boolean, search: boolean) => (
+      <MaplaceProvider locations={TOWNS}>
+        <LocationList fitAll={fitAll} search={search} />
+      </MaplaceProvider>
+    );
+    const { container, render } = await renderInto(app(false, false), root);
+    const fitAllEntry = () => container.querySelector(".maplace-fit-all");
+    const searchBox = () => container.querySelector("input");
+    expect([fitAllEntry(), searchBox()]).toEqual([null, null]);
+    await render(app(true, false));
+    expect(fitAllEntry()?.textContent).toBe("All locations");
+    await render(app(true, true));
+    expect(searchBox()?.placeholder).toBe("Search");
+  });
+
   it("keeps its view across renders with the same options", async () => {
     const app = () => (
       <MaplaceProvider locations={TOWNS}>
-        <LocationList fitAllLabel="All towns" />
+        <LocationList fitAll fitAllLabel="All towns" />
       </MaplaceProvider>
     );
     const { container, render } = await renderInto(app(), root);

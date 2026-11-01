@@ -31,7 +31,9 @@ export interface ListViewOptions<Data = unknown> {
    * `scope`: "North (3)". Off by default; refused with `groupHeadings: false`.
    */
   readonly groupCounts?: boolean | undefined;
-  /** Adds a first entry with this label that clears the selection and fits all locations. */
+  /** Adds a first entry to the list, which clears the selection and fits all locations. */
+  readonly fitAll?: boolean | undefined;
+  /** The words of the entry `fitAll` adds. Default "All locations"; nothing without `fitAll`. */
   readonly fitAllLabel?: string | undefined;
   /**
    * The list's accessible name. Default the `heading`, else "Locations"; or label `element` from
@@ -61,34 +63,39 @@ export interface ListViewOptions<Data = unknown> {
   readonly sort?: "distance" | undefined;
   /** What a distance is written in. Default `kilometer`. */
   readonly distanceUnit?: "kilometer" | "mile" | undefined;
-  /** The label of the switch's "This area". Default "This area". */
+  /** The words of the `scope` switch's button listing only the map's view. Default "This area". */
   readonly areaOnlyLabel?: string | undefined;
-  /** The label of the switch's "All". Default "All". */
+  /** The words of the `scope` switch's button that lists every location. Default "All". */
   readonly showAllLabel?: string | undefined;
-  /** What a scoped list says when nothing is in its view. Default "No locations in this area". */
+  /**
+   * What a list with `scope` says when no location is in the map's view.
+   * Default "No locations in this area".
+   */
   readonly emptyAreaLabel?: string | undefined;
   /**
-   * Shows a search box above the entries, named by this, for `as: 'list'` only: typing sets the
-   * filter's `query` once it pauses for 150 ms, keeping the rest of the filter, so the map narrows
-   * too and the camera stays.
+   * Shows a search box above the entries, for `as: 'list'` only: typing sets the filter's `query`
+   * once it pauses for 150 ms, keeping the rest of the filter, so the map narrows too and the
+   * camera stays.
    * It follows the store, emptying when a page's `setFilter` takes the query away, and a query
    * outlives the box.
    */
+  readonly search?: boolean | undefined;
+  /** The search box's placeholder and accessible name. Default "Search"; nothing without `search`. */
   readonly searchLabel?: string | undefined;
-  /** What the box's status says when nothing matches. Default "No locations match". */
+  /** What the line under the search box says when nothing matches. Default "No locations match". */
   readonly noMatchesLabel?: string | undefined;
-  /** What the box's status says before the count while a query is on. Default "Locations found". */
+  /** What the line under the search box says before the match count. Default "Locations found". */
   readonly matchesLabel?: string | undefined;
 }
 
 /**
  * A list view renders store state and asks the store for changes; it never talks to an adapter.
- * Without `fitAllLabel` a listbox can't clear the selection; the "fit all" entry shows as selected
+ * Without `fitAll` a listbox can't clear the selection; the "fit all" entry shows as selected
  * whenever nothing is (a selected location the list leaves out marks no entry).
  */
 export interface ListView {
   /**
-   * The listbox or select itself, or with `heading`, `scope` or `searchLabel` a block holding the
+   * The listbox or select itself, or with `heading`, `scope` or `search` a block holding the
    * heading, the search box, the "All" and "This area" switch, their statuses and the listbox, each
    * with the class `maplace-list-view`: place it with `mountControl`. Label it from the page only
    * without any of those: the block is no list, so a label on it names nothing (give `label`
@@ -104,6 +111,8 @@ export interface ListView {
 }
 
 const DEFAULT_LABEL = "Locations";
+const DEFAULT_FIT_ALL_LABEL = "All locations";
+const DEFAULT_SEARCH_LABEL = "Search";
 const DEFAULT_AREA_ONLY_LABEL = "This area";
 const DEFAULT_SHOW_ALL_LABEL = "All";
 const DEFAULT_EMPTY_AREA_LABEL = "No locations in this area";
@@ -132,7 +141,7 @@ export function createListView<Data>(
   const label = options?.label ?? options?.heading ?? DEFAULT_LABEL;
   const list: ListVariant<Data> = VARIANTS[options?.as ?? "list"](actions, {
     label,
-    fitAllLabel: options?.fitAllLabel,
+    fitAllLabel: options?.fitAll ? (options.fitAllLabel ?? DEFAULT_FIT_ALL_LABEL) : undefined,
     render: options?.render,
   });
   const { variant, areaSwitch, searchBox } = listBlock(list, blockPartsOf(options, label));
@@ -161,16 +170,14 @@ export function createListView<Data>(
  */
 function blockPartsOf(options: ListViewOptions<never> | undefined, name: string): BlockParts {
   const heading = options?.heading;
-  const searchLabel = options?.searchLabel;
   return {
-    search:
-      searchLabel === undefined
-        ? undefined
-        : {
-            label: searchLabel,
-            noMatches: options?.noMatchesLabel ?? DEFAULT_NO_MATCHES_LABEL,
-            matches: options?.matchesLabel ?? DEFAULT_MATCHES_LABEL,
-          },
+    search: options?.search
+      ? {
+          label: options.searchLabel ?? DEFAULT_SEARCH_LABEL,
+          noMatches: options.noMatchesLabel ?? DEFAULT_NO_MATCHES_LABEL,
+          matches: options.matchesLabel ?? DEFAULT_MATCHES_LABEL,
+        }
+      : undefined,
     heading:
       heading === undefined
         ? undefined

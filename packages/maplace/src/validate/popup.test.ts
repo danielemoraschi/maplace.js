@@ -23,14 +23,26 @@ describe("checkPopupOptions", () => {
     );
   });
 
-  it("accepts the link labels", () => {
-    const popup = { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" };
+  it("accepts the links' switches and labels", () => {
+    const popup = {
+      openInMapsLink: true,
+      directionsLink: false,
+      openInMapsLabel: "Open in Maps",
+      directionsLabel: "Directions",
+    };
     expect(() => checkPopupOptions(popup, field)).not.toThrow();
   });
 
-  it("accepts openOn 'hover' with no label", () => {
-    const popup = { openOn: "hover", openInMapsLabel: undefined, directionsLabel: undefined };
+  it("accepts openOn 'hover' with no link, whatever the labels say", () => {
+    const popup = { openOn: "hover", openInMapsLink: false, directionsLabel: "Directions" };
     expect(() => checkPopupOptions(popup, field)).not.toThrow();
+  });
+
+  it("rejects a link switch that isn't a boolean, naming it", () => {
+    expect(() => checkPopupOptions({ openInMapsLink: "Open" }, field)).toThrow(
+      /popup\.openInMapsLink/,
+    );
+    expect(() => checkPopupOptions({ directionsLink: 1 }, field)).toThrow(/popup\.directionsLink/);
   });
 
   it("rejects a blank label naming it", () => {
@@ -42,9 +54,9 @@ describe("checkPopupOptions", () => {
     );
   });
 
-  it("rejects openOn 'hover' beside either label, naming openOn", () => {
-    for (const label of [{ openInMapsLabel: "Open" }, { directionsLabel: "Go" }]) {
-      expect(() => checkPopupOptions({ openOn: "hover", ...label }, field)).toThrow(
+  it("rejects openOn 'hover' beside either link, naming openOn", () => {
+    for (const link of [{ openInMapsLink: true }, { directionsLink: true }]) {
+      expect(() => checkPopupOptions({ openOn: "hover", ...link }, field)).toThrow(
         /popup\.openOn can't be 'hover' with a link in the popup/,
       );
     }

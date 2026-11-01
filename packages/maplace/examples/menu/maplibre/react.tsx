@@ -30,6 +30,7 @@ function Menu() {
         <LocationList
           as="select"
           heading="Choose a location:"
+          fitAll
           fitAllLabel="All cities"
           position="top-right"
         />

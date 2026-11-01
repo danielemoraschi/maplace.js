@@ -1,6 +1,6 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
 import { adoptCarriedStyles } from "../adopted-styles";
-import { type ListViewOptions, listedLocations, type Maplace } from "../index";
+import { type ListViewOptions, listedLocations, type Maplace, type MaplaceError } from "../index";
 import { booleanOrRaw } from "./attribute-values";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
@@ -11,6 +11,7 @@ import { buildListView } from "./list-views";
 export const LIST_ATTRIBUTES = [
   "list",
   "list-position",
+  "fit-all",
   "fit-all-label",
   "list-heading",
   "group-counts",
@@ -20,6 +21,7 @@ export const LIST_ATTRIBUTES = [
   "area-only-label",
   "show-all-label",
   "empty-area-label",
+  "search",
   "search-label",
   "no-matches-label",
   "matches-label",
@@ -82,16 +84,18 @@ export function listFromAttributes(host: HTMLElement, store: Maplace): ElementLi
 
 function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
   return {
+    fitAll: switchAttribute(host, "fit-all"),
     fitAllLabel: textOf(host, "fit-all-label"),
     heading: textOf(host, "list-heading"),
-    groupCounts: groupCounts(host),
+    groupCounts: switchAttribute(host, "group-counts"),
     scope: listScope(host, name),
     sort: oneOfAttribute(host, "list-sort", ["distance"]),
     distanceUnit: oneOfAttribute(host, "distance-unit", ["kilometer", "mile"]),
     areaOnlyLabel: textOf(host, "area-only-label"),
     showAllLabel: textOf(host, "show-all-label"),
     emptyAreaLabel: textOf(host, "empty-area-label"),
-    searchLabel: searchLabel(host, name),
+    search: searchSwitch(host, name),
+    searchLabel: textOf(host, "search-label"),
     noMatchesLabel: textOf(host, "no-matches-label"),
     matchesLabel: textOf(host, "matches-label"),
   };
@@ -111,6 +115,13 @@ export function oneOfAttribute<Value extends string>(
   throw elementMisuse(problem, { field: name });
 }
 
+/** A switch, as HTML writes a boolean: `undefined` when missing, misuse naming it when neither. */
+export function switchAttribute(host: HTMLElement, name: string): boolean | undefined {
+  const value = booleanOrRaw(host, name);
+  if (typeof value !== "string") return value;
+  throw elementMisuse(`${name} must be true or false, got "${value}"`, { field: name });
+}
+
 /** `name`'s text, refused when blank: for every view, the page's own as maplace's. */
 function textOf(host: HTMLElement, name: string): string | undefined {
   const text = host.getAttribute(name) ?? undefined;
@@ -118,24 +129,18 @@ function textOf(host: HTMLElement, name: string): string | undefined {
   return text;
 }
 
-/** `group-counts`, as HTML writes a boolean. */
-function groupCounts(host: HTMLElement): boolean | undefined {
-  const value = booleanOrRaw(host, "group-counts");
-  if (typeof value !== "string") return value;
-  throw elementMisuse(`group-counts must be true or false, got "${value}"`, {
-    field: "group-counts",
-  });
+/** `search`, for a list with room for its box. */
+function searchSwitch(host: HTMLElement, name: string): boolean | undefined {
+  const search = switchAttribute(host, "search");
+  if (search && name === "select") throw selectMisuse("search");
+  return search;
 }
 
-/** `search-label`, for a list with room for its box. */
-function searchLabel(host: HTMLElement, name: string): string | undefined {
-  const label = textOf(host, "search-label");
-  if (label !== undefined && name === "select") {
-    throw elementMisuse('search-label needs a list: list="select" is a native select', {
-      field: "search-label",
-    });
-  }
-  return label;
+/** `attribute` on a native select, which has no room for what it adds. */
+function selectMisuse(attribute: string): MaplaceError {
+  return elementMisuse(`${attribute} needs a list: list="select" is a native select`, {
+    field: attribute,
+  });
 }
 
 /** Beside the map unless a corner is named. */
@@ -151,10 +156,7 @@ function listPosition(value: string | null): ListPosition {
 function listScope(host: HTMLElement, name: string): ListViewOptions["scope"] {
   const value = host.getAttribute("list-scope");
   if (value === null) return undefined;
-  const field = { field: "list-scope" };
-  if (name === "select") {
-    throw elementMisuse('list-scope needs a list: list="select" is a native select', field);
-  }
+  if (name === "select") throw selectMisuse("list-scope");
   if (value === "viewport") return value;
-  throw elementMisuse(`list-scope must be "viewport", got "${value}"`, field);
+  throw elementMisuse(`list-scope must be "viewport", got "${value}"`, { field: "list-scope" });
 }

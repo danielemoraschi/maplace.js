@@ -42,6 +42,7 @@ createMapLibreMap("#search-maplibre-vanilla-map", {
   ],
   list: {
     container: "#search-maplibre-vanilla-list",
+    search: true,
     searchLabel: "Find a place",
     sort: "distance",
   },

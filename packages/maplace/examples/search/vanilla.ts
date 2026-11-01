@@ -39,6 +39,11 @@ createGoogleMap("#search-vanilla-map", {
       searchText: "harbour",
     },
   ],
-  list: { container: "#search-vanilla-list", searchLabel: "Find a place", sort: "distance" },
+  list: {
+    container: "#search-vanilla-list",
+    search: true,
+    searchLabel: "Find a place",
+    sort: "distance",
+  },
   myLocation: true,
 });

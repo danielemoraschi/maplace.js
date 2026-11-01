@@ -102,9 +102,11 @@ shop.on("viewportChange", ({ viewport }) => viewport.center.lon);
 createMaplace({ skipMapLabel: "Skip", selectedLabel: "Chosen" });
 // @ts-expect-error a label is text
 createMaplace({ selectedLabel: 1 });
-createMaplace({ popup: { directionsLabel: "Directions" } });
+createMaplace({ popup: { directionsLink: true, directionsLabel: "Directions" } });
 // @ts-expect-error a link's label is text
 createMaplace({ popup: { openInMapsLabel: true } });
+// @ts-expect-error the switch is on or off: its words are openInMapsLabel
+createMaplace({ popup: { openInMapsLink: "Open" } });
 
 createMaplace({
   style: { fill: "blue" },

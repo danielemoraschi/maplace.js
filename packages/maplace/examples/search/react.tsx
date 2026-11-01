@@ -43,7 +43,7 @@ function Search() {
         <MaplaceMap createAdapter={createGoogleAdapter} className="map">
           <MyLocation />
         </MaplaceMap>
-        <LocationList searchLabel="Find a place" sort="distance" />
+        <LocationList search searchLabel="Find a place" sort="distance" />
       </div>
     </MaplaceProvider>
   );

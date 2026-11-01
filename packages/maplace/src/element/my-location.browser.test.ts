@@ -55,6 +55,7 @@ describe("the element's My location control", () => {
       arrived({ coords: { latitude: 0, longitude: 0 } } as GeolocationPosition),
     );
     const { map, adapters } = await mapOnFake({
+      "my-location": "",
       "my-location-label": "Near me",
       "my-location-position": "bottom-left",
     });
@@ -70,7 +71,7 @@ describe("the element's My location control", () => {
     vi.spyOn(navigator.geolocation, "getCurrentPosition").mockImplementation((arrived) =>
       arrived({ coords: { latitude: 0, longitude: 0 } } as GeolocationPosition),
     );
-    const { map } = await mapOnFake({ "my-location-label": "" });
+    const { map } = await mapOnFake({ "my-location": "" });
     buttonIn(map).click();
     await vi.waitFor(() => expect(buttonIn(map).getAttribute("aria-pressed")).toBe("true"));
     const parent = map.parentElement as HTMLElement;

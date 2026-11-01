@@ -52,7 +52,7 @@ describeWithMaps("controls on a Google map", () => {
 
   it("types in a search box without zooming the map", async () => {
     const maplace = createMaplace({ locations: places(5) });
-    const list = createListView(maplace, { searchLabel: "Find" });
+    const list = createListView(maplace, { search: true, searchLabel: "Find" });
     await listMountedOnGoogle({ maplace, list });
     const zoom = maplace.getSnapshot().viewport?.zoom;
     const box = queried(list.element, "input") as HTMLInputElement;

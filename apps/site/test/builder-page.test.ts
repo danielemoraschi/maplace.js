@@ -185,6 +185,21 @@ describe("the builder's map", () => {
   }, 40_000);
 });
 
+describe("the builder's preview of a 0.2 config", () => {
+  it("shows the fit-all entry the snippet writes, in 0.2's words", async () => {
+    const { page, context } = await openBuilder();
+    await placeholder(page).click();
+    await paste(
+      page,
+      `{ controls_type: "list", controls_on_map: false, view_all_text: "Everywhere",
+          locations: [{ lat: 1, lng: 2 }, { lat: 3, lng: 4 }] }`,
+    );
+    expect(await code(page).textContent()).toContain('fit-all fit-all-label="Everywhere"');
+    expect(await shownMap(page).locator(".maplace-fit-all").textContent()).toBe("Everywhere");
+    await context.close();
+  }, 60_000);
+});
+
 describe("the builder's refusals", () => {
   it("names what it refuses, with Copy off only when nothing can be written", async () => {
     const { page, context, errors } = await openBuilder();

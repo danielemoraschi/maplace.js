@@ -34,7 +34,10 @@ describe("a list view's search box in a browser", () => {
   });
 
   it("keeps focus through trusted typing, and narrows as it goes", async () => {
-    const { list } = await listed({ locations: titled("ab", "ac", "d") }, { searchLabel: "Find" });
+    const { list } = await listed(
+      { locations: titled("ab", "ac", "d") },
+      { search: true, searchLabel: "Find" },
+    );
     const box = page.getByRole("searchbox", { name: "Find" });
     await box.click();
     await userEvent.keyboard("a");
@@ -46,7 +49,10 @@ describe("a list view's search box in a browser", () => {
   });
 
   it("gets as wide as the list, never wider", async () => {
-    const { list } = await listed({ locations: titled("a") }, { searchLabel: "Find" });
+    const { list } = await listed(
+      { locations: titled("a") },
+      { search: true, searchLabel: "Find" },
+    );
     list.element.style.width = "120px";
     const input = list.element.querySelector("input") as HTMLInputElement;
     const { width } = input.getBoundingClientRect();

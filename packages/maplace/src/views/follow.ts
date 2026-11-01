@@ -15,7 +15,7 @@ export interface Following<Data> {
   readonly rules: ListRules;
   /** With `scope`: the switch between every location and those in the map's view. */
   readonly areaSwitch?: AreaSwitch | undefined;
-  /** With `searchLabel`: the box, which follows the store's query and says what it found. */
+  /** With `search`: the box, which follows the store's query and says what it found. */
   readonly searchBox?: SearchBox | undefined;
 }
 

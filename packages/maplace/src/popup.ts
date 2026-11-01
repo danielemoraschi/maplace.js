@@ -6,11 +6,18 @@ export interface PopupOptions {
   /** Default `click`. */
   readonly openOn?: "click" | "hover" | undefined;
   /**
-   * Adds a link with these words at the end of a popup, to the location on the provider's maps site.
-   * A location with no content has no popup, so no link; `invalid-input` with `openOn: "hover"`.
+   * Adds a link at the end of a popup, to the location on the provider's maps site. A location with
+   * no content has no popup, so no link; `invalid-input` with `openOn: "hover"`.
    */
+  readonly openInMapsLink?: boolean | undefined;
+  /** The words of the link `openInMapsLink` adds. Default "Open in Maps"; nothing without it. */
   readonly openInMapsLabel?: string | undefined;
-  /** Adds a link with these words at the end of a popup, to directions there; as `openInMapsLabel`. */
+  /**
+   * Adds a link at the end of a popup, to directions to the location. A location with no content
+   * has no popup, so no link; `invalid-input` with `openOn: "hover"`.
+   */
+  readonly directionsLink?: boolean | undefined;
+  /** The words of the link `directionsLink` adds. Default "Directions"; does nothing without it. */
   readonly directionsLabel?: string | undefined;
 }
 
@@ -19,6 +26,8 @@ export interface ResolvedPopupOptions {
   readonly maxWidth: number | undefined;
   readonly offset: readonly [number, number];
   readonly openOn: "click" | "hover";
+  /** The words of the link to the provider's maps site; `undefined` draws no link. */
   readonly openInMapsLabel: string | undefined;
+  /** The words of the link to directions; `undefined` draws no link. */
   readonly directionsLabel: string | undefined;
 }

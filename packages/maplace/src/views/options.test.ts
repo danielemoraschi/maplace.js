@@ -12,6 +12,7 @@ describe("checkListViewOptions", () => {
       as: "list",
       groupHeadings: true,
       groupCounts: true,
+      fitAll: true,
       fitAllLabel: "All",
       label: "Shops",
       heading: "Choose a location:",
@@ -25,12 +26,23 @@ describe("checkListViewOptions", () => {
   });
 
   it("takes the search labels, refusing a blank one and the box on a select", () => {
-    const labels = { searchLabel: "Find", noMatchesLabel: "None", matchesLabel: "Found" };
+    const labels = {
+      search: true,
+      searchLabel: "Find",
+      noMatchesLabel: "None",
+      matchesLabel: "Found",
+    };
     expect(check(labels)).not.toThrow();
     expect(check({ searchLabel: " " })).toThrow(/searchLabel must be a non-blank string/);
     expect(check({ noMatchesLabel: " " })).toThrow(/noMatchesLabel must be a non-blank string/);
     expect(check({ matchesLabel: " " })).toThrow(/matchesLabel must be a non-blank string/);
-    expect(check({ as: "select", searchLabel: "Find" })).toThrow(/searchLabel needs as: 'list'/);
+    expect(check({ as: "select", search: true })).toThrow(/search needs as: 'list'/);
+    expect(check({ as: "select", search: false })).not.toThrow();
+  });
+
+  it("refuses a switch that isn't a boolean, naming it", () => {
+    expect(check({ fitAll: "All" })).toThrow(/fitAll/);
+    expect(check({ search: "Find" })).toThrow(/search/);
   });
 
   it("takes sort and distanceUnit on either kind of list, refusing others", () => {

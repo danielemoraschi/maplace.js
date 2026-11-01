@@ -24,7 +24,7 @@ createGoogleMap("#simple-vanilla-map", {
 | `locations` | `Location[]` | The [locations](locations.md) to start with |
 | `selectedId` | `string` | The location selected at start; an unknown id throws |
 | `sanitize` | `(html) => string` | Makes a location's `html` safe to render; required before any location uses `html` |
-| `popup` | [`PopupOptions`](#popup-options) | How popups open and where they sit |
+| `popup` | [`PopupOptions`](#popup-options) | How popups open, where they sit, and the links at their end |
 | `style` | `ShapeStyle` | The default [style](locations.md#styles) of circles, polylines and polygons; a location's `style` overrides it |
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while a shape is hovered and not selected |
@@ -40,12 +40,14 @@ createGoogleMap("#simple-vanilla-map", {
 | `maxWidth` | `number` | The popup's maximum width, in pixels |
 | `offset` | `[x, y]` | Pixel offset from the anchor. Default `[0, 0]` |
 | `openOn` | `"click" \| "hover"` | What opens it. Default `"click"`; with `"click"`, closing it deselects |
-| `openInMapsLabel` | `string` | Adds a link with these words at the end of a popup, to the location on the provider's maps site: Google Maps on Google, OpenStreetMap on MapLibre |
-| `directionsLabel` | `string` | Adds one to directions to the location, from wherever the site starts |
+| `openInMapsLink` | `boolean` | Adds a link at the end of a popup, to the location on the provider's maps site: Google Maps on Google, OpenStreetMap on MapLibre |
+| `openInMapsLabel` | `string` | The words of the link to the provider's maps site; default "Open in Maps"; does nothing without `openInMapsLink` |
+| `directionsLink` | `boolean` | Adds a link at the end of a popup, to directions to the location, from wherever the site starts: Google Maps on Google, OpenStreetMap on MapLibre |
+| `directionsLabel` | `string` | The words of the link to directions; default "Directions"; does nothing without `directionsLink` |
 
 A popup follows the selection (or the hover, with `openOn: "hover"`). On a shape it points at a centre point: a circle's centre, the centre of a polygon's bounds, halfway along a polyline. A touch hovers no list entry and no DOM marker (every Google marker, and MapLibre's with an icon or `editable`), so with `openOn: "hover"` a tap opens no popup on them; MapLibre's pins and shapes can still be hovered by the mouse events a browser sends after a tap.
 
-Each link goes to the point the popup points at, as coordinates, opens in a new tab and sends no referrer: nothing loads until it is clicked, and no key or billing is involved. They end the element `popupOpen` gives, after the content. A location with no content has no popup, so no link. With `openOn: "hover"` a label is `invalid-input`: a pointer can't reach a link that closes as it leaves. An adapter of your own ([Adapters](#adapters)) draws its own from `popup`.
+Each link goes to the point the popup points at, as coordinates, opens in a new tab and sends no referrer: nothing loads until it is clicked, and no key or billing is involved. They end the element `popupOpen` gives, after the content. A location with no content has no popup, so no link. With `openOn: "hover"` a link is `invalid-input`: a pointer can't reach a link that closes as it leaves. An adapter of your own ([Adapters](#adapters)) draws its own from `popup`.
 
 ## The first view
 
@@ -148,23 +150,27 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `as` | `"list" \| "select"` | A listbox (default) or a native `<select>` |
 | `groupHeadings` | `boolean` | Shows group headings; default `true` when any location has a `group` |
 | `groupCounts` | `boolean` | After each group heading, how many are listed under it now, following the filter and `scope`: "North (3)". Off by default; refused with `groupHeadings: false` |
-| `fitAllLabel` | `string` | Adds a first entry with this label that clears the selection and fits all locations |
+| `fitAll` | `boolean` | Adds a first entry to the list, which clears the selection and fits all locations |
+| `fitAllLabel` | `string` | The words of the list's first entry, which clears the selection and fits all locations; default "All locations"; does nothing without `fitAll` |
 | `label` | `string` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | `string` | A visible heading above the entries |
 | `render` | `(entry) => Node` | An entry's content, for `as: "list"` only; the view keeps keyboard, focus and ARIA handling |
 | `scope` | `"viewport"` | A switch above the list, "All" or "This area", which lists only the locations in the map's view and follows it; for `as: "list"` only |
-| `areaOnlyLabel` | `string` | The label of the switch's "This area"; default "This area" |
-| `showAllLabel` | `string` | The label of the switch's "All"; default "All" |
-| `emptyAreaLabel` | `string` | What a scoped list says when nothing is in its view; default "No locations in this area" |
+| `areaOnlyLabel` | `string` | The words of the `scope` switch's button that lists only the map's view; default "This area" |
+| `showAllLabel` | `string` | The words of the `scope` switch's button that lists every location; default "All" |
+| `emptyAreaLabel` | `string` | What a list with `scope` says when no location is in the map's view; default "No locations in this area" |
 | `sort` | `"distance"` | Once the store has an origin, nearest first, each entry saying how far ([Distances](#distances)) |
 | `distanceUnit` | `"kilometer" \| "mile"` | What `sort` writes a distance in; default `kilometer` |
-| `searchLabel` | `string` | Shows a search box above the entries, named by this; for `as: "list"` only |
-| `noMatchesLabel` | `string` | What the box's status says when nothing matches; default "No locations match" |
-| `matchesLabel` | `string` | What its status says before the count while a query is on; default "Locations found", as "Locations found: 3" |
+| `search` | `boolean` | Shows a search box above the entries; for `as: "list"` only |
+| `searchLabel` | `string` | The search box's placeholder and accessible name; default "Search"; does nothing without `search` |
+| `noMatchesLabel` | `string` | What the line under the search box says when nothing matches; default "No locations match" |
+| `matchesLabel` | `string` | What the line under the search box says before the count of matches; default "Locations found", as "Locations found: 3" |
+
+A feature with words has a switch of its own, and its label only changes the words: a label without its switch does nothing, though a blank one is still refused.
 
 With `scope: "viewport"` the list shows a switch above its entries, always: two buttons, "All" and "This area", the one in use pressed (`aria-pressed`), in a group named as the list (its `label`, else its `heading`, else "Locations"). "All", at load, lists every location. "This area" lists the locations in the map's view (a marker or circle when its point or centre is in it, a line or polygon when any point of its path is) and follows the map: each new view lists again, as does a change of locations or filter. A resize or a rotation, which keeps the centre and zoom, isn't a new view, so a list under the map, whose height resizes it, can't loop. With no view (not attached, not laid out, reopened) "This area" stays chosen and lists everything until a view comes. A view holding nothing keeps the switch, and a status (`role="status"`, always on the page, so a screen reader hears it) says so (`emptyAreaLabel`). Nothing hides, so focus stays on the button pressed, and focus on an entry the list leaves out when it empties goes to it. It works wherever the list is: on the map, beside or under it, in a container of your own, or a `<LocationList>` outside the `<MaplaceMap>`.
 
-With `searchLabel`, typing sets the filter's `query` once it pauses for 150 ms, and keeps the rest of the filter, so the map narrows with the list; the camera stays, and choosing an entry pans to it. The box follows the store: a page's `setFilter` without a query empties it, so a page with its own controls too spreads `getSnapshot().filter`. A query outlives the box, and a location it hides can't be selected, as for any filter: a page's own `select` throws, so check `listedLocations(getSnapshot())` or clear the query first. A `listed: false` location that matches stays on the map, while the status counts only the list. With a `scope`, a match outside "This area" leaves the empty-area status to speak.
+With `search`, typing sets the filter's `query` once it pauses for 150 ms, and keeps the rest of the filter, so the map narrows with the list; the camera stays, and choosing an entry pans to it. The box follows the store: a page's `setFilter` without a query empties it, so a page with its own controls too spreads `getSnapshot().filter`. A query outlives the box, and a location it hides can't be selected, as for any filter: a page's own `select` throws, so check `listedLocations(getSnapshot())` or clear the query first. A `listed: false` location that matches stays on the map, while the status counts only the list. With a `scope`, a match outside "This area" leaves the empty-area status to speak.
 
 The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins; its element carries `maplace-list-view`, and [Styling](styling.md) lists its classes and how to turn the defaults off.
 
@@ -180,11 +186,11 @@ A list with `sort: "distance"` lists nearest first once there is an origin, afte
 
 ### The "My location" control
 
-`createMyLocationControl(maplace, { label, unavailableLabel })` returns `{ element, destroy }`, a view like a list view: put `element` on the map with `mountControl` or anywhere in the page. `createGoogleMap` and `createMapLibreMap` take it as `myLocation`, the element as `my-location-label`, React as `<MyLocation>`.
+`createMyLocationControl(maplace, { label, unavailableLabel })` returns `{ element, destroy }`, a view like a list view: put `element` on the map with `mountControl` or anywhere in the page. `createGoogleMap` and `createMapLibreMap` take it as `myLocation`, the element as `my-location`, React as `<MyLocation>`.
 
 It is a toggle button, "My location" by default. Pressed, it asks the browser for the position, once, then makes it the origin and centres the map there at its zoom (with no view yet it moves nothing). Pressed again, it clears the origin. Nothing is asked until a press. An origin your page set shows it unpressed, and a press replaces it.
 
-Refused, unavailable, timed out, not on HTTPS, or no geolocation at all: its status says `unavailableLabel`, "Location unavailable" by default, and any origin already there stands. That isn't an event or an error: it is the visitor's choice or the device's, not a failure of the page. [Setup](setup.md#the-visitors-location) says what a page needs.
+Refused, unavailable, timed out, not on HTTPS, or no geolocation at all: the line under the button says `unavailableLabel`, "Location unavailable" by default, and any origin already there stands. That isn't an event or an error: it is the visitor's choice or the device's, not a failure of the page. [Setup](setup.md#the-visitors-location) says what a page needs.
 
 ## Listed locations
 

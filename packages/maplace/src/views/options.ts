@@ -18,6 +18,7 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     as: optional(oneOf(AS)),
     groupHeadings: optional(checkBoolean),
     groupCounts: optional(checkBoolean),
+    fitAll: optional(checkBoolean),
     fitAllLabel: optional(checkNonBlankString),
     label: optional(checkNonBlankString),
     heading: optional(checkNonBlankString),
@@ -28,6 +29,7 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     areaOnlyLabel: optional(checkNonBlankString),
     showAllLabel: optional(checkNonBlankString),
     emptyAreaLabel: optional(checkNonBlankString),
+    search: optional(checkBoolean),
     searchLabel: optional(checkNonBlankString),
     noMatchesLabel: optional(checkNonBlankString),
     matchesLabel: optional(checkNonBlankString),
@@ -36,7 +38,7 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
 });
 
 /**
- * `createListView` options; `render`, `scope` or `searchLabel` with `as: 'select'`, and
+ * `createListView` options; `render`, `scope` or `search` with `as: 'select'`, and
  * `groupCounts` with `groupHeadings: false`, are refused, never ignored.
  */
 export function checkListViewOptions(
@@ -58,7 +60,7 @@ function refuseForSelect(value: ListViewOptions, field: Field): void {
   if (value.scope !== undefined) {
     reject(field, "scope needs as: 'list'; a native select has no room for its button");
   }
-  if (value.searchLabel !== undefined) {
-    reject(field, "searchLabel needs as: 'list'; a native select has no room for its box");
+  if (value.search) {
+    reject(field, "search needs as: 'list'; a native select has no room for its box");
   }
 }

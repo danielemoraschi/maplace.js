@@ -73,7 +73,12 @@ describe.each(ROOT_MODES)("React content on the map, in $mode", (root) => {
   it("puts a popup's links after React's content, and popupOpen still waits for it", async () => {
     const shown = vi.fn();
     const onPopupOpen = ({ element }: { element: HTMLElement }) => shown(element.textContent);
-    const popup = { openInMapsLabel: "Open", directionsLabel: "Go" };
+    const popup = {
+      openInMapsLink: true,
+      openInMapsLabel: "Open",
+      directionsLink: true,
+      directionsLabel: "Go",
+    };
     const popupContent = (location: Location) => <p>{location.id}</p>;
     const map = await renderMap(root, { popupContent }, { onPopupOpen, popup });
     await inAct(() => map.probe.click("north"));

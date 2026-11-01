@@ -10,7 +10,7 @@ export function resolvePopup(options: MaplaceOptions | undefined): ResolvedPopup
     maxWidth: popup?.maxWidth,
     offset,
     openOn: popup?.openOn ?? "click",
-    openInMapsLabel: popup?.openInMapsLabel,
-    directionsLabel: popup?.directionsLabel,
+    openInMapsLabel: popup?.openInMapsLink ? (popup.openInMapsLabel ?? "Open in Maps") : undefined,
+    directionsLabel: popup?.directionsLink ? (popup.directionsLabel ?? "Directions") : undefined,
   });
 }

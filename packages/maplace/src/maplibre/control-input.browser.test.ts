@@ -43,7 +43,7 @@ const tabInto = (list: HTMLElement) => tabUntil(() => list.contains(document.act
 
 describe("input in a panel on a MapLibre map", () => {
   it("types in a search box without moving or zooming the map", async () => {
-    const { map, list } = await listOnMap({ searchLabel: "Find" });
+    const { map, list } = await listOnMap({ search: true, searchLabel: "Find" });
     const before = cameraOf(map);
     list.element.querySelector("input")?.focus();
     await userEvent.keyboard("+-=");

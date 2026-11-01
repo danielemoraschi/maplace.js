@@ -19,6 +19,7 @@ export { defineProvider } from "./define";
 /** The list options `<maplace-map>` reads from its attributes and gives every list view. */
 export type ElementListOptions = Pick<
   ListViewOptions,
+  | "fitAll"
   | "fitAllLabel"
   | "heading"
   | "groupCounts"
@@ -28,6 +29,7 @@ export type ElementListOptions = Pick<
   | "areaOnlyLabel"
   | "showAllLabel"
   | "emptyAreaLabel"
+  | "search"
   | "searchLabel"
   | "noMatchesLabel"
   | "matchesLabel"
@@ -36,9 +38,9 @@ export type ElementListOptions = Pick<
 /** What `<maplace-map>` gives a list view besides its store. */
 export interface ListViewSetup {
   /**
-   * The list options from the attributes (`fit-all-label`, `list-heading`, `group-counts`,
-   * `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`, `search-label`,
-   * `no-matches-label`, `matches-label`).
+   * The list options from the attributes (`fit-all`, `fit-all-label`, `list-heading`,
+   * `group-counts`, `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`,
+   * `search`, `search-label`, `no-matches-label`, `matches-label`).
    */
   readonly options: ElementListOptions;
   /**
@@ -70,28 +72,38 @@ export { defineListView } from "./list-views";
  * - `list`: present (empty, or `"true"` as Svelte 5 writes it) = list view; `list="select"` =
  *   native select; `list="<name>"` = a view given to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.
- * - `fit-all-label`: label of a first list entry that fits all locations.
+ * - `fit-all`: adds a first list entry, which clears the selection and fits all locations.
+ * - `fit-all-label`: the words of the list's first entry, "All locations" by default; does nothing without
+ *   `fit-all`.
  * - `list-heading`: a heading above the list, beside the map or on it; the list's accessible name.
  * - `group-counts`: shows after each group heading how many are listed under it now (a boolean, as
  *   HTML writes one: present, empty or `"true"` is on, `"false"` off).
  * - `list-scope`: `viewport` shows a switch above the list, "All" (at load) or "This area",
  *   which lists only what is in the map's view and follows it, wherever the list is.
- * - `area-only-label`, `show-all-label`: the labels of "This area" and "All".
- * - `empty-area-label`: what the list says when nothing is in its view.
- * - `search-label`: shows a search box above a list, named by this; typing sets the filter's query
- *   once it pauses.
- * - `no-matches-label`, `matches-label`: what the box's status says when nothing matches, and
- *   before the count.
- *   (`list`, `list-position`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`,
- *   `area-only-label`, `show-all-label`, `empty-area-label`, `search-label`, `no-matches-label` and
- *   `matches-label` are live: the list is built again.)
+ * - `area-only-label`, `show-all-label`: the words of the `list-scope` switch's two buttons.
+ * - `empty-area-label`: what a list with `list-scope` says when no location is in the map's view.
+ * - `search`: shows a search box above a list; typing sets the filter's query once it pauses.
+ * - `search-label`: the box's placeholder and accessible name, "Search" by default; does nothing
+ *   without `search`.
+ * - `no-matches-label`, `matches-label`: what the line under the search box says when nothing
+ *   matches, and before the count of matches.
+ *   (`list`, `list-position`, `fit-all`, `fit-all-label`, `list-heading`, `group-counts`,
+ *   `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`, `search`,
+ *   `search-label`, `no-matches-label` and `matches-label` are live: the list is built again.)
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
  *   changes go through `maplace`.
  * - `cluster`: cluster markers (a CDN page needs the cluster build); can't change afterwards.
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
  *   of a selection; can't change afterwards.
- * - `open-in-maps-label`, `directions-label`: a link in each popup with these words, to the
- *   provider's maps site (a location with no content has no popup); can't change afterwards.
+ * - `my-location`: puts the "My location" button on the map, which asks for the visitor's position
+ *   only when pressed; read when the map opens, as are `my-location-label` (its words),
+ *   `my-location-unavailable-label` (what it says when no position comes) and
+ *   `my-location-position` (its corner).
+ * - `open-in-maps-link`, `directions-link`: a link at the end of each popup, to the location on
+ *   the provider's maps site, and to directions there (a location with no content has no popup);
+ *   can't change afterwards.
+ * - `open-in-maps-label`, `directions-label`: the words of the popup's two links, "Open in Maps" and "Directions"
+ *   by default; do nothing without their switch; can't change afterwards.
  * - `hold`: stay idle, with no provider request and no list built, until `release()`.
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as

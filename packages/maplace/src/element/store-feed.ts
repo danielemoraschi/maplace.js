@@ -26,7 +26,7 @@ export class StoreFeed {
   readonly #onStoreChange: () => void;
   #store: Maplace | undefined;
   #clusters = false;
-  /** What the store took from the label attributes. */
+  /** What the store took from its attributes: the link switches and the labels. */
   #labels: StoreLabels = {};
   /** Given before the store exists, or what the store was created with. */
   #sanitize: Sanitize | undefined;
@@ -113,15 +113,16 @@ export class StoreFeed {
     }
   }
 
-  /** A blank label stands as misuse, as does a change once the store has taken them. */
+  /** A blank label or a bad switch stands as misuse, as does a change once the store took them. */
   checkLabels(): void {
     checkStoreLabels(this.#host, this.#labels, this.#misuse);
   }
 
   /**
-   * The store from `cluster`, the labels and `sanitize`, fixed for its life, then fed what waited
-   * for it. It is listened to only then: the state the store starts from is no event, as an
-   * <input value> is no change. A bad label is said last, as a listener may read the store.
+   * The store from `cluster`, the labels, the link switches and `sanitize`, fixed for its life,
+   * then fed what waited for it. It is listened to only then: the state the store starts from is
+   * no event, as an <input value> is no change. A bad label or switch is said last, as a listener
+   * may read the store.
    */
   #create(): Maplace {
     this.#clusters = this.#host.hasAttribute("cluster");

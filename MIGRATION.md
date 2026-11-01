@@ -134,7 +134,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `type` (one per map) | `type` per location, so one map mixes markers and shapes |
 | `type: 'directions'` | `setRoute({ stops })` through your own locations, on Google (MapLibre has no routing) |
 | `type: 'fusion'`, `fusion_options` | dropped: Google shut down Fusion Tables in 2019 |
-| `view_all`, `view_all_text` | `fitAllLabel` (element `fit-all-label`); no entry unless set |
+| `view_all`, `view_all_text` | `fitAll` (element `fit-all`) adds the entry, and `fitAllLabel` (element `fit-all-label`) sets its words; no entry unless `fitAll` is set |
 | `start` | `selectedId` (element `selected-id`, React `defaultSelectedId`) |
 | `locations` | kept; every location needs an `id` |
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |

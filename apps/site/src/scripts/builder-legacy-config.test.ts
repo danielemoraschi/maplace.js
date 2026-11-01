@@ -22,6 +22,7 @@ describe("fromLegacyConfig's list", () => {
     expect(attributes({})).toEqual([
       ["list", "select"],
       ["list-position", "top-right"],
+      ["fit-all", ""],
       ["fit-all-label", "View All"],
     ]);
   });
@@ -29,6 +30,7 @@ describe("fromLegacyConfig's list", () => {
   it("follows each list option alone", () => {
     expect(attribute({ controls_type: "list" }, "list")).toBe("");
     expect(attribute({ controls_on_map: false }, "list-position")).toBeUndefined();
+    expect(attribute({ view_all: false }, "fit-all")).toBeUndefined();
     expect(attribute({ view_all: false }, "fit-all-label")).toBeUndefined();
     expect(attribute({ view_all_text: "All" }, "fit-all-label")).toBe("All");
     expect(attribute({ controls_title: "Places" }, "list-heading")).toBe("Places");

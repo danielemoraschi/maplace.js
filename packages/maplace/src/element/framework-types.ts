@@ -46,17 +46,25 @@ type NamedMapAttribute =
   | "language"
   | "region";
 
+/** Switches read `"false"` as off, so `false` is their off value. */
+type SwitchAttribute =
+  | "group-counts"
+  | "fit-all"
+  | "search"
+  | "my-location"
+  | "open-in-maps-link"
+  | "directions-link";
+
 type MapAttribute =
-  | Exclude<(typeof LIST_ATTRIBUTES)[number], "group-counts">
+  | Exclude<(typeof LIST_ATTRIBUTES)[number], SwitchAttribute>
   | MapSettingAttribute
   | NamedMapAttribute;
 
 /** The properties a template sets on the map; both frameworks set a defined element's own. */
 type MapProperties = Partial<Pick<MaplaceMapElement, "locations" | "route" | "sanitize">>;
 
-/** `group-counts` reads `"false"` as off, so `false` is its off value. */
 type MapTemplate = Attributes<MapAttribute> &
-  Attributes<"group-counts", AttributeValue | false> &
+  Attributes<SwitchAttribute, AttributeValue | false> &
   MapProperties &
   OtherAttributes;
 /** A location reads `"false"` as false (`listed`, `editable`), so `false` is its off value. */

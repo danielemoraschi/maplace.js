@@ -149,7 +149,7 @@ function listAttributesOf(config: Config, count: number, report: Report): MapAtt
   if (heading !== undefined) attributes.push(["list-heading", heading]);
   if (config.view_all !== false) {
     const label = textOption(config, "view_all_text", report);
-    attributes.push(["fit-all-label", label ?? LEGACY_VIEW_ALL]);
+    attributes.push(["fit-all", ""], ["fit-all-label", label ?? LEGACY_VIEW_ALL]);
   }
   return attributes;
 }

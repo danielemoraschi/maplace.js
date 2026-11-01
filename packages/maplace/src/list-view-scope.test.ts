@@ -112,7 +112,7 @@ describe("createListView with scope: 'viewport'", () => {
   });
 
   it("says so over an empty area with a fit-all entry too", async () => {
-    const view = { ...SCOPED, fitAllLabel: "Everything" };
+    const view = { ...SCOPED, fitAll: true, fitAllLabel: "Everything" };
     const { maplace, adapter, area, status } = await readyScopedList({}, view);
     await movedTo(maplace, adapter, 150);
     area.click();

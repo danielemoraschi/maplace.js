@@ -14,6 +14,7 @@ const shop = createMaplace({ locations: [{ id: "s", lat: 1, lng: 2, data: { pric
 const list = createListView(shop, {
   label: "Shops",
   heading: "Shops near you",
+  fitAll: true,
   fitAllLabel: "All shops",
   render: ({ location, selected }) => {
     expectTypeOf(location.data).toEqualTypeOf<{ price: number } | undefined>();
@@ -31,9 +32,18 @@ createListView(shop, {
 });
 
 createListView(shop, { groupCounts: true });
-createListView(shop, { searchLabel: "Find", noMatchesLabel: "None", matchesLabel: "Found" });
-// @ts-expect-error the box is named by text
+createListView(shop, {
+  search: true,
+  searchLabel: "Find",
+  noMatchesLabel: "None",
+  matchesLabel: "Found",
+});
+// @ts-expect-error the box's words are text
 createListView(shop, { searchLabel: true });
+// @ts-expect-error the switch is on or off: its words are searchLabel
+createListView(shop, { search: "Find" });
+// @ts-expect-error the switch is on or off: its words are fitAllLabel
+createListView(shop, { fitAll: "All" });
 // @ts-expect-error groupCounts is on or off
 createListView(shop, { groupCounts: "yes" });
 

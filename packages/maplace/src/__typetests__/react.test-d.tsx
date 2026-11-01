@@ -74,7 +74,7 @@ export const headed = <LocationList heading="Choose a location:" />;
 export const onTheMap = <LocationList position="top-right" />;
 export const counted = <LocationList groupCounts />;
 export const searched = (
-  <LocationList searchLabel="Find" noMatchesLabel="None" matchesLabel="Hits" />
+  <LocationList search searchLabel="Find" noMatchesLabel="None" matchesLabel="Hits" />
 );
 export const scoped = (
   <LocationList

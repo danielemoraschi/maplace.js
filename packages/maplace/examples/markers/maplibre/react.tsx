@@ -37,7 +37,7 @@ const cities: Location<City>[] = [
 // Outside the component, so a render of the page around it doesn't render every marker again.
 const popupContent = ({ data }: Location<City>) => (data?.about ? <p>{data.about}</p> : null);
 
-const popup = { openInMapsLabel: "Open in Maps", directionsLabel: "Directions" };
+const popup = { openInMapsLink: true, directionsLink: true };
 
 const markerIcon = ({ data }: Location<City>) =>
   data?.starred ? <span className="star">★</span> : null;
@@ -63,7 +63,12 @@ function Markers() {
         popupContent={popupContent}
         markerIcon={markerIcon}
       >
-        <LocationList heading="Choose a location:" fitAllLabel="View all" position="top-right" />
+        <LocationList
+          heading="Choose a location:"
+          fitAll
+          fitAllLabel="View all"
+          position="top-right"
+        />
       </MaplaceMap>
     </MaplaceProvider>
   );

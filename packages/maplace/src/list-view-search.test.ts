@@ -12,7 +12,7 @@ const PLACES: Location[] = [
   { id: "turin", lat: 45, lng: 8, title: "Turin", group: "North" },
 ];
 
-const WITH_BOX: ListViewOptions = { searchLabel: "Find a place" };
+const WITH_BOX: ListViewOptions = { search: true, searchLabel: "Find a place" };
 
 function typeIn(root: Element, text: string): void {
   const input = root.querySelector("input");
@@ -27,7 +27,7 @@ function typeIn(root: Element, text: string): void {
 const statusOf = (root: Element) => root.querySelector(".maplace-search-status")?.textContent;
 const titles = (root: Element) => optionsIn(root).map((option) => option.textContent);
 
-describe("createListView with searchLabel", () => {
+describe("createListView with search", () => {
   it("typing narrows the list and hides the map's other markers", async () => {
     const { list, adapter } = await listed({ locations: PLACES }, WITH_BOX);
     typeIn(list.element, "mil");
@@ -86,7 +86,12 @@ describe("createListView with searchLabel", () => {
   });
 
   it("takes its labels", async () => {
-    const view = { searchLabel: "Find", matchesLabel: "Hits", noMatchesLabel: "Nope" };
+    const view = {
+      search: true,
+      searchLabel: "Find",
+      matchesLabel: "Hits",
+      noMatchesLabel: "Nope",
+    };
     const { list } = await listed({ locations: PLACES }, view);
     typeIn(list.element, "rome");
     expect(statusOf(list.element)).toBe("Hits: 1");
@@ -128,7 +133,7 @@ describe("createListView with searchLabel", () => {
   });
 });
 
-describe("createListView with searchLabel and scope", () => {
+describe("createListView with search and scope", () => {
   it("gives focus to the box, not the switch, when the entries it was in empty", async () => {
     const view = { ...WITH_BOX, scope: "viewport" } as const;
     const { list, maplace } = await listed({ locations: PLACES }, view);

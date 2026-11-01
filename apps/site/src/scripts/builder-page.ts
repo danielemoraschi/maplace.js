@@ -20,7 +20,7 @@ type PreviewMap = HTMLElement & {
 };
 
 /** The map attributes a preview follows: those it rebuilds its list for. */
-const PREVIEW_ATTRIBUTES = ["list", "list-position", "list-heading", "fit-all-label"];
+const PREVIEW_ATTRIBUTES = ["list", "list-position", "list-heading", "fit-all", "fit-all-label"];
 
 /** How long typing rests before the page reads it, so a live region isn't told every key. */
 const SETTLE_MS = 250;

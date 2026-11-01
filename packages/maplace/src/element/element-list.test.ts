@@ -46,19 +46,32 @@ describe("listFromAttributes with a list view defined by name", () => {
   it("gives the view the host's store, its list options and what maplace's lists list", () => {
     const store = storeWithGroups();
     const view = definedView();
-    const host = elementWith({ list: view.name, "fit-all-label": "All", "list-heading": "Towns" });
+    const host = elementWith({
+      list: view.name,
+      "fit-all": "",
+      "fit-all-label": "All",
+      "list-heading": "Towns",
+    });
     listFromAttributes(host, store);
     expect(view.given.maplace).toBe(store);
-    expect(view.given.setup?.options).toEqual({ fitAllLabel: "All", heading: "Towns" });
+    expect(view.given.setup?.options).toEqual({
+      fitAll: true,
+      fitAllLabel: "All",
+      heading: "Towns",
+    });
     expect(view.given.setup?.listed().map(({ id }) => id)).toEqual(["a", "b"]);
     store.setFilter(["south"]);
     expect(view.given.setup?.listed().map(({ id }) => id)).toEqual(["b"]);
   });
 
-  it("gives no fit-all label or heading when the host has none", () => {
+  it("gives no fit-all or heading when the host has none", () => {
     const view = definedView();
     listFromAttributes(elementWith({ list: view.name }), createMaplace());
-    expect(view.given.setup?.options).toEqual({ fitAllLabel: undefined, heading: undefined });
+    expect(view.given.setup?.options).toEqual({
+      fitAll: undefined,
+      fitAllLabel: undefined,
+      heading: undefined,
+    });
   });
 
   it("puts the view beside the map, and destroys it with the list, off the page", () => {
@@ -150,30 +163,25 @@ describe("listFromAttributes with a list view defined by name", () => {
     }
   });
 
-  it("passes the search labels, and treats them as list attributes", () => {
+  it("passes the search switch and labels, and treats them as list attributes", () => {
     const view = definedView();
     const host = elementWith({
       list: view.name,
+      search: "",
       "search-label": "Find",
       "no-matches-label": "None",
       "matches-label": "Found",
     });
     listFromAttributes(host, createMaplace());
     expect(view.given.setup?.options).toMatchObject({
+      search: true,
       searchLabel: "Find",
       noMatchesLabel: "None",
       matchesLabel: "Found",
     });
-    for (const name of ["search-label", "no-matches-label", "matches-label"]) {
+    for (const name of ["search", "fit-all", "search-label", "no-matches-label", "matches-label"]) {
       expect(isListAttribute(name)).toBe(true);
     }
-  });
-
-  it("refuses search-label with list='select', naming it", () => {
-    const host = elementWith({ list: "select", "search-label": "Find" });
-    expect(() => listFromAttributes(host, createMaplace())).toThrow(
-      expect.objectContaining({ code: "invalid-input", field: "search-label" }),
-    );
   });
 
   it.each([

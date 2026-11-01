@@ -8,7 +8,7 @@ export const SEARCH_STATUS_CLASS = "maplace-search-status";
  */
 export const SEARCH_PAUSE_MS = 150;
 
-/** What a list with `searchLabel` shows above its entries: the box's name, and its status's words. */
+/** What a list with `search` shows above its entries: the box's name, and its status's words. */
 export interface SearchBoxLabels {
   readonly label: string;
   readonly noMatches: string;

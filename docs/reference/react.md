@@ -87,18 +87,20 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `as` | `"list"` (a listbox, the default) or `"select"` (a native select) |
 | `groupHeadings` | Shows group headings; default `true` when any location has a `group` |
 | `groupCounts` | After each group heading, how many are listed under it now, following the filter and `scope`: "North (3)". Off by default; refused with `groupHeadings: false` |
-| `fitAllLabel` | Adds a first entry with this label that clears the selection and fits all locations |
+| `fitAll` | Adds a first entry to the list, which clears the selection and fits all locations |
+| `fitAllLabel` | The words of the list's first entry, which clears the selection and fits all locations; default "All locations"; does nothing without `fitAll` |
 | `label` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | A visible heading above the entries |
 | `scope` | `"viewport"`: a switch above the list, "All" or "This area", which lists only the locations in the map's view and follows it, on the map or outside the `<MaplaceMap>` ([List view options](store.md#list-view-options)); for `as: "list"` only |
-| `areaOnlyLabel` | The label of the switch's "This area"; default "This area" |
-| `showAllLabel` | The label of the switch's "All"; default "All" |
-| `emptyAreaLabel` | What a scoped list says when nothing is in its view; default "No locations in this area" |
+| `areaOnlyLabel` | The words of the `scope` switch's button that lists only the map's view; default "This area" |
+| `showAllLabel` | The words of the `scope` switch's button that lists every location; default "All" |
+| `emptyAreaLabel` | What a list with `scope` says when no location is in the map's view; default "No locations in this area" |
 | `sort` | `"distance"`: once the store has an origin, nearest first, each entry saying how far, and a render function gets `distance` and `distanceLabel` ([Distances](store.md#distances)) |
 | `distanceUnit` | What `sort` writes a distance in: `"kilometer"` (the default) or `"mile"` |
-| `searchLabel` | Shows a search box above the entries, named by this; for `as: "list"` only ([List view options](store.md#list-view-options)) |
-| `noMatchesLabel` | What the box's status says when nothing matches; default "No locations match" |
-| `matchesLabel` | What its status says before the count; default "Locations found" |
+| `search` | Shows a search box above the entries; for `as: "list"` only ([List view options](store.md#list-view-options)) |
+| `searchLabel` | The search box's placeholder and accessible name; default "Search"; does nothing without `search` |
+| `noMatchesLabel` | What the line under the search box says when nothing matches; default "No locations match" |
+| `matchesLabel` | What the line under the search box says before the count of matches; default "Locations found", as "Locations found: 3" |
 | `children` | For `as: "list"`, a function rendering an entry's content: plain content, since the entry itself is the option |
 | `position` | A corner, inside a `<MaplaceMap>`: the list itself goes on the map there while the map is attached, as the element's `list-position`, so its panel hides with it and its entries scroll under its heading. Without a `<MaplaceMap>` it is misuse |
 
