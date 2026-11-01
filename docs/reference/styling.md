@@ -9,7 +9,7 @@ maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
 - **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its start; on MapLibre, the heading on a line of its own, clear of the close button; its links in a row at the end, each 1.5rem tall.
-- **The origin's dot:** 18px, blue with a white border and a soft shadow. It takes no pointer input, inside `data-maplace-unstyled` too, so a click reaches the map.
+- **The dot where distances are measured from:** 18px, blue with a white border and a soft shadow. It takes no pointer input, inside `data-maplace-unstyled` too, so a click reaches the map.
 - **Clusters:** a round badge with the count, blue with white text. `--maplace-cluster-background` and `--maplace-cluster-color`, set on the map or anything above it, change its colours.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
 - **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint ([MapLibre adapter](maplibre.md#on-map-controls)).
@@ -71,36 +71,36 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | Class | What it marks |
 |---|---|
 | `maplace-map-pane` | Inside `<maplace-map>`, the element the map is drawn in |
-| `maplace-load-panel` | In the pane of a map waiting to load, the [panel](element.md#load-states) with its line and button; `.maplace-load-panel { display: none; }` removes it |
+| `maplace-load-panel` | The [panel](element.md#load-states) with the "Load map" button, shown in the pane of a map waiting to load; `.maplace-load-panel { display: none; }` removes it |
 | `maplace-placed-list` | The list `<maplace-map>` places beside the map or on it |
 | `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
-| `maplace-list` | With a heading, `scope` or `searchLabel`, the block holding them and the entries |
-| `maplace-list-heading` | That heading |
-| `maplace-area-switch` | The switch of a list with `scope`: a group of two buttons, the one in use `[aria-pressed=true]` |
+| `maplace-list` | The block around a list's entries and its heading, area switch or search box; only on a list with one of those three |
+| `maplace-list-heading` | A list's visible heading (`heading`, `list-heading`) |
+| `maplace-area-switch` | The "All" and "This area" switch of a list with `scope`: two buttons, the one in use `[aria-pressed=true]` |
 | `maplace-show-all` | The switch's "All" button |
 | `maplace-area-only` | The switch's "This area" button |
-| `maplace-empty-area` | The status of a list with `scope`, empty but over an empty area, when it says so |
-| `maplace-my-location` | The "My location" control: its button's box and its status |
-| `maplace-my-location-box` | The box around its button, which is `[aria-pressed=true]` while the origin is the position it read |
-| `maplace-my-location-status` | The control's status, empty until no position comes |
-| `maplace-listbox` | The list of entries |
-| `maplace-group` | A group of entries |
+| `maplace-empty-area` | What a list with `scope` says when no location is in the map's view (`emptyAreaLabel`); empty otherwise |
+| `maplace-my-location` | The whole "My location" control: the box with its button, and its status |
+| `maplace-my-location-box` | The box around the control's button; the button is `[aria-pressed=true]` while the visitor's position is in use |
+| `maplace-my-location-status` | What the control says when it gets no position (`unavailableLabel`); empty otherwise |
+| `maplace-listbox` | The element holding a list's entries, without its heading, switch or search box |
+| `maplace-group` | A group's heading and entries in the list |
 | `maplace-search` | The search box (`searchLabel`) |
-| `maplace-search-status` | The box's status: how many are found, or that none is; empty with no query |
+| `maplace-search-status` | What the search box says: how many locations match, or that none does; empty with no query |
 | `maplace-group-heading` | A group's heading, with its count in the same text (`groupCounts`) |
-| `maplace-option` | A location's entry |
-| `maplace-distance` | How far an entry is (`sort`), after its label; a `render` shows its own |
-| `maplace-fit-all` | The entry that fits all locations (`fitAllLabel`) |
+| `maplace-option` | A location's entry in the list |
+| `maplace-distance` | An entry's distance, after its label, in a list with `sort: "distance"`; a custom `render` shows its own instead |
+| `maplace-fit-all` | The list's first entry, which clears the selection and fits all locations (`fitAllLabel`) |
 | `maplace-select` | The native select (`as: "select"`, `list="select"`) |
-| `maplace-origin-dot` | The dot at the store's origin; `{ display: none }` removes it |
+| `maplace-origin-dot` | The dot on the map where distances are measured from: the visitor's position after the ["My location" control](store.md#the-my-location-control), or a point the page gives to `setOrigin`; `{ display: none }` removes it |
 | `maplace-popup` | A popup's content |
 | `maplace-popup-heading` | A popup's heading, its location's title |
 | `maplace-popup-links` | A popup's links (`openInMapsLabel`, `directionsLabel`); a page's `a` rule colours them, so a pale one needs `.maplace-popup-links a` for the white bubble |
-| `maplace-cluster` | A cluster's badge, the count, on either provider |
-| `maplace-control` | The panel holding what is placed on a Google or MapLibre map |
+| `maplace-cluster` | The badge with the count on a cluster of markers, on either provider |
+| `maplace-control` | The panel around anything placed on a Google or MapLibre map: a list, a select, the "My location" control, your own controls |
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |
-| `maplace-google-map` | The element a Google map maplacejs creates is drawn in |
-| `maplace-maplibre-map` | The element a MapLibre map maplacejs creates is drawn in |
+| `maplace-google-map` | The element a Google map is drawn in, when maplacejs creates the map rather than being handed one |
+| `maplace-maplibre-map` | The element a MapLibre map is drawn in, when maplacejs creates the map rather than being handed one |
 
 A direct child of `<maplace-map>` marked `data-maplace-idle` replaces the load panel, taking the pane's place in `:state(idle)` and hidden in every other state, whatever `display` the page gives it. The default styles are adopted on the document: for a map inside a shadow root, the page hides its own child with a `:state(idle)` rule of its own.
 
