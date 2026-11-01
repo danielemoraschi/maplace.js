@@ -3,11 +3,13 @@ import { defaultClientConditions } from "vite";
 import { configDefaults, defineConfig } from "vitest/config";
 import { MAPS_TEST_PORT } from "./packages/maplace/src/google/testing/maps-origin.ts";
 import { MOUSE_COMMANDS } from "./packages/maplace/src/testing/mouse-commands.ts";
+import { freshGlobs } from "./scripts/checks/fresh-globs.ts";
 
 // What only a real browser shows: layout, scrolling, focus, trusted input, the accessibility tree.
 const BROWSER_TESTS = "packages/maplace/src/**/*.browser.test.{ts,tsx}";
 
 export default defineConfig({
+  plugins: [freshGlobs()],
   test: {
     coverage: {
       provider: "v8",
