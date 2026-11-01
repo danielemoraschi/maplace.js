@@ -58,6 +58,11 @@
       "types": "./dist/react/index.d.ts",
       "default": "./dist/react/index.js"
     },
+    "./testing": {
+      "maplace:source": "./src/testing/index.ts",
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    },
     "./package.json": "./package.json"
   },
   "dependencies": {
@@ -71,6 +76,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "svelte": "^4.0.0 || ^5.0.0",
+    "vitest": "*",
     "vue": "^3.3.0"
   },
   "peerDependenciesMeta": {
@@ -90,6 +96,9 @@
       "optional": true
     },
     "svelte": {
+      "optional": true
+    },
+    "vitest": {
       "optional": true
     },
     "vue": {

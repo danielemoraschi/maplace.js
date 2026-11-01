@@ -104,6 +104,17 @@ The React binding, a client boundary (`"use client"`).
 | `MyLocation`, `MyLocationProps` | component, type | [`<MyLocation>`](react.md#mylocation) |
 | `useMaplace` | hook | [`useMaplace()`](react.md#usemaplace) |
 
+## `maplace/testing`
+
+The conformance suite, for an adapter of your own; it needs `vitest` (an optional peer) in browser mode, and no page loads it.
+
+| Export | Kind | Explained in |
+|---|---|---|
+| `describeConformance`, `ConformanceSubject`, `ConformanceGroup` | function, types | [Proving an adapter](store.md#proving-an-adapter) |
+| `MapProbe`, `LocationOnMap`, `ShownPopup` | types | [Proving an adapter](store.md#proving-an-adapter) |
+| `frontFirst`, `StackedLocation` | function, type | [Proving an adapter](store.md#proving-an-adapter) |
+| `SELECTED_LOOK`, `SELECTED_LINE_LOOK`, `HOVERED_LOOK`, `ORIGIN_DOT_CLASS` | constants | [Proving an adapter](store.md#proving-an-adapter) |
+
 ## Errors
 
 Misuse throws a `MaplaceError` from the call that caused it, with a `code` and, where they apply, the `locationId` and the `field`. In the element, where no caller can catch a throw, misuse is the element's error state and a `maplace-error` event instead ([misuse](element.md#misuse)); in React it throws from render or a layout effect, to the nearest error boundary. Runtime failures are never thrown: they are `error` events, with the same `MaplaceError`.

@@ -48,7 +48,7 @@ import {
   SEARCH_CLASS,
   SEARCH_STATUS_CLASS,
 } from "../../../../packages/maplace/src/views/search-box.ts";
-import { PACKAGE_ENTRIES, readRootFile } from "../../../../scripts/build/package.ts";
+import { PUBLISHED_ENTRIES, readRootFile } from "../../../../scripts/build/package.ts";
 import {
   GOOGLE_PROVIDER_ATTRIBUTES,
   MAP_ATTRIBUTES,
@@ -178,7 +178,7 @@ function tablesOn(page: string, tables: readonly TableOf[]): ReferenceTable[] {
 }
 
 /** The package's entries, as the API page heads them. */
-const ENTRY_NAMES: Readonly<Record<keyof typeof PACKAGE_ENTRIES, string>> = {
+const ENTRY_NAMES: Readonly<Record<keyof typeof PUBLISHED_ENTRIES, string>> = {
   core: "maplace",
   google: "maplace/google",
   maplibre: "maplace/maplibre",
@@ -186,14 +186,15 @@ const ENTRY_NAMES: Readonly<Record<keyof typeof PACKAGE_ENTRIES, string>> = {
   elementGoogle: "maplace/element/google",
   elementMapLibre: "maplace/element/maplibre",
   react: "maplace/react",
+  testing: "maplace/testing",
 };
 
 /** One table per entry: its exports, read from its source. */
 function entryTables(): TableOf[] {
-  const entries = Object.entries(ENTRY_NAMES) as [keyof typeof PACKAGE_ENTRIES, string][];
+  const entries = Object.entries(ENTRY_NAMES) as [keyof typeof PUBLISHED_ENTRIES, string][];
   return entries.map(([entry, name]) => [
     `## \`${name}\``,
-    exportedNames(readRootFile(PACKAGE_ENTRIES[entry])),
+    exportedNames(readRootFile(PUBLISHED_ENTRIES[entry])),
     `the ${name} entry`,
   ]);
 }

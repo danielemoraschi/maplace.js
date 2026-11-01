@@ -6,9 +6,12 @@ import { packTarball } from "../build/pack-tarball.ts";
 import { ROOT } from "../build/package.ts";
 import { tempDir } from "../build/temp-dir.ts";
 import { layOutConsumer, typeCheckConsumer } from "./consumer-types.ts";
+import { runKitInBrowser } from "./kit-in-browser.ts";
 import { packageLintProblems } from "./package-lint.ts";
 import { renderServerComponentsApp } from "./server-components.ts";
 import { typeResolutionProblems } from "./type-resolution.ts";
+
+const KIT_RUN_MS = 120_000;
 
 /** Under the repo, so the consumer finds maplace's dependencies installed, as a page would. */
 const consumerDir = tempDir("consumer", join(ROOT, "node_modules/.cache/maplace-checks"));
@@ -61,6 +64,25 @@ describe("the packed package", () => {
     expect(render.html).toContain('<div style="display:contents"></div>');
     expect(render.payload).toContain('"title":"Rome"');
   }, 120_000);
+
+  it("type-checks a third party's conformance subject for a strict consumer", () => {
+    const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "testing");
+    expect(errors).toEqual([]);
+    expect(loadedFiles.some((file) => file.endsWith("/maplace/dist/testing/index.d.ts"))).toBe(
+      true,
+    );
+  }, 30_000);
+
+  it(
+    "runs a third party's adapter through the kit in a browser, from the package as packed",
+    () => {
+      const { passed, skipped } = runKitInBrowser(stagedDir);
+      expect(passed.length).toBeGreaterThan(0);
+      expect(passed.every((name) => name.includes("declarations"))).toBe(true);
+      expect(skipped.length).toBeGreaterThan(0);
+    },
+    KIT_RUN_MS,
+  );
 
   it("type-checks for a strict consumer on Google, its types reached through maplace's", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "google");

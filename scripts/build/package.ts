@@ -11,7 +11,7 @@ export const DIST = `${PACKAGE_DIR}/dist`;
 /** The package as npm packs it (`stage-package.ts`): what T4 checks and P2 publishes. */
 export const PACKED = `${PACKAGE_DIR}/packed`;
 
-/** The source of each published entry. */
+/** The source of each entry a page loads. */
 export const PACKAGE_ENTRIES = {
   core: `${SRC}/index.ts`,
   google: `${SRC}/google/index.ts`,
@@ -21,6 +21,12 @@ export const PACKAGE_ENTRIES = {
   elementMapLibre: `${SRC}/element/maplibre.ts`,
   react: `${SRC}/react/index.ts`,
 } as const;
+
+/** `maplace/testing`'s source: built apart, as sharing chunks with the others would grow them. */
+export const TESTING_ENTRY = `${SRC}/testing/index.ts`;
+
+/** Every published entry, `maplace/testing` among them. */
+export const PUBLISHED_ENTRIES = { ...PACKAGE_ENTRIES, testing: TESTING_ENTRY } as const;
 
 /** The repo's TypeScript compiler (TS 7 is a native binary, with no JS API). */
 export const TSC = resolve(ROOT, "node_modules/.bin/tsc");

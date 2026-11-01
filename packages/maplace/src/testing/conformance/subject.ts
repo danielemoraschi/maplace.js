@@ -31,7 +31,7 @@ export interface ConformanceSubject {
    */
   readonly provedOn?: ProvedOn | undefined;
   /**
-   * A new adapter for one check, and its probe. Checks mount it in `container`, of `MAP_SIZE`;
+   * A new adapter for one check, and its probe. Checks mount it in `container`, of 512×512;
    * a subject drawing on a page's own map puts that map there first.
    */
   create(container: HTMLElement): { readonly adapter: Adapter; readonly probe: MapProbe };

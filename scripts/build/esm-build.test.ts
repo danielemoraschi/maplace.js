@@ -9,6 +9,7 @@ import { packagesLoadedBy } from "./loaded-by.ts";
 import { PACKAGE_ENTRIES, ROOT } from "./package.ts";
 import { stagedBeforeTests } from "./staged-test-package.ts";
 
+const TESTING_SCRIPT = "testing/index.js";
 const CLUSTERER = "@googlemaps/markerclusterer";
 const SUPERCLUSTER = "supercluster";
 const REACT = ["react", "react-dom"];
@@ -83,6 +84,7 @@ describe("the npm ESM build", () => {
         "element/maplibre.js",
         "react/index.js",
         "maplibre/index.js",
+        TESTING_SCRIPT,
       ]),
     );
     for (const entry of entries) expect(built.has(entry), entry).toBe(true);
@@ -95,10 +97,17 @@ describe("the npm ESM build", () => {
     ).toHaveLength(1);
   });
 
-  it("bundles no dependency: it imports the clusterers, React and maplibre-gl by name", () => {
+  it("builds the testing entry apart: it alone imports Vitest, and on no chunk", () => {
+    const built = scripts(join(packageDir, "dist"));
+    const importing = [...built].filter(([, text]) => bareImportsOf(text).includes("vitest"));
+    expect(importing.map(([file]) => file)).toEqual([TESTING_SCRIPT]);
+    expect(new Set(importsOf(built.get(TESTING_SCRIPT) ?? ""))).toEqual(new Set(["vitest"]));
+  });
+
+  it("bundles no dependency: it imports the clusterers, React, maplibre-gl and Vitest by name", () => {
     const bare = [...scripts(join(packageDir, "dist")).values()].flatMap(bareImportsOf);
     expect(new Set(bare.map(packageName))).toEqual(
-      new Set([CLUSTERER, SUPERCLUSTER, ...REACT, MAPLIBRE]),
+      new Set([CLUSTERER, SUPERCLUSTER, ...REACT, MAPLIBRE, "vitest"]),
     );
   });
 

@@ -20,7 +20,8 @@ export type CdnScript = keyof typeof CDN_SCRIPTS;
 
 /**
  * What each CDN script is built from: its element entry, and what the npm entries it stands for
- * export, as the page's `Maplace` (W33). Kept out of `PACKAGE_ENTRIES`, which npm publishes.
+ * export, as the page's `Maplace` (W33). Kept out of `PACKAGE_ENTRIES`, the ones a page loads from
+ * npm.
  */
 export const CDN_ENTRIES = {
   google: `${SRC}/cdn/google.ts`,

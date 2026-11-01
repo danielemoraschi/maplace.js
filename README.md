@@ -182,8 +182,9 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 | `maplace/element/google` | the element with the Google provider registered |
 | `maplace/element/maplibre` | the element with the MapLibre provider registered |
 | `maplace/react` | `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>` and `useMaplace()` |
+| `maplace/testing` | `describeConformance`: the conformance suite, to prove an adapter of your own, with `vitest` as an optional peer |
 
-`@googlemaps/markerclusterer` and `supercluster` are dependencies, each loaded only by a store that clusters on its provider. `maplibre-gl` (6.15 or a later 6.x) is an optional peer, for `maplace/maplibre` and `maplace/element/maplibre`; `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`; `react` and `react-dom` (19) are optional peers, for `maplace/react`; `vue` (3.3 or later) and `svelte` (4 or 5) are optional peers, for the element's types in their templates.
+`@googlemaps/markerclusterer` and `supercluster` are dependencies, each loaded only by a store that clusters on its provider. `maplibre-gl` (6.15 or a later 6.x) is an optional peer, for `maplace/maplibre` and `maplace/element/maplibre`; `vitest` is an optional peer, for `maplace/testing`, tested on 5; `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`; `react` and `react-dom` (19) are optional peers, for `maplace/react`; `vue` (3.3 or later) and `svelte` (4 or 5) are optional peers, for the element's types in their templates.
 
 ## With React
 

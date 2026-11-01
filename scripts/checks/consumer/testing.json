@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "files": ["testing.ts", "kit-run/adapter-run.ts", "kit-run/vitest.config.ts"]
+}

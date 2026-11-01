@@ -208,3 +208,84 @@ Once a map has mounted, `attach` adds two things to its container, for a keyboar
 An adapter is the bridge to a map provider; the store drives it, and it reports back through its host. Writing one is for a new provider: the contract is in [RFC §3 Shape](../rfc-1.0.md#shape). Its container also holds [what `attach` adds](#on-every-map) once `mount` resolves, so an adapter leaves other nodes there alone.
 
 Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`, the same corner on a right-to-left page), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. maplacejs's own lists on the map go there the same way.
+
+### Proving an adapter
+
+`maplace/testing` runs the suite maplacejs's own adapters pass on yours, so a provider of your own can show it keeps the contract. It runs in [Vitest's browser mode](https://vitest.dev/guide/browser/), in a real browser, with `vitest` (tested on 5) and a browser provider such as `@vitest/browser-playwright` installed, and its browser (`npx playwright install chromium`); no page loads it, and it's built apart from the other entries, so it adds nothing to them.
+
+`describeConformance(subject)` registers the checks. A subject has a `name` and a `create(container)` returning `{ adapter, probe }`:
+
+- **`create`** returns a new adapter on each call, synchronously. The suite also calls it with a detached element, as the checks register, to read the adapter's capabilities, and never mounts that one: load your provider in `mount`, not here. A subject drawing on a page's own map makes that map only when `container.isConnected`.
+- **`probe`** is a `MapProbe`, the only per-provider code the suite needs. It reads your provider's map (`location`, `locationIds`, `stackOrder`, `shownPopup`, `originDot`) and acts as a user would (`click`, `clickMap`, `pointerOver`, `pointerOut`, `drag`, `closePopup`). `settle()` resolves once the map has finished what it started and reported it. `frontFirst` is `stackOrder`'s rule: markers above shapes, each front first.
+- **`groups`** joins the suite part by part: `declarations`, `lifecycle`, `drawing`, `presentation`, `popups`, `camera`, `container`, `reports`, `editing`, `route`, `cluster`, `controls` and `origin`. A group left out shows as skipped, and a capability your adapter doesn't declare skips its checks.
+- **`provedOn`** is for a second subject of one adapter, such as one on a page's own map: the `groups` its `subject` already proves, which then show as skipped.
+
+The maps are drawn at 512×512, and zoom means what it does on the web: a world 256 px wide at zoom 0. A check compares what your map draws with `SELECTED_LOOK` and `SELECTED_LINE_LOOK` for a selected shape and `HOVERED_LOOK` for one pointed at, and looks for `ORIGIN_DOT_CLASS` on the origin's dot. A real map may need a longer `testTimeout`: maplacejs's own use 60 seconds.
+
+This one draws nothing, so it joins only the first group:
+
+<!-- example: scripts/checks/consumer/testing.ts -->
+```ts
+// An adapter of your own, proved with maplace/testing: run in Vitest's browser mode. This one
+// draws nothing, so it joins only the suite's first group; yours adds each as it draws that part,
+// and its probe reads and drives your provider's map.
+import type { Adapter } from "maplace";
+import type { ConformanceSubject, MapProbe } from "maplace/testing";
+
+function createMyAdapter(): Adapter {
+  return {
+    capabilities: new Set(["circle"]),
+    async mount() {},
+    async apply() {},
+    present() {},
+    setView() {},
+    setRoute() {},
+    mountControl() {
+      return () => {};
+    },
+    destroy() {},
+  };
+}
+
+const myProbe: MapProbe = {
+  location: () => undefined,
+  locationIds: () => [],
+  stackOrder: () => [],
+  shownPopup: () => undefined,
+  originDot: () => undefined,
+  click() {},
+  clickMap() {},
+  pointerOver() {},
+  pointerOut() {},
+  drag() {},
+  closePopup() {},
+  settle: async () => {},
+};
+
+export const myAdapter: ConformanceSubject = {
+  name: "my adapter",
+  groups: ["declarations"],
+  create: () => ({ adapter: createMyAdapter(), probe: myProbe }),
+};
+```
+
+A test file then calls `describeConformance(myAdapter)`, in a config like this, whose `include` names that file:
+
+<!-- example: scripts/checks/consumer/kit-run/vitest.config.ts -->
+```ts
+import { playwright } from "@vitest/browser-playwright";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    include: ["kit-run/adapter-run.ts"],
+    browser: {
+      enabled: true,
+      headless: true,
+      provider: playwright(),
+      // Wider than the 512×512 the suite draws at, or its maps overflow the frame.
+      instances: [{ browser: "chromium", viewport: { width: 1024, height: 768 } }],
+    },
+  },
+});
+```

@@ -143,6 +143,16 @@ describe("problemsIn", () => {
     expect(problemsIn("route.ts", 'import type { Maplace } from "./store";')).toHaveLength(1);
   });
 
+  it("lets the testing entry reach the conformance suite and the adapter kit", () => {
+    expect(layerOf("testing/index")).toBe("testing-entry");
+    const source = `export { describeConformance } from "./conformance/describe-conformance";
+      export { SELECTED_LOOK } from "../adapter-kit/shape-looks";`;
+    expect(problemsIn("testing/index.ts", source)).toEqual([]);
+    expect(
+      problemsIn("testing/index.ts", 'export { createFakeAdapter } from "./fake-adapter";'),
+    ).toHaveLength(1);
+  });
+
   it("lets the React binding use the core through its entry only", () => {
     expect(problemsIn("react/provider.tsx", 'import { createMaplace } from "../index";')).toEqual(
       [],
