@@ -15,7 +15,58 @@ From npm, `import "maplace/element/google"` defines the same elements with the G
 
 ## Size
 
-The element is 24rem tall unless the page sets its height (`maplace-map { height: 30rem }`); a page sizing it by its layout instead (`position: absolute; inset: 0`, a grid's row) sets `height: auto`. The map fills it, with its list beside it, or, on a screen narrower than 40rem, under it, at most 40% of the height, scrolling. Its own styles come with the element's script, so a page loading that script late keeps the room with `maplace-map:not(:defined) { display: block; height: 24rem; }`.
+The element is 24rem tall unless the page sets its height (`maplace-map { height: 30rem }`); a page sizing it by its layout instead (`position: absolute; inset: 0`, a grid's row) sets `height: auto`. The map fills it, with its list beside it, or, on a screen narrower than 40rem, under it, at most 40% of the height, scrolling. Its own styles come with the element's script, so a page loading that script late keeps the room with `:where(maplace-map:not(:defined)) { display: block; height: 24rem; }`, which a height of the page's still overrides.
+
+## A list before the script runs
+
+maplace builds its list once its script has run, and a map with `hold` only on `release()`. To show the places sooner, while a slow script loads, if it fails, or while a map waits for a visitor's consent, write them into the page's HTML as a list of your own. It also puts them in front of crawlers that run no JavaScript. Hide it the moment maplace's list is there:
+
+<!-- example: packages/maplace/src/element/testing/list-before-script.html -->
+```html
+<style>
+  /* Holds the map's room, and the list's, until the script's own styles come. */
+  :where(maplace-map:not(:defined)) {
+    display: block;
+    height: 24rem;
+  }
+  .before-script {
+    margin: 0;
+    overflow: auto;
+  }
+  maplace-map:not(:defined) > .before-script {
+    height: 100%;
+  }
+  /* Beside a map waiting to load, where maplace's own list will go. */
+  maplace-map:defined > .before-script {
+    flex: 0 1 16rem;
+  }
+  @media (width < 40rem) {
+    maplace-map:defined > .before-script {
+      flex: none;
+      max-height: 40%;
+    }
+  }
+  /* Gone the moment maplace's list is there, not before. */
+  maplace-map:has(.maplace-placed-list) > .before-script {
+    display: none;
+  }
+</style>
+
+<maplace-map list api-key="YOUR_KEY">
+  <ul class="before-script">
+    <li><a href="/shops/rome">Rome</a></li>
+    <li><a href="/shops/milan">Milan</a></li>
+  </ul>
+  <maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome"></maplace-location>
+  <maplace-location location-id="milan" lat="45.46" lng="9.19" title="Milan"></maplace-location>
+</maplace-map>
+```
+
+- Load the script so it doesn't block parsing (`defer`, `type="module"`, or after the map), or a slow one holds the list back too.
+- Picking a place still needs the script, so make the entries plain text or links to pages of their own.
+- Your list and maplace's are two separate lists. Focus and scroll in yours are lost at the swap, the places are written twice, and the entries change to maplace's look unless your CSS matches it.
+- This is for a list beside the map. One in a corner (`list-position`) sits on the map, where yours has no place, and with `data-maplace-unstyled` the map's layout, and so your list's place in it, is your own.
+- Schema.org JSON-LD is yours to add the same way, its data matching what the page shows; maplace writes none.
 
 ## Map attributes
 

@@ -1,0 +1,37 @@
+<style>
+  /* Holds the map's room, and the list's, until the script's own styles come. */
+  :where(maplace-map:not(:defined)) {
+    display: block;
+    height: 24rem;
+  }
+  .before-script {
+    margin: 0;
+    overflow: auto;
+  }
+  maplace-map:not(:defined) > .before-script {
+    height: 100%;
+  }
+  /* Beside a map waiting to load, where maplace's own list will go. */
+  maplace-map:defined > .before-script {
+    flex: 0 1 16rem;
+  }
+  @media (width < 40rem) {
+    maplace-map:defined > .before-script {
+      flex: none;
+      max-height: 40%;
+    }
+  }
+  /* Gone the moment maplace's list is there, not before. */
+  maplace-map:has(.maplace-placed-list) > .before-script {
+    display: none;
+  }
+</style>
+
+<maplace-map list api-key="YOUR_KEY">
+  <ul class="before-script">
+    <li><a href="/shops/rome">Rome</a></li>
+    <li><a href="/shops/milan">Milan</a></li>
+  </ul>
+  <maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome"></maplace-location>
+  <maplace-location location-id="milan" lat="45.46" lng="9.19" title="Milan"></maplace-location>
+</maplace-map>

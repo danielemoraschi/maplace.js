@@ -36,6 +36,11 @@ describe("readLocationSource", () => {
     expect(readLocationSource(host)[0]).toBe(first);
   });
 
+  it("takes a page's other children for no location", () => {
+    const host = hostWith(`<ul><li>Rome</li></ul>${ROME}`);
+    expect(readLocationSource(host).map(({ id }) => id)).toEqual(["rome"]);
+  });
+
   it("reads a location again once its attributes changed", () => {
     const host = hostWith(ROME);
     const [first] = readLocationSource(host);
