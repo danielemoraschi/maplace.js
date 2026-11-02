@@ -66,7 +66,7 @@ ${docSection("setup", "## Key and Map ID", settings)}
 
 ${docSection("setup", "## Style URL", settings)}
 
-${docSection("setup", "## Serve a MapLibre page", settings)}
+${docSection("setup", "## Use a web server for MapLibre", settings)}
 
 From npm the page loads Maps JS: pass \`apiKey\` to \`createGoogleMap\`, or load Google's loader first. A map fills its container, so give the container a height; the element is 24rem tall by default.`;
 }

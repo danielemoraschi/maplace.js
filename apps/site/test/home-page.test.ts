@@ -59,11 +59,14 @@ describe("the home page's headings and install box", () => {
     await context.close();
   }, 30_000);
 
-  it("says a MapLibre page has to be served, and links how", async () => {
+  it("ends with the version and its hash, and nothing else", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    const serve = page.getByRole("link", { name: "Serve a MapLibre page" });
-    expect(await serve.first().getAttribute("href")).toBe("/setup/#serve-a-maplibre-page");
+    const note = page.getByText("checked by the browser against its hash");
+    expect(await note.textContent()).toMatch(
+      /^maplacejs \S+, checked by the browser against its hash\.$/,
+    );
+    expect(await note.locator("a").count()).toBe(0);
     await context.close();
   }, 30_000);
 });

@@ -62,6 +62,13 @@ describe("a page's Markdown", () => {
     }
   }, 60_000);
 
+  it("has no README-only block in Getting started's twin", async () => {
+    const markdown = await (await served("/getting-started/index.md")).text();
+    for (const repoOnly of ["readme-only", "shields.io", "<img", "Status and support"]) {
+      expect(markdown).not.toContain(repoOnly);
+    }
+  });
+
   it("has Getting started's pinned scripts", async () => {
     const markdown = await (await served("/getting-started/index.md")).text();
     expect(markdown).toContain("# Getting started");

@@ -13,7 +13,7 @@ import { fetchGroupPanel } from "./group-panels.ts";
 import { startGroupSwitch } from "./group-switch.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
-import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
+import { followNavFocus } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { provideSave } from "./page-save.ts";
 import { ELEMENT_LOADERS, READY_MAPLIBRE_VERSION } from "./provider-loaders.ts";
@@ -87,7 +87,6 @@ const startSections = sectionStarter({
 });
 
 provideSave(globalThis, document);
-revealCurrentNavLink(document);
 followNavFocus(document);
 startSections(document);
 startGroupSwitch({ document, startSections, fetchPanel: fetchGroupPanel, leave: location });
@@ -98,8 +97,3 @@ startConsent({
   openMaps: latch.turnOn,
   reload: reloadPage,
 });
-
-// The nav's link again once the web fonts are in, last, so nothing above waits for them: wider
-// than the fallback's, they can move it under the nav's end fade.
-await document.fonts.ready;
-revealCurrentNavLink(document);

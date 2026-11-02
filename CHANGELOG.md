@@ -2,14 +2,16 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
-- 2026-11-02 Fixed the migration guide on `zoom` beside `start` and on closing a popup, and the MapLibre script's source map size, and added to the install box that a MapLibre page must be served
+- 2026-11-02 Changed the site's header to Documentation and Examples, with the favicon before the name, and each reference page to list all the docs
+- 2026-11-02 Changed the README to open with the favicon, a pitch, links, badges and a short demo, and to end with a section on status and support
+- 2026-11-02 Fixed the migration guide on `zoom` beside `start` and on closing a popup, and the MapLibre script's source map size
 - 2026-11-02 Fixed a map that fails after it starts staying empty: MapLibre's worker failing is now reported on every map it reaches, and maplace's adapters say so on the maps they create (.maplace-map-failure, worded by failure-label)
 - 2026-11-02 Changed MapLibre's mapOptions and map-options to refuse Google's option names, saying MapLibre's
 - 2026-11-02 Added a Mixed example: a marker, a circle, a polygon and a polyline on one map and in one list
 - 2026-11-02 Changed the name of the example that swaps data sets, from Mixed to Live data, and of its data files
 - 2026-11-02 Fixed the snippet builder's CSV: a title column beats name in either order, row by row, as in JSON, and the sample says title
 - 2026-11-02 Fixed the snippet builder on a 0.2 config: its notes hold on either provider and point callbacks to their events, the preview selects what the snippet's selected-id does, one location gets no fit-all, and a config in parentheses is read
-- 2026-11-02 Fixed the size given for the MapLibre CDN script, and added that a MapLibre page must be served, not opened as a file
+- 2026-11-02 Fixed the size given for the MapLibre CDN script, and added that a MapLibre page has to be opened from a web server, not directly as a file
 - 2026-11-01 Added contributing rules, a security policy, a code of conduct, and forms for bug reports and feature requests
 - 2026-11-01 Changed the examples' group links to say "Lists, 7 examples" to a screen reader, with a pause before the number
 - 2026-11-01 Added an accessibility statement to the site: what maplacejs does for a keyboard and a screen reader, what was tested and on what, and what wasn't

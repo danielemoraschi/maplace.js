@@ -5,6 +5,7 @@ import {
   relativeLinksIn,
   section,
   tableRows,
+  withAbsoluteImages,
   withAbsoluteLinks,
   withLinksResolved,
 } from "./markdown.ts";
@@ -27,6 +28,42 @@ describe("relativeLinksIn", () => {
     expect(relativeLinksIn("```md\n[x](missing.md)\n```\n[y](here.md)")).toEqual([
       { path: "here.md", line: 4 },
     ]);
+  });
+});
+
+describe("relativeLinksIn, on HTML", () => {
+  it("finds an `<img src>` as a relative link, leaving a URL and a code fence out", () => {
+    const markdown = [
+      '<p align="center"><img src="docs/a.gif" width="800" alt="A map"></p>',
+      '<img alt="x" src="https://x.y/b.svg">',
+      "```html",
+      '<img src="c.svg">',
+      "```",
+    ].join("\n");
+    expect(relativeLinksIn(markdown)).toEqual([{ path: "docs/a.gif", line: 1 }]);
+  });
+});
+
+describe("withAbsoluteImages", () => {
+  const RAW = "https://github.com/o/r/raw/v1.0.0/";
+
+  it("makes a relative `<img src>` absolute, and leaves URLs and code fences as written", () => {
+    const markdown = [
+      '<p><img width="24" src="a.svg" alt="A"></p> <img src="https://x.y/b.svg">',
+      "```html",
+      '<img src="c.svg">',
+      "```",
+      "![a map](docs/map.png)",
+    ].join("\n");
+    expect(withAbsoluteImages(markdown, RAW)).toBe(
+      [
+        `<p><img width="24" src="${RAW}a.svg" alt="A"></p> <img src="https://x.y/b.svg">`,
+        "```html",
+        '<img src="c.svg">',
+        "```",
+        "![a map](docs/map.png)",
+      ].join("\n"),
+    );
   });
 });
 

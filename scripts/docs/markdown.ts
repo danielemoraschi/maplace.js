@@ -1,6 +1,9 @@
 /** The end of a Markdown link to a path in the repo: neither a URL (`https:`, `mailto:`), an anchor nor rooted. */
 const RELATIVE_LINK = /\]\((?![a-z][a-z\d+.-]*:|[#/])([^)\s]+)\)/gi;
 
+/** An `<img>` on one line with a `src` to a path in the repo: what's before it, then the path. */
+const RELATIVE_HTML_IMAGE = /(<img\b[^>]*?\bsrc=")(?![a-z][a-z\d+.-]*:|[#/])([^"]+)"/gi;
+
 // A backticked name, e.g. `selectionChange`.
 const BACKTICKED = /`([^`]+)`/g;
 // A cell boundary: a pipe no backslash escapes.
@@ -18,12 +21,13 @@ interface RelativeLink {
 
 /** The relative links and images of `markdown`, outside code fences. */
 export function relativeLinksIn(markdown: string): RelativeLink[] {
-  return proseLinesOf(markdown).flatMap(({ text, line }) =>
-    Array.from(text.matchAll(RELATIVE_LINK), ([, target = ""]) => ({
+  return proseLinesOf(markdown).flatMap(({ text, line }) => [
+    ...Array.from(text.matchAll(RELATIVE_LINK), ([, target = ""]) => ({
       path: target.split("#")[0] ?? "",
       line,
     })).filter(({ path }) => path !== ""),
-  );
+    ...Array.from(text.matchAll(RELATIVE_HTML_IMAGE), ([, , path = ""]) => ({ path, line })),
+  ]);
 }
 
 /**
@@ -34,13 +38,23 @@ export function withAbsoluteLinks(markdown: string, blobBase: string): string {
   return withLinksResolved(markdown, (path) => `${blobBase}${path}`);
 }
 
+/** `markdown` with each `<img src>` to a repo path made absolute at `rawBase`, outside code fences. */
+export function withAbsoluteImages(markdown: string, rawBase: string): string {
+  return onProseLines(markdown, (text) => text.replaceAll(RELATIVE_HTML_IMAGE, `$1${rawBase}$2"`));
+}
+
 /**
  * `markdown` with each link to a repo path (as written, anchor included) pointing where
  * `resolve` says, outside code fences; images are left as written.
  */
 export function withLinksResolved(markdown: string, resolve: (path: string) => string): string {
+  return onProseLines(markdown, (text) => withLinksResolvedOn(text, resolve));
+}
+
+/** `markdown` with `rewrite` applied to each line outside code fences. */
+function onProseLines(markdown: string, rewrite: (text: string) => string): string {
   return linesOf(markdown)
-    .map(({ text, isProse }) => (isProse ? withLinksResolvedOn(text, resolve) : text))
+    .map(({ text, isProse }) => (isProse ? rewrite(text) : text))
     .join("\n");
 }
 

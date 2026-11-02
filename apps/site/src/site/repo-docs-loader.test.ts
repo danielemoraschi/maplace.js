@@ -5,6 +5,7 @@ import {
   repoDocMarkdown,
   repoDocsLoader,
   siteMarkdownOf,
+  withoutReadmeOnly,
   withoutTitle,
 } from "./repo-docs-loader.ts";
 
@@ -16,6 +17,45 @@ const settings = {
 };
 
 vi.mock("./cdn-pin.ts", () => ({ cdnPin: async () => settings.pin }));
+
+describe("withoutReadmeOnly", () => {
+  const OPEN = "<!-- readme-only -->";
+  const CLOSE = "<!-- /readme-only -->";
+
+  it("drops the README-only block", () => {
+    expect(withoutReadmeOnly(`${OPEN}\n<img src="a.svg">\n${CLOSE}\n\nThe intro.`, "R.md")).toBe(
+      "The intro.",
+    );
+  });
+
+  it("keeps a document without one as it is", () => {
+    expect(withoutReadmeOnly("# maplace\n\nThe intro.", "R.md")).toBe("# maplace\n\nThe intro.");
+  });
+
+  it("drops every block, wherever it is", () => {
+    const markdown = `${OPEN}\ntop\n${CLOSE}\n\nkept\n\n${OPEN}\n## Status\n${CLOSE}\n\n## License`;
+    expect(withoutReadmeOnly(markdown, "R.md")).toBe("kept\n\n## License");
+  });
+
+  it("drops a marker however it is spaced, and leaves the word in prose alone", () => {
+    expect(withoutReadmeOnly("<!--readme-only-->\nx\n<!--  /readme-only -->\n\nkept", "R.md")).toBe(
+      "kept",
+    );
+    expect(withoutReadmeOnly("The `readme-only` marker.", "R.md")).toBe(
+      "The `readme-only` marker.",
+    );
+  });
+
+  it("refuses a block never closed before the next, rather than dropping what's between", () => {
+    const markdown = `${OPEN}\ntop\n\nThe body.\n\n${OPEN}\nstatus\n${CLOSE}\n\n## License`;
+    expect(() => withoutReadmeOnly(markdown, "R.md")).toThrow(/R\.md.*readme-only/);
+  });
+
+  it("refuses a block never closed, and a close with no opening, naming the document", () => {
+    expect(() => withoutReadmeOnly(`${OPEN}\nbadges`, "R.md")).toThrow(/R\.md.*readme-only/);
+    expect(() => withoutReadmeOnly(`badges\n${CLOSE}`, "R.md")).toThrow(/R\.md.*readme-only/);
+  });
+});
 
 describe("withoutTitle", () => {
   it("drops the document's own title, which the page writes", () => {
@@ -56,6 +96,15 @@ describe("siteMarkdownOf", () => {
 });
 
 describe("repoDocMarkdown", () => {
+  it("leaves the README's top block and own section off Getting started", () => {
+    const markdown = repoDocMarkdown(doc("getting-started"), settings);
+    for (const repoOnly of ["<img", "shields.io", "hobby project", "Status and support"]) {
+      expect(markdown).not.toContain(repoOnly);
+    }
+    expect(markdown).not.toContain("readme-only");
+    expect(markdown.startsWith("A list of locations")).toBe(true);
+  });
+
   it("pins Getting started's CDN scripts and links Migrating to its page", () => {
     const markdown = repoDocMarkdown(doc("getting-started"), settings);
     expect(markdown).toContain('maplace@1.2.3/dist/maplace-element.iife.js"');

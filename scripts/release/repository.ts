@@ -18,6 +18,11 @@ export function blobBaseFor(manifest: WithRepository, tag: string): string {
   return `${repositoryPageFor(manifest)}/blob/${tag}/`;
 }
 
+/** Where the repo's files can be read as themselves at `tag`, an image's bytes, say. */
+export function rawBaseFor(manifest: WithRepository, tag: string): string {
+  return `${repositoryPageFor(manifest)}/raw/${tag}/`;
+}
+
 function repositoryUrl({ repository }: WithRepository): string | undefined {
   const url = (repository as { url?: unknown } | undefined)?.url;
   return typeof url === "string" ? url : undefined;

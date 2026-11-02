@@ -1,8 +1,8 @@
 import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CHANGELOG_FILE } from "../docs/changelog-lines.ts";
-import { withAbsoluteLinks } from "../docs/markdown.ts";
-import { blobBaseFor } from "../release/repository.ts";
+import { withAbsoluteImages, withAbsoluteLinks } from "../docs/markdown.ts";
+import { blobBaseFor, rawBaseFor } from "../release/repository.ts";
 import { tagOf } from "../release/tags.ts";
 import { withPinnedScripts } from "./cdn-pins.ts";
 import {
@@ -30,13 +30,14 @@ export function stagePackage(dir: string = PACKED, dist: string = DIST): void {
   writeFileSync(join(staged, CHANGELOG_FILE), stagedChangelog(source));
 }
 
-/** The README pinned to this version's scripts, its links to the repo absolute at the tag. */
+/** The README pinned to this version's scripts, its links and images absolute at the tag. */
 function stagedReadme(source: VersionedManifest, dist: string): string {
   const pinned = withPinnedScripts(readRootFile("README.md"), {
     version: source.version,
     integrityOf: (file) => integrityOfFile(join(dist, file)),
   });
-  return withAbsoluteLinks(pinned, blobBaseAt(source));
+  const withLinks = withAbsoluteLinks(pinned, blobBaseAt(source));
+  return withAbsoluteImages(withLinks, rawBaseFor(source, tagOf(source.version)));
 }
 
 /** The changelog, its links to the repo absolute at the tag: the repo's files aren't packed. */

@@ -44,16 +44,32 @@ export function repoDocMarkdown(doc: RepoDoc, { pin, blobBase }: RepoDocSettings
 }
 
 /**
- * `markdown`, the repo file at `file`, as a page of the site shows it: without its title, which
- * the page writes, its links to repo documents going to their pages, to examples' guides to their
- * sections, the rest to GitHub.
+ * `markdown`, the repo file at `file`, as a page of the site shows it: without what's for readers
+ * on GitHub and npm only, or its title, which the page writes; its links to repo documents going
+ * to their pages, to examples' guides to their sections, the rest to GitHub.
  */
 export function siteMarkdownOf(markdown: string, file: string, blobBase: string): string {
-  const fromRoot = withLinksFromRoot(withoutTitle(markdown), file);
+  const fromRoot = withLinksFromRoot(withoutTitle(withoutReadmeOnly(markdown, file)), file);
   return withSiteLinks(fromRoot, { routes: SITE_ROUTES, blobBase });
 }
 
 const SITE_ROUTES = { ...DOC_ROUTES, ...GUIDE_ROUTES };
+
+const README_ONLY_BLOCK = /<!--\s*readme-only\s*-->[\s\S]*?<!--\s*\/readme-only\s*-->\n*/g;
+const README_ONLY_MARKER = /<!--\s*(\/?)readme-only\s*-->/g;
+
+/**
+ * `markdown` without its README-only blocks, which load images from other origins. Markers that
+ * don't pair up are refused: half a block would put those on the site, where nothing may load
+ * before consent, or drop the page up to the next block's close.
+ */
+export function withoutReadmeOnly(markdown: string, file: string): string {
+  const closes = Array.from(markdown.matchAll(README_ONLY_MARKER), ([, slash]) => slash === "/");
+  if (closes.length % 2 === 1 || closes.some((isClose, index) => isClose !== (index % 2 === 1))) {
+    throw new Error(`${file} has a readme-only marker without its other half`);
+  }
+  return markdown.replaceAll(README_ONLY_BLOCK, "");
+}
 
 /** `markdown` without its leading `# title`, which the page writes. */
 export function withoutTitle(markdown: string): string {

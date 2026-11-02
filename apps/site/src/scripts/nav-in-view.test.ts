@@ -1,68 +1,92 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { followNavFocus, revealCurrentNavLink } from "./nav-in-view.ts";
+import { followNavFocus } from "./nav-in-view.ts";
 
 afterEach(() => document.body.replaceChildren());
 
-/** A nav of three links in `parent`, the one at `current` (if any) the page shown. */
-function navIn(parent: HTMLElement, current?: number): HTMLAnchorElement[] {
+/** Where something sits across the screen. */
+const span = (left: number, right: number) => ({ left, right }) as DOMRect;
+
+/** A nav from 100 to 300 with a 30 px end fade, its links where `spans` says, in `parent`. */
+function navIn(parent: HTMLElement, spans: readonly [number, number][]) {
   const nav = document.createElement("nav");
-  const links = ["Setup", "Element", "Migrating"].map((label, index) => {
+  nav.style.paddingInlineEnd = "30px";
+  nav.getBoundingClientRect = () => span(100, 300);
+  nav.scrollBy = vi.fn();
+  const links = spans.map(([left, right]) => {
     const link = document.createElement("a");
-    link.textContent = label;
-    if (index === current) link.setAttribute("aria-current", "page");
-    link.scrollIntoView = vi.fn();
+    link.getBoundingClientRect = () => span(left, right);
     return link;
   });
   nav.append(...links);
   parent.append(nav);
   document.body.append(parent);
-  return links;
+  return { nav, links };
 }
 
-/** The header's nav, as `navIn` makes it. */
-const navWith = (current?: number) => navIn(document.createElement("header"), current);
+/** Links before the nav's start, inside it, under its fade and past its end. */
+const SPANS: readonly [number, number][] = [
+  [40, 90],
+  [120, 180],
+  [240, 290],
+  [320, 380],
+];
 
-describe("revealCurrentNavLink", () => {
-  it("centres the current page's link in the nav, clear of its fade, the page staying put", () => {
-    const links = navWith(2);
-    revealCurrentNavLink(document);
-    expect(links[2]?.scrollIntoView).toHaveBeenCalledWith({ block: "nearest", inline: "center" });
-    expect(links[0]?.scrollIntoView).not.toHaveBeenCalled();
-  });
+const headerNav = () => navIn(document.createElement("header"), SPANS);
 
-  it("does nothing on a page no link is current on", () => {
-    const links = navWith();
-    revealCurrentNavLink(document);
-    for (const link of links) expect(link.scrollIntoView).not.toHaveBeenCalled();
-  });
-});
+const focusOn = (element: Element) =>
+  element.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
 
 describe("another nav, as a reference page's contents", () => {
-  it("is left where it is, its current link and focus alike", () => {
-    const links = navIn(document.createElement("aside"), 1);
-    revealCurrentNavLink(document);
+  it("is left where it is", () => {
+    const { nav, links } = navIn(document.createElement("aside"), SPANS);
     followNavFocus(document);
-    links[1]?.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
-    expect(links[1]?.scrollIntoView).not.toHaveBeenCalled();
+    focusOn(links[3] as Element);
+    expect(nav.scrollBy).not.toHaveBeenCalled();
   });
 });
 
 describe("followNavFocus", () => {
-  it("scrolls a nav link that takes focus into the nav's view, clear of its scroll padding", () => {
-    const links = navWith();
+  it("brings a link taking focus clear of the nav's end fade", () => {
+    const { nav, links } = headerNav();
     followNavFocus(document);
-    links[1]?.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
-    expect(links[1]?.scrollIntoView).toHaveBeenCalledWith({ block: "nearest", inline: "nearest" });
+    focusOn(links[2] as Element);
+    expect(nav.scrollBy).toHaveBeenCalledWith({ left: 20 });
+  });
+
+  it("brings a link taking focus back clear of the nav's start", () => {
+    const { nav, links } = headerNav();
+    followNavFocus(document);
+    focusOn(links[0] as Element);
+    expect(nav.scrollBy).toHaveBeenCalledWith({ left: -60 });
+  });
+
+  it("brings a link past the nav's end clear, as far as it needs, moving the nav, never the page", () => {
+    const scrollPage = vi.spyOn(window, "scrollBy").mockImplementation(() => undefined);
+    const { nav, links } = headerNav();
+    const scrollLink = vi.fn();
+    for (const link of links) link.scrollIntoView = scrollLink;
+    followNavFocus(document);
+    focusOn(links[3] as Element);
+    expect(nav.scrollBy).toHaveBeenCalledWith({ left: 110 });
+    expect(scrollLink).not.toHaveBeenCalled();
+    expect(scrollPage).not.toHaveBeenCalled();
+    scrollPage.mockRestore();
+  });
+
+  it("leaves a link already clear where it is", () => {
+    const { nav, links } = headerNav();
+    followNavFocus(document);
+    focusOn(links[1] as Element);
+    expect(nav.scrollBy).not.toHaveBeenCalled();
   });
 
   it("leaves focus outside a nav alone", () => {
-    navWith();
+    const { nav } = headerNav();
     const button = document.createElement("button");
-    button.scrollIntoView = vi.fn();
     document.body.append(button);
     followNavFocus(document);
-    button.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
-    expect(button.scrollIntoView).not.toHaveBeenCalled();
+    focusOn(button);
+    expect(nav.scrollBy).not.toHaveBeenCalled();
   });
 });

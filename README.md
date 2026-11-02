@@ -1,4 +1,23 @@
-# maplacejs
+<!-- readme-only -->
+<p align="center"><img src="apps/site/src/assets/favicon.svg" width="72" height="72" alt=""></p>
+
+<h1 align="center">maplacejs</h1>
+
+<p align="center"><b>Your locations on a map, with a list in sync.</b><br>On Google Maps or MapLibre: one script tag, npm or React.</p>
+
+<p align="center"><a href="https://maplacejs.com">Website</a> · <a href="https://maplacejs.com/getting-started/">Documentation</a> · <a href="https://maplacejs.com/#examples">Examples</a> · <a href="https://maplacejs.com/builder/">Snippet builder</a> · <a href="https://maplacejs.com/migrating/">Migrating from 0.2</a></p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/maplace"><img alt="npm version" src="https://img.shields.io/npm/v/maplace"></a>
+  <a href="https://github.com/danielemoraschi/maplace.js/actions/workflows/ci.yml"><img alt="CI status" src="https://github.com/danielemoraschi/maplace.js/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/danielemoraschi/maplace.js/blob/main/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="https://www.npmjs.com/package/maplace"><img alt="TypeScript types included" src="https://img.shields.io/npm/types/maplace"></a>
+</p>
+
+<p align="center"><img src="docs/media/maplibre-demo.gif" width="800" alt="A map of Italy on MapLibre beside a list of Rome, Milan and Venice. Picking Rome, then Milan, in the list pans the map to each and opens its popup; clicking Venice's marker on the map highlights it in the list."></p>
+
+<p align="center"><sub><i>Maplacejs is a hobby project I maintain part-time, so support is best-effort.</i></sub></p>
+<!-- /readme-only -->
 
 A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it, opening its popup if it has one.
 
@@ -42,7 +61,7 @@ On MapLibre, with no key and no map ID:
 </maplace-map>
 ```
 
-- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. [Serve the page](docs/reference/setup.md#serve-a-maplibre-page), even from `localhost`, not a file. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: [centre and zoom](docs/reference/element.md#properties-and-methods)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
+- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. [Open the page from a web server](docs/reference/setup.md#use-a-web-server-for-maplibre), a local one is fine, not directly as a file. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: [centre and zoom](docs/reference/element.md#properties-and-methods)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
 
 On either:
 
@@ -287,6 +306,17 @@ export function CityMap() {
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 - [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md).
+
+<!-- readme-only -->
+## Status and support
+
+1.0 is a rewrite, and the current release; 0.2 stays in its tag, [`0.2.10`](https://github.com/danielemoraschi/maplace.js/tree/0.2.10). One person maintains it, so a reply can take a while.
+
+- **A question or an idea**: [Discussions](https://github.com/danielemoraschi/maplace.js/discussions).
+- **A bug or a feature request**: an [issue](https://github.com/danielemoraschi/maplace.js/issues/new/choose), through its form. [CONTRIBUTING.md](CONTRIBUTING.md) says what helps.
+- **A security problem**: a private report, as [SECURITY.md](SECURITY.md) explains.
+
+<!-- /readme-only -->
 
 ## License
 

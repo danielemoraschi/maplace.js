@@ -32,6 +32,15 @@ describe("the staged package", () => {
     expect(relativeLinksIn(readme)).toEqual([]);
   });
 
+  it("points the staged README's two images at the tag", () => {
+    const readme = readFileSync(join(packageDir, "README.md"), "utf8");
+    const raw = `https://github.com/danielemoraschi/maplace.js/raw/v${manifest().version}/`;
+    expect(readme).toContain(`src="${raw}apps/site/src/assets/favicon.svg"`);
+    expect(readme).toContain(`src="${raw}docs/media/maplibre-demo.gif"`);
+    // Any `<img>`, even across lines, as a relative one is broken on npm's page.
+    expect(readme).not.toMatch(/<img\b(?![^>]*\bsrc="[a-z]+:)/);
+  });
+
   it("ships a changelog whose links reach the repo at the version's tag", () => {
     const changelog = readFileSync(join(packageDir, "CHANGELOG.md"), "utf8");
     const { version } = manifest();

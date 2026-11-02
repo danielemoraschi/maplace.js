@@ -80,7 +80,7 @@ A change of either opens the map again where it was, keeping the store's state. 
 
 ## With the CDN script
 
-One script, `maplace-element-maplibre.iife.js`, defines the element with the MapLibre provider. It bundles maplibre-gl, its worker and its stylesheet, so a page loads it alone (about 510 kB gzip; clustering included). [Serve the page](setup.md#serve-a-maplibre-page).
+One script, `maplace-element-maplibre.iife.js`, defines the element with the MapLibre provider. It bundles maplibre-gl, its worker and its stylesheet, so a page loads it alone (about 510 kB gzip; clustering included). [Open the page from a web server](setup.md#use-a-web-server-for-maplibre).
 
 <!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
 ```html

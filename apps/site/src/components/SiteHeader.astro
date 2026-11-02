@@ -1,29 +1,26 @@
 ---
-import { docRoute, REPO_DOCS } from "../site/repo-docs.ts";
+import faviconUrl from "../assets/favicon.svg?no-inline";
+import { navCurrent, SITE_NAV_LINKS } from "../site/site-nav.ts";
 
 const here = Astro.url.pathname;
 // One row whatever the width: it scrolls sideways where it doesn't fit beside the name, its end
-// faded (`--nav-fade` wide) as the cue, padded and scroll-padded as wide, so the last link and a
-// link tabbed to come clear of the fade.
+// faded (`--nav-fade` wide) as the cue, padded as wide, so the last link comes clear of the fade.
 const NAV =
-  "ms-auto flex min-w-0 gap-x-5 overflow-x-auto pb-1 text-md font-medium whitespace-nowrap [scrollbar-width:none] [--nav-fade:2rem] max-[72rem]:pe-(--nav-fade) max-[72rem]:scroll-pe-(--nav-fade) max-[72rem]:[mask-image:linear-gradient(to_right,black_calc(100%-var(--nav-fade)),transparent)]";
-const NAV_LINK = "border-b-3 border-transparent no-underline aria-[current=page]:border-accent";
+  "ms-auto flex min-w-0 gap-x-5 overflow-x-auto pb-1 text-md font-medium whitespace-nowrap [scrollbar-width:none] [--nav-fade:2rem] max-[28rem]:pe-(--nav-fade) max-[28rem]:[mask-image:linear-gradient(to_right,black_calc(100%-var(--nav-fade)),transparent)]";
+const NAV_LINK =
+  "border-b-3 border-transparent no-underline aria-[current]:border-accent";
 ---
 
 <header class="sticky top-0 z-10 h-(--spacing-header-height) border-b-3 border-ink bg-paper">
   <div class="wrap flex items-baseline gap-x-6 py-3.5">
     <a class="shrink-0 font-display text-2xl leading-none font-extrabold tracking-[-0.03em] no-underline" href="/">
-      maplacejs
+      <img src={faviconUrl} width="24" height="24" alt="" class="me-2 inline-block align-[-0.15em]" />maplacejs
     </a>
-    <nav aria-label="Documentation" class={NAV}>
+    <nav aria-label="Site" class={NAV}>
       {
-        REPO_DOCS.map(({ id, label }) => (
-          <a
-            href={docRoute(id)}
-            aria-current={here === docRoute(id) ? "page" : undefined}
-            class={NAV_LINK}
-          >
-            {label}
+        SITE_NAV_LINKS.map((link) => (
+          <a href={link.href} aria-current={navCurrent(link, here)} class={NAV_LINK}>
+            {link.label}
           </a>
         ))
       }
