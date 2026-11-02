@@ -72,7 +72,7 @@ Either is a map with two markers, a list beside it, and selection kept in sync: 
 
 | Not this | Why |
 |---|---|
-| A GIS or layer toolkit (KML, traffic, heatmaps, data layers) | Add them to your own map, which an adapter takes (`createGoogleAdapter({ map })`, `createMapLibreAdapter({ map })`); they don't serve "list of places ↔ map". |
+| A GIS or layer toolkit (KML, traffic, heatmaps, data layers) | Add what the provider still offers to your own map (Google removed `KmlLayer` at Maps JS 3.66), which an adapter takes (`createGoogleAdapter({ map })`, `createMapLibreAdapter({ map })`); they don't serve "list of places ↔ map". |
 | Drawing tools | An editor is a different product; locations can be moved and reshaped, not drawn from scratch. |
 | Geocoding addresses | Needs a provider service and quotas; locations come with coordinates in 1.0. A page with addresses geocodes them once, before it ships ([the recipe](reference/locations.md#addresses-to-coordinates)), with a provider whose terms let it keep the results; that is a reader's script, not maplace's, since the terms are each provider's to change. An address a visitor types is the page's too: a form and its own geocoder, setting the origin ([the recipe](reference/locations.md#a-visitors-address), tracker V32). |
 | A store-locator product (distance matrix, opening hours, booking) | Store locators are one use case; those features are app logic or a dedicated component (see below). |
@@ -381,7 +381,7 @@ All are answered in 1.0 unless marked.
 | GeoJSON FeatureCollection to locations helper | 103, 188 | §3 Shape (`locationsFromGeoJSON`) |
 | "My location" control, route from the user's position | 169 | done (tracker V31), a route from the position left out |
 | Several routes on one map, route alternatives | 78, 177 | rejected: one route per map (§1 Non-goals) |
-| Built-in traffic, bicycling and KML layers | 38, 61, 68, 81 | rejected: add them to your own map (§1 Non-goals) |
+| Built-in traffic, bicycling and KML layers | 38, 61, 68, 81 | rejected (§1 Non-goals): traffic goes on your own map; Google removed `KmlLayer` at Maps JS 3.66, so KML becomes GeoJSON; `BicyclingLayer` drew nothing on a map with a map ID (tried 2026-11-02) |
 | Places: search box feeding locations, place details as content, save a place | 41, 98, 152, 165 | later (§1) |
 | Point-in-circle, distance matrix, drawing, print | 146, 151, 159, 93 | rejected: app logic or other Google APIs (§1 Non-goals) |
 
@@ -416,7 +416,7 @@ All are answered in 1.0 unless marked.
 | 45 | issue | fixed by 1.0 | `importLibrary`; the element stays idle until needed (§3 Loading) |
 | 54 | pr | fixed by 1.0 | `cluster` (§3 Performance). Carry: test that clusters update on remove/replace and list select |
 | 61 | issue | out of scope | Traffic layer on your own map (§1 Non-goals) |
-| 68 | issue | out of scope | KML layer on your own map (§1 Non-goals) |
+| 68 | issue | out of scope | KML converted to GeoJSON, as Google removed `KmlLayer` at Maps JS 3.66 (§1 Non-goals) |
 | 78 | issue | out of scope | One route per map (§1 Non-goals) |
 | 79 | issue | fixed by 1.0 | View re-applied when the container is shown or resized (§3 Decisions) |
 | 101 | issue | fixed by 1.0 | Marker content is a DOM node, so it can hold labels (§3 Shape) |

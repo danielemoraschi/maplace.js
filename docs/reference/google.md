@@ -67,7 +67,7 @@ Most pages don't need this. Normally you give maplacejs a container and it creat
 A map of your own is a `google.maps.Map` your code created and gave to the adapter as `map`, so maplacejs draws on it instead of creating one. You'd do this for one of two reasons:
 
 - **Your page already has a map.** You want maplacejs's markers, popups and list on it, not a second map beside it.
-- **You need something maplacejs has no option for.** You hold the map, so you can call Maps JS yourself: a traffic layer, a drawing library, a map event maplacejs doesn't report. It replaces 0.2's `oMap`.
+- **You need something maplacejs has no option for.** You hold the map, so you can call Maps JS yourself: a traffic layer, a map event maplacejs doesn't report. It replaces 0.2's `oMap`.
 
 To change a map setting, `mapOptions` is enough, with no map of your own. Here the page makes its map, and a right-click, which maplacejs doesn't report, sets where distances are measured from:
 

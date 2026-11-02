@@ -92,6 +92,17 @@ describe("#147: the routeChange event carries the result, once per result", () =
   });
 });
 
+describe("#10: a route beside markers and a polyline on one map", () => {
+  it("keeps every location while the route has its result", async () => {
+    const { maplace, host } = await mounted({ locations });
+    maplace.setRoute(AB);
+    host.reportRouteChange(AB, routeOf(100));
+    const { locations: shown, routeResult } = maplace.getSnapshot();
+    expect(shown.map(({ id }) => id)).toEqual(["a", "b", "area", "line"]);
+    expect(routeResult?.distanceMeters).toBe(100);
+  });
+});
+
 describe("G14: a late answer for a route since replaced", () => {
   const withC: Location[] = [...locations, { id: "c", lat: 2, lng: 2 }];
   const through = { stops: ["a", "b", "c"], via: ["b"] };

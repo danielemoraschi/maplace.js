@@ -69,6 +69,10 @@ createMaplace({
 
 Once the map is open, selecting a marker pans to it at the map's zoom, and selecting a shape fits it; `select(id, { zoom })`, or a location's own `zoom`, brings either to the point its popup points at, at that zoom; `{ pan: false }` leaves the map where it is.
 
+## Resized and hidden maps
+
+The adapter watches its container's size. A view sent while the container has none, in a closed tab or dialog, waits, and no viewport is reported until it is shown. Once shown, and after each resize, the last view is shown again, so a fit stays fitted as a side panel opens, unless the visitor has moved the map since, and then that stays. You never trigger a resize yourself.
+
 ## Methods
 
 | Method | What |
