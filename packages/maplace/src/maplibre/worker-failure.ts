@@ -81,7 +81,7 @@ function markFirstAnswer(
   answered: () => void,
   failed: (cause: unknown) => void,
 ): void {
-  const actor = actorOf(dispatcher);
+  const actor = unlessItThrows(() => dispatcher.getActor());
   if (actor === undefined) {
     answered();
     return;
@@ -91,10 +91,10 @@ function markFirstAnswer(
     .catch(answered);
 }
 
-/** The dispatcher's actor, on its way; undefined on a maplibre-gl whose `getActor` can't be called. */
-function actorOf(dispatcher: Dispatcher): ReturnType<Dispatcher["getActor"]> | undefined {
+/** What `call` returns, or undefined if calling it throws: a method a later version took out. */
+function unlessItThrows<T>(call: () => T): T | undefined {
   try {
-    return dispatcher.getActor();
+    return call();
   } catch {
     return undefined;
   }
