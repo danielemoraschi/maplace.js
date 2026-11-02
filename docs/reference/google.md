@@ -20,7 +20,7 @@
 
 ## `createGoogleMap`
 
-`createGoogleMap(container, options)` is a store on a Google map in one call, as 0.2's `new Maplace(options).Load()` was. It makes the store with the [store's options](store.md#options), the adapter with `mapId`, `colorScheme`, `mapOptions` and Maps JS's settings, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down.
+`createGoogleMap(container, options)` is a store on a Google map in one call. It makes the store with the [store's options](store.md#options), the adapter with `mapId`, `colorScheme`, `mapOptions` and Maps JS's settings, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down.
 
 <!-- example: packages/maplace/examples/menu/vanilla.ts -->
 ```ts
@@ -51,8 +51,8 @@ Its own options, beside the store's:
 | `apiKey` | `string` | As the adapter's: maplacejs adds Maps JS with it |
 | `version`, `language`, `region`, `nonce` | `string` | As the adapter's, with `apiKey` |
 | `list` | `true \| GoogleMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
-| `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right`, where 0.2 put its controls |
-| `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map (0.2's `controls_div`); not with `position` |
+| `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right` |
+| `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map; not with `position` |
 | `myLocation` | `true \| GoogleMapMyLocation` | A ["My location" control](store.md#the-my-location-control) on the map: `true`, or its `label`, `unavailableLabel` and `position` |
 | `myLocation.position` | `ControlPosition` | The corner it goes in; default `top-left` |
 

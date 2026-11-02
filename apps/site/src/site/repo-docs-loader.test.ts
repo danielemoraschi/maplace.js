@@ -74,7 +74,7 @@ describe("repoDocMarkdown", () => {
 describe("repoDocMarkdown of a reference page", () => {
   it("reads its links relative to it: a doc to its page, any other file to the repo", () => {
     const markdown = repoDocMarkdown(doc("locations"), settings);
-    expect(markdown).toContain("](/migrating/#location-fields)");
+    expect(markdown).toContain("](/element/#location-attributes)");
     expect(markdown).toContain("](https://github.com/o/r/blob/abc123/docs/rfc-1.0.md#shape)");
   });
 });

@@ -15,6 +15,7 @@ const FIXTURE = `
   <p data-builder-trust-note hidden></p>
   <p data-builder-text-note hidden></p>
   <p data-builder-key-note hidden></p>
+  <p data-builder-serve-note hidden></p>
   <pre data-builder-code></pre>
   <button data-builder-copy></button><span data-builder-copied></span>
   <code data-pinned-script="maplibre">&lt;script src="m.js"&gt;&lt;/script&gt;</code>
@@ -90,7 +91,9 @@ describe("startBuilder", () => {
     const before = map.locations;
     const fitAll = vi.fn();
     map.maplace = { fitAll };
+    expect(get("[data-builder-serve-note]").hidden).toBe(false);
     chooseGoogle();
+    expect(get("[data-builder-serve-note]").hidden).toBe(true);
     expect(codeText()).toContain('src="g.js"');
     expect(codeText()).toContain('api-key="YOUR_KEY"');
     expect(map.locations).toBe(before);

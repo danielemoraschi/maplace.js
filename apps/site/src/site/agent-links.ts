@@ -20,7 +20,7 @@ export const AGENT_LINKS: readonly AgentLink[] = [
   {
     href: AGENT_SKILL_PATH,
     label: "SKILL.md",
-    what: "The agent skill: install, the element, locations, adapters, events, error codes and React, in one file an agent can load.",
+    what: "The agent skill: install, the element, locations, adapters and React, with links to the events and error codes, in one file an agent can load.",
   },
   {
     href: AGENT_SKILLS_INDEX_PATH,

@@ -348,7 +348,3 @@ That goes in one `<script type="module">`, after the recipe (its `import type`, 
 - **On MapLibre**: another geocoder ([the table above](#may-you-keep-the-results) has some), or your own server calling one, so the key stays there. OpenStreetMap-based results keep their attribution.
 
 A typed address may be the visitor's home, and it goes to that geocoder: say so in your privacy notice. The button starts disabled, as a submit before your script runs would put the address in the page's URL, so a script that fails leaves the form unusable, not leaking. An answer arriving late can replace an origin set since by other means, such as "My location", and the status keeps saying "Nearest to" the address if something else sets the origin afterwards. The recipe's own checks use a stub geocoder; it hasn't run against a real one.
-
-## From 0.2
-
-Every 0.2 location field and its 1.0 replacement is in [Migrating, location fields](../../MIGRATION.md#location-fields).

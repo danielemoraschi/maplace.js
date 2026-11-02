@@ -41,6 +41,7 @@ const elementsOf = (page: Document) => ({
   trustNote: required(page, "[data-builder-trust-note]"),
   textNote: required(page, "[data-builder-text-note]"),
   keyNote: required(page, "[data-builder-key-note]"),
+  serveNote: required(page, "[data-builder-serve-note]"),
   code: required(page, "[data-builder-code]"),
   copy: required<HTMLButtonElement>(page, "[data-builder-copy]"),
   copied: required(page, "[data-builder-copied]"),
@@ -75,6 +76,7 @@ export function startBuilder(page: Document): void {
     elements.trustNote.hidden = !written?.popupsAsWritten;
     elements.textNote.hidden = !written?.popupsAsText;
     elements.keyNote.hidden = written === undefined || provider !== "google";
+    elements.serveNote.hidden = written === undefined || provider !== "maplibre";
   };
 
   const render = () => {

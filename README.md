@@ -1,8 +1,18 @@
 # maplacejs
 
-A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it and opens it.
+A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it, opening its popup if it has one.
 
 It runs on Google Maps or MapLibre, as a `<maplace-map>` element, from your own script or in React.
+
+## What it does
+
+- **Your data**: HTML children, JSON or JS objects, or GeoJSON ([locations](docs/reference/locations.md)): markers, circles, polylines and polygons on one map, and on Google one route through them.
+- **Lists**: beside the map or on it, with search, groups and "this area", or a native select ([list options](docs/reference/store.md#list-view-options)).
+- **Nearest first**: sorted by straight-line distance from a point, with a "My location" button, and no provider service or quota ([distances](docs/reference/store.md#distances)).
+- **Many places**: clustering for long lists ([element](docs/reference/element.md#map-attributes)).
+- **Loading**: `loading="lazy"` waits until the map is near the viewport, `hold` until the page's consent ([consent](docs/reference/setup.md#consent)).
+- **Links**: `url-state` keeps the selected place in the address ([URL state](docs/reference/element.md#url-state)).
+- **Keyboard and screen readers**: a link to skip the map, each selection announced ([accessibility](docs/reference/accessibility.md)).
 
 ## Quick start
 
@@ -32,7 +42,7 @@ On MapLibre, with no key and no map ID:
 </maplace-map>
 ```
 
-- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: [centre and zoom](docs/reference/element.md#properties-and-methods)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
+- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. [Serve the page](docs/reference/setup.md#serve-a-maplibre-page), even from `localhost`, not a file. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: [centre and zoom](docs/reference/element.md#properties-and-methods)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
 
 On either:
 
@@ -52,7 +62,7 @@ The CDN has three scripts. Load exactly one of them. Two scripts on one page are
 |---|---|
 | `maplace-element.iife.js` | on Google, everything but clustering |
 | `maplace-element-cluster.iife.js` | on Google, with `cluster` (bundles Google's MarkerClusterer; its licences are in `THIRD-PARTY-LICENSES.txt` beside it) |
-| `maplace-element-maplibre.iife.js` | the element on MapLibre, clustering included: maplibre-gl, its worker and its stylesheet bundled, so one pinned file is all the page loads (about 501 kB gzip; the bundled packages' licences in `THIRD-PARTY-LICENSES.txt` beside it) |
+| `maplace-element-maplibre.iife.js` | the element on MapLibre, clustering included: maplibre-gl, its worker and its stylesheet bundled, so one pinned file is all the page loads (about 510 kB gzip; the bundled packages' licences in `THIRD-PARTY-LICENSES.txt` beside it) |
 
 A map with `cluster` on the first script fails to load and says to use the second.
 
@@ -175,7 +185,7 @@ For the element from npm, `import "maplace/element/google"` defines `<maplace-ma
 
 | Entry | What it gives |
 |---|---|
-| `maplace` | `createMaplace` (the headless store), `createListView`, `listedLocations`, `locationsFromGeoJSON` (a GeoJSON FeatureCollection as locations), the adapter contract and the types |
+| `maplace` | `createMaplace` (the headless store), `createListView`, `createMyLocationControl`, `listedLocations`, `distanceTo`, `locationsFromGeoJSON` (a GeoJSON FeatureCollection as locations), the adapter contract and the types |
 | `maplace/google` | `createGoogleMap` (a store on a Google map in one call) and `createGoogleAdapter`: the only entry that knows `google.maps` |
 | `maplace/maplibre` | `createMapLibreMap` (a store on a MapLibre map in one call) and `createMapLibreAdapter`: the only entry that knows `maplibre-gl` |
 | `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |
@@ -270,6 +280,8 @@ export function CityMap() {
 
 ## Documentation
 
+- [maplacejs.com](https://maplacejs.com): every example running live, and these docs.
+- [Reference](docs/reference/api.md): every export, with where it is explained, its error codes and each provider's capabilities.
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
 - [Examples](packages/maplace/examples/): twenty-three scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.

@@ -52,7 +52,7 @@ On MapLibre, its own script, with no key:
 </maplace-map>
 ```
 
-It bundles maplibre-gl, its worker and its stylesheet, clustering included; `map-style` and `map-options` are its [provider attributes](maplibre.md#provider-attributes).
+[Serve the page](#serve-a-maplibre-page). The script bundles maplibre-gl, its worker and its stylesheet, clustering included; `map-style` and `map-options` are its [provider attributes](maplibre.md#provider-attributes).
 
 ## With a script of your own
 
@@ -96,6 +96,10 @@ On MapLibre, the MapLibre script's `Maplace` has `createMapLibreMap` and `create
 ```
 
 Every example on the site has this version, under its Script tab.
+
+## Serve a MapLibre page
+
+Serve a MapLibre page, even from `localhost`: opened as a file, the map can't start its worker and stays empty.
 
 ## With npm
 

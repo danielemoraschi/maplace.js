@@ -4,7 +4,7 @@ import { ROOT } from "../../../../scripts/build/package.ts";
 import { lastChangeOf } from "./git-dates.ts";
 
 /** A committed file nobody edits while the tests run. */
-const COMMITTED = "LICENSE";
+const COMMITTED = ".editorconfig";
 
 describe("lastChangeOf", () => {
   it("gives the author date of the last commit touching a path", () => {
