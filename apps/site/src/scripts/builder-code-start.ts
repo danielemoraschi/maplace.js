@@ -27,7 +27,7 @@ function walkOutsideComments(text: string, visit: (index: number) => boolean): v
 }
 
 /** The offset just after the first `new Maplace(` outside comments and strings, if any. */
-function afterNewMaplace(text: string): number | undefined {
+export function afterNewMaplace(text: string): number | undefined {
   if (!NEW_MAPLACE_ANYWHERE.test(text)) return undefined;
   let found: number | undefined;
   walkOutsideComments(text, (index) => {
@@ -52,15 +52,20 @@ export function startOfValue(text: string): number | undefined {
   return found;
 }
 
+/** Whether a list or object opens `code`, however many parentheses it is wrapped in. */
+function opensValue(code: string): boolean {
+  const scanner = new LiteralScanner(code);
+  while (scanner.peek() === "(") {
+    scanner.advance();
+    scanner.skipTrivia();
+  }
+  return scanner.peek() === "{" || scanner.peek() === "[";
+}
+
 /** Whether `text` is code rather than CSV. Never refuses. */
 export function isCode(text: string): boolean {
   const scanner = new LiteralScanner(text);
   scanner.skipTrivia();
   const rest = text.slice(scanner.position);
-  return (
-    rest.startsWith("{") ||
-    rest.startsWith("[") ||
-    DECLARATION.test(rest) ||
-    afterNewMaplace(text) !== undefined
-  );
+  return opensValue(rest) || DECLARATION.test(rest) || afterNewMaplace(text) !== undefined;
 }

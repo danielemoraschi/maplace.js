@@ -86,6 +86,7 @@ describe("readLiteral", () => {
   it("refuses a second value rather than dropping it", () => {
     expect(() => readLiteral("[{ a: 1 }] [{ a: 2 }]")).toThrow("Line 1");
     expect(() => readLiteral("var a = [1];\nvar b = [2];")).toThrow("Line 2");
+    expect(() => readLiteral("({ a: 1 }) ({ a: 2 })")).toThrow("a second value");
     expect(readLiteral("var a = [1];")).toEqual([1]);
   });
 

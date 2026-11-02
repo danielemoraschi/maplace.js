@@ -16,7 +16,7 @@ export const PREVIEW_FIT_PADDING = 80;
 /** A preview map, which may not be defined yet: then it has no `maplace`. */
 type PreviewMap = HTMLElement & {
   locations: unknown;
-  readonly maplace?: Pick<MaplaceMapElement["maplace"], "fitAll">;
+  readonly maplace?: Pick<MaplaceMapElement["maplace"], "fitAll" | "select">;
 };
 
 /** The map attributes a preview follows: those it rebuilds its list for. */
@@ -117,7 +117,7 @@ export function startBuilder(page: Document): void {
     });
   });
   render();
-  fitWhenDefined(maps);
+  showViewWhenDefined(maps, () => conversion);
 }
 
 /** Copies `text`, and what to tell the reader; a page off HTTPS has no clipboard at all. */
@@ -146,22 +146,33 @@ function showPreview(maps: readonly PreviewMap[], conversion: Conversion | undef
       if (value === undefined) map.removeAttribute(name);
       else map.setAttribute(name, value);
     }
-    fitPreview(map, locations.length);
+    showView(map, conversion);
   }
 }
 
+function selectedIdIn(conversion: Conversion): string | undefined {
+  return new Map(conversion.attributes).get("selected-id");
+}
+
 /**
- * New locations leave the camera where it is, so a paste would stay on the sample; a map not
- * defined yet has no `maplace`, and `fitWhenDefined` gives it its first view.
+ * What the snippet selects, or all the locations if nothing. New locations leave the camera
+ * where it is, so a paste would stay on the sample; a map not defined yet has no `maplace`, and
+ * `showViewWhenDefined` gives it its first view.
  */
-function fitPreview(map: PreviewMap, count: number): void {
-  if (count > 0) map.maplace?.fitAll({ padding: PREVIEW_FIT_PADDING });
+function showView(map: PreviewMap, conversion: Conversion | undefined): void {
+  if (map.maplace === undefined || conversion === undefined) return;
+  const selectedId = selectedIdIn(conversion);
+  map.maplace.select(selectedId);
+  if (selectedId === undefined) map.maplace.fitAll({ padding: PREVIEW_FIT_PADDING });
 }
 
 /** A map's opening view is the store's own, with the default padding, unless asked for first. */
-function fitWhenDefined(maps: readonly PreviewMap[]): void {
+function showViewWhenDefined(
+  maps: readonly PreviewMap[],
+  currentConversion: () => Conversion | undefined,
+): void {
   void customElements.whenDefined("maplace-map").then(() => {
-    for (const map of maps) map.maplace?.fitAll({ padding: PREVIEW_FIT_PADDING });
+    for (const map of maps) showView(map, currentConversion());
   });
 }
 
