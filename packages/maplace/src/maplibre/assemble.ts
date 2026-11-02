@@ -1,5 +1,6 @@
 import type { MapMouseEvent } from "maplibre-gl";
 import type { Adapter, Capability } from "../adapter";
+import { createMapFailureNotice, PAGE_MAP_FAILURES } from "../adapter-kit/map-failure";
 import { createCamera } from "./camera";
 import { clusterRegrouping } from "./cluster-regrouping";
 import { createControls } from "./controls";
@@ -53,10 +54,12 @@ export function assembleMapLibreAdapter(
     controls.part,
     originDot.part,
   ];
+  const failures = options.map ? PAGE_MAP_FAILURES : createMapFailureNotice();
   const lifecycle = createMapLifecycle({
     source: mapSourceFor(options),
     state,
     parts,
+    reportFatal: failures.reportFatal,
   });
   const followers = [camera, popup];
   const afterDrawing = () => {
@@ -75,10 +78,11 @@ export function assembleMapLibreAdapter(
     // Routes aren't a capability: the store never asks for one, and clears none.
     setRoute() {},
     mountControl: controls.mountControl,
-    mount: lifecycle.mount,
+    mount: failures.mounting(lifecycle.mount),
     destroy() {
       lifecycle.destroy();
       controls.release();
+      failures.clear();
     },
   };
 }

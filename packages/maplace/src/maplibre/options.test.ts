@@ -1,5 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
+import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
+import { createMapLibreMap } from "./maplibre-map";
 import { checkMapLibreOptions } from "./options";
 
 const pageMap = { getContainer: () => document.createElement("div") };
@@ -88,4 +90,26 @@ describe("checkMapLibreOptions", () => {
       "options.mapStyle is for a map maplace creates: set it on your own map",
     ),
   );
+
+  it.each(Object.entries(GOOGLE_NAMES_ON_MAPLIBRE))(
+    "refuses Google's %s in mapOptions, saying MapLibre's",
+    (key, remark) => {
+      const field = `options.mapOptions.${key}`;
+      refusal({ mapOptions: { [key]: false } }, field, `${field} ${remark}`)();
+    },
+  );
+
+  it("leaves MapLibre's own names alone", () => {
+    const own = { scrollZoom: false, dragPan: false, keyboard: false, pitch: 10, bearing: 10 };
+    expect(() => checkMapLibreOptions({ mapOptions: own })).not.toThrow();
+  });
+});
+
+describe("createMapLibreMap", () => {
+  it("refuses scrollwheel", () => {
+    const options = { mapOptions: { scrollwheel: false } };
+    expect(() => createMapLibreMap(document.createElement("div"), options as never)).toThrow(
+      expect.objectContaining({ code: "invalid-input", field: "options.mapOptions.scrollwheel" }),
+    );
+  });
 });

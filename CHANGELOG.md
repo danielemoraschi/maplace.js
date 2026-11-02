@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-02 Fixed a map that fails after it starts staying empty: MapLibre's worker failing is now reported on every map it reaches, and maplace's adapters say so on the maps they create (.maplace-map-failure, worded by failure-label)
+- 2026-11-02 Changed MapLibre's mapOptions and map-options to refuse Google's option names, saying MapLibre's
 - 2026-11-02 Added a Mixed example: a marker, a circle, a polygon and a polyline on one map and in one list
 - 2026-11-02 Changed the name of the example that swaps data sets, from Mixed to Live data, and of its data files
 - 2026-11-02 Fixed the snippet builder's CSV: a title column beats name in either order, row by row, as in JSON, and the sample says title

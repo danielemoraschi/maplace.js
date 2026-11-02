@@ -4,6 +4,7 @@ import { booleanOrRaw } from "./attribute-values";
 import { type CameraKeeper, createCameraKeeper } from "./camera-keeper";
 import { adoptDefaultStyles, PANE_CLASS } from "./default-styles";
 import { isListAttribute, LIST_ATTRIBUTES, switchAttribute } from "./element-list";
+import { wordFailurePanel } from "./failure-words";
 import type { MaplaceMapElement } from "./index";
 import { createListKeeper, type ListKeeper } from "./list-keeper";
 import { createLoadPanel } from "./load-panel";
@@ -29,6 +30,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     ...LIST_ATTRIBUTES,
     "provider",
     "hold",
+    "failure-label",
     ...STORE_ATTRIBUTES,
   ];
 
@@ -42,6 +44,8 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#keepOwnNodes();
     this.#panel.refresh();
   });
+  /** Not from `#showLoadState`: a store already at `error` failing fatally notifies nobody. */
+  readonly #failureWatch = new MutationObserver(() => wordFailurePanel(this, this.#pane));
   readonly #nearView = createNearViewWait(
     this,
     () => this.#openSession(),
@@ -100,6 +104,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     adoptDefaultStyles(this.ownerDocument);
     this.#keepOwnNodes();
     this.#ownNodesWatch.observe(this, { childList: true });
+    this.#failureWatch.observe(this.#pane, { childList: true });
     this.#urlState.start();
     this.#feed.watch();
     afterParsing(this.ownerDocument, () => this.#open());
@@ -119,6 +124,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     else if (isStoreAttribute(name)) this.#feed.checkAttributes();
     else if (name === "provider") this.#reopenSession();
     else if (isListAttribute(name)) this.#lists?.rebuildSoon();
+    else if (name === "failure-label") wordFailurePanel(this, this.#pane);
   }
 
   release(): void {
@@ -189,6 +195,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#nearView.stop();
     this.#lists?.stop();
     this.#ownNodesWatch.disconnect();
+    this.#failureWatch.disconnect();
     this.#feed.stopWatching();
     this.#urlState.stop();
   }

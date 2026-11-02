@@ -14,7 +14,7 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-const CONTEXT = { container: CONTAINER } as MountContext;
+const CONTEXT = { container: CONTAINER, signal: new AbortController().signal } as MountContext;
 
 describe("mountAfter", () => {
   it("mounts only once loading resolved", async () => {

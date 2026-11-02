@@ -72,6 +72,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 |---|---|
 | `maplace-map-pane` | Inside `<maplace-map>`, the element the map is drawn in |
 | `maplace-load-panel` | The [panel](element.md#load-states) with the "Load map" button, shown in the pane of a map waiting to load; `.maplace-load-panel { display: none; }` removes it |
+| `maplace-map-failure` | The panel saying a map [can't be used](element.md#load-states), on a map maplacejs created; `.maplace-map-failure { display: none; }` removes it, for a page handling `:state(error)` or the `error` event itself. On your own map none shows |
 | `maplace-placed-list` | The list `<maplace-map>` places beside the map or on it |
 | `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
 | `maplace-list` | The block around a list's entries and its heading, area switch or search box; only on a list with one of those three |

@@ -1,5 +1,6 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Adapter, Capability } from "../adapter";
+import { createMapFailureNotice, PAGE_MAP_FAILURES } from "../adapter-kit/map-failure";
 import { createCamera } from "./camera";
 import { createControls } from "./controls";
 import { createDrawing } from "./drawing";
@@ -54,6 +55,7 @@ export function assembleGoogleAdapter(
     controls.part,
     originDot.part,
   ];
+  const failures = options.map ? PAGE_MAP_FAILURES : createMapFailureNotice();
   const lifecycle = createMapLifecycle({
     source: mapSourceFor(options),
     state,
@@ -78,10 +80,11 @@ export function assembleGoogleAdapter(
     setView: camera.setView,
     setRoute: routing.setRoute,
     mountControl: controls.mountControl,
-    mount: lifecycle.mount,
+    mount: failures.mounting(lifecycle.mount),
     destroy() {
       lifecycle.destroy();
       controls.release();
+      failures.clear();
     },
   };
 }

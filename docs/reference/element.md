@@ -104,6 +104,7 @@ maplace builds its list once its script has run, and a map with `hold` only on `
 | `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
 | `load-label` | The words of the [load panel](#load-states)'s button; "Load map" when blank or left out; live |
 | `load-from-label` | The words before the name on that panel; "Loads from" when blank or left out; live |
+| `failure-label` | The words of the panel a map shows [when it can't be used](#load-states); "The map couldn't load." when blank or left out; live |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address wins |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
@@ -158,6 +159,8 @@ The [Load on demand](../../packages/maplace/examples/load-on-demand/guide.md) ex
 | With no `provider`, and none or several registered | None, only the button |
 
 `load-label` and `load-from-label` word it. A blank one takes the default words, unlike the other labels, where blank is misuse: an error would hide the panel, and with it the way to load the map. A direct child marked `data-maplace-idle` replaces the panel: the page's own, which stays where the page put it, shows only in `:state(idle)`, and calls `release()` itself. On a lazy map starting in view, it shows for the map's first frame, as `:state(idle)` is true then; the ready-made panel doesn't. A lazy map hidden at first (a closed tab) gets no panel, and opens as it nears the viewport. To look different, or to go, see [Styling](styling.md#classes).
+
+A map that can't be used says so in `:state(error)`: a panel on it (`.maplace-map-failure`, an alert), worded by `failure-label`, which a page handling `:state(error)` itself hides with `.maplace-map-failure { display: none; }`. It shows on the maps maplace's adapters create, and not where the map still works (locations failing to draw), beside Google's own refused-key message, for misuse, or on a provider of your own.
 
 ## URL state
 

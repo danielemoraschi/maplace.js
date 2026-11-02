@@ -8,6 +8,7 @@ export const CONTAINER = {
       style: {},
       setAttribute() {},
       addEventListener() {},
+      append() {},
       remove() {},
     }),
   },

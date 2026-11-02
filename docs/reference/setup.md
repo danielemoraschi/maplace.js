@@ -99,7 +99,7 @@ Every example on the site has this version, under its Script tab.
 
 ## Serve a MapLibre page
 
-Serve a MapLibre page, even from `localhost`: opened as a file, the map can't start its worker and stays empty.
+Serve a MapLibre page, even from `localhost`: opened as a file, the map can't start its worker and says it couldn't load.
 
 ## With npm
 

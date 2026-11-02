@@ -12,7 +12,7 @@ The store, its list, its events and its errors are the same as on Google; what d
 | `map` | `maplibregl.Map` | Your own map to draw on, instead of one maplacejs creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
 | `mapOptions` | `MapOptions` | Extra options for a map maplacejs creates; not `container`, `style`, `center`, `zoom` or `bounds`, which maplacejs sets ([the first view](store.md#the-first-view)). `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
 
-An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` maplacejs sets, saying where it goes (`style` is `mapStyle`).
+An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` maplacejs sets, saying where it goes (`style` is `mapStyle`), or one of Google's names MapLibre has its own for, saying which (`scrollwheel` is `scrollZoom`).
 
 ## `createMapLibreMap`
 
@@ -61,6 +61,7 @@ A map maplacejs creates is a new element filling the container (so size the cont
 With `map`, maplacejs draws on your map and never moves it in the page or removes it; the store's `view` still sets its camera.
 
 - `attach`'s container must be `map.getContainer()` or hold it.
+- Unlike a map maplacejs creates, your map shows no panel when it fails: hear the `error` event.
 - `mapStyle` and `mapOptions` are refused: your map's own style and options apply.
 - `destroy` removes only what maplacejs added: its sources, layers, markers and controls.
 
@@ -104,7 +105,7 @@ From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-g
 
 The style says where the tiles, fonts and icons come from. OpenFreeMap's `https://tiles.openfreemap.org/styles/bright` is the default: free, no key, OpenStreetMap data. Any provider's style URL works the same way, such as MapTiler, Stadia Maps, Protomaps or your own server, with its key in the URL where it needs one.
 
-A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log.
+A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. A worker maplacejs hears fail is `provider-load-failed` naming the worker, on the maps open on it and every map mounted after, as they share it for the page's life; one that failed before maplacejs's first mount on the page goes unheard, so MapLibre's console line and your own map's `error` listener are what say so.
 
 A dark map is a dark style (`map-style`), since MapLibre has no colour scheme option.
 

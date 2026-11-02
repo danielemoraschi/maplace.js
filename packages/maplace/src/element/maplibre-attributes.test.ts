@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { createMapLibreAdapter } from "../maplibre/index";
+import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import {
   MAPLIBRE_MAP_SETTINGS,
   mapLibreSettingsOf,
@@ -91,6 +92,14 @@ describe("mapLibreSettingsOf", () => {
         expect.objectContaining({ code: "invalid-input", field: `options.mapOptions.${key}` }),
       );
     },
+  );
+});
+
+describe("Google's names on MapLibre", () => {
+  it.each(Object.entries(GOOGLE_NAMES_ON_MAPLIBRE))(
+    "refuses %s in map-options too",
+    (key, remark) =>
+      refusal({ "map-options": JSON.stringify({ [key]: 1 }) }, `map-options.${key}`, remark),
   );
 });
 

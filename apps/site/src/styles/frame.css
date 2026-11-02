@@ -16,6 +16,10 @@
   display: block;
   height: var(--spacing-map);
 }
+/* The site's note (`.map-note .failed`) says the map failed, and why: one message. */
+.version :where(.maplace-map-failure) {
+  display: none;
+}
 /*
  * A held map's own "Load map" panel never shows here: the consent placeholder asks first, and the
  * element is defined with the first map released, while other maps on the page stay held. A map
