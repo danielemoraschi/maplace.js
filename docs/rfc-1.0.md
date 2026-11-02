@@ -147,9 +147,9 @@ Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
 | [tags](../packages/maplace/examples/tags/) | Places with several `tags` under their one `group`, checkboxes filtering the map and the list with `setFilter({ tags })`, each heading counting what is listed under it | none (new) | |
 | [polyline](../packages/maplace/examples/polyline/) | An editable polyline with points of interest along it, popups and a list, inline JSON data | polyline | #178 |
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `locationChange` event | polygon | #64, #164 |
-| [mixed](../packages/maplace/examples/mixed/) | A marker, a circle, a polygon and a polyline on one map and in one list, each location giving its own `type`, inline JSON data | polyline, "Path / Polyline + mixed circles" | #10, #43, #179 |
+| [mixed](../packages/maplace/examples/mixed/) | A marker, a circle, a polygon and a polyline on one map and in one list, each location giving its own `type`, inline JSON data | polyline, "Path / Polyline + mixed circles" | #10, #43, #179, #193 |
 | [route](../packages/maplace/examples/route/) | One route through ordered stops, passing through one (`via`), directions by leg from its steps and the distance, from the `routeChange` event | directions | #121, #147 |
-| [live-data](../packages/maplace/examples/live-data/) | 0.2's five data sets fetched by the page and swapped in live: markers, markers with a route through them, a polygon, a circle; on MapLibre, the route's data set without its route | mixed (ajax) | #134, #193 |
+| [live-data](../packages/maplace/examples/live-data/) | 0.2's five data sets fetched by the page and swapped in live: markers, markers with a route through them, a polygon, a circle; on MapLibre, the route's data set without its route | mixed (ajax) | #134 |
 | [styled](../packages/maplace/examples/styled/) | The provider's own looks: on Google a light or dark map or the system's scheme (`color-scheme`) and Google's map options (the map-type control); on MapLibre, OpenFreeMap's `bright`, `liberty`, `positron` and dark styles (`map-style`); a select opening the map again in the one chosen, where it was | styled | — |
 | [css-markers](../packages/maplace/examples/css-markers/) | Pins of the page's own markup (`<template data-icon>`, an `icon` node, `markerIcon`), their hovered and selected looks in the page's CSS by `data-hovered` and `data-selected` | — | #192 |
 | [brand](../packages/maplace/examples/brand/) | One palette across the map: areas' `style`, `hoveredStyle` and `selectedStyle`, clustered shops' badges (`--maplace-cluster-background`, `--maplace-cluster-color`), the list's entries by their classes | — | — |
@@ -446,7 +446,7 @@ All are answered in 1.0 unless marked.
 | 189 | issue | fixed by 1.0 | Domain renewed for the new site |
 | 190 | issue | fixed by 1.0 | Clustering and fit all (§3 Shape, Performance) |
 | 192 | issue | fixed by 1.0 | Selected state for icons (§3 Decisions) |
-| 193 | issue | fixed by 1.0 | Several types per map (§3 Shape) |
+| 193 | issue | fixed by 1.0 | Several types per map (§3 Shape), shown by the `mixed` example (§2) |
 | 194 | issue | fixed by 1.0 | Typed `selectionChange` events (§3 Shape) |
 | 195 | issue | fixed by 1.0 | `viewportChange` event (§3 Decisions) |
 | 197 | issue | fixed by 1.0 | `openOn: 'hover'` (§3 Decisions) |
