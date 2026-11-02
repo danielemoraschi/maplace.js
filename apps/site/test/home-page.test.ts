@@ -58,6 +58,14 @@ describe("the home page's headings and install box", () => {
     }
     await context.close();
   }, 30_000);
+
+  it("says a MapLibre page has to be served, and links how", async () => {
+    const { page, context } = await site.visitor();
+    await page.goto(site.url, { waitUntil: "domcontentloaded" });
+    const serve = page.getByRole("link", { name: "Serve a MapLibre page" });
+    expect(await serve.first().getAttribute("href")).toBe("/setup/#serve-a-maplibre-page");
+    await context.close();
+  }, 30_000);
 });
 
 describe("Data & routes' examples", () => {

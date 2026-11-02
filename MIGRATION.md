@@ -144,7 +144,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
 | `show_infowindows`, `infowindow_type` | a location opens a popup only when it has `content` (or `html`): leave it out for none; there is only one kind of popup |
-| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on MapLibre `createMapLibreAdapter({ mapOptions })`, on the element `map-options` (JSON). MapLibre refuses Google's names it has its own for, saying which. Centre and zoom go through `view` ([the first view](docs/reference/store.md#the-first-view)); `zoom` beside `start` is `view: { kind: 'location', id, zoom }` |
+| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on MapLibre `createMapLibreAdapter({ mapOptions })`, on the element `map-options` (JSON). MapLibre refuses Google's names it has its own for, saying which. Centre and zoom go through `view` ([the first view](docs/reference/store.md#the-first-view)); `zoom` beside `start` is `selectedId` with `view: { kind: 'location', id, zoom }` |
 | `styles` | on Google, a map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)); a JSON style (a Snazzy Maps one, say) imported into a Cloud style in the Cloud console, which Google converts only approximately, then given as that style's map ID (`mapId`); on MapLibre, the map's style (`mapStyle`, the element's `map-style`), any provider's style URL |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
@@ -221,7 +221,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 - Locations are identified by `id`, not by their 1-based position.
 - Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
 - Changing locations keeps the map where it is; call `fitAll()` to fit them again. A selected id still there stays selected, so with ids from positions it may now be another place: call `select(undefined)` first.
-- Closing a popup or clicking the map clears the selection.
+- Clicking the map clears the selection, and so does closing a popup, with the default `openOn: 'click'`.
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
 - No jQuery, and `Maplace` is no longer a constructor: one CDN script sets it as a namespace of functions, or you import ES modules. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap), and the MapLibre script bundles MapLibre; in code, the page loads Maps JS or gives the adapter `apiKey`; from npm it installs maplibre-gl, which the MapLibre script bundles.
 - The menu's inline styles are replaced by a stylesheet you can override.
