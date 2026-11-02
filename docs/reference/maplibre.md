@@ -105,7 +105,7 @@ From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-g
 
 The style says where the tiles, fonts and icons come from. OpenFreeMap's `https://tiles.openfreemap.org/styles/bright` is the default: free, no key, OpenStreetMap data. Any provider's style URL works the same way, such as MapTiler, Stadia Maps, Protomaps or your own server, with its key in the URL where it needs one.
 
-A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. MapLibre's worker failing is `provider-load-failed` naming the worker, on every map on the page, which share it for the page's life.
+A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. A worker maplacejs hears fail is `provider-load-failed` naming the worker, on the maps open on it and every map mounted after, as they share it for the page's life; one that failed before maplacejs's first mount on the page goes unheard, so MapLibre's console line and your own map's `error` listener are what say so.
 
 A dark map is a dark style (`map-style`), since MapLibre has no colour scheme option.
 
