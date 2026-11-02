@@ -137,11 +137,11 @@ Before `attach` the store skips capability checks; `attach` checks the current s
 
 | Code | When |
 |---|---|
-| `provider-load-failed` | The provider, or a part it loads (maplibre-gl, a style, the clusterer), failed to load; on Google also your own map made without a map ID |
+| `provider-load-failed` | The provider, or a part it loads (maplibre-gl, its worker, a style, the clusterer), failed to load; on Google also your own map made without a map ID |
 | `provider-auth-failed` | The provider refused the key: Google's, or a style's server (HTTP 401 or 403) |
 | `route-failed` | A route couldn't be computed |
 
-For the first two, `loadState` becomes `error` and `whenReady()` rejects; one that comes after `ready` moves `loadState` from `ready` to `error`. An `icon`, `content` or `sanitize` function of yours that fails while the map draws is an `invalid-input` error event naming the location and the field: the map stays ready.
+For the first two, `loadState` becomes `error` and `whenReady()` rejects; one that comes after `ready` moves `loadState` from `ready` to `error`. A map maplacejs creates also says so on the map when it can't be used: a [panel](styling.md#classes) in its container, none on your own map. An `icon`, `content` or `sanitize` function of yours that fails while the map draws is an `invalid-input` error event naming the location and the field: the map stays ready.
 
 ## Capabilities
 

@@ -57,6 +57,8 @@ export async function expectNoteAlone(
   const reload = section.getByRole("button", { name: "Reload the page" });
   expect(await reload.isVisible(), "reload offered").toBe(noted.reload);
   expect(await notes.locator(".map-note.loading").isVisible(), "loading shown").toBe(false);
+  const panel = section.locator(".maplace-map-failure > *:visible");
+  expect(await panel.count(), "the package's panel shown").toBe(0);
 }
 
 /** How long each provider's version may take to fail. */

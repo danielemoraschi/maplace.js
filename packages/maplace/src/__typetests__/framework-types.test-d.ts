@@ -96,6 +96,7 @@ export const svelteMap: SvelteMap = {
   hold: true,
   loading: "lazy",
   "load-label": "Karte laden",
+  "failure-label": "Karte nicht geladen",
   "url-state": true,
   id: "m",
   "data-x": "1",

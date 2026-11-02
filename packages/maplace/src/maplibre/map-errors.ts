@@ -17,11 +17,17 @@ type MapErrorEvent = ErrorEvent & { readonly sourceId?: string };
 const REFUSED = new Set([401, 403]);
 
 /**
+ * MapLibre's words for its worker failing, which a map whose dispatcher hears it before maplace's
+ * watch (a page's own, made first) fires like any error. Pinned by `maplibre-on-file.test.ts`.
+ */
+const WORKER_FAILED = /^Worker failed to load/;
+
+/**
  * Routes every error the map fires until the returned function stops it. MapLibre logs an error
  * only while nothing listens, so this one listener answers for all of them: one on maplace's own
  * sources is the store's to hear; any other before the style document has loaded is the style's;
- * the rest (another source's, a tile's, a sprite's) is logged, as MapLibre would, unless the page
- * listens too, on its own map.
+ * the rest (another source's, a tile's, a sprite's, the worker's, which `worker-failure.ts` answers
+ * for) is logged, as MapLibre would, unless the page listens too, on its own map.
  */
 export function routeMapErrors(map: MapLibreMap, routes: ErrorRoutes): () => void {
   let routing = true;
@@ -29,7 +35,7 @@ export function routeMapErrors(map: MapLibreMap, routes: ErrorRoutes): () => voi
     // MapLibre still calls a listener taken off by one before it, for the same error.
     if (!routing) return;
     if (sourceId !== undefined && isOwnSource(sourceId)) routes.sourceFailed(drawFailure(error));
-    else if (sourceId === undefined && map.getStyle() === undefined) {
+    else if (sourceId === undefined && map.getStyle() === undefined && !isWorkerFailure(error)) {
       routes.styleFailed(styleErrorOf(error));
     } else if (!othersListen(map, listener)) console.error(error);
   };
@@ -38,6 +44,11 @@ export function routeMapErrors(map: MapLibreMap, routes: ErrorRoutes): () => voi
     routing = false;
     map.off("error", listener);
   };
+}
+
+/** A page or plugin may fire an `error` carrying no error. */
+function isWorkerFailure(error: ErrorEvent["error"] | null | undefined): boolean {
+  return WORKER_FAILED.test(error?.message ?? "");
 }
 
 /** Whether anything besides `own` listens to the map's errors: the page, on its own map. */

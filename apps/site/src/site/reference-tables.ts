@@ -16,6 +16,7 @@ import { elementEventName } from "../../../../packages/maplace/src/element/event
 import { LOCATION_ATTRIBUTES } from "../../../../packages/maplace/src/element/location-attributes.ts";
 import { GOOGLE_MAP_CLASS } from "../../../../packages/maplace/src/google/control-styles.ts";
 import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
+import { MAP_FAILURE_CLASS } from "../../../../packages/maplace/src/map-failure-words.ts";
 import { SKIP_MAP_CLASS } from "../../../../packages/maplace/src/maplace/map-aids.ts";
 import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/control-styles.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
@@ -100,6 +101,7 @@ export const STYLING_CLASSES = [
   ORIGIN_DOT_CLASS,
   SKIP_MAP_CLASS,
   LOAD_PANEL_CLASS,
+  MAP_FAILURE_CLASS,
   GOOGLE_MAP_CLASS,
   MAPLIBRE_MAP_CLASS,
 ];

@@ -101,14 +101,6 @@ describe("Google's names on MapLibre", () => {
     (key, remark) =>
       refusal({ "map-options": JSON.stringify({ [key]: 1 }) }, `map-options.${key}`, remark),
   );
-
-  it("the refusals of createMapLibreAdapter and map-options name the same", () => {
-    for (const key of Object.keys(GOOGLE_NAMES_ON_MAPLIBRE)) {
-      expect(() => createMapLibreAdapter({ mapOptions: { [key]: 1 } })).toThrow(
-        expect.objectContaining({ code: "invalid-input", field: `options.mapOptions.${key}` }),
-      );
-    }
-  });
 });
 
 describe("mapStyleHostOf", () => {

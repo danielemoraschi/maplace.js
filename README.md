@@ -62,7 +62,7 @@ The CDN has three scripts. Load exactly one of them. Two scripts on one page are
 |---|---|
 | `maplace-element.iife.js` | on Google, everything but clustering |
 | `maplace-element-cluster.iife.js` | on Google, with `cluster` (bundles Google's MarkerClusterer; its licences are in `THIRD-PARTY-LICENSES.txt` beside it) |
-| `maplace-element-maplibre.iife.js` | the element on MapLibre, clustering included: maplibre-gl, its worker and its stylesheet bundled, so one pinned file is all the page loads (about 510 kB gzip; the bundled packages' licences in `THIRD-PARTY-LICENSES.txt` beside it) |
+| `maplace-element-maplibre.iife.js` | the element on MapLibre, clustering included: maplibre-gl, its worker and its stylesheet bundled, so one pinned file is all the page loads ([its size](docs/reference/maplibre.md#with-the-cdn-script); the bundled packages' licences in `THIRD-PARTY-LICENSES.txt` beside it) |
 
 A map with `cluster` on the first script fails to load and says to use the second.
 

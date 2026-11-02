@@ -19,6 +19,7 @@ const MAP_READS = [
   "hold",
   "loading",
   "load-label",
+  "failure-label",
   "load-from-label",
   "selected-id",
   "url-state",

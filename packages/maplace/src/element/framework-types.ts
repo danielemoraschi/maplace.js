@@ -34,6 +34,7 @@ type NamedMapAttribute =
   | "my-location-position"
   | "loading"
   | "load-label"
+  | "failure-label"
   | "load-from-label"
   | "selected-id"
   | "url-state"

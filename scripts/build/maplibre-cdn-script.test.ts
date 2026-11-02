@@ -52,6 +52,7 @@ describe("the MapLibre CDN script", { timeout: 60_000 }, () => {
   it("opens <maplace-map> on MapLibre from the one script, fetching nothing else", async () => {
     const { page, offsite, logged } = opened;
     expect(await page.locator(".maplace-map-pane .maplibregl-canvas").count()).toBe(1);
+    expect(await page.locator(".maplace-map-failure").count()).toBe(0);
     expect(offsite()).toEqual([]);
     expect(logged()).toEqual([]);
   });
@@ -137,6 +138,58 @@ describe("the MapLibre CDN script's own maplibre-gl", { timeout: 60_000 }, () =>
       expect(own.logged()).toEqual([]);
     } finally {
       await own.close();
+    }
+  });
+});
+
+/** Counts the page's `maplace-error`s, then throws in the worker from a timer, uncaught. */
+const THROW_IN_WORKER_BODY = `${BODY}
+<script type="module">
+  window.errorsHeard = 0;
+  document.addEventListener("maplace-error", () => window.errorsHeard++);
+  window.throwInWorker = () => {
+    const thrower = 'setTimeout(() => { throw new Error("thrown in the worker"); });';
+    const url = URL.createObjectURL(new Blob([thrower], { type: "text/javascript" }));
+    return Maplace.maplibre.importScriptInWorkers(url);
+  };
+</script>`;
+
+describe("MapLibre's worker, alive", { timeout: 60_000 }, () => {
+  it("a live worker's uncaught exception leaves the map ready, with no error, and a map added after it opens", async () => {
+    const thrown = await openCdnScriptPage(browser as Browser, {
+      file: CDN_SCRIPTS.maplibre,
+      script,
+      body: THROW_IN_WORKER_BODY,
+    });
+    try {
+      const { page } = thrown;
+      await untilReady(thrown);
+      await page.evaluate(() =>
+        (globalThis as never as { throwInWorker(): unknown }).throwInWorker(),
+      );
+      await page.waitForFunction(
+        () =>
+          (globalThis as never as { recordedWorkers: { errors: string[] }[] }).recordedWorkers.some(
+            ({ errors }) => errors.length > 0,
+          ),
+        undefined,
+        READY,
+      );
+      const states = () =>
+        page.evaluate(() =>
+          [...document.querySelectorAll<Element & { loadState: string }>("maplace-map")].map(
+            ({ loadState }) => loadState,
+          ),
+        );
+      expect(await states()).toEqual(["ready"]);
+      await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), BODY);
+      await expect.poll(states, READY).toEqual(["ready", "ready"]);
+      expect(
+        await page.evaluate(() => (globalThis as never as { errorsHeard: number }).errorsHeard),
+      ).toBe(0);
+      expect(await page.locator(".maplace-map-failure").count()).toBe(0);
+    } finally {
+      await thrown.close();
     }
   });
 });

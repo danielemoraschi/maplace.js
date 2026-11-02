@@ -115,6 +115,8 @@ export { defineListView } from "./list-views";
  *   `loading="lazy"`; blank, the default words (Load map; Loads from). The panel
  *   (`.maplace-load-panel`) names whom the provider loads from, and its button calls `release()`; a
  *   direct child marked `data-maplace-idle` replaces it, showing only in `:state(idle)`.
+ * - `failure-label`: the words of the panel (`.maplace-map-failure`) a map maplace's adapters created
+ *   shows when it can't be used; blank, the default words (The map couldn't load.); live.
  * - `url-state`: keeps the selection in the page's address while connected: the parameter it
  *   names (`location` when bare or `"true"`) selects on load, over `selected-id` and never as
  *   misuse; each selection is a history entry, and back and forward select again. Read on
