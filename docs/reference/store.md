@@ -129,7 +129,7 @@ On the element the same events are DOM events ([the element's events](element.md
 
 ## Routes
 
-A route is one path through your own locations, in order; it needs the `route` capability, which Google has and MapLibre lacks ([routes](maplibre.md#routes)).
+A route is one path through your own locations, in order; it needs the `route` capability, which Google has and MapLibre lacks ([routes](maplibre.md#routes)). Removing a stop's location drops it from the route; below two stops the route clears, with no error.
 
 | Field | Type | What |
 |---|---|---|

@@ -74,6 +74,15 @@ describe("checkMapLibreOptions", () => {
   );
 
   it(
+    "refuses 0.2's set_center, which would otherwise be ignored",
+    refusal(
+      { mapOptions: { set_center: [0, 0] } },
+      "options.mapOptions.set_center",
+      "options.mapOptions.set_center is a 0.2 option: use the store's view",
+    ),
+  );
+
+  it(
     "refuses something that isn't a MapLibre map",
     refusal(
       { map: {} },

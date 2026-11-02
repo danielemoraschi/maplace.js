@@ -1,18 +1,26 @@
 // Converting 0.2 locations: ids from the old 1-based index, `lon` → `lng`, `zoom` kept.
 import { createMaplace, type MarkerLocation } from "maplace";
 
-interface Legacy {
+export interface Legacy {
   readonly lat: number;
   readonly lon: number;
   readonly title?: string;
   readonly html?: string;
   readonly icon?: string;
   readonly zoom?: number;
+  readonly visible?: boolean;
+  readonly show_infowindow?: boolean;
+  readonly on_menu?: boolean;
 }
 
-function toLocation(legacy: Legacy, index: number): MarkerLocation {
-  const { lat, lon, title, html, icon, zoom } = legacy;
-  return { id: String(index + 1), lat, lng: lon, title, html, icon, zoom };
+export function toLocation(legacy: Legacy, index: number): MarkerLocation {
+  const { lat, lon, title, icon, zoom, visible, show_infowindow, on_menu } = legacy;
+  const id = String(index + 1);
+  const html =
+    show_infowindow === false
+      ? undefined
+      : legacy.html?.replace("%index", id).replace("%title", title ?? "");
+  return { id, lat, lng: lon, title, html, icon, zoom, visible, listed: on_menu };
 }
 
 declare const old: readonly Legacy[];

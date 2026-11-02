@@ -2,7 +2,7 @@ import type { Map as MapLibreMap, MapOptions, StyleSpecification } from "maplibr
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import { type Assert, recordOf } from "../validate/record";
-import { refusedKeysCheck } from "../validate/refused-keys";
+import { refusedKeysCheck, ZERO_TWO_MAP_OPTIONS } from "../validate/refused-keys";
 import { checkNonEmptyString, isElement, optional } from "../validate/values";
 
 /** MapLibre's map options maplace sets elsewhere: kept out of `mapOptions`, by type and by check. */
@@ -40,7 +40,7 @@ const SET_BY_MAPLACE: Readonly<Record<SetElsewhere, string>> = {
 
 /** Checks map options for a map maplace creates: an object, none of `SetElsewhere`, nor Google's. */
 const checkCreatedMapOptions: Assert<CreatedMapOptions> = refusedKeysCheck(
-  { ...SET_BY_MAPLACE, ...GOOGLE_NAMES_ON_MAPLIBRE },
+  { ...SET_BY_MAPLACE, ...GOOGLE_NAMES_ON_MAPLIBRE, ...ZERO_TWO_MAP_OPTIONS },
   "an object",
 );
 

@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-02 Changed the migration guide to name what breaks a 0.2 page with little or no warning: `google.maps` values in the data, Google's Routes API for a route, and `%index` in `html`
+- 2026-11-02 Changed `mapOptions` to refuse 0.2's `set_center`, which was ignored without a word
 - 2026-11-02 Fixed the select's "All locations", which showed over a map zoomed in on a location after a popup closed, and couldn't then be chosen: the select now shows no option until the locations are fitted
 - 2026-11-02 Fixed a marker's image icon sitting a few pixels above its point on MapLibre, and a React icon's, the line of text under it leaving a gap; a React icon's several children now stack
 - 2026-11-02 Changed the docs to say what a map of your own is and show one, and the migration guide to answer Google JSON styles on MapLibre, keeping the selection on a map click, a control on the element, and showing a selected location in a panel

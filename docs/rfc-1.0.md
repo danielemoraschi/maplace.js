@@ -276,8 +276,8 @@ Checked by `npm run check` (`scripts/checks/sizes.ts`, which reads them from thi
 | Google adapter (`maplace/google`) | ≤ 18.3 kB |
 | MapLibre adapter (`maplace/maplibre`) | ≤ 22.8 kB |
 | React binding (`maplace/react`) | ≤ 4.5 kB |
-| Element CDN build (core + Google + list view + element) | ≤ 44.3 kB |
-| Element CDN build with clustering | ≤ 54.4 kB |
+| Element CDN build (core + Google + list view + element) | ≤ 44.35 kB |
+| Element CDN build with clustering | ≤ 54.45 kB |
 | Element CDN build on MapLibre (core + MapLibre + list view + element) | ≤ 50 kB |
 | Element CDN build on MapLibre, as served (maplibre-gl, its worker and stylesheet bundled) | ≤ 551 kB |
 

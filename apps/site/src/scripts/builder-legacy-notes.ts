@@ -44,6 +44,8 @@ const CALLBACKS: Readonly<Record<string, string>> = {
   afterShow: callback(listenFor("selectionchange")),
   onPolylineClick: callback(listenFor("selectionchange")),
   onPolygonClick: callback(listenFor("selectionchange")),
+  onPolylineChanged: callback(listenFor("locationchange")),
+  onPolygonChanged: callback(listenFor("locationchange")),
   afterViewAll: callback("listen for maplace-selectionchange and maplace-viewportchange"),
   beforeOpenInfowindow: callback(listenAfter("popupopen")),
   afterOpenInfowindow: callback(listenFor("popupopen")),

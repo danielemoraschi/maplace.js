@@ -59,6 +59,7 @@ describe("checkGoogleOptions", () => {
     ["mapId", "is its own option: createGoogleAdapter({ mapId })"],
     ["colorScheme", "is its own option: createGoogleAdapter({ colorScheme })"],
     ["styles", "is not offered: style the map in Cloud Console, through its map ID"],
+    ["set_center", "is a 0.2 option: use the store's view"],
   ])("keeps %s out of mapOptions", (key, remark) =>
     refusal(
       { mapId: "id", mapOptions: { [key]: 1 } },

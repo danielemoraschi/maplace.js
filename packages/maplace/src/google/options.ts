@@ -1,7 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { type Assert, recordOf } from "../validate/record";
-import { refusedKeysCheck } from "../validate/refused-keys";
+import { refusedKeysCheck, ZERO_TWO_MAP_OPTIONS } from "../validate/refused-keys";
 import { checkNonEmptyString, checkOneOf, isElement, optional } from "../validate/values";
 import {
   MAPS_JS_CHECKS,
@@ -63,7 +63,7 @@ export function mapOptionsCheck(
   expected = "an object",
 ): Assert<CreatedMapOptions> {
   const remarks: Readonly<Record<SetElsewhere, string>> = { ...SET_BY_MAPLACE, ...own };
-  return refusedKeysCheck(remarks, expected);
+  return refusedKeysCheck({ ...remarks, ...ZERO_TWO_MAP_OPTIONS }, expected);
 }
 
 const ADAPTER_OWN_SETTINGS: OwnSettingRemarks = {
