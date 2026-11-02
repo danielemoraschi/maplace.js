@@ -90,8 +90,9 @@ export interface ListViewOptions<Data = unknown> {
 
 /**
  * A list view renders store state and asks the store for changes; it never talks to an adapter.
- * Without `fitAll` a listbox can't clear the selection; the "fit all" entry shows as selected
- * whenever nothing is (a selected location the list leaves out marks no entry).
+ * Without `fitAll` a listbox can't clear the selection; its "fit all" entry shows as selected
+ * whenever nothing is (a selected location the list leaves out marks no entry). A select shows it
+ * only while the view is that fit, or choosing it would fire nothing.
  */
 export interface ListView {
   /**

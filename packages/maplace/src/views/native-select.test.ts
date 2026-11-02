@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { recordingActions, structureOf } from "../testing/lists";
+import type { View } from "../viewport";
 import { createNativeSelect } from "./native-select";
 
 const locations: Location[] = [
@@ -27,6 +28,8 @@ function mounted({ fitAllLabel }: { fitAllLabel: string | undefined } = { fitAll
   return { view, calls: actions.calls, select, shown, choose };
 }
 
+const CENTERED: View = { kind: "center", center: { lat: 0, lng: 0 }, zoom: 6 };
+
 describe("createNativeSelect", () => {
   it("is a named select with optgroups, ungrouped first, and a fit-all option", () => {
     const { select } = mounted();
@@ -49,6 +52,32 @@ describe("createNativeSelect", () => {
     expect(shown()?.textContent).toBe("Alpha");
     view.renderState({ selectedId: undefined, hoveredId: undefined });
     expect(shown()?.textContent).toBe("All");
+  });
+
+  it("shows no option while nothing is selected and the view isn't fit-all", () => {
+    const { view, select } = mounted();
+    view.renderView?.(CENTERED);
+    expect(select.selectedIndex).toBe(-1);
+  });
+
+  it("shows fit all again when the view is fit-all", () => {
+    const { view, shown } = mounted();
+    view.renderView?.(CENTERED);
+    view.renderView?.({ kind: "fit-all", padding: 40 });
+    expect(shown()?.textContent).toBe("All");
+  });
+
+  it("shows the selected location whatever the view", () => {
+    const { view, shown } = mounted();
+    view.renderState({ selectedId: "a", hoveredId: undefined });
+    view.renderView?.(CENTERED);
+    expect(shown()?.textContent).toBe("Alpha");
+  });
+
+  it("keeps the blank placeholder without fit all", () => {
+    const { view, shown } = mounted({ fitAllLabel: undefined });
+    view.renderView?.(CENTERED);
+    expect(shown()?.textContent).toBe("");
   });
 
   it("shows fit all after it is chosen and the selection doesn't change", () => {

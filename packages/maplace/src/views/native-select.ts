@@ -22,8 +22,9 @@ export function createNativeSelect<Data>(
   const select = document.createElement("select");
   select.setAttribute("aria-label", settings.label);
   select.className = SELECT_CLASS;
-  // What shows while nothing is selected: "fit all" itself, or a blank placeholder without one;
-  // none shows while a location it leaves out is, so choosing "fit all" then fires change.
+  // What shows while nothing is selected: "fit all" itself while the view is that fit, or a blank
+  // placeholder without one; none shows while the map is elsewhere or a location it leaves out is
+  // selected, as a select fires no change for the option it shows, so "fit all" could not be chosen.
   // No hidden placeholder beside "fit all": Safari lists hidden options, so it would show twice.
   const fitAll = settings.fitAllLabel === undefined ? undefined : textOption(settings.fitAllLabel);
   const nothingSelected = fitAll ?? blankPlaceholder();
@@ -46,6 +47,7 @@ export function createNativeSelect<Data>(
     },
   });
   let selectedId: string | undefined;
+  let viewFitsAll = true;
 
   function onChange(): void {
     // `options[selectedIndex]`, not `selectedOptions`, which some DOMs don't keep current.
@@ -58,15 +60,14 @@ export function createNativeSelect<Data>(
   }
   select.addEventListener("change", onChange);
 
-  /** The store's selection: "fit all" (or the placeholder) for none, no option if unlisted. */
-  function showSelection(): void {
-    const option = selectedId === undefined ? nothingSelected : sections.optionOf(selectedId);
-    if (option === undefined) showNoOption();
-    else if (!option.selected) option.selected = true;
+  function optionToShow(): HTMLOptionElement | undefined {
+    if (selectedId !== undefined) return sections.optionOf(selectedId);
+    return fitAll === undefined || viewFitsAll ? nothingSelected : undefined;
   }
 
-  function showNoOption(): void {
-    if (select.selectedIndex !== -1) select.selectedIndex = -1;
+  function showSelection(): void {
+    const index = optionToShow()?.index ?? -1;
+    if (select.selectedIndex !== index) select.selectedIndex = index;
   }
 
   return {
@@ -78,6 +79,10 @@ export function createNativeSelect<Data>(
     },
     renderState(state: ListState) {
       selectedId = state.selectedId;
+      showSelection();
+    },
+    renderView(view) {
+      viewFitsAll = view.kind === "fit-all";
       showSelection();
     },
     destroy() {

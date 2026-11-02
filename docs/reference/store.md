@@ -150,7 +150,7 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `as` | `"list" \| "select"` | A listbox (default) or a native `<select>` |
 | `groupHeadings` | `boolean` | Shows group headings; default `true` when any location has a `group` |
 | `groupCounts` | `boolean` | After each group heading, how many are listed under it now, following the filter and `scope`: "North (3)". Off by default; refused with `groupHeadings: false` |
-| `fitAll` | `boolean` | Adds a first entry to the list, which clears the selection and fits all locations |
+| `fitAll` | `boolean` | Adds a first entry to the list, which clears the selection and fits all locations. On a select, the entry shows only while nothing is selected and all locations are fitted; otherwise no option shows, so the entry can be chosen. A map panned under the fit still shows it, and choosing it then does nothing. |
 | `fitAllLabel` | `string` | The words of the list's first entry, which clears the selection and fits all locations; default "All locations"; does nothing without `fitAll` |
 | `label` | `string` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | `string` | A visible heading above the entries |
@@ -207,7 +207,7 @@ Once a map has mounted, `attach` adds two things to its container, for a keyboar
 
 An adapter is the bridge to a map provider; the store drives it, and it reports back through its host. Writing one is for a new provider: the contract is in [RFC §3 Shape](../rfc-1.0.md#shape). Its container also holds [what `attach` adds](#on-every-map) once `mount` resolves, so an adapter leaves other nodes there alone.
 
-Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`, the same corner on a right-to-left page), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. maplacejs's own lists on the map go there the same way.
+Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`, the same corner on a right-to-left page), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. maplacejs's own lists on the map go there the same way. The element gives no adapter: [a list view of yours](element.md#list-views) puts a control on the map instead.
 
 ### Proving an adapter
 

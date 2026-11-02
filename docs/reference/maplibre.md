@@ -56,14 +56,49 @@ Your own map, a control of your own on the map and a map opened again take the p
 
 ## Your own map
 
-A map maplacejs creates is a new element filling the container (so size the container), removed on `destroy`. It opens on the world at zoom 1 and, as Google's 2D map, neither rotates nor tilts unless `mapOptions` allows it (`dragRotate` for rotation).
+Most pages don't need this. Normally you give maplacejs a container and it creates the map: a new element filling the container (so size the container), removed on `destroy`. It opens on the world at zoom 1 and, as Google's 2D map, neither rotates nor tilts unless `mapOptions` allows it (`dragRotate` for rotation). You never touch the `maplibregl.Map` behind it, so you can do only what maplacejs has options for.
 
-With `map`, maplacejs draws on your map and never moves it in the page or removes it; the store's `view` still sets its camera.
+A map of your own is a `maplibregl.Map` your code created and gave to the adapter as `map`, so maplacejs draws on it instead of creating one. You'd do this for one of two reasons:
+
+- **Your page already has a map.** You want maplacejs's markers, popups and list on it, not a second map beside it.
+- **You need something maplacejs has no option for.** You hold the map, so you can call maplibre-gl yourself: a layer or source of your own, a plugin, a map event maplacejs doesn't report. It replaces 0.2's `oMap`.
+
+To change a map setting or the style, `mapOptions` and `mapStyle` are enough, with no map of your own. Here the page makes its map, and a right-click, which maplacejs doesn't report, sets where distances are measured from:
+
+<!-- example: packages/maplace/examples/own-map/maplibre.ts -->
+```ts
+// A map of your own on MapLibre: the page makes it, and maplacejs draws on it.
+import "maplibre-gl/dist/maplibre-gl.css";
+import { createMaplace } from "maplace";
+import { createMapLibreAdapter } from "maplace/maplibre";
+import { Map as MapLibreMap } from "maplibre-gl";
+
+const map = new MapLibreMap({
+  container: "own-map",
+  style: "https://tiles.openfreemap.org/styles/bright",
+  center: [12.4964, 41.9028],
+  zoom: 5,
+});
+
+const maplace = createMaplace({
+  locations: [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+  ],
+});
+maplace.attach(createMapLibreAdapter({ map }), map.getContainer());
+
+// A map event maplacejs doesn't report: a right-click measures distances from there.
+map.on("contextmenu", ({ lngLat: { lat, lng } }) => maplace.setOrigin({ lat, lng }));
+```
+
+On the CDN script, make it with `new Maplace.maplibre.Map(…)`, the copy maplacejs draws with ([loading maplibre-gl](#loading-maplibre-gl)).
 
 - `attach`'s container must be `map.getContainer()` or hold it.
 - Unlike a map maplacejs creates, your map shows no panel when it fails: hear the `error` event.
 - `mapStyle` and `mapOptions` are refused: your map's own style and options apply.
-- `destroy` removes only what maplacejs added: its sources, layers, markers and controls.
+- The store's first view moves your map: by default it fits the locations. To keep your map where it is, give the store `view: { kind: "center", center: map.getCenter(), zoom: map.getZoom() + 1 }`: the store speaks [Google's zoom](#zoom), one higher.
+- maplacejs never moves your map in the page, and `destroy` removes only what maplacejs added: its sources, layers, markers and controls.
 
 `whenReady` waits for maplibre-gl to load and the map's style with it (and for supercluster on a map that clusters).
 

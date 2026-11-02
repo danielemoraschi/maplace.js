@@ -4,6 +4,7 @@ import type { Location, LocationState } from "../index";
 import { createMapLibreAdapter } from "../maplibre/index";
 import "../maplibre/testing/stylesheet";
 import { TEST_STYLE } from "../maplibre/testing/test-style";
+import { queried } from "../testing/queried";
 import {
   LocationList,
   MapControl,
@@ -77,6 +78,31 @@ describe("<MaplaceMap> on MapLibre", () => {
     await expect
       .poll(() => [...container.querySelectorAll(".town-icon")].map((node) => node.textContent))
       .toContain("★south");
+  });
+
+  it("stands a markerIcon's inline image on the marker's bottom, with no line of text under it", async () => {
+    const markerIcon = () => <img className="town-image" width={20} height={30} alt="" />;
+    const { container } = await renderedApp({ map: { markerIcon } });
+    await expect.poll(() => container.querySelector(".town-image"), LOAD).not.toBeNull();
+    const image = queried(container, ".town-image");
+    const marker = image.closest(".maplibregl-marker") as Element;
+    expect(marker.getBoundingClientRect().bottom - image.getBoundingClientRect().bottom).toBe(0);
+  });
+
+  it("stacks a markerIcon's several children", async () => {
+    const markerIcon = () => (
+      <>
+        <img className="town-image" width={20} height={30} alt="" />
+        <span className="town-label">Town</span>
+      </>
+    );
+    const { container } = await renderedApp({ map: { markerIcon } });
+    await expect.poll(() => container.querySelector(".town-label"), LOAD).not.toBeNull();
+    const image = queried(container, ".town-image");
+    const label = queried(container, ".town-label");
+    expect(label.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      image.getBoundingClientRect().bottom,
+    );
   });
 
   it("renders popupContent's React content in MapLibre's popup before popupOpen", async () => {

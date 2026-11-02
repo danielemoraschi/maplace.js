@@ -25,7 +25,7 @@ const MOVED_ON_TO: LatLng = { lat: 2, lng: 3 };
 /** An icon of the page's own, one node for every state. */
 function withPageIcon(): Partial<Drawable> {
   const icon = document.createElement("span");
-  icon.style.cssText = "display: block; width: 20px; height: 20px";
+  icon.style.cssText = "width: 20px; height: 20px";
   return { renderIcon: () => icon };
 }
 

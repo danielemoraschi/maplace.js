@@ -58,8 +58,8 @@ const MODULE_FILE: Readonly<Record<HostKind, string>> = {
 };
 
 // Found by glob, so an example runs by being in `examples/`. The snippets in `migrate/` declare
-// their inputs instead of having them: they are type-checked only. A MapLibre version sits in `maplibre/`
-// beside its Google twin.
+// their inputs instead of having them, and `own-map/` shows a page's own map: they are
+// type-checked only. A MapLibre version sits in `maplibre/` beside its Google twin.
 const FILES = import.meta.glob<string>(
   ["../../../examples/*/*.html", "../../../examples/*/maplibre/*.html"],
   { query: "?raw", import: "default", eager: true },

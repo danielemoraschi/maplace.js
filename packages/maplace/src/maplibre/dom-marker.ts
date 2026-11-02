@@ -99,6 +99,8 @@ export function createDomMarker(
   const select = () => selectLocation(mounted, drawable.id);
   const element = pressableElement(map.getContainer().ownerDocument, rank, select);
   markAsOwnMarker(element);
+  // A grid leaves no line of text under an inline icon: its bottom is what meets the point.
+  element.style.display = "grid";
   element.append(icon);
   setTitle(element, drawable.title);
   const marker = new maplibre.Marker({ element, anchor: "bottom", draggable });
@@ -178,8 +180,7 @@ function setTitle(element: HTMLElement, title: string | undefined): void {
 }
 
 /**
- * The default pin as an image, sized as the layer draws it, its tip at the bottom middle: a block,
- * so it sits on its point rather than on a line of text above it.
+ * The default pin as an image, sized as the layer draws it, its tip at the bottom middle.
  */
 export function createPinIcon(document: Document): HTMLElement {
   const image = document.createElement("img");
@@ -187,6 +188,5 @@ export function createPinIcon(document: Document): HTMLElement {
   image.alt = "";
   image.width = PIN_SIZE.width;
   image.height = PIN_SIZE.height;
-  image.style.display = "block";
   return image;
 }

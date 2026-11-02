@@ -140,7 +140,7 @@ export function createContentSession<Data>(settings: SessionSettings<Data>): Con
       }
       const slot = markers.get(id);
       if (slot && sameState(slot.state, state)) return slot.host;
-      const host = slot?.host ?? document.createElement("div");
+      const host = slot?.host ?? iconHost(document);
       markers.set(id, { id, host, state });
       changed();
       return stampState(host, state);
@@ -179,4 +179,11 @@ export function createContentSession<Data>(settings: SessionSettings<Data>): Con
     },
     version: () => version,
   };
+}
+
+/** A marker's host: a grid leaves no line of text under an inline icon, and stacks its children. */
+function iconHost(document: Document): HTMLElement {
+  const host = document.createElement("div");
+  host.style.display = "grid";
+  return host;
 }

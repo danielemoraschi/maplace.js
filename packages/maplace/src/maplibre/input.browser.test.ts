@@ -44,7 +44,7 @@ describe("input on MapLibre", () => {
   it("takes a click on a DOM marker for the location's, never a click on the map", async () => {
     const { adapter, probe, host } = await mountedMapLibre();
     const icon = document.createElement("span");
-    icon.style.cssText = "display: block; width: 20px; height: 20px";
+    icon.style.cssText = "width: 20px; height: 20px";
     await adapter.apply(adding(markerDrawable("a", undefined, { renderIcon: () => icon })));
     icon.click();
     await wait(DOUBLE_CLICK_WAIT_MS * 2);

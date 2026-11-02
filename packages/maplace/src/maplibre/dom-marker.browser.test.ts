@@ -47,6 +47,17 @@ describe("dragging MapLibre's markers", () => {
     expect(state.features?.pins.featureOf("a")).toBeUndefined();
   });
 
+  it("puts an inline image icon's bottom on its point, with no line of text under it", async () => {
+    const icon = document.createElement("img");
+    icon.width = 20;
+    icon.height = 30;
+    const { state, map } = await withEditableMarker({ renderIcon: () => icon });
+    expect(elementsOf(state, "a").icon).toBe(icon);
+    expect(
+      Math.abs(icon.getBoundingClientRect().bottom - pagePointOf(map, ORIGIN).y),
+    ).toBeLessThanOrEqual(1);
+  });
+
   it("puts the dragged pin's tip on its point, as the layer's pin", async () => {
     const { state, map } = await withEditableMarker();
     const { element, icon } = elementsOf(state, "a");

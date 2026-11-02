@@ -76,7 +76,7 @@ Renders a div you size and attaches a fresh adapter to it on mount, detaching on
 | `markerIcon` | `(location, state) => ReactNode`: a marker's icon as React content |
 | `children` | What goes on the map: `<MapControl>`s, `<LocationList position>`s and `<MyLocation>`, rendered beside the map's div, never in it |
 
-`popupContent` and `markerIcon` render through a portal into one host per location (an icon's host carries `data-selected` and `data-hovered`, as core icons do), with the provider's context, keeping their state. Returning nothing (`null`, `undefined`, a boolean) leaves the location's own `content` or `icon`. Whether either is given is read on mount. Content that throws is an `invalid-input` error event naming the field, and renders nothing.
+`popupContent` and `markerIcon` render through a portal into one host per location (an icon's host carries `data-selected` and `data-hovered`, as core icons do, and stacks an icon's children: for a row, wrap them in one element), with the provider's context, keeping their state. Returning nothing (`null`, `undefined`, a boolean) leaves the location's own `content` or `icon`. Whether either is given is read on mount. Content that throws is an `invalid-input` error event naming the field, and renders nothing.
 
 ## `<LocationList>`
 
@@ -87,7 +87,7 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `as` | `"list"` (a listbox, the default) or `"select"` (a native select) |
 | `groupHeadings` | Shows group headings; default `true` when any location has a `group` |
 | `groupCounts` | After each group heading, how many are listed under it now, following the filter and `scope`: "North (3)". Off by default; refused with `groupHeadings: false` |
-| `fitAll` | Adds a first entry to the list, which clears the selection and fits all locations |
+| `fitAll` | Adds a first entry to the list, which clears the selection and fits all locations. On a select it shows only while all locations are fitted ([list view options](store.md#list-view-options)). |
 | `fitAllLabel` | The words of the list's first entry, which clears the selection and fits all locations; default "All locations"; does nothing without `fitAll` |
 | `label` | The list's accessible name; default the `heading`, else "Locations" |
 | `heading` | A visible heading above the entries |

@@ -113,9 +113,11 @@ For rich content, pass a node or a function. `html` takes a string of HTML inste
 
 A marker's `icon` is one of:
 
-- an image URL;
+- an image URL, shown at the image's own size, above the point and centred on it;
 - a DOM node;
 - a function of the location and its state (`{ selected, hovered }`) returning a node, run again only for markers whose state changed.
+
+For another size, give a sized `<img>`. For another anchor, move the node with CSS: `display: block; transform: translateY(50%)` puts its centre on the point. A popup still opens from the node's place before the move.
 
 A DOM marker carries `data-selected` and `data-hovered` while in that state, so `[data-selected]` in CSS styles it. An `icon` or `content` function that throws, or returns something other than a node, is an `invalid-input` error event naming the location and the field: the map stays ready and draws the default marker, or opens no popup ([RFC §3 Errors](../rfc-1.0.md#errors)).
 

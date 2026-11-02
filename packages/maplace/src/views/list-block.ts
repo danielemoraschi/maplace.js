@@ -57,6 +57,7 @@ export function listBlock<Data>(variant: ListVariant<Data>, parts: BlockParts): 
       else if (focusWasIn && !holdsFocus(variant.element)) focusTaker.focus();
     },
     renderState: (state) => variant.renderState(state),
+    renderView: (view) => variant.renderView?.(view),
     destroy() {
       variant.destroy();
       block.remove();

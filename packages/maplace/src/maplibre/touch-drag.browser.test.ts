@@ -24,7 +24,7 @@ function newIconPerState(): Partial<Drawable> {
 
 function square(): HTMLElement {
   const icon = document.createElement("span");
-  icon.style.cssText = "display: block; width: 20px; height: 20px";
+  icon.style.cssText = "width: 20px; height: 20px";
   return icon;
 }
 

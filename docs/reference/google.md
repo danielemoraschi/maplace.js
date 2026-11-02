@@ -62,12 +62,47 @@ Your own map (`map`), a control of your own on the map (`adapter.mountControl`) 
 
 ## Your own map
 
-A map maplacejs creates is a new element filling the container (so size the container), removed on `destroy`. With `map`, maplacejs draws on your map and never moves it in the page or removes it; the store's `view` still sets its camera.
+Most pages don't need this. Normally you give maplacejs a container and it creates the map: a new element filling the container (so size the container), removed on `destroy`. You never touch the `google.maps.Map` behind it, so you can do only what maplacejs has options for.
+
+A map of your own is a `google.maps.Map` your code created and gave to the adapter as `map`, so maplacejs draws on it instead of creating one. You'd do this for one of two reasons:
+
+- **Your page already has a map.** You want maplacejs's markers, popups and list on it, not a second map beside it.
+- **You need something maplacejs has no option for.** You hold the map, so you can call Maps JS yourself: a traffic layer, a drawing library, a map event maplacejs doesn't report. It replaces 0.2's `oMap`.
+
+To change a map setting, `mapOptions` is enough, with no map of your own. Here the page makes its map, and a right-click, which maplacejs doesn't report, sets where distances are measured from:
+
+<!-- example: packages/maplace/examples/own-map/google.ts -->
+```ts
+// A map of your own on Google: the page loads Maps JS and makes it, and maplacejs draws on it.
+import { createMaplace } from "maplace";
+import { createGoogleAdapter } from "maplace/google";
+
+const { Map: GoogleMap } = await google.maps.importLibrary("maps");
+const map = new GoogleMap(document.querySelector("#own-map") as HTMLElement, {
+  mapId: "YOUR_MAP_ID",
+  center: { lat: 41.9028, lng: 12.4964 },
+  zoom: 5,
+});
+
+const maplace = createMaplace({
+  locations: [
+    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+  ],
+});
+maplace.attach(createGoogleAdapter({ map }), map.getDiv());
+
+// A map event maplacejs doesn't report: a right-click measures distances from there.
+map.addListener("contextmenu", ({ latLng }: google.maps.MapMouseEvent) => {
+  if (latLng) maplace.setOrigin(latLng.toJSON());
+});
+```
 
 - `attach`'s container must be `map.getDiv()` or hold it.
 - `mapOptions` and `colorScheme` are refused: set them on your map.
-- Your map's own map ID applies: keep `mapId` the same. Google shows no markers on a map made without one, so that is `provider-load-failed` with `field: 'mapId'`.
-- `destroy` removes only what maplacejs added.
+- Your map's own map ID applies; if you also pass `mapId`, keep it the same. Google shows no markers on a map made without one, so that is `provider-load-failed` with `field: 'mapId'`.
+- The store's first view moves your map: by default it fits the locations. To keep your map where it is, give the store `view: { kind: "center", center: map.getCenter().toJSON(), zoom: map.getZoom() }`.
+- maplacejs never moves your map in the page, and `destroy` removes only what maplacejs added.
 
 `whenReady` waits for Google to initialise the map, created or yours (at most 2 s, and not while it is hidden).
 

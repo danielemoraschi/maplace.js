@@ -65,6 +65,14 @@ describe("listBlock with a heading", () => {
     expect(renderState).toHaveBeenCalledWith(state);
   });
 
+  it("passes the view on to the list", () => {
+    const { listbox, block } = headedListbox("Shops");
+    listbox.renderView = vi.fn();
+    const view = { kind: "fit-all", padding: 40 } as const;
+    block.renderView?.(view);
+    expect(listbox.renderView).toHaveBeenCalledWith(view);
+  });
+
   it("destroys the list and takes the block off the page", () => {
     const { listbox, block } = headedListbox("Shops");
     document.body.append(block.element);

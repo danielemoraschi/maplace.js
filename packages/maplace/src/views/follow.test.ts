@@ -4,7 +4,7 @@ import { createMaplace } from "../maplace/create";
 import { CONTAINER } from "../testing/container";
 import { createFakeAdapter } from "../testing/fake-adapter";
 import { mounted } from "../testing/mounted";
-import type { Viewport } from "../viewport";
+import type { View, Viewport } from "../viewport";
 import type { AreaSwitch } from "./area-switch";
 import { follow } from "./follow";
 import { listedLocations } from "./listed-locations";
@@ -96,6 +96,17 @@ describe("follow", () => {
     variant.calls.length = 0;
     maplace.setLocations([...locations, { id: "c", lat: 2, lng: 2 }]);
     expect(variant.calls).toEqual(["structure"]);
+  });
+
+  it("tells the variant of a new view, and not of a hover", () => {
+    const maplace = createMaplace({ locations });
+    const kinds: string[] = [];
+    const variant = { ...recordingVariant(), renderView: (view: View) => kinds.push(view.kind) };
+    follow(maplace, { variant, rules });
+    maplace.hover("a");
+    expect(kinds).toEqual(["fit-all"]);
+    maplace.select("a");
+    expect(kinds).toEqual(["fit-all", "location"]);
   });
 
   it("renders nothing more once unsubscribed", () => {

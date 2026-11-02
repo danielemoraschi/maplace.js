@@ -27,8 +27,8 @@ interface OrderedListing<Data> {
 
 /**
  * Renders now, then on every change: the structure only when locations, filter, the list's
- * scope or a sorted list's origin changed, the state only when selection or hover did. With an
- * area switch, "This area" scopes the list to each new view (`scopeIn`), and a press of either button lists again. Each
+ * scope or a sorted list's origin changed, the view when it changed, the state only when selection
+ * or hover did. With an area switch, "This area" scopes the list to each new view (`scopeIn`), and a press of either button lists again. Each
  * pass reads the snapshot as it is then, because commits made during delivery are queued.
  */
 export function follow<Data>(
@@ -58,6 +58,7 @@ export function follow<Data>(
       searchBox?.show(snapshot.filter?.query, found);
       areaSwitch?.showEmptyArea(scope !== undefined && listing.length === 0 && found !== 0);
     }
+    if (snapshot.view !== shown?.view) variant.renderView?.(snapshot.view);
     if (stateChanged(shown, snapshot)) {
       variant.renderState({ selectedId: snapshot.selectedId, hoveredId: snapshot.hoveredId });
     }

@@ -74,7 +74,7 @@ maplace builds its list once its script has run, and a map with `hold` only on `
 |---|---|
 | `list` | Present: a list of the locations (empty, or `"true"`, as Svelte 5 writes a bare `list`); `list="select"`: a native select; `list="<name>"`: a [list view of yours](#list-views). Absent: no list |
 | `list-position` | `outside` (beside the map, the default; under it, within the element's height, on a screen narrower than 40rem), or a corner of the map: `top-left`, `top-right`, `bottom-left`, `bottom-right` |
-| `fit-all` | Adds a first entry to the list, which clears the selection and fits all locations. Present, empty or `"true"` is on, `"false"` off, anything else misuse, as for `search`, `my-location`, `open-in-maps-link`, `directions-link`, `cluster` and `hold` |
+| `fit-all` | Adds a first entry to the list, which clears the selection and fits all locations. On a select it shows only while all locations are fitted ([list view options](store.md#list-view-options)). Present, empty or `"true"` is on, `"false"` off, anything else misuse, as for `search`, `my-location`, `open-in-maps-link`, `directions-link`, `cluster` and `hold` |
 | `fit-all-label` | The words of the list's first entry, which clears the selection and fits all locations; "All locations" when left out; does nothing without `fit-all`; a blank one is misuse |
 | `list-heading` | A heading above the list, beside the map or on it; the list's accessible name |
 | `group-counts` | After each group heading, how many are listed under it now, following the filter and `list-scope`: "North (3)". Present, empty or `"true"` is on, `"false"` off, anything else misuse |
@@ -122,6 +122,8 @@ maplace builds its list once its script has run, and a map with `hold` only on `
 | `release` | `release()` starts loading at once an element held with `hold` or waiting with `loading="lazy"` |
 
 The store is created when the element first connects (or `maplace`, `locations` or `route` is first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
+
+With its built-in providers the element creates its own map. A page with a map of its own takes the parts instead ([on Google](google.md#your-own-map), [on MapLibre](maplibre.md#your-own-map)).
 
 No attribute sets a centre and zoom. `selected-id` on a location with a `zoom` opens the map there, at that zoom, the location selected; for a view of your own, a script calls `map.maplace.setView({ lat: 41.9, lng: 12.5 }, 6)`, before the map opens or after ([the first view](store.md#the-first-view)). A selection made later, such as a `selected-id` location arriving afterwards, moves the map to it.
 
@@ -234,6 +236,25 @@ A map waits for the document to parse its children before it opens, whether pars
 `defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAll`, `fitAllLabel`, `heading`, `groupCounts`, `scope`, `sort`, `distanceUnit`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`, `search`, `searchLabel`, `noMatchesLabel`, `matchesLabel`; a switch and its label come as written, so a view of yours that shows a fit-all entry or a search box checks `fitAll` or `search`, and brings its own words when the label is missing), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is. `listed()` stays in data order: a view with `sort` sorts itself, with [`distanceTo`](store.md#distances).
 
 A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
+
+A list view is also how the element puts a control of yours on the map, since it gives no adapter to call `mountControl` on. The view's element can be anything, and it can hold a built-in list beside your control:
+
+```js
+Maplace.defineListView("list-and-picker", (maplace, { options }) => {
+  const list = Maplace.createListView(maplace, { ...options, as: "select" });
+  const element = document.createElement("div");
+  element.append(yourControl, list.element);
+  return {
+    element,
+    destroy() {
+      list.destroy();
+      element.remove();
+    },
+  };
+});
+```
+
+Then `list="list-and-picker" list-position="top-right"` puts both in that corner. Controls in a second corner take the parts and [`mountControl`](store.md#adapters).
 
 ## Misuse
 

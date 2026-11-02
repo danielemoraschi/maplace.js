@@ -1,4 +1,5 @@
 import type { SelectionAndHover } from "../location-state";
+import type { View } from "../viewport";
 import type { ListStructure } from "./model";
 
 /** Selection and hover, as a list shows them. */
@@ -6,12 +7,14 @@ export type ListState = SelectionAndHover;
 
 /**
  * One way to show the list (`as`): a listbox or a native select. `renderStructure` follows the
- * locations and filter; `renderState` follows selection and hover, touching only what changed.
+ * locations and filter; `renderState` follows selection and hover, touching only what changed;
+ * `renderView`, for a variant that shows it, follows the store's view.
  */
 export interface ListVariant<Data = unknown> {
   readonly element: HTMLElement;
   renderStructure(structure: ListStructure<Data>): void;
   renderState(state: ListState): void;
+  renderView?(view: View): void;
   destroy(): void;
 }
 

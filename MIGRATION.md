@@ -131,7 +131,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 |---|---|
 | `map_div` | `createGoogleMap('#map', …)`'s (or `createMapLibreMap`'s) container (an element or a selector), the container passed to the store's `attach`, or `<maplace-map>` itself |
 | `controls_div`, `controls_on_map`, `controls_position` | `createGoogleMap`'s (or `createMapLibreMap`'s) `list: { position }` (a corner, default top right) or `list: { container }` (an element or a selector, as `controls_div`), element `list-position` (a corner, or `outside`), React's `<LocationList position>`; with the parts, put `listView.element` anywhere in the page or on the map with `adapter.mountControl` |
-| `generate_controls`, `force_generate_controls` | 0.2 gave a dropdown on the map, top right, whenever there was more than one location. In 1.0 a list exists only when asked for, at any number of locations: the closest is `list="select" list-position="top-right" fit-all` on the element |
+| `generate_controls`, `force_generate_controls` | 0.2 gave a dropdown on the map, top right, whenever there was more than one location. In 1.0 a list exists only when asked for, at any number of locations: the closest is `list="select" list-position="top-right" fit-all` on the element. Its first entry shows while all locations are fitted; once the map is on one location no option shows, so the entry can be chosen |
 | `controls_type` (`dropdown` \| `list`) | list view `as: 'select' \| 'list'` (`createGoogleMap`'s (or `createMapLibreMap`'s) `list: { as }`), element `list="select"` / `list`, or `list="<name>"` for a view of yours (`defineListView`) |
 | `controls_cssclass`, `controls_applycss` | your own classes; default styles use `:where()` so yours win, and `controls_applycss: false` is `data-maplace-unstyled` on an element holding the map and its list (the map then needs a height of yours, as in 0.2); the classes to style are on [Styling](docs/reference/styling.md) (on a Google or MapLibre map, the panel is `.maplace-control`) |
 | `controls_title` | list view `heading` (`createGoogleMap`'s (or `createMapLibreMap`'s) `list: { heading }`, element `list-heading`, `<LocationList heading>`), shown above the list on the map or beside it |
@@ -144,8 +144,8 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `shared` (the README calls it `commons`) | dropped: spread your defaults when mapping the data |
 | `show_markers` | `visible: false` per location; to centre a map without markers, `view: { kind: 'center', … }` |
 | `show_infowindows`, `infowindow_type` | a location opens a popup only when it has `content` (or `html`): leave it out for none; there is only one kind of popup |
-| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on MapLibre `createMapLibreAdapter({ mapOptions })`, on the element `map-options` (JSON). MapLibre refuses Google's names it has its own for, saying which. Centre and zoom go through `view` ([the first view](docs/reference/store.md#the-first-view)); `zoom` beside `start` is `selectedId` with `view: { kind: 'location', id, zoom }` |
-| `styles` | on Google, a map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)); a JSON style (a Snazzy Maps one, say) imported into a Cloud style in the Cloud console, which Google converts only approximately, then given as that style's map ID (`mapId`); on MapLibre, the map's style (`mapStyle`, the element's `map-style`), any provider's style URL |
+| `map_options` (with `set_center`, `zoom`) | `createGoogleAdapter({ mapOptions })`, on MapLibre `createMapLibreAdapter({ mapOptions })`, on the element `map-options` (JSON). MapLibre refuses Google's names it has its own for, saying which. Centre and zoom go through `view` ([the first view](docs/reference/store.md#the-first-view)); `zoom` beside `start` is `selectedId` with `view: { kind: 'location', id, zoom }`, or on the element `selected-id` with `zoom` on that `<maplace-location>`, which selecting it later also uses |
+| `styles` | on Google, a map ID and Cloud styling, plus `colorScheme` (the element's `color-scheme`) for light and dark ([RFC §3, Loading](docs/rfc-1.0.md#loading-providers-and-packaging)); a JSON style (a Snazzy Maps one, say) imported into a Cloud style in the Cloud console, which Google converts only approximately, then given as that style's map ID (`mapId`); on MapLibre, the map's style (`mapStyle`, the element's `map-style`), any provider's style URL or a MapLibre style as JSON; a Google JSON style won't work there, being another format. 0.2's several named styles, offered in Google's map type control, have no built-in switcher: on MapLibre, a `<select>` of yours sets `map-style`, and the map opens again where it was ([the styled example](packages/maplace/examples/styled/maplibre/page.html)); on Google, where the element's `map-id` isn't live, a new adapter with that style's map ID, through the parts (as [its script](packages/maplace/examples/styled/vanilla.ts) opens a new map for a colour scheme), each change a new map load, which Google bills |
 | `stroke_options`, `circle_options` | `style` option and per-location `style`; the circle's `radius` is a field |
 | `directions_options.travelMode` | `route.travelMode` |
 | `directions_options.avoidHighways`, `avoidTolls` | `route.avoid`: `["highways", "tolls"]`, and `"ferries"` too; on Google, driving routes only |
@@ -165,11 +165,11 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | (array index) | `id`, required and unique |
 | `lat` | kept; a circle's point is `center: { lat, lng }` |
 | `lon` | `lng`, no alias |
-| `title` | kept; plain text, also the marker's accessible name. A popup is now headed by it, so remove a heading in `html` that repeats it |
+| `title` | kept; plain text, also the marker's accessible name. A popup is now headed by it, so remove a heading in `html` that repeats it, or hide the popup's with `.maplace-popup-heading { display: none; }` (on Google the row with the close button stays) |
 | `html` | `content` (text, a DOM node or a function), or `html` with a `sanitize` option (on a page of script tags, `DOMPurify.sanitize` from its CDN script) |
 | `%index`, `%title` in `html` | a `content` function, which gets the location: `title`, and 0.2's 1-based `%index` as `id` if you converted as above |
 | `infoWindowMaxWidth` | `popup.maxWidth`, for all popups |
-| `icon` | kept: an image URL, a DOM node or a function of the selected/hovered state |
+| `icon` | kept: an image URL, a DOM node or a function of the selected/hovered state. Its size and anchor: [Icons](docs/reference/locations.md#icons) |
 | `image`, `image_w`, `image_h` | an `icon` node, e.g. a sized `<img>` |
 | `zoom` | kept: the zoom selecting it shows it at, a click on its marker or in the list too; `select(id, { zoom })` overrides it |
 | `show_infowindow` | `false` kept a location's info window shut: leave its `content` (and `html`) out, and a click selects it without a popup |
@@ -198,7 +198,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
 | `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
 | `ShowOnMenu(index)` | dropped: a location is in the list when it is shown and its `listed` isn't `false` |
-| `AddControl(name, menu)` | `defineListView(name, factory)` in `maplace/element`, used as `list="<name>"`; in code, `createListView(maplace, { render })` or your own view from `subscribe` and `getSnapshot` |
+| `AddControl(name, menu)` | `defineListView(name, factory)` in `maplace/element`, used as `list="<name>"`; in code, `createListView(maplace, { render })` or your own view from `subscribe` and `getSnapshot`. A control that isn't a menu goes on the map the same way: with the element, in a view of yours ([List views](docs/reference/element.md#list-views)); with the parts, `adapter.mountControl` |
 | internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
 
 ### Events
@@ -206,7 +206,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | 0.2 callback | 1.0 event | How |
 |---|---|---|
 | `beforeViewAll`, `beforeShow`, `beforeOpenInfowindow`, `beforeCloseInfowindow` | `selectionChange`, `popupOpen`, `popupClose` | dropped: they ran just before 0.2 acted and couldn't stop it; run the same code on the event that follows the change |
-| `afterShow` | `selectionChange` | `{ id }`, undefined when cleared. It doesn't fire for the selection a map starts on: read `getSnapshot().selectedId` |
+| `afterShow` | `selectionChange` | `{ id }`, undefined when cleared. It doesn't fire for the selection a map starts on: read `getSnapshot().selectedId`. The location itself is `getSnapshot().locations.find((location) => location.id === id)`, or on the element `map.locations`; to show its `html` in a panel of yours, call your `sanitize` on it yourself |
 | `afterViewAll` | `selectionChange`, `viewportChange` | the selection cleared (`id` undefined), then the view settled |
 | `afterCreateMarker` | — | dropped: an `icon` function, or CSS on `data-selected` / `data-hovered` |
 | `afterOpenInfowindow`, `afterCloseInfowindow` | `popupOpen`, `popupClose` | the content is in the DOM; `popupOpen` fires again when an open popup gets new content |
@@ -221,7 +221,14 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 - Locations are identified by `id`, not by their 1-based position.
 - Polyline, polygon and route points are no longer list entries; route stops are your own locations and stay visible.
 - Changing locations keeps the map where it is; call `fitAll()` to fit them again. A selected id still there stays selected, so with ids from positions it may now be another place: call `select(undefined)` first.
-- Clicking the map clears the selection, and so does closing a popup, with the default `openOn: 'click'`.
+- Clicking the map clears the selection, and so does closing a popup, with the default `openOn: 'click'`. 0.2 kept the selection on a map click, and 1.0 has no option for it. To keep it, select it again on `mapClick`: the popup closes and opens again, `selectionChange` fires twice, and the popup's close button still closes it. A panel of yours needs none of this: it can keep what it shows by ignoring `selectionChange` with no `id`.
+
+  ```js
+  let kept;
+  maplace.on("selectionChange", ({ id }) => { kept = id; });
+  maplace.on("mapClick", () => { if (kept) maplace.select(kept, { pan: false }); });
+  ```
+
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
 - No jQuery, and `Maplace` is no longer a constructor: one CDN script sets it as a namespace of functions, or you import ES modules. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap), and the MapLibre script bundles MapLibre; in code, the page loads Maps JS or gives the adapter `apiKey`; from npm it installs maplibre-gl, which the MapLibre script bundles.
 - The menu's inline styles are replaced by a stylesheet you can override.
