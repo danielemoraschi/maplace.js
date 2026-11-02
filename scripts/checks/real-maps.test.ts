@@ -22,6 +22,7 @@ describe("needsRealMaps", () => {
       needsRealMaps([
         "docs/MODERNIZE.md",
         "README.md",
+        ".github/ISSUE_TEMPLATE/bug-report.yml",
         "packages/maplace/examples/custom-list/guide.md",
         "packages/maplace/src/maplibre/layers.ts",
         "packages/maplace/src/element/maplibre.ts",

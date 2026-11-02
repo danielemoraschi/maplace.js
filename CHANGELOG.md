@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-01 Added contributing rules, a security policy, a code of conduct, and forms for bug reports and feature requests
 - 2026-11-01 Changed the examples' group links to say "Lists, 7 examples" to a screen reader, with a pause before the number
 - 2026-11-01 Added an accessibility statement to the site: what maplacejs does for a keyboard and a screen reader, what was tested and on what, and what wasn't
 - 2026-11-01 Fixed a selection made in a list with focus going unannounced: VoiceOver gave no word of it, so the map's live region now says it there too; a native select, which a screen reader speaks, stays quiet

@@ -1,0 +1,46 @@
+name: Feature request
+description: Something maplacejs could do for a page, and doesn't
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        maplacejs stays small on purpose. Please read its
+        [non-goals](https://github.com/danielemoraschi/maplace.js/blob/HEAD/docs/rfc-1.0.md#non-goals-for-10) first:
+        each gives its reason.
+
+  - type: checkboxes
+    attributes:
+      label: Search first
+      options:
+        - label: I searched the [issues](https://github.com/danielemoraschi/maplace.js/issues?q=is%3Aissue) and found no request for this.
+          required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What your page needs
+      description: The visitor's or the author's problem, rather than the option that would solve it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do today
+      description: How you get by without it, and what that costs you.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you'd suggest
+      description: Optional. How it might look in a page or in code.
+
+  - type: checkboxes
+    attributes:
+      label: Building it
+      description: Not required. Please wait for a yes on the issue before starting.
+      options:
+        - label: I'd like to send a pull request for this.

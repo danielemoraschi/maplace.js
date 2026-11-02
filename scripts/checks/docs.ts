@@ -5,6 +5,9 @@ import { exampleGuideFiles } from "../docs/example-guides.ts";
 export const DOCS = [
   "README.md",
   "MIGRATION.md",
+  "CONTRIBUTING.md",
+  "SECURITY.md",
+  "CODE_OF_CONDUCT.md",
   CHANGELOG_FILE,
   "docs/rfc-1.0.md",
   "docs/MODERNIZE.md",

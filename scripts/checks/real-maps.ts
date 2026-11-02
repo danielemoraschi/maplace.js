@@ -15,7 +15,7 @@ export function needsRealMaps(changedPaths: readonly string[] | undefined): bool
   return changedPaths.some((path) => !isProse(path) && !MAPLIBRE_ONLY.test(path));
 }
 
-/** Prose, which no test runs: the docs, the tracker, an example's guide, the package's own docs. */
+/** Prose, which no test runs: the docs, the tracker, an example's guide, the package's own docs, the issue forms. */
 function isProse(path: string): boolean {
-  return path.endsWith(".md");
+  return path.endsWith(".md") || path.startsWith(".github/ISSUE_TEMPLATE/");
 }

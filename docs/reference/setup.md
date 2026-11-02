@@ -56,7 +56,7 @@ It bundles maplibre-gl, its worker and its stylesheet, clustering included; `map
 
 ## With a script of your own
 
-A page that makes its map in its own script, as 0.2's did, uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`maplace`, the provider's and `maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, maplacejs adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
+A page that makes its map in its own script uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`maplace`, the provider's and `maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, maplacejs adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
 
 <!-- example: packages/maplace/examples/simple/script.html -->
 ```html

@@ -419,7 +419,7 @@ All are answered in 1.0 unless marked.
 | 78 | issue | out of scope | One route per map (§1 Non-goals) |
 | 79 | issue | fixed by 1.0 | View re-applied when the container is shown or resized (§3 Decisions) |
 | 101 | issue | fixed by 1.0 | Marker content is a DOM node, so it can hold labels (§3 Shape) |
-| 103 | issue | out of scope | Data layers are not a 1.0 feature |
+| 103 | issue | fixed by 1.0 | A menu of places, and `locationsFromGeoJSON` for their data; overlay layers stay on your own map (§1 Non-goals) |
 | 108 | issue | out of scope | Framework integration question, no product signal |
 | 109 | issue | fixed by 1.0 | Views control centring (§3 Shape) |
 | 117 | issue | fixed by 1.0 | `group` and `setFilter` (§3 Decisions) |

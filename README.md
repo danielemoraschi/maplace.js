@@ -2,7 +2,7 @@
 
 A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it and opens it.
 
-maplacejs is a rewrite: no jQuery, one store per map, with adapters for Google Maps and MapLibre, a list view and a `<maplace-map>` element. Coming from 0.2? See [MIGRATION.md](MIGRATION.md).
+It runs on Google Maps or MapLibre, as a `<maplace-map>` element, from your own script or in React.
 
 ## Quick start
 
@@ -89,7 +89,7 @@ curl -s https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js 
 
 ## From your own script
 
-A page that makes its map in its own script, as 0.2's did, needs no build step either: the CDN script's `Maplace` holds what the npm entries export. Given `apiKey`, maplacejs adds Maps JS itself, as the element does from `api-key`:
+A page that makes its map in its own script needs no build step either: the CDN script's `Maplace` holds what the npm entries export. Given `apiKey`, maplacejs adds Maps JS itself, as the element does from `api-key`:
 
 <!-- example: packages/maplace/examples/simple/script.html -->
 ```html
@@ -274,8 +274,7 @@ export function CityMap() {
 - [Examples](packages/maplace/examples/): twenty-three scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
-
-The 0.2 README and code stay in the tag [`0.2.10`](https://github.com/danielemoraschi/maplace.js/tree/0.2.10).
+- [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 

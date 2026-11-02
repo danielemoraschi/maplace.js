@@ -1,0 +1,84 @@
+name: Bug report
+description: Something in maplacejs doesn't work as its docs say
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Please leave your Maps API key out of anything you paste here.
+
+  - type: checkboxes
+    attributes:
+      label: Search first
+      options:
+        - label: I searched the [issues](https://github.com/danielemoraschi/maplace.js/issues?q=is%3Aissue) and found no report of this.
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: maplacejs version
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Map provider
+      options:
+        - Google
+        - MapLibre
+        - Both
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: setup
+    attributes:
+      label: How the page uses it
+      options:
+        - CDN script
+        - "<maplace-map> element"
+        - JavaScript or TypeScript, from npm
+        - React
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and system
+      placeholder: Safari 27 on macOS
+    validations:
+      required: true
+
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: Any error in the console too, with its code if it has one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: A way to see it
+      description: A link to a page, or the shortest code that shows it, with the steps to follow.
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: A fix
+      description: Not required. It helps to know, and help is on offer if you'd like it.
+      options:
+        - label: I'd like to send a pull request for this.
