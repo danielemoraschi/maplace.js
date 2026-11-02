@@ -7,26 +7,26 @@
   });
 </script>
 <style>
-  #mixed-vanilla-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
-  #mixed-vanilla-map-and-list { display: flex; height: 24rem; }
-  #mixed-vanilla-map { flex: 1 1 auto; min-width: 0; }
-  #mixed-vanilla-list { display: contents; }
-  #mixed-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
+  #live-data-vanilla-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
+  #live-data-vanilla-map-and-list { display: flex; height: 24rem; }
+  #live-data-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #live-data-vanilla-list { display: contents; }
+  #live-data-vanilla-list [role="listbox"] { flex: 0 1 16rem; }
   /* On a phone the list goes under the map, as the element's does. */
   @media (width < 40rem) {
-    #mixed-vanilla-map-and-list { flex-direction: column; }
-    #mixed-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
+    #live-data-vanilla-map-and-list { flex-direction: column; }
+    #live-data-vanilla-list [role="listbox"] { flex: none; max-height: 40%; }
   }
 </style>
-<p id="mixed-vanilla-groups">
+<p id="live-data-vanilla-groups">
   <button type="button" value="a">Markers</button>
   <button type="button" value="b">More markers</button>
   <button type="button" value="c">Route</button>
   <button type="button" value="d">Area</button>
   <button type="button" value="e">Circle</button>
 </p>
-<div id="mixed-vanilla-map-and-list">
-  <div id="mixed-vanilla-map"></div>
-  <div id="mixed-vanilla-list"></div>
+<div id="live-data-vanilla-map-and-list">
+  <div id="live-data-vanilla-map"></div>
+  <div id="live-data-vanilla-list"></div>
 </div>
 <script type="module" src="./vanilla.ts"></script>

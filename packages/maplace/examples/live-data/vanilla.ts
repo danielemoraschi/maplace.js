@@ -1,13 +1,13 @@
 import type { Location } from "maplace";
 import { createGoogleMap } from "maplace/google";
 
-const maplace = createGoogleMap("#mixed-vanilla-map", {
-  list: { container: "#mixed-vanilla-list" },
+const maplace = createGoogleMap("#live-data-vanilla-map", {
+  list: { container: "#live-data-vanilla-list" },
 });
 
 let latestGroup: string | undefined;
 
-const buttons = document.querySelectorAll<HTMLButtonElement>("#mixed-vanilla-groups button");
+const buttons = document.querySelectorAll<HTMLButtonElement>("#live-data-vanilla-groups button");
 for (const button of buttons) {
   button.addEventListener("click", () => showGroup(button.value));
 }
@@ -21,7 +21,7 @@ async function showGroup(letter: string): Promise<void> {
   latestGroup = letter;
   for (const button of buttons)
     button.setAttribute("aria-pressed", String(button.value === letter));
-  const response = await fetch(`/mixed-${letter}.json`);
+  const response = await fetch(`/live-data-${letter}.json`);
   const locations: Location[] = await response.json();
   if (letter !== latestGroup) return;
   maplace.setLocations(locations);

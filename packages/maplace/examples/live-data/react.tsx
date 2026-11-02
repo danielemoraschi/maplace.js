@@ -1,19 +1,25 @@
-import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
+import type { Location, Route } from "maplace";
+import { createGoogleAdapter } from "maplace/google";
 import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
 import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-/** Each data set's button, by its file's letter: `/mixed-a.json` is the markers. */
-const GROUPS = { a: "Markers", b: "More markers", d: "Area", e: "Circle" };
+/** Each data set's button, by its file's letter: `/live-data-a.json` is the markers. */
+const GROUPS = { a: "Markers", b: "More markers", c: "Route", d: "Area", e: "Circle" };
 
-const NO_LOCATIONS: readonly Location[] = [];
+/** A data set shown, the route's (c) with a route through it. */
+interface Shown {
+  readonly locations: readonly Location[];
+  readonly route: Route | undefined;
+}
 
-/** A data set: on MapLibre, which has no routing, there is no route's set (c). */
-async function fetchGroup(letter: string): Promise<Location[]> {
-  const response = await fetch(`/mixed-${letter}.json`);
-  return response.json();
+const NOTHING: Shown = { locations: [], route: undefined };
+
+async function fetchGroup(letter: string): Promise<Shown> {
+  const response = await fetch(`/live-data-${letter}.json`);
+  const locations: Location[] = await response.json();
+  const stops = locations.map(({ id }) => id);
+  return { locations, route: letter === "c" ? { stops, travelMode: "driving" } : undefined };
 }
 
 /** Fits the map to every location each time a data set is swapped in. */
@@ -25,19 +31,19 @@ function FitAllOnSwap({ locations }: { readonly locations: readonly Location[] }
   return null;
 }
 
-function Mixed() {
+function LiveData() {
   const [group, setGroup] = useState("a");
-  const [locations, setLocations] = useState(NO_LOCATIONS);
+  const [shown, setShown] = useState(NOTHING);
   // Only the group last asked for: a slower answer to an earlier click is dropped.
   useEffect(() => {
     let latest = true;
-    fetchGroup(group).then((fetched) => latest && setLocations(fetched));
+    fetchGroup(group).then((fetched) => latest && setShown(fetched));
     return () => {
       latest = false;
     };
   }, [group]);
   return (
-    <MaplaceProvider locations={locations}>
+    <MaplaceProvider locations={shown.locations} route={shown.route}>
       <p>
         {/* A space after each button, as between buttons written in HTML. */}
         {Object.entries(GROUPS).map(([letter, label]) => (
@@ -48,17 +54,17 @@ function Mixed() {
           </Fragment>
         ))}
       </p>
-      <FitAllOnSwap locations={locations} />
+      <FitAllOnSwap locations={shown.locations} />
       <div className="map-and-list">
-        <MaplaceMap createAdapter={createMapLibreAdapter} className="map" />
+        <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
         <LocationList />
       </div>
     </MaplaceProvider>
   );
 }
 
-createRoot(document.getElementById("mixed-maplibre-react-root") as HTMLElement).render(
+createRoot(document.getElementById("live-data-react-root") as HTMLElement).render(
   <StrictMode>
-    <Mixed />
+    <LiveData />
   </StrictMode>,
 );

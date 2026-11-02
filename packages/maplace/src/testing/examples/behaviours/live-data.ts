@@ -13,7 +13,7 @@ const pressed = (root: Element) => buttonTexts(root, 'button[aria-pressed="true"
 
 const ids = (store: Maplace) => store.getSnapshot().locations.map(({ id }) => id);
 
-export const mixed: ExampleBehaviour = async (run) => {
+export const liveData: ExampleBehaviour = async (run) => {
   await expectStartsOnMarkers(run, ["Markers", "More markers", "Route", "Area", "Circle"]);
   await expectRouteSetShown(run);
   await expectRouteDrawn(run);
@@ -21,7 +21,7 @@ export const mixed: ExampleBehaviour = async (run) => {
 };
 
 /** On MapLibre, which has no routing: no route to show, so no button for it. */
-export const mixedWithoutRoute: ExampleBehaviour = async (run) => {
+export const liveDataWithoutRoute: ExampleBehaviour = async (run) => {
   await expectStartsOnMarkers(run, ["Markers", "More markers", "Area", "Circle"]);
   await expectAreaFitted(run);
 };

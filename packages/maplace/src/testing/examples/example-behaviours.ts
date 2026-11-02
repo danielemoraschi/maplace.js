@@ -4,10 +4,10 @@ import { clickToAdd } from "./behaviours/click-to-add";
 import { cssMarkers } from "./behaviours/css-markers";
 import { customList } from "./behaviours/custom-list";
 import { linkToPlace } from "./behaviours/link-to-place";
+import { liveData, liveDataWithoutRoute } from "./behaviours/live-data";
 import { loadOnDemand } from "./behaviours/load-on-demand";
 import { markers } from "./behaviours/markers";
 import { menu } from "./behaviours/menu";
-import { mixed, mixedWithoutRoute } from "./behaviours/mixed";
 import { nearest } from "./behaviours/nearest";
 import { polygon } from "./behaviours/polygon";
 import { polyline } from "./behaviours/polyline";
@@ -39,7 +39,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   polyline,
   route,
   polygon,
-  mixed,
+  "live-data": liveData,
   "load-on-demand": loadOnDemand,
   "link-to-place": linkToPlace,
   "custom-list": customList,
@@ -49,12 +49,12 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
 };
 
 /**
- * Where a provider's version does otherwise: on MapLibre, mixed has no route, nor a button for
+ * Where a provider's version does otherwise: on MapLibre, live-data has no route, nor a button for
  * one; styled offers each provider's own looks.
  */
 const ON_PROVIDER: Readonly<Record<Provider, Readonly<Record<string, ExampleBehaviour>>>> = {
   google: { styled: styledOnGoogle },
-  maplibre: { mixed: mixedWithoutRoute, styled: styledOnMapLibre },
+  maplibre: { "live-data": liveDataWithoutRoute, styled: styledOnMapLibre },
 };
 
 /** What `example`'s version on `provider` does beyond drawing its locations, if anything. */

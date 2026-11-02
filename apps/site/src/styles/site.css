@@ -1,7 +1,7 @@
 /*
  * The site's styles (D26). Tailwind's theme and utilities, without its preflight: preflight would
  * strip the browser's defaults from every node, an example's own included (route's numbered list,
- * mixed's buttons), and the site shows an example as the page a reader copies does.
+ * live-data's buttons), and the site shows an example as the page a reader copies does.
  */
 @layer theme, base, components, utilities;
 

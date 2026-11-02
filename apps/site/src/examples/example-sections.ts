@@ -126,8 +126,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       "Data swapped in live with maplacejs, thousands of points clustered, a drive, a map loaded on a press, and a link to a place.",
     sections: [
       {
-        name: "mixed",
-        title: "Mixed",
+        name: "live-data",
+        title: "Live data",
         summary:
           "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
       },

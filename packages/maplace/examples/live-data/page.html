@@ -3,26 +3,26 @@
 <!-- Five data sets, each fetched by the page and swapped in live: markers, markers with a route
      through them, an area and a circle; leaving the route's set takes its route with it. -->
 <style>
-  #mixed-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
+  #live-data-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
 </style>
-<p id="mixed-groups">
+<p id="live-data-groups">
   <button type="button" value="a">Markers</button>
   <button type="button" value="b">More markers</button>
   <button type="button" value="c">Route</button>
   <button type="button" value="d">Area</button>
   <button type="button" value="e">Circle</button>
 </p>
-<maplace-map id="mixed-map" api-key="YOUR_KEY" list></maplace-map>
+<maplace-map id="live-data-map" api-key="YOUR_KEY" list></maplace-map>
 <script type="module">
-  const map = document.getElementById('mixed-map');
-  const buttons = document.querySelectorAll('#mixed-groups button');
+  const map = document.getElementById('live-data-map');
+  const buttons = document.querySelectorAll('#live-data-groups button');
   let latestGroup;
 
   /** Swaps in the group last asked for: a slower answer to an earlier click is dropped. */
   async function showGroup(letter) {
     latestGroup = letter;
     for (const button of buttons) button.setAttribute('aria-pressed', String(button.value === letter));
-    const response = await fetch(`/mixed-${letter}.json`);
+    const response = await fetch(`/live-data-${letter}.json`);
     const locations = await response.json();
     if (letter !== latestGroup) return;
     map.locations = locations;

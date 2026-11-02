@@ -17,13 +17,13 @@ interface LegacyGroup {
   readonly locations: readonly LegacyLocation[];
 }
 
-/** One of the `mixed` example's data sets: 0.2's group of that letter. */
+/** One of the `live-data` example's data sets: 0.2's group of that letter. */
 export interface MixedGroup {
   readonly letter: string;
   readonly locations: readonly Location[];
 }
 
-/** The groups the `mixed` example swaps between, as 0.2's demo did, by letter: each one's kind. */
+/** The groups the `live-data` example swaps between, as 0.2's demo did, by letter: each one's kind. */
 const MIXED_GROUPS: Readonly<Record<string, string>> = {
   a: "Markers",
   b: "More markers",
@@ -39,7 +39,7 @@ const ECHOED_GROUP = /echo '(\{[^']+\})';/g;
 const LEGACY_POINT = /\{lat:(-?[\d.]+),lon:(-?[\d.]+)\}/g;
 
 /**
- * The `mixed` example's data sets, from 0.2's `website/data/ajax.php`: groups A and B as
+ * The `live-data` example's data sets, from 0.2's `website/data/ajax.php`: groups A and B as
  * markers, C's directions as markers (the example routes through them), D's points as one
  * polygon and E as a circle, each group named by its kind (`MIXED_GROUPS`). `html` becomes
  * plain-text `content` (the page has no sanitizer), none where `show_infowindow` is false; `lon`

@@ -5,11 +5,11 @@ describe("exampleData", () => {
   it("is each data file the example pages fetch, by the name in its path", () => {
     const files = exampleData();
     expect(files.map(({ name }) => name).sort()).toEqual([
-      "mixed-a",
-      "mixed-b",
-      "mixed-c",
-      "mixed-d",
-      "mixed-e",
+      "live-data-a",
+      "live-data-b",
+      "live-data-c",
+      "live-data-d",
+      "live-data-e",
       "points-4k",
     ]);
     const points = files.find(({ name }) => name === "points-4k");

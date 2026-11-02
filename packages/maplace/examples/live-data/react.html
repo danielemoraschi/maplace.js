@@ -7,15 +7,15 @@
   });
 </script>
 <style>
-  #mixed-react-root [aria-pressed="true"] { background: CanvasText; color: Canvas; }
-  #mixed-react-root .map-and-list { display: flex; height: 24rem; }
-  #mixed-react-root .map { flex: 1 1 auto; min-width: 0; }
-  #mixed-react-root [role="listbox"] { flex: 0 1 16rem; }
+  #live-data-react-root [aria-pressed="true"] { background: CanvasText; color: Canvas; }
+  #live-data-react-root .map-and-list { display: flex; height: 24rem; }
+  #live-data-react-root .map { flex: 1 1 auto; min-width: 0; }
+  #live-data-react-root [role="listbox"] { flex: 0 1 16rem; }
   /* On a phone the list goes under the map, as the element's does. */
   @media (width < 40rem) {
-    #mixed-react-root .map-and-list { flex-direction: column; }
-    #mixed-react-root [role="listbox"] { flex: none; max-height: 40%; }
+    #live-data-react-root .map-and-list { flex-direction: column; }
+    #live-data-react-root [role="listbox"] { flex: none; max-height: 40%; }
   }
 </style>
-<div id="mixed-react-root"></div>
+<div id="live-data-react-root"></div>
 <script type="module" src="./react.tsx"></script>

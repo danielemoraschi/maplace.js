@@ -45,7 +45,7 @@ export function exampleIcons(): readonly ExampleIcon[] {
   }));
 }
 
-/** `…/data/mixed-a.json` → `mixed-a`. */
+/** `…/data/live-data-a.json` → `live-data-a`. */
 function fileNameOf(path: string, extension: string): string {
   return path.slice(path.lastIndexOf("/") + 1, -extension.length);
 }

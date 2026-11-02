@@ -61,7 +61,7 @@ describe("EXAMPLE_GROUPS", () => {
       [
         "data-routes",
         "Data & routes",
-        ["mixed", "big", "route", "load-on-demand", "link-to-place"],
+        ["live-data", "big", "route", "load-on-demand", "link-to-place"],
       ],
       ["styling", "Styling", ["styled", "css-markers", "brand", "unstyled"]],
     ]);

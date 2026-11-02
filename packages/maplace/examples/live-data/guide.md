@@ -1,4 +1,4 @@
-# Mixed
+# Live data
 
 Data sets your page fetches and swaps in while the map stays: markers, an area, a circle, and on Google a route through some of them. The map's element never fetches anything itself.
 

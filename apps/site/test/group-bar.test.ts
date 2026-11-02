@@ -89,13 +89,13 @@ describe("the examples' bar and its provider toggle (W38)", () => {
     it(`is held right under the header, drawn over a map scrolled under it, at ${viewport.width} px`, async () => {
       const { page, context } = await opened(site, "/examples/data-routes/", viewport);
       const header = await boxOf(page.locator("header"));
-      for (const name of ["mixed", "route"]) {
+      for (const name of ["live-data", "route"]) {
         await scrollTo(page, name);
         const bar = await boxOf(groupBar(page));
         expect(Math.round(bar.y)).toBe(Math.round(header.y + header.height));
       }
       await page
-        .locator("section#mixed .map-frame")
+        .locator("section#live-data .map-frame")
         .evaluate((frame) => scrollBy(0, frame.getBoundingClientRect().top - 40));
       const toggle = providerToggle(page);
       const under = await toggle.evaluate((element) => {
