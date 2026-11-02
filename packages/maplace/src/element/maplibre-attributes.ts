@@ -1,6 +1,7 @@
 import type { MapOptions } from "maplibre-gl";
 import type { MapLibreAdapterOptions } from "../maplibre/index";
 import { child, mustBe, root } from "../validate/fail";
+import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import type { Assert } from "../validate/record";
 import { refusedKeysCheck } from "../validate/refused-keys";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
@@ -18,13 +19,14 @@ type MapLibreMapOptionsAttribute = NonNullable<MapLibreAdapterOptions["mapOption
 /** MapLibre's map options maplace sets itself, which `map-options` therefore leaves out. */
 type SetByMaplace = Exclude<keyof MapOptions, keyof MapLibreMapOptionsAttribute>;
 
-/** Why `map-options` refuses each key maplace sets itself. */
+/** Why `map-options` refuses each key maplace sets itself, and Google's names for MapLibre's. */
 export const REFUSED_IN_MAP_OPTIONS = {
   container: "is the map's own element, which maplace makes",
   style: "is its own attribute: map-style",
   center: "is set by the store's view",
   zoom: "is set by the store's view",
   bounds: "is set by the store's view",
+  ...GOOGLE_NAMES_ON_MAPLIBRE,
 } as const satisfies Record<SetByMaplace, string>;
 
 const ELEMENT = root("<maplace-map>");

@@ -1,5 +1,6 @@
 import type { Map as MapLibreMap, MapOptions, StyleSpecification } from "maplibre-gl";
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
+import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import { type Assert, recordOf } from "../validate/record";
 import { refusedKeysCheck } from "../validate/refused-keys";
 import { checkNonEmptyString, isElement, optional } from "../validate/values";
@@ -37,9 +38,9 @@ const SET_BY_MAPLACE: Readonly<Record<SetElsewhere, string>> = {
   bounds: "is set by the store's view",
 };
 
-/** Checks map options for a map maplace creates: an object, none of `SetElsewhere`. */
+/** Checks map options for a map maplace creates: an object, none of `SetElsewhere`, nor Google's. */
 const checkCreatedMapOptions: Assert<CreatedMapOptions> = refusedKeysCheck(
-  SET_BY_MAPLACE,
+  { ...SET_BY_MAPLACE, ...GOOGLE_NAMES_ON_MAPLIBRE },
   "an object",
 );
 
