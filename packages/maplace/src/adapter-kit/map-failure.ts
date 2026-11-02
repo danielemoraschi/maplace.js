@@ -18,7 +18,8 @@ export interface MapFailureNotice {
  * The look of the words. No vertical margin: one would collapse through the holder of no height
  * and move the map, or the whole container.
  */
-const FAILURE_STYLES = `${outsideUnstyled(`.${MAP_FAILURE_CLASS}>*`)}{display:block;position:relative;top:.5rem;width:fit-content;max-width:calc(100% - 1rem);margin-inline:auto;padding:.5rem .75rem;border:1px solid;border-radius:.375rem;background:Canvas;color:CanvasText;font-size:.875rem}`;
+const FAILURE_WORDS = `.${MAP_FAILURE_CLASS}>*`;
+const FAILURE_STYLES = `${outsideUnstyled(FAILURE_WORDS)}{display:block;position:relative;top:.5rem;width:fit-content;max-width:calc(100% - 1rem);margin-inline:auto;padding:.5rem .75rem;border:1px solid;border-radius:.375rem;background:Canvas;color:CanvasText;font-size:.875rem}`;
 
 /** A notice for a map the adapter creates. */
 export function createMapFailureNotice(): MapFailureNotice {

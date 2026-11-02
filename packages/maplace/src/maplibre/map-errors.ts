@@ -20,7 +20,7 @@ const REFUSED = new Set([401, 403]);
  * MapLibre's words for its worker failing, which a map whose dispatcher hears it before maplace's
  * watch (a page's own, made first) fires like any error. Pinned by `maplibre-on-file.test.ts`.
  */
-const WORKER_FAILED = /^Worker failed to load/;
+const WORKER_FAILED = "Worker failed to load";
 
 /**
  * Routes every error the map fires until the returned function stops it. MapLibre logs an error
@@ -48,7 +48,7 @@ export function routeMapErrors(map: MapLibreMap, routes: ErrorRoutes): () => voi
 
 /** A page or plugin may fire an `error` carrying no error. */
 function isWorkerFailure(error: ErrorEvent["error"] | null | undefined): boolean {
-  return WORKER_FAILED.test(error?.message ?? "");
+  return (error?.message ?? "").startsWith(WORKER_FAILED);
 }
 
 /** Whether anything besides `own` listens to the map's errors: the page, on its own map. */
