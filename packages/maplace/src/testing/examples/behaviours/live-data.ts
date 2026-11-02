@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import type { Maplace } from "../../../index";
 import type { FakeAdapter } from "../../fake-adapter";
 import type { ExampleRun } from "../example-runs";
-import { type BoundsView, clickButton, type ExampleBehaviour } from "./reading";
+import { clickButton, type ExampleBehaviour, lastFit } from "./reading";
 
 /** The text of the buttons `selector` finds in `root`. */
 const buttonTexts = (root: Element, selector: string) =>
@@ -58,9 +58,4 @@ async function expectAreaFitted({ store, adapter, root }: ExampleRun): Promise<v
 async function routedLegs(store: Maplace, adapter: FakeAdapter): Promise<number | undefined> {
   await adapter.probe().settle();
   return store.getSnapshot().routeResult?.legs.length;
-}
-
-function lastFit(adapter: FakeAdapter): BoundsView | undefined {
-  const view = adapter.callsOf("setView").at(-1)?.view;
-  return view?.kind === "fit-bounds" ? view : undefined;
 }

@@ -8,6 +8,7 @@ import { liveData, liveDataWithoutRoute } from "./behaviours/live-data";
 import { loadOnDemand } from "./behaviours/load-on-demand";
 import { markers } from "./behaviours/markers";
 import { menu } from "./behaviours/menu";
+import { mixed } from "./behaviours/mixed";
 import { nearest } from "./behaviours/nearest";
 import { polygon } from "./behaviours/polygon";
 import { polyline } from "./behaviours/polyline";
@@ -39,6 +40,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   polyline,
   route,
   polygon,
+  mixed,
   "live-data": liveData,
   "load-on-demand": loadOnDemand,
   "link-to-place": linkToPlace,

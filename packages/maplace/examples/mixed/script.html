@@ -1,0 +1,58 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #mixed-script-map-and-list { display: flex; height: 24rem; }
+  #mixed-script-map { flex: 1 1 auto; min-width: 0; }
+  #mixed-script-list { display: contents; }
+  #mixed-script-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #mixed-script-map-and-list { flex-direction: column; }
+    #mixed-script-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+</style>
+<div id="mixed-script-map-and-list">
+  <div id="mixed-script-map"></div>
+  <div id="mixed-script-list"></div>
+</div>
+<script type="module">
+  const locations = [
+    { id: "colosseum", type: "marker", title: "Colosseum", lat: 41.8902, lng: 12.4922 },
+    {
+      id: "trastevere",
+      type: "circle",
+      title: "Trastevere",
+      center: { lat: 41.8867, lng: 12.47 },
+      radius: 500,
+    },
+    {
+      id: "villa-borghese",
+      type: "polygon",
+      title: "Villa Borghese",
+      path: [
+        { lat: 41.9175, lng: 12.479 },
+        { lat: 41.916, lng: 12.4885 },
+        { lat: 41.909, lng: 12.488 },
+        { lat: 41.9085, lng: 12.48 },
+      ],
+    },
+    {
+      id: "tiber",
+      type: "polyline",
+      title: "Along the Tiber",
+      path: [
+        { lat: 41.9117, lng: 12.4729 },
+        { lat: 41.9014, lng: 12.4664 },
+        { lat: 41.8964, lng: 12.466 },
+        { lat: 41.8925, lng: 12.4709 },
+        { lat: 41.8906, lng: 12.4775 },
+      ],
+    },
+  ];
+  Maplace.createGoogleMap("#mixed-script-map", {
+    apiKey: "YOUR_KEY",
+    locations,
+    list: { container: "#mixed-script-list" },
+  });
+</script>

@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-02 Added a Mixed example: a marker, a circle, a polygon and a polyline on one map and in one list
 - 2026-11-02 Changed the name of the example that swaps data sets, from Mixed to Live data, and of its data files
 - 2026-11-02 Fixed the snippet builder's CSV: a title column beats name in either order, row by row, as in JSON, and the sample says title
 - 2026-11-02 Fixed the snippet builder on a 0.2 config: its notes hold on either provider and point callbacks to their events, the preview selects what the snippet's selected-id does, one location gets no fit-all, and a config in parentheses is read

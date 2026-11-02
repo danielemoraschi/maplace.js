@@ -125,7 +125,7 @@ Ranked by impact. The first ones deepen the core job, a list of your places sync
 
 ## 2. Use cases
 
-Twenty-three scenarios, each written four ways against the API: an HTML page using `<maplace-map>`, a page of your own script on the CDN script's `Maplace` (`script.html`, W33), vanilla TypeScript, and React. They live in [`packages/maplace/examples/`](../packages/maplace/examples/); CI type-checks them and runs every version on a fake map, Google's on Google Maps too. Each vanilla version opens with `createGoogleMap` (custom-list and styled, which need the adapter, with the parts it composes); each vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`: Maps JS from Google's bootstrap loader), the same map as its page, which a test holds them to. Each script version is its vanilla version as one page: the CDN script, the HTML it mounts on, and the program in an inline module calling `Maplace` where the vanilla one imports, on Google with `apiKey` in place of the bootstrap loader.
+Twenty-four scenarios, each written four ways against the API: an HTML page using `<maplace-map>`, a page of your own script on the CDN script's `Maplace` (`script.html`, W33), vanilla TypeScript, and React. They live in [`packages/maplace/examples/`](../packages/maplace/examples/); CI type-checks them and runs every version on a fake map, Google's on Google Maps too. Each vanilla version opens with `createGoogleMap` (custom-list and styled, which need the adapter, with the parts it composes); each vanilla and React version is a complete program with the HTML it mounts on (`vanilla.html`, `react.html`: Maps JS from Google's bootstrap loader), the same map as its page, which a test holds them to. Each script version is its vanilla version as one page: the CDN script, the HTML it mounts on, and the program in an inline module calling `Maplace` where the vanilla one imports, on Google with `apiKey` in place of the bootstrap loader.
 
 Every scenario but `route` is written for MapLibre too, in a `maplibre/` folder beside it (MapLibre has no routing): `page.html` on the MapLibre CDN script, with no key, on OpenFreeMap's style; `vanilla.ts` on `createMapLibreMap` (custom-list and styled, as on Google, with the parts) and `react.tsx` on `createMapLibreAdapter`, each importing maplibre-gl's stylesheet, with the `vanilla.html` and `react.html` they mount on; `script.html` on the MapLibre CDN script's `Maplace`, with no stylesheet to import; the same map as the Google versions. CI runs them on a fake map and on MapLibre with a local style.
 
@@ -147,8 +147,9 @@ Together they mirror the 0.2 demo site, so every 0.2 user can find their case.
 | [tags](../packages/maplace/examples/tags/) | Places with several `tags` under their one `group`, checkboxes filtering the map and the list with `setFilter({ tags })`, each heading counting what is listed under it | none (new) | |
 | [polyline](../packages/maplace/examples/polyline/) | An editable polyline with points of interest along it, popups and a list, inline JSON data | polyline | #178 |
 | [polygon](../packages/maplace/examples/polygon/) | Editable polygon, edits written back, `locationChange` event | polygon | #64, #164 |
+| [mixed](../packages/maplace/examples/mixed/) | A marker, a circle, a polygon and a polyline on one map and in one list, each location giving its own `type`, inline JSON data | polyline, "Path / Polyline + mixed circles" | #10, #43, #179 |
 | [route](../packages/maplace/examples/route/) | One route through ordered stops, passing through one (`via`), directions by leg from its steps and the distance, from the `routeChange` event | directions | #121, #147 |
-| [live-data](../packages/maplace/examples/live-data/) | 0.2's five data sets fetched by the page and swapped in live: markers, markers with a route through them, a polygon, a circle; on MapLibre, the route's data set without its route | mixed (ajax) | #43, #134, #179, #193 |
+| [live-data](../packages/maplace/examples/live-data/) | 0.2's five data sets fetched by the page and swapped in live: markers, markers with a route through them, a polygon, a circle; on MapLibre, the route's data set without its route | mixed (ajax) | #134, #193 |
 | [styled](../packages/maplace/examples/styled/) | The provider's own looks: on Google a light or dark map or the system's scheme (`color-scheme`) and Google's map options (the map-type control); on MapLibre, OpenFreeMap's `bright`, `liberty`, `positron` and dark styles (`map-style`); a select opening the map again in the one chosen, where it was | styled | — |
 | [css-markers](../packages/maplace/examples/css-markers/) | Pins of the page's own markup (`<template data-icon>`, an `icon` node, `markerIcon`), their hovered and selected looks in the page's CSS by `data-hovered` and `data-selected` | — | #192 |
 | [brand](../packages/maplace/examples/brand/) | One palette across the map: areas' `style`, `hoveredStyle` and `selectedStyle`, clustered shops' badges (`--maplace-cluster-background`, `--maplace-cluster-color`), the list's entries by their classes | — | — |
@@ -344,7 +345,7 @@ Demand = items + reactions + comments.
 | Overlay layers (KML, traffic, bicycling, Data/GeoJSON) | 28, 38, 61, 68, 81, 103, 188 | 16 (7+0+9) | out of scope: add them to your own map (§1 Non-goals) |
 | Single location renders blank map | 52, 55, 65 | 15 (3+0+12) | the initial-view order; kept as a regression test |
 | List view and programmatic select | 5, 75, 84, 115, 122 | 14 (5+0+9) | list view and `select` (§3 Shape) |
-| Mixed location types on one map | 10, 43, 90, 158, 179, 193 | 13 (6+0+7) | `type` per location (§3 Shape) |
+| Mixed location types on one map | 10, 43, 90, 158, 179, 193 | 13 (6+0+7) | `type` per location (§3 Shape), shown by the `mixed` example (§2) |
 | Geocoding and address input | 8, 24, 126, 131, 170 | 13 (5+0+8) | addresses geocoded once, before the page ships: the recipe (Locations, Addresses to coordinates); at run time a non-goal (§1), a visitor's address being a page's own form and geocoder (Locations, A visitor's address) |
 | Setup errors and input validation | 63, 125, 145, 175 | 13 (4+0+9) | misuse throws with code, id and field (§3 Errors) |
 | Places and location search (search box, place details, save a place) | 41, 98, 152, 165 | 12 (4+0+8) | later: Places integration (§1) |
@@ -408,10 +409,10 @@ All are answered in 1.0 unless marked.
 
 | # | Kind | Action | Why |
 |---|---|---|---|
-| 10 | issue | fixed by 1.0 | Location types mix on one map (§3 Shape) |
+| 10 | issue | fixed by 1.0 | Location types mix on one map (§3 Shape), shown by the `mixed` example (§2) |
 | 21 | issue | fixed by 1.0 | `language`/`region` attributes (§3 Loading) |
 | 38 | pr | out of scope | Layers go on your own map (§1 Non-goals). Carry: nothing |
-| 43 | issue | fixed by 1.0 | Polygons and markers mix (§3 Shape) |
+| 43 | issue | fixed by 1.0 | Polygons and markers mix (§3 Shape), shown by the `mixed` example (§2) |
 | 45 | issue | fixed by 1.0 | `importLibrary`; the element stays idle until needed (§3 Loading) |
 | 54 | pr | fixed by 1.0 | `cluster` (§3 Performance). Carry: test that clusters update on remove/replace and list select |
 | 61 | issue | out of scope | Traffic layer on your own map (§1 Non-goals) |
@@ -434,7 +435,7 @@ All are answered in 1.0 unless marked.
 | 174 | issue | fixed by 1.0 | Addresses geocoded once with the recipe (§1 Non-goals) |
 | 177 | issue | out of scope | One route, no alternatives (§1 Non-goals) |
 | 178 | issue | fixed by 1.0 | Code replaced; kept as a regression test |
-| 179 | issue | fixed by 1.0 | Polylines and markers mix (§3 Shape) |
+| 179 | issue | fixed by 1.0 | Polylines and markers mix (§3 Shape), shown by the `mixed` example (§2) |
 | 180 | issue | out of scope | Off-road routing is a provider limitation |
 | 181 | pr | out of scope | README rewritten for 1.0. Carry: nothing |
 | 182 | issue | fixed by 1.0 | Standalone examples (§2) |

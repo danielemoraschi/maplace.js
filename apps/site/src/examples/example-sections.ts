@@ -100,9 +100,10 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "shapes",
     label: "Shapes",
-    summary: "Circles, lines and areas, drawn in their own colours, some of them to edit.",
+    summary:
+      "Circles, lines and areas in their own colours, some to edit, and all of them with markers on one map.",
     description:
-      "Shapes on a map with maplacejs: circles, lines and areas in their own colours, some of them to edit and save.",
+      "Shapes on a map with maplacejs: circles, lines and areas in their own colours, some to edit and save, and all of them with markers on one map.",
     sections: [
       {
         name: "circles",
@@ -114,6 +115,11 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "polygon",
         title: "Polygon",
         summary: "An area to edit: drag a corner, and the edit is written back.",
+      },
+      {
+        name: "mixed",
+        title: "Mixed",
+        summary: "A marker, a circle, an area and a line on one map and in one list.",
       },
     ],
   },
