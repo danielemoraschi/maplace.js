@@ -1,10 +1,5 @@
 import { expect } from "vitest";
-import { byText, type ExampleBehaviour, listIn, textIn } from "./reading";
-
-/** The tab marked chosen inside `root`. */
-function chosenTab(root: Element): HTMLElement | null {
-  return root.querySelector('[role="option"][aria-selected="true"]');
-}
+import { byText, type ExampleBehaviour, listIn, selectedEntryIn, textIn } from "./reading";
 
 const tabIn = (root: Element, text: string) => byText(root, '[role="option"]', text);
 
@@ -37,7 +32,7 @@ function expectDetailsBetweenTabsAndMap(root: Element, map: Element | undefined)
 export const tabs: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(store.getSnapshot().selectedId).toBe("rome");
   expect(store.getSnapshot().locations.map(({ zoom }) => zoom)).toEqual([6, 6]);
-  await expect.poll(() => chosenTab(root)?.textContent).toBe("Rome");
+  await expect.poll(() => selectedEntryIn(root)?.textContent).toBe("Rome");
   await expect.poll(() => textIn(root, "aside")).toBe("Capital since 1871.");
   expectDrawnAsTabs(tabIn(root, "Rome"), tabIn(root, "Milan"));
   expectTabsFitTheirRow(root);
@@ -49,5 +44,5 @@ export const tabs: ExampleBehaviour = async ({ store, adapter, root }) => {
     zoom: 6,
   });
   await expect.poll(() => textIn(root, "aside")).toBe("Finance and fashion.");
-  await expect.poll(() => chosenTab(root)?.textContent).toBe("Milan");
+  await expect.poll(() => selectedEntryIn(root)?.textContent).toBe("Milan");
 };

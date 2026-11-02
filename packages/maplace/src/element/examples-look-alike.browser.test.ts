@@ -42,8 +42,8 @@ vi.mock("maplace", async (importOriginal) => {
 
 /** What only a Google page has, by example, left out when its MapLibre twin is held to it. */
 const GOOGLE_ONLY_PARTS: Readonly<Record<string, string>> = {
-  // MapLibre has no routing: mixed's page there has no button for the route's data set.
-  mixed: 'button[value="c"]',
+  // MapLibre has no routing: live-data's page there has no button for the route's data set.
+  "live-data": 'button[value="c"]',
 };
 
 /** The width the site gives a version at its widest. */

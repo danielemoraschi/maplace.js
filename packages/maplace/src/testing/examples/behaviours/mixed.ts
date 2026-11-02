@@ -1,66 +1,87 @@
 import { expect } from "vitest";
-import type { Maplace } from "../../../index";
-import type { FakeAdapter } from "../../fake-adapter";
 import type { ExampleRun } from "../example-runs";
-import { type BoundsView, clickButton, type ExampleBehaviour } from "./reading";
+import { byText, type ExampleBehaviour, labelsIn, lastFit, selectedEntryIn } from "./reading";
 
-/** The text of the buttons `selector` finds in `root`. */
-const buttonTexts = (root: Element, selector: string) =>
-  [...root.querySelectorAll(selector)].map(({ textContent }) => textContent?.trim());
-
-/** The data sets' buttons shown pressed: the set on the map, or on its way. */
-const pressed = (root: Element) => buttonTexts(root, 'button[aria-pressed="true"]');
-
-const ids = (store: Maplace) => store.getSnapshot().locations.map(({ id }) => id);
+/** Each location, as the list names it, what the map draws it as, and a shape's latitudes. */
+const MARKER = { id: "colosseum", title: "Colosseum", type: "marker" } as const;
+const SHAPES = [
+  { id: "trastevere", title: "Trastevere", type: "circle", north: 41.8912, south: 41.8822 },
+  {
+    id: "villa-borghese",
+    title: "Villa Borghese",
+    type: "polygon",
+    north: 41.9175,
+    south: 41.9085,
+  },
+  { id: "tiber", title: "Along the Tiber", type: "polyline", north: 41.9117, south: 41.8906 },
+] as const;
+const DRAWN = [MARKER, ...SHAPES];
 
 export const mixed: ExampleBehaviour = async (run) => {
-  await expectStartsOnMarkers(run, ["Markers", "More markers", "Route", "Area", "Circle"]);
-  await expectRouteSetShown(run);
-  await expectRouteDrawn(run);
-  await expectAreaFitted(run);
+  expectEachTypeDrawn(run);
+  await expectListNamesAll(run);
+  expectFirstViewFitsAll(run);
+  await expectClickSelectsInList(run);
+  await expectListPickMovesMap(run);
 };
 
-/** On MapLibre, which has no routing: no route to show, so no button for it. */
-export const mixedWithoutRoute: ExampleBehaviour = async (run) => {
-  await expectStartsOnMarkers(run, ["Markers", "More markers", "Area", "Circle"]);
-  await expectAreaFitted(run);
+const expectEachTypeDrawn = ({ adapter }: ExampleRun): void => {
+  for (const { id, type } of DRAWN) {
+    expect(adapter.probe().location(id)?.geometry.type).toBe(type);
+  }
 };
 
-async function expectStartsOnMarkers(
-  { store, root }: ExampleRun,
-  buttons: readonly string[],
+const expectListNamesAll: ExampleBehaviour = async ({ root }) => {
+  await expect.poll(() => labelsIn(root)).toEqual(DRAWN.map(({ title }) => title));
+};
+
+/** Called before any click, so the last view is the first: it holds every shape. */
+const expectFirstViewFitsAll = ({ adapter }: ExampleRun): void => {
+  const firstView = lastFit(adapter);
+  expect(firstView).toBeDefined();
+  const { north, east, south, west } = firstView?.bounds ?? {};
+  expectWithin(north, 41.9175, 41.92);
+  expectWithin(east, 12.4922, 12.495);
+  expectWithin(south, 41.88, 41.883);
+  expectWithin(west, 12.46, 12.465);
+};
+
+/** A click on the map selects the location, and the list says so, for each type alike. */
+const expectClickSelectsInList: ExampleBehaviour = async ({ store, adapter, root }) => {
+  for (const { id, title } of DRAWN) {
+    adapter.probe().click(id);
+    await expect.poll(() => store.getSnapshot().selectedId).toBe(id);
+    await expect.poll(() => selectedEntryIn(root)?.firstChild?.textContent).toBe(title);
+  }
+};
+
+/** Picking an entry selects its location and takes the map to that one, for each type alike. */
+const expectListPickMovesMap: ExampleBehaviour = async (run) => {
+  await pick(run, MARKER);
+  expect(run.adapter.callsOf("setView").at(-1)?.view).toEqual({
+    kind: "location",
+    id: MARKER.id,
+    zoom: undefined,
+  });
+  for (const shape of SHAPES) {
+    await pick(run, shape);
+    expect(lastFit(run.adapter)?.bounds.north).toBeCloseTo(shape.north, 3);
+    expect(lastFit(run.adapter)?.bounds.south).toBeCloseTo(shape.south, 3);
+  }
+};
+
+/** Clicks the list's entry for a location, until it is selected and the map has been told. */
+async function pick(
+  { store, adapter, root }: ExampleRun,
+  { id, title }: (typeof DRAWN)[number],
 ): Promise<void> {
-  await expect.poll(() => ids(store)).toEqual(["a1", "a2", "a3"]);
-  expect(buttonTexts(root, "button[aria-pressed]")).toEqual(buttons);
-  expect(pressed(root)).toEqual(["Markers"]);
+  const viewsBefore = adapter.callsOf("setView").length;
+  byText(root, '[role="option"]', title).click();
+  await expect.poll(() => store.getSnapshot().selectedId).toBe(id);
+  await expect.poll(() => adapter.callsOf("setView").length).toBeGreaterThan(viewsBefore);
 }
 
-async function expectRouteSetShown({ store, root }: ExampleRun): Promise<void> {
-  clickButton(root, "Route");
-  await expect.poll(() => pressed(root)).toEqual(["Route"]);
-  await expect.poll(() => ids(store)).toEqual(["c1", "c2", "c3"]);
-}
-
-async function expectRouteDrawn({ store, adapter }: ExampleRun): Promise<void> {
-  await expect.poll(() => store.getSnapshot().route?.stops).toEqual(["c1", "c2", "c3"]);
-  await expect.poll(() => routedLegs(store, adapter)).toBe(2);
-}
-
-async function expectAreaFitted({ store, adapter, root }: ExampleRun): Promise<void> {
-  clickButton(root, "Area");
-  await expect.poll(() => ids(store)).toEqual(["d1"]);
-  expect(store.getSnapshot().route).toBeUndefined();
-  await expect.poll(() => lastFit(adapter)?.bounds.north).toBeCloseTo(52.1);
-  expect(lastFit(adapter)?.bounds.south).toBeCloseTo(47.8);
-}
-
-/** How many legs the route computed has, once the fake computes it. */
-async function routedLegs(store: Maplace, adapter: FakeAdapter): Promise<number | undefined> {
-  await adapter.probe().settle();
-  return store.getSnapshot().routeResult?.legs.length;
-}
-
-function lastFit(adapter: FakeAdapter): BoundsView | undefined {
-  const view = adapter.callsOf("setView").at(-1)?.view;
-  return view?.kind === "fit-bounds" ? view : undefined;
+function expectWithin(value: number | undefined, min: number, max: number): void {
+  expect(value).toBeGreaterThanOrEqual(min);
+  expect(value).toBeLessThanOrEqual(max);
 }

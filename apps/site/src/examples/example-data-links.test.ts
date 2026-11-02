@@ -9,12 +9,12 @@ describe("dataFetchedBy", () => {
   });
 
   it("is every data file a path with a template part can be", () => {
-    expect(names([`fetch(\`/mixed-\${letter}.json\`)`])).toEqual([
-      "mixed-a",
-      "mixed-b",
-      "mixed-c",
-      "mixed-d",
-      "mixed-e",
+    expect(names([`fetch(\`/live-data-\${letter}.json\`)`])).toEqual([
+      "live-data-a",
+      "live-data-b",
+      "live-data-c",
+      "live-data-d",
+      "live-data-e",
     ]);
   });
 

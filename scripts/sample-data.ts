@@ -18,6 +18,6 @@ function write(file: string, data: unknown): void {
 }
 
 for (const { letter, locations } of mixedGroupsFromAjax(legacyFile("ajax.php"))) {
-  write(`mixed-${letter}.json`, locations);
+  write(`live-data-${letter}.json`, locations);
 }
 write("points-4k.json", pointsFrom4k(legacyFile("4k.js")));

@@ -17,6 +17,12 @@ export function latitudeSpanOf(view: BoundsView | undefined): number {
   return (view?.bounds.north ?? 0) - (view?.bounds.south ?? 0);
 }
 
+/** The view the map last went to, if it was a fit to bounds. */
+export function lastFit(adapter: FakeAdapter): BoundsView | undefined {
+  const view = adapter.callsOf("setView").at(-1)?.view;
+  return view?.kind === "fit-bounds" ? view : undefined;
+}
+
 /** The text of the first `selector` inside `root`, if both are there. */
 export function textIn(root: Element | undefined, selector: string): string | null | undefined {
   return root?.querySelector(selector)?.textContent;
@@ -46,6 +52,11 @@ export function labelsIn(root: Element): (string | null | undefined)[] {
     root.querySelectorAll("[role=option]"),
     (option) => option.firstChild?.textContent,
   );
+}
+
+/** The entry of the list inside `root` marked selected, if any. */
+export function selectedEntryIn(root: Element): HTMLElement | null {
+  return root.querySelector('[role="option"][aria-selected="true"]');
 }
 
 /** The input of the `<label>` inside `root` whose text is `text`, failing when there is none. */

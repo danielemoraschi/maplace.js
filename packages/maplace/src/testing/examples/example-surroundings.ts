@@ -2,7 +2,7 @@
 import { vi } from "vitest";
 import { OPENFREEMAP_STYLES } from "./openfreemap-styles";
 
-/** The data the example pages fetch, by path: `examples/data/mixed-a.json` is `/mixed-a.json`. */
+/** The data the example pages fetch, by path: `examples/data/live-data-a.json` is `/live-data-a.json`. */
 const EXAMPLE_DATA: Readonly<Record<string, unknown>> = Object.fromEntries(
   Object.entries(
     import.meta.glob("../../../examples/data/*.json", { import: "default", eager: true }),
@@ -48,7 +48,7 @@ function stubFetch(answerOffsite: (url: URL) => unknown): void {
   vi.stubGlobal("fetch", fetchFromPage);
 }
 
-/** The URL a script fetched: `/mixed-a.json` resolved against the page, a URL, or a request's. */
+/** The URL a script fetched: `/live-data-a.json` resolved against the page, a URL, or a request's. */
 function urlOf(input: RequestInfo | URL): URL {
   if (input instanceof URL) return input;
   return new URL(typeof input === "string" ? input : input.url, location.href);

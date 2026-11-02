@@ -205,12 +205,12 @@ describe("a map's failure note", () => {
       site,
       {},
       {
-        example: "mixed",
+        example: "live-data",
         provider: "maplibre",
         version: "Bundler",
-        // mixed's module makes its map, then waits on its first group's data: held, the version
+        // live-data's module makes its map, then waits on its first group's data: held, the version
         // stays starting while OpenFreeMap, refused, fails its map.
-        beforeConsent: (page) => page.route("**/mixed-a.json", () => {}),
+        beforeConsent: (page) => page.route("**/live-data-a.json", () => {}),
       },
     );
     const vanilla = mapLibreVersionIn(section, "vanilla");

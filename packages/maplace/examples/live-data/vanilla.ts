@@ -1,0 +1,32 @@
+import type { Location } from "maplace";
+import { createGoogleMap } from "maplace/google";
+
+const maplace = createGoogleMap("#live-data-vanilla-map", {
+  list: { container: "#live-data-vanilla-list" },
+});
+
+let latestGroup: string | undefined;
+
+const buttons = document.querySelectorAll<HTMLButtonElement>("#live-data-vanilla-groups button");
+for (const button of buttons) {
+  button.addEventListener("click", () => showGroup(button.value));
+}
+await showGroup("a");
+
+/**
+ * One of the data sets swapped in, the route's (c) with a route through it; leaving it takes
+ * the route away. Only the group last asked for: a slower answer to an earlier click is dropped.
+ */
+async function showGroup(letter: string): Promise<void> {
+  latestGroup = letter;
+  for (const button of buttons)
+    button.setAttribute("aria-pressed", String(button.value === letter));
+  const response = await fetch(`/live-data-${letter}.json`);
+  const locations: Location[] = await response.json();
+  if (letter !== latestGroup) return;
+  maplace.setLocations(locations);
+  if (letter === "c") {
+    maplace.setRoute({ stops: locations.map(({ id }) => id), travelMode: "driving" });
+  }
+  maplace.fitAll();
+}

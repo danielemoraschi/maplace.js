@@ -1,37 +1,16 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
-<!-- Five data sets, each fetched by the page and swapped in live: markers, markers with a route
-     through them, an area and a circle; leaving the route's set takes its route with it. -->
-<style>
-  #mixed-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
-</style>
-<p id="mixed-groups">
-  <button type="button" value="a">Markers</button>
-  <button type="button" value="b">More markers</button>
-  <button type="button" value="c">Route</button>
-  <button type="button" value="d">Area</button>
-  <button type="button" value="e">Circle</button>
-</p>
-<maplace-map id="mixed-map" api-key="YOUR_KEY" list></maplace-map>
-<script type="module">
-  const map = document.getElementById('mixed-map');
-  const buttons = document.querySelectorAll('#mixed-groups button');
-  let latestGroup;
-
-  /** Swaps in the group last asked for: a slower answer to an earlier click is dropped. */
-  async function showGroup(letter) {
-    latestGroup = letter;
-    for (const button of buttons) button.setAttribute('aria-pressed', String(button.value === letter));
-    const response = await fetch(`/mixed-${letter}.json`);
-    const locations = await response.json();
-    if (letter !== latestGroup) return;
-    map.locations = locations;
-    if (letter === 'c') map.route = { stops: locations.map(({ id }) => id), travelMode: 'driving' };
-    map.maplace.fitAll();
-  }
-
-  for (const button of buttons) {
-    button.addEventListener('click', () => showGroup(button.value));
-  }
-  await showGroup('a');
-</script>
+<!-- A marker, a circle, a polygon and a polyline on one map and in one list: each location gives its
+     own type, all from inline JSON. -->
+<maplace-map api-key="YOUR_KEY" list>
+  <script type="application/json">
+    [{ "id": "colosseum", "type": "marker", "title": "Colosseum", "lat": 41.8902, "lng": 12.4922 },
+     { "id": "trastevere", "type": "circle", "title": "Trastevere", "center": { "lat": 41.8867, "lng": 12.47 }, "radius": 500 },
+     { "id": "villa-borghese", "type": "polygon", "title": "Villa Borghese",
+       "path": [{ "lat": 41.9175, "lng": 12.479 }, { "lat": 41.916, "lng": 12.4885 }, { "lat": 41.909, "lng": 12.488 },
+                { "lat": 41.9085, "lng": 12.48 }] },
+     { "id": "tiber", "type": "polyline", "title": "Along the Tiber",
+       "path": [{ "lat": 41.9117, "lng": 12.4729 }, { "lat": 41.9014, "lng": 12.4664 }, { "lat": 41.8964, "lng": 12.466 },
+                { "lat": 41.8925, "lng": 12.4709 }, { "lat": 41.8906, "lng": 12.4775 }] }]
+  </script>
+</maplace-map>

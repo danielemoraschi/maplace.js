@@ -100,9 +100,10 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "shapes",
     label: "Shapes",
-    summary: "Circles, lines and areas, drawn in their own colours, some of them to edit.",
+    summary:
+      "Circles, lines and areas in their own colours, some to edit, and all of them with markers on one map.",
     description:
-      "Shapes on a map with maplacejs: circles, lines and areas in their own colours, some of them to edit and save.",
+      "Shapes on a map with maplacejs: circles, lines and areas in their own colours, some to edit and save, and all of them with markers on one map.",
     sections: [
       {
         name: "circles",
@@ -115,6 +116,11 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         title: "Polygon",
         summary: "An area to edit: drag a corner, and the edit is written back.",
       },
+      {
+        name: "mixed",
+        title: "Mixed",
+        summary: "A marker, a circle, an area and a line on one map and in one list.",
+      },
     ],
   },
   {
@@ -126,8 +132,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       "Data swapped in live with maplacejs, thousands of points clustered, a drive, a map loaded on a press, and a link to a place.",
     sections: [
       {
-        name: "mixed",
-        title: "Mixed",
+        name: "live-data",
+        title: "Live data",
         summary:
           "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
       },

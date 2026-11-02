@@ -1,7 +1,7 @@
 import type { APIRoute, GetStaticPaths } from "astro";
 import { exampleData } from "../examples/example-data.ts";
 
-/** `/mixed-a.json` … `/mixed-e.json` and `/points-4k.json`, which `mixed` and `big` fetch. */
+/** `/live-data-a.json` … `/live-data-e.json` and `/points-4k.json`, which `live-data` and `big` fetch. */
 export const getStaticPaths = (() =>
   exampleData().map(({ name, json }) => ({
     params: { data: name },

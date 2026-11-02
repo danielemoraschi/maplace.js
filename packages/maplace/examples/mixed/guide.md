@@ -1,8 +1,8 @@
 # Mixed
 
-Data sets your page fetches and swaps in while the map stays: markers, an area, a circle, and on Google a route through some of them. The map's element never fetches anything itself.
+A marker, a circle, a polygon and a polyline on one map and in one list: each location says what it is with its own `type`, and everything else about them works alike.
 
-- **Try it**: press each button above the map, Markers, More markers, Area and Circle: the map and the list take the new set, and the map fits it. On Google a fifth, Route, draws a route through its places, and leaving that set takes its route with it; MapLibre, which has no routing, has no such button. A slower answer to an earlier press is dropped.
-- **HTML**: `list` on an empty `<maplace-map>`, and a script assigning the `locations` property, and on Google `route` ([Properties and methods](../../../../docs/reference/element.md#properties-and-methods)), then calling `maplace.fitAll()`.
-- **Script** and **Bundler**: [`setLocations` and `fitAll`](../../../../docs/reference/store.md#methods) on the store `createGoogleMap` or `createMapLibreMap` returns, and on Google `setRoute`.
-- **React**: `locations` as a prop of `<MaplaceProvider>`, and on Google `route`, from your state ([`<MaplaceProvider>`](../../../../docs/reference/react.md#maplaceprovider)), and a small component calling `fitAll` through [`useMaplace()`](../../../../docs/reference/react.md#usemaplace) when they change.
+- **Try it**: pick each entry in the list and the map goes to it. Click a shape or the marker on the map and the list follows.
+- **HTML**: `list` on the map, and a `<script type="application/json">` inside `<maplace-map>` holding all four, as a path takes more than an attribute ([Data](../../../../docs/reference/element.md#data)).
+- **Script** and **Bundler**: `type` on each location ([Markers](../../../../docs/reference/locations.md#markers), [Circles](../../../../docs/reference/locations.md#circles), [Polylines](../../../../docs/reference/locations.md#polylines), [Polygons](../../../../docs/reference/locations.md#polygons)), and `list: { container }` ([List view options](../../../../docs/reference/store.md#list-view-options)).
+- **React**: the same locations on `<MaplaceProvider>`, and `<LocationList />` beside the `<MaplaceMap>` ([`<LocationList>`](../../../../docs/reference/react.md#locationlist)).

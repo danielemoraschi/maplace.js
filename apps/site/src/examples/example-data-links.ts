@@ -2,7 +2,7 @@ import { type ExampleData, exampleData } from "./example-data.ts";
 
 /**
  * A data file's site path in an example's code, `/points-4k.json`, or one with a template part,
- * `/mixed-${letter}.json`: the name, its parts outside `${…}` kept.
+ * `/live-data-${letter}.json`: the name, its parts outside `${…}` kept.
  */
 const FETCHED_JSON = /\/((?:[\w-]|\$\{[^}]*\})+)\.json/g;
 

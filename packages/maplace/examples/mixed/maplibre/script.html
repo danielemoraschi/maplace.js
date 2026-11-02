@@ -1,8 +1,7 @@
 <!doctype html>
-<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, the group buttons and what the map and its list mount on, and the map made with Maplace; its data sets come from mixed-a.json, -b, -d and -e (MapLibre has no routing, so no route's set, -c). -->
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map and its list mount on, and the map made with Maplace. -->
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <style>
-  #mixed-maplibre-script-groups [aria-pressed="true"] { background: CanvasText; color: Canvas; }
   #mixed-maplibre-script-map-and-list { display: flex; height: 24rem; }
   #mixed-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
   #mixed-maplibre-script-list { display: contents; }
@@ -13,41 +12,46 @@
     #mixed-maplibre-script-list [role="listbox"] { flex: none; max-height: 40%; }
   }
 </style>
-<p id="mixed-maplibre-script-groups">
-  <button type="button" value="a">Markers</button>
-  <button type="button" value="b">More markers</button>
-  <button type="button" value="d">Area</button>
-  <button type="button" value="e">Circle</button>
-</p>
 <div id="mixed-maplibre-script-map-and-list">
   <div id="mixed-maplibre-script-map"></div>
   <div id="mixed-maplibre-script-list"></div>
 </div>
 <script type="module">
-  const maplace = Maplace.createMapLibreMap("#mixed-maplibre-script-map", {
+  const locations = [
+    { id: "colosseum", type: "marker", title: "Colosseum", lat: 41.8902, lng: 12.4922 },
+    {
+      id: "trastevere",
+      type: "circle",
+      title: "Trastevere",
+      center: { lat: 41.8867, lng: 12.47 },
+      radius: 500,
+    },
+    {
+      id: "villa-borghese",
+      type: "polygon",
+      title: "Villa Borghese",
+      path: [
+        { lat: 41.9175, lng: 12.479 },
+        { lat: 41.916, lng: 12.4885 },
+        { lat: 41.909, lng: 12.488 },
+        { lat: 41.9085, lng: 12.48 },
+      ],
+    },
+    {
+      id: "tiber",
+      type: "polyline",
+      title: "Along the Tiber",
+      path: [
+        { lat: 41.9117, lng: 12.4729 },
+        { lat: 41.9014, lng: 12.4664 },
+        { lat: 41.8964, lng: 12.466 },
+        { lat: 41.8925, lng: 12.4709 },
+        { lat: 41.8906, lng: 12.4775 },
+      ],
+    },
+  ];
+  Maplace.createMapLibreMap("#mixed-maplibre-script-map", {
+    locations,
     list: { container: "#mixed-maplibre-script-list" },
   });
-
-  let latestGroup;
-
-  const buttons = document.querySelectorAll("#mixed-maplibre-script-groups button");
-  for (const button of buttons) {
-    button.addEventListener("click", () => showGroup(button.value));
-  }
-  await showGroup("a");
-
-  /**
-   * One of the data sets swapped in. Only the group last asked for: a slower answer to an earlier
-   * click is dropped.
-   */
-  async function showGroup(letter) {
-    latestGroup = letter;
-    for (const button of buttons)
-      button.setAttribute("aria-pressed", String(button.value === letter));
-    const response = await fetch(`/mixed-${letter}.json`);
-    const locations = await response.json();
-    if (letter !== latestGroup) return;
-    maplace.setLocations(locations);
-    maplace.fitAll();
-  }
 </script>
