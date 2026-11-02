@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-02 Fixed the snippet builder's CSV: a title column beats name in either order, row by row, as in JSON, and the sample says title
 - 2026-11-02 Fixed the size given for the MapLibre CDN script, and added that a MapLibre page must be served, not opened as a file
 - 2026-11-01 Added contributing rules, a security policy, a code of conduct, and forms for bug reports and feature requests
 - 2026-11-01 Changed the examples' group links to say "Lists, 7 examples" to a screen reader, with a pause before the number

@@ -12,7 +12,7 @@ import { BUILDER_PAGE, PRIVACY_PAGE } from "../site/footer-pages.ts";
 const install = await getEntry("install", "element");
 if (install === undefined) throw new Error("the install collection has no element entry");
 const previews = previewMapsMarkup({ apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID });
-const SAMPLE = `name,lat,lng
+const SAMPLE = `title,lat,lng
 Rome,41.9028,12.4964
 Milan,45.4642,9.19
 Venice,45.4408,12.3155`;

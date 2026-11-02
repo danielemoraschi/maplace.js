@@ -3,6 +3,11 @@ import { PasteRefused, type Report, shortened } from "./builder-report.ts";
 
 type CsvRecord = Record<string, unknown>;
 
+interface FieldColumn {
+  readonly name: string;
+  readonly index: number;
+}
+
 /** The fields a column can fill, under their own name or a location's other names for them. */
 const READ_COLUMNS: ReadonlySet<string> = new Set([
   "lat",
@@ -29,8 +34,8 @@ export function recordsFromCsv(text: string, report: Report): CsvRecord[] {
   const firstLine = cleaned.trimStart().split("\n", 1)[0] ?? "";
   const [headerRow, ...rows] = rowsOf(cleaned, delimiterOf(firstLine));
   const header = (headerRow ?? []).map((column) => column.trim().toLowerCase());
-  const fields = fieldsOfHeader(header, report);
-  if (!fields.includes("lat") || !fields.includes("lng")) {
+  const fieldColumns = columnsOfFields(header);
+  if (!fieldColumns.has("lat") || !fieldColumns.has("lng")) {
     throw new PasteRefused(
       `A CSV needs a header row naming lat and lng; this one starts with ${shortened(firstLine)}`,
     );
@@ -41,22 +46,26 @@ export function recordsFromCsv(text: string, report: Report): CsvRecord[] {
     }
   }
   if (rows.length === 0) throw new PasteRefused("This CSV has a header row and no rows under it");
-  return rows.map((row, index) => recordOfRow(fields, row, index + 2));
+  return rows.map((row, index) => {
+    refuseOverlongRow(row, header.length, index + 2);
+    return recordOfRow(fieldColumns, row, report);
+  });
 }
 
-/** The field of each column; a second column for one field is reported and fills none. */
-function fieldsOfHeader(header: readonly string[], report: Report): (string | undefined)[] {
-  const used = new Set<string>();
-  return header.map((column) => {
-    const field = fieldOfColumn(column);
-    if (field === undefined) return undefined;
-    if (used.has(field)) {
-      report.note(column, `fills ${field}, as a column before it does, so it was left out`);
-      return undefined;
-    }
-    used.add(field);
-    return field;
+/** Each field's columns in the order a row tries them: those under its own name, then left to right. */
+function columnsOfFields(header: readonly string[]): ReadonlyMap<string, readonly FieldColumn[]> {
+  const columns = new Map<string, FieldColumn[]>();
+  header.forEach((name, index) => {
+    const field = fieldOfColumn(name);
+    if (field === undefined) return;
+    const ofField = columns.get(field) ?? [];
+    ofField.push({ name, index });
+    columns.set(field, ofField);
   });
+  for (const [field, ofField] of columns) {
+    ofField.sort((a, b) => Number(b.name === field) - Number(a.name === field));
+  }
+  return columns;
 }
 
 /** The field `column` fills, if it is one this page reads. */
@@ -127,22 +136,33 @@ function quotedCellAt(text: string, start: number): { value: string; next: numbe
   throw new PasteRefused(`A quote opened on line ${line} of this CSV never closes`);
 }
 
-function recordOfRow(
-  fields: readonly (string | undefined)[],
-  row: readonly string[],
-  rowNumber: number,
-): CsvRecord {
-  if (row.slice(fields.length).some((cell) => cell.trim() !== "")) {
+function refuseOverlongRow(row: readonly string[], columnCount: number, rowNumber: number): void {
+  if (row.slice(columnCount).some((cell) => cell.trim() !== "")) {
     throw new PasteRefused(
-      `Row ${rowNumber} of this CSV has ${row.length} cells, and its header ${fields.length}`,
+      `Row ${rowNumber} of this CSV has ${row.length} cells, and its header ${columnCount}`,
     );
   }
+}
+
+/** Each field from the first of its columns filled in `row`; any other filled column is noted. */
+function recordOfRow(
+  fieldColumns: ReadonlyMap<string, readonly FieldColumn[]>,
+  row: readonly string[],
+  report: Report,
+): CsvRecord {
   const record: CsvRecord = {};
-  row.forEach((cell, index) => {
-    const field = fields[index];
-    const written = cell.trim();
-    if (field !== undefined && written !== "") record[field] = cellValue(field, written);
-  });
+  for (const [field, columns] of fieldColumns) {
+    const [used, ...losing] = columns
+      .map(({ name, index }) => ({ name, written: (row[index] ?? "").trim() }))
+      .filter(({ written }) => written !== "");
+    if (used !== undefined) record[field] = cellValue(field, used.written);
+    for (const { name } of losing) {
+      report.note(
+        name,
+        `fills ${field}, as another column does; where a row has both, that one was used`,
+      );
+    }
+  }
   return record;
 }
 
