@@ -1,5 +1,6 @@
 import { OLD_OPTIONS } from "../../../../packages/maplace/src/validate/migration.ts";
 import { locationFromRecord, recordsWithIds } from "./builder-fields.ts";
+import { legacyOptionWords, legacyTypeWords } from "./builder-legacy-notes.ts";
 import { firstRefusedIn, holdsWords, isRecord, Refused, refusalWords } from "./builder-literal.ts";
 import { PasteRefused, type Report } from "./builder-report.ts";
 import {
@@ -147,7 +148,7 @@ function listAttributesOf(config: Config, count: number, report: Report): MapAtt
   if (config.controls_on_map !== false) attributes.push(["list-position", "top-right"]);
   const heading = textOption(config, "controls_title", report);
   if (heading !== undefined) attributes.push(["list-heading", heading]);
-  if (config.view_all !== false) {
+  if (config.view_all !== false && count > 1) {
     const label = textOption(config, "view_all_text", report);
     attributes.push(["fit-all", ""], ["fit-all-label", label ?? LEGACY_VIEW_ALL]);
   }
@@ -194,7 +195,7 @@ function reportOtherOptions(
   if (config.type !== undefined && !DRAWN_TYPES.has(config.type)) {
     report.note(
       `type: ${JSON.stringify(config.type)}`,
-      `${OLD_OPTIONS.type}; its points stay markers`,
+      `${legacyTypeWords(config.type)}; its points stay markers`,
     );
   }
   for (const name of Object.keys(config)) {
@@ -203,9 +204,7 @@ function reportOtherOptions(
 }
 
 function noteOption(name: string, config: Config, report: Report): void {
-  const says = Object.hasOwn(OLD_OPTIONS, name)
-    ? (OLD_OPTIONS[name] as string)
-    : "isn't a 0.2 option this page carries over";
+  const says = legacyOptionWords(name);
   const code = firstRefusedIn(config[name]);
   report.note(
     name,

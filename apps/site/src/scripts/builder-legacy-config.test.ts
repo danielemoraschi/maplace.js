@@ -45,6 +45,14 @@ describe("fromLegacyConfig's list", () => {
     );
   });
 
+  it("offers fit-all only for more than one location, as 0.2's menu did", () => {
+    expect(attributes({ force_generate_controls: true }, [A])).toEqual([
+      ["list", "select"],
+      ["list-position", "top-right"],
+    ]);
+    expect(attribute({ force_generate_controls: true }, "fit-all")).toBe("");
+  });
+
   it("notes a blank label or heading and never writes one", () => {
     const blank = convert({ view_all_text: "  ", controls_title: 5 });
     expect(blank.names).toEqual(["controls_title", "view_all_text"]);

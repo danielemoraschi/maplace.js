@@ -68,10 +68,63 @@ describe("recordsFromCsv", () => {
     expect(read("lat,lng\n1,2,")).toEqual([{ lat: 1, lng: 2 }]);
   });
 
-  it("takes the first of two columns for one field and reports the other", () => {
+  it("takes the user's paste: title wins where a row has it, and name fills the rest", () => {
     const report = createReport();
-    expect(read("name,title,lat,lng\nA,B,1,2", report)).toEqual([{ title: "A", lat: 1, lng: 2 }]);
-    expect(report.notes().map(({ name }) => name)).toEqual(["title"]);
+    const records = read(
+      "name,lat,lng,title\nRome,41.9028,12.4964,my title\nMilan,45.4642,9.19\nVenice,45.4408,12.3155",
+      report,
+    );
+    expect(records.map(({ title }) => title)).toEqual(["my title", "Milan", "Venice"]);
+    expect(report.notes().map(({ name }) => name)).toEqual(["name"]);
+  });
+
+  it.each([
+    ["lon", "lng", "lat,lng,lon\n1,2,9", "lat,lon,lng\n1,9,2"],
+    ["long", "lng", "lat,lng,long\n1,2,9", "lat,long,lng\n1,9,2"],
+    ["longitude", "lng", "lat,lng,longitude\n1,2,9", "lat,longitude,lng\n1,9,2"],
+    ["latitude", "lat", "lng,lat,latitude\n2,1,9", "lng,latitude,lat\n2,9,1"],
+  ])("a field's own column beats its alias %s in either order", (alias, field, ...texts) => {
+    for (const text of texts) {
+      const report = createReport();
+      expect(read(text, report)).toEqual([{ lat: 1, lng: 2 }]);
+      expect(report.notes()).toEqual([expect.objectContaining({ name: alias })]);
+      expect(report.notes()[0]?.says).toContain(`fills ${field}`);
+    }
+  });
+
+  it.each([["name,title,lat,lng\nA,B,1,2"], ["title,name,lat,lng\nB,A,1,2"]])(
+    "a field's own column beats its alias name in %s",
+    (text) => {
+      expect(read(text)).toEqual([{ title: "B", lat: 1, lng: 2 }]);
+    },
+  );
+
+  it("gives a row with an empty own cell its alias, with no note", () => {
+    const report = createReport();
+    expect(read("title,name,lat,lng\n,A,1,2", report)).toEqual([{ title: "A", lat: 1, lng: 2 }]);
+    expect(report.notes()).toEqual([]);
+  });
+
+  it("takes the first of two aliases", () => {
+    expect(read("lon,long,lat\n2,9,1")).toEqual([{ lng: 2, lat: 1 }]);
+  });
+
+  it("takes the first of two columns under one name, the second filling a gap", () => {
+    expect(read("title,title,lat,lng\nA,B,1,2\n,C,3,4")).toEqual([
+      { title: "A", lat: 1, lng: 2 },
+      { title: "C", lat: 3, lng: 4 },
+    ]);
+  });
+
+  it("says what a losing column fills and which was used, once", () => {
+    const report = createReport();
+    read("title,name,lat,lng\nA,B,1,2\nC,D,3,4", report);
+    expect(report.notes()).toEqual([
+      {
+        name: "name",
+        says: "fills title, as another column does; where a row has both, that one was used",
+      },
+    ]);
   });
 
   it.each([

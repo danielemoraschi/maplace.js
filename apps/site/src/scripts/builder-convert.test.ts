@@ -20,6 +20,8 @@ describe("convertPasted's choice of reader", () => {
     [`var config = ${CONFIG};`, "a 0.2 config"],
     [`new Maplace(${CONFIG}).Load();`, "a 0.2 config"],
     [`$(function () { new Maplace(${CONFIG}) })`, "a 0.2 config"],
+    [`(${CONFIG})`, "a 0.2 config"],
+    [`(${LIST})`, "a list of locations"],
     [`// my [list]\n${CONFIG}`, "a 0.2 config"],
     [`// new Maplace({ no: 1 })\n${CONFIG}`, "a 0.2 config"],
     [

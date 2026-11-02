@@ -1,4 +1,4 @@
-import { OLD_LOCATION_FIELDS } from "../../../../packages/maplace/src/validate/migration.ts";
+import { legacyFieldWords } from "./builder-legacy-notes.ts";
 import { firstRefusedIn, holdsWords, isRecord } from "./builder-literal.ts";
 import type { Report } from "./builder-report.ts";
 import {
@@ -118,7 +118,7 @@ function carryField(
   if (KEPT_FIELDS.has(name)) fields[name] = value;
   else if (Object.hasOwn(RENAMED_FIELDS, name)) rename(record, name, value, fields, report);
   else if (name === "on_menu") copyOnMenu(record, value, fields);
-  else reportField(name, report);
+  else report.note(name, legacyFieldWords(name));
 }
 
 /** Whether `value` holds code, which is reported in place of carrying it. */
@@ -144,15 +144,6 @@ function rename(
 
 function copyOnMenu(record: PastedRecord, value: unknown, fields: Record<string, unknown>): void {
   if (value === false && !hasValue(record.listed)) fields.listed = false;
-}
-
-function reportField(name: string, report: Report): void {
-  report.note(
-    name,
-    Object.hasOwn(OLD_LOCATION_FIELDS, name)
-      ? (OLD_LOCATION_FIELDS[name] as string)
-      : "isn't a location field",
-  );
 }
 
 /** `fields` with the popup 0.2 would have shown: none for `show_infowindow: false`. */

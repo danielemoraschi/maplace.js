@@ -1,4 +1,4 @@
-import { startOfValue } from "./builder-code-start.ts";
+import { afterNewMaplace, startOfValue } from "./builder-code-start.ts";
 import { LiteralScanner, VALUE_ENDS } from "./builder-literal-scan.ts";
 import { PasteRefused, shortened } from "./builder-report.ts";
 
@@ -46,7 +46,7 @@ export function readLiteral(text: string): Literal {
 
 /** A second list or object outside a `new Maplace(` call would be dropped: says so instead. */
 function refuseSecondValue(text: string, scanner: LiteralScanner, start: number): void {
-  if (text.charAt(start - 1) === "(") return;
+  if (afterNewMaplace(text) === start) return;
   const next = startOfValue(text.slice(scanner.position));
   if (next === undefined) return;
   scanner.moveTo(scanner.position + next);

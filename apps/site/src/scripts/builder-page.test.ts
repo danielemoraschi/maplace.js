@@ -25,8 +25,19 @@ const get = (selector: string) => document.querySelector(selector) as HTMLElemen
 const statusText = () => get("[data-builder-status]").textContent;
 const codeText = () => get("[data-builder-code]").textContent ?? "";
 const copy = () => get("[data-builder-copy]") as HTMLButtonElement;
-type TestMap = HTMLElement & { locations: { title?: string }[]; maplace?: { fitAll(): void } };
+type TestMap = HTMLElement & {
+  locations: { title?: string }[];
+  maplace?: { fitAll(): void; select(id: string | undefined): void };
+};
+const CONFIG_WITH_START = "{ start: 2, locations: [{ lat: 1, lng: 2 }, { lat: 3, lng: 4 }] }";
 const maps = () => [...document.querySelectorAll<TestMap>("maplace-map")];
+
+/** The first map as a defined one, with what it is asked for. */
+function stubFirstMap() {
+  const stub = { fitAll: vi.fn(), select: vi.fn() };
+  (maps()[0] as TestMap).maplace = stub;
+  return stub;
+}
 
 function paste(text: string): void {
   const area = get("[data-builder-paste]") as HTMLTextAreaElement;
@@ -89,8 +100,7 @@ describe("startBuilder", () => {
   it("rewrites the snippet for the toggle, leaving the maps' locations and camera", () => {
     const [map] = maps() as [TestMap];
     const before = map.locations;
-    const fitAll = vi.fn();
-    map.maplace = { fitAll };
+    const { fitAll, select } = stubFirstMap();
     expect(get("[data-builder-serve-note]").hidden).toBe(false);
     chooseGoogle();
     expect(get("[data-builder-serve-note]").hidden).toBe(true);
@@ -98,15 +108,33 @@ describe("startBuilder", () => {
     expect(codeText()).toContain('api-key="YOUR_KEY"');
     expect(map.locations).toBe(before);
     expect(fitAll).not.toHaveBeenCalled();
+    expect(select).not.toHaveBeenCalled();
     expect(get("[data-builder-key-note]").hidden).toBe(false);
   });
 
-  it("fits a defined map on a paste, and tolerates one not defined", () => {
-    const [map] = maps() as [TestMap];
-    const fitAll = vi.fn();
-    map.maplace = { fitAll };
+  it("clears the selection and fits a defined map on a paste with no selected-id", () => {
+    const { fitAll, select } = stubFirstMap();
     paste("lat,lng\n5,6");
+    expect(select).toHaveBeenCalledExactlyOnceWith(undefined);
     expect(fitAll).toHaveBeenCalledExactlyOnceWith({ padding: PREVIEW_FIT_PADDING });
+  });
+
+  it("selects the snippet's selected-id on a paste, without fitting", () => {
+    const { fitAll, select } = stubFirstMap();
+    paste(CONFIG_WITH_START);
+    expect(select).toHaveBeenCalledExactlyOnceWith("2");
+    expect(fitAll).not.toHaveBeenCalled();
+  });
+
+  it("tolerates a map not defined on a paste", () => {
+    expect(() => paste(CONFIG_WITH_START)).not.toThrow();
+  });
+
+  it("asks nothing of a defined map when a paste can't be read", () => {
+    const { fitAll, select } = stubFirstMap();
+    paste("nothing to see");
+    expect(select).not.toHaveBeenCalled();
+    expect(fitAll).not.toHaveBeenCalled();
   });
 
   it("writes a note's name as text", () => {
@@ -168,5 +196,36 @@ describe("startBuilder", () => {
       },
     });
     expect(() => vi.runAllTimers()).toThrow("a bug");
+  });
+});
+
+describe("startBuilder once the element is defined", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  async function defineAfter(openingPaste: string, pasted?: string) {
+    vi.useFakeTimers();
+    vi.spyOn(customElements, "whenDefined").mockResolvedValue(HTMLElement);
+    document.body.innerHTML = FIXTURE;
+    (get("[data-builder-paste]") as HTMLTextAreaElement).value = openingPaste;
+    startBuilder(document);
+    if (pasted !== undefined) paste(pasted);
+    const stub = stubFirstMap();
+    await vi.advanceTimersByTimeAsync(0);
+    return stub;
+  }
+
+  it("shows the selected-id of the latest paste", async () => {
+    const { fitAll, select } = await defineAfter("lat,lng\n1,2", CONFIG_WITH_START);
+    expect(select).toHaveBeenCalledExactlyOnceWith("2");
+    expect(fitAll).not.toHaveBeenCalled();
+  });
+
+  it("fits with none", async () => {
+    const { fitAll, select } = await defineAfter("lat,lng\n1,2");
+    expect(select).toHaveBeenCalledExactlyOnceWith(undefined);
+    expect(fitAll).toHaveBeenCalledExactlyOnceWith({ padding: PREVIEW_FIT_PADDING });
   });
 });

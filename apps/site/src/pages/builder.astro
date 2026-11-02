@@ -12,7 +12,7 @@ import { BUILDER_PAGE, PRIVACY_PAGE } from "../site/footer-pages.ts";
 const install = await getEntry("install", "element");
 if (install === undefined) throw new Error("the install collection has no element entry");
 const previews = previewMapsMarkup({ apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID });
-const SAMPLE = `name,lat,lng
+const SAMPLE = `title,lat,lng
 Rome,41.9028,12.4964
 Milan,45.4642,9.19
 Venice,45.4408,12.3155`;
@@ -99,7 +99,7 @@ const NUMBER = "text-accent";
         The popups are used as written, scripts included: keep only HTML you trust.
       </p>
       <p data-builder-text-note hidden class="mt-0 mb-3 text-sm text-muted">
-        The popups are written as plain text, as their HTML couldn't go beside these locations; one with no text has no popup.
+        The popups are written as plain text: this page wrote these locations as JSON, as not all of them could be a <code>&lt;maplace-location&gt;</code> with its popup whole (a polygon, a polyline, a hidden location or <code>data</code> can't), and JSON's <code>html</code> needs a <a href="/element/#properties-and-methods"><code>sanitize</code></a> of yours. One with no text has no popup.
       </p>
       <p data-builder-key-note hidden class="mt-0 mb-3 text-sm text-muted">
         Put your own key in <code>api-key</code>: <a href="/setup/#key-and-map-id">how to get one</a>.
