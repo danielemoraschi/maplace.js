@@ -81,12 +81,21 @@ function markFirstAnswer(
   answered: () => void,
   failed: (cause: unknown) => void,
 ): void {
-  try {
-    dispatcher
-      .getActor()
-      .then(({ target }) => target.addEventListener("message", answered, { once: true }), failed)
-      .catch(answered);
-  } catch {
+  const actor = actorOf(dispatcher);
+  if (actor === undefined) {
     answered();
+    return;
+  }
+  actor
+    .then(({ target }) => target.addEventListener("message", answered, { once: true }), failed)
+    .catch(answered);
+}
+
+/** The dispatcher's actor, on its way; undefined on a maplibre-gl whose `getActor` can't be called. */
+function actorOf(dispatcher: Dispatcher): ReturnType<Dispatcher["getActor"]> | undefined {
+  try {
+    return dispatcher.getActor();
+  } catch {
+    return undefined;
   }
 }
