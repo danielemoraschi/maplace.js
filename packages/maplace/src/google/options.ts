@@ -37,10 +37,11 @@ export type CreatedMapOptions = NonNullable<GoogleAdapterOptions["mapOptions"]>;
 
 /**
  * Where the caller takes a map ID and a colour scheme instead of map options, as told the page;
- * a caller with a centre and zoom of its own re-words those of `SET_BY_MAPLACE` too.
+ * a caller with a centre and zoom of its own re-words those of `SET_BY_MAPLACE`, and 0.2's
+ * `set_center`, too.
  */
 type OwnSettingRemarks = Readonly<
-  Record<CallerOwned, string> & Partial<Record<"center" | "zoom", string>>
+  Record<CallerOwned, string> & Partial<Record<"center" | "zoom" | "set_center", string>>
 >;
 
 /** What every caller takes as a setting of its own: a map ID and a colour scheme. */
@@ -70,8 +71,7 @@ export function mapOptionsCheck(
   own: OwnSettingRemarks,
   expected = "an object",
 ): Assert<CreatedMapOptions> {
-  const remarks: Readonly<Record<SetElsewhere, string>> = { ...SET_BY_MAPLACE, ...own };
-  return refusedKeysCheck({ ...remarks, ...ZERO_TWO_MAP_OPTIONS }, expected);
+  return refusedKeysCheck({ ...SET_BY_MAPLACE, ...ZERO_TWO_MAP_OPTIONS, ...own }, expected);
 }
 
 const ADAPTER_OWN_SETTINGS: OwnSettingRemarks = {

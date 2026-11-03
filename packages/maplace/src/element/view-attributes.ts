@@ -7,10 +7,14 @@ import { MAP_ELEMENT } from "./element-error";
 /** The attributes of the map's first view, given together. */
 export const VIEW_ATTRIBUTES = ["center", "zoom"] as const;
 
-/** What `map-options` says of a centre or zoom given in it, on either provider. */
+/**
+ * What `map-options` says of a centre or zoom given in it, 0.2's `set_center` too, on either
+ * provider.
+ */
 export const VIEW_IN_MAP_OPTIONS = {
   center: "is its own attribute: center",
   zoom: "is its own attribute: zoom",
+  set_center: "is its own attribute: center",
 } as const;
 
 const CENTER = child(MAP_ELEMENT, "center");
