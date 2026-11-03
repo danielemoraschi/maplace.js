@@ -6,9 +6,16 @@ star.textContent = "★";
 
 createGoogleMap("#markers-vanilla-map", {
   locations: [
-    { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", icon: "/icons/a.svg" },
-    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", icon: "/icons/b.svg", zoom: 8 },
-    { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples", icon: "/icons/c.svg" },
-    { id: "venice", lat: 45.4408, lng: 12.3155, title: "Venice", icon: star },
+    { id: "london", lat: 51.5074, lng: -0.1278, title: "London", icon: "/icons/a.svg" },
+    {
+      id: "edinburgh",
+      lat: 55.9533,
+      lng: -3.1883,
+      title: "Edinburgh",
+      icon: "/icons/b.svg",
+      zoom: 8,
+    },
+    { id: "manchester", lat: 53.4808, lng: -2.2426, title: "Manchester", icon: "/icons/c.svg" },
+    { id: "cardiff", lat: 51.4816, lng: -3.1791, title: "Cardiff", icon: star },
   ],
 });

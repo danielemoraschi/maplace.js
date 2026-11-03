@@ -8,13 +8,13 @@
   #tabs-maplibre-map > [role="listbox"] > [aria-selected="true"] { position: relative; border-color: color-mix(in srgb, currentColor 25%, transparent); background: Canvas; font-weight: 600; }
   #tabs-maplibre-map > #tabs-maplibre-details { order: -1; padding: 0.75rem 1.25rem 1rem; line-height: 1.5; }
 </style>
-<maplace-map id="tabs-maplibre-map" list selected-id="rome">
-  <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome" zoom="6"></maplace-location>
-  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan" zoom="6"></maplace-location>
+<maplace-map id="tabs-maplibre-map" list selected-id="london">
+  <maplace-location location-id="london" lat="51.5074" lng="-0.1278" title="London" zoom="6"></maplace-location>
+  <maplace-location location-id="edinburgh" lat="55.9533" lng="-3.1883" title="Edinburgh" zoom="6"></maplace-location>
   <aside id="tabs-maplibre-details"></aside>
 </maplace-map>
 <script>
-  const tabsMapLibreNotes = { rome: 'Capital since 1871.', milan: 'Finance and fashion.' };
+  const tabsMapLibreNotes = { london: 'Capital of the United Kingdom.', edinburgh: 'Capital of Scotland, home of the Fringe arts festival.' };
   const tabsMapLibreMap = document.getElementById('tabs-maplibre-map');
   function showTabsMapLibreNote(id) {
     document.getElementById('tabs-maplibre-details').textContent = tabsMapLibreNotes[id] ?? '';

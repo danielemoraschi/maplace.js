@@ -6,9 +6,9 @@ import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 const cities: Location[] = [
-  { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", group: "Centre" },
-  { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", group: "North" },
-  { id: "turin", lat: 45.0703, lng: 7.6869, title: "Turin", group: "North" },
+  { id: "london", lat: 51.5074, lng: -0.1278, title: "London", group: "South" },
+  { id: "edinburgh", lat: 55.9533, lng: -3.1883, title: "Edinburgh", group: "North" },
+  { id: "belfast", lat: 54.5973, lng: -5.9301, title: "Belfast", group: "North" },
 ];
 const NORTH = ["North"];
 

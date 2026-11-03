@@ -1,12 +1,14 @@
 import { expect } from "vitest";
-import type { ExampleBehaviour } from "./reading";
+import { type ExampleBehaviour, firstView } from "./reading";
 
+const FIRST_VIEW = { kind: "center", center: { lat: 44, lng: 11 }, zoom: 6 };
 const FIRST_CLICK = { lat: 43.1, lng: 13.4 };
 const DRAGGED_TO = { lat: 44.2, lng: 11.3 };
-const SECOND_CLICK = { lat: 40.5, lng: 16.5 };
+const SECOND_CLICK = { lat: 42.4, lng: 14.2 };
 
-/** A click on the map adds a pin; it drags, and stays where it was dragged as the next one lands. */
+/** The map opens on Italy's north; a click adds a pin, which drags and stays as the next lands. */
 export const clickToAdd: ExampleBehaviour = async ({ store, adapter }) => {
+  expect(firstView(adapter)).toEqual(FIRST_VIEW);
   const probe = adapter.probe();
   const located = (id: string) => store.getSnapshot().locations.find((place) => place.id === id);
   probe.clickMap(FIRST_CLICK);

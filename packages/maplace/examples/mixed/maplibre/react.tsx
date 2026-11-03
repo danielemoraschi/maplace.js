@@ -6,35 +6,35 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 const places: Location[] = [
-  { id: "colosseum", type: "marker", title: "Colosseum", lat: 41.8902, lng: 12.4922 },
+  { id: "tower-of-london", type: "marker", title: "Tower of London", lat: 51.5081, lng: -0.0759 },
   {
-    id: "trastevere",
+    id: "greenwich",
     type: "circle",
-    title: "Trastevere",
-    center: { lat: 41.8867, lng: 12.47 },
+    title: "Greenwich",
+    center: { lat: 51.4769, lng: -0.0005 },
     radius: 500,
   },
   {
-    id: "villa-borghese",
+    id: "hyde-park",
     type: "polygon",
-    title: "Villa Borghese",
+    title: "Hyde Park",
     path: [
-      { lat: 41.9175, lng: 12.479 },
-      { lat: 41.916, lng: 12.4885 },
-      { lat: 41.909, lng: 12.488 },
-      { lat: 41.9085, lng: 12.48 },
+      { lat: 51.5115, lng: -0.1755 },
+      { lat: 51.511, lng: -0.16 },
+      { lat: 51.503, lng: -0.16 },
+      { lat: 51.5035, lng: -0.1755 },
     ],
   },
   {
-    id: "tiber",
+    id: "thames",
     type: "polyline",
-    title: "Along the Tiber",
+    title: "Along the Thames",
     path: [
-      { lat: 41.9117, lng: 12.4729 },
-      { lat: 41.9014, lng: 12.4664 },
-      { lat: 41.8964, lng: 12.466 },
-      { lat: 41.8925, lng: 12.4709 },
-      { lat: 41.8906, lng: 12.4775 },
+      { lat: 51.5009, lng: -0.1222 },
+      { lat: 51.5085, lng: -0.1166 },
+      { lat: 51.5098, lng: -0.1043 },
+      { lat: 51.5085, lng: -0.0943 },
+      { lat: 51.5079, lng: -0.0877 },
     ],
   },
 ];

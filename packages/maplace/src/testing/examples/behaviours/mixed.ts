@@ -3,17 +3,17 @@ import type { ExampleRun } from "../example-runs";
 import { byText, type ExampleBehaviour, labelsIn, lastFit, selectedEntryIn } from "./reading";
 
 /** Each location, as the list names it, what the map draws it as, and a shape's latitudes. */
-const MARKER = { id: "colosseum", title: "Colosseum", type: "marker" } as const;
+const MARKER = { id: "tower-of-london", title: "Tower of London", type: "marker" } as const;
 const SHAPES = [
-  { id: "trastevere", title: "Trastevere", type: "circle", north: 41.8912, south: 41.8822 },
+  { id: "greenwich", title: "Greenwich", type: "circle", north: 51.4814, south: 51.4724 },
   {
-    id: "villa-borghese",
-    title: "Villa Borghese",
+    id: "hyde-park",
+    title: "Hyde Park",
     type: "polygon",
-    north: 41.9175,
-    south: 41.9085,
+    north: 51.5115,
+    south: 51.503,
   },
-  { id: "tiber", title: "Along the Tiber", type: "polyline", north: 41.9117, south: 41.8906 },
+  { id: "thames", title: "Along the Thames", type: "polyline", north: 51.5098, south: 51.5009 },
 ] as const;
 const DRAWN = [MARKER, ...SHAPES];
 
@@ -40,10 +40,10 @@ const expectFirstViewFitsAll = ({ adapter }: ExampleRun): void => {
   const firstView = lastFit(adapter);
   expect(firstView).toBeDefined();
   const { north, east, south, west } = firstView?.bounds ?? {};
-  expectWithin(north, 41.9175, 41.92);
-  expectWithin(east, 12.4922, 12.495);
-  expectWithin(south, 41.88, 41.883);
-  expectWithin(west, 12.46, 12.465);
+  expectWithin(north, 51.5115, 51.52);
+  expectWithin(east, 0.0067, 0.01);
+  expectWithin(south, 51.47, 51.473);
+  expectWithin(west, -0.18, -0.175);
 };
 
 /** A click on the map selects the location, and the list says so, for each type alike. */

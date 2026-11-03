@@ -2,5 +2,5 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { createMapLibreMap } from "maplace/maplibre";
 
 createMapLibreMap("#simple-maplibre-vanilla-map", {
-  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });

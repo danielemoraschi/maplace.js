@@ -70,7 +70,7 @@ A page that makes its map in its own script uses the same CDN script with no bui
 <script type="module">
   Maplace.createGoogleMap("#simple-script-map", {
     apiKey: "YOUR_KEY",
-    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+    locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
   });
 </script>
 ```
@@ -90,7 +90,7 @@ On MapLibre, the MapLibre script's `Maplace` has `createMapLibreMap` and `create
 <div id="simple-maplibre-script-map"></div>
 <script type="module">
   Maplace.createMapLibreMap("#simple-maplibre-script-map", {
-    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+    locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
   });
 </script>
 ```
@@ -133,7 +133,7 @@ The module makes the store on a Google map in one call ([`createGoogleMap`](goog
 import { createGoogleMap } from "maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
-  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });
 ```
 
@@ -158,7 +158,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { createMapLibreMap } from "maplace/maplibre";
 
 createMapLibreMap("#simple-maplibre-vanilla-map", {
-  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });
 ```
 

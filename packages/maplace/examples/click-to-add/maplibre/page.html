@@ -6,11 +6,12 @@
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan" editable></maplace-location>
 </maplace-map>
 <script>
+  const clickToAddMapLibreMap = document.getElementById('click-to-add-maplibre-map');
+  clickToAddMapLibreMap.maplace.setView({ lat: 44, lng: 11 }, 6);
   let clickToAddMapLibrePins = 0;
-  document.getElementById('click-to-add-maplibre-map').addEventListener('maplace-mapclick', (event) => {
+  clickToAddMapLibreMap.addEventListener('maplace-mapclick', (event) => {
     clickToAddMapLibrePins += 1;
-    const map = event.currentTarget;
     const pin = { id: `pin-${clickToAddMapLibrePins}`, ...event.detail.position, title: `Pin ${clickToAddMapLibrePins}`, editable: true };
-    map.locations = [...map.locations, pin];
+    clickToAddMapLibreMap.locations = [...clickToAddMapLibreMap.locations, pin];
   });
 </script>

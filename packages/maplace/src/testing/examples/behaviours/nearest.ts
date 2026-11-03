@@ -7,11 +7,11 @@ import {
   listedIn,
 } from "./reading";
 
-const ALL = ["Rome", "Naples", "Bologna", "Milan", "Turin"];
+const ALL = ["London", "Bristol", "Birmingham", "Manchester", "Leeds"];
 
-/** Oslo: every place south of it, so the nearest are in the North, then Centre, then South. */
+/** Oslo: every place south of it, so the nearest are the North's, then the Midlands', the South's. */
 const ABOVE_THEM_ALL = { latitude: 59.91, longitude: 10.75 };
-const NEAREST_FIRST = ["Milan", "Turin", "Bologna", "Rome", "Naples"];
+const NEAREST_FIRST = ["Leeds", "Manchester", "Birmingham", "London", "Bristol"];
 
 /**
  * A "My location" button on the map asks for the position only when pressed and sorts the list

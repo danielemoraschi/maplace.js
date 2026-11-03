@@ -4,6 +4,9 @@ One dated line per change a reader would notice, newest first, written in the co
 
 - 2026-11-03 Changed the site's header and footer to frosted glass over the page as it scrolls, and lowered the header's favicon to sit on the name's line
 - 2026-11-03 Fixed a list in a corner of a Google map covering Google's own buttons: it stops short of the fullscreen button, camera control and Pegman on the right, and of the logo and terms on the left, where a top-left one now sits under the Map/Satellite toggle rather than beside it
+- 2026-11-03 Changed the popups and click-to-add examples to open wider than a fit, on a centre and zoom
+- 2026-11-03 Changed the popups example's third place from Naples, which had no popup, to Venice, whose popup holds a list
+- 2026-11-02 Changed eight examples to UK places, so the site's examples aren't nearly all in Italy
 - 2026-11-02 Added to the docs what a map does when its container is resized or hidden
 - 2026-11-02 Changed the migration guide to name what breaks a 0.2 page with little or no warning: `google.maps` values in the data, Google's Routes API for a route, and `%index` in `html`
 - 2026-11-02 Changed `mapOptions` to refuse 0.2's `set_center`, which was ignored without a word

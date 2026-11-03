@@ -132,7 +132,7 @@ A page that makes its map in its own script needs no build step either: the CDN 
 <script type="module">
   Maplace.createGoogleMap("#simple-script-map", {
     apiKey: "YOUR_KEY",
-    locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+    locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
   });
 </script>
 ```
@@ -169,7 +169,7 @@ A store on a Google map in one call, `createGoogleMap`, on a page that loads Map
 import { createGoogleMap } from "maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
-  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });
 ```
 
@@ -194,7 +194,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { createMapLibreMap } from "maplace/maplibre";
 
 createMapLibreMap("#simple-maplibre-vanilla-map", {
-  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });
 ```
 
@@ -225,11 +225,11 @@ import { MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
+const london: Location[] = [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }];
 
 function Simple() {
   return (
-    <MaplaceProvider locations={rome}>
+    <MaplaceProvider locations={london}>
       <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
     </MaplaceProvider>
   );

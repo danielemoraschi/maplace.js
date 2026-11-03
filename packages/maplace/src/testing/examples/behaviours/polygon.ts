@@ -7,9 +7,9 @@ export const polygon: ExampleBehaviour = async ({ store, adapter }) => {
   adapter.probe().drag("park", {
     type: "polygon",
     path: [
-      { lat: 41.9, lng: 12.48 },
-      { lat: 41.93, lng: 12.49 },
-      { lat: 41.9, lng: 12.5 },
+      { lat: 51.503, lng: -0.175 },
+      { lat: 51.52, lng: -0.16 },
+      { lat: 51.503, lng: -0.155 },
     ],
   });
   await expect.poll(() => saved).toHaveLength(1);

@@ -5,11 +5,11 @@ import { MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-const rome: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
+const london: Location[] = [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }];
 
 function Simple() {
   return (
-    <MaplaceProvider locations={rome}>
+    <MaplaceProvider locations={london}>
       <MaplaceMap createAdapter={createMapLibreAdapter} className="map" />
     </MaplaceProvider>
   );

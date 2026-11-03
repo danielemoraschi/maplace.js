@@ -23,9 +23,21 @@ export function lastFit(adapter: FakeAdapter): BoundsView | undefined {
   return view?.kind === "fit-bounds" ? view : undefined;
 }
 
+/** The view the store sent the map first. */
+export function firstView(adapter: FakeAdapter): ResolvedView | undefined {
+  return adapter.callsOf("setView").at(0)?.view;
+}
+
 /** The text of the first `selector` inside `root`, if both are there. */
 export function textIn(root: Element | undefined, selector: string): string | null | undefined {
   return root?.querySelector(selector)?.textContent;
+}
+
+/** The trimmed text of every `selector` inside `root`, none without a root. */
+export function textsIn(root: Element | undefined, selector: string): (string | undefined)[] {
+  return [...(root?.querySelectorAll(selector) ?? [])].map(({ textContent }) =>
+    textContent?.trim(),
+  );
 }
 
 /** The list view inside `root`: the block holding its heading and entries, or the entries. */

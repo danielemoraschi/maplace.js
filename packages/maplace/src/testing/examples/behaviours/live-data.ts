@@ -2,14 +2,10 @@ import { expect } from "vitest";
 import type { Maplace } from "../../../index";
 import type { FakeAdapter } from "../../fake-adapter";
 import type { ExampleRun } from "../example-runs";
-import { clickButton, type ExampleBehaviour, lastFit } from "./reading";
-
-/** The text of the buttons `selector` finds in `root`. */
-const buttonTexts = (root: Element, selector: string) =>
-  [...root.querySelectorAll(selector)].map(({ textContent }) => textContent?.trim());
+import { clickButton, type ExampleBehaviour, lastFit, textsIn } from "./reading";
 
 /** The data sets' buttons shown pressed: the set on the map, or on its way. */
-const pressed = (root: Element) => buttonTexts(root, 'button[aria-pressed="true"]');
+const pressed = (root: Element) => textsIn(root, 'button[aria-pressed="true"]');
 
 const ids = (store: Maplace) => store.getSnapshot().locations.map(({ id }) => id);
 
@@ -31,7 +27,7 @@ async function expectStartsOnMarkers(
   buttons: readonly string[],
 ): Promise<void> {
   await expect.poll(() => ids(store)).toEqual(["a1", "a2", "a3"]);
-  expect(buttonTexts(root, "button[aria-pressed]")).toEqual(buttons);
+  expect(textsIn(root, "button[aria-pressed]")).toEqual(buttons);
   expect(pressed(root)).toEqual(["Markers"]);
 }
 

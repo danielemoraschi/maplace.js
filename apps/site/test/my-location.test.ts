@@ -55,7 +55,7 @@ describe("the My location control on the built site", () => {
     await expect.poll(() => button.getAttribute("aria-pressed"), ON_MAPLIBRE).toBe("true");
     expect(await asks()).toBe(1);
     const options = version.getByRole("option");
-    await expect.poll(() => options.first().textContent(), ON_MAPLIBRE).toContain("Milan");
+    await expect.poll(() => options.first().textContent(), ON_MAPLIBRE).toContain("Leeds");
     expect(await version.locator(`.${DISTANCE_CLASS}`).count()).toBe(await options.count());
     expect(await version.locator(`.${ORIGIN_DOT_CLASS}`).count()).toBe(1);
 

@@ -22,8 +22,8 @@ export const customList: ExampleBehaviour = async ({ store, adapter, root }) => 
   expect(radios).toHaveLength(listed.length + 1);
   expect(inputLabelled(root, "Fit all").checked).toBe(true);
 
-  inputLabelled(root, "Milan").click();
-  await expect.poll(() => store.getSnapshot().selectedId).toBe("milan");
+  inputLabelled(root, "York").click();
+  await expect.poll(() => store.getSnapshot().selectedId).toBe("york");
 
   const fits = adapter.callsOf("setView").length;
   inputLabelled(root, "Fit all").click();
@@ -31,7 +31,7 @@ export const customList: ExampleBehaviour = async ({ store, adapter, root }) => 
   await expect.poll(() => adapter.callsOf("setView").length).toBeGreaterThan(fits);
   expect(adapter.callsOf("setView").at(-1)?.view.kind).toBe("fit-bounds");
 
-  adapter.probe().click("rome");
-  await expect.poll(() => inputLabelled(root, "Rome").checked).toBe(true);
+  adapter.probe().click("london");
+  await expect.poll(() => inputLabelled(root, "London").checked).toBe(true);
   expect(inputLabelled(root, "Fit all").checked).toBe(false);
 };

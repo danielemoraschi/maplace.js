@@ -1,4 +1,4 @@
-import type { LatLng, Location } from "maplace";
+import type { LatLng, Location, View } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { MaplaceMap, MaplaceProvider } from "maplace/react";
 import { StrictMode, useState } from "react";
@@ -8,6 +8,8 @@ const cities: Location[] = [
   { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", editable: true },
   { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", editable: true },
 ];
+
+const firstView: View = { kind: "center", center: { lat: 44, lng: 11 }, zoom: 6 };
 
 /** The pin a click on the map adds, the `count`th. */
 function addedPin(position: LatLng, count: number): Location {
@@ -24,7 +26,12 @@ function ClickToAdd() {
       current.map((other) => (other.id === location.id ? location : other)),
     );
   return (
-    <MaplaceProvider locations={locations} onMapClick={addPin} onLocationChange={keepMoved}>
+    <MaplaceProvider
+      view={firstView}
+      locations={locations}
+      onMapClick={addPin}
+      onLocationChange={keepMoved}
+    >
       <MaplaceMap createAdapter={createGoogleAdapter} className="map" />
     </MaplaceProvider>
   );

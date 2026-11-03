@@ -16,8 +16,16 @@ createGoogleMap("#popups-vanilla-map", {
       title: "Milan",
       content: () => popupOf("Finance and fashion."),
     },
-    { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
+    {
+      id: "venice",
+      lat: 45.4408,
+      lng: 12.3155,
+      title: "Venice",
+      content: () =>
+        popupWithList("A city on 118 islands.", ["Over 400 bridges", "No cars, only boats"]),
+    },
   ],
+  view: { kind: "center", center: { lat: 44, lng: 11 }, zoom: 6 },
   popup: { openInMapsLink: true, directionsLink: true },
 });
 
@@ -26,4 +34,19 @@ function popupOf(about: string): HTMLParagraphElement {
   const text = document.createElement("p");
   text.textContent = about;
   return text;
+}
+
+/** A popup's line, then a list under it: any markup a node can hold. */
+function popupWithList(about: string, facts: readonly string[]): HTMLDivElement {
+  const list = document.createElement("ul");
+  list.append(...facts.map(listItemOf));
+  const popup = document.createElement("div");
+  popup.append(popupOf(about), list);
+  return popup;
+}
+
+function listItemOf(text: string): HTMLLIElement {
+  const item = document.createElement("li");
+  item.textContent = text;
+  return item;
 }

@@ -5,6 +5,7 @@ const maplace = createGoogleMap("#click-to-add-vanilla-map", {
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", editable: true },
     { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", editable: true },
   ],
+  view: { kind: "center", center: { lat: 44, lng: 11 }, zoom: 6 },
 });
 
 let pins = 0;

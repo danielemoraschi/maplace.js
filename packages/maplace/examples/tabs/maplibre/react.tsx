@@ -6,12 +6,12 @@ import { StrictMode, useSyncExternalStore } from "react";
 import { createRoot } from "react-dom/client";
 
 const cities: Location[] = [
-  { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", zoom: 6 },
-  { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan", zoom: 6 },
+  { id: "london", lat: 51.5074, lng: -0.1278, title: "London", zoom: 6 },
+  { id: "edinburgh", lat: 55.9533, lng: -3.1883, title: "Edinburgh", zoom: 6 },
 ];
 const notes: Readonly<Record<string, string>> = {
-  rome: "Capital since 1871.",
-  milan: "Finance and fashion.",
+  london: "Capital of the United Kingdom.",
+  edinburgh: "Capital of Scotland, home of the Fringe arts festival.",
 };
 
 const noteOf = (id: string | undefined) => (id === undefined ? "" : (notes[id] ?? ""));
@@ -28,7 +28,7 @@ function TabDetails() {
 
 function Tabs() {
   return (
-    <MaplaceProvider locations={cities} defaultSelectedId="rome">
+    <MaplaceProvider locations={cities} defaultSelectedId="london">
       <div className="panel">
         <LocationList />
         <TabDetails />

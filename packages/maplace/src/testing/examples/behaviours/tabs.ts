@@ -30,19 +30,21 @@ function expectDetailsBetweenTabsAndMap(root: Element, map: Element | undefined)
  * after, each place shown at its own zoom.
  */
 export const tabs: ExampleBehaviour = async ({ store, adapter, root }) => {
-  expect(store.getSnapshot().selectedId).toBe("rome");
+  expect(store.getSnapshot().selectedId).toBe("london");
   expect(store.getSnapshot().locations.map(({ zoom }) => zoom)).toEqual([6, 6]);
-  await expect.poll(() => selectedEntryIn(root)?.textContent).toBe("Rome");
-  await expect.poll(() => textIn(root, "aside")).toBe("Capital since 1871.");
-  expectDrawnAsTabs(tabIn(root, "Rome"), tabIn(root, "Milan"));
+  await expect.poll(() => selectedEntryIn(root)?.textContent).toBe("London");
+  await expect.poll(() => textIn(root, "aside")).toBe("Capital of the United Kingdom.");
+  expectDrawnAsTabs(tabIn(root, "London"), tabIn(root, "Edinburgh"));
   expectTabsFitTheirRow(root);
   expectDetailsBetweenTabsAndMap(root, adapter.mounted?.container);
-  store.select("milan");
+  store.select("edinburgh");
   expect(adapter.callsOf("setView").at(-1)?.view).toEqual({
     kind: "location",
-    id: "milan",
+    id: "edinburgh",
     zoom: 6,
   });
-  await expect.poll(() => textIn(root, "aside")).toBe("Finance and fashion.");
-  await expect.poll(() => selectedEntryIn(root)?.textContent).toBe("Milan");
+  await expect
+    .poll(() => textIn(root, "aside"))
+    .toBe("Capital of Scotland, home of the Fringe arts festival.");
+  await expect.poll(() => selectedEntryIn(root)?.textContent).toBe("Edinburgh");
 };

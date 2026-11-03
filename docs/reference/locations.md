@@ -14,12 +14,12 @@ const locations: Location[] = [
   {
     id: "park",
     type: "polygon",
-    title: "Park",
+    title: "Hyde Park",
     editable: true,
     path: [
-      { lat: 41.91, lng: 12.48 },
-      { lat: 41.92, lng: 12.49 },
-      { lat: 41.9, lng: 12.5 },
+      { lat: 51.512, lng: -0.175 },
+      { lat: 51.513, lng: -0.16 },
+      { lat: 51.503, lng: -0.155 },
     ],
   },
 ];

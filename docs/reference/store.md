@@ -11,7 +11,7 @@ The store is maplacejs's headless map state: locations, selection, hover, filter
 import { createGoogleMap } from "maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
-  locations: [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }],
+  locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });
 ```
 
