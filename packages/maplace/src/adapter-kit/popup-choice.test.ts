@@ -13,6 +13,12 @@ describe("createPopupChoice", () => {
     expect(createPopupChoice("click").wanted(NOTHING_PRESENTED)).toBeUndefined();
   });
 
+  it("wants the selected location's popup with 'hover' while nothing is hovered, as after a tap", () => {
+    const choice = createPopupChoice("hover");
+    expect(choice.wanted(presented({ selectedId: "a" }))).toBe("a");
+    expect(choice.wanted(presented({ selectedId: "a", hoveredId: "b" }))).toBe("b");
+  });
+
   it("wants no popup for a hidden location", () => {
     const hidden = presented({ selectedId: "a", hiddenIds: new Set(["a"]) });
     expect(createPopupChoice("click").wanted(hidden)).toBeUndefined();

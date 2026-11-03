@@ -83,6 +83,13 @@ export function popupChecks(subject: ConformanceSubject): void {
       expect(host.reportsOf("reportPopupOpen").map(([id]) => id)).toEqual(["a"]);
     });
 
+    it("shows the selected location's popup with openOn 'hover' while nothing is hovered, so a tap opens it", async () => {
+      const { adapter, probe, host } = await mountedWithPopups({ openOn: "hover" });
+      adapter.present(presented({ selectedId: "b" }));
+      await probe.settle();
+      expect(host.reportsOf("reportPopupOpen").map(([id]) => id)).toEqual(["b"]);
+    });
+
     it("reports a close by the user, and stays closed", async () => {
       const { adapter, probe, host } = await mountedWithPopups();
       adapter.present(presented({ selectedId: "a" }));

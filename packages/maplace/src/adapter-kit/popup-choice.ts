@@ -4,8 +4,8 @@ import type { ResolvedPopupOptions } from "../popup";
 /** Which location's popup a map should show, the same on every map. */
 export interface PopupChoice {
   /**
-   * The location whose popup should show: the selected one, or the hovered one with
-   * `openOn: 'hover'`, if shown and the user didn't close its popup. Asking again once another
+   * The location whose popup should show: the selected one, or with `openOn: 'hover'` the hovered
+   * one, else the selected one (a tap hovers nothing), if shown and the user didn't close its popup. Asking again once another
    * location (or none) is wanted forgets that close.
    */
   wanted(presented: PresentationState): string | undefined;
@@ -17,7 +17,7 @@ export function createPopupChoice(openOn: ResolvedPopupOptions["openOn"]): Popup
   let dismissed: string | undefined;
   return {
     wanted({ selectedId, hoveredId, hiddenIds }) {
-      const id = openOn === "click" ? selectedId : hoveredId;
+      const id = openOn === "click" ? selectedId : (hoveredId ?? selectedId);
       if (id !== dismissed) dismissed = undefined;
       if (id === undefined || id === dismissed || hiddenIds.has(id)) return undefined;
       return id;
