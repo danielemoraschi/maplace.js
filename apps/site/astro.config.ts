@@ -24,6 +24,9 @@ export default defineConfig({
     },
   },
   markdown: { shikiConfig: { theme: "css-variables" } },
+  // Off: its Audit app re-checks the whole page after every DOM change, which the maps make
+  // all the time; in Safari that took 40% of a dev page's CPU.
+  devToolbar: { enabled: false },
   // maplace resolved to its source, as the tests and the examples' type-check do.
   vite: {
     plugins: [tailwindcss(), exampleModulesRun(), exampleMapId(), exampleFailureNotes()],
