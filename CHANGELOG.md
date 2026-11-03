@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-03 Changed the site's header and footer to frosted glass over the page as it scrolls, and lowered the header's favicon to sit on the name's line
 - 2026-11-03 Fixed a list in a corner of a Google map covering Google's own buttons: it stops short of the fullscreen button, camera control and Pegman on the right, and of the logo and terms on the left, where a top-left one now sits under the Map/Satellite toggle rather than beside it
 - 2026-11-02 Added to the docs what a map does when its container is resized or hidden
 - 2026-11-02 Changed the migration guide to name what breaks a 0.2 page with little or no warning: `google.maps` values in the data, Google's Routes API for a route, and `%index` in `html`
