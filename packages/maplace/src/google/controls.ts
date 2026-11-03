@@ -86,7 +86,7 @@ export function createControls(colorScheme: ColorScheme = "light"): Controls {
       if (destroyed) return () => {};
       const previous = byNode.get(node);
       if (previous) takeOff(previous);
-      const control = { panel: panelFor(node, colorScheme), position };
+      const control = { panel: panelFor(node, colorScheme, position), position };
       byNode.set(node, control);
       place(control);
       return () => remove(node, control);
@@ -94,11 +94,19 @@ export function createControls(colorScheme: ColorScheme = "light"): Controls {
   };
 }
 
-/** The panel Google lays out as it likes: an element of maplace's own holding `node` unchanged. */
-function panelFor(node: HTMLElement, colorScheme: ColorScheme): HTMLElement {
+/**
+ * The panel Google lays out as it likes: an element of maplace's own holding `node` unchanged,
+ * marked with its corner for the default styles (`data-corner`, not documented for pages).
+ */
+function panelFor(
+  node: HTMLElement,
+  colorScheme: ColorScheme,
+  position: ControlPosition,
+): HTMLElement {
   const panel = node.ownerDocument.createElement("div");
   panel.className = CONTROL_CLASS;
   panel.dataset.colorScheme = colorScheme;
+  panel.dataset.corner = position;
   panel.append(node);
   return panel;
 }

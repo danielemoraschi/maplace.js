@@ -16,6 +16,6 @@ createMapLibreMap("#this-area-maplibre-vanilla-map", {
     { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" },
     { id: "athens", lat: 37.9838, lng: 23.7275, title: "Athens" },
   ],
-  // On the map, top-right: a list switched between "All" and "This area", what is in view.
-  list: { scope: "viewport" },
+  // On the map, top-left: a list switched between "All" and "This area", what is in view.
+  list: { scope: "viewport", position: "top-left" },
 });

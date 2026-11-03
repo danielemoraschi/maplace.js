@@ -25,7 +25,7 @@ function ThisArea() {
     <MaplaceProvider locations={capitals}>
       <MaplaceMap createAdapter={createMapLibreAdapter} className="map">
         {/* A list switched between "All" and "This area", what is in view as the map moves. */}
-        <LocationList scope="viewport" position="top-right" />
+        <LocationList scope="viewport" position="top-left" />
       </MaplaceMap>
     </MaplaceProvider>
   );

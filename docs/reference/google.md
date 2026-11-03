@@ -155,6 +155,12 @@ A click on the map is reported 250 ms after it, unless a double-click comes firs
 
 A popup is Google's InfoWindow, headed by the location's title. One opened by a click or from the list pans the map to show it, once Google's own pan ends, clear of what the map's corners hold when there is room (never over Google's logo or terms; with no room, Google's own pan stands). A hover's popup doesn't pan.
 
+## On-map controls
+
+What goes on the map (`createGoogleMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like Google's own controls, `.maplace-control`, in Google's corners: `top-left` under Google's Map/Satellite toggle, the others in Google's corner of that name.
+
+On a map maplacejs creates, its lists scroll within the map, clear of Google's own controls: on the left of the toggle and of its logo and terms, on the right of the fullscreen button, the camera control and Pegman, which Google stacks on that side. On a map too short for them, a list on the right keeps at least 7em and may cover them. A list in a left corner has the most room. The room is set aside for each side, not measured: it stays when those controls are turned off in `mapOptions`, and two lists on one side can overlap; a rule of the page, such as `.maplace-control .maplace-list { max-height: 90% }`, takes it back. Classes and how to turn the defaults off: [Styling](styling.md).
+
 ## The origin's dot
 
 The dot at the store's [origin](store.md#distances) is an advanced marker straight on the map, not clickable, below every marker, in no cluster.

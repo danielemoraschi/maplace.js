@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { ControlPosition } from "../adapter";
 import { frameDocument } from "../testing/iframes";
+import { panelOf } from "../testing/panel-of";
 import { cssTextOf } from "../testing/selectors";
 import { type Controls, createControls } from "./controls";
 import type { ColorScheme } from "./options";
@@ -26,8 +27,8 @@ function controlsOnStubs(colorScheme?: ColorScheme) {
 
 const button = () => document.createElement("button");
 
-/** The element Google holds in the top-left corner: the control's panel. */
-const panelTopLeft = (map: StubMap) => map.controls[STUB_CONTROL_POSITIONS.TOP_LEFT]?.getArray()[0];
+/** The element Google holds under its top-left controls, maplace's top-left: the control's panel. */
+const panelTopLeft = (map: StubMap) => map.controls[STUB_CONTROL_POSITIONS.LEFT_TOP]?.getArray()[0];
 
 function mount(controls: Controls, position: ControlPosition) {
   const node = button();
@@ -54,6 +55,15 @@ describe("the Google adapter's controls", () => {
     expect(panel?.classList.contains("maplace-control")).toBe(true);
     expect(panel?.dataset.colorScheme).toBe("dark");
     expect(panel?.firstElementChild).toBe(node);
+  });
+
+  it("marks each panel with its corner, which its lists' room depends on", () => {
+    const { controls, open } = controlsOnStubs();
+    open();
+    const corners = [mount(controls, "top-left"), mount(controls, "bottom-right")].map(
+      ({ node }) => panelOf(node).dataset.corner,
+    );
+    expect(corners).toEqual(["top-left", "bottom-right"]);
   });
 
   it("takes the light scheme, Google's own, when none is given", () => {
@@ -91,7 +101,7 @@ describe("the Google adapter's controls", () => {
     const { node, remove } = mount(controls, "top-left");
     remove();
     remove();
-    expect(corner("TOP_LEFT")).toEqual([]);
+    expect(corner("LEFT_TOP")).toEqual([]);
     expect(node.isConnected).toBe(false);
     expect(node.parentNode).toBeNull();
   });
@@ -102,7 +112,7 @@ describe("the Google adapter's controls", () => {
     const { remove } = mount(controls, "top-left");
     mount(controls, "top-right");
     destroy();
-    expect([corner("TOP_LEFT"), corner("TOP_RIGHT")]).toEqual([[], []]);
+    expect([corner("LEFT_TOP"), corner("TOP_RIGHT")]).toEqual([[], []]);
     expect(remove).not.toThrow();
   });
 
@@ -115,7 +125,7 @@ describe("the Google adapter's controls", () => {
     sidebar.append(node);
     const remove = controls.mountControl(node, "top-left");
     remove();
-    expect([node.parentElement, corner("TOP_LEFT")]).toEqual([sidebar, []]);
+    expect([node.parentElement, corner("LEFT_TOP")]).toEqual([sidebar, []]);
   });
 
   it("leaves the page's node where it is after a destroy that came before the map opened", () => {
@@ -135,18 +145,18 @@ describe("the Google adapter's controls", () => {
     const removeFirst = controls.mountControl(node, "top-left");
     controls.mountControl(node, "bottom-left");
     removeFirst();
-    expect([corner("TOP_LEFT"), corner("BOTTOM_LEFT")]).toEqual([[], [node]]);
+    expect([corner("LEFT_TOP"), corner("BOTTOM_LEFT")]).toEqual([[], [node]]);
   });
 
   it("leaves the page's own control in the same corner through remove and destroy", () => {
     const { controls, corner, open, destroy, map } = controlsOnStubs();
     const pages = button();
-    map.controls[STUB_CONTROL_POSITIONS.TOP_LEFT]?.push(pages);
+    map.controls[STUB_CONTROL_POSITIONS.LEFT_TOP]?.push(pages);
     open();
     mount(controls, "top-left").remove();
     mount(controls, "top-left");
     destroy();
-    expect(corner("TOP_LEFT")).toEqual([pages]);
+    expect(corner("LEFT_TOP")).toEqual([pages]);
   });
 
   it("takes its controls off when the map closes, as when Google refuses the key", () => {
@@ -155,6 +165,6 @@ describe("the Google adapter's controls", () => {
     mount(controls, "top-left");
     close();
     mount(controls, "top-left");
-    expect(corner("TOP_LEFT")).toEqual([]);
+    expect(corner("LEFT_TOP")).toEqual([]);
   });
 });

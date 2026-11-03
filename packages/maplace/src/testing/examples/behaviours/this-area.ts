@@ -16,7 +16,7 @@ function entriesIn(root: Element): number {
  * the next move; "All" listing every point again.
  */
 export const thisArea: ExampleBehaviour = async ({ store, adapter, root }) => {
-  expect(controlPositions(adapter)).toEqual(["top-right"]);
+  expect(controlPositions(adapter)).toEqual(["top-left"]);
   const moveTo = async (lat: number, lng: number) => {
     store.setView({ lat, lng }, 5);
     await adapter.probe().settle();

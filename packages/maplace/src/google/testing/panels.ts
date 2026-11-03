@@ -22,9 +22,9 @@ interface ListOnGoogle extends StoreSite {
 }
 
 /**
- * `list` in the top-left corner of the Google map `maplace` is attached and fitted to, once Google
- * laid it out, and destroyed after the test: the map's container, the panel holding the list,
- * and how to take the list off the map.
+ * `list` top-left on the Google map `maplace` is attached and fitted to, once Google laid it out,
+ * and destroyed after the test: the adapter, the map's container, the panel holding the list, and
+ * how to take the list off the map.
  */
 export async function listMountedOnGoogle({ maplace, list, ...site }: ListOnGoogle) {
   onTestFinished(() => list.destroy());
@@ -32,5 +32,5 @@ export async function listMountedOnGoogle({ maplace, list, ...site }: ListOnGoog
   await fitted(maplace);
   const remove = adapter.mountControl(list.element, "top-left");
   await settledOnMap(list.element);
-  return { container, panel: panelOf(list.element), remove };
+  return { adapter, container, panel: panelOf(list.element), remove };
 }

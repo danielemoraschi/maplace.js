@@ -1,11 +1,14 @@
 /// <reference types="google.maps" />
-import { afterEach, expect, it } from "vitest";
+import { afterEach, expect, it, onTestFinished } from "vitest";
 import { userEvent } from "vitest/browser";
-import { createListView, type ListViewOptions } from "../list-view";
+import type { Adapter } from "../adapter";
+import { createListView, type ListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { SKIP_MAP_CLASS } from "../maplace/map-aids";
+import { panelOf } from "../testing/panel-of";
 import { queried } from "../testing/queried";
 import type { ColorScheme } from "./options";
+import { settledOnMap } from "./testing/controls-placed";
 import { darkPage } from "./testing/dark-page";
 import { tabUntil } from "./testing/page-input";
 import { listMountedOnGoogle } from "./testing/panels";
@@ -20,6 +23,42 @@ function googlesOwnControl(container: HTMLElement): HTMLElement {
   return control;
 }
 
+/**
+ * Google's own controls on its map: its buttons, Pegman, and its logo and terms. Not its fullscreen
+ * button, which Google leaves out of a page in a frame, as the test runner's is.
+ */
+const GOOGLES_CONTROLS =
+  ".gmnoprint button, .gm-svpc, .gm-style-cc, a[href*='maps.google.com/maps']";
+
+function overlaps(a: DOMRect, b: DOMRect): boolean {
+  return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+}
+
+/** Which of Google's own controls `panel` covers: none, once each has its room. */
+function crowded(container: HTMLElement, panel: HTMLElement): string[] {
+  const panelBox = panel.getBoundingClientRect();
+  const controls = [...container.querySelectorAll<HTMLElement>(GOOGLES_CONTROLS)].filter(
+    (control) => !panel.contains(control),
+  );
+  if (controls.length === 0) throw new Error("none of Google's own controls on the map");
+  return controls
+    .filter((control) => overlaps(control.getBoundingClientRect(), panelBox))
+    .map((control) => control.ariaLabel ?? control.className);
+}
+
+/** How far below Google's Map/Satellite toggle `panel` starts: never above it. */
+function belowTheToggle(container: HTMLElement, panel: HTMLElement): number {
+  const toggle = queried(container, ".gm-style-mtc").getBoundingClientRect();
+  return panel.getBoundingClientRect().top - toggle.bottom;
+}
+
+/** `list` mounted top-right, once Google laid it out: its panel. */
+async function mountedTopRight(adapter: Pick<Adapter, "mountControl">, list: ListView) {
+  adapter.mountControl(list.element, "top-right");
+  await settledOnMap(list.element);
+  return panelOf(list.element);
+}
+
 interface ListSetting extends ListViewOptions {
   readonly colorScheme?: ColorScheme | undefined;
   readonly count?: number | undefined;
@@ -29,8 +68,8 @@ interface ListSetting extends ListViewOptions {
 async function listOnGoogle({ colorScheme, count, ...options }: ListSetting = {}) {
   const maplace = createMaplace({ locations: places(count) });
   const list = createListView(maplace, options);
-  const { container, panel } = await listMountedOnGoogle({ maplace, list, colorScheme });
-  return { container, view: list.element, panel };
+  const { adapter, container, panel } = await listMountedOnGoogle({ maplace, list, colorScheme });
+  return { maplace, adapter, container, view: list.element, panel };
 }
 
 describeWithMaps("controls on a Google map", () => {
@@ -93,8 +132,19 @@ describeWithMaps("controls on a Google map", () => {
     );
   });
 
-  it("keeps a long list inside the map, its heading in view as End scrolls to the last entry", async () => {
-    const { container, panel, view } = await listOnGoogle({ count: 30, heading: "Places" });
+  it("keeps long lists inside the map and off Google's own controls, a top-left one under the Map/Satellite toggle, its heading in view as End scrolls", async () => {
+    const { maplace, adapter, container, panel, view } = await listOnGoogle({
+      count: 30,
+      heading: "Places",
+    });
+    const right = createListView(maplace);
+    onTestFinished(() => right.destroy());
+    const rightPanel = await mountedTopRight(adapter, right);
+    expect({ left: crowded(container, panel), right: crowded(container, rightPanel) }).toEqual({
+      left: [],
+      right: [],
+    });
+    expect(belowTheToggle(container, panel)).toBeGreaterThanOrEqual(0);
     const listbox = queried(view, '[role="listbox"]');
     const heading = queried(view, ".maplace-list-heading");
     const mapBox = container.getBoundingClientRect();

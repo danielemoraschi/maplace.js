@@ -7,9 +7,9 @@ import { stubLibraries } from "./testing/stub-libraries";
 const { core } = stubLibraries();
 
 describe("googlePosition", () => {
-  it("puts each of maplace's corners in Google's corner of the same name", () => {
+  it("puts top-left under Google's own top-left controls, and every other corner in Google's corner of its name", () => {
     const corners: ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
-    // Google's own values for its corners (Maps JS 3.66), which the stub copies.
-    expect(corners.map((corner) => googlePosition(core, corner))).toEqual([1, 3, 10, 12]);
+    // Google's own values (Maps JS 3.66), which the stub copies: LEFT_TOP, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+    expect(corners.map((corner) => googlePosition(core, corner))).toEqual([5, 3, 10, 12]);
   });
 });

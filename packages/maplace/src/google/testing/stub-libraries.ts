@@ -95,8 +95,8 @@ customElements.define("stub-advanced-marker", StubMarker);
 
 /** Google's `ControlPosition` values for the corners (Maps JS 3.66). */
 export const STUB_CONTROL_POSITIONS = {
-  TOP_LEFT: 1,
   TOP_RIGHT: 3,
+  LEFT_TOP: 5,
   BOTTOM_LEFT: 10,
   BOTTOM_RIGHT: 12,
 } as const;

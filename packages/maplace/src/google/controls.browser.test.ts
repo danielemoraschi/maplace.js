@@ -94,7 +94,7 @@ describeWithMaps("lists on a Google map", () => {
     const { map, list, remove } = await listOnMap();
     const pages = document.createElement("button");
     const corner = map.controls[
-      google.maps.ControlPosition.TOP_LEFT
+      google.maps.ControlPosition.LEFT_TOP
     ] as google.maps.MVCArray<HTMLElement>;
     corner.push(pages);
     await controlsPlaced(map);
