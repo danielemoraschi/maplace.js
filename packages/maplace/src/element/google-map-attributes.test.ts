@@ -59,8 +59,8 @@ describe("createdMapSettingsOf", () => {
   );
 
   it.each([
-    ["center", "is set by the store's view"],
-    ["zoom", "is set by the store's view"],
+    ["center", "is its own attribute: center"],
+    ["zoom", "is its own attribute: zoom"],
     ["styles", "is not offered: style the map in Cloud Console, through its map ID"],
     ["mapId", "is its own attribute: map-id"],
     ["colorScheme", "is its own attribute: color-scheme"],

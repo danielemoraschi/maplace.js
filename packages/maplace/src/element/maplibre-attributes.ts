@@ -1,11 +1,13 @@
 import type { MapOptions } from "maplibre-gl";
 import type { MapLibreAdapterOptions } from "../maplibre/index";
-import { child, mustBe, root } from "../validate/fail";
+import { child, mustBe } from "../validate/fail";
 import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import type { Assert } from "../validate/record";
 import { refusedKeysCheck } from "../validate/refused-keys";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
+import { MAP_ELEMENT } from "./element-error";
 import { MAP_SETTING_ATTRIBUTES } from "./map-settings-watch";
+import { VIEW_IN_MAP_OPTIONS } from "./view-attributes";
 
 /** The map settings MapLibre's provider reads; `color-scheme` isn't one: the style sets the colours. */
 export const MAPLIBRE_MAP_SETTINGS = [
@@ -23,13 +25,10 @@ type SetByMaplace = Exclude<keyof MapOptions, keyof MapLibreMapOptionsAttribute>
 export const REFUSED_IN_MAP_OPTIONS = {
   container: "is the map's own element, which maplace makes",
   style: "is its own attribute: map-style",
-  center: "is set by the store's view",
-  zoom: "is set by the store's view",
+  ...VIEW_IN_MAP_OPTIONS,
   bounds: "is set by the store's view",
   ...GOOGLE_NAMES_ON_MAPLIBRE,
 } as const satisfies Record<SetByMaplace, string>;
-
-const ELEMENT = root("<maplace-map>");
 
 const UNPARSED_JSON = /^\s*[[{]/;
 
@@ -61,7 +60,7 @@ function mapStyleOf(element: Element): MapLibreStyle | undefined {
   const name = MAP_SETTING_ATTRIBUTES.mapStyle;
   const value = jsonOrRaw(givenAttribute(element, name));
   if (value === undefined || isStyle(value)) return value;
-  return mustBe(child(ELEMENT, name), "a style URL or a JSON style object", value);
+  return mustBe(child(MAP_ELEMENT, name), "a style URL or a JSON style object", value);
 }
 
 function isStyle(value: unknown): value is MapLibreStyle {
@@ -78,6 +77,6 @@ function mapOptionsOf(element: Element): MapLibreMapOptionsAttribute | undefined
   const name = MAP_SETTING_ATTRIBUTES.mapOptions;
   const value = jsonOrRaw(givenAttribute(element, name));
   if (value === undefined) return undefined;
-  checkMapOptionsAttribute(value, child(ELEMENT, name));
+  checkMapOptionsAttribute(value, child(MAP_ELEMENT, name));
   return value;
 }

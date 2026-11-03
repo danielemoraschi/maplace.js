@@ -81,11 +81,17 @@ expectTypeOf<VueMap["locations"]>().toEqualTypeOf<readonly Location[] | undefine
 expectTypeOf<VueMap["route"]>().toEqualTypeOf<Route | undefined>();
 expectTypeOf<SvelteMap["sanitize"]>().toEqualTypeOf<((html: string) => string) | undefined>();
 
+// The first view's attributes are plain ones, as `selected-id` is: no `false`, which isn't a view.
+expectTypeOf<VueMap["center"]>().toEqualTypeOf<VueMap["selected-id"]>();
+expectTypeOf<SvelteMap["zoom"]>().toEqualTypeOf<SvelteMap["selected-id"]>();
+
 // A template as a reader writes it compiles.
 const locations: Location[] = [{ id: "rome", lat: 41.9, lng: 12.5 }];
 export const vueMap: VueMap = {
   list: true,
   "map-options": '{"maxZoom": 12}',
+  center: "41.9,12.5",
+  zoom: 6,
   class: "map",
   "url-state": "place",
   locations,

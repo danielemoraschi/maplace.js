@@ -4,10 +4,12 @@ import {
   checkColorScheme,
   mapOptionsCheck,
 } from "../google/options";
-import { child, root } from "../validate/fail";
+import { child } from "../validate/fail";
 import type { Assert } from "../validate/record";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
+import { MAP_ELEMENT } from "./element-error";
 import { MAP_SETTING_ATTRIBUTES } from "./map-settings-watch";
+import { VIEW_IN_MAP_OPTIONS } from "./view-attributes";
 
 /** The map settings Google's provider reads; Google sets a colour scheme only on a new map. */
 export const GOOGLE_MAP_SETTINGS = [
@@ -21,12 +23,11 @@ export interface CreatedMapSettings {
   readonly mapOptions: CreatedMapOptions | undefined;
 }
 
-const ELEMENT = root("<maplace-map>");
-
 const checkMapOptionsAttribute: Assert<CreatedMapOptions> = mapOptionsCheck(
   {
     mapId: "is its own attribute: map-id",
     colorScheme: "is its own attribute: color-scheme",
+    ...VIEW_IN_MAP_OPTIONS,
   },
   "a JSON object",
 );
@@ -40,7 +41,7 @@ function colorSchemeOf(element: Element): ColorScheme | undefined {
   const name = MAP_SETTING_ATTRIBUTES.colorScheme;
   const value = givenAttribute(element, name);
   if (value === undefined) return undefined;
-  checkColorScheme(value, child(ELEMENT, name));
+  checkColorScheme(value, child(MAP_ELEMENT, name));
   return value;
 }
 
@@ -48,6 +49,6 @@ function mapOptionsOf(element: Element): CreatedMapOptions | undefined {
   const name = MAP_SETTING_ATTRIBUTES.mapOptions;
   const value = jsonOrRaw(givenAttribute(element, name));
   if (value === undefined) return undefined;
-  checkMapOptionsAttribute(value, child(ELEMENT, name));
+  checkMapOptionsAttribute(value, child(MAP_ELEMENT, name));
   return value;
 }

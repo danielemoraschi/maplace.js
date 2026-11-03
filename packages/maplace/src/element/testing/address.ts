@@ -14,19 +14,19 @@ export function syncedFeed(
   locations = [ROME_LOCATION, MILAN_LOCATION],
 ) {
   const host = elementWith(attributes);
-  const feed = new StoreFeed(
-    host,
-    createStandingMisuse(host, () => {}),
-    () => {},
-  );
+  const misuse = createStandingMisuse(host, () => {});
+  const feed = new StoreFeed(host, misuse, () => {});
   feed.giveLocations(locations);
   const sync = createUrlState(host, feed);
   onTestFinished(() => sync.stop());
-  return { host, feed, sync, errors: errorsOn(host) };
+  return { host, feed, sync, misuse, errors: errorsOn(host) };
 }
 
 /** The selection of `feed`'s store, created if it wasn't. */
 export const selectedIn = (feed: StoreFeed) => feed.store().getSnapshot().selectedId;
+
+/** The view of `feed`'s store, created if it wasn't. */
+export const viewOf = (feed: StoreFeed) => feed.store().getSnapshot().view;
 
 /** The page's address with `query` and `hash`, until the test finishes. */
 export function atAddress(query: string, hash = ""): void {

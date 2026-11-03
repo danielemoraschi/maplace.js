@@ -16,7 +16,7 @@ const field = (hint: string) => `is a 0.2 field; ${hint}`;
 /** Options whose hint in `migration.ts` is true of the store's API, not of the element's. */
 const OPTIONS_ON_THE_ELEMENT: Readonly<Record<string, string>> = {
   map_options: option(
-    "use map-options, a JSON object of your provider's own map options (Google's and MapLibre's names differ), without a centre or zoom",
+    "use map-options, a JSON object of your provider's own map options (Google's and MapLibre's names differ), without a centre or zoom: those are the center and zoom attributes",
   ),
   controls_div: option(LIST_POSITION),
   controls_position: option(LIST_POSITION),

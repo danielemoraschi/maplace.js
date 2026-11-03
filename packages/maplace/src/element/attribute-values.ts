@@ -24,9 +24,13 @@ export function jsonOrRaw(written: string | null | undefined): unknown {
 /** The attribute as a number, or as written when blank or not a number (`lat=""` is never 0). */
 export function numberOrRaw(element: Element, name: string): number | string | undefined {
   const value = element.getAttribute(name);
-  if (value === null) return undefined;
-  const number = Number(value);
-  return value.trim() === "" || !Number.isFinite(number) ? value : number;
+  return value === null ? undefined : numberOrText(value);
+}
+
+/** `text` as a number, or as written when blank or not a number. */
+export function numberOrText(text: string): number | string {
+  const number = Number(text);
+  return text.trim() === "" || !Number.isFinite(number) ? text : number;
 }
 
 /**

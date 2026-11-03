@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- Popups from each place's content, ending in an Open in Maps and a Directions link; Venice's content adds a list. -->
-<maplace-map id="popups-map" api-key="YOUR_KEY" open-in-maps-link directions-link>
+<maplace-map id="popups-map" api-key="YOUR_KEY" center="44,11" zoom="6" open-in-maps-link directions-link>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome">
     <template><p>Capital of Italy.</p></template>
   </maplace-location>
@@ -18,6 +18,3 @@
     </template>
   </maplace-location>
 </maplace-map>
-<script>
-  document.getElementById('popups-map').maplace.setView({ lat: 44, lng: 11 }, 6);
-</script>

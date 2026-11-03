@@ -1,8 +1,12 @@
 import { MaplaceError, type MaplaceErrorDetails } from "../index";
+import { root } from "../validate/fail";
+
+/** Where an attribute's misuse is, for the store's checks: `<maplace-map>: map-options.center`. */
+export const MAP_ELEMENT = root("<maplace-map>");
 
 /** Misuse of `<maplace-map>`, which no caller can catch: reported as `maplace-error` instead. */
 export function elementMisuse(problem: string, details?: MaplaceErrorDetails): MaplaceError {
-  return new MaplaceError("invalid-input", `<maplace-map>: ${problem}`, details);
+  return new MaplaceError("invalid-input", `${MAP_ELEMENT.label}: ${problem}`, details);
 }
 
 /**

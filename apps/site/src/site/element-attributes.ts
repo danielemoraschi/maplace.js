@@ -2,6 +2,7 @@ import { LIST_ATTRIBUTES } from "../../../../packages/maplace/src/element/elemen
 import { SCRIPT_ATTRIBUTES } from "../../../../packages/maplace/src/element/google-attributes.ts";
 import { GOOGLE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/google-map-attributes.ts";
 import { MAPLIBRE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/maplibre-attributes.ts";
+import { VIEW_ATTRIBUTES } from "../../../../packages/maplace/src/element/view-attributes.ts";
 
 /**
  * The attributes the element reads by a literal name, kept in no list of its own:
@@ -33,7 +34,11 @@ const GOOGLE_PROVIDER_READS = ["map-id"] as const;
 export const ATTRIBUTES_READ_BY_NAME: readonly string[] = [...MAP_READS, ...GOOGLE_PROVIDER_READS];
 
 /** The attributes `<maplace-map>` reads itself, whatever its provider. */
-export const MAP_ATTRIBUTES: readonly string[] = [...LIST_ATTRIBUTES, ...MAP_READS];
+export const MAP_ATTRIBUTES: readonly string[] = [
+  ...LIST_ATTRIBUTES,
+  ...VIEW_ATTRIBUTES,
+  ...MAP_READS,
+];
 
 /**
  * The attributes the element's Google provider reads, when the map opens: `nonce` through the

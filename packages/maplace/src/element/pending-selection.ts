@@ -1,17 +1,20 @@
-import type { Maplace } from "../index";
+import type { Maplace, SelectOptions } from "../index";
 import { isSelectable } from "../location-state";
 import type { StandingMisuse } from "./standing-misuse";
 
 /**
  * A selection waiting for its location: `selected-id`, misuse until the locations have it, and
- * the one the page's address names (`url-state`), which wins and is never misuse. Either, once
- * made, or any other selection, drops both.
+ * the one the page's address names (`url-state`), which wins and is never misuse, unless it names
+ * `selected-id`'s own location: that one is `selected-id`'s. Either, once made, or any other
+ * selection, drops both.
  */
 export class PendingSelection {
   readonly #store: () => Maplace | undefined;
   readonly #misuse: StandingMisuse;
   /** `selected-id`, until the locations have it or something else is selected. */
   #fromAttribute: string | undefined;
+  /** How `selected-id` is selected: without moving the map off a first view of the page's. */
+  #attributeOptions: SelectOptions | undefined;
   /** The address's id, until the locations show it or something else is selected. */
   #fromAddress: string | undefined;
 
@@ -20,8 +23,9 @@ export class PendingSelection {
     this.#misuse = misuse;
   }
 
-  fromAttribute(id: string | undefined): void {
+  fromAttribute(id: string | undefined, options?: SelectOptions): void {
     this.#fromAttribute = id;
+    this.#attributeOptions = options;
   }
 
   fromAddress(id: string): void {
@@ -35,7 +39,7 @@ export class PendingSelection {
     const id = this.#fromAttribute;
     if (id === undefined || this.#hiddenByQuery(store, id)) return;
     const selected = this.#misuse.retry("selection", () => {
-      store.select(id);
+      store.select(id, this.#attributeOptions);
       return true;
     });
     if (selected) this.drop();
@@ -55,10 +59,13 @@ export class PendingSelection {
     return isSelectable({ locations, filter: { ...filter, query: undefined } }, id);
   }
 
-  /** Selects the address's location if shown; whether it was. */
+  /**
+   * Selects the address's location if shown; whether it was. `selected-id`'s own, written in or
+   * reloaded, is left to `selected-id`, selected as it is.
+   */
   #selectAddressLocation(store: Maplace): boolean {
     const id = this.#fromAddress;
-    if (id === undefined || !selectIfShown(store, id)) return false;
+    if (id === undefined || id === this.#fromAttribute || !selectIfShown(store, id)) return false;
     this.drop();
     return true;
   }

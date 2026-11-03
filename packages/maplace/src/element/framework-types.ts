@@ -6,6 +6,7 @@ import type { LIST_ATTRIBUTES } from "./element-list";
 import type { MaplaceElementEventMap, MaplaceLocationElement, MaplaceMapElement } from "./index";
 import type { LOCATION_ATTRIBUTES } from "./location-attributes";
 import type { MapSettingAttribute } from "./map-settings-watch";
+import type { VIEW_ATTRIBUTES } from "./view-attributes";
 
 // The elements in Vue's and Svelte's templates, for vue-tsc and svelte-check: augmentations only,
 // naming only maplace's and the DOM's types, so a project without the framework ignores them.
@@ -58,6 +59,7 @@ type SwitchAttribute =
 
 type MapAttribute =
   | Exclude<(typeof LIST_ATTRIBUTES)[number], SwitchAttribute>
+  | (typeof VIEW_ATTRIBUTES)[number]
   | MapSettingAttribute
   | NamedMapAttribute;
 

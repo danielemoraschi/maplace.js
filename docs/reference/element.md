@@ -105,10 +105,14 @@ maplace builds its list once its script has run, and a map with `hold` only on `
 | `load-label` | The words of the [load panel](#load-states)'s button; "Load map" when blank or left out; live |
 | `load-from-label` | The words before the name on that panel; "Loads from" when blank or left out; live |
 | `failure-label` | The words of the panel a map shows [when it can't be used](#load-states); "The map couldn't load." when blank or left out; live |
-| `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address wins |
+| `center` | The map's first centre, `"lat,lng"` (`center="41.9,12.5"`), with `zoom`; can't change once the store exists |
+| `zoom` | The map's first zoom, with `center`; can't change once the store exists |
+| `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address naming another location wins; `center` and `zoom` win for the first view |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
 `list`, `list-position`, `fit-all`, `fit-all-label`, `list-heading`, `group-counts`, `list-scope`, `list-sort`, `distance-unit`, `area-only-label`, `show-all-label`, `empty-area-label`, `search`, `search-label`, `no-matches-label` and `matches-label` are live: a change builds the list again. `my-location` and the `my-location-*` attributes are read when the map opens: a later change does nothing until it opens again. The Google provider reads its own attributes, such as `api-key` and `map-id`, and the MapLibre provider `map-style` and `map-options`, when the map opens; a change of a map setting (`color-scheme`, `map-style` or `map-options`, whichever the provider) opens it again where it was: provider attributes on [Google](google.md#provider-attributes) and [MapLibre](maplibre.md#provider-attributes).
+
+The map opens on the location a [`url-state`](#url-state) address names, if not `selected-id`'s; else at `center` and `zoom` when given; else on the `selected-id` location (at its `zoom`, if it has one); else with all locations fitted ([the first view](store.md#the-first-view)). The two go together: one alone is misuse naming the missing one, and a value the store's checks refuse, such as a latitude past 90, misuse naming it; the map then opens as without them. With `center` and `zoom`, `selected-id`'s location is selected without moving the map, even when it arrives later, or when the address names it as the page loads (written in on a first visit, or on a reload); going back or forward to an entry brings its location into view. A popup opening may still pan the map to fit it. Any other view, or a later move, goes through `map.maplace` (`map.maplace.setView({ lat: 41.9, lng: 12.5 }, 6)`).
 
 ## Properties and methods
 
@@ -121,11 +125,9 @@ maplace builds its list once its script has run, and a map with `hold` only on `
 | `loadState` | `error` while a misuse stands, else the store's: `idle`, `loading`, `ready` or `error` |
 | `release` | `release()` starts loading at once an element held with `hold` or waiting with `loading="lazy"` |
 
-The store is created when the element first connects (or `maplace`, `locations` or `route` is first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
+The store is created when the element first connects (or `maplace`, `locations` or `route` is first read), from `cluster`, `center` and `zoom`, `sanitize`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
 
 With its built-in providers the element creates its own map. A page with a map of its own takes the parts instead ([on Google](google.md#your-own-map), [on MapLibre](maplibre.md#your-own-map)).
-
-No attribute sets a centre and zoom. `selected-id` on a location with a `zoom` opens the map there, at that zoom, the location selected; for a view of your own, a script calls `map.maplace.setView({ lat: 41.9, lng: 12.5 }, 6)`, before the map opens or after ([the first view](store.md#the-first-view)). A selection made later, such as a `selected-id` location arriving afterwards, moves the map to it.
 
 ## Events
 

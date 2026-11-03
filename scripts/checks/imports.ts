@@ -96,10 +96,11 @@ const LAYERS = {
     imports: ["data", "contract", "store", "view", "maplace", "geojson"],
   },
   // The element makes stores and list views through the core's entry, as a page does; it reads
-  // the data rules, and the adapter contract, store and list view for their types and constants.
+  // the data rules, and the adapter contract, store and list view for their types and constants;
+  // it checks its first view (`center`, `zoom`) with the store's checks, so its misuse reads the same.
   element: {
     files: /^element\/(?!google(-|$)|maplibre(-|$)|testing\/)/,
-    imports: ["data", "contract", "store", "view", "entry"],
+    imports: ["data", "contract", "store", "view", "entry", "validation"],
   },
   // The element's test support: maps on the fake adapter.
   "element-testing": {

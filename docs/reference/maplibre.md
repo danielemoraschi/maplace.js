@@ -111,7 +111,7 @@ The element's MapLibre provider reads these attributes of `<maplace-map>` when t
 | `map-style` | A style URL, or a JSON style object, as `mapStyle`; OpenFreeMap's `bright` when left out |
 | `map-options` | A JSON object of MapLibre's map options, as `mapOptions`, with the same exclusions |
 
-A change of either opens the map again where it was, keeping the store's state. A bad value is `invalid-input` naming the attribute (`map-options.center`; `map-options.style` is told to use `map-style`). `color-scheme` isn't read: the style sets the colours.
+A change of either opens the map again where it was, keeping the store's state. A bad value is `invalid-input` naming the attribute (`map-options.bounds`; `map-options.style` is told to use `map-style`, `map-options.center` and `map-options.zoom` the [`center` and `zoom` attributes](element.md#map-attributes)). `color-scheme` isn't read: the style sets the colours.
 
 ## With the CDN script
 

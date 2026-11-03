@@ -85,6 +85,14 @@ describe("mapLibreSettingsOf", () => {
       refusal({ "map-options": JSON.stringify({ [key]: 1 }) }, `map-options.${key}`, remark),
   );
 
+  it.each(["center", "zoom"])("keeps %s out of map-options for its own attribute", (key) =>
+    refusal(
+      { "map-options": JSON.stringify({ [key]: 1 }) },
+      `map-options.${key}`,
+      `is its own attribute: ${key}`,
+    ),
+  );
+
   it.each(Object.keys(REFUSED_IN_MAP_OPTIONS))(
     "refuses in map-options what createMapLibreAdapter refuses in mapOptions: %s",
     (key) => {

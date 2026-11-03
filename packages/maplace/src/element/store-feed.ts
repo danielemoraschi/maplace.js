@@ -29,7 +29,7 @@ export class StoreFeed {
   readonly #misuse: StandingMisuse;
   readonly #onStoreChange: () => void;
   #store: Maplace | undefined;
-  /** What the store took from its attributes: `cluster`, the link switches and the labels. */
+  /** What the store took from its attributes: `cluster`, the link switches, the labels, the view. */
   #attributes: StoreAttributes = {};
   /** Given before the store exists, or what the store was created with. */
   #sanitize: Sanitize | undefined;
@@ -84,8 +84,8 @@ export class StoreFeed {
   }
 
   /**
-   * Selects `id` once the locations show it, winning over `selected-id`; an id they never show is
-   * dropped, silently, when something else is selected.
+   * Selects `id` once the locations show it, winning over `selected-id` unless it names the same
+   * location; an id they never show is dropped, silently, when something else is selected.
    */
   selectOnceShown(id: string): void {
     this.#pendingSelection.fromAddress(id);
@@ -107,16 +107,19 @@ export class StoreFeed {
     this.#stopWatching = undefined;
   }
 
-  /** A blank label or a bad switch stands as misuse, as does a change once the store took them. */
+  /**
+   * A blank label, a bad switch or a bad view stands as misuse, as does a change once the store
+   * took them.
+   */
   checkAttributes(): void {
     checkStoreAttributes(this.#host, this.#attributes, this.#misuse);
   }
 
   /**
-   * The store from `cluster`, the labels, the link switches and `sanitize`, fixed for its life,
-   * then fed what waited for it. It is listened to only then: the state the store starts from is
-   * no event, as an <input value> is no change. A bad label or switch is said last, as a listener
-   * may read the store.
+   * The store from `cluster`, the labels, the link switches, the view and `sanitize`, fixed for
+   * its life, then fed what waited for it. It is listened to only then: the state the store starts
+   * from is no event, as an <input value> is no change. A bad label, switch or view is said last,
+   * as a listener may read the store.
    */
   #create(): Maplace {
     this.#attributes = readStoreAttributes(this.#host);
@@ -145,7 +148,10 @@ export class StoreFeed {
    * route.
    */
   #feedPending(): void {
-    this.#pendingSelection.fromAttribute(this.#host.getAttribute("selected-id") ?? undefined);
+    // A first view of the page's stands: `selected-id` selects without moving off it.
+    this.#pendingSelection.fromAttribute(this.#host.getAttribute("selected-id") ?? undefined, {
+      pan: this.#attributes.view === undefined,
+    });
     const { locations, route } = this.#pending;
     this.#pending = {};
     // Given locations are checked as given, whatever they are.

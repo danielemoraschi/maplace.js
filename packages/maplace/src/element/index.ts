@@ -90,8 +90,11 @@ export { defineListView } from "./list-views";
  *   (`list`, `list-position`, `fit-all`, `fit-all-label`, `list-heading`, `group-counts`,
  *   `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`, `search`,
  *   `search-label`, `no-matches-label` and `matches-label` are live: the list is built again.)
- * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address wins); later
- *   changes go through `maplace`.
+ * - `center`, `zoom`: the map's first view, given together (`center="41.9,12.5" zoom="6"`), over
+ *   `selected-id`'s location, which is selected without moving the map (its popup may still pan
+ *   to fit); can't change afterwards.
+ * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address naming
+ *   another location wins); later changes go through `maplace`.
  * - `cluster`: cluster markers (a boolean, as `group-counts`; a CDN page needs the cluster build);
  *   can't change afterwards.
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
@@ -125,11 +128,12 @@ export { defineListView } from "./list-views";
  *   read when the map opens.
  *
  * The store is created when the element first connects (or `maplace`, `locations` or `route` is
- * first read), from `cluster`, `sanitize`, `selected-id` and the locations, and lives as long as
- * the element: disconnected, the map closes and the store goes back to `idle`, keeping its
- * locations, selection and listeners; connected again, a new map opens. A move within one task
- * keeps the map. A map waits for the document to parse its children before it opens, whether
- * parsed or created by a script, so its first view and `selected-id` see them all.
+ * first read), from `cluster`, `center` and `zoom`, `sanitize`, `selected-id` and the locations,
+ * and lives as long as the element: disconnected, the map closes and the store goes back to
+ * `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A
+ * move within one task keeps the map. A map waits for the document to parse its children before
+ * it opens, whether parsed or created by a script, so its first view and `selected-id` see them
+ * all.
  *
  * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent. It stands
  * until corrected: bad locations or route keep the previous ones until valid ones are given, and

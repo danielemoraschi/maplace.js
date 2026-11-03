@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createMaplace } from "../index";
+import { createMaplace, type SelectOptions } from "../index";
 import { PendingSelection } from "./pending-selection";
 import type { StandingMisuse } from "./standing-misuse";
 
@@ -8,12 +8,12 @@ const LOCATIONS = [
   { id: "milan", lat: 0, lng: 0, title: "Milan" },
 ];
 
-function waitingFor(id: string) {
+function waitingFor(id: string, options?: SelectOptions) {
   const store = createMaplace({ locations: LOCATIONS });
   const retry = vi.fn((_: string, attempt: () => boolean) => attempt());
   const misuse = { retry, clear: vi.fn() } as unknown as StandingMisuse;
   const pending = new PendingSelection(() => store, misuse);
-  pending.fromAttribute(id);
+  pending.fromAttribute(id, options);
   return { store, pending, retry };
 }
 
@@ -22,6 +22,12 @@ describe("PendingSelection", () => {
     const { store, pending } = waitingFor("rome");
     pending.trySelect();
     expect(store.getSnapshot().selectedId).toBe("rome");
+  });
+
+  it("selects selected-id with the options given", () => {
+    const { store, pending } = waitingFor("rome", { pan: false });
+    pending.trySelect();
+    expect(store.getSnapshot()).toMatchObject({ selectedId: "rome", view: { kind: "fit-all" } });
   });
 
   it("waits while a query hides it, as a visitor's typing is no misuse of the page's", () => {

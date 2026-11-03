@@ -35,8 +35,16 @@ export type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
 /** What `mapOptions` takes: Google's map options without those maplace sets elsewhere. */
 export type CreatedMapOptions = NonNullable<GoogleAdapterOptions["mapOptions"]>;
 
-/** Where the caller takes a map ID and a colour scheme instead of map options, as told the page. */
-type OwnSettingRemarks = Readonly<Record<"mapId" | "colorScheme", string>>;
+/**
+ * Where the caller takes a map ID and a colour scheme instead of map options, as told the page;
+ * a caller with a centre and zoom of its own re-words those of `SET_BY_MAPLACE` too.
+ */
+type OwnSettingRemarks = Readonly<
+  Record<CallerOwned, string> & Partial<Record<"center" | "zoom", string>>
+>;
+
+/** What every caller takes as a setting of its own: a map ID and a colour scheme. */
+type CallerOwned = "mapId" | "colorScheme";
 
 /** maplace's colour scheme names, as Google spells them. */
 export const GOOGLE_COLOR_SCHEMES: Readonly<Record<ColorScheme, google.maps.ColorSchemeString>> = {
@@ -55,7 +63,7 @@ const SET_BY_MAPLACE = {
   center: "is set by the store's view",
   zoom: "is set by the store's view",
   styles: "is not offered: style the map in Cloud Console, through its map ID",
-} as const satisfies Record<Exclude<SetElsewhere, keyof OwnSettingRemarks>, string>;
+} as const satisfies Record<Exclude<SetElsewhere, CallerOwned>, string>;
 
 /** Checks map options for a map maplace creates: an object (`expected`), none of `SetElsewhere`. */
 export function mapOptionsCheck(

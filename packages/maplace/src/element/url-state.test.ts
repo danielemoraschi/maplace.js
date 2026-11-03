@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Location } from "../index";
 import {
   atAddress,
+  goTo,
   historyWrites,
   MILAN_LOCATION,
   popTo,
@@ -67,6 +68,17 @@ describe("createUrlState, the address's selection", () => {
       "milan",
       "rome",
     ]);
+  });
+
+  it("selects selected-id's location from the address on reconnect, once something else was selected", () => {
+    atAddress("");
+    const { feed, sync } = syncedFeed({ "url-state": "", "selected-id": "rome" });
+    sync.start();
+    feed.store().select("milan");
+    sync.stop();
+    goTo("?location=rome");
+    sync.start();
+    expect(selectedIn(feed)).toBe("rome");
   });
 
   it("never reads or writes the address without url-state", () => {

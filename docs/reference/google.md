@@ -115,7 +115,7 @@ The element's Google provider reads these attributes of `<maplace-map>` when the
 | `map-id` | Optional: the map ID, as `mapId` |
 | `nonce` | The nonce of the Maps JS script it adds, for a Content Security Policy; read as the element's `nonce` property, so one Vue or Svelte sets, or one a header CSP hides from the attribute, still counts |
 | `color-scheme` | `light`, `dark` or `follow-system`, as `colorScheme` |
-| `map-options` | A JSON object of Google's map options, as `mapOptions`, with the same exclusions |
+| `map-options` | A JSON object of Google's map options, as `mapOptions`, with the same exclusions; `center` and `zoom` in it are told to use the [`center` and `zoom` attributes](element.md#map-attributes) |
 | `api-key` | The key Maps JS loads with; needed only when the provider adds Maps JS itself |
 | `version` | The Maps JS version to load |
 | `language` | The language Maps JS loads with |
