@@ -21,6 +21,7 @@ import { tabs } from "./behaviours/tabs";
 import { tags } from "./behaviours/tags";
 import { thisArea } from "./behaviours/this-area";
 import { unstyled } from "./behaviours/unstyled";
+import { whatsOn } from "./behaviours/whats-on";
 import type { Provider } from "./example-files";
 
 export type { ExampleBehaviour } from "./behaviours/reading";
@@ -47,6 +48,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   "custom-list": customList,
   "css-markers": cssMarkers,
   brand,
+  "whats-on": whatsOn,
   unstyled,
 };
 

@@ -13,8 +13,8 @@ export interface LookPart {
 
 /** maplace's own list: its listbox or native select; a page's own select is one of its controls. */
 export const MAPLACE_LIST_CONTROL = "[role=listbox], .maplace-select";
-/** The list a version shows: maplace's, or a page's radio group. */
-export const LIST_SELECTOR = `${MAPLACE_LIST_CONTROL}, fieldset:has(input[type=radio])`;
+/** The list a version shows: maplace's, or a page's own fieldset of choices (radios, toggles). */
+export const LIST_SELECTOR = `${MAPLACE_LIST_CONTROL}, fieldset:has(input[type=radio], button[aria-pressed])`;
 /** A list's entries, each a location (or "fit all") a reader picks. */
 const ENTRY = "[role=option]";
 /** A page's own controls, readouts and text blocks: what it puts around the map. */
@@ -79,13 +79,17 @@ interface Part {
 
 /**
  * The map, the list and its entries, and the page's parts, leaving out what is drawn inside the map
- * or a list. The map and a list are named by role alone: their words change as they load.
+ * or a list, or laid over the map as a control on it would be. The map and a list are named by role
+ * alone: their words change as they load.
  */
 function partsOf(root: Element, map: Element): Part[] {
   const lists = [...root.querySelectorAll(LIST_SELECTOR)];
   const entries = [...root.querySelectorAll(ENTRY)];
   const pageParts = [...root.querySelectorAll(PAGE_PART)].filter(
-    (element) => !map.contains(element) && !lists.some((list) => list.contains(element)),
+    (element) =>
+      !map.contains(element) &&
+      !isOver(element, map) &&
+      !lists.some((list) => list.contains(element)),
   );
   const parts = [
     { element: map, name: "map" },
@@ -94,6 +98,19 @@ function partsOf(root: Element, map: Element): Part[] {
     ...pageParts.map((element) => ({ element, name: `${roleOf(element)} ${wordsOf(element)}` })),
   ];
   return parts.filter(({ element }) => isShown(element));
+}
+
+/** Whether `element` is laid over `map`, its box within the map's, as a page's own overlay is. */
+function isOver(element: Element, map: Element): boolean {
+  const box = element.getBoundingClientRect();
+  const mapBox = map.getBoundingClientRect();
+  return (
+    box.width > 0 &&
+    box.left >= mapBox.left &&
+    box.right <= mapBox.right &&
+    box.top >= mapBox.top &&
+    box.bottom <= mapBox.bottom
+  );
 }
 
 function isShown(element: Element): boolean {

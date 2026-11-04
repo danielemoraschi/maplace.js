@@ -6,6 +6,8 @@ export interface ExampleSection {
   readonly summary: string;
   /** Its list drawn its own way (as tabs, or in its own CSS), not in the site's panel beside the map. */
   readonly drawsOwnList?: true;
+  /** Its map framed its own way: the site draws no border around it. */
+  readonly drawsOwnFrame?: true;
   /** Why it runs on Google only, said in its frame while MapLibre is chosen. */
   readonly googleOnlyBecause?: string;
 }
@@ -167,6 +169,12 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     description:
       "Style a map with maplacejs: the provider's own basemaps, your own markers and colours, or none of maplace's styles.",
     sections: [
+      {
+        name: "whats-on",
+        title: "Your own look",
+        summary: "A dark frame, pins coloured by category, a count and a legend that filters them.",
+        drawsOwnFrame: true,
+      },
       {
         name: "styled",
         title: "Basemaps",

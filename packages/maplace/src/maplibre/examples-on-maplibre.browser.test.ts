@@ -15,10 +15,10 @@ import { openPage } from "../testing/examples/example-page";
 import { type ExampleRun, openVersion } from "../testing/examples/example-runs";
 import { type OffsiteLog, serveExamplesOffline } from "../testing/examples/example-surroundings";
 import {
-  OPENFREEMAP_BRIGHT as BRIGHT,
   OPENFREEMAP_DARK as DARK,
   OPENFREEMAP_STYLES,
 } from "../testing/examples/openfreemap-styles";
+import { openingStyleOf } from "../testing/examples/opening-style";
 import { recordErrors } from "../testing/examples/page-errors";
 import {
   recordedStoreCount,
@@ -51,16 +51,21 @@ type RealCheck = (run: RealRun) => Promise<void>;
 const PIN_ACCENT = "rgb(198, 40, 40)";
 /** The background brand's palette gives a cluster badge, as a browser computes it. */
 const BRAND_BADGE = "rgb(59, 36, 22)";
+/** The colour whats-on's CSS gives the Theatre category's pins, as a browser computes it. */
+const THEATRE = "rgb(228, 87, 46)";
+/** No background: whats-on makes maplace's panel on the map nothing. */
+const NO_BACKGROUND = "rgba(0, 0, 0, 0)";
 
 /**
  * What a version does on real MapLibre beyond opening, where only a real map shows it: styled's
- * select loads OpenFreeMap's dark style; css-markers' pins and brand's cluster badges take their
- * looks from the page's CSS.
+ * select loads OpenFreeMap's dark style; css-markers' pins, brand's cluster badges and whats-on's
+ * pins and panel take their looks from the page's CSS.
  */
 const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = {
   styled: expectDarkStyleOnChoosing,
   "css-markers": expectSelectedPinLook,
   brand: expectBadgeInBrandColours,
+  "whats-on": expectCategoryLook,
 };
 
 let offsite: OffsiteLog;
@@ -116,8 +121,8 @@ function takeDown(): void {
 
 /**
  * The run's map ready on the local style, showing its locations (a version fetching them has
- * them), having asked offsite for OpenFreeMap's default style only, then doing what its example
- * does on MapLibre. `askedBefore` counts the offsite URLs asked before the run opened.
+ * them), having asked offsite for the OpenFreeMap style its page opens on only, then doing what its
+ * example does on MapLibre. `askedBefore` counts the offsite URLs asked before the run opened.
  */
 async function expectReadyOffline(
   run: RealRun,
@@ -126,7 +131,7 @@ async function expectReadyOffline(
 ): Promise<void> {
   await expect.poll(() => run.store.getSnapshot().loadState, LOAD).toBe("ready");
   await expect.poll(() => shownIds(run.store).length, LOAD).toBeGreaterThan(0);
-  expect(offsite.asked().slice(askedBefore)).toContain(BRIGHT);
+  expect(offsite.asked().slice(askedBefore)).toContain(openingStyleOf(example));
   expectNothingElseOffsite();
   await ON_MAPLIBRE[example]?.(run);
 }
@@ -146,6 +151,13 @@ async function expectSelectedPinLook({ store, root }: RealRun): Promise<void> {
 /** The shops' cluster badges take the brand's colours from the custom properties around the map. */
 async function expectBadgeInBrandColours({ root }: RealRun): Promise<void> {
   await expect.poll(() => backgroundOf(root, `.${CLUSTER_CLASS}`), LOAD).toBe(BRAND_BADGE);
+}
+
+/** A Theatre pin takes its category's colour, and the legend's panel no background of its own. */
+async function expectCategoryLook({ root }: RealRun): Promise<void> {
+  await expect.poll(() => backgroundOf(root, '.pin[data-category="Theatre"]'), LOAD).toBe(THEATRE);
+  const legendPanel = ".maplace-control:has(.event-legend)";
+  await expect.poll(() => backgroundOf(root, legendPanel), LOAD).toBe(NO_BACKGROUND);
 }
 
 /** The background the page's CSS gives the first `selector` inside `root`, once it is drawn. */

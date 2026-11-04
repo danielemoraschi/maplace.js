@@ -13,7 +13,8 @@ interface Props extends ExampleSection {
   number: number;
 }
 
-const { number, name, title, summary, drawsOwnList, googleOnlyBecause } = Astro.props;
+const { number, name, title, summary, drawsOwnList, drawsOwnFrame, googleOnlyBecause } =
+  Astro.props;
 const codeTabs = codeTabsOf(name);
 // Its code tabs open on the first provider it has: route's Google, the others' the page's first.
 const [firstProvider] = exampleProviders(name);
@@ -88,7 +89,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
     <VersionSwitch name={name} disabled={!offered} />
-    <MapFrame name={name} drawsOwnList={drawsOwnList} googleOnlyBecause={googleOnlyBecause} />
+    <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} googleOnlyBecause={googleOnlyBecause} />
   </div>
   {
     codeTabs.map(({ kind, codes }) => (

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  OPENFREEMAP_BRIGHT as BRIGHT,
   OPENFREEMAP_DARK as DARK,
   OPENFREEMAP_STYLES,
 } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
+import { openingStyleOf } from "../../../packages/maplace/src/testing/examples/opening-style.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
 import { exampleProviders } from "../src/examples/example-sources.ts";
 import { VERSION_LABELS } from "../src/examples/example-versions.ts";
@@ -60,8 +60,9 @@ describe("the site's examples on MapLibre", () => {
           name,
         );
         const warnings = missingStylesheetWarnings(page);
+        const openingStyle = openingStyleOf(name);
 
-        /** Waits for `kind`'s map to be made on MapLibre, its default style asked for. */
+        /** Waits for `kind`'s map to be made on MapLibre, the style its page opens on asked for. */
         async function drawnOnMapLibre({ kind, label }: VersionChoice, askedBefore: number) {
           const version = mapLibreVersionIn(section, kind);
           const waitingFor = (what: string) => polled(name, `its ${label} version's ${what}`);
@@ -70,7 +71,7 @@ describe("the site's examples on MapLibre", () => {
             // Past consent, a map holding itself draws nothing and asks for no style until pressed.
             await loadMapButton(version).waitFor();
             expect(await mapLibreDrawn(version)).toBe(false);
-            expect(offsite().slice(askedBefore)).not.toContain(BRIGHT);
+            expect(offsite().slice(askedBefore)).not.toContain(openingStyle);
             await loadMapButton(version).click();
           }
           if (kind === "html") {
@@ -79,7 +80,7 @@ describe("the site's examples on MapLibre", () => {
           await expect.poll(() => mapLibreDrawn(version), waitingFor("map")).toBe(true);
           await expect
             .poll(() => offsite().slice(askedBefore), waitingFor("style"))
-            .toContain(BRIGHT);
+            .toContain(openingStyle);
           if (opensOnPress) {
             expect(await loadMapButton(version).count()).toBe(0);
             expect(await version.evaluate((node) => node.contains(document.activeElement))).toBe(
@@ -130,15 +131,22 @@ describe("the site's examples on MapLibre", () => {
 });
 
 describe("MapLibre's maps in the site's frame", () => {
-  it("frames MapLibre's map as Google's", async () => {
-    const { context, section } = await visitSection(site, "simple");
-    await loadMapsButtons(section).click();
-    const map = mapLibreVersionIn(section, "html").locator(".maplace-maplibre-map");
-    await expect.poll(() => map.count(), ON_MAPLIBRE).toBe(1);
-    const border = await map.evaluate((element) => getComputedStyle(element).borderTopWidth);
-    expect(border).toBe("2px");
-    await context.close();
-  }, 30_000);
+  it.for([
+    { name: "simple", width: "2px" },
+    { name: "whats-on", width: "0px" },
+  ])(
+    "frames $name's MapLibre map as Google's, or not at all for an example framing its own",
+    { timeout: 30_000 },
+    async ({ name, width }) => {
+      const { context, section } = await visitSection(site, name);
+      await loadMapsButtons(section).click();
+      const map = mapLibreVersionIn(section, "html").locator(".maplace-maplibre-map");
+      await expect.poll(() => map.count(), ON_MAPLIBRE).toBe(1);
+      const border = await map.evaluate((element) => getComputedStyle(element).borderTopWidth);
+      expect(border).toBe(width);
+      await context.close();
+    },
+  );
 
   it("leaves a list on MapLibre's map out of the site's side panel", async () => {
     const { context, section } = await visitSection(site, "tags");

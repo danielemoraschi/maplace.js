@@ -105,7 +105,7 @@ export async function expectDrawsItsStore({ store, adapter }: ExampleRun): Promi
   await expect.poll(() => sortedIds(adapter.probe().locationIds())).toEqual(shownIds(store));
 }
 
-/** Whether a list, as listbox, select or a page's own fieldset of radios, is inside `root`. */
+/** Whether a list, as listbox, select or a page's own fieldset of choices, is inside `root`. */
 export function hasList(root: Element): boolean {
   return root.querySelector(LIST_SELECTOR) !== null;
 }

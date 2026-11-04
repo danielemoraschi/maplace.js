@@ -9,11 +9,13 @@ interface Props {
   name: string;
   /** Its list drawn its own way, kept out of the site's panel (`frame.css`). */
   drawsOwnList?: true | undefined;
+  /** Its map framed its own way, left out of the site's border (`frame.css`). */
+  drawsOwnFrame?: true | undefined;
   /** Why it runs on Google only: said, with a button to it, while MapLibre is chosen. */
   googleOnlyBecause?: string | undefined;
 }
 
-const { name, drawsOwnList, googleOnlyBecause } = Astro.props;
+const { name, drawsOwnList, drawsOwnFrame, googleOnlyBecause } = Astro.props;
 const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
 const versions = liveVersions(name, settings);
 /** Whether `version` runs on Google, which the site has no key for. */
@@ -24,6 +26,7 @@ const keyMissing = ({ provider }: LiveVersionMarkup) =>
 <div
   class="map-frame relative"
   data-own-list={drawsOwnList ? "" : undefined}
+  data-own-frame={drawsOwnFrame ? "" : undefined}
   data-no-version={versions.some(shownFirst) ? undefined : ""}
 >
   {

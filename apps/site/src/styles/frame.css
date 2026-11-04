@@ -30,9 +30,9 @@
 }
 /*
  * Around the map Google or MapLibre draws, in every version: the lists and controls stay outside
- * it.
+ * it. An example framing its map its own way is marked `data-own-frame` and left out.
  */
-.version :where(.maplace-google-map, .maplace-maplibre-map) {
+.version :where(.maplace-google-map, .maplace-maplibre-map):where(:not([data-own-frame] *)) {
   border: 2px solid var(--color-ink);
 }
 /*

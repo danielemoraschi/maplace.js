@@ -1,0 +1,155 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace's store and adapter, on OpenFreeMap's liberty style; a count and a legend of your own on it, in maplace's panel made nothing. -->
+<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  /* The frame: a dark page of its own around a rounded map. */
+  #whats-on-maplibre-script-frame { padding: 12px; border-radius: 16px; background: #1c1d21; }
+  #whats-on-maplibre-script-map { height: 26rem; border-radius: 12px; overflow: hidden; }
+  /* Each category's colour, which its pins and its chip take. */
+  #whats-on-maplibre-script-frame [data-category="Theatre"] { --category: #e4572e; }
+  #whats-on-maplibre-script-frame [data-category="Concerts"] { --category: #8e44ad; }
+  #whats-on-maplibre-script-frame [data-category="Markets"] { --category: #2a9d8f; }
+  #whats-on-maplibre-script-frame [data-category="Talks"] { --category: #c48a00; }
+  #whats-on-maplibre-script-frame .pin {
+    display: block;
+    box-sizing: border-box;
+    width: 22px;
+    height: 22px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: var(--category);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
+    cursor: pointer;
+  }
+  #whats-on-maplibre-script-frame .pin[data-hovered] { transform: translateY(-2px); }
+  #whats-on-maplibre-script-frame .pin[data-selected] { transform: scale(1.25); box-shadow: 0 0 0 2px var(--category), 0 2px 6px rgb(0 0 0 / 45%); }
+  /* maplace's panel on the map, made nothing, so the count and the legend are the page's own. */
+  #whats-on-maplibre-script-frame .maplace-control { padding: 0; background: none; box-shadow: none; }
+  #whats-on-maplibre-script-frame .event-count, #whats-on-maplibre-script-frame .event-legend {
+    background: rgb(28 29 33 / 88%);
+    color: #f2f2f3;
+    font: 500 13px/1.2 system-ui, sans-serif;
+  }
+  #whats-on-maplibre-script-frame .event-count { display: block; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-maplibre-script-frame .event-legend { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; margin: 0; padding: 4px; border: 0; border-radius: 18px; }
+  /* On a phone, the four chips two by two rather than three and one. */
+  @media (width < 30rem) {
+    #whats-on-maplibre-script-frame .event-legend { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+  #whats-on-maplibre-script-frame .category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  #whats-on-maplibre-script-frame .category-chip::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-maplibre-script-frame .category-chip:hover { background: rgb(255 255 255 / 12%); }
+  #whats-on-maplibre-script-frame .category-chip[aria-pressed="true"] { background: #f2f2f3; color: #1c1d21; }
+  #whats-on-maplibre-script-frame .category-chip:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
+</style>
+<div id="whats-on-maplibre-script-frame">
+  <div id="whats-on-maplibre-script-map"></div>
+</div>
+<script type="module">
+  const locations = [
+    venue("national-theatre", 51.507, -0.1145, "National Theatre", "Theatre"),
+    venue("globe", 51.5081, -0.0972, "Shakespeare's Globe", "Theatre"),
+    venue("donmar", 51.5136, -0.1254, "Donmar Warehouse", "Theatre"),
+    venue("royal-albert-hall", 51.501, -0.1774, "Royal Albert Hall", "Concerts"),
+    venue("wigmore-hall", 51.5165, -0.149, "Wigmore Hall", "Concerts"),
+    venue("barbican", 51.5202, -0.0938, "Barbican Hall", "Concerts"),
+    venue("borough-market", 51.5055, -0.091, "Borough Market", "Markets"),
+    venue("camden-market", 51.5413, -0.146, "Camden Market", "Markets"),
+    venue("spitalfields", 51.5197, -0.0754, "Old Spitalfields Market", "Markets"),
+    venue("british-library", 51.5299, -0.1277, "British Library", "Talks"),
+    venue("conway-hall", 51.5203, -0.1188, "Conway Hall", "Talks"),
+    venue("royal-institution", 51.5098, -0.1425, "Royal Institution", "Talks"),
+  ];
+
+  /** Every venue fitted, with room at the edges for the count and the legend over the map. */
+  const maplace = Maplace.createMaplace({ locations, view: { kind: "fit-all", padding: 80 } });
+  const adapter = Maplace.createMapLibreAdapter({ mapStyle: "https://tiles.openfreemap.org/styles/liberty" });
+  maplace.attach(adapter, "#whats-on-maplibre-script-map");
+  adapter.mountControl(eventLegend(maplace), "bottom-left");
+  adapter.mountControl(eventCount(maplace), "top-left");
+
+  /** A venue in its category, its pin coloured by it. */
+  function venue(id, lat, lng, title, group) {
+    return { id, lat, lng, title, group, icon: pinFor(group) };
+  }
+
+  /** A pin of your own, its colour the category's (`--category`, by `data-category` in the CSS). */
+  function pinFor(category) {
+    const pin = document.createElement("span");
+    pin.className = "pin";
+    pin.dataset.category = category;
+    return pin;
+  }
+
+  /** How many venues are shown, of all of them, said again when that changes. */
+  function eventCount(maplace) {
+    const count = document.createElement("output");
+    count.className = "event-count";
+    const writeCount = () => {
+      const snapshot = maplace.getSnapshot();
+      const shown = Maplace.listedLocations(snapshot).length;
+      const total = snapshot.locations.length;
+      const text = shown === total ? `${total} venues` : `${shown} of ${total} venues`;
+      if (count.textContent !== text) count.textContent = text;
+    };
+    writeCount();
+    maplace.subscribe(writeCount);
+    return count;
+  }
+
+  /**
+   * A chip per category, in the venues' order; the one shown alone is pressed. The chips are made once,
+   * so a chip pressed from the keyboard keeps its focus; a store change only moves the press.
+   */
+  function eventLegend(maplace) {
+    const legend = document.createElement("fieldset");
+    legend.className = "event-legend";
+    legend.setAttribute("aria-label", "Categories");
+    const categories = new Set(maplace.getSnapshot().locations.flatMap(({ group }) => group ?? []));
+    const chips = [...categories].map((category) => categoryChip(maplace, category));
+    legend.append(...chips);
+    let pressed;
+    const pressShownAlone = () => {
+      const alone = shownAlone(maplace);
+      if (alone === pressed) return;
+      pressed = alone;
+      for (const chip of chips) {
+        chip.setAttribute("aria-pressed", String(chip.dataset.category === alone));
+      }
+    };
+    pressShownAlone();
+    maplace.subscribe(pressShownAlone);
+    return legend;
+  }
+
+  /** A toggle showing `category` alone, or every category again once pressed. */
+  function categoryChip(maplace, category) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "category-chip";
+    chip.dataset.category = category;
+    chip.setAttribute("aria-pressed", "false");
+    chip.textContent = category;
+    chip.addEventListener("click", () => {
+      maplace.setFilter(shownAlone(maplace) === category ? undefined : [category]);
+    });
+    return chip;
+  }
+
+  /** The category the map shows alone, if any. */
+  function shownAlone(maplace) {
+    const groups = maplace.getSnapshot().filter?.groups;
+    return groups?.length === 1 ? groups[0] : undefined;
+  }
+</script>
