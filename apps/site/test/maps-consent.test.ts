@@ -1,4 +1,4 @@
-import type { BrowserContext } from "playwright";
+import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
 import { chooseProvider, chooseVersion, groupLink, sectionPage } from "./home-sections.ts";
@@ -6,6 +6,27 @@ import { ASKED, SETTLE_MS, settled, siteBuiltBeforeTests } from "./site-session.
 import { firstMap, footerToggle, loadMapButton, openHome, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
+
+/**
+ * The display of every node `selector` matches, found and read in one pass in the page, once there
+ * is one. A locator's `count` and `evaluateAll` each go to the page apart, and a map released
+ * between two of them takes its load panel away, which then has no display at all, or none left.
+ */
+async function displaysOf(page: Page, selector: string): Promise<string[]> {
+  let displays: string[] = [];
+  const read = () =>
+    page.evaluate(
+      (matching) =>
+        Array.from(document.querySelectorAll(matching), (node) => getComputedStyle(node).display),
+      selector,
+    );
+  const readCount = async () => {
+    displays = await read();
+    return displays.length;
+  };
+  await expect.poll(readCount, ASKED).toBeGreaterThan(0);
+  return displays;
+}
 
 const consentKept = (context: BrowserContext) =>
   context.storageState().then(({ origins }) => origins.flatMap(({ localStorage }) => localStorage));
@@ -100,21 +121,12 @@ describe("the site's consent to its maps", () => {
     await placeholder(page).click();
     // Load on demand's map keeps its panel: it holds itself, for its reader to press.
     const others = "maplace-map:not([data-held-by-example])";
-    const panels = page.locator(`${others}:state(idle) .maplace-load-panel`);
-    await expect.poll(() => panels.count(), ASKED).toBeGreaterThan(0);
-    const displays = await panels.evaluateAll((nodes) =>
-      nodes.map((node) => getComputedStyle(node).display),
-    );
-    expect(new Set(displays)).toEqual(new Set(["none"]));
+    const panels = `${others}:state(idle) .maplace-load-panel`;
+    expect(new Set(await displaysOf(page, panels))).toEqual(new Set(["none"]));
     // One not released yet hides its panel too, until pressing it can load the map.
-    const unreleased = page.locator(
-      '[data-held-by-example]:not([data-held-by-example="open"]) .maplace-load-panel',
-    );
-    await expect.poll(() => unreleased.count(), ASKED).toBeGreaterThan(0);
-    const unreleasedDisplays = await unreleased.evaluateAll((nodes) =>
-      nodes.map((node) => getComputedStyle(node).display),
-    );
-    expect(new Set(unreleasedDisplays)).toEqual(new Set(["none"]));
+    const unreleased =
+      '[data-held-by-example]:not([data-held-by-example="open"]) .maplace-load-panel';
+    expect(new Set(await displaysOf(page, unreleased))).toEqual(new Set(["none"]));
     expect(await placeholder(page).isVisible()).toBe(false);
     expect(await loadMapButton(page.locator(others)).count()).toBe(0);
     await context.close();
