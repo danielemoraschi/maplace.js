@@ -8,24 +8,51 @@ const { version, providers } = entry.data;
 const HEADING = "mt-2 mb-2 text-xl";
 /** One provider per column, Google's then MapLibre's; one under the other on a phone. */
 const PAIR = "grid grid-cols-2 gap-x-6 max-[720px]:grid-cols-1";
+/** A heading from 720px wide; on a phone, a row that folds the box, its sign on the right. */
+const SUMMARY =
+  "flex list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden max-[720px]:cursor-pointer";
 ---
 
-<div class="border-t-3 border-ink pt-4">
-  <h2 class={HEADING}>Install</h2>
-  <div class={PAIR}>
-    {
-      providers.map(({ provider, label, npmCommand }) => (
-        <LabelledCode id={`npm-install-${provider}`} label={label} text={npmCommand} />
-      ))
-    }
+<details open class="group border-t-3 border-ink pt-4">
+  <summary class={SUMMARY}>
+    <h2 class={`${HEADING} max-[720px]:my-0`}>Install</h2>
+    <span class="text-sm text-muted min-[720px]:hidden">npm and CDN script</span>
+    <span
+      aria-hidden="true"
+      class="ml-auto text-xl after:content-['+'] group-open:after:content-['−'] min-[720px]:hidden"
+    ></span>
+  </summary>
+  <div class="max-[720px]:mt-3">
+    <div class={PAIR}>
+      {
+        providers.map(({ provider, label, npmCommand }) => (
+          <LabelledCode id={`npm-install-${provider}`} label={label} text={npmCommand} />
+        ))
+      }
+    </div>
+    <h2 class={HEADING}>CDN script</h2>
+    <div class={PAIR}>
+      {
+        providers.map(({ provider, label, cdnSnippet }) => (
+          <LabelledCode id={`pinned-script-${provider}`} label={label} text={cdnSnippet} />
+        ))
+      }
+    </div>
+    <p class="m-0 text-sm text-muted">maplacejs {version}, checked by the browser against its hash.</p>
   </div>
-  <h2 class={HEADING}>CDN script</h2>
-  <div class={PAIR}>
-    {
-      providers.map(({ provider, label, cdnSnippet }) => (
-        <LabelledCode id={`pinned-script-${provider}`} label={label} text={cdnSnippet} />
-      ))
-    }
-  </div>
-  <p class="m-0 text-sm text-muted">maplacejs {version}, checked by the browser against its hash.</p>
-</div>
+</details>
+{/* Folded on a phone (under 720px, as the classes' `max-[720px]`) before the first paint, and as the screen crosses that width; its heading folds it only there. Open everywhere without scripts. */}
+<script is:inline>
+  {
+    const box = document.currentScript.previousElementSibling;
+    const phone = matchMedia("(width < 720px)");
+    const followWidth = () => {
+      box.open = !phone.matches;
+    };
+    followWidth();
+    phone.addEventListener("change", followWidth);
+    box.querySelector("summary").addEventListener("click", (event) => {
+      if (!phone.matches) event.preventDefault();
+    });
+  }
+</script>

@@ -12,8 +12,8 @@ import {
   visitSection,
 } from "./home-sections.ts";
 import { recordAnimations } from "./recorded-animations.ts";
-import { ASKED, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { footerToggle, openHome, placeholder } from "./visitor.ts";
+import { ASKED, opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
+import { DESKTOP, footerToggle, openHome, PHONE, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -56,6 +56,38 @@ describe("the home page's headings and install box", () => {
         "integrity=",
       );
     }
+    await context.close();
+  }, 30_000);
+
+  const npmCommand = (page: Page) => page.locator("#npm-install-google");
+  const installSummary = (page: Page) => page.locator("summary").filter({ hasText: "Install" });
+
+  it("is folded on a phone, and opens from its heading by keyboard", async () => {
+    const { page, context } = await opened(site, "/", PHONE);
+    expect(await npmCommand(page).isVisible()).toBe(false);
+    await installSummary(page).focus();
+    await page.keyboard.press("Enter");
+    expect(await npmCommand(page).isVisible()).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("is open from 720px wide, and its heading doesn't fold it", async () => {
+    for (const viewport of [DESKTOP, { width: 720, height: 900 }]) {
+      const { page, context } = await opened(site, "/", viewport);
+      expect(await npmCommand(page).isVisible(), `${viewport.width}`).toBe(true);
+      await installSummary(page).focus();
+      await page.keyboard.press("Enter");
+      expect(await npmCommand(page).isVisible(), `${viewport.width}`).toBe(true);
+      await context.close();
+    }
+  }, 30_000);
+
+  it("opens as the screen widens to 720px, and folds again as it narrows", async () => {
+    const { page, context } = await opened(site, "/", PHONE);
+    await page.setViewportSize(DESKTOP);
+    await expect.poll(() => npmCommand(page).isVisible()).toBe(true);
+    await page.setViewportSize(PHONE);
+    await expect.poll(() => npmCommand(page).isVisible()).toBe(false);
     await context.close();
   }, 30_000);
 
