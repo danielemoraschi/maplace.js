@@ -30,14 +30,16 @@
   #whats-on-react-root [data-selected] > .pin { transform: scale(1.25); box-shadow: 0 0 0 2px var(--category), 0 2px 6px rgb(0 0 0 / 45%); }
   /* maplace's panel on the map, made nothing, so the count and the legend are the page's own. */
   #whats-on-react-root .maplace-control { padding: 0; background: none; box-shadow: none; }
-  /* The legend clear of Google's terms, which reach under the bottom-left corner on a narrow map. */
-  #whats-on-react-root .maplace-control:has(.event-legend) { margin-bottom: 18px; }
-  #whats-on-react-root .event-count, #whats-on-react-root .event-legend {
+  #whats-on-react-root .event-count, #whats-on-react-root .event-selected, #whats-on-react-root .event-legend {
     background: rgb(28 29 33 / 88%);
     color: #f2f2f3;
     font: 500 13px/1.2 system-ui, sans-serif;
   }
-  #whats-on-react-root .event-count { display: block; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-react-root .event-count { padding: 8px 14px; border-radius: 999px; }
+  #whats-on-react-root .event-status { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  #whats-on-react-root .event-selected { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-react-root .event-selected::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-react-root .event-selected[hidden] { display: none; }
   #whats-on-react-root .event-legend { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; margin: 0; padding: 4px; border: 0; border-radius: 18px; }
   /* On a phone, the four chips two by two rather than three and one. */
   @media (width < 30rem) {

@@ -145,7 +145,7 @@ describe("the Google adapter's controls", () => {
     const removeFirst = controls.mountControl(node, "top-left");
     controls.mountControl(node, "bottom-left");
     removeFirst();
-    expect([corner("LEFT_TOP"), corner("BOTTOM_LEFT")]).toEqual([[], [node]]);
+    expect([corner("LEFT_TOP"), corner("LEFT_BOTTOM")]).toEqual([[], [node]]);
   });
 
   it("leaves the page's own control in the same corner through remove and destroy", () => {

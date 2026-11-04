@@ -97,7 +97,7 @@ customElements.define("stub-advanced-marker", StubMarker);
 export const STUB_CONTROL_POSITIONS = {
   TOP_RIGHT: 3,
   LEFT_TOP: 5,
-  BOTTOM_LEFT: 10,
+  LEFT_BOTTOM: 6,
   BOTTOM_RIGHT: 12,
 } as const;
 

@@ -57,6 +57,16 @@ const firstView: View = { kind: "fit-all", padding: 80 };
  */
 const markerIcon = ({ group }: Location) => <span className="pin" data-category={group} />;
 
+/** The count, and beside it the name of the venue selected, if any. */
+function EventStatus() {
+  return (
+    <div className="event-status">
+      <EventCount />
+      <SelectedName />
+    </div>
+  );
+}
+
 /** How many venues are shown, of all of them; read as text, so a hover renders nothing. */
 function EventCount() {
   const maplace = useMaplace();
@@ -68,6 +78,28 @@ function countText(snapshot: Snapshot): string {
   const shown = listedLocations(snapshot).length;
   const total = snapshot.locations.length;
   return shown === total ? `${total} venues` : `${shown} of ${total} venues`;
+}
+
+/**
+ * The name of the venue selected, marked with its category for its colour; hidden while none is.
+ * Not a live region: maplace says each selection to a screen reader already.
+ */
+function SelectedName() {
+  const maplace = useMaplace();
+  const selected = useSyncExternalStore(maplace.subscribe, () => selectedIn(maplace.getSnapshot()));
+  return (
+    <span
+      className="event-selected"
+      data-category={selected?.group}
+      hidden={selected === undefined}
+    >
+      {selected?.title}
+    </span>
+  );
+}
+
+function selectedIn({ locations, selectedId }: Snapshot): Location | undefined {
+  return locations.find(({ id }) => id === selectedId);
 }
 
 /**
@@ -112,7 +144,7 @@ function WhatsOn() {
           <EventLegend />
         </MapControl>
         <MapControl position="top-left">
-          <EventCount />
+          <EventStatus />
         </MapControl>
       </MaplaceMap>
     </MaplaceProvider>

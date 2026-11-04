@@ -23,7 +23,7 @@ const adapter = createGoogleAdapter({
 });
 maplace.attach(adapter, "#whats-on-vanilla-map");
 adapter.mountControl(eventLegend(maplace), "bottom-left");
-adapter.mountControl(eventCount(maplace), "top-left");
+adapter.mountControl(eventStatus(maplace), "top-left");
 
 /** A venue in its category, its pin coloured by it. */
 function venue(id: string, lat: number, lng: number, title: string, group: string): Location {
@@ -36,6 +36,14 @@ function pinFor(category: string): HTMLElement {
   pin.className = "pin";
   pin.dataset.category = category;
   return pin;
+}
+
+/** The count, and beside it the name of the venue selected, if any. */
+function eventStatus(maplace: Maplace): HTMLElement {
+  const status = document.createElement("div");
+  status.className = "event-status";
+  status.append(eventCount(maplace), selectedName(maplace));
+  return status;
 }
 
 /** How many venues are shown, of all of them, said again when that changes. */
@@ -52,6 +60,24 @@ function eventCount(maplace: Maplace): HTMLOutputElement {
   writeCount();
   maplace.subscribe(writeCount);
   return count;
+}
+
+/**
+ * The name of the venue selected, marked with its category for its colour; hidden while none is.
+ * Not a live region: maplace says each selection to a screen reader already.
+ */
+function selectedName(maplace: Maplace): HTMLElement {
+  const name = document.createElement("span");
+  name.className = "event-selected";
+  const writeName = (id: string | undefined) => {
+    const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
+    name.hidden = selected === undefined;
+    name.textContent = selected?.title ?? "";
+    name.dataset.category = selected?.group ?? "";
+  };
+  writeName(maplace.getSnapshot().selectedId);
+  maplace.on("selectionChange", ({ id }) => writeName(id));
+  return name;
 }
 
 /**

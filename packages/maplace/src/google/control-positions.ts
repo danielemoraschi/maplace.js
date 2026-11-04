@@ -6,14 +6,15 @@ import type { ControlPosition } from "../adapter";
  * so they map to Google's legacy corners rather than its logical ones, which flip with the
  * writing direction (Maps JS 3.66 places these with no warning). Top-left is `LEFT_TOP`, under
  * Google's own top-left controls (the Map/Satellite toggle), as Google's `TOP_LEFT` lays them out
- * in a row and a list there sits beside the toggle. The bottom corners keep Google's names: its
- * `BOTTOM_LEFT` and `BOTTOM_RIGHT` sit in the bottom row beside the logo and the terms, where its
- * `LEFT_BOTTOM` and `RIGHT_BOTTOM` would stack above them and take more height.
+ * in a row and a list there sits beside the toggle. Bottom-left is `LEFT_BOTTOM`, above the logo,
+ * in the corner as on MapLibre: Google's `BOTTOM_LEFT` sits in the bottom row beside the logo, where
+ * the terms reach under a panel on a narrow map (G21). Bottom-right keeps `BOTTOM_RIGHT`, beside the
+ * terms.
  */
 const GOOGLE_CORNERS = {
   "top-left": "LEFT_TOP",
   "top-right": "TOP_RIGHT",
-  "bottom-left": "BOTTOM_LEFT",
+  "bottom-left": "LEFT_BOTTOM",
   "bottom-right": "BOTTOM_RIGHT",
 } as const satisfies Record<ControlPosition, keyof typeof google.maps.ControlPosition>;
 

@@ -25,14 +25,16 @@
   #whats-on-script-frame .pin[data-selected] { transform: scale(1.25); box-shadow: 0 0 0 2px var(--category), 0 2px 6px rgb(0 0 0 / 45%); }
   /* maplace's panel on the map, made nothing, so the count and the legend are the page's own. */
   #whats-on-script-frame .maplace-control { padding: 0; background: none; box-shadow: none; }
-  /* The legend clear of Google's terms, which reach under the bottom-left corner on a narrow map. */
-  #whats-on-script-frame .maplace-control:has(.event-legend) { margin-bottom: 18px; }
-  #whats-on-script-frame .event-count, #whats-on-script-frame .event-legend {
+  #whats-on-script-frame .event-count, #whats-on-script-frame .event-selected, #whats-on-script-frame .event-legend {
     background: rgb(28 29 33 / 88%);
     color: #f2f2f3;
     font: 500 13px/1.2 system-ui, sans-serif;
   }
-  #whats-on-script-frame .event-count { display: block; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-script-frame .event-count { padding: 8px 14px; border-radius: 999px; }
+  #whats-on-script-frame .event-status { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  #whats-on-script-frame .event-selected { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-script-frame .event-selected::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-script-frame .event-selected[hidden] { display: none; }
   #whats-on-script-frame .event-legend { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; margin: 0; padding: 4px; border: 0; border-radius: 18px; }
   /* On a phone, the four chips two by two rather than three and one. */
   @media (width < 30rem) {
@@ -79,7 +81,7 @@
   const adapter = Maplace.createGoogleAdapter({ apiKey: "YOUR_KEY", mapOptions: { mapTypeControl: false, streetViewControl: false, cameraControl: false } });
   maplace.attach(adapter, "#whats-on-script-map");
   adapter.mountControl(eventLegend(maplace), "bottom-left");
-  adapter.mountControl(eventCount(maplace), "top-left");
+  adapter.mountControl(eventStatus(maplace), "top-left");
 
   /** A venue in its category, its pin coloured by it. */
   function venue(id, lat, lng, title, group) {
@@ -92,6 +94,14 @@
     pin.className = "pin";
     pin.dataset.category = category;
     return pin;
+  }
+
+  /** The count, and beside it the name of the venue selected, if any. */
+  function eventStatus(maplace) {
+    const status = document.createElement("div");
+    status.className = "event-status";
+    status.append(eventCount(maplace), selectedName(maplace));
+    return status;
   }
 
   /** How many venues are shown, of all of them, said again when that changes. */
@@ -108,6 +118,24 @@
     writeCount();
     maplace.subscribe(writeCount);
     return count;
+  }
+
+  /**
+   * The name of the venue selected, marked with its category for its colour; hidden while none is.
+   * Not a live region: maplace says each selection to a screen reader already.
+   */
+  function selectedName(maplace) {
+    const name = document.createElement("span");
+    name.className = "event-selected";
+    const writeName = (id) => {
+      const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
+      name.hidden = selected === undefined;
+      name.textContent = selected?.title ?? "";
+      name.dataset.category = selected?.group ?? "";
+    };
+    writeName(maplace.getSnapshot().selectedId);
+    maplace.on("selectionChange", ({ id }) => writeName(id));
+    return name;
   }
 
   /**

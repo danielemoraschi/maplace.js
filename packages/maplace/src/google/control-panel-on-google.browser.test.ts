@@ -1,10 +1,11 @@
 /// <reference types="google.maps" />
 import { afterEach, expect, it, onTestFinished } from "vitest";
 import { userEvent } from "vitest/browser";
-import type { Adapter } from "../adapter";
+import type { Adapter, ControlPosition } from "../adapter";
 import { createListView, type ListView, type ListViewOptions } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { SKIP_MAP_CLASS } from "../maplace/map-aids";
+import { sizedContainer } from "../testing/container";
 import { panelOf } from "../testing/panel-of";
 import { queried } from "../testing/queried";
 import type { ColorScheme } from "./options";
@@ -62,13 +63,19 @@ async function mountedTopRight(adapter: Pick<Adapter, "mountControl">, list: Lis
 interface ListSetting extends ListViewOptions {
   readonly colorScheme?: ColorScheme | undefined;
   readonly count?: number | undefined;
+  readonly position?: ControlPosition | undefined;
 }
 
-/** A list view top-left on a map maplace creates, laid out by Google, and its panel. */
-async function listOnGoogle({ colorScheme, count, ...options }: ListSetting = {}) {
+/** A list view in a corner (top-left unless given) of a map maplace creates, laid out by Google. */
+async function listOnGoogle({ colorScheme, count, position, ...options }: ListSetting = {}) {
   const maplace = createMaplace({ locations: places(count) });
   const list = createListView(maplace, options);
-  const { adapter, container, panel } = await listMountedOnGoogle({ maplace, list, colorScheme });
+  const { adapter, container, panel } = await listMountedOnGoogle({
+    maplace,
+    list,
+    colorScheme,
+    position,
+  });
   return { maplace, adapter, container, view: list.element, panel };
 }
 
@@ -130,6 +137,28 @@ describeWithMaps("controls on a Google map", () => {
     expect(getComputedStyle(panel).backgroundColor).toBe(
       getComputedStyle(googlesOwnControl(container)).backgroundColor,
     );
+  });
+
+  it("puts a bottom-left panel in the map's corner, above Google's logo and off its terms, on a narrow map", async () => {
+    // As wide as fits beside Google's right-hand column on a 350px map, which a wider one would reach.
+    const legend = document.createElement("div");
+    legend.style.cssText = "width: 220px; height: 64px";
+    legend.textContent = "Legend";
+    const { container, panel } = await listMountedOnGoogle({
+      maplace: createMaplace({ locations: places(5) }),
+      list: { element: legend, destroy: () => legend.remove() },
+      position: "bottom-left",
+      container: sizedContainer({ width: 350, height: 420 }),
+    });
+    expect(crowded(container, panel)).toEqual([]);
+    const fromLeft = panel.getBoundingClientRect().left - container.getBoundingClientRect().left;
+    expect(fromLeft).toBeLessThanOrEqual(10);
+  });
+
+  it("keeps a long bottom-left list above Google's logo and under its Map/Satellite toggle", async () => {
+    const { container, panel } = await listOnGoogle({ count: 30, position: "bottom-left" });
+    expect(crowded(container, panel)).toEqual([]);
+    expect(belowTheToggle(container, panel)).toBeGreaterThanOrEqual(0);
   });
 
   it("keeps long lists inside the map and off Google's own controls, a top-left one under the Map/Satellite toggle, its heading in view as End scrolls", async () => {

@@ -1,4 +1,5 @@
 import { expect } from "vitest";
+import type { Maplace } from "../../../index";
 import type { FakeAdapter } from "../../fake-adapter";
 import {
   byText,
@@ -37,12 +38,27 @@ async function expectLegendRebuiltPressed(root: Element): Promise<void> {
   }
 }
 
+/**
+ * The pill beside the count names the venue selected, its category marked for its colour, and goes
+ * with the selection.
+ */
+async function expectSelectedNamed(store: Maplace, root: Element): Promise<void> {
+  const named = () => textIn(root, ".event-selected:not([hidden])");
+  expect(named()).toBeUndefined();
+  store.select("royal-albert-hall");
+  await expect.poll(named).toBe("Royal Albert Hall");
+  expect(root.querySelector<HTMLElement>(".event-selected")?.dataset.category).toBe("Concerts");
+  store.select(undefined);
+  await expect.poll(named).toBeUndefined();
+}
+
 /** The chips pressed inside `root`, by their words. */
 const pressedIn = (root: Element) => textsIn(root, 'button[aria-pressed="true"]');
 
 /**
  * Every venue fitted with room for the controls; the legend on the map's bottom left, the count on
- * its top left (on the map, or over it in the page); pins marked with their category. A chip shows
+ * its top left (on the map, or over it in the page), the venue selected named beside it; pins
+ * marked with their category. A chip shows
  * its category alone, the count following; pressed again, every venue is back. The chip pressed
  * stays the node pressed.
  */
@@ -56,6 +72,7 @@ export const whatsOn: ExampleBehaviour = async ({ store, adapter, root }) => {
     expect(iconCategoryOf(adapter, id)).toBe(category);
   }
   await expect.poll(() => textIn(root, ".event-count")).toBe("12 venues");
+  await expectSelectedNamed(store, root);
   expect(textsIn(root, "button[aria-pressed]")).toEqual(Object.values(CATEGORY_OF));
   expect(pressedIn(root)).toEqual([]);
 

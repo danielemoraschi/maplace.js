@@ -27,12 +27,16 @@
   #whats-on-maplibre-frame .pin[data-selected] { transform: scale(1.25); box-shadow: 0 0 0 2px var(--category), 0 2px 6px rgb(0 0 0 / 45%); }
   /* maplace's panel on the map, made nothing, so the count and the legend are the page's own. */
   #whats-on-maplibre-frame .maplace-control { padding: 0; background: none; box-shadow: none; }
-  #whats-on-maplibre-frame .event-count, #whats-on-maplibre-frame .event-legend {
+  #whats-on-maplibre-frame .event-count, #whats-on-maplibre-frame .event-selected, #whats-on-maplibre-frame .event-legend {
     background: rgb(28 29 33 / 88%);
     color: #f2f2f3;
     font: 500 13px/1.2 system-ui, sans-serif;
   }
-  #whats-on-maplibre-frame .event-count { display: block; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-maplibre-frame .event-count { padding: 8px 14px; border-radius: 999px; }
+  #whats-on-maplibre-frame .event-status { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  #whats-on-maplibre-frame .event-selected { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; }
+  #whats-on-maplibre-frame .event-selected::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-maplibre-frame .event-selected[hidden] { display: none; }
   #whats-on-maplibre-frame .event-legend { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; margin: 0; padding: 4px; border: 0; border-radius: 18px; }
   /* On a phone, the four chips two by two rather than three and one. */
   @media (width < 30rem) {
@@ -56,12 +60,15 @@
   #whats-on-maplibre-frame .category-chip:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
   /* The count over the map's top left, where a control would sit: the element places one view
      of yours on the map, the legend. It takes no clicks, so the map under it still does. */
-  #whats-on-maplibre-count { position: absolute; top: 22px; left: 22px; z-index: 1; pointer-events: none; }
+  #whats-on-maplibre-status { position: absolute; top: 22px; left: 22px; z-index: 1; pointer-events: none; }
   /* Shown with the map only, not over its load or failure panel. */
-  #whats-on-maplibre-frame:has(#whats-on-maplibre-map:not(:state(ready))) #whats-on-maplibre-count { display: none; }
+  #whats-on-maplibre-frame:has(#whats-on-maplibre-map:not(:state(ready))) #whats-on-maplibre-status { display: none; }
 </style>
 <div id="whats-on-maplibre-frame">
-  <output id="whats-on-maplibre-count" class="event-count"></output>
+  <div id="whats-on-maplibre-status" class="event-status">
+    <output id="whats-on-maplibre-count" class="event-count"></output>
+    <span id="whats-on-maplibre-selected" class="event-selected" hidden></span>
+  </div>
   <maplace-map id="whats-on-maplibre-map" map-style="https://tiles.openfreemap.org/styles/liberty"
     list="maplibre-whats-on-legend" list-position="bottom-left">
     <maplace-location location-id="national-theatre" lat="51.507" lng="-0.1145" title="National Theatre" group="Theatre">
@@ -154,5 +161,17 @@
     };
     writeCount();
     maplace.subscribe(writeCount);
+
+    // Beside it, the name of the venue selected, marked with its category for its colour; hidden
+    // while none is. Not a live region: maplace says each selection to a screen reader already.
+    const name = document.getElementById('whats-on-maplibre-selected');
+    const writeName = (id) => {
+      const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
+      name.hidden = selected === undefined;
+      name.textContent = selected?.title ?? '';
+      name.dataset.category = selected?.group ?? '';
+    };
+    writeName(maplace.getSnapshot().selectedId);
+    maplace.on('selectionChange', ({ id }) => writeName(id));
   }
 </script>
