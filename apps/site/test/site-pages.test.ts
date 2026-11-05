@@ -143,7 +143,7 @@ describe("the footer", () => {
       }));
       expect(await footerLinks(page), route).toEqual(expect.arrayContaining(expected));
       expect(await page.getByRole("contentinfo").textContent(), route).toMatch(
-        new RegExp(`MIT licence © \\d{4} ${SITE_MAINTAINER}`),
+        new RegExp(`Apache-2\\.0 licence © \\d{4} ${SITE_MAINTAINER}`),
       );
       await context.close();
     }

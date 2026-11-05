@@ -9,7 +9,7 @@ const PAGE = {
   description: "The store.",
   modifiedOn: "2026-10-30",
 };
-const LIBRARY = { name: "maplace", description: "A map.", version: "1.2.3", license: "MIT" };
+const LIBRARY = { name: "maplace", description: "A map.", version: "1.2.3", license: "Apache-2.0" };
 
 const { "@graph": graph } = structuredData(PAGE, LIBRARY);
 const nodeOfType = (type: string) => graph.find((node) => node["@type"] === type);
@@ -31,7 +31,7 @@ describe("structuredData", () => {
       description: LIBRARY.description,
       codeRepository: REPOSITORY_URL,
       programmingLanguage: "TypeScript",
-      license: "https://spdx.org/licenses/MIT.html",
+      license: "https://spdx.org/licenses/Apache-2.0.html",
       version: LIBRARY.version,
       sameAs: "https://www.npmjs.com/package/maplace",
     });

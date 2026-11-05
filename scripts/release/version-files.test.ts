@@ -26,7 +26,7 @@ describe("withVersion", () => {
   it("changes the workspace's entry in the lockfile, not another package's", () => {
     const text =
       '{\n  "packages": {\n    "node_modules/x": {\n      "version": "0.0.0"\n    },\n' +
-      '    "packages/maplace": {\n      "version": "0.0.0",\n      "license": "MIT"\n    }\n  }\n}\n';
+      '    "packages/maplace": {\n      "version": "0.0.0",\n      "license": "Apache-2.0"\n    }\n  }\n}\n';
     expect(withVersion(text, { file: lockfile, version: "1.0.0" })).toBe(
       text.replace(
         '"packages/maplace": {\n      "version": "0.0.0"',

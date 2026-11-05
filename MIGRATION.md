@@ -11,6 +11,7 @@ maplacejs 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in t
 - **Text is text.** Titles and string content are never inserted as HTML; `html` needs a `sanitize` function you provide (DOMPurify, for one).
 - **One kind of change, after it happened.** The `before…` callbacks are gone; events such as `selectionChange`, `locationChange` and `routeChange` report what changed.
 - **On Google, a map ID for production**: maplacejs draws advanced markers, which need a map ID. As in 0.2, a page needs none to start: without one the map uses Google's `DEMO_MAP_ID` and warns once in the console that it is for development ([key and map ID](docs/reference/setup.md#key-and-map-id)).
+- **Apache-2.0, not MIT.** 1.0 is under the [Apache-2.0 licence](LICENSE); 0.2 stays MIT.
 
 ## Before and after
 

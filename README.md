@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/maplace"><img alt="npm version" src="https://img.shields.io/npm/v/maplace"></a>
   <a href="https://github.com/danielemoraschi/maplace.js/actions/workflows/ci.yml"><img alt="CI status" src="https://github.com/danielemoraschi/maplace.js/actions/workflows/ci.yml/badge.svg?branch=main"></a>
-  <a href="https://github.com/danielemoraschi/maplace.js/blob/main/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/license-MIT-blue"></a>
+  <a href="https://github.com/danielemoraschi/maplace.js/blob/main/LICENSE"><img alt="Apache-2.0 licence" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
   <a href="https://www.npmjs.com/package/maplace"><img alt="TypeScript types included" src="https://img.shields.io/npm/types/maplace"></a>
 </p>
 
@@ -320,4 +320,8 @@ export function CityMap() {
 
 ## License
 
-[MIT](LICENSE)
+maplacejs is released under the [Apache License, Version 2.0](LICENSE) © 2013-2026 Daniele Moraschi.
+
+## The name
+
+Maplace, maplacejs, maplace.js and maplace-js are this project's names, and the licence grants no rights to them (Apache-2.0 §6). Please publish a fork or a product under a name of its own, and don't present it as maplacejs or as endorsed by it; saying it is built on or derived from maplacejs, and carrying the NOTICE, is fine.

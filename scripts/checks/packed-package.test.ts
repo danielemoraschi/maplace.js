@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildPackage } from "../build/build-package.ts";
@@ -8,6 +8,7 @@ import { tempDir } from "../build/temp-dir.ts";
 import { layOutConsumer, typeCheckConsumer } from "./consumer-types.ts";
 import { runKitInBrowser } from "./kit-in-browser.ts";
 import { packageLintProblems } from "./package-lint.ts";
+import { topLevelEntriesIn } from "./packed-files.ts";
 import { renderServerComponentsApp } from "./server-components.ts";
 import { typeResolutionProblems } from "./type-resolution.ts";
 
@@ -26,6 +27,10 @@ beforeAll(async () => {
 }, 60_000);
 
 describe("the packed package", () => {
+  it("ships everything staged, its licence and notice among them", () => {
+    expect(topLevelEntriesIn(tarball)).toEqual(new Set(readdirSync(stagedDir)));
+  });
+
   it("has nothing publint warns about", async () => {
     expect(await packageLintProblems(tarball)).toEqual([]);
   });

@@ -43,4 +43,4 @@ npx playwright install chromium
 
 Keep each one to a single change, branched from the default branch, and say `Fixes #N` if it closes an issue.
 
-Contributions are under the project's [MIT license](LICENSE). This project has a [code of conduct](CODE_OF_CONDUCT.md).
+Contributions are under the project's [Apache-2.0 licence](LICENSE) (section 5). This project has a [code of conduct](CODE_OF_CONDUCT.md).

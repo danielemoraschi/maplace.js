@@ -147,5 +147,5 @@ function inMemory(script: CdnScript, outdir?: string) {
 
 function bannerOf({ bundlesThirdParty }: CdnContents): string {
   const thirdParty = bundlesThirdParty ? ` | bundles third-party code: ${LICENSES_FILE}` : "";
-  return `/*! maplace ${packageManifest().version} | MIT${thirdParty} */`;
+  return `/*! maplace ${packageManifest().version} | Apache-2.0${thirdParty} */`;
 }

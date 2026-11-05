@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-05 Changed the licence from MIT to Apache-2.0
 - 2026-11-05 Changed the examples' data and icons to /examples/data/, where the site serves them, the Fetches links opening those copies, not GitHub's
 - 2026-11-05 Changed the Your own look example's styles into one stylesheet, examples/styles/whats-on.css, which every version links and the site serves and links beside the example
 - 2026-11-05 Added to the Your own look example's card, while no venue is picked, a list of the venues shown, each picking it, under the category a chip shows alone, and a × closing the venue picked

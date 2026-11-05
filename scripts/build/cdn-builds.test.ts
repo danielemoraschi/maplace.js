@@ -35,7 +35,7 @@ describe("the CDN scripts", () => {
   it("are single files, each starting with maplace's banner", () => {
     for (const script of Object.values(CDN_SCRIPTS)) {
       const text = read(script);
-      expect(text).toMatch(/^\/\*! maplace \S+ \| MIT/);
+      expect(text).toMatch(/^\/\*! maplace \S+ \| Apache-2\.0 /);
       expect(text).not.toMatch(/\bimport\(\s*["'`]/);
     }
   });

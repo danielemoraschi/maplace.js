@@ -16,7 +16,7 @@ import {
 import { packedManifest } from "./packed-manifest.ts";
 import { integrityOfFile } from "./subresource-integrity.ts";
 
-/** Writes the package as npm packs it into `dir`: its packed manifest, `dist`, README, licence and changelog. */
+/** Writes the package as npm packs it into `dir`: its packed manifest, `dist`, README, licence, notice and changelog. */
 export function stagePackage(dir: string = PACKED, dist: string = DIST): void {
   const staged = resolve(ROOT, dir);
   rmSync(staged, { recursive: true, force: true });
@@ -25,7 +25,7 @@ export function stagePackage(dir: string = PACKED, dist: string = DIST): void {
   const manifest = packedManifest(source);
   writeFileSync(join(staged, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   cpSync(resolve(ROOT, dist), join(staged, "dist"), { recursive: true });
-  cpSync(resolve(ROOT, "LICENSE"), join(staged, "LICENSE"));
+  for (const file of ["LICENSE", "NOTICE"]) cpSync(resolve(ROOT, file), join(staged, file));
   writeFileSync(join(staged, "README.md"), stagedReadme(source, resolve(ROOT, dist)));
   writeFileSync(join(staged, CHANGELOG_FILE), stagedChangelog(source));
 }

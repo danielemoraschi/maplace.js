@@ -11,8 +11,8 @@ import { integrityOfFile } from "./subresource-integrity.ts";
 const { packageDir, manifest } = stagedBeforeTests("stage");
 
 describe("the staged package", () => {
-  it("has its licence and readme, as npm packs them", () => {
-    for (const file of ["package.json", "LICENSE", "README.md", "CHANGELOG.md"]) {
+  it("has its licence, notice and readme, as npm packs them", () => {
+    for (const file of ["package.json", "LICENSE", "NOTICE", "README.md", "CHANGELOG.md"]) {
       expect(existsSync(join(packageDir, file)), file).toBe(true);
     }
   });
