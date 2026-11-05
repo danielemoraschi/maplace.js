@@ -1,7 +1,8 @@
 import { type Location, listedLocations, type Snapshot, type View } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 import { MapControl, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
-import { StrictMode, useSyncExternalStore } from "react";
+import { StrictMode, useRef, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 
 /** What the card beside the map says of a venue, besides its name and category. */
@@ -153,18 +154,61 @@ function selectedIn({
 }
 
 /**
- * The card beside the map: the venue selected, its category marked for its colour; or a word asking
- * for one. Not a live region: maplace says each selection to a screen reader already.
+ * The card beside the map: the venue selected, its category marked for its colour, with a × closing
+ * it; or, while none is, the venues shown, each a button selecting it, under the category shown
+ * alone, if any. A press moves the focus to what takes the button's place, the card rendered at
+ * once for it. Not a live region: maplace says each selection to a screen reader already.
  */
 function VenueCard() {
   const maplace = useMaplace<VenueDetails>();
   const selected = useSyncExternalStore(maplace.subscribe, () => selectedIn(maplace.getSnapshot()));
+  const listed = useListedVenues();
+  const shownAlone = useSyncExternalStore(maplace.subscribe, () =>
+    shownAloneIn(maplace.getSnapshot()),
+  );
+  const card = useRef<HTMLElement>(null);
+  const selectAndFocus = (id: string | undefined, toFocus: string) => {
+    flushSync(() => maplace.select(id));
+    card.current?.querySelector<HTMLElement>(toFocus)?.focus();
+  };
   return (
-    <aside className="venue-card" aria-label="Venue">
+    <aside className="venue-card" aria-label="Venue" ref={card}>
       {selected?.data === undefined ? (
-        <p className="venue-empty">Pick a venue on the map to see it here.</p>
+        <div className="venue-picker">
+          <p
+            className="venue-list-category"
+            data-category={shownAlone}
+            hidden={shownAlone === undefined}
+          >
+            {shownAlone}
+          </p>
+          <p className="venue-empty">Pick a venue on the map, or here.</p>
+          <ul className="venue-list" aria-label="Venues">
+            {listed.map(({ id, title, group }) => (
+              <li key={id}>
+                <button
+                  type="button"
+                  className="venue-pick"
+                  data-category={group}
+                  data-id={id}
+                  onClick={() => selectAndFocus(id, ".venue-close")}
+                >
+                  {title ?? id}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
         <div className="venue" data-category={selected.group}>
+          <button
+            type="button"
+            className="venue-close"
+            aria-label="Close"
+            onClick={() =>
+              selectAndFocus(undefined, `.venue-pick[data-id="${CSS.escape(selected.id)}"]`)
+            }
+          />
           <p className="venue-category">{selected.group}</p>
           <h3 className="venue-name">{selected.title}</h3>
           <dl>
@@ -185,6 +229,17 @@ function VenueCard() {
       )}
     </aside>
   );
+}
+
+/** The venues shown, rendered again when they change; read as their ids, so a hover renders none. */
+function useListedVenues(): readonly Location[] {
+  const maplace = useMaplace();
+  useSyncExternalStore(maplace.subscribe, () =>
+    listedLocations(maplace.getSnapshot())
+      .map(({ id }) => id)
+      .join(),
+  );
+  return listedLocations(maplace.getSnapshot());
 }
 
 /**

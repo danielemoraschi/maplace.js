@@ -173,7 +173,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "whats-on",
         title: "Your own look",
         summary:
-          "A dark frame, pins coloured by category, a legend that filters them and a card of the venue picked.",
+          "A dark frame, pins coloured by category, a legend that filters them and a card of the venues, or of the one picked.",
         drawsOwnFrame: true,
       },
       {

@@ -56,8 +56,8 @@
   #whats-on-maplibre-script-frame .category-chip:hover { background: rgb(255 255 255 / 12%); }
   #whats-on-maplibre-script-frame .category-chip[aria-pressed="true"] { background: #f2f2f3; color: #1c1d21; }
   #whats-on-maplibre-script-frame .category-chip:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
-  /* The card beside the map, under it where there is no room: the venue selected, or a word
-     asking for one. */
+  /* The card beside the map, under it where there is no room: the venue selected, or the
+     venues shown, each picked with a press. */
   #whats-on-maplibre-script-frame .venue-card {
     flex: 1 1 14rem;
     box-sizing: border-box;
@@ -68,9 +68,56 @@
     font: 400 14px/1.4 system-ui, sans-serif;
   }
   #whats-on-maplibre-script-frame .venue-empty { margin: 0; color: #a5a6ad; }
-  #whats-on-maplibre-script-frame .venue { padding-left: 12px; border-left: 3px solid var(--category); }
-  #whats-on-maplibre-script-frame .venue-category { display: flex; align-items: center; gap: 6px; margin: 0; color: #c9cad0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-  #whats-on-maplibre-script-frame .venue-category::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-maplibre-script-frame .venue-list { display: grid; margin: 8px -8px 0; padding: 0; list-style: none; }
+  #whats-on-maplibre-script-frame .venue-pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  #whats-on-maplibre-script-frame .venue-pick::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-maplibre-script-frame .venue-close {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: #c9cad0;
+    cursor: pointer;
+  }
+  /* The × drawn as two bars crossing at the button's centre, which a glyph's metrics never are. */
+  #whats-on-maplibre-script-frame .venue-close::before, #whats-on-maplibre-script-frame .venue-close::after {
+    content: "";
+    grid-area: 1 / 1;
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+  #whats-on-maplibre-script-frame .venue-close::after { transform: rotate(-45deg); }
+  #whats-on-maplibre-script-frame .venue-pick:hover, #whats-on-maplibre-script-frame .venue-close:hover { background: rgb(255 255 255 / 8%); }
+  #whats-on-maplibre-script-frame .venue-pick:focus-visible, #whats-on-maplibre-script-frame .venue-close:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
+  #whats-on-maplibre-script-frame .venue { position: relative; padding-left: 12px; border-left: 3px solid var(--category); }
+  #whats-on-maplibre-script-frame .venue-category, #whats-on-maplibre-script-frame .venue-list-category { display: flex; align-items: center; gap: 6px; margin: 0; color: #c9cad0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  #whats-on-maplibre-script-frame .venue-category::before, #whats-on-maplibre-script-frame .venue-list-category::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  /* The category shown alone, a tag over the list rather than another of its venues. */
+  #whats-on-maplibre-script-frame .venue-list-category { width: fit-content; margin-bottom: 10px; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--category) 30%, transparent); color: #f2f2f3; }
+  #whats-on-maplibre-script-frame .venue-list-category[hidden] { display: none; }
   #whats-on-maplibre-script-frame .venue-name { margin: 6px 0 14px; font-family: inherit; font-size: 20px; font-weight: 600; line-height: 1.2; }
   #whats-on-maplibre-script-frame .venue dl { display: grid; gap: 12px; margin: 0; }
   #whats-on-maplibre-script-frame .venue dt { color: #a5a6ad; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -79,9 +126,14 @@
 <div id="whats-on-maplibre-script-frame">
   <div id="whats-on-maplibre-script-map"></div>
   <aside id="whats-on-maplibre-script-card" class="venue-card" aria-label="Venue">
-    <p class="venue-empty">Pick a venue on the map to see it here.</p>
+    <div class="venue-picker">
+      <p class="venue-list-category" hidden></p>
+      <p class="venue-empty">Pick a venue on the map, or here.</p>
+      <ul class="venue-list" aria-label="Venues"></ul>
+    </div>
     <template>
       <div class="venue">
+        <button type="button" class="venue-close" aria-label="Close"></button>
         <p class="venue-category"></p>
         <h3 class="venue-name">Venue</h3>
         <dl>
@@ -222,19 +274,27 @@
 
   /**
    * The card beside the map: the venue selected, its category marked for its colour, made from the
-   * card's template and in the card only while a venue is selected; or a word asking for one. Not a live region: maplace says each selection to a screen reader already.
+   * card's template and in the card only while a venue is selected, with a × closing it;
+   * or, while none is, the venues shown, each a button selecting it. Not a live region: maplace
+   * says each selection to a screen reader already.
    */
   function showVenueIn(card, maplace) {
-    const empty = card.querySelector(".venue-empty");
-    const template = card.querySelector("template");
-    const venuePart = template.content.firstElementChild.cloneNode(true);
+    const picker = card.querySelector(".venue-picker");
+    const venuePart = card.querySelector("template").content.firstElementChild.cloneNode(true);
+    const close = venuePart.querySelector(".venue-close");
+    close.addEventListener("click", () => {
+      const closed = maplace.getSnapshot().selectedId ?? "";
+      maplace.select(undefined);
+      picker.querySelector(`.venue-pick[data-id="${CSS.escape(closed)}"]`)?.focus();
+    });
+    listVenuesIn(picker, maplace, () => close.focus());
     const write = (selector, text) => {
       venuePart.querySelector(selector).textContent = text;
     };
     const writeCard = (id) => {
       const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
       const data = selected?.data;
-      empty.hidden = data !== undefined;
+      picker.hidden = data !== undefined;
       if (selected === undefined || data === undefined) {
         venuePart.remove();
         return;
@@ -245,10 +305,51 @@
       write(".venue-address", data.address);
       write(".venue-since", String(data.since));
       write(".venue-known-for", data.knownFor);
-      card.append(venuePart);
+      if (!venuePart.isConnected) card.append(venuePart);
     };
     writeCard(maplace.getSnapshot().selectedId);
     maplace.on("selectionChange", ({ id }) => writeCard(id));
+  }
+
+  /**
+   * In the card's `picker`, a button per venue shown, selecting it and then calling `afterPick`, and
+   * above them the category shown alone, if any, marked for its colour; written again only when the
+   * venues shown change, as a hover changes the store too.
+   */
+  function listVenuesIn(picker, maplace, afterPick) {
+    const categoryLine = picker.querySelector(".venue-list-category");
+    const list = picker.querySelector(".venue-list");
+    let listedIds;
+    const writeList = () => {
+      const listed = Maplace.listedLocations(maplace.getSnapshot());
+      const ids = listed.map(({ id }) => id).join();
+      if (ids === listedIds) return;
+      listedIds = ids;
+      const alone = shownAlone(maplace);
+      categoryLine.hidden = alone === undefined;
+      categoryLine.textContent = alone ?? "";
+      categoryLine.dataset.category = alone ?? "";
+      list.replaceChildren(...listed.map((location) => venueEntry(location, maplace, afterPick)));
+    };
+    writeList();
+    maplace.subscribe(writeList);
+  }
+
+  /** A venue in the card's list: a button selecting it, marked with its category for its colour. */
+  function venueEntry({ id, title, group }, maplace, afterPick) {
+    const pick = document.createElement("button");
+    pick.type = "button";
+    pick.className = "venue-pick";
+    pick.dataset.category = group ?? "";
+    pick.textContent = title ?? id;
+    pick.dataset.id = id;
+    pick.addEventListener("click", () => {
+      maplace.select(id);
+      afterPick();
+    });
+    const entry = document.createElement("li");
+    entry.append(pick);
+    return entry;
   }
 
   /**

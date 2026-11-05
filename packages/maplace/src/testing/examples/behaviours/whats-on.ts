@@ -10,7 +10,22 @@ import {
   textsIn,
 } from "./reading";
 
-const PICK_A_VENUE = "Pick a venue on the map to see it here.";
+const PICK_A_VENUE = "Pick a venue on the map, or here.";
+const VENUES = [
+  "National Theatre",
+  "Shakespeare's Globe",
+  "Donmar Warehouse",
+  "Royal Albert Hall",
+  "Wigmore Hall",
+  "Barbican Hall",
+  "Borough Market",
+  "Camden Market",
+  "Old Spitalfields Market",
+  "British Library",
+  "Conway Hall",
+  "Royal Institution",
+];
+const MARKETS = ["Borough Market", "Camden Market", "Old Spitalfields Market"];
 const ROYAL_ALBERT_HALL = [
   "Concerts",
   "Royal Albert Hall",
@@ -47,29 +62,59 @@ async function expectLegendRebuiltPressed(root: Element): Promise<void> {
   }
 }
 
+/** The category the card's list says it shows alone, if any. */
+const listedCategoryIn = (root: Element) =>
+  textIn(root, ".venue-picker:not([hidden]) .venue-list-category:not([hidden])");
+
+/** The venues the card lists, by their words; none while a venue is selected. */
+const venuesListedIn = (root: Element) => textsIn(root, ".venue-picker:not([hidden]) .venue-pick");
+
+/** The venue the card shows: its category, name, address, year and what it is known for. */
+const shownIn = (root: Element) => textsIn(root, ".venue :is(.venue-category, .venue-name, dd)");
+
 /**
  * The venue selected is named in the pill beside the count, and shown in the card beside the map:
  * its category, name, address, year and what it is known for, both marked with the category for its
- * colour. Unselected, the pill goes and the card asks for a venue again.
+ * colour, in place of the card's list of venues. Unselected, the pill goes and the list is back.
  */
 async function expectSelectionShown(store: Maplace, root: Element): Promise<void> {
   const named = () => textIn(root, ".event-selected:not([hidden])");
-  const shown = () => textsIn(root, ".venue :is(.venue-category, .venue-name, dd)");
-  const asking = () => textIn(root, ".venue-empty:not([hidden])");
+  const asking = () => textIn(root, ".venue-picker:not([hidden]) .venue-empty");
   expect(named()).toBeUndefined();
-  expect(shown()).toEqual([]);
+  expect(shownIn(root)).toEqual([]);
   expect(asking()).toBe(PICK_A_VENUE);
+  expect(venuesListedIn(root)).toEqual(VENUES);
+  expect(listedCategoryIn(root)).toBeUndefined();
   store.select("royal-albert-hall");
   await expect.poll(named).toBe("Royal Albert Hall");
-  await expect.poll(shown).toEqual(ROYAL_ALBERT_HALL);
+  await expect.poll(() => shownIn(root)).toEqual(ROYAL_ALBERT_HALL);
   expect(asking()).toBeUndefined();
+  expect(venuesListedIn(root)).toEqual([]);
   for (const marked of root.querySelectorAll<HTMLElement>(".event-selected, .venue")) {
     expect(marked.dataset.category).toBe("Concerts");
   }
   store.select(undefined);
   await expect.poll(named).toBeUndefined();
-  await expect.poll(shown).toEqual([]);
+  await expect.poll(() => shownIn(root)).toEqual([]);
   expect(asking()).toBe(PICK_A_VENUE);
+  expect(venuesListedIn(root)).toEqual(VENUES);
+}
+
+/**
+ * A venue picked from the card's list is selected and shown, the focus moved to the card's ×;
+ * pressed, it clears the selection and the focus goes back to that venue in the list.
+ */
+async function expectPickedFromList(store: Maplace, root: Element): Promise<void> {
+  const focused = () => root.ownerDocument.activeElement;
+  byText(root, ".venue-pick", "Wigmore Hall").click();
+  expect(store.getSnapshot().selectedId).toBe("wigmore-hall");
+  await expect.poll(() => shownIn(root)[1]).toBe("Wigmore Hall");
+  const close = root.querySelector<HTMLElement>(".venue-close");
+  expect(focused()).toBe(close);
+  close?.click();
+  expect(store.getSnapshot().selectedId).toBeUndefined();
+  await expect.poll(() => venuesListedIn(root)).toEqual(VENUES);
+  expect(focused()?.textContent?.trim()).toBe("Wigmore Hall");
 }
 
 /** The chips pressed inside `root`, by their words. */
@@ -78,8 +123,9 @@ const pressedIn = (root: Element) => textsIn(root, 'button[aria-pressed="true"]'
 /**
  * Every venue fitted with room for the controls; the legend on the map's bottom left, the count on
  * its top left (on the map, or over it in the page), the venue selected named beside it and shown
- * in the card beside the map; pins marked with their category. A chip shows its category alone,
- * the count following; pressed again, every venue is back. The chip pressed stays the node pressed.
+ * in the card beside the map, which lists the venues shown while none is; pins marked with their
+ * category. A chip shows its category alone, the count and the card's list following, the list
+ * named by it; pressed again, every venue is back. The chip pressed stays the node pressed.
  */
 export const whatsOn: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(firstView(adapter)).toMatchObject({ padding: 80 });
@@ -92,6 +138,7 @@ export const whatsOn: ExampleBehaviour = async ({ store, adapter, root }) => {
   }
   await expect.poll(() => textIn(root, ".event-count")).toBe("12 venues");
   await expectSelectionShown(store, root);
+  await expectPickedFromList(store, root);
   expect(textsIn(root, "button[aria-pressed]")).toEqual(Object.values(CATEGORY_OF));
   expect(pressedIn(root)).toEqual([]);
 
@@ -100,6 +147,9 @@ export const whatsOn: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(store.getSnapshot().filter?.groups).toEqual(["Markets"]);
   await expect.poll(() => textIn(root, ".event-count")).toBe("3 of 12 venues");
   await expect.poll(() => pressedIn(root)).toEqual(["Markets"]);
+  await expect.poll(() => venuesListedIn(root)).toEqual(MARKETS);
+  expect(listedCategoryIn(root)).toBe("Markets");
+  expect(root.querySelector<HTMLElement>(".venue-list-category")?.dataset.category).toBe("Markets");
   expect(markets.isConnected).toBe(true);
   await expectLegendRebuiltPressed(root);
 
@@ -107,4 +157,6 @@ export const whatsOn: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(store.getSnapshot().filter).toBeUndefined();
   await expect.poll(() => textIn(root, ".event-count")).toBe("12 venues");
   await expect.poll(() => pressedIn(root)).toEqual([]);
+  await expect.poll(() => venuesListedIn(root)).toEqual(VENUES);
+  expect(listedCategoryIn(root)).toBeUndefined();
 };

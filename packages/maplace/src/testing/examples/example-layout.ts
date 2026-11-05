@@ -121,14 +121,27 @@ function roleOf(element: Element): string {
   return element.getAttribute("role") ?? element.localName;
 }
 
-/** The words naming `element`: a select's options left out, the choices it offers, not its name. */
+/**
+ * The words naming `element`, a space between text in different elements, so blocks stay apart
+ * whether or not the markup has space between them (JSX writes none), while text one element holds
+ * reads as one, however React splits it around an expression; a select's options left out, the
+ * choices it offers, not its name.
+ */
 function wordsOf(element: Element): string {
   let named = element;
   if (element.querySelector("select") !== null) {
     named = element.cloneNode(true) as Element;
     for (const select of named.querySelectorAll("select")) select.remove();
   }
-  return (named.textContent ?? "").replaceAll(/\s+/g, " ").trim().slice(0, WORDS_IN_KEY);
+  const texts = element.ownerDocument.createTreeWalker(named, NodeFilter.SHOW_TEXT);
+  let words = "";
+  let lastParent: Node | null = null;
+  while (texts.nextNode()) {
+    const text = texts.currentNode as Text;
+    words += (text.parentNode === lastParent ? "" : " ") + text.data;
+    lastParent = text.parentNode;
+  }
+  return words.replaceAll(/\s+/g, " ").trim().slice(0, WORDS_IN_KEY);
 }
 
 function boxIn(element: Element, origin: DOMRect): LookPart["box"] {

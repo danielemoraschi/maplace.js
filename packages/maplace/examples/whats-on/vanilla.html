@@ -61,8 +61,8 @@
   #whats-on-vanilla-frame .category-chip:hover { background: rgb(255 255 255 / 12%); }
   #whats-on-vanilla-frame .category-chip[aria-pressed="true"] { background: #f2f2f3; color: #1c1d21; }
   #whats-on-vanilla-frame .category-chip:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
-  /* The card beside the map, under it where there is no room: the venue selected, or a word
-     asking for one. */
+  /* The card beside the map, under it where there is no room: the venue selected, or the
+     venues shown, each picked with a press. */
   #whats-on-vanilla-frame .venue-card {
     flex: 1 1 14rem;
     box-sizing: border-box;
@@ -73,9 +73,56 @@
     font: 400 14px/1.4 system-ui, sans-serif;
   }
   #whats-on-vanilla-frame .venue-empty { margin: 0; color: #a5a6ad; }
-  #whats-on-vanilla-frame .venue { padding-left: 12px; border-left: 3px solid var(--category); }
-  #whats-on-vanilla-frame .venue-category { display: flex; align-items: center; gap: 6px; margin: 0; color: #c9cad0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
-  #whats-on-vanilla-frame .venue-category::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-vanilla-frame .venue-list { display: grid; margin: 8px -8px 0; padding: 0; list-style: none; }
+  #whats-on-vanilla-frame .venue-pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  #whats-on-vanilla-frame .venue-pick::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-vanilla-frame .venue-close {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: #c9cad0;
+    cursor: pointer;
+  }
+  /* The × drawn as two bars crossing at the button's centre, which a glyph's metrics never are. */
+  #whats-on-vanilla-frame .venue-close::before, #whats-on-vanilla-frame .venue-close::after {
+    content: "";
+    grid-area: 1 / 1;
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+  #whats-on-vanilla-frame .venue-close::after { transform: rotate(-45deg); }
+  #whats-on-vanilla-frame .venue-pick:hover, #whats-on-vanilla-frame .venue-close:hover { background: rgb(255 255 255 / 8%); }
+  #whats-on-vanilla-frame .venue-pick:focus-visible, #whats-on-vanilla-frame .venue-close:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
+  #whats-on-vanilla-frame .venue { position: relative; padding-left: 12px; border-left: 3px solid var(--category); }
+  #whats-on-vanilla-frame .venue-category, #whats-on-vanilla-frame .venue-list-category { display: flex; align-items: center; gap: 6px; margin: 0; color: #c9cad0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  #whats-on-vanilla-frame .venue-category::before, #whats-on-vanilla-frame .venue-list-category::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  /* The category shown alone, a tag over the list rather than another of its venues. */
+  #whats-on-vanilla-frame .venue-list-category { width: fit-content; margin-bottom: 10px; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--category) 30%, transparent); color: #f2f2f3; }
+  #whats-on-vanilla-frame .venue-list-category[hidden] { display: none; }
   #whats-on-vanilla-frame .venue-name { margin: 6px 0 14px; font-family: inherit; font-size: 20px; font-weight: 600; line-height: 1.2; }
   #whats-on-vanilla-frame .venue dl { display: grid; gap: 12px; margin: 0; }
   #whats-on-vanilla-frame .venue dt { color: #a5a6ad; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -84,9 +131,14 @@
 <div id="whats-on-vanilla-frame">
   <div id="whats-on-vanilla-map"></div>
   <aside id="whats-on-vanilla-card" class="venue-card" aria-label="Venue">
-    <p class="venue-empty">Pick a venue on the map to see it here.</p>
+    <div class="venue-picker">
+      <p class="venue-list-category" hidden></p>
+      <p class="venue-empty">Pick a venue on the map, or here.</p>
+      <ul class="venue-list" aria-label="Venues"></ul>
+    </div>
     <template>
       <div class="venue">
+        <button type="button" class="venue-close" aria-label="Close"></button>
         <p class="venue-category"></p>
         <h3 class="venue-name">Venue</h3>
         <dl>

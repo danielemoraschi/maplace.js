@@ -145,19 +145,28 @@ function selectedName(maplace: Maplace): HTMLElement {
 
 /**
  * The card beside the map: the venue selected, its category marked for its colour, made from the
- * card's template and in the card only while a venue is selected; or a word asking for one. Not a live region: maplace says each selection to a screen reader already.
+ * card's template and in the card only while a venue is selected, with a × closing it; or,
+ * while none is, the venues shown, each a button selecting it. Not a live region: maplace says each
+ * selection to a screen reader already.
  */
 function showVenueIn(card: HTMLElement, maplace: Maplace<VenueDetails>): void {
-  const empty = card.querySelector(".venue-empty") as HTMLElement;
+  const picker = card.querySelector(".venue-picker") as HTMLElement;
   const template = card.querySelector("template") as HTMLTemplateElement;
   const venuePart = template.content.firstElementChild?.cloneNode(true) as HTMLElement;
+  const close = venuePart.querySelector(".venue-close") as HTMLButtonElement;
+  close.addEventListener("click", () => {
+    const closed = maplace.getSnapshot().selectedId ?? "";
+    maplace.select(undefined);
+    picker.querySelector<HTMLElement>(`.venue-pick[data-id="${CSS.escape(closed)}"]`)?.focus();
+  });
+  listVenuesIn(picker, maplace, () => close.focus());
   const write = (selector: string, text: string) => {
     (venuePart.querySelector(selector) as HTMLElement).textContent = text;
   };
   const writeCard = (id: string | undefined) => {
     const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
     const data = selected?.data;
-    empty.hidden = data !== undefined;
+    picker.hidden = data !== undefined;
     if (selected === undefined || data === undefined) {
       venuePart.remove();
       return;
@@ -168,10 +177,51 @@ function showVenueIn(card: HTMLElement, maplace: Maplace<VenueDetails>): void {
     write(".venue-address", data.address);
     write(".venue-since", String(data.since));
     write(".venue-known-for", data.knownFor);
-    card.append(venuePart);
+    if (!venuePart.isConnected) card.append(venuePart);
   };
   writeCard(maplace.getSnapshot().selectedId);
   maplace.on("selectionChange", ({ id }) => writeCard(id));
+}
+
+/**
+ * In the card's `picker`, a button per venue shown, selecting it and then calling `afterPick`, and
+ * above them the category shown alone, if any, marked for its colour; written again only when the
+ * venues shown change, as a hover changes the store too.
+ */
+function listVenuesIn(picker: HTMLElement, maplace: Maplace, afterPick: () => void): void {
+  const categoryLine = picker.querySelector(".venue-list-category") as HTMLElement;
+  const list = picker.querySelector(".venue-list") as HTMLElement;
+  let listedIds: string | undefined;
+  const writeList = () => {
+    const listed = listedLocations(maplace.getSnapshot());
+    const ids = listed.map(({ id }) => id).join();
+    if (ids === listedIds) return;
+    listedIds = ids;
+    const alone = shownAlone(maplace);
+    categoryLine.hidden = alone === undefined;
+    categoryLine.textContent = alone ?? "";
+    categoryLine.dataset.category = alone ?? "";
+    list.replaceChildren(...listed.map((location) => venueEntry(location, maplace, afterPick)));
+  };
+  writeList();
+  maplace.subscribe(writeList);
+}
+
+/** A venue in the card's list: a button selecting it, marked with its category for its colour. */
+function venueEntry({ id, title, group }: Location, maplace: Maplace, afterPick: () => void) {
+  const pick = document.createElement("button");
+  pick.type = "button";
+  pick.className = "venue-pick";
+  pick.dataset.category = group ?? "";
+  pick.textContent = title ?? id;
+  pick.dataset.id = id;
+  pick.addEventListener("click", () => {
+    maplace.select(id);
+    afterPick();
+  });
+  const entry = document.createElement("li");
+  entry.append(pick);
+  return entry;
 }
 
 /**
