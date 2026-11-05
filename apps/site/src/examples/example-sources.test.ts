@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   codeTabsOf,
-  everyExampleStylesheet,
   exampleCode,
   exampleFile,
   exampleProviders,
-  stylesheetsOf,
+  exampleStylesheets,
 } from "./example-sources.ts";
 
 describe("exampleCode", () => {
@@ -58,7 +57,10 @@ describe("exampleCode", () => {
   });
 });
 
-describe("stylesheetsOf", () => {
+describe("exampleStylesheets", () => {
+  const stylesheetsOf = (name: string) =>
+    exampleStylesheets(codeTabsOf(name).flatMap(({ codes }) => codes));
+
   it("is the stylesheet an example's versions link, once, with its text", () => {
     expect(exampleFile("styles", "whats-on.css")).toContain(".whats-on {");
     expect(stylesheetsOf("whats-on")).toEqual([
@@ -68,14 +70,6 @@ describe("stylesheetsOf", () => {
 
   it("is none for an example whose versions link none", () => {
     expect(stylesheetsOf("simple")).toEqual([]);
-  });
-});
-
-describe("everyExampleStylesheet", () => {
-  it("is each stylesheet any example's versions link, once", () => {
-    expect(everyExampleStylesheet().map(({ folder, file }) => `${folder}/${file}`)).toEqual([
-      "styles/whats-on.css",
-    ]);
   });
 });
 

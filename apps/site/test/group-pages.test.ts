@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { setTimeout as pause } from "node:timers/promises";
 import type { Page } from "playwright";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -25,6 +26,9 @@ const shownMapHeights = (page: Page, provider: Provider) =>
       `section.example [data-live-version]:not([hidden]) maplace-map[provider="${provider}"]`,
     )
     .evaluateAll((maps) => maps.map((map) => map.getBoundingClientRect().height));
+
+/** The examples' folder, from here. */
+const EXAMPLES = "../../../packages/maplace/examples/";
 
 const site = siteBuiltBeforeTests();
 
@@ -104,13 +108,18 @@ describe("the examples' pages, as built (W38)", () => {
     expect(pages.reduce((sum, { heldMaps }) => sum + heldMaps, 0)).toBe(PAGE_MAP_COUNT);
   });
 
-  it("link the data an example fetches to the site's own copy, in a new tab", () => {
+  it("link the data an example fetches to the site's own copy, in a new tab", async () => {
     const links = pages.flatMap(({ dataLinks }) => dataLinks);
     expect(new Set(links.map(([, target]) => target))).toEqual(new Set(["_blank"]));
     expect(links.map(([href]) => href).sort()).toEqual(
       exampleData()
         .map(({ name }) => `/examples/data/${name}.json`)
         .sort(),
+    );
+    const served = await fetch(new URL("/examples/data/points-4k.json", site.url));
+    expect(served.headers.get("content-type")).toMatch(/^application\/json/);
+    expect(await served.text()).toBe(
+      readFileSync(new URL(`${EXAMPLES}data/points-4k.json`, import.meta.url), "utf8"),
     );
   });
 

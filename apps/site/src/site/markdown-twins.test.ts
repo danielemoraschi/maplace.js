@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { fencedBlocks } from "../../../../scripts/docs/markdown.ts";
 import { EXAMPLE_GROUPS, EXAMPLE_SECTIONS, groupPath } from "../examples/example-sections.ts";
-import { codeTabsOf, stylesheetsOf } from "../examples/example-sources.ts";
+import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "./markdown-routes.ts";
@@ -90,7 +90,7 @@ describe("markdownTwins", () => {
     const whatsOn = EXAMPLE_SECTIONS.find(({ name }) => name === "whats-on");
     const group = EXAMPLE_GROUPS.find(({ sections }) => sections.includes(whatsOn as never));
     const section = sectionOf(twinAt(groupPath(group as never)).markdown, whatsOn?.title as string);
-    const [stylesheet] = stylesheetsOf("whats-on");
+    const [stylesheet] = exampleStylesheets(codeTabsOf("whats-on").flatMap(({ codes }) => codes));
     const [, underHeading = ""] = section.split(`${STYLESHEETS_HEADING}\n\n`);
     expect(underHeading.startsWith("`packages/maplace/examples/styles/whats-on.css`")).toBe(true);
     expect(section.split("`packages/maplace/examples/styles/whats-on.css`")).toHaveLength(2);

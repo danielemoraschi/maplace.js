@@ -3,7 +3,6 @@ import {
   stylesheetsLinkedBy,
 } from "../../../../packages/maplace/src/testing/examples/linked-stylesheets.ts";
 import { exampleFolder, PROVIDER_LABELS, type Provider } from "./example-providers.ts";
-import { EXAMPLE_SECTIONS } from "./example-sections.ts";
 import { VERSION_LABELS, VERSION_MODULES, type VersionKind } from "./example-versions.ts";
 
 /** One of an example's files, as a reader copies it. */
@@ -31,7 +30,8 @@ export interface ExampleCode {
 /** Where the examples are in the repo. */
 export const EXAMPLES_IN_REPO = "packages/maplace/examples/";
 
-const EXAMPLES = `../../../../${EXAMPLES_IN_REPO}`;
+/** The examples' folder as this folder's globs name it: each file's key starts with it. */
+export const EXAMPLES = `../../../../${EXAMPLES_IN_REPO}`;
 
 // The files the tests run (T5), read as text: the site shows them and never bundles them this
 // way (`example-modules.ts` bundles the version modules). Vite reads each glob as written.
@@ -106,17 +106,6 @@ export function exampleStylesheets(codes: readonly ExampleCode[]): readonly Exam
   }));
 }
 
-/** The stylesheets the versions of the example `name` link, on every provider, once each. */
-export function stylesheetsOf(name: string): readonly ExampleStylesheet[] {
-  return exampleStylesheets(codeTabsOf(name).flatMap(({ codes }) => codes));
-}
-
-/** Every stylesheet the versions of the site's sections link, once each: what the site serves. */
-export function everyExampleStylesheet(): readonly ExampleStylesheet[] {
-  const linked = EXAMPLE_SECTIONS.flatMap(({ name }) => stylesheetsOf(name));
-  return [...new Map(linked.map((stylesheet) => [stylesheet.file, stylesheet])).values()];
-}
-
 /** One file in `folder` under `packages/maplace/examples/`, as written. */
 export function exampleFile(folder: string, file: string): string {
   const code = FILES[`${EXAMPLES}${folder}/${file}`];
@@ -142,5 +131,10 @@ export function exampleNames(): readonly string[] {
 }
 
 export function langOf(file: string): ExampleFile["lang"] {
-  return file.slice(file.lastIndexOf(".") + 1) as ExampleFile["lang"];
+  return extensionOf(file) as ExampleFile["lang"];
+}
+
+/** `whats-on.css`'s `css`. */
+export function extensionOf(file: string): string {
+  return file.slice(file.lastIndexOf(".") + 1);
 }
