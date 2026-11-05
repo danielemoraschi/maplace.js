@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-05 Changed the examples' Fetches links to open the data files the site serves, not GitHub's
+- 2026-11-05 Changed the Your own look example's styles into one stylesheet, whats-on.css, which every version links and the site serves and links beside the example
 - 2026-11-05 Added to the Your own look example's card, while no venue is picked, a list of the venues shown, each picking it, under the category a chip shows alone, and a × closing the venue picked
 - 2026-11-05 Added a card beside the map to the Your own look example: the venue picked, with its address, the year it opened and what it is known for
 - 2026-11-04 Changed a bottom-left panel on a Google map (a list, a select, your own control) to sit above Google's logo, in the map's corner as on MapLibre, so Google's terms no longer reach under it on a narrow map

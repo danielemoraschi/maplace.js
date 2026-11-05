@@ -1,11 +1,12 @@
 /// <reference types="vite/client" />
 import { type ScriptVersion, scriptOf } from "./example-scripts";
+import { withStylesheetsWritten } from "./linked-stylesheets";
 
 /** The map providers an example is drawn on. */
 const PROVIDERS = ["google", "maplibre"] as const;
 export type Provider = (typeof PROVIDERS)[number];
 
-/** An example page, as a reader copies it. */
+/** An example page, as a reader copies it, its linked stylesheets written in. */
 export interface ExamplePage {
   readonly name: string;
   readonly provider: Provider;
@@ -17,6 +18,7 @@ export interface ExampleHost {
   readonly example: string;
   readonly provider: Provider;
   readonly kind: HostKind;
+  /** As a reader copies it, its linked stylesheets written in. */
   readonly html: string;
   /** The module, as a reader copies it. */
   readonly moduleSource: string;
@@ -61,7 +63,7 @@ const MODULE_FILE: Readonly<Record<HostKind, string>> = {
 // their inputs instead of having them, and `own-map/` shows a page's own map: they are
 // type-checked only. A MapLibre version sits in `maplibre/` beside its Google twin.
 const FILES = import.meta.glob<string>(
-  ["../../../examples/*/*.html", "../../../examples/*/maplibre/*.html"],
+  ["../../../examples/*/*.{html,css}", "../../../examples/*/maplibre/*.html"],
   { query: "?raw", import: "default", eager: true },
 );
 const MODULES = import.meta.glob([
@@ -78,7 +80,11 @@ const MODULE_SOURCES = import.meta.glob<string>(
 
 export const EXAMPLE_PAGES: readonly ExamplePage[] = Object.entries(FILES)
   .filter(([path]) => path.endsWith("/page.html"))
-  .map(([path, html]) => ({ name: exampleName(path), provider: providerOf(path), html }));
+  .map(([path, html]) => ({
+    name: exampleName(path),
+    provider: providerOf(path),
+    html: withLinkedStylesheets(path, html),
+  }));
 
 /** The examples, named by their Google pages: every provider's versions are checked by these. */
 const NAMES = EXAMPLE_PAGES.filter(onProvider("google"))
@@ -149,9 +155,27 @@ function pathOf(example: string, provider: Provider, file: string): string {
 }
 
 function fileOf(path: string): string {
+  return withLinkedStylesheets(path, fileAsAuthored(path));
+}
+
+/** The file at `path` as written, a missing one refused. */
+function fileAsAuthored(path: string): string {
   const file = FILES[path];
   if (file === undefined) throw new Error(`${shown(path)} is missing`);
   return file;
+}
+
+/**
+ * `html`, the file at `path`, as a browser applies it beside the files it links: each stylesheet
+ * it links written in (`withStylesheetsWritten`), since a test document has no folder to load it
+ * from.
+ */
+function withLinkedStylesheets(path: string, html: string): string {
+  return withStylesheetsWritten(html, foldersOf(path).join("/"), stylesheetIn);
+}
+
+function stylesheetIn(folder: string, file: string): string {
+  return fileAsAuthored(`../../../examples/${folder}/${file}`);
 }
 
 /** `examples/simple/page.html`, as a reader finds it. */

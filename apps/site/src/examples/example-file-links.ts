@@ -1,3 +1,4 @@
+import type { StylesheetPlace } from "../../../../packages/maplace/src/testing/examples/linked-stylesheets.ts";
 import { type ExampleData, exampleData } from "./example-data.ts";
 
 /**
@@ -10,8 +11,8 @@ const FETCHED_JSON = /\/((?:[\w-]|\$\{[^}]*\})+)\.json/g;
 const TEMPLATE_PART = /\$\{[^}]*\}/;
 const ANY_NAME_PART = String.raw`[\w-]+`;
 
-/** A data file of the examples, linked to its place in the repo. */
-export interface ExampleDataLink {
+/** A file of the examples, linked to the site's copy of it. */
+export interface ExampleFileLink {
   readonly file: string;
   readonly url: string;
 }
@@ -24,12 +25,22 @@ export function dataFetchedBy(code: readonly string[]): ExampleData[] {
   return exampleData().filter(({ name }) => fetched.some((pattern) => pattern.test(name)));
 }
 
-/** Each of `data` linked to the repo at `blobBase`. */
-export function exampleDataLinks(
-  data: readonly ExampleData[],
-  blobBase: string,
-): ExampleDataLink[] {
-  return data.map(({ name, path }) => ({ file: `${name}.json`, url: `${blobBase}${path}` }));
+/** Each of `data` linked to the site's copy, where the examples fetch it (`[data].json.ts`). */
+export function exampleDataLinks(data: readonly ExampleData[]): ExampleFileLink[] {
+  return data.map(({ name }) => ({ file: `${name}.json`, url: `/${name}.json` }));
+}
+
+/** Each of `stylesheets` linked to the site's copy. */
+export function stylesheetLinks(stylesheets: readonly StylesheetPlace[]): ExampleFileLink[] {
+  return stylesheets.map((place) => ({ file: place.file, url: stylesheetHref(place) }));
+}
+
+/**
+ * Where the site serves a stylesheet (`examples/[...stylesheet].css.ts`):
+ * `/examples/whats-on/whats-on.css`.
+ */
+export function stylesheetHref({ folder, file }: StylesheetPlace): string {
+  return `/examples/${folder}/${file}`;
 }
 
 /** `path`, a fetched name with its template parts, as a pattern for the names it can be. */

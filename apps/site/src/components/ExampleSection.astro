@@ -1,10 +1,10 @@
 ---
 import { getEntry, render } from "astro:content";
-import { dataFetchedBy, exampleDataLinks } from "../examples/example-data-links.ts";
+import { dataFetchedBy, exampleDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
 import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import type { ExampleSection } from "../examples/example-sections.ts";
-import { codeTabsOf, exampleProviders } from "../examples/example-sources.ts";
-import { REPO_FILES_ENTRY } from "../site/repo-files-loader.ts";
+import { codeTabsOf, exampleProviders, exampleStylesheets } from "../examples/example-sources.ts";
+import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
 import VersionSwitch from "./VersionSwitch.astro";
@@ -21,15 +21,10 @@ const [firstProvider] = exampleProviders(name);
 // Without a version on the page's first provider (route on MapLibre), its version radios and code
 // tabs open grayed out, until the visitor shows it on Google (`version-switch.ts`).
 const offered = firstProvider === FIRST_PROVIDER;
-const repoFiles = await getEntry("repoFiles", REPO_FILES_ENTRY);
-if (repoFiles === undefined) throw new Error("the repoFiles collection has no entry");
-const fetched = dataFetchedBy(
-  codeTabs
-    .flatMap(({ codes }) => codes)
-    .flatMap(({ files }) => files)
-    .map(({ code }) => code),
-);
-const dataLinks = exampleDataLinks(fetched, repoFiles.data.blobBase);
+const codes = codeTabs.flatMap(({ codes }) => codes);
+const fetched = dataFetchedBy(codes.flatMap(({ files }) => files).map(({ code }) => code));
+const dataLinks = exampleDataLinks(fetched);
+const styleLinks = stylesheetLinks(exampleStylesheets(codes));
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;
 const tabs = [
@@ -52,19 +47,8 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     </h2>
     <p class="m-0 text-muted">{summary}</p>
   </div>
-  {
-    dataLinks.length > 0 && (
-      <p class="mt-1 mb-0 text-sm text-muted">
-        Fetches{" "}
-        {dataLinks.map(({ file, url }, index) => (
-          <>
-            {index > 0 && ", "}
-            <a href={url} target="_blank" rel="noopener">{file}</a>
-          </>
-        ))}
-      </p>
-    )
-  }
+  <ExampleFileLinks lead="Fetches" links={dataLinks} />
+  <ExampleFileLinks lead="Styled by" links={styleLinks} />
   <div
     class="mt-4 mb-3 flex flex-wrap"
     role="tablist"

@@ -117,6 +117,16 @@ async function expectPickedFromList(store: Maplace, root: Element): Promise<void
   expect(focused()?.textContent?.trim()).toBe("Wigmore Hall");
 }
 
+/** The dark of the frame, `#1c1d21` in whats-on.css, as a browser computes it. */
+const FRAME_BACKGROUND = "rgb(28, 29, 33)";
+
+/** The frame is drawn dark: the example's stylesheet, which every version links, applies. */
+function expectStylesheetApplied(root: Element): void {
+  const frame = root.querySelector(".whats-on");
+  expect(frame, "the version's frame, .whats-on").not.toBeNull();
+  expect(getComputedStyle(frame as Element).backgroundColor).toBe(FRAME_BACKGROUND);
+}
+
 /** The chips pressed inside `root`, by their words. */
 const pressedIn = (root: Element) => textsIn(root, 'button[aria-pressed="true"]');
 
@@ -128,6 +138,7 @@ const pressedIn = (root: Element) => textsIn(root, 'button[aria-pressed="true"]'
  * named by it; pressed again, every venue is back. The chip pressed stays the node pressed.
  */
 export const whatsOn: ExampleBehaviour = async ({ store, adapter, root }) => {
+  expectStylesheetApplied(root);
   expect(firstView(adapter)).toMatchObject({ padding: 80 });
   const countOnMap = adapter.mounted?.container.querySelector(".event-count") != null;
   expect(controlPositions(adapter)).toEqual(

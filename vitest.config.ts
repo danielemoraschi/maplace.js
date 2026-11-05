@@ -46,6 +46,9 @@ export default defineConfig({
             "apps/site/{src,test}/**/*.test.ts",
           ],
           exclude: [...configDefaults.exclude, BROWSER_TESTS],
+          // CSS read as text (`?raw`) is the file's text, as in Vite: Vitest blanks every CSS file
+          // it isn't told to process, `?raw` too.
+          css: { include: [/\.css\?raw$/] },
         },
       },
       {

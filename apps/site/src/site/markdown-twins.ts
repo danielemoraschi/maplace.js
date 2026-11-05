@@ -6,7 +6,12 @@ import {
   groupPath,
   groupTitle,
 } from "../examples/example-sections.ts";
-import { codeTabsOf, type ExampleCode } from "../examples/example-sources.ts";
+import {
+  codeTabsOf,
+  EXAMPLES_IN_REPO,
+  type ExampleCode,
+  exampleStylesheets,
+} from "../examples/example-sources.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
 import { markdownAddress } from "./markdown-routes.ts";
@@ -89,20 +94,34 @@ function sectionMarkdown(
     .join("\n\n");
 }
 
-/** Every file of every version of the example `name`, on each provider it runs on. */
+/**
+ * Every file of every version of the example `name`, on each provider it runs on, then the
+ * stylesheets they link, once each.
+ */
 function codeMarkdown(name: string): string {
-  return codeTabsOf(name)
-    .flatMap(({ codes }) => codes)
-    .map(versionMarkdown)
-    .join("\n\n");
+  const codes = codeTabsOf(name).flatMap(({ codes }) => codes);
+  return [...codes.map(versionMarkdown), ...stylesheetsMarkdown(codes)].join("\n\n");
 }
 
-function versionMarkdown({ label, provider, folder, files }: ExampleCode): string {
-  const fenced = files.map(
-    ({ file, lang, code }) =>
-      `\`packages/maplace/examples/${folder}/${file}\`\n\n\`\`\`${lang}\n${code.trimEnd()}\n\`\`\``,
+/** The stylesheets `codes` link, under a heading of their own, as every version's: none if none. */
+function stylesheetsMarkdown(codes: readonly ExampleCode[]): string[] {
+  const fenced = exampleStylesheets(codes).map(({ folder, file, code }) =>
+    fencedFile(`${folder}/${file}`, "css", code),
   );
+  return fenced.length === 0 ? [] : [STYLESHEETS_HEADING, ...fenced];
+}
+
+/** Over an example's stylesheets in its twin, apart from any one version's files. */
+export const STYLESHEETS_HEADING = "### The stylesheet every version links";
+
+function versionMarkdown({ label, provider, folder, files }: ExampleCode): string {
+  const fenced = files.map(({ file, lang, code }) => fencedFile(`${folder}/${file}`, lang, code));
   return [`### ${label} on ${providerLabel(provider)}`, ...fenced].join("\n\n");
+}
+
+/** An example's file at `path` under `packages/maplace/examples/`: its path, then its fence. */
+function fencedFile(path: string, lang: string, code: string): string {
+  return `\`${EXAMPLES_IN_REPO}${path}\`\n\n\`\`\`${lang}\n${code.trimEnd()}\n\`\`\``;
 }
 
 function providerLabel(provider: Provider): string {

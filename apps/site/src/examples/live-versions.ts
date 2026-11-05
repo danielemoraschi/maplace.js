@@ -1,5 +1,6 @@
+import { withStylesheetsWritten } from "../../../../packages/maplace/src/testing/examples/linked-stylesheets.ts";
 import { FIRST_PROVIDER, type Provider } from "./example-providers.ts";
-import { type ExampleFile, exampleCode, exampleProviders } from "./example-sources.ts";
+import { type ExampleFile, exampleCode, exampleFile, exampleProviders } from "./example-sources.ts";
 import { FIRST_VERSION, type VersionKind } from "./example-versions.ts";
 import { liveHost } from "./live-host.ts";
 import { livePage } from "./live-page.ts";
@@ -11,7 +12,10 @@ import type { SiteMapSettings } from "./site-map-settings.ts";
 export interface LiveVersionMarkup {
   readonly kind: VersionKind;
   readonly provider: Provider;
-  /** Its HTML as the site runs it: the page's, or the host's its module mounts on. */
+  /**
+   * Its HTML as the site runs it: the page's, or the host's its module mounts on, each stylesheet
+   * it links written in.
+   */
   readonly markup: string;
   /**
    * Whether its own files call `save(location)`, which the site writes: its notes say what was
@@ -28,7 +32,11 @@ export function liveVersions(name: string, settings: SiteMapSettings): LiveVersi
   return exampleProviders(name).flatMap((provider) => {
     const rewrite = PROVIDER_MARKUP[provider](settings);
     return exampleCode(name, provider).map(({ kind, folder, files }) => {
-      const html = htmlOf(files, `examples/${folder}'s ${kind} version`);
+      const html = withStylesheetsWritten(
+        htmlOf(files, `examples/${folder}'s ${kind} version`),
+        folder,
+        exampleFile,
+      );
       const callsSave = callsSaveIn(files.map(({ code }) => code));
       return { kind, provider, markup: liveMarkup(kind, html, rewrite), callsSave };
     });

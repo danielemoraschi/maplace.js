@@ -1,9 +1,10 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { userEvent } from "vitest/browser";
 import { CLUSTER_CLASS } from "../adapter-kit/cluster-badge";
 import * as cdn from "../cdn/maplibre";
 import type * as Core from "../index";
 import type { Maplace } from "../index";
-import { chooseOption } from "../testing/examples/behaviours/reading";
+import { byText, chooseOption } from "../testing/examples/behaviours/reading";
 import {
   EXAMPLE_PAGES,
   onProvider,
@@ -144,26 +145,51 @@ function expectNothingElseOffsite(): void {
 /** A selected museum's pin, drawn on the map, takes the selected look the page's CSS gives it. */
 async function expectSelectedPinLook({ store, root }: RealRun): Promise<void> {
   store.select("rijks");
-  const selectedPin = ".pin[data-selected], [data-selected] > .pin";
-  await expect.poll(() => backgroundOf(root, selectedPin), LOAD).toBe(PIN_ACCENT);
+  await expect.poll(() => styleOf(root, SELECTED_PIN)?.backgroundColor, LOAD).toBe(PIN_ACCENT);
 }
 
 /** The shops' cluster badges take the brand's colours from the custom properties around the map. */
 async function expectBadgeInBrandColours({ root }: RealRun): Promise<void> {
-  await expect.poll(() => backgroundOf(root, `.${CLUSTER_CLASS}`), LOAD).toBe(BRAND_BADGE);
+  await expect
+    .poll(() => styleOf(root, `.${CLUSTER_CLASS}`)?.backgroundColor, LOAD)
+    .toBe(BRAND_BADGE);
 }
 
-/** A Theatre pin takes its category's colour, and the legend's panel no background of its own. */
-async function expectCategoryLook({ root }: RealRun): Promise<void> {
-  await expect.poll(() => backgroundOf(root, '.pin[data-category="Theatre"]'), LOAD).toBe(THEATRE);
+/** whats-on's chip pressed, `#f2f2f3` in its CSS, and hovered, as a browser computes them. */
+const PRESSED_CHIP = "rgb(242, 242, 243)";
+const HOVERED_CHIP = "rgba(255, 255, 255, 0.12)";
+
+/** whats-on's selected pin, grown by its CSS's `scale(1.25)`. */
+const GROWN_PIN = "matrix(1.25, 0, 0, 1.25, 0, 0)";
+
+/**
+ * A Theatre pin takes its category's colour, and the legend's panel no background of its own; a
+ * selected pin grows; a chip takes its own hovered look, and a chip pressed keeps its pressed look
+ * under the pointer, over MapLibre's own hover on a control's buttons.
+ */
+async function expectCategoryLook({ store, root }: RealRun): Promise<void> {
+  const theatrePin = '.pin[data-category="Theatre"]';
+  await expect.poll(() => styleOf(root, theatrePin)?.backgroundColor, LOAD).toBe(THEATRE);
   const legendPanel = ".maplace-control:has(.event-legend)";
-  await expect.poll(() => backgroundOf(root, legendPanel), LOAD).toBe(NO_BACKGROUND);
+  await expect.poll(() => styleOf(root, legendPanel)?.backgroundColor, LOAD).toBe(NO_BACKGROUND);
+  store.select("royal-albert-hall");
+  await expect.poll(() => styleOf(root, SELECTED_PIN)?.transform, LOAD).toBe(GROWN_PIN);
+  const talks = byText(root, ".category-chip", "Talks");
+  await userEvent.hover(talks);
+  await expect.poll(() => getComputedStyle(talks).backgroundColor, LOAD).toBe(HOVERED_CHIP);
+  const markets = byText(root, ".category-chip", "Markets");
+  markets.click();
+  await userEvent.hover(markets);
+  await expect.poll(() => getComputedStyle(markets).backgroundColor, LOAD).toBe(PRESSED_CHIP);
 }
 
-/** The background the page's CSS gives the first `selector` inside `root`, once it is drawn. */
-function backgroundOf(root: Element, selector: string): string | undefined {
+/** The selected pin: marked itself, or inside the node React's markers are marked on. */
+const SELECTED_PIN = ".pin[data-selected], [data-selected] > .pin";
+
+/** The style the page's CSS gives the first `selector` inside `root`, once it is drawn. */
+function styleOf(root: Element, selector: string): CSSStyleDeclaration | undefined {
   const element = root.querySelector(selector);
-  return element ? getComputedStyle(element).backgroundColor : undefined;
+  return element ? getComputedStyle(element) : undefined;
 }
 
 /** Choosing Dark opens the map again on OpenFreeMap's dark style, ready. */

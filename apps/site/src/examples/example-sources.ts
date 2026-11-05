@@ -1,4 +1,9 @@
+import {
+  type StylesheetPlace,
+  stylesheetsLinkedBy,
+} from "../../../../packages/maplace/src/testing/examples/linked-stylesheets.ts";
 import { exampleFolder, PROVIDER_LABELS, type Provider } from "./example-providers.ts";
+import { EXAMPLE_SECTIONS } from "./example-sections.ts";
 import { VERSION_LABELS, VERSION_MODULES, type VersionKind } from "./example-versions.ts";
 
 /** One of an example's files, as a reader copies it. */
@@ -12,7 +17,7 @@ export interface ExampleFile {
 
 /**
  * One way of using maplacejs an example is written in, on one provider: its code tab, with every
- * file it needs.
+ * file it needs but the stylesheet it links (`exampleStylesheets`).
  */
 export interface ExampleCode {
   readonly kind: VersionKind;
@@ -23,13 +28,16 @@ export interface ExampleCode {
   readonly files: readonly ExampleFile[];
 }
 
-const EXAMPLES = "../../../../packages/maplace/examples";
+/** Where the examples are in the repo. */
+export const EXAMPLES_IN_REPO = "packages/maplace/examples/";
+
+const EXAMPLES = `../../../../${EXAMPLES_IN_REPO}`;
 
 // The files the tests run (T5), read as text: the site shows them and never bundles them this
 // way (`example-modules.ts` bundles the version modules). Vite reads each glob as written.
 const FILES = import.meta.glob<string>(
   [
-    "../../../../packages/maplace/examples/*/*.{html,ts,tsx}",
+    "../../../../packages/maplace/examples/*/*.{html,ts,tsx,css}",
     "../../../../packages/maplace/examples/*/maplibre/*.{html,ts,tsx}",
   ],
   { query: "?raw", import: "default", eager: true },
@@ -81,9 +89,36 @@ export function codeTabsOf(name: string): readonly CodeTab[] {
   }));
 }
 
+/** A stylesheet an example's versions link, beside them, with its text. */
+export interface ExampleStylesheet extends StylesheetPlace {
+  readonly code: string;
+}
+
+/** The stylesheets `codes`, an example's versions, link, once each. */
+export function exampleStylesheets(codes: readonly ExampleCode[]): readonly ExampleStylesheet[] {
+  const places = codes.flatMap(({ folder, files }) =>
+    files.flatMap(({ lang, code }) => (lang === "html" ? stylesheetsLinkedBy(code, folder) : [])),
+  );
+  const byPath = new Map(places.map((place) => [`${place.folder}/${place.file}`, place]));
+  return [...byPath.values()].map((place) => ({
+    ...place,
+    code: exampleFile(place.folder, place.file),
+  }));
+}
+
+/** The stylesheets the versions of the example `name` link, on every provider, once each. */
+export function stylesheetsOf(name: string): readonly ExampleStylesheet[] {
+  return exampleStylesheets(codeTabsOf(name).flatMap(({ codes }) => codes));
+}
+
+/** Every stylesheet the versions of the site's sections link, once each: what the site serves. */
+export function everyExampleStylesheet(): readonly ExampleStylesheet[] {
+  return EXAMPLE_SECTIONS.flatMap(({ name }) => stylesheetsOf(name));
+}
+
 /** One file in `folder` under `packages/maplace/examples/`, as written. */
 export function exampleFile(folder: string, file: string): string {
-  const code = FILES[`${EXAMPLES}/${folder}/${file}`];
+  const code = FILES[`${EXAMPLES}${folder}/${file}`];
   if (code === undefined) throw new Error(`examples/${folder}/${file} doesn't exist`);
   return code;
 }
@@ -94,7 +129,7 @@ export function exampleFile(folder: string, file: string): string {
  */
 export function exampleProviders(name: string): readonly Provider[] {
   const providers = PROVIDER_LABELS.map(({ provider }) => provider).filter(
-    (provider) => `${EXAMPLES}/${exampleFolder(name, provider)}/page.html` in FILES,
+    (provider) => `${EXAMPLES}${exampleFolder(name, provider)}/page.html` in FILES,
   );
   if (providers.length === 0) throw new Error(`examples/${name}/page.html doesn't exist`);
   return providers;

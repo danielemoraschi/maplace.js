@@ -1,0 +1,278 @@
+/* Your own look, which every version links: page, script, vanilla and React, on either map. */
+/* The frame: a dark page of its own around a rounded map and, beside it, a card. */
+.whats-on {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  padding: 12px;
+  border-radius: 16px;
+  background: #1c1d21;
+}
+.whats-on-map {
+  flex: 3 1 22rem;
+  min-width: 0;
+  height: 26rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+/* Each category's colour, which its pins and its chip take. */
+.whats-on [data-category="Theatre"] {
+  --category: #e4572e;
+}
+.whats-on [data-category="Concerts"] {
+  --category: #8e44ad;
+}
+.whats-on [data-category="Markets"] {
+  --category: #2a9d8f;
+}
+.whats-on [data-category="Talks"] {
+  --category: #c48a00;
+}
+.whats-on .pin {
+  display: block;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--category);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
+  cursor: pointer;
+}
+/* React marks the node maplace keeps for each marker, the pin inside it. */
+.whats-on .pin[data-hovered],
+.whats-on [data-hovered] > .pin {
+  transform: translateY(-2px);
+}
+.whats-on .pin[data-selected],
+.whats-on [data-selected] > .pin {
+  transform: scale(1.25);
+  box-shadow:
+    0 0 0 2px var(--category),
+    0 2px 6px rgb(0 0 0 / 45%);
+}
+/* The category's dot beside its name: on the venue picked, a chip, a venue in the list, the card. */
+.whats-on .event-selected::before,
+.whats-on .category-chip::before,
+.whats-on .venue-pick::before,
+.whats-on .venue-category::before,
+.whats-on .venue-list-category::before {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--category);
+}
+/* maplace's panel on the map, made nothing, so the count and the legend are the page's own. */
+.whats-on .maplace-control {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+.whats-on .event-count,
+.whats-on .event-selected,
+.whats-on .event-legend {
+  background: rgb(28 29 33 / 88%);
+  color: #f2f2f3;
+  font:
+    500 13px / 1.2 system-ui,
+    sans-serif;
+}
+.whats-on .event-count,
+.whats-on .event-selected {
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+.whats-on .event-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.whats-on .event-selected {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.whats-on .event-selected[hidden] {
+  display: none;
+}
+.whats-on .event-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  min-width: 0;
+  margin: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 18px;
+}
+/* On a phone, the four chips two by two rather than three and one. */
+@media (width < 30rem) {
+  .whats-on .event-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.whats-on .category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+/* Under the legend too, to weigh more than MapLibre's hover on a control's buttons. */
+.whats-on .event-legend .category-chip:hover {
+  background: rgb(255 255 255 / 12%);
+}
+.whats-on .event-legend .category-chip[aria-pressed="true"] {
+  background: #f2f2f3;
+  color: #1c1d21;
+}
+/* The page's count, marked over-map, over the map's top left where a control would sit: the element
+   places one view of yours on the map, the legend. It takes no clicks, so the map under it does. */
+.whats-on .over-map {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  z-index: 1;
+  pointer-events: none;
+}
+/* Shown with the map only, not over its load or failure panel. */
+.whats-on:has(.whats-on-map:not(:state(ready))) .over-map {
+  display: none;
+}
+/* The card beside the map, under it where there is no room: the venue selected, or the
+   venues shown, each picked with a press. */
+.whats-on .venue-card {
+  flex: 1 1 14rem;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #26272c;
+  color: #f2f2f3;
+  font:
+    400 14px / 1.4 system-ui,
+    sans-serif;
+}
+.whats-on .venue-empty {
+  margin: 0;
+  color: #a5a6ad;
+}
+.whats-on .venue-list {
+  display: grid;
+  margin: 8px -8px 0;
+  padding: 0;
+  list-style: none;
+}
+.whats-on .venue-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.whats-on .venue-close {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #c9cad0;
+  cursor: pointer;
+}
+/* The × drawn as two bars crossing at the button's centre, which a glyph's metrics never are. */
+.whats-on .venue-close::before,
+.whats-on .venue-close::after {
+  content: "";
+  grid-area: 1 / 1;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+.whats-on .venue-close::after {
+  transform: rotate(-45deg);
+}
+.whats-on .venue-pick:hover,
+.whats-on .venue-close:hover {
+  background: rgb(255 255 255 / 8%);
+}
+.whats-on .category-chip:focus-visible,
+.whats-on .venue-pick:focus-visible,
+.whats-on .venue-close:focus-visible {
+  outline: 2px solid #f2f2f3;
+  outline-offset: 2px;
+}
+.whats-on .venue {
+  position: relative;
+  padding-left: 12px;
+  border-left: 3px solid var(--category);
+}
+.whats-on .venue-category,
+.whats-on .venue-list-category {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #c9cad0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* The category shown alone, a tag over the list rather than another of its venues. */
+.whats-on .venue-list-category {
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--category) 30%, transparent);
+  color: #f2f2f3;
+}
+.whats-on .venue-list-category[hidden] {
+  display: none;
+}
+.whats-on .venue-name {
+  margin: 6px 0 14px;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.whats-on .venue dl {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+.whats-on .venue dt {
+  color: #a5a6ad;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.whats-on .venue dd {
+  margin: 2px 0 0;
+}

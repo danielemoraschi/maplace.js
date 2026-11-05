@@ -279,7 +279,7 @@ function shownAloneIn({ filter }: Snapshot): string | undefined {
 function WhatsOn() {
   return (
     <MaplaceProvider locations={venues} view={firstView}>
-      <MaplaceMap createAdapter={createAdapter} className="map" markerIcon={markerIcon}>
+      <MaplaceMap createAdapter={createAdapter} className="whats-on-map" markerIcon={markerIcon}>
         <MapControl position="bottom-left">
           <EventLegend />
         </MapControl>

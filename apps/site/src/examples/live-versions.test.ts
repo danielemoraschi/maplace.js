@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { exampleFile } from "./example-sources.ts";
 import { callsSaveIn, liveVersions, shownFirst } from "./live-versions.ts";
 
 /** `simple`'s versions on Google, in their order: page, script, vanilla, React. */
@@ -65,6 +66,14 @@ describe("liveVersions", () => {
     );
     expect(onMapLibre[0]?.markup).toContain('<maplace-map hold provider="maplibre">');
     for (const { markup } of onMapLibre) expect(markup).not.toMatch(/site-key|site-map/);
+  });
+
+  it("writes in the stylesheet each of Your own look's versions links", () => {
+    const written = `<style>\n${exampleFile("whats-on", "whats-on.css")}</style>`;
+    for (const { kind, provider, markup } of liveVersions("whats-on", { apiKey: "k" })) {
+      expect(markup, `${provider} ${kind}`).toContain(written);
+      expect(markup, `${provider} ${kind}`).not.toContain("<link");
+    }
   });
 
   it("refuses an example that isn't there", () => {

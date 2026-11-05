@@ -1,8 +1,6 @@
 import { setTimeout as pause } from "node:timers/promises";
 import type { Page } from "playwright";
 import { beforeAll, describe, expect, it } from "vitest";
-import { headCommit } from "../../../scripts/build/git.ts";
-import { ROOT } from "../../../scripts/build/package.ts";
 import { exampleData } from "../src/examples/example-data.ts";
 import type { Provider } from "../src/examples/example-providers.ts";
 import {
@@ -11,8 +9,7 @@ import {
   groupPath,
   HOME_GROUP,
 } from "../src/examples/example-sections.ts";
-import { exampleProviders } from "../src/examples/example-sources.ts";
-import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
+import { exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 import { chooseProvider, groupLink } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
@@ -60,6 +57,12 @@ const builtFacts = async (page: Page) => ({
     .evaluateAll((anchors) =>
       anchors.map((a) => [a.getAttribute("href"), a.getAttribute("target")]),
     ),
+  stylesheetLinks: await page
+    .locator("section.example")
+    .getByRole("link", { name: /\.css$/ })
+    .evaluateAll((anchors) =>
+      anchors.map((a) => [a.closest("section")?.id, a.getAttribute("href"), a.textContent]),
+    ),
   idsTwice: await duplicateIds(page),
   versions: await page.evaluate(() => {
     const versions = [...document.querySelectorAll<HTMLElement>("[data-live-version]")];
@@ -101,15 +104,24 @@ describe("the examples' pages, as built (W38)", () => {
     expect(pages.reduce((sum, { heldMaps }) => sum + heldMaps, 0)).toBe(PAGE_MAP_COUNT);
   });
 
-  it("link the data an example fetches to the repo, at the commit built, in a new tab", () => {
+  it("link the data an example fetches to the site's own copy, in a new tab", () => {
     const links = pages.flatMap(({ dataLinks }) => dataLinks);
     expect(new Set(links.map(([, target]) => target))).toEqual(new Set(["_blank"]));
-    const blob = `${REPOSITORY_URL}/blob/${headCommit(ROOT)}/`;
     expect(links.map(([href]) => href).sort()).toEqual(
       exampleData()
-        .map(({ path }) => `${blob}${path}`)
+        .map(({ name }) => `/${name}.json`)
         .sort(),
     );
+  });
+
+  it("link the stylesheet an example's versions link to the site's copy, once, under its section", async () => {
+    const href = "/examples/whats-on/whats-on.css";
+    expect(pages.flatMap(({ stylesheetLinks }) => stylesheetLinks)).toEqual([
+      ["whats-on", href, "whats-on.css"],
+    ]);
+    const served = await fetch(new URL(href, site.url));
+    expect(served.headers.get("content-type")).toMatch(/^text\/css/);
+    expect(await served.text()).toBe(exampleFile("whats-on", "whats-on.css"));
   });
 
   it("use no id twice on a page", () => {

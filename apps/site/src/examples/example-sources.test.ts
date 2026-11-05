@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { codeTabsOf, exampleCode, exampleFile, exampleProviders } from "./example-sources.ts";
+import {
+  codeTabsOf,
+  everyExampleStylesheet,
+  exampleCode,
+  exampleFile,
+  exampleProviders,
+  stylesheetsOf,
+} from "./example-sources.ts";
 
 describe("exampleCode", () => {
   it("is an example's four versions, each with every file a reader copies", () => {
@@ -48,6 +55,27 @@ describe("exampleCode", () => {
   it("refuses an example that isn't there, or a provider it doesn't run on", () => {
     expect(() => exampleCode("nowhere", "google")).toThrow(/nowhere/);
     expect(() => exampleCode("route", "maplibre")).toThrow(/route\/maplibre/);
+  });
+});
+
+describe("stylesheetsOf", () => {
+  it("is the stylesheet an example's versions link, once, with its text", () => {
+    expect(exampleFile("whats-on", "whats-on.css")).toContain(".whats-on {");
+    expect(stylesheetsOf("whats-on")).toEqual([
+      { folder: "whats-on", file: "whats-on.css", code: exampleFile("whats-on", "whats-on.css") },
+    ]);
+  });
+
+  it("is none for an example whose versions link none", () => {
+    expect(stylesheetsOf("simple")).toEqual([]);
+  });
+});
+
+describe("everyExampleStylesheet", () => {
+  it("is each stylesheet any example's versions link, once", () => {
+    expect(everyExampleStylesheet().map(({ folder, file }) => `${folder}/${file}`)).toEqual([
+      "whats-on/whats-on.css",
+    ]);
   });
 });
 
