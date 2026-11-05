@@ -1,9 +1,9 @@
 <!doctype html>
 <!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
 <style>
-  /* The frame: a dark page of its own around a rounded map. */
-  #whats-on-maplibre-vanilla-frame { padding: 12px; border-radius: 16px; background: #1c1d21; }
-  #whats-on-maplibre-vanilla-map { height: 26rem; border-radius: 12px; overflow: hidden; }
+  /* The frame: a dark page of its own around a rounded map and, beside it, a card. */
+  #whats-on-maplibre-vanilla-frame { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; border-radius: 16px; background: #1c1d21; }
+  #whats-on-maplibre-vanilla-map { flex: 3 1 22rem; min-width: 0; height: 26rem; border-radius: 12px; overflow: hidden; }
   /* Each category's colour, which its pins and its chip take. */
   #whats-on-maplibre-vanilla-frame [data-category="Theatre"] { --category: #e4572e; }
   #whats-on-maplibre-vanilla-frame [data-category="Concerts"] { --category: #8e44ad; }
@@ -55,8 +55,41 @@
   #whats-on-maplibre-vanilla-frame .category-chip:hover { background: rgb(255 255 255 / 12%); }
   #whats-on-maplibre-vanilla-frame .category-chip[aria-pressed="true"] { background: #f2f2f3; color: #1c1d21; }
   #whats-on-maplibre-vanilla-frame .category-chip:focus-visible { outline: 2px solid #f2f2f3; outline-offset: 2px; }
+  /* The card beside the map, under it where there is no room: the venue selected, or a word
+     asking for one. */
+  #whats-on-maplibre-vanilla-frame .venue-card {
+    flex: 1 1 14rem;
+    box-sizing: border-box;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: #26272c;
+    color: #f2f2f3;
+    font: 400 14px/1.4 system-ui, sans-serif;
+  }
+  #whats-on-maplibre-vanilla-frame .venue-empty { margin: 0; color: #a5a6ad; }
+  #whats-on-maplibre-vanilla-frame .venue { padding-left: 12px; border-left: 3px solid var(--category); }
+  #whats-on-maplibre-vanilla-frame .venue-category { display: flex; align-items: center; gap: 6px; margin: 0; color: #c9cad0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  #whats-on-maplibre-vanilla-frame .venue-category::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-maplibre-vanilla-frame .venue-name { margin: 6px 0 14px; font-family: inherit; font-size: 20px; font-weight: 600; line-height: 1.2; }
+  #whats-on-maplibre-vanilla-frame .venue dl { display: grid; gap: 12px; margin: 0; }
+  #whats-on-maplibre-vanilla-frame .venue dt { color: #a5a6ad; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  #whats-on-maplibre-vanilla-frame .venue dd { margin: 2px 0 0; }
 </style>
 <div id="whats-on-maplibre-vanilla-frame">
   <div id="whats-on-maplibre-vanilla-map"></div>
+  <aside id="whats-on-maplibre-vanilla-card" class="venue-card" aria-label="Venue">
+    <p class="venue-empty">Pick a venue on the map to see it here.</p>
+    <template>
+      <div class="venue">
+        <p class="venue-category"></p>
+        <h3 class="venue-name">Venue</h3>
+        <dl>
+          <div><dt>Address</dt><dd class="venue-address"></dd></div>
+          <div><dt>Since</dt><dd class="venue-since"></dd></div>
+          <div><dt>Known for</dt><dd class="venue-known-for"></dd></div>
+        </dl>
+      </div>
+    </template>
+  </aside>
 </div>
 <script type="module" src="./vanilla.ts"></script>

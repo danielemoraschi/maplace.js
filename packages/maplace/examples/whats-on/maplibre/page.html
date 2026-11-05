@@ -4,9 +4,9 @@
      coloured by category, a count over the map's top left and a legend on its bottom left whose
      chips show one category; maplace's panel on the map made nothing. -->
 <style>
-  /* The frame: a dark page of its own around a rounded map. */
-  #whats-on-maplibre-frame { position: relative; padding: 12px; border-radius: 16px; background: #1c1d21; }
-  #whats-on-maplibre-map { height: 26rem; border-radius: 12px; overflow: hidden; }
+  /* The frame: a dark page of its own around a rounded map and, beside it, a card. */
+  #whats-on-maplibre-frame { display: flex; flex-wrap: wrap; gap: 12px; position: relative; padding: 12px; border-radius: 16px; background: #1c1d21; }
+  #whats-on-maplibre-map { flex: 3 1 22rem; min-width: 0; height: 26rem; border-radius: 12px; overflow: hidden; }
   /* Each category's colour, which its pins and its chip take. */
   #whats-on-maplibre-frame [data-category="Theatre"] { --category: #e4572e; }
   #whats-on-maplibre-frame [data-category="Concerts"] { --category: #8e44ad; }
@@ -63,6 +63,25 @@
   #whats-on-maplibre-status { position: absolute; top: 22px; left: 22px; z-index: 1; pointer-events: none; }
   /* Shown with the map only, not over its load or failure panel. */
   #whats-on-maplibre-frame:has(#whats-on-maplibre-map:not(:state(ready))) #whats-on-maplibre-status { display: none; }
+  /* The card beside the map, under it where there is no room: the venue selected, or a word
+     asking for one. */
+  #whats-on-maplibre-frame .venue-card {
+    flex: 1 1 14rem;
+    box-sizing: border-box;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: #26272c;
+    color: #f2f2f3;
+    font: 400 14px/1.4 system-ui, sans-serif;
+  }
+  #whats-on-maplibre-frame .venue-empty { margin: 0; color: #a5a6ad; }
+  #whats-on-maplibre-frame .venue { padding-left: 12px; border-left: 3px solid var(--category); }
+  #whats-on-maplibre-frame .venue-category { display: flex; align-items: center; gap: 6px; margin: 0; color: #c9cad0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  #whats-on-maplibre-frame .venue-category::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--category); }
+  #whats-on-maplibre-frame .venue-name { margin: 6px 0 14px; font-family: inherit; font-size: 20px; font-weight: 600; line-height: 1.2; }
+  #whats-on-maplibre-frame .venue dl { display: grid; gap: 12px; margin: 0; }
+  #whats-on-maplibre-frame .venue dt { color: #a5a6ad; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  #whats-on-maplibre-frame .venue dd { margin: 2px 0 0; }
 </style>
 <div id="whats-on-maplibre-frame">
   <div id="whats-on-maplibre-status" class="event-status">
@@ -71,43 +90,69 @@
   </div>
   <maplace-map id="whats-on-maplibre-map" map-style="https://tiles.openfreemap.org/styles/liberty"
     list="maplibre-whats-on-legend" list-position="bottom-left">
-    <maplace-location location-id="national-theatre" lat="51.507" lng="-0.1145" title="National Theatre" group="Theatre">
+    <maplace-location location-id="national-theatre" lat="51.507" lng="-0.1145" title="National Theatre" group="Theatre"
+      data-address="Upper Ground, London SE1 9PX" data-since="1976" data-known-for="Three stages on the South Bank">
       <template data-icon><span class="pin" data-category="Theatre"></span></template>
     </maplace-location>
-    <maplace-location location-id="globe" lat="51.5081" lng="-0.0972" title="Shakespeare's Globe" group="Theatre">
+    <maplace-location location-id="globe" lat="51.5081" lng="-0.0972" title="Shakespeare's Globe" group="Theatre"
+      data-address="21 New Globe Walk, London SE1 9DT" data-since="1997" data-known-for="An open-air playhouse rebuilt after the 1599 original">
       <template data-icon><span class="pin" data-category="Theatre"></span></template>
     </maplace-location>
-    <maplace-location location-id="donmar" lat="51.5136" lng="-0.1254" title="Donmar Warehouse" group="Theatre">
+    <maplace-location location-id="donmar" lat="51.5136" lng="-0.1254" title="Donmar Warehouse" group="Theatre"
+      data-address="41 Earlham Street, London WC2H 9LX" data-since="1977" data-known-for="A small studio theatre in Covent Garden">
       <template data-icon><span class="pin" data-category="Theatre"></span></template>
     </maplace-location>
-    <maplace-location location-id="royal-albert-hall" lat="51.501" lng="-0.1774" title="Royal Albert Hall" group="Concerts">
+    <maplace-location location-id="royal-albert-hall" lat="51.501" lng="-0.1774" title="Royal Albert Hall" group="Concerts"
+      data-address="Kensington Gore, London SW7 2AP" data-since="1871" data-known-for="The BBC Proms, every summer">
       <template data-icon><span class="pin" data-category="Concerts"></span></template>
     </maplace-location>
-    <maplace-location location-id="wigmore-hall" lat="51.5165" lng="-0.149" title="Wigmore Hall" group="Concerts">
+    <maplace-location location-id="wigmore-hall" lat="51.5165" lng="-0.149" title="Wigmore Hall" group="Concerts"
+      data-address="36 Wigmore Street, London W1U 2BP" data-since="1901" data-known-for="Chamber music and song recitals">
       <template data-icon><span class="pin" data-category="Concerts"></span></template>
     </maplace-location>
-    <maplace-location location-id="barbican" lat="51.5202" lng="-0.0938" title="Barbican Hall" group="Concerts">
+    <maplace-location location-id="barbican" lat="51.5202" lng="-0.0938" title="Barbican Hall" group="Concerts"
+      data-address="Silk Street, London EC2Y 8DS" data-since="1982" data-known-for="Home of the London Symphony Orchestra">
       <template data-icon><span class="pin" data-category="Concerts"></span></template>
     </maplace-location>
-    <maplace-location location-id="borough-market" lat="51.5055" lng="-0.091" title="Borough Market" group="Markets">
+    <maplace-location location-id="borough-market" lat="51.5055" lng="-0.091" title="Borough Market" group="Markets"
+      data-address="8 Southwark Street, London SE1 1TL" data-since="1756" data-known-for="One of London's oldest food markets">
       <template data-icon><span class="pin" data-category="Markets"></span></template>
     </maplace-location>
-    <maplace-location location-id="camden-market" lat="51.5413" lng="-0.146" title="Camden Market" group="Markets">
+    <maplace-location location-id="camden-market" lat="51.5413" lng="-0.146" title="Camden Market" group="Markets"
+      data-address="Camden Lock Place, London NW1 8AF" data-since="1974" data-known-for="Stalls along the Regent's Canal">
       <template data-icon><span class="pin" data-category="Markets"></span></template>
     </maplace-location>
-    <maplace-location location-id="spitalfields" lat="51.5197" lng="-0.0754" title="Old Spitalfields Market" group="Markets">
+    <maplace-location location-id="spitalfields" lat="51.5197" lng="-0.0754" title="Old Spitalfields Market" group="Markets"
+      data-address="16 Horner Square, London E1 6EW" data-since="1638" data-known-for="A Victorian market hall in the East End">
       <template data-icon><span class="pin" data-category="Markets"></span></template>
     </maplace-location>
-    <maplace-location location-id="british-library" lat="51.5299" lng="-0.1277" title="British Library" group="Talks">
+    <maplace-location location-id="british-library" lat="51.5299" lng="-0.1277" title="British Library" group="Talks"
+      data-address="96 Euston Road, London NW1 2DB" data-since="1973" data-known-for="The UK's national library, at St Pancras">
       <template data-icon><span class="pin" data-category="Talks"></span></template>
     </maplace-location>
-    <maplace-location location-id="conway-hall" lat="51.5203" lng="-0.1188" title="Conway Hall" group="Talks">
+    <maplace-location location-id="conway-hall" lat="51.5203" lng="-0.1188" title="Conway Hall" group="Talks"
+      data-address="25 Red Lion Square, London WC1R 4RL" data-since="1929" data-known-for="Talks and debates, home of the Conway Hall Ethical Society">
       <template data-icon><span class="pin" data-category="Talks"></span></template>
     </maplace-location>
-    <maplace-location location-id="royal-institution" lat="51.5098" lng="-0.1425" title="Royal Institution" group="Talks">
+    <maplace-location location-id="royal-institution" lat="51.5098" lng="-0.1425" title="Royal Institution" group="Talks"
+      data-address="21 Albemarle Street, London W1S 4BS" data-since="1799" data-known-for="The Christmas Lectures, given since 1825">
       <template data-icon><span class="pin" data-category="Talks"></span></template>
     </maplace-location>
   </maplace-map>
+  <aside id="whats-on-maplibre-card" class="venue-card" aria-label="Venue">
+    <p class="venue-empty">Pick a venue on the map to see it here.</p>
+    <template>
+      <div class="venue">
+        <p class="venue-category"></p>
+        <h3 class="venue-name">Venue</h3>
+        <dl>
+          <div><dt>Address</dt><dd class="venue-address"></dd></div>
+          <div><dt>Since</dt><dd class="venue-since"></dd></div>
+          <div><dt>Known for</dt><dd class="venue-known-for"></dd></div>
+        </dl>
+      </div>
+    </template>
+  </aside>
 </div>
 <script>
   // The legend, a list view of your own: a chip per category, in the venues' order, showing that
@@ -173,5 +218,31 @@
     };
     writeName(maplace.getSnapshot().selectedId);
     maplace.on('selectionChange', ({ id }) => writeName(id));
+
+    // The card beside the map: the venue selected, its details from its location's data-
+    // attributes, its category marked for its colour, made from the card's template and in the card
+    // only while a venue is selected; or a word asking for one. Not a live region either.
+    const card = document.getElementById('whats-on-maplibre-card');
+    const empty = card.querySelector('.venue-empty');
+    const venuePart = card.querySelector('template').content.firstElementChild.cloneNode(true);
+    const write = (selector, text) => { venuePart.querySelector(selector).textContent = text; };
+    const writeCard = (id) => {
+      const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
+      empty.hidden = selected !== undefined;
+      if (selected === undefined) {
+        venuePart.remove();
+        return;
+      }
+      const details = document.querySelector(`#whats-on-maplibre-map > [location-id="${CSS.escape(id)}"]`).dataset;
+      venuePart.dataset.category = selected.group;
+      write('.venue-category', selected.group);
+      write('.venue-name', selected.title);
+      write('.venue-address', details.address);
+      write('.venue-since', details.since);
+      write('.venue-known-for', details.knownFor);
+      card.append(venuePart);
+    };
+    writeCard(maplace.getSnapshot().selectedId);
+    maplace.on('selectionChange', ({ id }) => writeCard(id));
   }
 </script>

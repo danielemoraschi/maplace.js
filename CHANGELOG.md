@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-05 Added a card beside the map to the Your own look example: the venue picked, with its address, the year it opened and what it is known for
 - 2026-11-04 Changed a bottom-left panel on a Google map (a list, a select, your own control) to sit above Google's logo, in the map's corner as on MapLibre, so Google's terms no longer reach under it on a narrow map
 - 2026-11-04 Added a Your own look example to the site's Styling page: a dark frame, pins coloured by category, a count with the selected venue's name beside it, and a legend on the map whose chips show one category
 - 2026-11-04 Changed the site's install box to fold on a phone: one Install row that opens on a tap, open as before on a wider screen
