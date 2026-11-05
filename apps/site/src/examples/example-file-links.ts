@@ -2,8 +2,8 @@ import type { StylesheetPlace } from "../../../../packages/maplace/src/testing/e
 import { type ExampleData, exampleData } from "./example-data.ts";
 
 /**
- * A data file's site path in an example's code, `/points-4k.json`, or one with a template part,
- * `/live-data-${letter}.json`: the name, its parts outside `${…}` kept.
+ * A data file's site path in an example's code, `/examples/data/points-4k.json`, or one with a
+ * template part, `/examples/data/live-data-${letter}.json`: the name, its parts outside `${…}` kept.
  */
 const FETCHED_JSON = /\/((?:[\w-]|\$\{[^}]*\})+)\.json/g;
 
@@ -25,22 +25,28 @@ export function dataFetchedBy(code: readonly string[]): ExampleData[] {
   return exampleData().filter(({ name }) => fetched.some((pattern) => pattern.test(name)));
 }
 
-/** Each of `data` linked to the site's copy, where the examples fetch it (`[data].json.ts`). */
+/** Each of `data` linked to the site's copy, where the examples fetch it. */
 export function exampleDataLinks(data: readonly ExampleData[]): ExampleFileLink[] {
-  return data.map(({ name }) => ({ file: `${name}.json`, url: `/${name}.json` }));
+  return data.map(({ name }) => {
+    const file = `${name}.json`;
+    return { file, url: exampleFileHref(`data/${file}`) };
+  });
 }
 
 /** Each of `stylesheets` linked to the site's copy. */
 export function stylesheetLinks(stylesheets: readonly StylesheetPlace[]): ExampleFileLink[] {
-  return stylesheets.map((place) => ({ file: place.file, url: stylesheetHref(place) }));
+  return stylesheets.map(({ folder, file }) => ({
+    file,
+    url: exampleFileHref(`${folder}/${file}`),
+  }));
 }
 
 /**
- * Where the site serves a stylesheet (`examples/[...stylesheet].css.ts`):
- * `/examples/whats-on/whats-on.css`.
+ * Where the site serves an example's file, at `path` under `packages/maplace/examples/`: under
+ * `/examples/` at the same path, `/examples/data/points-4k.json`, `/examples/styles/whats-on.css`.
  */
-export function stylesheetHref({ folder, file }: StylesheetPlace): string {
-  return `/examples/${folder}/${file}`;
+export function exampleFileHref(path: string): string {
+  return `/examples/${path}`;
 }
 
 /** `path`, a fetched name with its template parts, as a pattern for the names it can be. */

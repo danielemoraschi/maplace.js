@@ -60,9 +60,9 @@ describe("exampleCode", () => {
 
 describe("stylesheetsOf", () => {
   it("is the stylesheet an example's versions link, once, with its text", () => {
-    expect(exampleFile("whats-on", "whats-on.css")).toContain(".whats-on {");
+    expect(exampleFile("styles", "whats-on.css")).toContain(".whats-on {");
     expect(stylesheetsOf("whats-on")).toEqual([
-      { folder: "whats-on", file: "whats-on.css", code: exampleFile("whats-on", "whats-on.css") },
+      { folder: "styles", file: "whats-on.css", code: exampleFile("styles", "whats-on.css") },
     ]);
   });
 
@@ -74,7 +74,7 @@ describe("stylesheetsOf", () => {
 describe("everyExampleStylesheet", () => {
   it("is each stylesheet any example's versions link, once", () => {
     expect(everyExampleStylesheet().map(({ folder, file }) => `${folder}/${file}`)).toEqual([
-      "whats-on/whats-on.css",
+      "styles/whats-on.css",
     ]);
   });
 });

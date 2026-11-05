@@ -4,7 +4,7 @@ import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/r
 import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-/** Each data set's button, by its file's letter: `/live-data-a.json` is the markers. */
+/** Each data set's button, by its file's letter: `/examples/data/live-data-a.json` is the markers. */
 const GROUPS = { a: "Markers", b: "More markers", c: "Route", d: "Area", e: "Circle" };
 
 /** A data set shown, the route's (c) with a route through it. */
@@ -16,7 +16,7 @@ interface Shown {
 const NOTHING: Shown = { locations: [], route: undefined };
 
 async function fetchGroup(letter: string): Promise<Shown> {
-  const response = await fetch(`/live-data-${letter}.json`);
+  const response = await fetch(`/examples/data/live-data-${letter}.json`);
   const locations: Location[] = await response.json();
   const stops = locations.map(({ id }) => id);
   return { locations, route: letter === "c" ? { stops, travelMode: "driving" } : undefined };

@@ -1,7 +1,7 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import { exampleIcons } from "../../examples/example-data.ts";
+import { exampleIcons } from "../../../../examples/example-data.ts";
 
-/** `/icons/a.svg` and the others, which the `markers` example's markers show. */
+/** `/examples/data/icons/a.svg` and the others, which the `markers` example's markers show. */
 export const getStaticPaths = (() =>
   exampleIcons().map(({ name, svg }) => ({
     params: { icon: name },

@@ -120,7 +120,7 @@ describe("Data & routes' examples", () => {
       )
       .toMatchObject({ stops: ["milan", "zurich", "paris", "munich"], via: ["zurich"] });
     await page.locator("#big-map").scrollIntoViewIfNeeded();
-    await expect.poll(() => fetched("/points-4k.json"), ASKED).toBe(true);
+    await expect.poll(() => fetched("/examples/data/points-4k.json"), ASKED).toBe(true);
     await context.close();
   }, 30_000);
 
@@ -140,7 +140,7 @@ describe("Data & routes' examples", () => {
     const box = await page.locator("#route-vanilla-map").boundingBox();
     expect(box?.height).toBeGreaterThan(0);
     await page.locator("#big-react-root").scrollIntoViewIfNeeded();
-    await expect.poll(() => fetched("/points-4k.json"), ASKED).toBe(true);
+    await expect.poll(() => fetched("/examples/data/points-4k.json"), ASKED).toBe(true);
     const reactMap = await page.locator("#big-react-root .map").boundingBox();
     expect(reactMap?.height).toBeGreaterThan(0);
     await context.close();

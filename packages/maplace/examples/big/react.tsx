@@ -7,7 +7,7 @@ import { createRoot } from "react-dom/client";
 function Big() {
   const [points, setPoints] = useState<readonly Location[]>([]);
   useEffect(() => {
-    fetch("/points-4k.json")
+    fetch("/examples/data/points-4k.json")
       .then((response) => response.json())
       .then(setPoints);
   }, []);

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { stylesheetsLinkedBy, withStylesheetsWritten } from "./linked-stylesheets";
 
 const STYLESHEETS: Readonly<Record<string, string>> = {
-  "whats-on/whats-on.css": ".whats-on { color: red; }\n",
+  "styles/whats-on.css": ".whats-on { color: red; }\n",
 };
 
 /** A stylesheet in `STYLESHEETS`, read as the site's `exampleFile` reads one. */
@@ -17,13 +17,14 @@ const linking = (href: string) =>
 
 describe("withStylesheetsWritten", () => {
   it("writes a linked stylesheet in its place, as a style", () => {
-    expect(withStylesheetsWritten(linking("whats-on.css"), "whats-on", read)).toBe(
+    expect(withStylesheetsWritten(linking("../styles/whats-on.css"), "whats-on", read)).toBe(
       '<style>\n.whats-on { color: red; }\n</style>\n<div class="whats-on"></div>',
     );
   });
 
-  it("resolves a link from a MapLibre version's folder up to the example's", () => {
-    expect(withStylesheetsWritten(linking("../whats-on.css"), "whats-on/maplibre", read)).toContain(
+  it("resolves a link from a MapLibre version's folder up to the examples' styles", () => {
+    const html = linking("../../styles/whats-on.css");
+    expect(withStylesheetsWritten(html, "whats-on/maplibre", read)).toContain(
       ".whats-on { color: red; }",
     );
   });
@@ -37,12 +38,13 @@ describe("withStylesheetsWritten", () => {
     ["a protocol-relative URL", "//example.com/a.css"],
     ["a site path", "/a.css"],
     ["a file out of the examples", "../../a.css"],
-    ["another example's file", "../simple/a.css"],
-    ["a file in a sub-folder", "maplibre/a.css"],
-    ["a file that isn't CSS", "theme.scss"],
+    ["a file beside the example's versions", "whats-on.css"],
+    ["another folder of the examples", "../data/a.css"],
+    ["a file in a folder of the styles", "../styles/old/a.css"],
+    ["a file that isn't CSS", "../styles/theme.scss"],
   ])("refuses a link it can't write in: %s", (_, href) => {
     expect(() => withStylesheetsWritten(linking(href), "whats-on", read)).toThrow(
-      `an example links a .css file in its own folder only, not ${href}`,
+      `an example links a .css file in examples/styles/ only, not ${href}`,
     );
   });
 
@@ -57,16 +59,16 @@ describe("withStylesheetsWritten", () => {
   });
 
   it("throws for a stylesheet that isn't there, through its reader", () => {
-    expect(() => withStylesheetsWritten(linking("gone.css"), "whats-on", read)).toThrow(
-      "examples/whats-on/gone.css doesn't exist",
+    expect(() => withStylesheetsWritten(linking("../styles/gone.css"), "whats-on", read)).toThrow(
+      "examples/styles/gone.css doesn't exist",
     );
   });
 });
 
 describe("stylesheetsLinkedBy", () => {
   it("lists the stylesheets a version links, each by its place, resolved from its folder", () => {
-    expect(stylesheetsLinkedBy(linking("../whats-on.css"), "whats-on/maplibre")).toEqual([
-      { folder: "whats-on", file: "whats-on.css" },
+    expect(stylesheetsLinkedBy(linking("../../styles/whats-on.css"), "whats-on/maplibre")).toEqual([
+      { folder: "styles", file: "whats-on.css" },
     ]);
   });
 

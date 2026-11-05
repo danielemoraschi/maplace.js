@@ -67,9 +67,11 @@
     font-size: var(--text-sm);
   }
 
+  /* Wrapped mid-word when too long for its line, as a path is: never wider than a phone's screen. */
   :not(pre) > code {
     background: var(--color-wash);
     padding: 0.1em 0.3em;
+    overflow-wrap: break-word;
   }
 
   button {

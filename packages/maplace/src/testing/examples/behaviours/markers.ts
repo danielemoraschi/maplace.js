@@ -7,9 +7,9 @@ export const markers: ExampleBehaviour = async ({ store, adapter }) => {
   const srcOf = (id: string) =>
     (probe.location(id)?.icon as Element | undefined)?.getAttribute("src");
   expect(["london", "edinburgh", "manchester"].map(srcOf)).toEqual([
-    "/icons/a.svg",
-    "/icons/b.svg",
-    "/icons/c.svg",
+    "/examples/data/icons/a.svg",
+    "/examples/data/icons/b.svg",
+    "/examples/data/icons/c.svg",
   ]);
   expect(probe.location("cardiff")?.icon?.textContent).toBe("★");
   store.select("edinburgh");

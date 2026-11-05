@@ -1,4 +1,4 @@
-/** A data file the example pages fetch, as the site serves it: `/<name>.json`. */
+/** A data file the example pages fetch, as the site serves it: `/examples/data/<name>.json`. */
 export interface ExampleData {
   readonly name: string;
   readonly json: unknown;
@@ -19,7 +19,7 @@ export function exampleData(): readonly ExampleData[] {
   }));
 }
 
-/** An icon the example pages show, as the site serves it: `/icons/<name>.svg`. */
+/** An icon the example pages show, as the site serves it: `/examples/data/icons/<name>.svg`. */
 export interface ExampleIcon {
   readonly name: string;
   readonly svg: string;

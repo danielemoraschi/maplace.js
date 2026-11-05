@@ -44,7 +44,7 @@ describe("the site's consent to its maps", () => {
     await page.waitForTimeout(SETTLE_MS);
     expect(mapProviders()).toEqual([]);
     expect(offsite()).toEqual([]);
-    expect(fetched("/points-4k.json")).toBe(false);
+    expect(fetched("/examples/data/points-4k.json")).toBe(false);
     await expect.poll(() => placeholder(page).isVisible()).toBe(true);
     await placeholder(page).click();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);

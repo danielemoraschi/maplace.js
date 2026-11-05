@@ -35,6 +35,14 @@ describe("pageSources", () => {
     }
   });
 
+  it("dates a group's page from the examples' shared data and stylesheets", () => {
+    for (const group of EXAMPLE_GROUPS) {
+      const sources = pageSources(groupPath(group));
+      expect(sources, group.id).toContain(`${PACKAGE_DIR}/examples/data`);
+      expect(sources, group.id).toContain(`${PACKAGE_DIR}/examples/styles`);
+    }
+  });
+
   it("dates the changelog's page from the changelog", () => {
     expect(pageSources(CHANGELOG_PAGE.route)).toEqual([CHANGELOG_FILE]);
   });

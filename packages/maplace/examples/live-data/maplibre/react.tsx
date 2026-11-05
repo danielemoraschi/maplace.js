@@ -5,14 +5,14 @@ import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/r
 import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-/** Each data set's button, by its file's letter: `/live-data-a.json` is the markers. */
+/** Each data set's button, by its file's letter: `/examples/data/live-data-a.json` is the markers. */
 const GROUPS = { a: "Markers", b: "More markers", d: "Area", e: "Circle" };
 
 const NO_LOCATIONS: readonly Location[] = [];
 
 /** A data set: on MapLibre, which has no routing, there is no route's set (c). */
 async function fetchGroup(letter: string): Promise<Location[]> {
-  const response = await fetch(`/live-data-${letter}.json`);
+  const response = await fetch(`/examples/data/live-data-${letter}.json`);
   return response.json();
 }
 

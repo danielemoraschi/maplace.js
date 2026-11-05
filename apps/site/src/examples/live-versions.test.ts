@@ -69,7 +69,7 @@ describe("liveVersions", () => {
   });
 
   it("writes in the stylesheet each of Your own look's versions links", () => {
-    const written = `<style>\n${exampleFile("whats-on", "whats-on.css")}</style>`;
+    const written = `<style>\n${exampleFile("styles", "whats-on.css")}</style>`;
     for (const { kind, provider, markup } of liveVersions("whats-on", { apiKey: "k" })) {
       expect(markup, `${provider} ${kind}`).toContain(written);
       expect(markup, `${provider} ${kind}`).not.toContain("<link");

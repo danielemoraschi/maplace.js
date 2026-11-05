@@ -89,7 +89,7 @@ export function codeTabsOf(name: string): readonly CodeTab[] {
   }));
 }
 
-/** A stylesheet an example's versions link, beside them, with its text. */
+/** A stylesheet an example's versions link, from `examples/styles/`, with its text. */
 export interface ExampleStylesheet extends StylesheetPlace {
   readonly code: string;
 }
@@ -113,7 +113,8 @@ export function stylesheetsOf(name: string): readonly ExampleStylesheet[] {
 
 /** Every stylesheet the versions of the site's sections link, once each: what the site serves. */
 export function everyExampleStylesheet(): readonly ExampleStylesheet[] {
-  return EXAMPLE_SECTIONS.flatMap(({ name }) => stylesheetsOf(name));
+  const linked = EXAMPLE_SECTIONS.flatMap(({ name }) => stylesheetsOf(name));
+  return [...new Map(linked.map((stylesheet) => [stylesheet.file, stylesheet])).values()];
 }
 
 /** One file in `folder` under `packages/maplace/examples/`, as written. */

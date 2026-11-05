@@ -12,7 +12,7 @@ export const PRIVACY_SOURCES: readonly string[] = [
 
 /**
  * What every group's page says besides its examples: the hero shows quick-start's files raw, the
- * install box the README's snippets, and the examples draw the shared data.
+ * install box the README's snippets, and the examples draw the shared data and stylesheets.
  */
 const EXAMPLE_PAGE_TEXT = [
   "apps/site/src/examples/example-sections.ts",
@@ -21,6 +21,7 @@ const EXAMPLE_PAGE_TEXT = [
   "README.md",
   `${PACKAGE_DIR}/examples/quick-start`,
   `${PACKAGE_DIR}/examples/data`,
+  `${PACKAGE_DIR}/examples/styles`,
 ];
 
 /** The files each route shows the words of: a change to the site's layout dates no page. */

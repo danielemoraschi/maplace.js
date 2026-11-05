@@ -10,7 +10,7 @@
     cluster: true,
   });
 
-  const response = await fetch("/points-4k.json");
+  const response = await fetch("/examples/data/points-4k.json");
   const points = await response.json();
   maplace.setLocations(points);
 </script>

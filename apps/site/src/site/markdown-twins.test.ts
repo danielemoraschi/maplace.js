@@ -92,8 +92,8 @@ describe("markdownTwins", () => {
     const section = sectionOf(twinAt(groupPath(group as never)).markdown, whatsOn?.title as string);
     const [stylesheet] = stylesheetsOf("whats-on");
     const [, underHeading = ""] = section.split(`${STYLESHEETS_HEADING}\n\n`);
-    expect(underHeading.startsWith("`packages/maplace/examples/whats-on/whats-on.css`")).toBe(true);
-    expect(section.split("`packages/maplace/examples/whats-on/whats-on.css`")).toHaveLength(2);
+    expect(underHeading.startsWith("`packages/maplace/examples/styles/whats-on.css`")).toBe(true);
+    expect(section.split("`packages/maplace/examples/styles/whats-on.css`")).toHaveLength(2);
     expect(fencedBlocks(section, "css")).toEqual([stylesheet?.code.trimEnd()]);
   });
 

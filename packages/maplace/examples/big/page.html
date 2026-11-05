@@ -3,6 +3,6 @@
 <!-- 4,000 points, clustered (the cluster build bundles @googlemaps/markerclusterer): the markers near each other drawn as one badge counting them, which splits as you zoom in. -->
 <maplace-map id="big-map" api-key="YOUR_KEY" cluster></maplace-map>
 <script type="module">
-  const response = await fetch('/points-4k.json');
+  const response = await fetch('/examples/data/points-4k.json');
   document.getElementById('big-map').locations = await response.json();
 </script>

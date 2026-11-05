@@ -47,7 +47,7 @@ describe("the examples' provider toggle, on a section", () => {
     await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
     expect(mapProviders()).toEqual([]);
-    expect(fetched("/points-4k.json")).toBe(false);
+    expect(fetched("/examples/data/points-4k.json")).toBe(false);
     await context.close();
   }, 30_000);
 

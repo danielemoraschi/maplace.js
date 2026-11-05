@@ -6,6 +6,6 @@ const maplace = createMapLibreMap("#big-maplibre-vanilla-map", {
   cluster: true,
 });
 
-const response = await fetch("/points-4k.json");
+const response = await fetch("/examples/data/points-4k.json");
 const points: Location[] = await response.json();
 maplace.setLocations(points);

@@ -109,19 +109,19 @@ describe("the examples' pages, as built (W38)", () => {
     expect(new Set(links.map(([, target]) => target))).toEqual(new Set(["_blank"]));
     expect(links.map(([href]) => href).sort()).toEqual(
       exampleData()
-        .map(({ name }) => `/${name}.json`)
+        .map(({ name }) => `/examples/data/${name}.json`)
         .sort(),
     );
   });
 
   it("link the stylesheet an example's versions link to the site's copy, once, under its section", async () => {
-    const href = "/examples/whats-on/whats-on.css";
+    const href = "/examples/styles/whats-on.css";
     expect(pages.flatMap(({ stylesheetLinks }) => stylesheetLinks)).toEqual([
       ["whats-on", href, "whats-on.css"],
     ]);
     const served = await fetch(new URL(href, site.url));
     expect(served.headers.get("content-type")).toMatch(/^text\/css/);
-    expect(await served.text()).toBe(exampleFile("whats-on", "whats-on.css"));
+    expect(await served.text()).toBe(exampleFile("styles", "whats-on.css"));
   });
 
   it("use no id twice on a page", () => {
