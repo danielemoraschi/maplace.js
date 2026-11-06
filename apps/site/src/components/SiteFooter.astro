@@ -1,16 +1,17 @@
 ---
+import { copyrightYears } from "../site/copyright-years.ts";
 import { FOOTER_PAGES } from "../site/footer-pages.ts";
 import { REPOSITORY_URL } from "../site/repo-docs.ts";
 import { SITE_MAINTAINER } from "../site/site-owner.ts";
 
 const here = Astro.url.pathname;
-const year = new Date().getFullYear();
+const years = copyrightYears(new Date().getFullYear());
 ---
 
 {/* Held on the screen from 48rem up: on a phone it would take too much of it. */}
 <footer class="mt-16 bg-[rgb(0_0_0/0.8)] text-sm backdrop-blur-[10px] text-paper min-[48rem]:sticky min-[48rem]:bottom-0 min-[48rem]:z-10">
   <div class="wrap flex flex-wrap justify-between gap-x-6 gap-y-2 py-4">
-    <span>maplacejs · Apache-2.0 licence © {year} {SITE_MAINTAINER}</span>
+    <span>maplacejs · Apache-2.0 licence © {years} {SITE_MAINTAINER}</span>
     <span class="flex flex-wrap gap-x-5 gap-y-2">
       <button
         type="button"

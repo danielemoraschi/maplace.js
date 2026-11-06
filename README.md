@@ -320,7 +320,7 @@ export function CityMap() {
 
 ## License
 
-maplacejs is released under the [Apache License, Version 2.0](LICENSE) © 2013-2026 Daniele Moraschi.
+maplacejs is released under the [Apache License, Version 2.0](LICENSE) © 2026 Daniele Moraschi.
 
 ## The name
 
