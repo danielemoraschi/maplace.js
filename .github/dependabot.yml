@@ -1,0 +1,36 @@
+# Dependabot's version updates (F8, docs/MODERNIZE.md). GitHub reads this file only on the default branch,
+# so it acts from R3, when main becomes it; scripts/dependabot.test.ts holds it to Dependabot's keys until
+# then. Security updates are a repository setting, not this file: R3 turns them on.
+# A release waits a week before it's proposed, so a hijacked one is found before it reaches a pull request.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    # A dependency goes in the first group it matches. Families that pin each other move together, majors
+    # too. The package's runtime dependencies stay out of every group: users install them, so each gets a
+    # pull request of its own, merged with its CHANGELOG line.
+    groups:
+      vitest:
+        patterns: [vitest, "@vitest/*"]
+      react:
+        patterns: [react, react-dom, "@types/react", "@types/react-dom"]
+      tailwind:
+        patterns: [tailwindcss, "@tailwindcss/*"]
+      npm-minor-and-patch:
+        patterns: ["*"]
+        exclude-patterns: [supercluster, "@googlemaps/markerclusterer"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
