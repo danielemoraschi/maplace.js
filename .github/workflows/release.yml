@@ -1,6 +1,6 @@
 # Release maplace: run by hand from the Actions tab on main, with the version (P2, docs/MODERNIZE.md).
 # The logic is in scripts/release/ and tested there; this file runs it (scripts/release/release-workflow.test.ts
-# holds the two together). Three jobs, each safe to re-run with "Re-run failed jobs":
+# holds the two together). Four jobs, each safe to re-run with "Re-run failed jobs":
 #   release   the version written and CHANGELOG.md headed (npm run release), the result committed, verified,
 #             tagged v<version> and pushed to main with its tag in one atomic push. Refused, before anything is
 #             pushed, when the version isn't above every release from v1.0.0, is below what the CHANGELOG lines
@@ -10,6 +10,9 @@
 #   announce  jsDelivr checked against the published README (npm run release-cdn, retrying while it lags), then the
 #             GitHub release, its notes the version's CHANGELOG lines (npm run release-notes). An existing release
 #             is skipped.
+#   deploy    the site to production from main (deploy.yml), after announce, so a version whose CDN check fails
+#             isn't offered; never for a pre-release, which the site doesn't pin apart. It can also be dispatched
+#             by hand, as Deploy.
 # Recovery: a publish or announce that failed is re-run (it starts again from the tag); a push refused because
 # main moved is dispatched again; a release tagged whose publish can't be made to pass blocks the next dispatch
 # until it is on npm. An announce stopped by the CDN check comes after an irreversible publish, and the GitHub
@@ -168,3 +171,11 @@ jobs:
           if [ "$PRERELEASE" = true ]; then prerelease=(--prerelease); fi
           gh release create "$TAG" --verify-tag --title "maplace $VERSION" \
             --notes-file "$RUNNER_TEMP/notes.md" "${prerelease[@]}"
+
+  deploy:
+    needs: [release, announce]
+    if: needs.release.outputs.prerelease != 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

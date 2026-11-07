@@ -49,6 +49,10 @@ export default defineConfig({
           // CSS read as text (`?raw`) is the file's text, as in Vite: Vitest blanks every CSS file
           // it isn't told to process, `?raw` too.
           css: { include: [/\.css\?raw$/] },
+          // happy-dom 21 loads no frame's page unless told to, so a blank frame has no document:
+          // the tests' frames are blank ones of their own (packages/maplace/src/testing/iframes.ts),
+          // as a page rendering into a frame makes.
+          environmentOptions: { happyDOM: { settings: { enableIframePageLoading: true } } },
         },
       },
       {

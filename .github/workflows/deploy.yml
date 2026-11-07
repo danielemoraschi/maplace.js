@@ -1,0 +1,71 @@
+# The site to production, maplacejs.com (R4): run by hand from the Actions tab on main, and by release.yml after each
+# stable release's announce. It deploys main as it is then, at the release commit when the release calls it, so the
+# site pins the version npm has: refused for a pre-release, which the site doesn't pin apart, and for a version not on
+# npm, whose scripts would 404 (W46). Then every page is checked for requests to another origin (W10c), which only the
+# edge can add. The preview, next's, is ci.yml's deploy-preview, built the same way (scripts/site-workflows.test.ts).
+# maplacejs.com is attached to the Worker in Cloudflare's dashboard, not in wrangler.jsonc: with no routes there,
+# wrangler deploy leaves the Worker's domains and DNS alone. R4's first run comes before the domain is attached, so
+# the dashboard's Hello World is replaced while no address serves it; its offsite check is then red, as maplacejs.com
+# isn't the Worker's yet: attach the domain, then re-run the job once its certificate is ready.
+name: Deploy
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # One deploy at a time, a running one never cancelled; a newer waiting one replaces an older, both deploying main.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      # A called workflow's ref is its caller's: release.yml runs from main alone too.
+      - name: Deploys come from main
+        run: test "$GITHUB_REF" = refs/heads/main || { echo "::error::deploy from main, not $GITHUB_REF"; exit 1; }
+      # main, not the run's commit: when release.yml calls this, the run's commit is the one before the release commit.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0 # the build dates each page from git
+          persist-credentials: false # it never pushes, and npm's install scripts run here
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      # Node alone: a refusal comes before minutes of installing and building.
+      - name: The manifest's version is a release on npm
+        run: |
+          name=$(node -p 'require("./packages/maplace/package.json").name')
+          version=$(node -p 'require("./packages/maplace/package.json").version')
+          case "$version" in
+            *-*) echo "::error::$name $version is a pre-release: the site pins stable releases only"; exit 1 ;;
+          esac
+          test "$(npm view "$name@$version" version)" = "$version" || {
+            echo "::error::$name $version isn't on npm, or npm can't be reached: the site would pin scripts that 404"
+            exit 1
+          }
+      - run: npm ci
+      # Without them the maps would only say the site has no key, so missing ones fail.
+      - run: |
+          test -n "$SITE_MAPS_KEY" || { echo "::error::the SITE_MAPS_KEY secret is not set"; exit 1; }
+          test -n "$SITE_MAPS_MAP_ID" || { echo "::error::the SITE_MAPS_MAP_ID variable is not set"; exit 1; }
+          npm run site:build
+        env:
+          SITE_MAPS_KEY: ${{ secrets.SITE_MAPS_KEY }}
+          SITE_MAPS_MAP_ID: ${{ vars.SITE_MAPS_MAP_ID }}
+      # Wrangler and its install scripts fetched before the Cloudflare token is in the environment.
+      - run: npx --yes wrangler@4.150.0 --version
+      - working-directory: apps/site
+        run: npx --yes wrangler@4.150.0 deploy --message "$(git rev-parse HEAD)"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      # What the edge adds, which the build never sees (W10c): every page as a browser gets it may ask no other origin
+      # before consent.
+      - run: node apps/site/src/site/offsite-check.ts https://maplacejs.com

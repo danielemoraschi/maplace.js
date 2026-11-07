@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { ROOT } from "../build/package.ts";
+import { jobNamed } from "../checks/workflow-text.ts";
 import { CDN_DEADLINE_MS, LONGEST_CDN_ATTEMPT_MS } from "./cdn-check.ts";
 
 /** Holds the workflow, which can't run before R3, to the code and to its safety rules. */
@@ -10,11 +11,6 @@ const lines = workflow.split("\n");
 const scripts = Object.keys(
   JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf8")).scripts as object,
 );
-
-/** A job's text, from its name to the next job's. */
-function jobNamed(name: string, text = workflow): string {
-  return text.split(/^ {2}(?=[\w-]+:$)/m).find((job) => job.startsWith(`${name}:`)) ?? "";
-}
 
 const CDN_CHECK = "run: npm run --silent release-cdn";
 
@@ -62,13 +58,13 @@ it("refuses a new version while the last one isn't on npm, before committing it"
 });
 
 it("checks the CDN before making the GitHub release", () => {
-  const announce = jobNamed("announce");
+  const announce = jobNamed("announce", workflow);
   expect(announce.indexOf(CDN_CHECK)).toBeGreaterThan(-1);
   expect(announce.indexOf(CDN_CHECK)).toBeLessThan(announce.indexOf("gh release create"));
 });
 
 it("gives the CDN check no token", () => {
-  const announce = jobNamed("announce");
+  const announce = jobNamed("announce", workflow);
   const [beforeCheck = "", afterCheck = ""] = announce.split(CDN_CHECK);
   expect(workflow.slice(0, workflow.indexOf("\njobs:"))).not.toContain("GH_TOKEN");
   expect(beforeCheck).not.toContain("GH_TOKEN");
@@ -76,12 +72,26 @@ it("gives the CDN check no token", () => {
 });
 
 it("leaves the CDN check's retries room inside announce's timeout", () => {
-  const minutes = Number(/timeout-minutes: (\d+)/.exec(jobNamed("announce"))?.[1]);
+  const minutes = Number(/timeout-minutes: (\d+)/.exec(jobNamed("announce", workflow))?.[1]);
   expect(minutes * 60_000).toBeGreaterThan(CDN_DEADLINE_MS + LONGEST_CDN_ATTEMPT_MS);
 });
 
 it("builds what it publishes from the lockfile", () => {
-  const publish = jobNamed("publish");
+  const publish = jobNamed("publish", workflow);
   expect(publish.indexOf("npm ci")).toBeGreaterThan(-1);
   expect(publish.indexOf("npm ci")).toBeLessThan(publish.indexOf("npm run build"));
+});
+
+it("deploys the site after announce, through the deploy workflow", () => {
+  const deploy = jobNamed("deploy", workflow);
+  expect(deploy).toMatch(/^\s+needs: \[release, announce\]$/m);
+  expect(deploy).toMatch(/^\s+uses: \.\/\.github\/workflows\/deploy\.yml$/m);
+  // Without them the deploy fails, and only after an irreversible publish.
+  expect(deploy).toMatch(/^\s+secrets: inherit$/m);
+});
+
+it("never deploys a pre-release", () => {
+  expect(jobNamed("deploy", workflow)).toMatch(
+    /^\s+if: needs\.release\.outputs\.prerelease != 'true'$/m,
+  );
 });

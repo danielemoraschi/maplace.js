@@ -100,7 +100,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   # The site from next, once it passed, as a Cloudflare version under the alias `next` (W10):
-  # next-maplacejs.<subdomain>.workers.dev, behind Cloudflare Access; production is R4's. The
+  # next-maplacejs.<subdomain>.workers.dev, behind Cloudflare Access; production is deploy.yml's. The
   # Worker was created once by hand: an upload can't create one.
   deploy-preview:
     needs: verify

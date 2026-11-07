@@ -1,0 +1,28 @@
+# On the 1st and 15th, whether a page of maplacejs.com loads anything from another origin before consent (W10c):
+# apps/site/src/site/offsite-check.ts, which deploy.yml also runs after each deploy. A dashboard setting changes the
+# pages with no push (Cloudflare's Web Analytics beacon appeared on wavelace's domain the day it went live), so a check
+# run only on a deploy would not see it. It only looks; it deploys nothing, and needs no install: the check imports
+# only the site's own modules. Schedules run from the default branch alone, main from R3; GitHub turns a public
+# repo's schedules off after 60 days with no activity, turned on again from the Actions tab.
+name: Offsite
+
+on:
+  schedule:
+    - cron: "17 6 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - run: node apps/site/src/site/offsite-check.ts https://maplacejs.com

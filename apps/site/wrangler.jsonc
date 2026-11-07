@@ -5,6 +5,8 @@
 // the `next` alias CI uploads; observability off, so no visitor's request is logged for the site.
 // Only `wrangler deploy` applies these three (`wrangler triggers deploy` the first two), never
 // CI's `versions upload`: the Worker was created in Cloudflare's dashboard, all three set there.
+// No routes: maplacejs.com is attached to the Worker in the dashboard, and `wrangler deploy`
+// (.github/workflows/deploy.yml) leaves the Worker's domains and DNS alone while none is here.
 {
   "name": "maplacejs",
   "compatibility_date": "2026-10-13",

@@ -19,4 +19,10 @@ describe("wrangler.jsonc", () => {
     expect(assets.run_worker_first).toEqual([STAR_COUNT_PATH]);
     expect(assets.binding).toBe("ASSETS");
   });
+
+  it("declares no route or routes, so a deploy leaves the dashboard's domain alone", () => {
+    const config = wranglerConfig();
+    expect(config).not.toHaveProperty("route");
+    expect(config).not.toHaveProperty("routes");
+  });
 });
