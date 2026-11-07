@@ -7,7 +7,7 @@ export const SITE_NAME = "Maplace.js";
 export const OG_IMAGE = {
   width: 1200,
   height: 630,
-  alt: "Maplace.js: a JavaScript library for Google Maps and MapLibre.",
+  alt: "Maplace.js: JavaScript library for Google Maps and MapLibre.",
 } as const;
 
 /** A `<meta>` tag: named, or by Open Graph's `property`. */

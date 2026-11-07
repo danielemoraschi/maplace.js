@@ -90,7 +90,7 @@ describe("EXAMPLE_GROUPS", () => {
 
   it("titles the first group's page as the home page, the others by their label", () => {
     expect(EXAMPLE_GROUPS.map(groupTitle)).toEqual([
-      "Maplace.js: a JavaScript library for Google Maps and MapLibre",
+      "Maplace.js: JavaScript library for Google Maps and MapLibre",
       "Lists: Maplace.js examples",
       "Shapes: Maplace.js examples",
       "Data & routes: Maplace.js examples",

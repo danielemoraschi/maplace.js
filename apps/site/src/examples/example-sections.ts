@@ -24,7 +24,7 @@ export interface ExampleGroup {
 }
 
 /** The home page's title, the first group's page. */
-const HOME_TITLE = "Maplace.js: a JavaScript library for Google Maps and MapLibre";
+const HOME_TITLE = "Maplace.js: JavaScript library for Google Maps and MapLibre";
 
 /** The examples in their groups, each group a page; the sections numbered in this order (W38). */
 export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
