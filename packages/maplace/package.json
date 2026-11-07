@@ -1,7 +1,6 @@
 {
   "name": "maplace",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0",
   "description": "A list of locations becomes a map plus a synced list, in a few lines.",
   "license": "Apache-2.0",
   "homepage": "https://maplacejs.com",
