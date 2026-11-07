@@ -9,28 +9,29 @@ export interface SitePage {
 export const PRIVACY_PAGE: SitePage = {
   route: "/privacy/",
   label: "Privacy",
-  description: "What maplacejs's site sends where, what it keeps in your browser, and your rights.",
+  description:
+    "What Maplace.js's site sends where, what it keeps in your browser, and your rights.",
 };
 
 export const CHANGELOG_PAGE: SitePage = {
   route: "/changelog/",
   label: "Changelog",
   description:
-    "Every change to maplacejs a reader would notice, newest first, with the issue it closed if any.",
+    "Every change to Maplace.js a reader would notice, newest first, with the issue it closed if any.",
 };
 
 export const AGENTS_PAGE: SitePage = {
   route: "/agents/",
   label: "AI agents",
   description:
-    "How AI agents can read maplacejs's site: its docs and examples in Markdown, llms.txt, its agent skill, and what robots.txt allows.",
+    "How AI agents can read Maplace.js's site: its docs and examples in Markdown, llms.txt, its agent skill, and what robots.txt allows.",
 };
 
 export const BUILDER_PAGE: SitePage = {
   route: "/builder/",
   label: "Snippet builder",
   description:
-    "Paste a CSV, JSON, GeoJSON or a maplace 0.2 config and get a working <maplace-map> to copy, with a live preview. All of it stays in your browser.",
+    "Paste a CSV, JSON, GeoJSON or a Maplace.js 0.2 config and get a working <maplace-map> to copy, with a live preview. All of it stays in your browser.",
 };
 
 /** The footer's links, in order. */

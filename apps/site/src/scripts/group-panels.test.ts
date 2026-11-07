@@ -15,7 +15,7 @@ function answering(body: string, status = 200): void {
 }
 
 const LISTS_PAGE = `<!doctype html><html><head><title>Lists</title></head><body>
-  <header>maplacejs</header>
+  <header>Maplace.js</header>
   <div data-group-panel="lists"><section id="menu"><h2>04 Menu</h2></section></div>
 </body></html>`;
 

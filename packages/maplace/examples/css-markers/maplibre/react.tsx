@@ -25,7 +25,7 @@ const museums: Location<Museum>[] = [
 ];
 
 /**
- * A pin of your own, in a node maplace keeps for each marker and marks `data-hovered` and
+ * A pin of your own, in a node Maplace.js keeps for each marker and marks `data-hovered` and
  * `data-selected`, so the page's CSS gives each state its look (`[data-selected] > .pin`).
  */
 const markerIcon = ({ data }: Location<Museum>) => <span className="pin">{data?.pin}</span>;

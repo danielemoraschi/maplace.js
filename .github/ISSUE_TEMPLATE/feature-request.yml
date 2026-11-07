@@ -1,11 +1,11 @@
 name: Feature request
-description: Something maplacejs could do for a page, and doesn't
+description: Something Maplace.js could do for a page, and doesn't
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: >
-        maplacejs stays small on purpose. Please read its
+        Maplace.js stays small on purpose. Please read its
         [non-goals](https://github.com/danielemoraschi/maplace.js/blob/HEAD/docs/rfc-1.0.md#non-goals-for-10) first:
         each gives its reason.
 

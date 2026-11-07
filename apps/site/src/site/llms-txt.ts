@@ -31,7 +31,7 @@ const LISTED_PAGES: ReadonlyMap<string, ListedPage> = new Map([
 export function llmsTxt(site: URL, agentLinks: readonly AgentLink[]): string {
   const pages = SITE_ROUTES.map((route) => pageLine(route, site));
   return [
-    "# maplacejs",
+    "# Maplace.js",
     `> ${SITE_IN_A_PARAGRAPH}`,
     `## Pages\n\n${pages.join("\n")}`,
     ...agentsSection(site, agentLinks),

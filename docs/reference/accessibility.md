@@ -1,6 +1,6 @@
 # Accessibility
 
-What maplacejs does for a keyboard and a screen reader, what was tested and on what, and what wasn't. This is a statement of what was tested, not a claim of conformance to a standard or of legal compliance: no audit has been done, and how the European Accessibility Act applies to web maps hasn't been established.
+What Maplace.js does for a keyboard and a screen reader, what was tested and on what, and what wasn't. This is a statement of what was tested, not a claim of conformance to a standard or of legal compliance: no audit has been done, and how the European Accessibility Act applies to web maps hasn't been established.
 
 ## The list is the way in
 

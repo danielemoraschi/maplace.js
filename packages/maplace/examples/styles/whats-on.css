@@ -40,7 +40,7 @@
   box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
   cursor: pointer;
 }
-/* React marks the node maplace keeps for each marker, the pin inside it. */
+/* React marks the node Maplace.js keeps for each marker, the pin inside it. */
 .whats-on .pin[data-hovered],
 .whats-on [data-hovered] > .pin {
   transform: translateY(-2px);
@@ -65,7 +65,7 @@
   border-radius: 50%;
   background: var(--category);
 }
-/* maplace's panel on the map, made nothing, so the count and the legend are the page's own. */
+/* Maplace.js's panel on the map, made nothing, so the count and the legend are the page's own. */
 .whats-on .maplace-control {
   padding: 0;
   background: none;

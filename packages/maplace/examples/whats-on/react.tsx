@@ -101,7 +101,7 @@ const firstView: View = { kind: "fit-all", padding: 80 };
 
 /**
  * A pin of your own, its colour the category's (`--category`, by `data-category` in the CSS), in a
- * node maplace keeps for each marker and marks `data-hovered` and `data-selected`.
+ * node Maplace.js keeps for each marker and marks `data-hovered` and `data-selected`.
  */
 const markerIcon = ({ group }: Location) => <span className="pin" data-category={group} />;
 
@@ -130,7 +130,7 @@ function countText(snapshot: Snapshot): string {
 
 /**
  * The name of the venue selected, marked with its category for its colour; hidden while none is.
- * Not a live region: maplace says each selection to a screen reader already.
+ * Not a live region: Maplace.js says each selection to a screen reader already.
  */
 function SelectedName() {
   const maplace = useMaplace<VenueDetails>();
@@ -157,7 +157,7 @@ function selectedIn({
  * The card beside the map: the venue selected, its category marked for its colour, with a × closing
  * it; or, while none is, the venues shown, each a button selecting it, under the category shown
  * alone, if any. A press moves the focus to what takes the button's place, the card rendered at
- * once for it. Not a live region: maplace says each selection to a screen reader already.
+ * once for it. Not a live region: Maplace.js says each selection to a screen reader already.
  */
 function VenueCard() {
   const maplace = useMaplace<VenueDetails>();

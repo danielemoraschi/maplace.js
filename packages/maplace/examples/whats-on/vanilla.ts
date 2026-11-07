@@ -127,7 +127,7 @@ function eventCount(maplace: Maplace): HTMLOutputElement {
 
 /**
  * The name of the venue selected, marked with its category for its colour; hidden while none is.
- * Not a live region: maplace says each selection to a screen reader already.
+ * Not a live region: Maplace.js says each selection to a screen reader already.
  */
 function selectedName(maplace: Maplace): HTMLElement {
   const name = document.createElement("span");
@@ -146,7 +146,7 @@ function selectedName(maplace: Maplace): HTMLElement {
 /**
  * The card beside the map: the venue selected, its category marked for its colour, made from the
  * card's template and in the card only while a venue is selected, with a × closing it; or,
- * while none is, the venues shown, each a button selecting it. Not a live region: maplace says each
+ * while none is, the venues shown, each a button selecting it. Not a live region: Maplace.js says each
  * selection to a screen reader already.
  */
 function showVenueIn(card: HTMLElement, maplace: Maplace<VenueDetails>): void {

@@ -26,7 +26,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "README.md",
     title: "Getting started",
     description:
-      "Install maplacejs and put a map with a synced list on a page, with one script or a bundler.",
+      "Install Maplace.js and put a map with a synced list on a page, with one script or a bundler.",
     label: "Getting started",
     pinsScripts: true,
   },
@@ -83,7 +83,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/react.md",
     title: "React",
     description:
-      "The React binding of maplacejs: provider, map, list, map controls and the hook that reads the store.",
+      "The React binding of Maplace.js: provider, map, list, map controls and the hook that reads the store.",
     label: "React",
   },
   {
@@ -91,7 +91,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/styling.md",
     title: "Styling",
     description:
-      "maplacejs's default styles, turning them off, and the classes to style its markup by.",
+      "Maplace.js's default styles, turning them off, and the classes to style its markup by.",
     label: "Styling",
   },
   {
@@ -99,7 +99,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/accessibility.md",
     title: "Accessibility",
     description:
-      "What maplacejs does for a keyboard and a screen reader, what was tested and on what, and what wasn't.",
+      "What Maplace.js does for a keyboard and a screen reader, what was tested and on what, and what wasn't.",
     label: "Accessibility",
   },
   {

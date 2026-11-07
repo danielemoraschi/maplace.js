@@ -23,9 +23,9 @@ function intro({ site }: AgentSkillSettings): string {
   const docs = REPO_DOCS.map(
     ({ id, label, description }) => `- [${label}](${pageUrl(docRoute(id), site)}): ${description}`,
   );
-  return `# Make a map with maplacejs
+  return `# Make a map with Maplace.js
 
-maplacejs turns a list of locations into a map with a synced list, on Google Maps or MapLibre. It keeps selection and hover in one store the map, the list and your code read.
+Maplace.js turns a list of locations into a map with a synced list, on Google Maps or MapLibre. It keeps selection and hover in one store the map, the list and your code read.
 
 This is a rewrite. There is no jQuery and no \`new Maplace(options).Load()\`: that is 0.2, so never write it. To move a 0.2 page, read [Migrating](${pageUrl(docRoute("migrating"), site)}).
 

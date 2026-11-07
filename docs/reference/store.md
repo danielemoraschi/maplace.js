@@ -1,6 +1,6 @@
 # Store and list view
 
-The store is maplacejs's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md) or [MapLibre](maplibre.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
+The store is Maplace.js's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md) or [MapLibre](maplibre.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
 
 ## Creating a store
 
@@ -198,7 +198,7 @@ Refused, unavailable, timed out, not on HTTPS, or no geolocation at all: the lin
 
 ## Listed locations
 
-`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as maplacejs's. The map's view never narrows it: a list with `scope` narrows them to its view in "This area".
+`listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as Maplace.js's. The map's view never narrows it: a list with `scope` narrows them to its view in "This area".
 
 ## On every map
 
@@ -211,11 +211,11 @@ Once a map has mounted, `attach` adds two things to its container, for a keyboar
 
 An adapter is the bridge to a map provider; the store drives it, and it reports back through its host. Writing one is for a new provider: the contract is in [RFC §3 Shape](../rfc-1.0.md#shape). Its container also holds [what `attach` adds](#on-every-map) once `mount` resolves, so an adapter leaves other nodes there alone.
 
-Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`, the same corner on a right-to-left page), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. maplacejs's own lists on the map go there the same way. The element gives no adapter: [a list view of yours](element.md#list-views) puts a control on the map instead.
+Every adapter puts a node of yours on its map with `mountControl(node, position)`, in a corner (`"top-left"`, `"top-right"`, `"bottom-left"` or `"bottom-right"`, the same corner on a right-to-left page), even before the map opens. The node is moved, never changed, and its keys, wheel and drags never move the map. It returns a function that takes the node off, safe to call twice; destroying the adapter takes every control off. Maplace.js's own lists on the map go there the same way. The element gives no adapter: [a list view of yours](element.md#list-views) puts a control on the map instead.
 
 ### Proving an adapter
 
-`maplace/testing` runs the suite maplacejs's own adapters pass on yours, so a provider of your own can show it keeps the contract. It runs in [Vitest's browser mode](https://vitest.dev/guide/browser/), in a real browser, with `vitest` (tested on 5) and a browser provider such as `@vitest/browser-playwright` installed, and its browser (`npx playwright install chromium`); no page loads it, and it's built apart from the other entries, so it adds nothing to them.
+`maplace/testing` runs the suite Maplace.js's own adapters pass on yours, so a provider of your own can show it keeps the contract. It runs in [Vitest's browser mode](https://vitest.dev/guide/browser/), in a real browser, with `vitest` (tested on 5) and a browser provider such as `@vitest/browser-playwright` installed, and its browser (`npx playwright install chromium`); no page loads it, and it's built apart from the other entries, so it adds nothing to them.
 
 `describeConformance(subject)` registers the checks. A subject has a `name` and a `create(container)` returning `{ adapter, probe }`:
 
@@ -224,7 +224,7 @@ Every adapter puts a node of yours on its map with `mountControl(node, position)
 - **`groups`** joins the suite part by part: `declarations`, `lifecycle`, `drawing`, `presentation`, `popups`, `camera`, `container`, `reports`, `editing`, `route`, `cluster`, `controls` and `origin`. A group left out shows as skipped, and a capability your adapter doesn't declare skips its checks.
 - **`provedOn`** is for a second subject of one adapter, such as one on a page's own map: the `groups` its `subject` already proves, which then show as skipped.
 
-The maps are drawn at 512×512, and zoom means what it does on the web: a world 256 px wide at zoom 0. A check compares what your map draws with `SELECTED_LOOK` and `SELECTED_LINE_LOOK` for a selected shape and `HOVERED_LOOK` for one pointed at, and looks for `ORIGIN_DOT_CLASS` on the origin's dot. A real map may need a longer `testTimeout`: maplacejs's own use 60 seconds.
+The maps are drawn at 512×512, and zoom means what it does on the web: a world 256 px wide at zoom 0. A check compares what your map draws with `SELECTED_LOOK` and `SELECTED_LINE_LOOK` for a selected shape and `HOVERED_LOOK` for one pointed at, and looks for `ORIGIN_DOT_CLASS` on the origin's dot. A real map may need a longer `testTimeout`: Maplace.js's own use 60 seconds.
 
 This one draws nothing, so it joins only the first group:
 

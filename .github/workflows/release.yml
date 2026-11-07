@@ -101,7 +101,7 @@ jobs:
           TAG: ${{ steps.prepare.outputs.tag }}
           TOKEN: ${{ github.token }}
         run: |
-          git tag -a "$TAG" -m "maplace $VERSION"
+          git tag -a "$TAG" -m "Maplace.js $VERSION"
           # No hooks: the suite ran npm code on this runner, which mustn't see the token in a hook's URL.
           git -c core.hooksPath=/dev/null push --atomic \
             "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:main "$TAG"
@@ -169,7 +169,7 @@ jobs:
           npm run --silent release-notes -- "$VERSION" > "$RUNNER_TEMP/notes.md"
           prerelease=()
           if [ "$PRERELEASE" = true ]; then prerelease=(--prerelease); fi
-          gh release create "$TAG" --verify-tag --title "maplace $VERSION" \
+          gh release create "$TAG" --verify-tag --title "Maplace.js $VERSION" \
             --notes-file "$RUNNER_TEMP/notes.md" "${prerelease[@]}"
 
   deploy:

@@ -27,7 +27,7 @@ describe("structuredData", () => {
 
   it("names the library with its repository, licence, npm package and version", () => {
     expect(nodeOfType("SoftwareSourceCode")).toMatchObject({
-      name: "maplacejs",
+      name: "Maplace.js",
       description: LIBRARY.description,
       codeRepository: REPOSITORY_URL,
       programmingLanguage: "TypeScript",

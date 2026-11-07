@@ -1,6 +1,6 @@
 # Locations
 
-A location is one item of your data: a marker, a circle, a polyline or a polygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (maplacejs never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
+A location is one item of your data: a marker, a circle, a polyline or a polygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (Maplace.js never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
 
 <!-- example: packages/maplace/examples/polygon/vanilla.ts -->
 ```ts
@@ -97,7 +97,7 @@ A style says how a shape or a route line is drawn. Colours are CSS colours and w
 | `fill` | `string` | The fill's colour; not on a polyline |
 | `fillOpacity` | `number` | The fill's opacity, 0 to 1; not on a polyline |
 
-A shape in a state is drawn as maplacejs's own look for that state, then its `style`, then its state style (`selectedStyle` or `hoveredStyle`), each the location's over the store's ([store options](store.md#options)). Selected wins over hovered. The state style comes last, so a store-wide `selectedStyle` shows on every shape whatever its own colours.
+A shape in a state is drawn as Maplace.js's own look for that state, then its `style`, then its state style (`selectedStyle` or `hoveredStyle`), each the location's over the store's ([store options](store.md#options)). Selected wins over hovered. The state style comes last, so a store-wide `selectedStyle` shows on every shape whatever its own colours.
 
 ## Content
 
@@ -156,7 +156,7 @@ On `<maplace-map>`, set the `locations` property to the result. With React, comp
 
 ## Addresses to coordinates
 
-maplacejs itself takes coordinates, never addresses, at run time. A page with addresses geocodes them once, before it ships, and keeps the result if its geocoder allows it: no provider quota, no key in your page, nothing sent about your readers. For an address a visitor types, see [A visitor's address](#a-visitors-address).
+Maplace.js itself takes coordinates, never addresses, at run time. A page with addresses geocodes them once, before it ships, and keeps the result if its geocoder allows it: no provider quota, no key in your page, nothing sent about your readers. For an address a visitor types, see [A visitor's address](#a-visitors-address).
 
 ### May you keep the results?
 
@@ -245,7 +245,7 @@ Change `pointIn`'s parameter type to the new answer's shape, the wait to the new
 
 ## A visitor's address
 
-The "My location" button needs a visitor who shares their position. For anyone who refuses, or is planning from somewhere else, a form of your own can take an address and sort the [list by distance](store.md#distances) from there. maplacejs sends nothing itself: the geocoder is yours.
+The "My location" button needs a visitor who shares their position. For anyone who refuses, or is planning from somewhere else, a form of your own can take an address and sort the [list by distance](store.md#distances) from there. Maplace.js sends nothing itself: the geocoder is yours.
 
 <!-- example: scripts/recipes/address-origin.html -->
 ```html

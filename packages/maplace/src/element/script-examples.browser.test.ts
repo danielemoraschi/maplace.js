@@ -57,7 +57,8 @@ describe.each(SCRIPT_VERSIONS)(
   ({ provider, html }) => {
     // The runners' `Maplace` holds both providers': this holds each version to its own script's.
     it("reaches only what its provider's CDN script sets on Maplace", () => {
-      const called = [...html.matchAll(/\bMaplace\.(\w+)/g)].map(([, name]) => name ?? "");
+      // `Maplace.js` is the project's name in a comment, never a member: no CDN script sets `js`.
+      const called = [...html.matchAll(/\bMaplace\.(?!js\b)(\w+)/g)].map(([, name]) => name ?? "");
       expect(called.length).toBeGreaterThan(0);
       expect(called.filter((name) => !MAPLACE_NAMES[provider].has(name))).toEqual([]);
     });

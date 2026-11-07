@@ -45,7 +45,7 @@ describe("showStarCount", () => {
     const failures = [
       answering(() => Response.json({ error: "star count unavailable" }, { status: 503 })),
       answering(() => Response.json({ stars: "many" })),
-      answering(() => new Response("<!doctype html><title>maplacejs</title>", { status: 200 })),
+      answering(() => new Response("<!doctype html><title>Maplace.js</title>", { status: 200 })),
       vi.fn(async (): Promise<Response> => {
         throw new TypeError("offline");
       }),

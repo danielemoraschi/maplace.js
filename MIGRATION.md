@@ -1,6 +1,6 @@
 # Migrating from 0.2 to 1.0
 
-maplacejs 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in the tag [`0.2.10`](https://github.com/danielemoraschi/maplace.js/tree/0.2.10). On npm, `maplace-js` becomes `maplace`. This guide moves a page to 1.0: what changed, a page before and after, how to convert your locations, then every 0.2 option, field, method and callback with what replaces it.
+Maplace.js 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in the tag [`0.2.10`](https://github.com/danielemoraschi/maplace.js/tree/0.2.10). On npm, `maplace-js` becomes `maplace`. This guide moves a page to 1.0: what changed, a page before and after, how to convert your locations, then every 0.2 option, field, method and callback with what replaces it.
 
 ## What changed
 
@@ -10,7 +10,7 @@ maplacejs 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in t
 - **`lon` is `lng`**, as Google and MapLibre name it, with no alias.
 - **Text is text.** Titles and string content are never inserted as HTML; `html` needs a `sanitize` function you provide (DOMPurify, for one).
 - **One kind of change, after it happened.** The `before…` callbacks are gone; events such as `selectionChange`, `locationChange` and `routeChange` report what changed.
-- **On Google, a map ID for production**: maplacejs draws advanced markers, which need a map ID. As in 0.2, a page needs none to start: without one the map uses Google's `DEMO_MAP_ID` and warns once in the console that it is for development ([key and map ID](docs/reference/setup.md#key-and-map-id)).
+- **On Google, a map ID for production**: Maplace.js draws advanced markers, which need a map ID. As in 0.2, a page needs none to start: without one the map uses Google's `DEMO_MAP_ID` and warns once in the console that it is for development ([key and map ID](docs/reference/setup.md#key-and-map-id)).
 - **Apache-2.0, not MIT.** 1.0 is under the [Apache-2.0 licence](LICENSE); 0.2 stays MIT.
 
 ## Before and after
@@ -47,7 +47,7 @@ In 1.0 the element does the same, loading Google Maps itself:
 
 On MapLibre, the same page loads `maplace-element-maplibre.iife.js` and drops `api-key` ([quick start](README.md#quick-start)); [open the page from a web server](docs/reference/setup.md#use-a-web-server-for-maplibre), not directly as a file.
 
-A page that builds the map in its own script, as 0.2's did, calls `Maplace.createGoogleMap` on the same CDN script, with no build step: `Maplace` is a namespace now, not a constructor, and the key goes in the options, maplacejs loading Google Maps with it:
+A page that builds the map in its own script, as 0.2's did, calls `Maplace.createGoogleMap` on the same CDN script, with no build step: `Maplace` is a namespace now, not a constructor, and the key goes in the options, Maplace.js loading Google Maps with it:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
@@ -258,7 +258,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
   maplace.on("mapClick", () => { if (kept) maplace.select(kept, { pan: false }); });
   ```
 
-- `google.maps` isn't there before your script when maplacejs loads Google, and never is once you leave it: any `google.maps.*` value in your data or options (`Animation.DROP`, `MapTypeId`) throws `ReferenceError`, and no locations load. Remove them.
+- `google.maps` isn't there before your script when Maplace.js loads Google, and never is once you leave it: any `google.maps.*` value in your data or options (`Animation.DROP`, `MapTypeId`) throws `ReferenceError`, and no locations load. Remove them.
 - Titles and string content are text. 0.2 inserted titles into the menu as raw HTML.
 - No jQuery, and `Maplace` is no longer a constructor: one CDN script sets it as a namespace of functions, or you import ES modules. With the element, Google Maps no longer has to load first (the element adds Google's bootstrap), and the MapLibre script bundles MapLibre; in code, the page loads Maps JS or gives the adapter `apiKey`; from npm it installs maplibre-gl, which the MapLibre script bundles.
 - The menu's inline styles are replaced by a stylesheet you can override.

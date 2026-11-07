@@ -15,7 +15,7 @@ export interface ExampleFile {
 }
 
 /**
- * One way of using maplacejs an example is written in, on one provider: its code tab, with every
+ * One way of using Maplace.js an example is written in, on one provider: its code tab, with every
  * file it needs but the stylesheet it links (`exampleStylesheets`).
  */
 export interface ExampleCode {

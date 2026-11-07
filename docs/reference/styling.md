@@ -1,10 +1,10 @@
 # Styling
 
-maplacejs comes with a few default styles. They make a map usable as soon as it is on a page, and the page can change any of them or turn them all off. What maplacejs draws carries the classes below, for the page's own styles.
+Maplace.js comes with a few default styles. They make a map usable as soon as it is on a page, and the page can change any of them or turn them all off. What Maplace.js draws carries the classes below, for the page's own styles.
 
 ## Default styles
 
-maplacejs adds its styles to the page itself (adopted stylesheets, so no `<link>` and nothing for a content security policy to allow), and only for what the page uses:
+Maplace.js adds its styles to the page itself (adopted stylesheets, so no `<link>` and nothing for a content security policy to allow), and only for what the page uses:
 
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
@@ -54,7 +54,7 @@ The badge stands with its bottom middle on the cluster's point, whatever its siz
 
 | Attribute | What |
 |---|---|
-| `data-maplace-unstyled` | On any element: maplacejs's default styles are off for it and everything inside it, live |
+| `data-maplace-unstyled` | On any element: Maplace.js's default styles are off for it and everything inside it, live |
 
 ```html
 <maplace-map data-maplace-unstyled api-key="YOUR_KEY" list></maplace-map>
@@ -62,7 +62,7 @@ The badge stands with its bottom middle on the cluster's point, whatever its siz
 
 Put it on `<html>` for the whole page, on `<maplace-map>` for one map, on the element a vanilla map is drawn in, or, with React, on an element around `<MaplaceMap>` and its `<LocationList>` (`<MaplaceMap>` passes no attributes to its own element). A list in a container of its own (`createGoogleMap`'s or `createMapLibreMap`'s `list: { container }`) needs the marker there, or above both. A map's popups and on-map panels are drawn inside the map, so a marker on the map or above it reaches them; one on a list placed on the map leaves the panel around that list styled.
 
-What maplacejs's own markup needs stays: a `<maplace-location>` stays hidden (its children are popup content), `<maplace-map>` stays a block, and its map fills it. An on-map panel whose list is hidden stays hidden too.
+What Maplace.js's own markup needs stays: a `<maplace-location>` stays hidden (its children are popup content), `<maplace-map>` stays a block, and its map fills it. An on-map panel whose list is hidden stays hidden too.
 
 Without the defaults, the page sizes the map (it has no height of its own) and lays out a list beside it. Popup text takes the page's colour on Google's and MapLibre's bubbles, which stay white: on a dark page, give `.maplace-popup` a dark colour.
 
@@ -72,9 +72,9 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 |---|---|
 | `maplace-map-pane` | Inside `<maplace-map>`, the element the map is drawn in |
 | `maplace-load-panel` | The [panel](element.md#load-states) with the "Load map" button, shown in the pane of a map waiting to load; `.maplace-load-panel { display: none; }` removes it |
-| `maplace-map-failure` | The panel saying a map [can't be used](element.md#load-states), on a map maplacejs created; `.maplace-map-failure { display: none; }` removes it, for a page handling `:state(error)` or the `error` event itself. On your own map none shows |
+| `maplace-map-failure` | The panel saying a map [can't be used](element.md#load-states), on a map Maplace.js created; `.maplace-map-failure { display: none; }` removes it, for a page handling `:state(error)` or the `error` event itself. On your own map none shows |
 | `maplace-placed-list` | The list `<maplace-map>` places beside the map or on it |
-| `maplace-list-view` | The element of every list view maplacejs builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
+| `maplace-list-view` | The element of every list view Maplace.js builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
 | `maplace-list` | The block around a list's entries and its heading, area switch or search box; only on a list with one of those three |
 | `maplace-list-heading` | A list's visible heading (`heading`, `list-heading`) |
 | `maplace-area-switch` | The "All" and "This area" switch of a list with `scope`: two buttons, the one in use `[aria-pressed=true]` |
@@ -100,8 +100,8 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-cluster` | The badge with the count on a cluster of markers, on either provider |
 | `maplace-control` | The panel around anything placed on a Google or MapLibre map: a list, a select, the "My location" control, your own controls |
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |
-| `maplace-google-map` | The element a Google map is drawn in, when maplacejs creates the map rather than being handed one |
-| `maplace-maplibre-map` | The element a MapLibre map is drawn in, when maplacejs creates the map rather than being handed one |
+| `maplace-google-map` | The element a Google map is drawn in, when Maplace.js creates the map rather than being handed one |
+| `maplace-maplibre-map` | The element a MapLibre map is drawn in, when Maplace.js creates the map rather than being handed one |
 
 A direct child of `<maplace-map>` marked `data-maplace-idle` replaces the load panel, taking the pane's place in `:state(idle)` and hidden in every other state, whatever `display` the page gives it. The default styles are adopted on the document: for a map inside a shadow root, the page hides its own child with a `:state(idle)` rule of its own.
 

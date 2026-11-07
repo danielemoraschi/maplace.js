@@ -39,7 +39,7 @@ describe("the site's header", () => {
 
   it("shows the favicon before the name, its text in line with the nav's links", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
-    const name = header(page).getByRole("link", { name: "maplacejs" });
+    const name = header(page).getByRole("link", { name: "Maplace.js" });
     const icon = name.locator("img");
     expect(await icon.getAttribute("alt")).toBe("");
     expect(await icon.getAttribute("src")).toMatch(/favicon\.[\w-]+\.svg$/);

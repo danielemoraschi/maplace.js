@@ -1,4 +1,4 @@
-# Contributing to maplacejs
+# Contributing to Maplace.js
 
 Bug reports, fixes, docs and examples are all welcome. One person maintains this project, so a reply can take a while.
 
@@ -8,7 +8,7 @@ Bug reports, fixes, docs and examples are all welcome. One person maintains this
 - **A bug or a feature request** goes in an [issue](https://github.com/danielemoraschi/maplace.js/issues/new/choose), through its form.
 - **A security problem** goes in a private report: see [SECURITY.md](SECURITY.md).
 - **A small fix** (a bug, a typo, a broken example) can go straight to a pull request.
-- **New API or a new feature**: open an issue and wait for a yes first. The API is set in [the RFC](docs/rfc-1.0.md), which also lists [what maplacejs leaves out](docs/rfc-1.0.md#non-goals-for-10) and why, and the size budgets leave little room, so even a good idea may not fit.
+- **New API or a new feature**: open an issue and wait for a yes first. The API is set in [the RFC](docs/rfc-1.0.md), which also lists [what Maplace.js leaves out](docs/rfc-1.0.md#non-goals-for-10) and why, and the size budgets leave little room, so even a good idea may not fit.
 
 ## Setting up
 

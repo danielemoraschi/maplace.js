@@ -1,6 +1,6 @@
 # Setup
 
-A maplacejs map draws on Google Maps or on MapLibre. On Google it needs Maps JS on the page and an API key, a map ID being optional. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it. On MapLibre it needs no key and no map ID, only a [style URL](#style-url), OpenFreeMap's by default: the MapLibre CDN script brings everything else, and from npm the page installs maplibre-gl.
+A Maplace.js map draws on Google Maps or on MapLibre. On Google it needs Maps JS on the page and an API key, a map ID being optional. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it. On MapLibre it needs no key and no map ID, only a [style URL](#style-url), OpenFreeMap's by default: the MapLibre CDN script brings everything else, and from npm the page installs maplibre-gl.
 
 ## Key and Map ID
 
@@ -18,7 +18,7 @@ On Google, two different things, easy to mix up:
 - **The map ID** defaults to `DEMO_MAP_ID`, Google's public map ID for development. A map on it warns once in the console that it isn't for production.
 - **For production**, make a map ID of your own (Google's [map IDs](https://developers.google.com/maps/documentation/get-map-id)) and set it. It is also where the map's Cloud styling lives, besides a colour scheme ([map ID and styling](google.md#map-id-and-styling)).
 
-Google checks the key as the first map opens. A key it refuses (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is a `provider-auth-failed` error for every map on the page, and the map shows Google's message. A missing key isn't refused: Google draws the map and logs `ApiProjectMapError`, so maplacejs reports nothing ([when Google refuses](google.md#when-google-refuses)).
+Google checks the key as the first map opens. A key it refuses (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is a `provider-auth-failed` error for every map on the page, and the map shows Google's message. A missing key isn't refused: Google draws the map and logs `ApiProjectMapError`, so Maplace.js reports nothing ([when Google refuses](google.md#when-google-refuses)).
 
 ## Style URL
 
@@ -56,7 +56,7 @@ On MapLibre, its own script, with no key:
 
 ## With a script of your own
 
-A page that makes its map in its own script uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`maplace`, the provider's and `maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, maplacejs adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
+A page that makes its map in its own script uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`maplace`, the provider's and `maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, Maplace.js adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
 
 <!-- example: packages/maplace/examples/simple/script.html -->
 ```html
@@ -139,7 +139,7 @@ createGoogleMap("#simple-vanilla-map", {
 
 For the element from npm, `import "maplace/element/google"` defines it with the Google provider; it adds Maps JS itself as on the CDN, or takes the page's when the page loaded it first. With React: [React](react.md). Routes are Google's, and need Maps JS 3.63 or later. Every entry and what it gives: [API reference](api.md).
 
-On MapLibre, the page installs maplibre-gl beside maplacejs (`npm install maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `maplace/maplibre` makes the store in one call, and `import "maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version is the whole page:
+On MapLibre, the page installs maplibre-gl beside Maplace.js (`npm install maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `maplace/maplibre` makes the store in one call, and `import "maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version is the whole page:
 
 <!-- example: packages/maplace/examples/simple/maplibre/vanilla.html -->
 ```html
@@ -164,13 +164,13 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 
 ## The visitor's location
 
-The ["My location" control](store.md#the-my-location-control) needs HTTPS and the visitor's permission, and asks only when pressed. A page that sends `Permissions-Policy: geolocation=()`, or a frame without `allow="geolocation"`, gets a refusal, so the control says "Location unavailable". maplacejs itself sends the position to no server, but moving the map there shows the map's provider the area around the visitor, and the provider's code running in the page is handed the position to draw the dot: say so in your privacy policy.
+The ["My location" control](store.md#the-my-location-control) needs HTTPS and the visitor's permission, and asks only when pressed. A page that sends `Permissions-Policy: geolocation=()`, or a frame without `allow="geolocation"`, gets a refusal, so the control says "Location unavailable". Maplace.js itself sends the position to no server, but moving the map there shows the map's provider the area around the visitor, and the provider's code running in the page is handed the position to draw the dot: say so in your privacy policy.
 
 ## Content Security Policy
 
 The script the element adds carries its `<maplace-map>`'s nonce, read from the element's `nonce` property (which a framework may set, and which keeps the attribute's value once a policy sent as a header hides it), and the one an adapter given `apiKey` adds carries its `nonce` option, so a page with a nonce-based policy lets it load. The element never writes inline styles: its default styles are an adopted stylesheet, and a shape's styles are JSON attributes, not `style`.
 
-On MapLibre, from the CDN script or npm, a policy allows `img-src data: blob:`, as MapLibre asks: the pin maplacejs draws in front for the selected or hovered location, and on an `editable` marker, is a `data:` image. The MapLibre CDN script also starts maplibre-gl's worker from a `blob:` URL, so its pages allow `worker-src blob:`; its stylesheet is adopted, as the element's own styles are. The map fetches its style, and the tiles, fonts and icons it names, from the style's servers (OpenFreeMap's, by default), which `connect-src` allows.
+On MapLibre, from the CDN script or npm, a policy allows `img-src data: blob:`, as MapLibre asks: the pin Maplace.js draws in front for the selected or hovered location, and on an `editable` marker, is a `data:` image. The MapLibre CDN script also starts maplibre-gl's worker from a `blob:` URL, so its pages allow `worker-src blob:`; its stylesheet is adopted, as the element's own styles are. The map fetches its style, and the tiles, fonts and icons it names, from the style's servers (OpenFreeMap's, by default), which `connect-src` allows.
 
 ## Consent
 

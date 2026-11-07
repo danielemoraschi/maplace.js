@@ -1,4 +1,4 @@
-// A map of your own on Google: the page loads Maps JS and makes it, and maplacejs draws on it.
+// A map of your own on Google: the page loads Maps JS and makes it, and Maplace.js draws on it.
 import { createMaplace } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 
@@ -17,7 +17,7 @@ const maplace = createMaplace({
 });
 maplace.attach(createGoogleAdapter({ map }), map.getDiv());
 
-// A map event maplacejs doesn't report: a right-click measures distances from there.
+// A map event Maplace.js doesn't report: a right-click measures distances from there.
 map.addListener("contextmenu", ({ latLng }: google.maps.MapMouseEvent) => {
   if (latLng) maplace.setOrigin(latLng.toJSON());
 });

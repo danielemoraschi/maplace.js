@@ -11,7 +11,7 @@
   maplace-map:not(:defined) > .before-script {
     height: 100%;
   }
-  /* Beside a map waiting to load, where maplace's own list will go. */
+  /* Beside a map waiting to load, where Maplace.js's own list will go. */
   maplace-map:defined > .before-script {
     flex: 0 1 16rem;
   }
@@ -21,7 +21,7 @@
       max-height: 40%;
     }
   }
-  /* Gone the moment maplace's list is there, not before. */
+  /* Gone the moment Maplace.js's list is there, not before. */
   maplace-map:has(.maplace-placed-list) > .before-script {
     display: none;
   }

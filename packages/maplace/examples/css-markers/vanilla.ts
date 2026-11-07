@@ -18,7 +18,7 @@ const locations: Location[] = [
 createGoogleMap("#css-markers-vanilla-map", { locations });
 
 /**
- * A pin of your own: one node for every state, which maplace marks `data-hovered` and
+ * A pin of your own: one node for every state, which Maplace.js marks `data-hovered` and
  * `data-selected`, so the page's CSS gives each state its look.
  */
 function pinFor(label: string): HTMLElement {

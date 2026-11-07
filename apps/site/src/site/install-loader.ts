@@ -10,7 +10,7 @@ import type { Provider } from "../examples/example-providers.ts";
 import { cdnPin } from "./cdn-pin.ts";
 
 /**
- * How the install box installs maplacejs for each provider, in the order shown: the npm command,
+ * How the install box installs Maplace.js for each provider, in the order shown: the npm command,
  * MapLibre's adding its peer, and the CDN script it pins.
  */
 const PROVIDER_INSTALLS = [

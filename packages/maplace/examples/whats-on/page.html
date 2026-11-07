@@ -2,7 +2,7 @@
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- A look all your own, on Google's map without its map-type, Street View and camera controls:
      a dark frame, pins of your markup coloured by category, a count over the map's top left and a
-     legend on its bottom left whose chips show one category; maplace's panel on the map made
+     legend on its bottom left whose chips show one category; Maplace.js's panel on the map made
      nothing. -->
 <!-- This example's look lives in the examples' styles/whats-on.css, which every version links. -->
 <link rel="stylesheet" href="../styles/whats-on.css">
@@ -138,7 +138,7 @@
     maplace.subscribe(writeCount);
 
     // Beside it, the name of the venue selected, marked with its category for its colour; hidden
-    // while none is. Not a live region: maplace says each selection to a screen reader already.
+    // while none is. Not a live region: Maplace.js says each selection to a screen reader already.
     const name = document.getElementById('whats-on-selected');
     const writeName = (id) => {
       const selected = maplace.getSnapshot().locations.find((location) => location.id === id);

@@ -96,7 +96,7 @@ describe("the home page's headings and install box", () => {
     await page.goto(site.url, { waitUntil: "domcontentloaded" });
     const note = page.getByText("checked by the browser against its hash");
     expect(await note.textContent()).toMatch(
-      /^maplacejs \S+, checked by the browser against its hash\.$/,
+      /^Maplace\.js \S+, checked by the browser against its hash\.$/,
     );
     expect(await note.locator("a").count()).toBe(0);
     await context.close();

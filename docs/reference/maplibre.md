@@ -9,10 +9,10 @@ The store, its list, its events and its errors are the same as on Google; what d
 | Option | Type | What |
 |---|---|---|
 | `mapStyle` | `string \| StyleSpecification` | The map's style: a style URL or a style object; OpenFreeMap's `bright` when left out ([styles and tiles](#styles-and-tiles)). Named `mapStyle` because the store's `style` is the shapes' default style |
-| `map` | `maplibregl.Map` | Your own map to draw on, instead of one maplacejs creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
-| `mapOptions` | `MapOptions` | Extra options for a map maplacejs creates; not `container`, `style`, `center`, `zoom` or `bounds`, which maplacejs sets ([the first view](store.md#the-first-view)). `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
+| `map` | `maplibregl.Map` | Your own map to draw on, instead of one Maplace.js creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
+| `mapOptions` | `MapOptions` | Extra options for a map Maplace.js creates; not `container`, `style`, `center`, `zoom` or `bounds`, which Maplace.js sets ([the first view](store.md#the-first-view)). `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
 
-An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` maplacejs sets, saying where it goes (`style` is `mapStyle`), or one of Google's names MapLibre has its own for, saying which (`scrollwheel` is `scrollZoom`).
+An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` Maplace.js sets, saying where it goes (`style` is `mapStyle`), or one of Google's names MapLibre has its own for, saying which (`scrollwheel` is `scrollZoom`).
 
 ## `createMapLibreMap`
 
@@ -44,7 +44,7 @@ Its own options, beside the store's:
 |---|---|---|
 | `mapStyle` | `string \| StyleSpecification` | As the adapter's |
 | `mapOptions` | `MapOptions` | As the adapter's |
-| `list` | `true \| MapLibreMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
+| `list` | `true \| MapLibreMapList` | Maplace.js's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner the list goes in; default `top-right` |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map; not with `position` |
 | `myLocation` | `true \| MapLibreMapMyLocation` | A ["My location" control](store.md#the-my-location-control) on the map: `true`, or its `label`, `unavailableLabel` and `position` |
@@ -56,18 +56,18 @@ Your own map, a control of your own on the map and a map opened again take the p
 
 ## Your own map
 
-Most pages don't need this. Normally you give maplacejs a container and it creates the map: a new element filling the container (so size the container), removed on `destroy`. It opens on the world at zoom 1 and, as Google's 2D map, neither rotates nor tilts unless `mapOptions` allows it (`dragRotate` for rotation). You never touch the `maplibregl.Map` behind it, so you can do only what maplacejs has options for.
+Most pages don't need this. Normally you give Maplace.js a container and it creates the map: a new element filling the container (so size the container), removed on `destroy`. It opens on the world at zoom 1 and, as Google's 2D map, neither rotates nor tilts unless `mapOptions` allows it (`dragRotate` for rotation). You never touch the `maplibregl.Map` behind it, so you can do only what Maplace.js has options for.
 
-A map of your own is a `maplibregl.Map` your code created and gave to the adapter as `map`, so maplacejs draws on it instead of creating one. You'd do this for one of two reasons:
+A map of your own is a `maplibregl.Map` your code created and gave to the adapter as `map`, so Maplace.js draws on it instead of creating one. You'd do this for one of two reasons:
 
-- **Your page already has a map.** You want maplacejs's markers, popups and list on it, not a second map beside it.
-- **You need something maplacejs has no option for.** You hold the map, so you can call maplibre-gl yourself: a layer or source of your own, a plugin, a map event maplacejs doesn't report. It replaces 0.2's `oMap`.
+- **Your page already has a map.** You want Maplace.js's markers, popups and list on it, not a second map beside it.
+- **You need something Maplace.js has no option for.** You hold the map, so you can call maplibre-gl yourself: a layer or source of your own, a plugin, a map event Maplace.js doesn't report. It replaces 0.2's `oMap`.
 
-To change a map setting or the style, `mapOptions` and `mapStyle` are enough, with no map of your own. Here the page makes its map, and a right-click, which maplacejs doesn't report, sets where distances are measured from:
+To change a map setting or the style, `mapOptions` and `mapStyle` are enough, with no map of your own. Here the page makes its map, and a right-click, which Maplace.js doesn't report, sets where distances are measured from:
 
 <!-- example: packages/maplace/examples/own-map/maplibre.ts -->
 ```ts
-// A map of your own on MapLibre: the page makes it, and maplacejs draws on it.
+// A map of your own on MapLibre: the page makes it, and Maplace.js draws on it.
 import "maplibre-gl/dist/maplibre-gl.css";
 import { createMaplace } from "maplace";
 import { createMapLibreAdapter } from "maplace/maplibre";
@@ -88,17 +88,17 @@ const maplace = createMaplace({
 });
 maplace.attach(createMapLibreAdapter({ map }), map.getContainer());
 
-// A map event maplacejs doesn't report: a right-click measures distances from there.
+// A map event Maplace.js doesn't report: a right-click measures distances from there.
 map.on("contextmenu", ({ lngLat: { lat, lng } }) => maplace.setOrigin({ lat, lng }));
 ```
 
-On the CDN script, make it with `new Maplace.maplibre.Map(…)`, the copy maplacejs draws with ([loading maplibre-gl](#loading-maplibre-gl)).
+On the CDN script, make it with `new Maplace.maplibre.Map(…)`, the copy Maplace.js draws with ([loading maplibre-gl](#loading-maplibre-gl)).
 
 - `attach`'s container must be `map.getContainer()` or hold it.
-- Unlike a map maplacejs creates, your map shows no panel when it fails: hear the `error` event.
+- Unlike a map Maplace.js creates, your map shows no panel when it fails: hear the `error` event.
 - `mapStyle` and `mapOptions` are refused: your map's own style and options apply.
 - The store's first view moves your map: by default it fits the locations. To keep your map where it is, give the store `view: { kind: "center", center: map.getCenter(), zoom: map.getZoom() + 1 }`: the store speaks [Google's zoom](#zoom), one higher.
-- maplacejs never moves your map in the page, and `destroy` removes only what maplacejs added: its sources, layers, markers and controls.
+- Maplace.js never moves your map in the page, and `destroy` removes only what Maplace.js added: its sources, layers, markers and controls.
 
 `whenReady` waits for maplibre-gl to load and the map's style with it (and for supercluster on a map that clusters).
 
@@ -132,7 +132,7 @@ Nothing is fetched from other origins at runtime but the map's style and what it
 
 From npm, `maplibre-gl` (6.15 or a later 6.x) is the page's to install: an optional peer, loaded when a MapLibre map mounts, so a page that never mounts one never loads it. The MapLibre CDN script bundles it, and gives it to a page's own script as `Maplace.maplibre`, the copy its maps are drawn with, to use as an npm page uses `import * as maplibregl from "maplibre-gl"` (`const maplibregl = Maplace.maplibre;`), a map of your own for `createMapLibreAdapter({ map })` included: so the script runs maplibre-gl as it loads, not when a map mounts. Missing, or with the browser giving no WebGL, loading fails with `provider-load-failed`.
 
-From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-gl.css`, as every MapLibre page does (the CDN script adopts it itself): an import in a bundled module, as the examples do, or a `<link>`. Without it, markers and popups are misplaced, and maplacejs warns once in the console.
+From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-gl.css`, as every MapLibre page does (the CDN script adopts it itself): an import in a bundled module, as the examples do, or a `<link>`. Without it, markers and popups are misplaced, and Maplace.js warns once in the console.
 
 `import "maplace/element/maplibre"` defines the element with the MapLibre provider from npm, on the page's maplibre-gl and stylesheet.
 
@@ -140,17 +140,17 @@ From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-g
 
 The style says where the tiles, fonts and icons come from. OpenFreeMap's `https://tiles.openfreemap.org/styles/bright` is the default: free, no key, OpenStreetMap data. Any provider's style URL works the same way, such as MapTiler, Stadia Maps, Protomaps or your own server, with its key in the URL where it needs one.
 
-A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. A worker maplacejs hears fail is `provider-load-failed` naming the worker, on the maps open on it and every map mounted after, as they share it for the page's life; one that failed before maplacejs's first mount on the page goes unheard, so MapLibre's console line and your own map's `error` listener are what say so.
+A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. A worker Maplace.js hears fail is `provider-load-failed` naming the worker, on the maps open on it and every map mounted after, as they share it for the page's life; one that failed before Maplace.js's first mount on the page goes unheard, so MapLibre's console line and your own map's `error` listener are what say so.
 
 A dark map is a dark style (`map-style`), since MapLibre has no colour scheme option.
 
 ## Hidden maps
 
-A browser keeps about 16 WebGL contexts per page, one per MapLibre map, and takes the oldest away past that, leaving that map blank. So a map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, and takes it back once shown, drawing again from its style. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A map hidden with `visibility` or `opacity` keeps its context, and so does your own map (`map`). More than about 16 maps on show at once is past the browser's limit. Checked in Chromium.
+A browser keeps about 16 WebGL contexts per page, one per MapLibre map, and takes the oldest away past that, leaving that map blank. So a map Maplace.js creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, and takes it back once shown, drawing again from its style. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A map hidden with `visibility` or `opacity` keeps its context, and so does your own map (`map`). More than about 16 maps on show at once is past the browser's limit. Checked in Chromium.
 
 ## Zoom
 
-maplacejs speaks one zoom on every provider: Google's. MapLibre's tiles are 512 pixels, so its zoom is one lower, and the adapter adds one. The same `view`, `select(id, { zoom })`, location `zoom` and viewport zoom show the same area on either map. Only `mapOptions.minZoom` and `maxZoom`, which go to MapLibre as they are, are on MapLibre's scale.
+Maplace.js speaks one zoom on every provider: Google's. MapLibre's tiles are 512 pixels, so its zoom is one lower, and the adapter adds one. The same `view`, `select(id, { zoom })`, location `zoom` and viewport zoom show the same area on either map. Only `mapOptions.minZoom` and `maxZoom`, which go to MapLibre as they are, are on MapLibre's scale.
 
 ## Markers and shapes
 
@@ -172,7 +172,7 @@ A popup is MapLibre's, headed by the location's title. One opened by a click pan
 
 ## Clustering
 
-The `cluster` option (the element's `cluster` attribute) groups markers with `supercluster`, on Google's clusterer's settings (60 px, up to zoom 16, at the rounded zoom), so the same clusters show at the same view on either map. They are maplacejs's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)).
+The `cluster` option (the element's `cluster` attribute) groups markers with `supercluster`, on Google's clusterer's settings (60 px, up to zoom 16, at the rounded zoom), so the same clusters show at the same view on either map. They are Maplace.js's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)).
 
 A click or Enter on a cluster eases to the zoom at which it splits. Circles, lines and polygons are never clustered, and the selected location is drawn on its own.
 
@@ -186,7 +186,7 @@ MapLibre has no routing, so `route` isn't among this adapter's capabilities. `se
 
 What goes on the map (`createMapLibreMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like MapLibre's own controls, `.maplace-control`, in MapLibre's corners with their margins. It is light, as MapLibre's controls are, and `.maplace-control { color-scheme: dark }` gives a dark one.
 
-maplacejs's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a maplacejs panel sits above the attribution. Classes and how to turn the defaults off: [Styling](styling.md).
+Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. Classes and how to turn the defaults off: [Styling](styling.md).
 
 ## React
 

@@ -18,7 +18,7 @@ const pageLinks = (text: string) =>
 
 describe("llmsTxt", () => {
   it("opens with the site's name and a paragraph", () => {
-    expect(TEXT.startsWith("# maplacejs\n\n> ")).toBe(true);
+    expect(TEXT.startsWith("# Maplace.js\n\n> ")).toBe(true);
   });
 
   it("says, in its paragraph, that the Agents section holds the skill", () => {

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace's store and adapter, on OpenFreeMap's liberty style; a count and a legend of your own on it, in maplace's panel made nothing. -->
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace's store and adapter, on OpenFreeMap's liberty style; a count and a legend of your own on it, in Maplace.js's panel made nothing. -->
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <!-- This example's look lives in the examples' styles/whats-on.css, which every version links. -->
 <link rel="stylesheet" href="../../styles/whats-on.css">
@@ -136,7 +136,7 @@
 
   /**
    * The name of the venue selected, marked with its category for its colour; hidden while none is.
-   * Not a live region: maplace says each selection to a screen reader already.
+   * Not a live region: Maplace.js says each selection to a screen reader already.
    */
   function selectedName(maplace) {
     const name = document.createElement("span");
@@ -155,7 +155,7 @@
   /**
    * The card beside the map: the venue selected, its category marked for its colour, made from the
    * card's template and in the card only while a venue is selected, with a × closing it;
-   * or, while none is, the venues shown, each a button selecting it. Not a live region: maplace
+   * or, while none is, the venues shown, each a button selecting it. Not a live region: Maplace.js
    * says each selection to a screen reader already.
    */
   function showVenueIn(card, maplace) {

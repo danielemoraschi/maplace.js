@@ -40,7 +40,7 @@ describe("switching the examples' group in place (W38)", () => {
     await switchTo(page, "Lists", "lists");
     expect(await sameDocument(page)).toBe(true);
     expect(new URL(page.url()).pathname).toBe("/examples/lists/");
-    expect(await page.title()).toBe("Lists: maplacejs examples");
+    expect(await page.title()).toBe("Lists: Maplace.js examples");
     expect(await groupLink(page, "Lists").getAttribute("aria-current")).toBe("page");
     expect(await page.locator("header").isVisible()).toBe(true);
     expect(await page.getByRole("heading", { level: 1 }).count()).toBe(1);
@@ -55,7 +55,7 @@ describe("switching the examples' group in place (W38)", () => {
     const { page, context } = await opened(site, "/examples/shapes/", DESKTOP);
     expect(await page.getByRole("heading", { level: 1 }).count()).toBe(1);
     expect(await shownGroups(page)).toEqual(["shapes"]);
-    expect(await page.title()).toBe("Shapes: maplacejs examples");
+    expect(await page.title()).toBe("Shapes: Maplace.js examples");
     await context.close();
   }, 30_000);
 

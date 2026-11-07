@@ -1,4 +1,4 @@
-// A map of your own on MapLibre: the page makes it, and maplacejs draws on it.
+// A map of your own on MapLibre: the page makes it, and Maplace.js draws on it.
 import "maplibre-gl/dist/maplibre-gl.css";
 import { createMaplace } from "maplace";
 import { createMapLibreAdapter } from "maplace/maplibre";
@@ -19,5 +19,5 @@ const maplace = createMaplace({
 });
 maplace.attach(createMapLibreAdapter({ map }), map.getContainer());
 
-// A map event maplacejs doesn't report: a right-click measures distances from there.
+// A map event Maplace.js doesn't report: a right-click measures distances from there.
 map.on("contextmenu", ({ lngLat: { lat, lng } }) => maplace.setOrigin({ lat, lng }));

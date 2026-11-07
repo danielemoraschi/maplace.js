@@ -105,7 +105,7 @@ describe("startGroupSwitch", () => {
     await settle();
     expect(shownPanels()).toEqual(["lists"]);
     expect(location.pathname).toBe("/examples/lists/");
-    expect(document.title).toBe("Lists: maplacejs examples");
+    expect(document.title).toBe("Lists: Maplace.js examples");
     expect(current()).toBe("lists");
     expect(started).toEqual(["lists"]);
   });

@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Question or idea
     url: https://github.com/danielemoraschi/maplace.js/discussions
-    about: How to do something with maplacejs, or an idea to talk over.
+    about: How to do something with Maplace.js, or an idea to talk over.
   - name: Documentation
     url: https://github.com/danielemoraschi/maplace.js#documentation
     about: The API, the examples and the guide to moving from 0.2.

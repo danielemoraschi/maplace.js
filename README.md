@@ -1,7 +1,7 @@
 <!-- readme-only -->
 <p align="center"><img src="apps/site/src/assets/favicon.svg" width="72" height="72" alt=""></p>
 
-<h1 align="center">maplacejs</h1>
+<h1 align="center">Maplace.js</h1>
 
 <p align="center"><b>Your locations on a map, with a list in sync.</b><br>On Google Maps or MapLibre: one script tag, npm or React.</p>
 
@@ -16,7 +16,7 @@
 
 <p align="center"><img src="docs/media/maplibre-demo.gif" width="800" alt="A map of Italy on MapLibre beside a list of Rome, Milan and Venice. Picking Rome, then Milan, in the list pans the map to each and opens its popup; clicking Venice's marker on the map highlights it in the list."></p>
 
-<p align="center"><sub><i>Maplacejs is a hobby project I maintain part-time, so support is best-effort.</i></sub></p>
+<p align="center"><sub><i>Maplace.js is a hobby project I maintain part-time, so support is best-effort.</i></sub></p>
 <!-- /readme-only -->
 
 A list of locations becomes a map plus a synced list, in a few lines. Click a marker and the list highlights it; pick it in the list and the map pans to it, opening its popup if it has one.
@@ -65,7 +65,7 @@ On MapLibre, with no key and no map ID:
 
 On either:
 
-- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as maplacejs's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element, both before a scoped list narrows it to the map's view; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, `list-heading` shows a heading above it (on the map too), naming it for screen readers, and `list-scope="viewport"` shows a switch above it, "All" or "This area", which lists only what is in the map's view and follows the map. The list and popups come with default styles in `:where()`: any rule of yours wins, and `data-maplace-unstyled` turns them off ([Styling](docs/reference/styling.md) lists the classes to style instead). What goes on the map sits in a panel like the provider's own controls (`.maplace-control`): in the map's colour scheme on Google, light on MapLibre.
+- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as Maplace.js's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element, both before a scoped list narrows it to the map's view; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, `list-heading` shows a heading above it (on the map too), naming it for screen readers, and `list-scope="viewport"` shows a switch above it, "All" or "This area", which lists only what is in the map's view and follows the map. The list and popups come with default styles in `:where()`: any rule of yours wins, and `data-maplace-unstyled` turns them off ([Styling](docs/reference/styling.md) lists the classes to style instead). What goes on the map sits in a panel like the provider's own controls (`.maplace-control`): in the map's colour scheme on Google, light on MapLibre.
 
 A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
 
@@ -75,7 +75,7 @@ Locations can also come from an inline `<script type="application/json">` child 
 
 ## One script per page
 
-The CDN has three scripts. Load exactly one of them. Two scripts on one page are two copies of maplacejs, and the second's provider is never seen. A page with maps on both Google and MapLibre uses npm: both element entries, each map naming its `provider`.
+The CDN has three scripts. Load exactly one of them. Two scripts on one page are two copies of Maplace.js, and the second's provider is never seen. A page with maps on both Google and MapLibre uses npm: both element entries, each map naming its `provider`.
 
 | Script | For |
 |---|---|
@@ -118,7 +118,7 @@ curl -s https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js 
 
 ## From your own script
 
-A page that makes its map in its own script needs no build step either: the CDN script's `Maplace` holds what the npm entries export. Given `apiKey`, maplacejs adds Maps JS itself, as the element does from `api-key`:
+A page that makes its map in its own script needs no build step either: the CDN script's `Maplace` holds what the npm entries export. Given `apiKey`, Maplace.js adds Maps JS itself, as the element does from `api-key`:
 
 <!-- example: packages/maplace/examples/simple/script.html -->
 ```html
@@ -173,7 +173,7 @@ createGoogleMap("#simple-vanilla-map", {
 });
 ```
 
-`list: true` adds maplacejs's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
+`list: true` adds Maplace.js's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
 
 On MapLibre, `createMapLibreMap` from `maplace/maplibre` makes the same store in one call, with `mapStyle` and `mapOptions` for the map ([MapLibre adapter](docs/reference/maplibre.md#createmaplibremap)). The page installs `maplibre-gl` too (`npm install maplace maplibre-gl`), imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module, and needs no loader script and no key. Its parts are `createMaplace`, `createMapLibreAdapter` and `attach`. The simple example's MapLibre version is the whole page:
 
@@ -198,7 +198,7 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 });
 ```
 
-Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); maplacejs's own selected and hovered look fills what they leave unset.
+Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); Maplace.js's own selected and hovered look fills what they leave unset.
 
 For the element from npm, `import "maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider, and `import "maplace/element/maplibre"` with the MapLibre provider (on the page's maplibre-gl and its stylesheet).
 
@@ -290,7 +290,7 @@ export function CityMap() {
 }
 ```
 
-`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelectionChange`. A server component can start the selection with `defaultSelectedId`. Both files are the ones maplacejs's own test builds with Vite's RSC plugin.
+`on<Event>` props, `popupContent`, `markerIcon` and a list's function child are functions too, so they go in client components as well; so does a controlled `selectedId`, which needs its `onSelectionChange`. A server component can start the selection with `defaultSelectedId`. Both files are the ones Maplace.js's own test builds with Vite's RSC plugin.
 
 ## What it needs
 
@@ -320,8 +320,8 @@ export function CityMap() {
 
 ## License
 
-maplacejs is released under the [Apache License, Version 2.0](LICENSE) © 2026 Daniele Moraschi.
+Maplace.js is released under the [Apache License, Version 2.0](LICENSE) © 2026 Daniele Moraschi.
 
 ## The name
 
-Maplace, maplacejs, maplace.js and maplace-js are this project's names, and the licence grants no rights to them (Apache-2.0 §6). Please publish a fork or a product under a name of its own, and don't present it as maplacejs or as endorsed by it; saying it is built on or derived from maplacejs, and carrying the NOTICE, is fine.
+Maplace.js, Maplace, maplacejs, maplace.js and maplace-js are this project's names, and the licence grants no rights to them (Apache-2.0 §6). Please publish a fork or a product under a name of its own, and don't present it as Maplace.js or as endorsed by it; saying it is built on or derived from Maplace.js, and carrying the NOTICE, is fine.

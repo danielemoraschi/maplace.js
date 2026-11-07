@@ -11,7 +11,7 @@
 </maplace-map>
 ```
 
-From npm, `import "maplace/element/google"` defines the same elements with the Google provider, `import "maplace/element/maplibre"` with the MapLibre provider, and `maplace/element` with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of maplacejs on the page logs an error and leaves the first in place.
+From npm, `import "maplace/element/google"` defines the same elements with the Google provider, `import "maplace/element/maplibre"` with the MapLibre provider, and `maplace/element` with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of Maplace.js on the page logs an error and leaves the first in place.
 
 ## Size
 
@@ -19,7 +19,7 @@ The element is 24rem tall unless the page sets its height (`maplace-map { height
 
 ## A list before the script runs
 
-maplace builds its list once its script has run, and a map with `hold` only on `release()`. To show the places sooner, while a slow script loads, if it fails, or while a map waits for a visitor's consent, write them into the page's HTML as a list of your own. It also puts them in front of crawlers that run no JavaScript. Hide it the moment maplace's list is there:
+Maplace.js builds its list once its script has run, and a map with `hold` only on `release()`. To show the places sooner, while a slow script loads, if it fails, or while a map waits for a visitor's consent, write them into the page's HTML as a list of your own. It also puts them in front of crawlers that run no JavaScript. Hide it the moment Maplace.js's list is there:
 
 <!-- example: packages/maplace/src/element/testing/list-before-script.html -->
 ```html
@@ -36,7 +36,7 @@ maplace builds its list once its script has run, and a map with `hold` only on `
   maplace-map:not(:defined) > .before-script {
     height: 100%;
   }
-  /* Beside a map waiting to load, where maplace's own list will go. */
+  /* Beside a map waiting to load, where Maplace.js's own list will go. */
   maplace-map:defined > .before-script {
     flex: 0 1 16rem;
   }
@@ -46,7 +46,7 @@ maplace builds its list once its script has run, and a map with `hold` only on `
       max-height: 40%;
     }
   }
-  /* Gone the moment maplace's list is there, not before. */
+  /* Gone the moment Maplace.js's list is there, not before. */
   maplace-map:has(.maplace-placed-list) > .before-script {
     display: none;
   }
@@ -64,9 +64,9 @@ maplace builds its list once its script has run, and a map with `hold` only on `
 
 - Load the script so it doesn't block parsing (`defer`, `type="module"`, or after the map), or a slow one holds the list back too.
 - Picking a place still needs the script, so make the entries plain text or links to pages of their own.
-- Your list and maplace's are two separate lists. Focus and scroll in yours are lost at the swap, the places are written twice, and the entries change to maplace's look unless your CSS matches it.
+- Your list and Maplace.js's are two separate lists. Focus and scroll in yours are lost at the swap, the places are written twice, and the entries change to Maplace.js's look unless your CSS matches it.
 - This is for a list beside the map. One in a corner (`list-position`) sits on the map, where yours has no place, and with `data-maplace-unstyled` the map's layout, and so your list's place in it, is your own.
-- Schema.org JSON-LD is yours to add the same way, its data matching what the page shows; maplace writes none.
+- Schema.org JSON-LD is yours to add the same way, its data matching what the page shows; Maplace.js writes none.
 
 ## Map attributes
 
@@ -164,7 +164,7 @@ The [Load on demand](../../packages/maplace/examples/load-on-demand/guide.md) ex
 
 `load-label` and `load-from-label` word it. A blank one takes the default words, unlike the other labels, where blank is misuse: an error would hide the panel, and with it the way to load the map. A direct child marked `data-maplace-idle` replaces the panel: the page's own, which stays where the page put it, shows only in `:state(idle)`, and calls `release()` itself. On a lazy map starting in view, it shows for the map's first frame, as `:state(idle)` is true then; the ready-made panel doesn't. A lazy map hidden at first (a closed tab) gets no panel, and opens as it nears the viewport. To look different, or to go, see [Styling](styling.md#classes).
 
-A map that can't be used says so in `:state(error)`: a panel on it (`.maplace-map-failure`, an alert), worded by `failure-label`, which a page handling `:state(error)` itself hides with `.maplace-map-failure { display: none; }`. It shows on the maps maplace's adapters create, and not where the map still works (locations failing to draw), beside Google's own refused-key message, for misuse, or on a provider of your own.
+A map that can't be used says so in `:state(error)`: a panel on it (`.maplace-map-failure`, an alert), worded by `failure-label`, which a page handling `:state(error)` itself hides with `.maplace-map-failure { display: none; }`. It shows on the maps Maplace.js's adapters create, and not where the map still works (locations failing to draw), beside Google's own refused-key message, for misuse, or on a provider of your own.
 
 ## URL state
 
@@ -235,7 +235,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## List views
 
-`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAll`, `fitAllLabel`, `heading`, `groupCounts`, `scope`, `sort`, `distanceUnit`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`, `search`, `searchLabel`, `noMatchesLabel`, `matchesLabel`; a switch and its label come as written, so a view of yours that shows a fit-all entry or a search box checks `fitAll` or `search`, and brings its own words when the label is missing), and `listed()`, the locations maplacejs's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is. `listed()` stays in data order: a view with `sort` sorts itself, with [`distanceTo`](store.md#distances).
+`defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAll`, `fitAllLabel`, `heading`, `groupCounts`, `scope`, `sort`, `distanceUnit`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`, `search`, `searchLabel`, `noMatchesLabel`, `matchesLabel`; a switch and its label come as written, so a view of yours that shows a fit-all entry or a search box checks `fitAll` or `search`, and brings its own words when the label is missing), and `listed()`, the locations Maplace.js's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is. `listed()` stays in data order: a view with `sort` sorts itself, with [`distanceTo`](store.md#distances).
 
 A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
 

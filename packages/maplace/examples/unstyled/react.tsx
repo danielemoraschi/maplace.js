@@ -28,7 +28,7 @@ const popupContent = ({ data }: Location<City>) => <p>{data?.about}</p>;
 function Unstyled() {
   return (
     <MaplaceProvider locations={cities}>
-      {/* maplace's own styles are off inside: the page's CSS draws the map, the list and the popups' text. */}
+      {/* Maplace.js's own styles are off inside: the page's CSS draws the map, the list and the popups' text. */}
       <div className="map-and-list" data-maplace-unstyled="">
         <MaplaceMap
           createAdapter={createGoogleAdapter}

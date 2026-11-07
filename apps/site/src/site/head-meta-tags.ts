@@ -1,13 +1,13 @@
 import { SITE_MAINTAINER } from "./site-owner.ts";
 
 /** The site's name, wherever search and sharing show it. */
-export const SITE_NAME = "maplacejs";
+export const SITE_NAME = "Maplace.js";
 
 /** The sharing image, `src/assets/og-image.png`. */
 export const OG_IMAGE = {
   width: 1200,
   height: 630,
-  alt: "maplacejs: a JavaScript library for Google Maps and MapLibre.",
+  alt: "Maplace.js: a JavaScript library for Google Maps and MapLibre.",
 } as const;
 
 /** A `<meta>` tag: named, or by Open Graph's `property`. */

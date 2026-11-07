@@ -26,7 +26,7 @@ function choice(maplace: Maplace, id: string, title: string): HTMLLabelElement {
 }
 
 /**
- * A list of your own: a radio per location maplace's lists would list, and one to fit them all.
+ * A list of your own: a radio per location Maplace.js's lists would list, and one to fit them all.
  * The choices are made again when those change; the selection is checked.
  */
 function checksMenu(maplace: Maplace, heading: string): HTMLFieldSetElement {

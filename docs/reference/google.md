@@ -7,10 +7,10 @@
 | Option | Type | What |
 |---|---|---|
 | `mapId` | `string` | Optional: Google's `DEMO_MAP_ID` by default, for development, with a console warning; your own for production ([key and map ID](setup.md#key-and-map-id)) |
-| `colorScheme` | `"light" \| "dark" \| "follow-system"` | The colour scheme of a map maplacejs creates |
-| `map` | `google.maps.Map` | Your own map to draw on, instead of one maplacejs creates |
-| `mapOptions` | `google.maps.MapOptions` | Extra options for a map maplacejs creates; not `center`, `zoom`, `mapId`, `colorScheme` or `styles` |
-| `apiKey` | `string` | Your Maps API key: maplacejs adds Maps JS to the page with it as the map mounts, unless the page loaded Maps JS already ([loading Maps JS](#loading-maps-js)) |
+| `colorScheme` | `"light" \| "dark" \| "follow-system"` | The colour scheme of a map Maplace.js creates |
+| `map` | `google.maps.Map` | Your own map to draw on, instead of one Maplace.js creates |
+| `mapOptions` | `google.maps.MapOptions` | Extra options for a map Maplace.js creates; not `center`, `zoom`, `mapId`, `colorScheme` or `styles` |
+| `apiKey` | `string` | Your Maps API key: Maplace.js adds Maps JS to the page with it as the map mounts, unless the page loaded Maps JS already ([loading Maps JS](#loading-maps-js)) |
 | `version` | `string` | Maps JS's version, as Google's `v`; with `apiKey` |
 | `language` | `string` | The language of Google's labels and route instructions; with `apiKey` |
 | `region` | `string` | The region Google biases its answers to; with `apiKey` |
@@ -48,9 +48,9 @@ Its own options, beside the store's:
 | `mapId` | `string` | Optional, as the adapter's |
 | `colorScheme` | `"light" \| "dark" \| "follow-system"` | As the adapter's |
 | `mapOptions` | `google.maps.MapOptions` | As the adapter's |
-| `apiKey` | `string` | As the adapter's: maplacejs adds Maps JS with it |
+| `apiKey` | `string` | As the adapter's: Maplace.js adds Maps JS with it |
 | `version`, `language`, `region`, `nonce` | `string` | As the adapter's, with `apiKey` |
-| `list` | `true \| GoogleMapList` | maplacejs's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
+| `list` | `true \| GoogleMapList` | Maplace.js's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner of the map the list goes in; default `top-right` |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map; not with `position` |
 | `myLocation` | `true \| GoogleMapMyLocation` | A ["My location" control](store.md#the-my-location-control) on the map: `true`, or its `label`, `unavailableLabel` and `position` |
@@ -62,18 +62,18 @@ Your own map (`map`), a control of your own on the map (`adapter.mountControl`) 
 
 ## Your own map
 
-Most pages don't need this. Normally you give maplacejs a container and it creates the map: a new element filling the container (so size the container), removed on `destroy`. You never touch the `google.maps.Map` behind it, so you can do only what maplacejs has options for.
+Most pages don't need this. Normally you give Maplace.js a container and it creates the map: a new element filling the container (so size the container), removed on `destroy`. You never touch the `google.maps.Map` behind it, so you can do only what Maplace.js has options for.
 
-A map of your own is a `google.maps.Map` your code created and gave to the adapter as `map`, so maplacejs draws on it instead of creating one. You'd do this for one of two reasons:
+A map of your own is a `google.maps.Map` your code created and gave to the adapter as `map`, so Maplace.js draws on it instead of creating one. You'd do this for one of two reasons:
 
-- **Your page already has a map.** You want maplacejs's markers, popups and list on it, not a second map beside it.
-- **You need something maplacejs has no option for.** You hold the map, so you can call Maps JS yourself: a traffic layer, a map event maplacejs doesn't report. It replaces 0.2's `oMap`.
+- **Your page already has a map.** You want Maplace.js's markers, popups and list on it, not a second map beside it.
+- **You need something Maplace.js has no option for.** You hold the map, so you can call Maps JS yourself: a traffic layer, a map event Maplace.js doesn't report. It replaces 0.2's `oMap`.
 
-To change a map setting, `mapOptions` is enough, with no map of your own. Here the page makes its map, and a right-click, which maplacejs doesn't report, sets where distances are measured from:
+To change a map setting, `mapOptions` is enough, with no map of your own. Here the page makes its map, and a right-click, which Maplace.js doesn't report, sets where distances are measured from:
 
 <!-- example: packages/maplace/examples/own-map/google.ts -->
 ```ts
-// A map of your own on Google: the page loads Maps JS and makes it, and maplacejs draws on it.
+// A map of your own on Google: the page loads Maps JS and makes it, and Maplace.js draws on it.
 import { createMaplace } from "maplace";
 import { createGoogleAdapter } from "maplace/google";
 
@@ -92,7 +92,7 @@ const maplace = createMaplace({
 });
 maplace.attach(createGoogleAdapter({ map }), map.getDiv());
 
-// A map event maplacejs doesn't report: a right-click measures distances from there.
+// A map event Maplace.js doesn't report: a right-click measures distances from there.
 map.addListener("contextmenu", ({ latLng }: google.maps.MapMouseEvent) => {
   if (latLng) maplace.setOrigin(latLng.toJSON());
 });
@@ -102,7 +102,7 @@ map.addListener("contextmenu", ({ latLng }: google.maps.MapMouseEvent) => {
 - `mapOptions` and `colorScheme` are refused: set them on your map.
 - Your map's own map ID applies; if you also pass `mapId`, keep it the same. Google shows no markers on a map made without one, so that is `provider-load-failed` with `field: 'mapId'`.
 - The store's first view moves your map: by default it fits the locations. To keep your map where it is, give the store `view: { kind: "center", center: map.getCenter().toJSON(), zoom: map.getZoom() }`.
-- maplacejs never moves your map in the page, and `destroy` removes only what maplacejs added.
+- Maplace.js never moves your map in the page, and `destroy` removes only what Maplace.js added.
 
 `whenReady` waits for Google to initialise the map, created or yours (at most 2 s, and not while it is hidden).
 
@@ -125,13 +125,13 @@ A change of `color-scheme` or `map-options` opens the map again where it was, ke
 
 ## Loading Maps JS
 
-Nothing reads `google` on import. The adapter calls the global `google.maps.importLibrary`, which works with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) and with `@googlemaps/js-api-loader`, so maplacejs has no loader dependency. Without `google.maps.importLibrary` (an old or missing Maps JS) loading fails with `provider-load-failed`.
+Nothing reads `google` on import. The adapter calls the global `google.maps.importLibrary`, which works with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) and with `@googlemaps/js-api-loader`, so Maplace.js has no loader dependency. Without `google.maps.importLibrary` (an old or missing Maps JS) loading fails with `provider-load-failed`.
 
 The element's Google provider adds Maps JS itself, from `api-key`, and so does an adapter given `apiKey`, as its map mounts: one script per page however many maps, never while the element is held or before the adapter's map mounts. Maps JS's settings, `version`, `language`, `region` and `nonce`, go with the key; without `apiKey`, or with your own `map`, an adapter refuses them (`invalid-input`). The page's Maps JS tag, whoever added it, is shared: an element asking it for another `api-key`, `version`, `language` or `region` is misuse, and an adapter asking for another fails its load with `provider-load-failed`, the option in `field` (one it leaves out takes the page's). A page that loaded Maps JS without a tag of its own (the bootstrap loader, js-api-loader) is taken as it is, an adapter's settings unused. [Setup](setup.md) has both routes.
 
 ## Map ID and styling
 
-maplacejs draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
+Maplace.js draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
 
 ## Routes
 
@@ -141,11 +141,11 @@ Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older 
 
 ## Clustering
 
-The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing maplacejs's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)). Circles, lines and polygons are never clustered, and the selected location is drawn on its own. Only the view and half a view around it are clustered and on the map, as on MapLibre, so a map zoomed in carries the markers it shows, not every one, and a short pan draws nothing again. A cluster still in view after a longer pan keeps its marker, and its focus. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
+The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing Maplace.js's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)). Circles, lines and polygons are never clustered, and the selected location is drawn on its own. Only the view and half a view around it are clustered and on the map, as on MapLibre, so a map zoomed in carries the markers it shows, not every one, and a short pan draws nothing again. A cluster still in view after a longer pan keeps its marker, and its focus. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
 
 ## When Google refuses
 
-Google refusing the key (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is `provider-auth-failed` for every map on the page. Google checks the key as the first map opens, so this can come after `ready`: maplacejs then stops drawing and leaves the map, with Google's message on it, until `destroy`. Your own `gm_authFailure` still runs. A missing key isn't refused (Google draws the map and logs `ApiProjectMapError`), so it reports nothing.
+Google refusing the key (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is `provider-auth-failed` for every map on the page. Google checks the key as the first map opens, so this can come after `ready`: Maplace.js then stops drawing and leaves the map, with Google's message on it, until `destroy`. Your own `gm_authFailure` still runs. A missing key isn't refused (Google draws the map and logs `ApiProjectMapError`), so it reports nothing.
 
 ## Clicks and edits
 
@@ -159,7 +159,7 @@ A popup is Google's InfoWindow, headed by the location's title. One opened by a 
 
 What goes on the map (`createGoogleMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like Google's own controls, `.maplace-control`, in Google's corners: `top-left` under Google's Map/Satellite toggle, `bottom-left` above its logo, in the map's corner as on MapLibre and clear of the terms on a narrow map, and the right ones in Google's corner of that name.
 
-On a map maplacejs creates, its lists scroll within the map, clear of Google's own controls: on the left of the toggle and of its logo and terms, on the right of the fullscreen button, the camera control and Pegman, which Google stacks on that side. On a map too short for them, a list on the right keeps at least 7em and may cover them. A list in a left corner has the most room. The room is set aside for each side, not measured: it stays when those controls are turned off in `mapOptions`, and two lists on one side can overlap; a rule of the page, such as `.maplace-control .maplace-list { max-height: 90% }`, takes it back. Classes and how to turn the defaults off: [Styling](styling.md).
+On a map Maplace.js creates, its lists scroll within the map, clear of Google's own controls: on the left of the toggle and of its logo and terms, on the right of the fullscreen button, the camera control and Pegman, which Google stacks on that side. On a map too short for them, a list on the right keeps at least 7em and may cover them. A list in a left corner has the most room. The room is set aside for each side, not measured: it stays when those controls are turned off in `mapOptions`, and two lists on one side can overlap; a rule of the page, such as `.maplace-control .maplace-list { max-height: 90% }`, takes it back. Classes and how to turn the defaults off: [Styling](styling.md).
 
 ## The origin's dot
 
@@ -167,4 +167,4 @@ The dot at the store's [origin](store.md#distances) is an advanced marker straig
 
 ## Hidden maps
 
-A Google map with a map ID draws with WebGL, and a browser keeps about 16 WebGL contexts per page, taking the oldest away past that. So a vector map maplacejs creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, takes it back once shown, and gives it back when destroyed. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A raster map holds none, and your own map (`map`) keeps its context. Checked in Chromium.
+A Google map with a map ID draws with WebGL, and a browser keeps about 16 WebGL contexts per page, taking the oldest away past that. So a vector map Maplace.js creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, takes it back once shown, and gives it back when destroyed. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A raster map holds none, and your own map (`map`) keeps its context. Checked in Chromium.
