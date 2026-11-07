@@ -8,14 +8,19 @@ const locations: Location[] = [
   { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
 ];
 
+const panel = document.createElement("div");
+panel.className = "load-panel";
+const line = document.createElement("span");
+line.textContent = "Loads from Google";
 const button = document.createElement("button");
 button.type = "button";
 button.textContent = "Load map";
 button.addEventListener("click", () => {
-  // The button goes as it's pressed: focus stays here, not at the top of the page.
+  // The panel goes as it's pressed: focus stays here, not at the top of the page.
   box.tabIndex = -1;
   box.focus({ preventScroll: true });
-  button.remove();
+  panel.remove();
   createGoogleMap(box, { locations });
 });
-box.append(button);
+panel.append(line, button);
+box.append(panel);

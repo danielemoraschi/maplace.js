@@ -8,7 +8,9 @@
 </script>
 <style>
   #load-on-demand-vanilla-map { height: 24rem; }
-  #load-on-demand-vanilla-map:has(> button) { display: grid; place-content: center; }
+  /* The panel the map waits behind: the look <maplace-map hold> gives its own. */
+  #load-on-demand-vanilla-map .load-panel { display: grid; place-content: center; justify-items: center; gap: 0.75rem; height: 100%; padding-inline: 1rem; text-align: center; background: #8881; }
+  #load-on-demand-vanilla-map .load-panel > button { padding: 0.5rem 1rem; border: 1px solid; border-radius: 0.375rem; background: none; color: inherit; font: inherit; font-weight: 600; cursor: pointer; }
 </style>
 <div id="load-on-demand-vanilla-map"></div>
 <script type="module" src="./vanilla.ts"></script>

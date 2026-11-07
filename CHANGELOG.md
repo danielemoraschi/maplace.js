@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it; an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-07 Changed the Unstyled example to Default styles off, showing the bare look with only a height, and Load on demand's script, bundler and React versions to show the same panel as the element
 - 2026-11-07 Changed the project's written name to Maplace.js, in the docs, the examples' comments, the site and the issue forms; the package and everything typed stay `maplace`
 - 2026-11-05 Changed the licence from MIT to Apache-2.0
 - 2026-11-05 Changed the examples' data and icons to /examples/data/, where the site serves them, the Fetches links opening those copies, not GitHub's

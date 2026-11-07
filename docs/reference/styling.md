@@ -64,7 +64,7 @@ Put it on `<html>` for the whole page, on `<maplace-map>` for one map, on the el
 
 What Maplace.js's own markup needs stays: a `<maplace-location>` stays hidden (its children are popup content), `<maplace-map>` stays a block, and its map fills it. An on-map panel whose list is hidden stays hidden too.
 
-Without the defaults, the page sizes the map (it has no height of its own) and lays out a list beside it. Popup text takes the page's colour on Google's and MapLibre's bubbles, which stay white: on a dark page, give `.maplace-popup` a dark colour.
+Without the defaults, the page sizes the map (it has no height of its own) and lays out a list beside it. Popup text takes the page's colour on Google's and MapLibre's bubbles, which stay white: on a dark page, give `.maplace-popup` and `.maplace-popup-heading` a dark colour.
 
 ## Classes
 

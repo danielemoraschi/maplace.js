@@ -15,7 +15,7 @@ function LoadOnDemand() {
   const [loaded, setLoaded] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const load = () => {
-    // The button goes as it's pressed: focus stays here, not at the top of the page.
+    // The panel goes as it's pressed: focus stays here, not at the top of the page.
     box.current?.focus({ preventScroll: true });
     setLoaded(true);
   };
@@ -26,9 +26,12 @@ function LoadOnDemand() {
           <MaplaceMap createAdapter={createMapLibreAdapter} className="map" />
         </MaplaceProvider>
       ) : (
-        <button type="button" onClick={load}>
-          Load map
-        </button>
+        <div className="load-panel">
+          <span>Loads from OpenFreeMap</span>
+          <button type="button" onClick={load}>
+            Load map
+          </button>
+        </div>
       )}
     </div>
   );

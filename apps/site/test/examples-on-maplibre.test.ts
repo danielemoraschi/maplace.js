@@ -134,8 +134,9 @@ describe("MapLibre's maps in the site's frame", () => {
   it.for([
     { name: "simple", width: "2px" },
     { name: "whats-on", width: "0px" },
+    { name: "unstyled", width: "0px" },
   ])(
-    "frames $name's MapLibre map as Google's, or not at all for an example framing its own",
+    "frames $name's MapLibre map as Google's, or not at all for an example framing its own or with the defaults off",
     { timeout: 30_000 },
     async ({ name, width }) => {
       const { context, section } = await visitSection(site, name);
@@ -148,6 +149,25 @@ describe("MapLibre's maps in the site's frame", () => {
     },
   );
 
+  it("shows load-on-demand's Load map button alike in every version, the element's as the others' copies", async () => {
+    const { page, context, section } = await visitSection(site, "load-on-demand");
+    const looks: string[][] = [];
+    for (const [index, { kind, label }] of versionsInTurn(0).entries()) {
+      await chooseVersion(page, "load-on-demand", label);
+      if (index === 0) await loadMapsButtons(section).click();
+      const button = loadMapButton(mapLibreVersionIn(section, kind));
+      await button.waitFor();
+      looks.push(
+        await button.evaluate((element) => {
+          const look = getComputedStyle(element);
+          return [look.borderRadius, look.borderTopWidth, look.padding, look.fontWeight];
+        }),
+      );
+    }
+    for (const look of looks) expect(look).toEqual(looks[0]);
+    await context.close();
+  }, 30_000);
+
   it("leaves a list on MapLibre's map out of the site's side panel", async () => {
     const { context, section } = await visitSection(site, "tags");
     await loadMapsButtons(section).click();
@@ -158,7 +178,7 @@ describe("MapLibre's maps in the site's frame", () => {
     await context.close();
   }, 30_000);
 
-  it("leaves a list inside data-maplace-unstyled to the example's own CSS, out of the site's side panel", async () => {
+  it("leaves a list inside data-maplace-unstyled bare, out of the site's side panel", async () => {
     const { context, section } = await visitSection(site, "unstyled");
     await loadMapsButtons(section).click();
     const list = mapLibreVersionIn(section, "html").locator(".maplace-list-view");

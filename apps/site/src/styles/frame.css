@@ -30,9 +30,13 @@
 }
 /*
  * Around the map Google or MapLibre draws, in every version: the lists and controls stay outside
- * it. An example framing its map its own way is marked `data-own-frame` and left out.
+ * it. An example framing its map its own way is marked `data-own-frame` and left out, as is one
+ * inside maplace's own opt-out (`data-maplace-unstyled`), shown as a reader's page shows it.
  */
-.version :where(.maplace-google-map, .maplace-maplibre-map):where(:not([data-own-frame] *)) {
+.version
+:where(.maplace-google-map, .maplace-maplibre-map):where(
+  :not([data-own-frame] *, [data-maplace-unstyled] *)
+) {
   border: 2px solid var(--color-ink);
 }
 /*
@@ -127,11 +131,12 @@
 }
 
 /*
- * A page's own buttons in the site's look, the map's own (Google's or MapLibre's) left alone. All
- * but `.version` in `:where()`, so the rule weighs one class and any rule of the example's own
- * wins.
+ * A page's own buttons in the site's look, the map's own (Google's or MapLibre's) left alone, and
+ * the element's own load panel, which keeps the look a reader's page gives it. All but `.version`
+ * in `:where()`, so the rule weighs one class and any rule of the example's own wins.
  */
-.version :where(button):where(:not(.maplace-google-map *, .maplace-maplibre-map *)) {
+.version
+:where(button):where(:not(.maplace-google-map *, .maplace-maplibre-map *, .maplace-load-panel *)) {
   @apply button-plain;
 }
 

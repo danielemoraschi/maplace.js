@@ -2,7 +2,9 @@
 <!-- The page react.tsx renders into: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
 <style>
   #load-on-demand-maplibre-react-root .box { height: 24rem; }
-  #load-on-demand-maplibre-react-root .box:has(> button) { display: grid; place-content: center; }
+  /* The panel the map waits behind: the look <maplace-map hold> gives its own. */
+  #load-on-demand-maplibre-react-root .load-panel { display: grid; place-content: center; justify-items: center; gap: 0.75rem; height: 100%; padding-inline: 1rem; text-align: center; background: #8881; }
+  #load-on-demand-maplibre-react-root .load-panel > button { padding: 0.5rem 1rem; border: 1px solid; border-radius: 0.375rem; background: none; color: inherit; font: inherit; font-weight: 600; cursor: pointer; }
   #load-on-demand-maplibre-react-root .map { height: 100%; }
 </style>
 <div id="load-on-demand-maplibre-react-root"></div>

@@ -153,7 +153,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "load-on-demand",
         title: "Load on demand",
-        summary: "A button in the map's place: nothing draws until the visitor presses it.",
+        summary: "A panel in the map's place: nothing draws until the visitor presses its button.",
       },
       {
         name: "link-to-place",
@@ -195,8 +195,9 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       },
       {
         name: "unstyled",
-        title: "Unstyled",
-        summary: "maplace's own styles off: the page's CSS draws the list and the popups.",
+        title: "Default styles off",
+        summary:
+          "Maplace.js's styles off and nothing in their place: the map and its list as your page shows them, with no CSS but a height.",
       },
     ],
   },

@@ -3,7 +3,9 @@
 <script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <style>
   #load-on-demand-maplibre-script-map { height: 24rem; }
-  #load-on-demand-maplibre-script-map:has(> button) { display: grid; place-content: center; }
+  /* The panel the map waits behind: the look <maplace-map hold> gives its own. */
+  #load-on-demand-maplibre-script-map .load-panel { display: grid; place-content: center; justify-items: center; gap: 0.75rem; height: 100%; padding-inline: 1rem; text-align: center; background: #8881; }
+  #load-on-demand-maplibre-script-map .load-panel > button { padding: 0.5rem 1rem; border: 1px solid; border-radius: 0.375rem; background: none; color: inherit; font: inherit; font-weight: 600; cursor: pointer; }
 </style>
 <div id="load-on-demand-maplibre-script-map"></div>
 <script type="module">
@@ -14,15 +16,20 @@
     { id: "naples", lat: 40.8518, lng: 14.2681, title: "Naples" },
   ];
 
+  const panel = document.createElement("div");
+  panel.className = "load-panel";
+  const line = document.createElement("span");
+  line.textContent = "Loads from OpenFreeMap";
   const button = document.createElement("button");
   button.type = "button";
   button.textContent = "Load map";
   button.addEventListener("click", () => {
-    // The button goes as it's pressed: focus stays here, not at the top of the page.
+    // The panel goes as it's pressed: focus stays here, not at the top of the page.
     box.tabIndex = -1;
     box.focus({ preventScroll: true });
-    button.remove();
+    panel.remove();
     Maplace.createMapLibreMap(box, { locations });
   });
-  box.append(button);
+  panel.append(line, button);
+  box.append(panel);
 </script>

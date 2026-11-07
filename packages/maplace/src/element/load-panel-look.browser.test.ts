@@ -4,7 +4,8 @@ import { mapFrom, ROME, styledPage } from "./testing/fake-maps";
 import { restoreScreen, showOnDesktop, showOnPhone } from "./testing/screens";
 
 // The look the assertions can't judge is read by eye, in `.vitest/load-panel/`, gitignored: at each
-// width, light and dark. The site never shows the panel (frame.css), so this page is its only look.
+// width, light and dark. The site shows the panel only on a map that holds itself (frame.css), in
+// this same default look, so this page is where its looks are read.
 
 const PAGE = `
 :root { color-scheme: light dark; font-family: system-ui; }
