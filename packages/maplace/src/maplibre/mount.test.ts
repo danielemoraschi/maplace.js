@@ -25,8 +25,10 @@ const mocks = vi.hoisted(() => ({ dispatcher: {} as object }));
 beforeEach(() => {
   const listeners: ((event: { error: Error }) => void)[] = [];
   mocks.dispatcher = {
-    getActor: () => new Promise(() => {}),
-    on: (_: string, listener: (event: { error: Error }) => void) => listeners.push(listener),
+    broadcast: () => new Promise(() => {}),
+    on(type: string, listener: (event: { error: Error }) => void) {
+      if (type === "error") listeners.push(listener);
+    },
   };
   fireWorkerError = () => {
     for (const listener of listeners) listener({ error: new Error("Worker failed to load") });

@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-08 Changed the MapLibre CDN script to bundle maplibre-gl 6.16.0, and `Maplace.maplibre` with it
+- 2026-11-08 Fixed MapLibre maps on maplibre-gl 6.16 and later saying nothing when its worker can't start (a page opened as a file, a content security policy without `worker-src`): the map fails with `provider-load-failed` again
 - 2026-11-08 Fixed tools that read only `package.json`'s top-level `types` field, such as npm's types badge, finding no TypeScript types: the field now names the core entry's declarations
 
 ## 1.0.0 (2026-11-07)

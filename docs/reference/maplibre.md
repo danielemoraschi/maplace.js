@@ -115,7 +115,7 @@ A change of either opens the map again where it was, keeping the store's state. 
 
 ## With the CDN script
 
-One script, `maplace-element-maplibre.iife.js`, defines the element with the MapLibre provider. It bundles maplibre-gl, its worker and its stylesheet, so a page loads it alone (about 510 kB gzip; clustering included). [Open the page from a web server](setup.md#use-a-web-server-for-maplibre).
+One script, `maplace-element-maplibre.iife.js`, defines the element with the MapLibre provider. It bundles maplibre-gl, its worker and its stylesheet, so a page loads it alone (about 520 kB gzip; clustering included). [Open the page from a web server](setup.md#use-a-web-server-for-maplibre).
 
 <!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
 ```html
@@ -140,7 +140,7 @@ From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-g
 
 The style says where the tiles, fonts and icons come from. OpenFreeMap's `https://tiles.openfreemap.org/styles/bright` is the default: free, no key, OpenStreetMap data. Any provider's style URL works the same way, such as MapTiler, Stadia Maps, Protomaps or your own server, with its key in the URL where it needs one.
 
-A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. A worker Maplace.js hears fail is `provider-load-failed` naming the worker, on the maps open on it and every map mounted after, as they share it for the page's life; one that failed before Maplace.js's first mount on the page goes unheard, so MapLibre's console line and your own map's `error` listener are what say so.
+A style that fails to load is `provider-load-failed`, or `provider-auth-failed` when its server refuses it (HTTP 401 or 403: a key missing or wrong in its URL). A tile or sprite failing later is MapLibre's to log. A worker Maplace.js hears fail is `provider-load-failed` naming the worker, on the maps open on it and every map mounted after, as maplibre-gl's workers are the page's and the next ones would load the same way; workers that failed before Maplace.js's first mount on the page go unheard while they run, so MapLibre's console line and your own map's `error` listener are what say so.
 
 A dark map is a dark style (`map-style`), since MapLibre has no colour scheme option.
 

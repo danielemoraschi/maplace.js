@@ -3,7 +3,7 @@ import type { MapLibre } from "./library";
 
 type Dispatcher = ReturnType<MapLibre["getGlobalDispatcher"]>;
 
-/** What is known of the worker pool every MapLibre map on the page shares for the page's life. */
+/** What is known of maplibre-gl's workers, which every MapLibre map on the page shares. */
 export interface WorkerWatch {
   /** The worker's failure, once heard. */
   failure(): MaplaceError | undefined;
@@ -21,11 +21,13 @@ const watches = new WeakMap<Dispatcher, WorkerWatch>();
 const UNWATCHED: WorkerWatch = { failure: () => undefined, whenFails: () => () => {} };
 
 /**
- * Starts watching the page's worker, once per dispatcher, which starts the worker if none is.
- * maplibre-gl's global dispatcher holds the pool for the page's life, so a dead worker stays dead
- * and remembering it is right; and it hears a worker's failure whichever map came first, where a
- * later map's own dispatcher, subscribing too late, never does. Not being able to watch must not
- * cost a page its map.
+ * Starts watching the page's workers, once per dispatcher. maplibre-gl's global dispatcher lasts as
+ * long as the page and hears a worker's failure whichever map came first, where a later map's own
+ * dispatcher, subscribing too late, never does. Since 6.16 the workers stop with the last map and
+ * come back with the next, so each set gets a hello of its own; a set that couldn't load fails the
+ * page's maps for good, as the next would load the same way. The hello starts the workers if none
+ * run: when a mount throws before its map exists, nobody claims them and they last as long as the
+ * page, as on 6.15. Not being able to watch must not cost a page its map.
  */
 export function watchWorker(maplibre: MapLibre): WorkerWatch {
   try {
@@ -39,8 +41,8 @@ export function watchWorker(maplibre: MapLibre): WorkerWatch {
 }
 
 /**
- * Only a worker that has never answered has failed to load: MapLibre fires the same error for a
- * live worker's uncaught exception, which leaves working maps working.
+ * Only workers that have never answered their hello have failed to load: MapLibre fires the same
+ * error for a live worker's uncaught exception, which leaves working maps working.
  */
 function startWatching(dispatcher: Dispatcher): WorkerWatch {
   let answered = false;
@@ -52,13 +54,18 @@ function startWatching(dispatcher: Dispatcher): WorkerWatch {
     for (const heard of waiting) heard(failure);
     waiting.clear();
   };
-  markFirstAnswer(
-    dispatcher,
-    () => {
-      answered = true;
-    },
-    failed,
-  );
+  const greetWorkers = () => {
+    answered = false;
+    sayHello(
+      dispatcher,
+      () => {
+        answered = true;
+      },
+      failed,
+    );
+  };
+  greetWorkers();
+  dispatcher.on("workerscreate", greetWorkers);
   dispatcher.on("error", ({ error }) => failed(error));
   return {
     failure: () => failure,
@@ -69,33 +76,21 @@ function startWatching(dispatcher: Dispatcher): WorkerWatch {
   };
 }
 
+/** A message no worker has a handler for: a worker answers it with nothing, proving it loaded. */
+const HELLO = "maplace:hello";
+
 /**
- * Calls `answered` at the worker's first message: any map's first broadcast brings one. `getActor`
- * rejecting is `failed`: no worker could be made, and no `error` event will come. `getActor` and
- * `target` are in maplibre-gl's types, not its docs, and the peer range is a caret. Either missing
- * counts as answered: back to today's silence rather than failing working maps. The tests on a
- * real worker fail if an upgrade changes them.
+ * Says hello to the workers, calling `answered` when they answer. A rejected hello is `failed`: no
+ * worker could be made, and no `error` event will come. Workers stopped before they answered (6.16
+ * stops them with the page's last map) failed at nothing: the next ones get a hello of their own.
  */
-function markFirstAnswer(
-  dispatcher: Dispatcher,
-  answered: () => void,
-  failed: (cause: unknown) => void,
-): void {
-  const actor = unlessItThrows(() => dispatcher.getActor());
-  if (actor === undefined) {
-    answered();
-    return;
-  }
-  actor
-    .then(({ target }) => target.addEventListener("message", answered, { once: true }), failed)
-    .catch(answered);
+function sayHello(dispatcher: Dispatcher, answered: () => void, failed: (cause: unknown) => void) {
+  dispatcher.broadcast(HELLO, undefined).then(answered, (cause: unknown) => {
+    if (!isAbort(cause)) failed(cause);
+  });
 }
 
-/** What `call` returns, or undefined if calling it throws: a method a later version took out. */
-function unlessItThrows<T>(call: () => T): T | undefined {
-  try {
-    return call();
-  } catch {
-    return undefined;
-  }
+/** The workers were stopped before they answered: the page removed its last map. */
+function isAbort(cause: unknown): boolean {
+  return cause instanceof Error && cause.name === "AbortError";
 }
