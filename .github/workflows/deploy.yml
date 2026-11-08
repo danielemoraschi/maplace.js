@@ -1,12 +1,14 @@
 # The site to production, maplacejs.com (R4): run by hand from the Actions tab on main, and by release.yml after each
-# stable release's announce. It deploys main as it is then, at the release commit when the release calls it, so the
-# site pins the version npm has: refused for a pre-release, which the site doesn't pin apart, and for a version not on
-# npm, whose scripts would 404 (W46). Then every page is checked for requests to another origin (W10c), which only the
-# edge can add. The preview, main's, is ci.yml's deploy-preview, built the same way (scripts/site-workflows.test.ts).
-# maplacejs.com is attached to the Worker in Cloudflare's dashboard, not in wrangler.jsonc: with no routes there,
-# wrangler deploy leaves the Worker's domains and DNS alone. R4's first run comes before the domain is attached, so
-# the dashboard's Hello World is replaced while no address serves it; its offsite check is then red, as maplacejs.com
-# isn't the Worker's yet: attach the domain, then re-run the job once its certificate is ready.
+# stable release's announce. It deploys the newest stable release tag on main (R9), never main's unreleased work, so
+# the site pins the version npm has: refused for a pre-release, which the site doesn't pin apart, and for a version
+# not on npm, whose scripts would 404 (W46). Then every page is checked for requests to another origin (W10c), which
+# only the edge can add. The preview, main's, is ci.yml's deploy-preview, built the same way
+# (scripts/site-workflows.test.ts). maplacejs.com is attached to the Worker in Cloudflare's dashboard, not in
+# wrangler.jsonc: with no routes there, wrangler deploy leaves the Worker's domains and DNS alone. R4's first run
+# comes before the domain is attached, so the dashboard's Hello World is replaced while no address serves it; its
+# offsite check is then red, as maplacejs.com isn't the Worker's yet: attach the domain, then re-run the job once its
+# certificate is ready. The steps are main's; what they run before the offsite check (.nvmrc, npm ci, the build) is
+# the tag's. So a step calling a script that only main has would break by-hand deploys until the next release.
 name: Deploy
 
 on:
@@ -20,7 +22,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # One deploy at a time, a running one never cancelled; a newer waiting one replaces an older, both deploying main.
+    # One deploy at a time, a running one never cancelled; a newer waiting one replaces an older, both deploying the
+    # newest tag.
     concurrency:
       group: deploy-production
       cancel-in-progress: false
@@ -28,12 +31,20 @@ jobs:
       # A called workflow's ref is its caller's: release.yml runs from main alone too.
       - name: Deploys come from main
         run: test "$GITHUB_REF" = refs/heads/main || { echo "::error::deploy from main, not $GITHUB_REF"; exit 1; }
-      # main, not the run's commit: when release.yml calls this, the run's commit is the one before the release commit.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
-          fetch-depth: 0 # the build dates each page from git
+          fetch-depth: 0 # every tag, and the pages' dates from git
           persist-credentials: false # it never pushes, and npm's install scripts run here
+      # The newest stable release, not main's head, which carries work npm hasn't published (R9). Tags aren't
+      # protected: refused unless it is on main here, and unless it is its manifest's version in the guard below.
+      - name: The newest release's tag
+        run: |
+          tag=$(git tag --list 'v[0-9]*' --sort=-v:refname | grep -v -- - | head -n 1)
+          test -n "$tag" || { echo "::error::no release tag to deploy"; exit 1; }
+          git merge-base --is-ancestor "$tag" origin/main || { echo "::error::$tag isn't on main"; exit 1; }
+          git checkout --quiet "$tag"
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
@@ -43,6 +54,10 @@ jobs:
         run: |
           name=$(node -p 'require("./packages/maplace/package.json").name')
           version=$(node -p 'require("./packages/maplace/package.json").version')
+          test "v$version" = "$RELEASE_TAG" || {
+            echo "::error::$RELEASE_TAG isn't the release of $name $version"
+            exit 1
+          }
           case "$version" in
             *-*) echo "::error::$name $version is a pre-release: the site pins stable releases only"; exit 1 ;;
           esac
@@ -62,10 +77,13 @@ jobs:
       # Wrangler and its install scripts fetched before the Cloudflare token is in the environment.
       - run: npx --yes wrangler@4.150.0 --version
       - working-directory: apps/site
-        run: npx --yes wrangler@4.150.0 deploy --message "$(git rev-parse HEAD)"
+        run: npx --yes wrangler@4.150.0 deploy --message "$RELEASE_TAG $(git rev-parse HEAD)"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       # What the edge adds, which the build never sees (W10c): every page as a browser gets it may ask no other origin
-      # before consent.
-      - run: node apps/site/src/site/offsite-check.ts https://maplacejs.com
+      # before consent. By main's rules, the newest, as offsite.yml checks: the check needs no install, and runs on
+      # the tag's Node.
+      - run: |
+          git checkout --quiet main
+          node apps/site/src/site/offsite-check.ts https://maplacejs.com

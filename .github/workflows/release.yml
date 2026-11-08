@@ -10,9 +10,9 @@
 #   announce  jsDelivr checked against the published README (npm run release-cdn, retrying while it lags), then the
 #             GitHub release, its notes the version's CHANGELOG lines (npm run release-notes). An existing release
 #             is skipped.
-#   deploy    the site to production from main (deploy.yml), after announce, so a version whose CDN check fails
-#             isn't offered; never for a pre-release, which the site doesn't pin apart. It can also be dispatched
-#             by hand, as Deploy.
+#   deploy    the site to production at the release's tag (deploy.yml), after announce, so a version whose CDN check
+#             fails isn't offered; never for a pre-release, which the site doesn't pin apart. It can also be
+#             dispatched by hand, as Deploy, which deploys the newest release tag.
 # Recovery: a publish or announce that failed is re-run (it starts again from the tag); a push refused because
 # main moved is dispatched again; a release tagged whose publish can't be made to pass blocks the next dispatch
 # until it is on npm. An announce stopped by the CDN check comes after an irreversible publish, and the GitHub

@@ -29,11 +29,40 @@ describe("deploy.yml", () => {
     expect(stepWith(deploy, 'test "$GITHUB_REF" = refs/heads/main')).toBe(0);
   });
 
-  it("checks out main with its full history, or every page is dated at the last commit", () => {
+  it("checks out main with its full history, for its release tags and the pages' dates", () => {
     const checkout = stepsOf(deploy)[stepWith(deploy, "uses: actions/checkout@")];
     expect(checkout).toContain("ref: main");
     expect(checkout).toContain("fetch-depth: 0");
     expect(checkout).toContain("persist-credentials: false");
+  });
+
+  it("deploys the newest stable release tag on main, before setting up Node", () => {
+    const pick = stepWith(deploy, "git tag --list 'v[0-9]*'");
+    const step = stepsOf(deploy)[pick];
+    expect(step).toContain("--sort=-v:refname");
+    expect(step).toContain("grep -v -- -");
+    expect(step).toMatch(/git merge-base --is-ancestor "\$tag" origin\/main \|\| \{[^}]*exit 1/);
+    expect(step).toContain('git checkout --quiet "$tag"');
+    expect(step).toContain('echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"');
+    expect(pick).toBeGreaterThan(stepWith(deploy, "uses: actions/checkout@"));
+    for (const later of ["uses: actions/setup-node@", "npm view", "run: npm ci"]) {
+      expect(pick).toBeLessThan(stepWith(deploy, later));
+    }
+  });
+
+  it("refuses a tag that isn't its manifest's release, and names the release it deploys", () => {
+    expect(stepsOf(deploy)[stepWith(deploy, "npm view")]).toMatch(
+      /test "v\$version" = "\$RELEASE_TAG" \|\| \{[^}]*exit 1/,
+    );
+    expect(stepsOf(deploy)[stepWith(deploy, "wrangler@4.150.0 deploy")]).toContain(
+      '--message "$RELEASE_TAG $(git rev-parse HEAD)"',
+    );
+  });
+
+  it("checks the live site by main's rules, the newest, as offsite.yml does", () => {
+    expect(stepsOf(deploy)[stepWith(deploy, OFFSITE_CHECK)]).toMatch(
+      new RegExp(String.raw`git checkout --quiet main\n\s+${OFFSITE_CHECK.replaceAll(".", "\\.")}`),
+    );
   });
 
   it("refuses a pre-release, or a version that isn't on npm, before installing or building", () => {
