@@ -25,10 +25,13 @@ describe("strayRequests", () => {
     ]);
   });
 
-  it("names what the edge adds under /cdn-cgi/, but not its bot check", () => {
+  it("names whatever the edge adds under /cdn-cgi/, its bot check too: the site runs none", () => {
     const html = `<script src="/cdn-cgi/zaraz/i.js"></script>
       <script src="/cdn-cgi/challenge-platform/scripts/jsd/main.js"></script>`;
-    expect(strayRequests(html, PAGE)).toEqual([`${PAGE}cdn-cgi/zaraz/i.js`]);
+    expect(strayRequests(html, PAGE)).toEqual([
+      `${PAGE}cdn-cgi/zaraz/i.js`,
+      `${PAGE}cdn-cgi/challenge-platform/scripts/jsd/main.js`,
+    ]);
   });
 
   it("doesn't count the canonical link, which fetches nothing", () => {

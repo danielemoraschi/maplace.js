@@ -49,10 +49,10 @@ function addressesRequested(html: string): string[] {
 }
 
 // Under /cdn-cgi/ the edge serves what it adds from the site's own address (Zaraz, Rocket
-// Loader); its bot check is the exception, strictly necessary.
-const ADDED_BY_THE_EDGE = /^\/cdn-cgi\/(?!challenge-platform\/)/;
+// Loader, its bot check); the site runs none of them.
+const EDGE_PATH = "/cdn-cgi/";
 
 function isStray(url: URL, origin: string): boolean {
   if (!url.protocol.startsWith("http")) return false;
-  return url.origin !== origin || ADDED_BY_THE_EDGE.test(url.pathname);
+  return url.origin !== origin || url.pathname.startsWith(EDGE_PATH);
 }

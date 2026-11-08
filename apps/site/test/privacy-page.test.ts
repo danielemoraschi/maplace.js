@@ -3,7 +3,7 @@ import { CONSENT_GRANTED, CONSENT_KEY } from "../src/consent/consent-store.ts";
 import { PROVIDER_CHOICE_KEY } from "../src/scripts/provider-choice.ts";
 import { BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { PRIVACY_CHANGED_ON } from "../src/site/privacy-changed-on.ts";
-import { PRIVACY_CONTACT_EMAIL, SITE_HOST } from "../src/site/site-owner.ts";
+import { PRIVACY_CONTACT_EMAIL } from "../src/site/site-owner.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
 import { opened, siteBuiltBeforeTests } from "./site-session.ts";
 import { DESKTOP } from "./visitor.ts";
@@ -40,7 +40,7 @@ describe("the privacy page", () => {
     expect(text).toContain(CONSENT_KEY);
     expect(text).toContain(CONSENT_GRANTED);
     expect(text).toContain(PROVIDER_CHOICE_KEY);
-    expect(text).toContain(SITE_HOST.securityCookie);
+    expect(text).not.toContain("__cf_bm");
     const contact = page.locator(`a[href="mailto:${PRIVACY_CONTACT_EMAIL}"]`);
     expect(await contact.allTextContents()).toEqual([PRIVACY_CONTACT_EMAIL]);
     await context.close();
