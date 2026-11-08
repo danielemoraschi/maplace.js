@@ -7,11 +7,14 @@ export type Bump = "patch" | "minor" | "major";
 /** Smallest first. */
 const BUMP_ORDER: readonly Bump[] = ["patch", "minor", "major"];
 
-/** What each kind of line calls for: whether a change breaks anything is the person's to judge, above. */
+/**
+ * The least each kind of line calls for, by semver: a feature (Added) a minor, a removal a major.
+ * A change can be a fix, a feature or a break, so it calls for a patch; more is the person's to judge.
+ */
 const BUMP_FOR_VERB: Readonly<Record<Verb, Bump>> = {
   Fixed: "patch",
   Added: "minor",
-  Changed: "minor",
+  Changed: "patch",
   Removed: "major",
 };
 

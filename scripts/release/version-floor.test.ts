@@ -34,10 +34,10 @@ describe("assertMeetsFloor", () => {
     ).toThrow("1.0.1 is a patch after 1.0.0, and an Added line calls for at least a minor: 1.1.0");
   });
 
-  it("refuses a patch when a line changes something", () => {
-    expect(() => assertMeetsFloor(v("1.0.1"), { lastStable, lines: [line("Changed")] })).toThrow(
-      "1.0.1 is a patch after 1.0.0, and a Changed line calls for at least a minor: 1.1.0",
-    );
+  it("passes a patch when a line changes something: semver's minor is for features, Added's", () => {
+    expect(() =>
+      assertMeetsFloor(v("1.0.1"), { lastStable, lines: [line("Fixed"), line("Changed")] }),
+    ).not.toThrow();
   });
 
   it("refuses less than a major when a line removes something", () => {
