@@ -1,3 +1,9 @@
+> **Maplace.js 1.0 is published as [`@maplacejs/maplace`](https://www.npmjs.com/package/@maplacejs/maplace)**: a rewrite without jQuery, on Google Maps or MapLibre, from HTML, a script, a bundler or React.
+>
+> Install it with `npm i @maplacejs/maplace`, and see [maplacejs.com](https://maplacejs.com), with [a guide to moving a 0.2 page](https://maplacejs.com/migrating/).
+>
+> This package, `maplace-js`, stays at 0.2: this release changes only this notice and its homepage, and its code is 0.2.10's.
+
 # Maplace.js [![Build Status](https://travis-ci.org/danielemoraschi/maplace.js.svg)](https://travis-ci.org/danielemoraschi/maplace.js)
 Helps you to embed Google Maps into your website, quickly create markers and controls menu for the locations on map.
 

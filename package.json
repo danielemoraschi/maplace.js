@@ -1,8 +1,8 @@
 {
   "name": "maplace-js",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Google Maps jQuery plugin and markers helper",
-  "homepage": "https://github.com/danielemoraschi/maplace.js",
+  "homepage": "https://maplacejs.com",
   "main": "dist/maplace.min.js",
   "scripts": {
     "build": "npm install && grunt build",
