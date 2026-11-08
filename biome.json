@@ -29,6 +29,22 @@
   },
   "overrides": [
     {
+      "includes": ["apps/site/src/styles/frame.css"],
+      "linter": {
+        "rules": {
+          "style": { "noDescendingSpecificity": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "correctness": { "noComponentHookFactories": "off" }
+        }
+      }
+    },
+    {
       "includes": ["packages/maplace/src/**", "!packages/maplace/src/google/**"],
       "linter": {
         "rules": {
@@ -65,5 +81,10 @@
   },
   "html": {
     "experimentalFullSupportEnabled": true
+  },
+  "markdown": {
+    "formatter": {
+      "enabled": false
+    }
   }
 }

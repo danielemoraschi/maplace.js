@@ -31,7 +31,7 @@ export class StubResizeObserver {
 export function stubResizeObserver(): void {
   latest = undefined;
   // A constructor returning the stub, so the test can reach the observer the code just started.
-  vi.stubGlobal("ResizeObserver", function ResizeObserver(callback: () => void) {
+  vi.stubGlobal("ResizeObserver", function resizeObserver(callback: () => void) {
     latest = new StubResizeObserver(callback);
     return latest;
   });

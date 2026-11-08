@@ -34,9 +34,9 @@
  * inside maplace's own opt-out (`data-maplace-unstyled`), shown as a reader's page shows it.
  */
 .version
-:where(.maplace-google-map, .maplace-maplibre-map):where(
-  :not([data-own-frame] *, [data-maplace-unstyled] *)
-) {
+  :where(.maplace-google-map, .maplace-maplibre-map):where(
+    :not([data-own-frame] *, [data-maplace-unstyled] *)
+  ) {
   border: 2px solid var(--color-ink);
 }
 /*
@@ -47,15 +47,15 @@
  * a list on the map is in the map's own panel already.
  */
 .version
-:where(.maplace-list-view):where(
-  :not(
-    .maplace-google-map *,
-    .maplace-maplibre-map *,
-    [data-own-list] *,
-    [data-maplace-unstyled],
-    [data-maplace-unstyled] *
-  )
-) {
+  :where(.maplace-list-view):where(
+    :not(
+      .maplace-google-map *,
+      .maplace-maplibre-map *,
+      [data-own-list] *,
+      [data-maplace-unstyled],
+      [data-maplace-unstyled] *
+    )
+  ) {
   margin-inline-start: 1rem;
   padding: 0.75rem 0.5rem;
   border-radius: 0.75rem;
@@ -93,16 +93,16 @@
  * switches above it. The map's own and a list's are left alone.
  */
 .version
-:where(label:has(> input[type="checkbox"]), p:has(> select)):where(
-  :not(
-    .maplace-google-map *,
-    .maplace-maplibre-map *,
-    .maplace-list-view *,
-    [data-own-list] *,
-    [data-maplace-unstyled],
-    [data-maplace-unstyled] *
-  )
-) {
+  :where(label:has(> input[type="checkbox"]), p:has(> select)):where(
+    :not(
+      .maplace-google-map *,
+      .maplace-maplibre-map *,
+      .maplace-list-view *,
+      [data-own-list] *,
+      [data-maplace-unstyled],
+      [data-maplace-unstyled] *
+    )
+  ) {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -136,7 +136,9 @@
  * in `:where()`, so the rule weighs one class and any rule of the example's own wins.
  */
 .version
-:where(button):where(:not(.maplace-google-map *, .maplace-maplibre-map *, .maplace-load-panel *)) {
+  :where(button):where(
+    :not(.maplace-google-map *, .maplace-maplibre-map *, .maplace-load-panel *)
+  ) {
   @apply button-plain;
 }
 
@@ -165,7 +167,8 @@
   .version[data-reload-mends] + [data-version-notes] [data-map-reload] {
     display: block;
   }
-  /* Apart: a browser without `:state()` drops the whole rule. */
+  /* Apart: a browser without `:state()` drops the whole rule. Both rules only show a note, so
+     their order doesn't matter (biome.json turns noDescendingSpecificity off here). */
   .version:has(maplace-map:state(error)) + [data-version-notes] .failed,
   .version:has(maplace-map:state(loading)) + [data-version-notes] .loading {
     display: block;
