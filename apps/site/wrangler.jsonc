@@ -2,7 +2,7 @@
 // visitors' browsers ask the site, never GitHub; every other path is the assets'. Its GitHub token
 // is the Worker's secret GITHUB_STARS_TOKEN, set once (`wrangler versions secret put`).
 // workers_dev off, so the Worker's own workers.dev address serves nothing; preview_urls on, for
-// the `next` alias CI uploads; observability off, so no visitor's request is logged for the site.
+// the `main` alias CI uploads; observability off, so no visitor's request is logged for the site.
 // Only `wrangler deploy` applies these three (`wrangler triggers deploy` the first two), never
 // CI's `versions upload`: the Worker was created in Cloudflare's dashboard, all three set there.
 // No routes: maplacejs.com is attached to the Worker in the dashboard, and `wrangler deploy`

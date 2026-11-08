@@ -2,7 +2,7 @@
 # stable release's announce. It deploys main as it is then, at the release commit when the release calls it, so the
 # site pins the version npm has: refused for a pre-release, which the site doesn't pin apart, and for a version not on
 # npm, whose scripts would 404 (W46). Then every page is checked for requests to another origin (W10c), which only the
-# edge can add. The preview, next's, is ci.yml's deploy-preview, built the same way (scripts/site-workflows.test.ts).
+# edge can add. The preview, main's, is ci.yml's deploy-preview, built the same way (scripts/site-workflows.test.ts).
 # maplacejs.com is attached to the Worker in Cloudflare's dashboard, not in wrangler.jsonc: with no routes there,
 # wrangler deploy leaves the Worker's domains and DNS alone. R4's first run comes before the domain is attached, so
 # the dashboard's Hello World is replaced while no address serves it; its offsite check is then red, as maplacejs.com

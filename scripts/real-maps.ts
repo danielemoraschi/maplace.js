@@ -3,8 +3,8 @@ import { ROOT } from "./build/package.ts";
 import { needsRealMaps } from "./checks/real-maps.ts";
 
 /**
- * CI's step before `npm test` on `next`: `run=true` or `run=false` for `$GITHUB_OUTPUT`, whether
- * the commits since `base` (the last commit CI passed on `next`, none for a run started by hand)
+ * CI's step before `npm test` on `main`: `run=true` or `run=false` for `$GITHUB_OUTPUT`, whether
+ * the commits since `base` (the last commit CI passed on `main`, none for a run started by hand)
  * need Google's real maps.
  */
 function decide(base: string): void {

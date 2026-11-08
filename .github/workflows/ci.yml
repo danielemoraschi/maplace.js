@@ -3,12 +3,12 @@ name: CI
 on:
   push:
   pull_request:
-  # On next, runs the real Google Maps tests whatever changed.
+  # On main, runs the real Google Maps tests whatever changed.
   workflow_dispatch:
 
 permissions:
   contents: read
-  actions: read # the last CI run passed on next, for scripts/real-maps.ts
+  actions: read # the last CI run passed on main, for scripts/real-maps.ts
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -56,12 +56,12 @@ jobs:
         with:
           path: ~/.cache/chromium-packages
           key: ${{ steps.chromium-packages.outputs.cache-primary-key }}
-      # Real Google Maps (T2) on next only: fork PRs get no secrets, and every map is billed, so
-      # only when next changed more than prose or MapLibre's own files since the last commit verify
+      # Real Google Maps (T2) on main only: fork PRs get no secrets, and every map is billed, so
+      # only when main changed more than prose or MapLibre's own files since the last commit verify
       # passed on (scripts/real-maps.ts; a cancelled run's changes count too), or on a run
       # started by hand. Without the key the Maps tests would only skip, so a missing secret fails.
       - id: real-maps
-        if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+        if: github.ref == 'refs/heads/main' && !github.event.repository.fork
         env:
           GH_TOKEN: ${{ github.token }}
           BY_HAND: ${{ github.event_name == 'workflow_dispatch' }}
@@ -69,7 +69,7 @@ jobs:
           # The last run whose verify passed, whatever deploy-preview did after it.
           base=""
           if [ "$BY_HAND" != "true" ]; then
-            for run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch next \
+            for run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch main \
               --status completed --limit 20 --json databaseId,event \
               --jq '.[] | select(.event != "pull_request") | .databaseId'); do
               base=$(gh run view "$run" --repo "$GITHUB_REPOSITORY" --json headSha,jobs \
@@ -86,25 +86,25 @@ jobs:
         env:
           VITE_MAPS_KEY: ${{ steps.real-maps.outputs.run == 'true' && secrets.MAPS_KEY || '' }}
       - run: npm run coverage
-      - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+      - if: github.ref == 'refs/heads/main' && !github.event.repository.fork
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.sonar/cache
           key: sonar-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: sonar-${{ runner.os }}-
-      - if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+      - if: github.ref == 'refs/heads/main' && !github.event.repository.fork
         continue-on-error: true
         run: npm run sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  # The site from next, once it passed, as a Cloudflare version under the alias `next` (W10):
-  # next-maplacejs.<subdomain>.workers.dev, behind Cloudflare Access; production is deploy.yml's. The
+  # The site from main, once it passed, as a Cloudflare version under the alias `main` (W10):
+  # main-maplacejs.<subdomain>.workers.dev, behind Cloudflare Access; production is deploy.yml's. The
   # Worker was created once by hand: an upload can't create one.
   deploy-preview:
     needs: verify
-    if: github.ref == 'refs/heads/next' && !github.event.repository.fork
+    if: github.ref == 'refs/heads/main' && !github.event.repository.fork
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -125,19 +125,20 @@ jobs:
         env:
           SITE_MAPS_KEY: ${{ secrets.SITE_MAPS_KEY }}
           SITE_MAPS_MAP_ID: ${{ vars.SITE_MAPS_MAP_ID }}
-      # Kept out of search engines until R4, whatever Access lets through; added to the site's own.
+      # Kept out of search engines whatever Access lets through, as the preview isn't the site;
+      # added to the site's own.
       - run: |
           printf '/*\n  X-Robots-Tag: noindex\n' >> apps/site/dist/_headers
       # Wrangler and its install scripts fetched before the Cloudflare token is in the environment.
       - run: npx --yes wrangler@4.150.0 --version
       - working-directory: apps/site
-        run: npx --yes wrangler@4.150.0 versions upload --preview-alias next --message "$GITHUB_SHA"
+        run: npx --yes wrangler@4.150.0 versions upload --preview-alias main --message "$GITHUB_SHA"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       # What the edge adds, which the build never sees (W10c): every page as a browser gets it,
       # through Access with its service token, may ask no other origin before consent.
-      - run: node apps/site/src/site/offsite-check.ts https://next-maplacejs.dmoraschi-io.workers.dev
+      - run: node apps/site/src/site/offsite-check.ts https://main-maplacejs.dmoraschi-io.workers.dev
         env:
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
