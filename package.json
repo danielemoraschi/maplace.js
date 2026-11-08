@@ -33,7 +33,7 @@
     "@biomejs/biome": "^2.6.4",
     "@sonar/scan": "^5.0.2",
     "@types/google.maps": "^3.66.9",
-    "@types/node": "^24.19.2",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/supercluster": "7.1.3",
