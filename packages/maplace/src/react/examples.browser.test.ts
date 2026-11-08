@@ -15,13 +15,13 @@ import { recordingCreateMaplace } from "../testing/examples/recorded-stores";
 // adapter instead of Google's or MapLibre's. Their roots render outside `act`, as on a page, so
 // what they show is polled (this file never loads `testing/act-environment`, which tells React it
 // is inside `act`, nor `testing/render`, which loads it).
-// `maplace` is the source entry the binding imports too, so its stores are recorded.
+// `@maplacejs/maplace` is the source entry the binding imports too, so its stores are recorded.
 const adapters = await vi.hoisted(async () =>
   (await import("../testing/fake/adapters")).fakeAdapters(),
 );
-vi.mock("maplace/google", () => ({ createGoogleAdapter: adapters.createAdapter }));
-vi.mock("maplace/maplibre", () => ({ createMapLibreAdapter: adapters.createAdapter }));
-vi.mock("maplace", async (importOriginal) => {
+vi.mock("@maplacejs/maplace/google", () => ({ createGoogleAdapter: adapters.createAdapter }));
+vi.mock("@maplacejs/maplace/maplibre", () => ({ createMapLibreAdapter: adapters.createAdapter }));
+vi.mock("@maplacejs/maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };
 });

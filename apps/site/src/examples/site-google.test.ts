@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { type GoogleEntry, googleWithMapId } from "./site-google.ts";
 
-/** `maplace/google`'s two functions, recording the options they are called with. */
+/** `@maplacejs/maplace/google`'s two functions, recording the options they are called with. */
 function stubGoogle() {
   return {
     createGoogleAdapter: vi.fn(),

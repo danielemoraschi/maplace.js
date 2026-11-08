@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { packTarball } from "../build/pack-tarball.ts";
-import type { Fetch } from "./published-package.ts";
+import { type Fetch, PACKAGE_NAME } from "./published-package.ts";
 
 /**
  * A package of `files` (path to text) as `npm pack` really packs it, as bytes. Its temp dir isn't
@@ -16,7 +16,7 @@ export function packedPackage(
   const dir = mkdtempSync(join(tmpdir(), "maplace-packed-"));
   try {
     const stage = join(dir, "stage");
-    const manifest = JSON.stringify({ name: "maplace", version });
+    const manifest = JSON.stringify({ name: PACKAGE_NAME, version });
     for (const [path, text] of Object.entries({ "package.json": manifest, ...files })) {
       mkdirSync(dirname(join(stage, path)), { recursive: true });
       writeFileSync(join(stage, path), text);
@@ -27,14 +27,17 @@ export function packedPackage(
   }
 }
 
-const PACKAGE_URL = "https://registry.npmjs.org/maplace/";
+const PACKAGE_URL = `https://registry.npmjs.org/${PACKAGE_NAME}/`;
+
+/** A tarball's file name: a scoped package's keeps only its name's last part, as npm's do. */
+const TARBALL_NAME = PACKAGE_NAME.split("/").at(-1);
 
 /**
  * A test's npm, holding `tarball` as `version` and no other version. Throws on any other URL, so
  * a test can't reach the network by accident.
  */
 export function registryHolding(version: string, tarball: Uint8Array): Fetch {
-  const tarballUrl = `${PACKAGE_URL}-/maplace-${version}.tgz`;
+  const tarballUrl = `${PACKAGE_URL}-/${TARBALL_NAME}-${version}.tgz`;
   const integrity = `sha512-${createHash("sha512").update(tarball).digest("base64")}`;
   return async (url) => {
     if (url === tarballUrl) return new Response(new Uint8Array(tarball));

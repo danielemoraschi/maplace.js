@@ -1,6 +1,6 @@
 # MapLibre adapter
 
-`createMapLibreAdapter(options)` from `maplace/maplibre` draws a store on MapLibre GL JS; `maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `bright` style unless you give another, so it needs no key and no map ID.
+`createMapLibreAdapter(options)` from `@maplacejs/maplace/maplibre` draws a store on MapLibre GL JS; `@maplacejs/maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`@maplacejs/maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `bright` style unless you give another, so it needs no key and no map ID.
 
 The store, its list, its events and its errors are the same as on Google; what differs is in [capabilities](api.md#capabilities): no routes. Provider options belong to the adapter, never to the store. On Google: [Google adapter](google.md).
 
@@ -21,7 +21,7 @@ An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOp
 <!-- example: packages/maplace/examples/menu/maplibre/vanilla.ts -->
 ```ts
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMapLibreMap } from "maplace/maplibre";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 const maplace = createMapLibreMap("#menu-maplibre-vanilla-map", {
   locations: [
@@ -69,8 +69,8 @@ To change a map setting or the style, `mapOptions` and `mapStyle` are enough, wi
 ```ts
 // A map of your own on MapLibre: the page makes it, and Maplace.js draws on it.
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMaplace } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
+import { createMaplace } from "@maplacejs/maplace";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
 import { Map as MapLibreMap } from "maplibre-gl";
 
 const map = new MapLibreMap({
@@ -119,7 +119,7 @@ One script, `maplace-element-maplibre.iife.js`, defines the element with the Map
 
 <!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <maplace-map list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
@@ -134,7 +134,7 @@ From npm, `maplibre-gl` (6.15 or a later 6.x) is the page's to install: an optio
 
 From npm, the page brings maplibre-gl's stylesheet, `maplibre-gl/dist/maplibre-gl.css`, as every MapLibre page does (the CDN script adopts it itself): an import in a bundled module, as the examples do, or a `<link>`. Without it, markers and popups are misplaced, and Maplace.js warns once in the console.
 
-`import "maplace/element/maplibre"` defines the element with the MapLibre provider from npm, on the page's maplibre-gl and stylesheet.
+`import "@maplacejs/maplace/element/maplibre"` defines the element with the MapLibre provider from npm, on the page's maplibre-gl and stylesheet.
 
 ## Styles and tiles
 
@@ -195,9 +195,9 @@ Maplace.js's lists scroll within the map, one it creates or the page's own, clea
 <!-- example: packages/maplace/examples/simple/maplibre/react.tsx -->
 ```tsx
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
-import { MaplaceMap, MaplaceProvider } from "maplace/react";
+import type { Location } from "@maplacejs/maplace";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
+import { MaplaceMap, MaplaceProvider } from "@maplacejs/maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 

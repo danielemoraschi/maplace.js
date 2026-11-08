@@ -21,16 +21,16 @@ interface NotedEntry {
 const MAPLIBRE_ASSETS = fileURLToPath(new URL("../scripts/maplibre-assets.ts", import.meta.url));
 
 /** The provider entries the site notes failed loads of, as the examples import them. */
-type NotedName = "maplace/google" | "maplace/maplibre";
+type NotedName = "@maplacejs/maplace/google" | "@maplacejs/maplace/maplibre";
 
 /** Each provider entry the site notes failed loads of. */
 const NOTED_ENTRIES: Readonly<Record<NotedName, NotedEntry>> = {
-  "maplace/google": {
+  "@maplacejs/maplace/google": {
     id: "\0maplace-google-noted",
     adapter: "createGoogleAdapter",
     map: "createGoogleMap",
   },
-  "maplace/maplibre": {
+  "@maplacejs/maplace/maplibre": {
     id: "\0maplace-maplibre-noted",
     adapter: "createMapLibreAdapter",
     map: "createMapLibreMap",
@@ -68,22 +68,25 @@ function workerReadyingLines(module: string): string[] {
 
 /**
  * The noted entry for `source` from `importer`: Google's for the site's map-ID module, whose
- * `maplace/google` the version modules and the site's `Maplace` reach through it
+ * `@maplacejs/maplace/google` the version modules and the site's `Maplace` reach through it
  * (`exampleMapId`); MapLibre's for those importers themselves. A noted module's own import of
  * its entry is none of these, so it reaches the package.
  */
 function notedFor(source: string, importer: string): string | undefined {
-  if (source === "maplace/google" && importer === ON_SITE) return NOTED_ENTRIES[source].id;
-  if (source === "maplace/maplibre" && isOnSiteMapId(importer)) return NOTED_ENTRIES[source].id;
+  if (source === "@maplacejs/maplace/google" && importer === ON_SITE)
+    return NOTED_ENTRIES[source].id;
+  if (source === "@maplacejs/maplace/maplibre" && isOnSiteMapId(importer))
+    return NOTED_ENTRIES[source].id;
   return undefined;
 }
 
 /**
  * Says in a version's note when its map didn't load, as a page map's says: the examples' vanilla
- * and React versions, and the site's `Maplace` its script versions call, get a `maplace/google`
- * and a `maplace/maplibre` whose calls note a failed load (`version-map-failures.ts`), the
- * example files unchanged. MapLibre's also readies maplibre-gl (its stylesheet, its worker)
- * before the version's code runs, fetched beside the version's module rather than after it.
+ * and React versions, and the site's `Maplace` its script versions call, get a
+ * `@maplacejs/maplace/google` and a `@maplacejs/maplace/maplibre` whose calls note a failed load
+ * (`version-map-failures.ts`), the example files unchanged. MapLibre's also readies maplibre-gl
+ * (its stylesheet, its worker) before the version's code runs, fetched beside the version's module
+ * rather than after it.
  */
 export function exampleFailureNotes(): Plugin {
   const entryOf = new Map(

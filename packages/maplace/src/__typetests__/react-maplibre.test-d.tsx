@@ -1,7 +1,7 @@
 // Compile-time checks of the React binding on MapLibre: each @ts-expect-error must stay an error.
-import type { Location, LocationState } from "maplace";
-import { createMapLibreAdapter, createMapLibreMap } from "maplace/maplibre";
-import { MaplaceMap } from "maplace/react";
+import type { Location, LocationState } from "@maplacejs/maplace";
+import { createMapLibreAdapter, createMapLibreMap } from "@maplacejs/maplace/maplibre";
+import { MaplaceMap } from "@maplacejs/maplace/react";
 
 type Shop = Location<{ price: number }>;
 

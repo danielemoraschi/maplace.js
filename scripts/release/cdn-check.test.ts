@@ -11,7 +11,7 @@ vi.mock("node:timers/promises", () => ({ setTimeout: async () => undefined }));
 
 const VERSION = "1.2.0";
 const SCRIPTS = { "a.iife.js": "a();", "b.iife.js": "b();" };
-const CDN = `https://cdn.jsdelivr.net/npm/maplace@${VERSION}/dist/`;
+const CDN = `https://cdn.jsdelivr.net/npm/@maplacejs/maplace@${VERSION}/dist/`;
 const hash = (text: string) => integrityOf(new TextEncoder().encode(text));
 
 function pinnedReadme(scripts: Readonly<Record<string, string>>): string {

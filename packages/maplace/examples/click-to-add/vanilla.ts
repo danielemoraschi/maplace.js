@@ -1,4 +1,4 @@
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const maplace = createGoogleMap("#click-to-add-vanilla-map", {
   locations: [

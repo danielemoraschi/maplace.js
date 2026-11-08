@@ -9,7 +9,7 @@ import { elementWith } from "./testing/dom";
 const hostWith = (attributes: Record<string, string> = {}) =>
   elementWith({ provider: "maplibre", ...attributes }) as MaplaceMapElement;
 
-describe("maplace/element/maplibre", () => {
+describe("@maplacejs/maplace/element/maplibre", () => {
   it("defines the elements and registers the maplibre provider on import", () => {
     expect(customElements.get("maplace-map")).toBeDefined();
     expect(providerFor(hostWith())).toBeTypeOf("function");

@@ -1,4 +1,4 @@
-import type { MaplaceElementEventMap } from "maplace/element";
+import type { MaplaceElementEventMap } from "@maplacejs/maplace/element";
 import { providerOf, versionOf } from "./by-provider.ts";
 import { versionFailureNote } from "./failure-words.ts";
 import {

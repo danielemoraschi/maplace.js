@@ -1,5 +1,5 @@
 // Each list in api-lists.ts names exactly the members of its type.
-import type { Capability, MaplaceEventName, MisuseCode, RuntimeCode } from "maplace";
+import type { Capability, MaplaceEventName, MisuseCode, RuntimeCode } from "@maplacejs/maplace";
 import { expectTypeOf } from "vitest";
 import type { API_LISTS } from "./api-lists";
 

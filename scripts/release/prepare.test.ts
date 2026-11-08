@@ -18,9 +18,10 @@ const CHANGELOG = [
 
 /** Each version file as small as its pattern allows (version-files.test.ts holds the real ones). */
 const AT_1_0_0: Readonly<Record<string, string>> = {
-  "packages/maplace/package.json": '{\n  "name": "maplace",\n  "version": "1.0.0"\n}\n',
+  "packages/maplace/package.json": '{\n  "name": "@maplacejs/maplace",\n  "version": "1.0.0"\n}\n',
   "package-lock.json":
-    '{\n  "packages": {\n    "packages/maplace": {\n      "version": "1.0.0"\n    }\n  }\n}\n',
+    '{\n  "packages": {\n    "packages/maplace": {\n      "name": "@maplacejs/maplace",\n' +
+    '      "version": "1.0.0"\n    }\n  }\n}\n',
   "packages/maplace/src/element/version.ts": 'export const MAPLACE_VERSION = "1.0.0";\n',
 };
 

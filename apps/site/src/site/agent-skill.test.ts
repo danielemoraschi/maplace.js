@@ -11,6 +11,7 @@ import { CDN_SCRIPTS } from "../../../../scripts/build/cdn-builds.ts";
 import { pinnedSnippetOf, withPinnedScripts } from "../../../../scripts/build/cdn-pins.ts";
 import { readRootFile } from "../../../../scripts/build/package.ts";
 import { fencedBlocks, isFence, relativeLinksIn } from "../../../../scripts/docs/markdown.ts";
+import { PACKAGE_NAME } from "../../../../scripts/release/published-package.ts";
 import { agentSkillMarkdown } from "./agent-skill.ts";
 import {
   AGENT_SKILL_DESCRIPTION,
@@ -181,7 +182,7 @@ describe("the skill's snippets", () => {
 
   it("have the version and integrity filled in", () => {
     expect(skill).toContain(hashOf("maplace-element-cluster.iife.js"));
-    expect(skill).toContain("maplace@1.2.3/dist/");
+    expect(skill).toContain(`/${PACKAGE_NAME}@1.2.3/dist/`);
     expect(skill).toContain('integrity="sha384-');
     expect(skill).not.toContain("x.y.z");
   });

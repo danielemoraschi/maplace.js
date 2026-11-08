@@ -1,4 +1,4 @@
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import { MaplaceError } from "../../../../packages/maplace/src/index.ts";
 import { FIRST_PROVIDER, type Provider } from "../examples/example-providers.ts";
 import { type Conversion, convertPasted } from "./builder-convert.ts";

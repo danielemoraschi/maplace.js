@@ -1,8 +1,8 @@
-// An adapter of your own, proved with maplace/testing: run in Vitest's browser mode. This one
-// draws nothing, so it joins only the suite's first group; yours adds each as it draws that part,
-// and its probe reads and drives your provider's map.
-import type { Adapter } from "maplace";
-import type { ConformanceSubject, MapProbe } from "maplace/testing";
+// An adapter of your own, proved with @maplacejs/maplace/testing: run in Vitest's browser mode.
+// This one draws nothing, so it joins only the suite's first group; yours adds each as it draws
+// that part, and its probe reads and drives your provider's map.
+import type { Adapter } from "@maplacejs/maplace";
+import type { ConformanceSubject, MapProbe } from "@maplacejs/maplace/testing";
 
 function createMyAdapter(): Adapter {
   return {

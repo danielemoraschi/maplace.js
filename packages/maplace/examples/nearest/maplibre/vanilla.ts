@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMapLibreMap } from "maplace/maplibre";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 createMapLibreMap("#nearest-maplibre-vanilla-map", {
   locations: [

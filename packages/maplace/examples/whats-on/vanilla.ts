@@ -1,5 +1,5 @@
-import { createMaplace, type Location, listedLocations, type Maplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createMaplace, type Location, listedLocations, type Maplace } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
 
 /** What the card beside the map says of a venue, besides its name and category. */
 interface VenueDetails {

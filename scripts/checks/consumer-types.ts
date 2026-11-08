@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { cpSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { TSC } from "../build/package.ts";
+import { PACKAGE_NAME } from "../release/published-package.ts";
 
 /** A page's code using the packed package, one per `<fixture>.json` in `consumer/`. */
 export type ConsumerFixture = "core-and-element" | "google" | "maplibre" | "react" | "testing";
@@ -11,8 +12,8 @@ const FIXTURES = join(import.meta.dirname, "consumer");
 /** An error `tsc` reports: `path(line,col): error TSnnnn: …`, or `error TSnnnn: …` for none. */
 const TSC_ERROR = /^(?:(.+?)\(\d+,\d+\): )?error TS\d+:/;
 
-/** A path in an installed package other than maplace. */
-const IN_OTHER_PACKAGE = /(?:^|\/)node_modules\/(?!maplace\/)/;
+/** A path in an installed package other than ours. */
+const IN_OTHER_PACKAGE = new RegExp(`(?:^|/)node_modules/(?!${PACKAGE_NAME}/)`);
 
 export interface ConsumerTypeCheck {
   /** Errors in maplace's declarations or the fixture. */
@@ -21,7 +22,7 @@ export interface ConsumerTypeCheck {
   readonly loadedFiles: readonly string[];
 }
 
-/** Makes `dir` a consumer's project: the fixtures, as ES modules. Install maplace in it apart. */
+/** Makes `dir` a consumer's project: the fixtures, as ES modules. Install the package in it apart. */
 export function layOutConsumer(dir: string): void {
   cpSync(FIXTURES, dir, { recursive: true });
   writeFileSync(join(dir, "package.json"), '{ "type": "module" }\n');

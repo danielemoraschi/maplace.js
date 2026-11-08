@@ -52,7 +52,7 @@ function install({ pin }: AgentSkillSettings): string {
 
 ${providers.join("\n\n")}
 
-\`maplace@1\` follows the latest 1.x and can't carry an integrity hash: pin in production. Google's plain script has no clusterer; for \`cluster\`, this one instead:
+\`@maplacejs/maplace@1\` follows the latest 1.x and can't carry an integrity hash: pin in production. Google's plain script has no clusterer; for \`cluster\`, this one instead:
 
 \`\`\`html
 ${pinnedSnippetOf(withPinnedScripts(readRootFile("README.md"), pin), CDN_SCRIPTS.cluster)}
@@ -74,7 +74,7 @@ From npm the page loads Maps JS: pass \`apiKey\` to \`createGoogleMap\`, or load
 function element({ site }: AgentSkillSettings): string {
   return `## The element
 
-In a bundled app, \`import "maplace/element/google"\` or \`"maplace/element/maplibre"\` defines the same elements; on MapLibre, also import \`maplibre-gl/dist/maplibre-gl.css\`.
+In a bundled app, \`import "@maplacejs/maplace/element/google"\` or \`"@maplacejs/maplace/element/maplibre"\` defines the same elements; on MapLibre, also import \`maplibre-gl/dist/maplibre-gl.css\`.
 
 ${exampleSnippet("quick-start", "page.html")}
 
@@ -126,7 +126,7 @@ function react(): string {
 
 ${exampleSnippet("simple", "react.tsx")}
 
-It runs on a page like the npm one: an element with the id it renders into, a height for its \`.map\`, and, on Google, Maps JS loaded. On MapLibre it differs by \`createMapLibreAdapter\` from \`maplace/maplibre\` and by importing \`maplibre-gl/dist/maplibre-gl.css\`.
+It runs on a page like the npm one: an element with the id it renders into, a height for its \`.map\`, and, on Google, Maps JS loaded. On MapLibre it differs by \`createMapLibreAdapter\` from \`@maplacejs/maplace/maplibre\` and by importing \`maplibre-gl/dist/maplibre-gl.css\`.
 
 - \`MaplaceProvider\` takes ${codeList(REACT_PROPS.provider)}.
 - \`MaplaceMap\` takes ${codeList(REACT_PROPS.map)}.

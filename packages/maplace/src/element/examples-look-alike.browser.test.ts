@@ -27,15 +27,15 @@ import { restoreScreen, showOnPhone } from "./testing/screens";
 const moduleAdapters = await vi.hoisted(async () =>
   (await import("../testing/fake/adapters")).fakeAdapters(),
 );
-vi.mock("maplace/google", async () => {
+vi.mock("@maplacejs/maplace/google", async () => {
   const { fakeGoogleEntry } = await import("../testing/examples/fake-google");
   return fakeGoogleEntry(moduleAdapters);
 });
-vi.mock("maplace/maplibre", async () => {
+vi.mock("@maplacejs/maplace/maplibre", async () => {
   const { fakeMapLibreEntry } = await import("../testing/examples/fake-maplibre");
   return fakeMapLibreEntry(moduleAdapters);
 });
-vi.mock("maplace", async (importOriginal) => {
+vi.mock("@maplacejs/maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };
 });

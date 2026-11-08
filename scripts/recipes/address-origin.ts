@@ -1,7 +1,7 @@
 // An address typed into your own form becomes the point the list measures from. `geocode` is yours;
 // a blank address clears the point. The button stays disabled until this runs: a submit without it
 // would put the address in the page's URL. Returns what stops listening.
-import type { LatLng, Maplace } from "maplace";
+import type { LatLng, Maplace } from "@maplacejs/maplace";
 
 /** Your geocoder: the address's point, or `undefined` when it finds none. */
 export type Geocode = (address: string) => Promise<LatLng | undefined>;

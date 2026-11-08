@@ -1,13 +1,13 @@
 // A page using maplace on MapLibre, type-checked against the packed package
 // (scripts/checks/consumer-types.ts): MapLibre's types come from the maplibre-gl it installed.
 
-import { createMaplace } from "maplace";
+import { createMaplace } from "@maplacejs/maplace";
 import {
   createMapLibreAdapter,
   createMapLibreMap,
   type MapLibreAdapterOptions,
-} from "maplace/maplibre";
-import "maplace/element/maplibre";
+} from "@maplacejs/maplace/maplibre";
+import "@maplacejs/maplace/element/maplibre";
 import { Map as MapLibreMap } from "maplibre-gl";
 
 const pageMap = new MapLibreMap({ container: "map" });

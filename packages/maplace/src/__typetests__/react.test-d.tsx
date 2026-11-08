@@ -7,9 +7,15 @@ import type {
   Maplace,
   MarkerLocation,
   RouteResult,
-} from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-import { LocationList, MaplaceMap, MaplaceProvider, MyLocation, useMaplace } from "maplace/react";
+} from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
+import {
+  LocationList,
+  MaplaceMap,
+  MaplaceProvider,
+  MyLocation,
+  useMaplace,
+} from "@maplacejs/maplace/react";
 import { expectTypeOf } from "vitest";
 
 const shops = [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }];

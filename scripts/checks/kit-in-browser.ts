@@ -1,8 +1,9 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, symlinkSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { ROOT } from "../build/package.ts";
 import { newTempDir, removeTempDir } from "../build/temp-dir.ts";
+import { installedPackageDir } from "../release/published-package.ts";
 import { layOutConsumer } from "./consumer-types.ts";
 
 const VITEST = resolve(ROOT, "node_modules/.bin/vitest");
@@ -62,8 +63,9 @@ export function runKitInBrowser(installed: string): KitRun {
 
 function layOutProject(project: string, installed: string): void {
   layOutConsumer(project);
-  mkdirSync(join(project, "node_modules"));
-  symlinkSync(installed, join(project, "node_modules", "maplace"), "dir");
+  const link = installedPackageDir(project);
+  mkdirSync(dirname(link), { recursive: true });
+  symlinkSync(installed, link, "dir");
 }
 
 /** `env` without what tells a Vitest it runs inside another. */

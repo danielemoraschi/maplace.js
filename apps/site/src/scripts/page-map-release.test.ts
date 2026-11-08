@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   HELD_BY_EXAMPLE_ATTRIBUTE,

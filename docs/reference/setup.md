@@ -1,6 +1,6 @@
 # Setup
 
-A Maplace.js map draws on Google Maps or on MapLibre. On Google it needs Maps JS on the page and an API key, a map ID being optional. The element (its CDN script, or `maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it. On MapLibre it needs no key and no map ID, only a [style URL](#style-url), OpenFreeMap's by default: the MapLibre CDN script brings everything else, and from npm the page installs maplibre-gl.
+A Maplace.js map draws on Google Maps or on MapLibre. On Google it needs Maps JS on the page and an API key, a map ID being optional. The element (its CDN script, or `@maplacejs/maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it. On MapLibre it needs no key and no map ID, only a [style URL](#style-url), OpenFreeMap's by default: the MapLibre CDN script brings everything else, and from npm the page installs maplibre-gl.
 
 ## Key and Map ID
 
@@ -32,7 +32,7 @@ One script, no build step. The element adds Maps JS to the page itself, once how
 
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
@@ -45,7 +45,7 @@ On MapLibre, its own script, with no key:
 
 <!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <maplace-map list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
@@ -56,13 +56,13 @@ On MapLibre, its own script, with no key:
 
 ## With a script of your own
 
-A page that makes its map in its own script uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`maplace`, the provider's and `maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, Maplace.js adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
+A page that makes its map in its own script uses the same CDN script with no build step: the script also sets `Maplace`, a namespace of functions, what the npm entries export (`@maplacejs/maplace`, the provider's and `@maplacejs/maplace/element`), so `Maplace.createGoogleMap(...)` is what an npm page imports as `createGoogleMap`. The store it makes is the page's own, `maplace` in these docs (typed `Maplace` from npm). Given `apiKey`, Maplace.js adds Maps JS to the page itself as the map mounts, as the element does from `api-key`:
 
 <!-- example: packages/maplace/examples/simple/script.html -->
 ```html
 <!doctype html>
 <!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key. -->
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <style>
   #simple-script-map { height: 24rem; }
 </style>
@@ -83,7 +83,7 @@ On MapLibre, the MapLibre script's `Maplace` has `createMapLibreMap` and `create
 ```html
 <!doctype html>
 <!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map mounts on, and the map made with Maplace. -->
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <style>
   #simple-maplibre-script-map { height: 24rem; }
 </style>
@@ -104,7 +104,7 @@ A MapLibre page has to be opened from a web server, and a local one such as `htt
 ## With npm
 
 ```sh
-npm install maplace
+npm install @maplacejs/maplace
 ```
 
 On Google, the page loads Maps JS with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) (or `@googlemaps/js-api-loader`) and gives the map's container its size:
@@ -130,16 +130,16 @@ The module makes the store on a Google map in one call ([`createGoogleMap`](goog
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
   locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
 });
 ```
 
-For the element from npm, `import "maplace/element/google"` defines it with the Google provider; it adds Maps JS itself as on the CDN, or takes the page's when the page loaded it first. With React: [React](react.md). Routes are Google's, and need Maps JS 3.63 or later. Every entry and what it gives: [API reference](api.md).
+For the element from npm, `import "@maplacejs/maplace/element/google"` defines it with the Google provider; it adds Maps JS itself as on the CDN, or takes the page's when the page loaded it first. With React: [React](react.md). Routes are Google's, and need Maps JS 3.63 or later. Every entry and what it gives: [API reference](api.md).
 
-On MapLibre, the page installs maplibre-gl beside Maplace.js (`npm install maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `maplace/maplibre` makes the store in one call, and `import "maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version is the whole page:
+On MapLibre, the page installs maplibre-gl beside Maplace.js (`npm install @maplacejs/maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `@maplacejs/maplace/maplibre` makes the store in one call, and `import "@maplacejs/maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version is the whole page:
 
 <!-- example: packages/maplace/examples/simple/maplibre/vanilla.html -->
 ```html
@@ -155,7 +155,7 @@ On MapLibre, the page installs maplibre-gl beside Maplace.js (`npm install mapla
 <!-- example: packages/maplace/examples/simple/maplibre/vanilla.ts -->
 ```ts
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMapLibreMap } from "maplace/maplibre";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 createMapLibreMap("#simple-maplibre-vanilla-map", {
   locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],

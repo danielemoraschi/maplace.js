@@ -1,4 +1,4 @@
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import type { Locator, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { BUILDER_PAGE } from "../src/site/footer-pages.ts";

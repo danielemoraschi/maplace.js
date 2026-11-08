@@ -5,6 +5,7 @@ import { buildPackage } from "../build/build-package.ts";
 import { packTarball } from "../build/pack-tarball.ts";
 import { ROOT } from "../build/package.ts";
 import { tempDir } from "../build/temp-dir.ts";
+import { installedPackageDir, PACKAGE_NAME } from "../release/published-package.ts";
 import { layOutConsumer, typeCheckConsumer } from "./consumer-types.ts";
 import { runKitInBrowser } from "./kit-in-browser.ts";
 import { packageLintProblems } from "./package-lint.ts";
@@ -17,7 +18,7 @@ const KIT_RUN_MS = 120_000;
 /** Under the repo, so the consumer finds maplace's dependencies installed, as a page would. */
 const consumerDir = tempDir("consumer", join(ROOT, "node_modules/.cache/maplace-checks"));
 const workDir = tempDir("pack");
-const stagedDir = join(consumerDir, "node_modules", "maplace");
+const stagedDir = installedPackageDir(consumerDir);
 let tarball: string;
 
 beforeAll(async () => {
@@ -73,9 +74,8 @@ describe("the packed package", () => {
   it("type-checks a third party's conformance subject for a strict consumer", () => {
     const { errors, loadedFiles } = typeCheckConsumer(consumerDir, "testing");
     expect(errors).toEqual([]);
-    expect(loadedFiles.some((file) => file.endsWith("/maplace/dist/testing/index.d.ts"))).toBe(
-      true,
-    );
+    const declarations = `/node_modules/${PACKAGE_NAME}/dist/testing/index.d.ts`;
+    expect(loadedFiles.some((file) => file.endsWith(declarations))).toBe(true);
   }, 30_000);
 
   it(

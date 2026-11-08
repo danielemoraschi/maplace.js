@@ -27,10 +27,10 @@ describe("searchFacts", () => {
 });
 
 describe("requiredText", () => {
-  const manifest = { exports: {}, name: "maplace", empty: "", count: 3 };
+  const manifest = { exports: {}, name: "@maplacejs/maplace", empty: "", count: 3 };
 
   it("reads a field the manifest has", () => {
-    expect(requiredText(manifest, "name")).toBe("maplace");
+    expect(requiredText(manifest, "name")).toBe("@maplacejs/maplace");
   });
 
   it("throws naming a field that is missing or isn't text", () => {

@@ -1,5 +1,5 @@
-import type { Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const box = document.getElementById("load-on-demand-vanilla-map") as HTMLElement;
 const locations: Location[] = [

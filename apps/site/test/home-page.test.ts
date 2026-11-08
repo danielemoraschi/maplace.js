@@ -47,9 +47,11 @@ describe("the home page's headings and install box", () => {
   it("offers each provider's npm command and pinned script", async () => {
     const { page, context } = await site.visitor();
     await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    expect(await page.locator("#npm-install-google").textContent()).toBe("npm install maplace");
+    expect(await page.locator("#npm-install-google").textContent()).toBe(
+      "npm install @maplacejs/maplace",
+    );
     expect(await page.locator("#npm-install-maplibre").textContent()).toBe(
-      "npm install maplace maplibre-gl",
+      "npm install @maplacejs/maplace maplibre-gl",
     );
     for (const provider of ["google", "maplibre"]) {
       expect(await page.locator(`#pinned-script-${provider}`).textContent()).toContain(

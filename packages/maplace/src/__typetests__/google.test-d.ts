@@ -1,6 +1,6 @@
 // Compile-time checks of the Google adapter's options: each @ts-expect-error must stay an error.
-import type { Adapter } from "maplace";
-import { createGoogleAdapter, type GoogleAdapterOptions } from "maplace/google";
+import type { Adapter } from "@maplacejs/maplace";
+import { createGoogleAdapter, type GoogleAdapterOptions } from "@maplacejs/maplace/google";
 
 // A page's own Google map, named through the options so this file stays outside the google fence.
 declare const pageMap: NonNullable<GoogleAdapterOptions["map"]>;

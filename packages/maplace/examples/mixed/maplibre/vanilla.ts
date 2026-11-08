@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreMap } from "maplace/maplibre";
+import type { Location } from "@maplacejs/maplace";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 const locations: Location[] = [
   { id: "tower-of-london", type: "marker", title: "Tower of London", lat: 51.5081, lng: -0.0759 },

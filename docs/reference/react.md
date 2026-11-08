@@ -1,12 +1,12 @@
 # React
 
-`maplace/react` is the store as React components: a provider that makes one store for its children, a map, a list, controls on the map and a hook. It needs `react` and `react-dom` 19. Nothing touches the DOM on import or on a server render.
+`@maplacejs/maplace/react` is the store as React components: a provider that makes one store for its children, a map, a list, controls on the map and a hook. It needs `react` and `react-dom` 19. Nothing touches the DOM on import or on a server render.
 
 <!-- example: packages/maplace/examples/simple/react.tsx -->
 ```tsx
-import type { Location } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-import { MaplaceMap, MaplaceProvider } from "maplace/react";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
+import { MaplaceMap, MaplaceProvider } from "@maplacejs/maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 

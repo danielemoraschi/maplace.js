@@ -3,7 +3,7 @@ import { livePage } from "./live-page.ts";
 import { INERT_SCRIPT_TYPE } from "./page-scripts.ts";
 
 const PAGE = `<!doctype html>
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <maplace-map api-key="YOUR_KEY">
   <maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome"></maplace-location>
 </maplace-map>`;

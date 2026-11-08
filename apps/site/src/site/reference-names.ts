@@ -10,7 +10,7 @@ import type {
   Route,
   ShapeStyle,
   Snapshot,
-} from "maplace";
+} from "@maplacejs/maplace";
 
 /** Each name of `Name` once: the compiler fails on a missing or an extra key. */
 export function everyName<Name extends string>(

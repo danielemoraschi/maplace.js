@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import type { Locator, Page } from "playwright";
 import { MAPLIBRE_MAP_CLASS } from "../../../packages/maplace/src/maplibre/control-styles.ts";
 import type { VersionKind } from "../src/examples/example-versions.ts";

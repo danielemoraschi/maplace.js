@@ -1,4 +1,4 @@
-import type { MaplaceError } from "maplace";
+import type { MaplaceError } from "@maplacejs/maplace";
 import type { Provider } from "../examples/example-providers.ts";
 import {
   type CodeFailure,

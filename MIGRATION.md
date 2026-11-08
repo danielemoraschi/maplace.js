@@ -1,6 +1,6 @@
 # Migrating from 0.2 to 1.0
 
-Maplace.js 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in the tag [`0.2.10`](https://github.com/danielemoraschi/maplace.js/tree/0.2.10). On npm, `maplace-js` becomes `maplace`. This guide moves a page to 1.0: what changed, a page before and after, how to convert your locations, then every 0.2 option, field, method and callback with what replaces it.
+Maplace.js 1.0 is a rewrite. A 0.2 page keeps working on 0.2: its code stays in the tag [`0.2.10`](https://github.com/danielemoraschi/maplace.js/tree/0.2.10). On npm, `maplace-js` becomes `@maplacejs/maplace`. This guide moves a page to 1.0: what changed, a page before and after, how to convert your locations, then every 0.2 option, field, method and callback with what replaces it.
 
 ## What changed
 
@@ -38,7 +38,7 @@ In 1.0 the element does the same, loading Google Maps itself:
 
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
@@ -50,7 +50,7 @@ On MapLibre, the same page loads `maplace-element-maplibre.iife.js` and drops `a
 A page that builds the map in its own script, as 0.2's did, calls `Maplace.createGoogleMap` on the same CDN script, with no build step: `Maplace` is a namespace now, not a constructor, and the key goes in the options, Maplace.js loading Google Maps with it:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <div id="gmap" style="height: 24rem"></div>
 <div id="controls"></div>
 <script type="module">
@@ -70,7 +70,7 @@ On MapLibre, the MapLibre script and `Maplace.createMapLibreMap`, with no key.
 A page with a bundler makes the same call, `createGoogleMap` from npm, on a page that loads Maps JS with Google's bootstrap loader ([README](README.md#with-a-bundler)); the list goes where 0.2's `controls_div` put it:
 
 ```ts
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 createGoogleMap("#gmap", {
   locations: [
@@ -81,7 +81,7 @@ createGoogleMap("#gmap", {
 });
 ```
 
-On MapLibre, `createMapLibreMap` from `maplace/maplibre` takes the same options, on a page that installs `maplibre-gl` and imports its stylesheet instead of loading Maps JS ([README](README.md#with-a-bundler)).
+On MapLibre, `createMapLibreMap` from `@maplacejs/maplace/maplibre` takes the same options, on a page that installs `maplibre-gl` and imports its stylesheet instead of loading Maps JS ([README](README.md#with-a-bundler)).
 
 ## Converting your locations
 
@@ -92,7 +92,7 @@ The [snippet builder](https://maplacejs.com/builder/) does this in the browser: 
 <!-- example: packages/maplace/examples/migrate/from-0.2.ts -->
 ```ts
 // Converting 0.2 locations: ids from the old 1-based index, `lon` → `lng`, `zoom` kept.
-import { createMaplace, type MarkerLocation } from "maplace";
+import { createMaplace, type MarkerLocation } from "@maplacejs/maplace";
 
 export interface Legacy {
   readonly lat: number;
@@ -131,7 +131,7 @@ These snippets are TypeScript for a bundler; on a page of script tags, drop the 
 <!-- example: packages/maplace/examples/migrate/circle-from-0.2.ts -->
 ```ts
 // Converting a 0.2 circle: its point is `center`, and `radius` is a field.
-import type { CircleLocation } from "maplace";
+import type { CircleLocation } from "@maplacejs/maplace";
 import { type Legacy, toLocation } from "./from-0.2";
 
 interface LegacyCircle extends Legacy {
@@ -226,7 +226,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `SetLocations(locations, reload)` | `setLocations(locations)`; only the differences reach the map |
 | `AddLocations`, `AddLocation`, `RemoveLocations` | `setLocations` with the new array: one way to change data |
 | `ShowOnMenu(index)` | dropped: a location is in the list when it is shown and its `listed` isn't `false` |
-| `AddControl(name, menu)` | `defineListView(name, factory)` in `maplace/element`, used as `list="<name>"`; in code, `createListView(maplace, { render })` or your own view from `subscribe` and `getSnapshot`. A control that isn't a menu goes on the map the same way: with the element, in a view of yours ([List views](docs/reference/element.md#list-views)); with the parts, `adapter.mountControl` |
+| `AddControl(name, menu)` | `defineListView(name, factory)` in `@maplacejs/maplace/element`, used as `list="<name>"`; in code, `createListView(maplace, { render })` or your own view from `subscribe` and `getSnapshot`. A control that isn't a menu goes on the map the same way: with the element, in a view of yours ([List views](docs/reference/element.md#list-views)); with the parts, `adapter.mountControl` |
 | internals (`oMap`, `markers`, `circles`, …) | pass your own map and keep the reference |
 
 ### Events

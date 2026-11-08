@@ -6,7 +6,7 @@ import {
   distanceTo,
   type ListView,
   type MyLocationControl,
-} from "maplace";
+} from "@maplacejs/maplace";
 import { expectTypeOf } from "vitest";
 
 const shop = createMaplace({ locations: [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }] });

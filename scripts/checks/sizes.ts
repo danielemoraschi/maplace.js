@@ -23,24 +23,29 @@ export type SizeMeasure = {
 );
 
 export const SIZE_MEASURES: readonly SizeMeasure[] = [
-  { name: "maplace", rfcRow: "Core (`maplace`)", kind: "esm", entry: PACKAGE_ENTRIES.core },
   {
-    name: "maplace/google",
-    rfcRow: "Google adapter (`maplace/google`)",
+    name: "@maplacejs/maplace",
+    rfcRow: "Core (`@maplacejs/maplace`)",
+    kind: "esm",
+    entry: PACKAGE_ENTRIES.core,
+  },
+  {
+    name: "@maplacejs/maplace/google",
+    rfcRow: "Google adapter (`@maplacejs/maplace/google`)",
     kind: "esm",
     entry: PACKAGE_ENTRIES.google,
     beside: PACKAGE_ENTRIES.core,
   },
   {
-    name: "maplace/maplibre",
-    rfcRow: "MapLibre adapter (`maplace/maplibre`)",
+    name: "@maplacejs/maplace/maplibre",
+    rfcRow: "MapLibre adapter (`@maplacejs/maplace/maplibre`)",
     kind: "esm",
     entry: PACKAGE_ENTRIES.maplibre,
     beside: PACKAGE_ENTRIES.core,
   },
   {
-    name: "maplace/react",
-    rfcRow: "React binding (`maplace/react`)",
+    name: "@maplacejs/maplace/react",
+    rfcRow: "React binding (`@maplacejs/maplace/react`)",
     kind: "esm",
     entry: PACKAGE_ENTRIES.react,
     beside: PACKAGE_ENTRIES.core,

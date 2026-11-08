@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readRootFile } from "../../../../scripts/build/package.ts";
+import { PACKAGE_NAME } from "../../../../scripts/release/published-package.ts";
 import { installOf } from "./install-loader.ts";
 
 describe("installOf", () => {
@@ -10,15 +11,18 @@ describe("installOf", () => {
     expect(version).toBe("1.2.3");
     expect(providers.map(({ provider }) => provider)).toEqual(["google", "maplibre"]);
     const [google, maplibre] = providers.map(({ cdnSnippet }) => cdnSnippet);
-    expect(google).toContain('maplace@1.2.3/dist/maplace-element.iife.js"');
+    expect(google).toContain(`/${PACKAGE_NAME}@1.2.3/dist/maplace-element.iife.js"`);
     expect(google).toContain('integrity="sha384-of-maplace-element.iife.js"');
-    expect(maplibre).toContain('maplace@1.2.3/dist/maplace-element-maplibre.iife.js"');
+    expect(maplibre).toContain(`/${PACKAGE_NAME}@1.2.3/dist/maplace-element-maplibre.iife.js"`);
     expect(maplibre).toContain('integrity="sha384-of-maplace-element-maplibre.iife.js"');
   });
 
   it("offers an npm command per provider, MapLibre's adding maplibre-gl", () => {
     const commands = installOf(pin).providers.map(({ npmCommand }) => npmCommand);
-    expect(commands).toEqual(["npm install maplace", "npm install maplace maplibre-gl"]);
+    expect(commands).toEqual([
+      "npm install @maplacejs/maplace",
+      "npm install @maplacejs/maplace maplibre-gl",
+    ]);
   });
 
   it("offers only npm commands the README gives", () => {

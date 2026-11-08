@@ -8,7 +8,7 @@ The store is Maplace.js's headless map state: locations, selection, hover, filte
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
   locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
@@ -215,7 +215,7 @@ Every adapter puts a node of yours on its map with `mountControl(node, position)
 
 ### Proving an adapter
 
-`maplace/testing` runs the suite Maplace.js's own adapters pass on yours, so a provider of your own can show it keeps the contract. It runs in [Vitest's browser mode](https://vitest.dev/guide/browser/), in a real browser, with `vitest` (tested on 5) and a browser provider such as `@vitest/browser-playwright` installed, and its browser (`npx playwright install chromium`); no page loads it, and it's built apart from the other entries, so it adds nothing to them.
+`@maplacejs/maplace/testing` runs the suite Maplace.js's own adapters pass on yours, so a provider of your own can show it keeps the contract. It runs in [Vitest's browser mode](https://vitest.dev/guide/browser/), in a real browser, with `vitest` (tested on 5) and a browser provider such as `@vitest/browser-playwright` installed, and its browser (`npx playwright install chromium`); no page loads it, and it's built apart from the other entries, so it adds nothing to them.
 
 `describeConformance(subject)` registers the checks. A subject has a `name` and a `create(container)` returning `{ adapter, probe }`:
 
@@ -230,11 +230,11 @@ This one draws nothing, so it joins only the first group:
 
 <!-- example: scripts/checks/consumer/testing.ts -->
 ```ts
-// An adapter of your own, proved with maplace/testing: run in Vitest's browser mode. This one
-// draws nothing, so it joins only the suite's first group; yours adds each as it draws that part,
-// and its probe reads and drives your provider's map.
-import type { Adapter } from "maplace";
-import type { ConformanceSubject, MapProbe } from "maplace/testing";
+// An adapter of your own, proved with @maplacejs/maplace/testing: run in Vitest's browser mode.
+// This one draws nothing, so it joins only the suite's first group; yours adds each as it draws
+// that part, and its probe reads and drives your provider's map.
+import type { Adapter } from "@maplacejs/maplace";
+import type { ConformanceSubject, MapProbe } from "@maplacejs/maplace/testing";
 
 function createMyAdapter(): Adapter {
   return {

@@ -1,6 +1,6 @@
 # Google adapter
 
-`createGoogleAdapter(options)` from `maplace/google` draws a store on Google Maps; `maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store. On MapLibre: [MapLibre adapter](maplibre.md).
+`createGoogleAdapter(options)` from `@maplacejs/maplace/google` draws a store on Google Maps; `@maplacejs/maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`@maplacejs/maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store. On MapLibre: [MapLibre adapter](maplibre.md).
 
 ## Options
 
@@ -24,7 +24,7 @@
 
 <!-- example: packages/maplace/examples/menu/vanilla.ts -->
 ```ts
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const maplace = createGoogleMap("#menu-vanilla-map", {
   locations: [
@@ -74,8 +74,8 @@ To change a map setting, `mapOptions` is enough, with no map of your own. Here t
 <!-- example: packages/maplace/examples/own-map/google.ts -->
 ```ts
 // A map of your own on Google: the page loads Maps JS and makes it, and Maplace.js draws on it.
-import { createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createMaplace } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
 
 const { Map: GoogleMap } = await google.maps.importLibrary("maps");
 const map = new GoogleMap(document.querySelector("#own-map") as HTMLElement, {

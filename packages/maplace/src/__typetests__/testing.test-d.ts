@@ -1,6 +1,6 @@
-// Compile-time checks of `maplace/testing`: each @ts-expect-error must stay an error.
-import type { Adapter } from "maplace";
-import type * as kit from "maplace/testing";
+// Compile-time checks of `@maplacejs/maplace/testing`: each @ts-expect-error must stay an error.
+import type { Adapter } from "@maplacejs/maplace";
+import type * as kit from "@maplacejs/maplace/testing";
 import {
   type ConformanceGroup,
   type ConformanceSubject,
@@ -14,7 +14,7 @@ import {
   SELECTED_LOOK,
   type ShownPopup,
   type StackedLocation,
-} from "maplace/testing";
+} from "@maplacejs/maplace/testing";
 import { expectTypeOf } from "vitest";
 
 declare const adapter: Adapter;

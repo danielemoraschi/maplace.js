@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { packageManifest, readRootFile } from "../../../scripts/build/package.ts";
 import { CHANGELOG_FILE, listLines } from "../../../scripts/docs/changelog-lines.ts";
 import { captures, section } from "../../../scripts/docs/markdown.ts";
+import { PACKAGE_NAME } from "../../../scripts/release/published-package.ts";
 import { AGENT_LINKS, LLMS_TXT_ROUTE } from "../src/site/agent-links.ts";
 import { AGENTS_PAGE, BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import {
@@ -72,7 +73,7 @@ describe("a page's Markdown", () => {
   it("has Getting started's pinned scripts", async () => {
     const markdown = await (await served("/getting-started/index.md")).text();
     expect(markdown).toContain("# Getting started");
-    expect(markdown).toContain(`maplace@${packageManifest().version}`);
+    expect(markdown).toContain(`/${PACKAGE_NAME}@${packageManifest().version}`);
   });
 
   it("has every line of the changelog", async () => {

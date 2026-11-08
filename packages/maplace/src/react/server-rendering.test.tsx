@@ -5,7 +5,7 @@ import { LocationList, MapControl, MaplaceMap, MaplaceProvider, MyLocation } fro
 import { TOWNS } from "./testing/towns";
 
 // No DOM in this file: importing the binding, and rendering it on a server, must not need one.
-describe("maplace/react on a server", () => {
+describe("@maplacejs/maplace/react on a server", () => {
   it("renders the map's and the list's places, empty, with no DOM, React content or controls or not", () => {
     expect(typeof document).toBe("undefined");
     const html = renderToString(

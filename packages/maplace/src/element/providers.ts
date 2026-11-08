@@ -24,7 +24,7 @@ export function providerFor(host: Element): ProviderFactory {
   const [only, ...others] = providers.values();
   if (only === undefined) {
     throw elementMisuse(
-      "no provider is registered: import maplace/element/google or maplace/element/maplibre, or load a CDN script",
+      "no provider is registered: import @maplacejs/maplace/element/google or @maplacejs/maplace/element/maplibre, or load a CDN script",
       PROVIDER_FIELD,
     );
   }

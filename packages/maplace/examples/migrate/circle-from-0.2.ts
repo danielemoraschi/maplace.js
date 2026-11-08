@@ -1,5 +1,5 @@
 // Converting a 0.2 circle: its point is `center`, and `radius` is a field.
-import type { CircleLocation } from "maplace";
+import type { CircleLocation } from "@maplacejs/maplace";
 import { type Legacy, toLocation } from "./from-0.2";
 
 interface LegacyCircle extends Legacy {

@@ -1,7 +1,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
-import { MaplaceMap, MaplaceProvider } from "maplace/react";
+import type { Location } from "@maplacejs/maplace";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
+import { MaplaceMap, MaplaceProvider } from "@maplacejs/maplace/react";
 import { StrictMode, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 

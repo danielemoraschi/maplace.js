@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { LatLng, Location } from "maplace";
-import { createMapLibreMap } from "maplace/maplibre";
+import type { LatLng, Location } from "@maplacejs/maplace";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 // Cinque Terre's coastal path, Riomaggiore to Monterosso, through the villages between.
 const path: LatLng[] = [

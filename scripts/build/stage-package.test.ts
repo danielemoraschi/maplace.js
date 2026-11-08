@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { relativeLinksIn } from "../docs/markdown.ts";
+import { PACKAGE_NAME } from "../release/published-package.ts";
 import { CDN_SCRIPTS } from "./cdn-builds.ts";
 import { pinnedScriptsIn } from "./cdn-pins.ts";
 import { readRootFile } from "./package.ts";
@@ -25,7 +26,7 @@ describe("the staged package", () => {
       expect(Object.values(CDN_SCRIPTS)).toContain(file);
       const integrity = integrityOfFile(join(packageDir, "dist", file));
       expect(readme).toContain(
-        `maplace@${manifest().version}/dist/${file}"\n  integrity="${integrity}"`,
+        `/${PACKAGE_NAME}@${manifest().version}/dist/${file}"\n  integrity="${integrity}"`,
       );
     }
     expect(readme).not.toContain("x.y.z");

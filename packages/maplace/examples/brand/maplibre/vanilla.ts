@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreMap } from "maplace/maplibre";
+import type { Location } from "@maplacejs/maplace";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 /**
  * The brand's palette on a delivery area, at rest, hovered and selected: hex colours, which every

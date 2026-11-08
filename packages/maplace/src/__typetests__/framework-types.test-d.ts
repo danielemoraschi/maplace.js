@@ -1,10 +1,10 @@
 // Compile-time checks of the elements in Vue's and Svelte's templates (element/framework-types.ts): each @ts-expect-error must stay an error.
-import type { Location, Route } from "maplace";
+import type { Location, Route } from "@maplacejs/maplace";
 import type {
   MaplaceElementEventMap,
   MaplaceLocationElement,
   MaplaceMapElement,
-} from "maplace/element";
+} from "@maplacejs/maplace/element";
 import type { SvelteHTMLElements } from "svelte/elements";
 import { expectTypeOf } from "vitest";
 import type { GlobalComponents } from "vue";

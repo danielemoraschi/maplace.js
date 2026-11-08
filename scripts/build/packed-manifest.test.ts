@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { packedManifest } from "./packed-manifest.ts";
 
 const MANIFEST = {
-  name: "maplace",
+  name: "@maplacejs/maplace",
   files: ["dist"],
   sideEffects: ["./dist/element/index.js", "./src/element/index.ts"],
   exports: {
@@ -27,7 +27,7 @@ describe("packedManifest", () => {
   it("keeps the conditions' order, and every other field", () => {
     const packed = packedManifest(MANIFEST);
     expect(Object.keys(packed.exports["."] as object)).toEqual(["types", "default"]);
-    expect(packed).toMatchObject({ name: "maplace", files: ["dist"] });
+    expect(packed).toMatchObject({ name: "@maplacejs/maplace", files: ["dist"] });
   });
 
   it("drops the side effects only the source has: npm packs no src", () => {

@@ -22,10 +22,10 @@ export const PACKAGE_ENTRIES = {
   react: `${SRC}/react/index.ts`,
 } as const;
 
-/** `maplace/testing`'s source: built apart, as sharing chunks with the others would grow them. */
+/** `@maplacejs/maplace/testing`'s source, built apart: sharing chunks would grow the others. */
 export const TESTING_ENTRY = `${SRC}/testing/index.ts`;
 
-/** Every published entry, `maplace/testing` among them. */
+/** Every published entry, `@maplacejs/maplace/testing` among them. */
 export const PUBLISHED_ENTRIES = { ...PACKAGE_ENTRIES, testing: TESTING_ENTRY } as const;
 
 /** The repo's TypeScript compiler (TS 7 is a native binary, with no JS API). */

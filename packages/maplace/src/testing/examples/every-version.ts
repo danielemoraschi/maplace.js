@@ -52,8 +52,8 @@ export interface VersionRuns {
 }
 
 /**
- * Where the adapters come from: the element's, and the ones `maplace/google`'s and
- * `maplace/maplibre`'s mocks and the page's `Maplace` make.
+ * Where the adapters come from: the element's, and the ones `@maplacejs/maplace/google`'s and
+ * `@maplacejs/maplace/maplibre`'s mocks and the page's `Maplace` make.
  */
 export interface VersionAdapters {
   readonly pageAdapters: readonly FakeAdapter[];

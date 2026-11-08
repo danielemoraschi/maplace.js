@@ -14,7 +14,11 @@ const CLUSTERER = "@googlemaps/markerclusterer";
 const SUPERCLUSTER = "supercluster";
 const REACT = ["react", "react-dom"];
 const MAPLIBRE = "maplibre-gl";
-const ELEMENT_ENTRIES = ["maplace/element", "maplace/element/google", "maplace/element/maplibre"];
+const ELEMENT_ENTRIES = [
+  "@maplacejs/maplace/element",
+  "@maplacejs/maplace/element/google",
+  "@maplacejs/maplace/element/maplibre",
+];
 /**
  * The entries on MapLibre, by name in `PACKAGE_ENTRIES`: they alone load maplibre-gl and
  * supercluster.
@@ -171,6 +175,6 @@ describe("the npm ESM build", () => {
   );
 
   it("leaves nothing of the core in a page's bundle that uses none of it", () => {
-    expect(bundledPage('import "maplace";').trim()).toBe("");
+    expect(bundledPage('import "@maplacejs/maplace";').trim()).toBe("");
   });
 });

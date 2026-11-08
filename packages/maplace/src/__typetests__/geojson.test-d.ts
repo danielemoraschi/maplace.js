@@ -1,6 +1,11 @@
 // Compile-time checks of the GeoJSON helper: each @ts-expect-error must stay an error.
+
+import {
+  type GeoJSONFeatureCollection,
+  type Location,
+  locationsFromGeoJSON,
+} from "@maplacejs/maplace";
 import type { Feature, FeatureCollection, Point } from "geojson";
-import { type GeoJSONFeatureCollection, type Location, locationsFromGeoJSON } from "maplace";
 import { expectTypeOf } from "vitest";
 
 declare const anyCollection: FeatureCollection;

@@ -1,8 +1,9 @@
 import { spawnSync } from "node:child_process";
 import { cpSync, mkdirSync, symlinkSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { ROOT } from "../build/package.ts";
 import { newTempDir, removeTempDir } from "../build/temp-dir.ts";
+import { installedPackageDir } from "../release/published-package.ts";
 
 const APP_SOURCE = join(import.meta.dirname, "rsc-app");
 const BUILD_AND_RENDER_FILE = "server-components-build.ts";
@@ -44,8 +45,9 @@ export function renderServerComponentsApp(installed: string): ServerComponentsRe
 
 function layOutApp(app: string, installed: string): void {
   cpSync(APP_SOURCE, app, { recursive: true });
-  mkdirSync(join(app, "node_modules"));
-  symlinkSync(installed, join(app, "node_modules", "maplace"), "dir");
+  const link = installedPackageDir(app);
+  mkdirSync(dirname(link), { recursive: true });
+  symlinkSync(installed, link, "dir");
 }
 
 /** The render the run printed as JSON, or its output when it printed something else. */

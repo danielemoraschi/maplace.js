@@ -1,5 +1,5 @@
-import type { LatLng, Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { LatLng, Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 // Cinque Terre's coastal path, Riomaggiore to Monterosso, through the villages between.
 const path: LatLng[] = [

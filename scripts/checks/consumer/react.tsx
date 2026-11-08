@@ -1,9 +1,9 @@
 // A React page using maplace, type-checked against the packed package
 // (scripts/checks/consumer-types.ts): React's types come from the page's own install.
-import type { Location, LocationState } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-import { createMapLibreAdapter } from "maplace/maplibre";
-import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
+import type { Location, LocationState } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
+import { LocationList, MaplaceMap, MaplaceProvider, useMaplace } from "@maplacejs/maplace/react";
 
 const createAdapter = () => createGoogleAdapter({ mapId: "DEMO_MAP_ID" });
 const towns: Location<{ population: number }>[] = [

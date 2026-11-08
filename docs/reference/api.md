@@ -2,7 +2,7 @@
 
 Every export of every entry, with where it is explained, then the error codes and the capabilities. One package, one version for all entries; the package is ES modules only.
 
-## `maplace`
+## `@maplacejs/maplace`
 
 The store, the list view, the GeoJSON helper, the adapter contract and the types. Side-effect-free.
 
@@ -35,7 +35,7 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 | `ControlPosition` | type | A corner of the map: [`<MapControl>`](react.md#mapcontrol), [`<LocationList>`](react.md#locationlist)'s `position` |
 | `Adapter`, `AdapterHost`, `MountContext`, `LocationDiff`, `PresentationState`, `Drawable`, `ResolvedPopupOptions`, `ResolvedView` | types | The adapter contract, for a new provider: [RFC §3 Shape](../rfc-1.0.md#shape) |
 
-## `maplace/google`
+## `@maplacejs/maplace/google`
 
 The Google Maps adapter: the only entry that knows `google.maps`.
 
@@ -46,7 +46,7 @@ The Google Maps adapter: the only entry that knows `google.maps`.
 | `createGoogleMap` | function | [`createGoogleMap`](google.md#creategooglemap) |
 | `GoogleMapOptions`, `GoogleMapList`, `GoogleMapMyLocation` | types | [`createGoogleMap`](google.md#creategooglemap) |
 
-## `maplace/maplibre`
+## `@maplacejs/maplace/maplibre`
 
 The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise: the only entry that knows `maplibre-gl`, which the page installs, with its stylesheet.
 
@@ -57,7 +57,7 @@ The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise
 | `createMapLibreMap` | function | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
 | `MapLibreMapOptions`, `MapLibreMapList`, `MapLibreMapMyLocation` | types | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
 
-## `maplace/element`
+## `@maplacejs/maplace/element`
 
 `<maplace-map>` and `<maplace-location>`, defined on import, with no provider registered.
 
@@ -70,7 +70,7 @@ The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise
 | `MaplaceLocationElement` | type | [Location attributes](element.md#location-attributes) |
 | `MaplaceElementEventMap` | type | [Events](element.md#events) |
 
-## `maplace/element/google`
+## `@maplacejs/maplace/element/google`
 
 The element with the Google provider registered; the Google CDN scripts are this entry bundled.
 
@@ -78,7 +78,7 @@ The element with the Google provider registered; the Google CDN scripts are this
 |---|---|---|
 | `MaplaceMapElement` | type | [Properties and methods](element.md#properties-and-methods), [provider attributes](google.md#provider-attributes) |
 
-## `maplace/element/maplibre`
+## `@maplacejs/maplace/element/maplibre`
 
 The element with the MapLibre provider registered; the MapLibre CDN script is this entry bundled, with maplibre-gl.
 
@@ -88,9 +88,9 @@ The element with the MapLibre provider registered; the MapLibre CDN script is th
 
 ## The CDN scripts' `Maplace`
 
-Each CDN script also sets one global, `Maplace`: the exports of `maplace`, `maplace/element` and its provider's entry above, so a page's own script calls `Maplace.createGoogleMap(...)` where an npm page imports `createGoogleMap`. The MapLibre script adds `Maplace.maplibre`, the maplibre-gl it bundles. It holds functions, no state: the store a page makes is its own ([with a script of your own](setup.md#with-a-script-of-your-own)).
+Each CDN script also sets one global, `Maplace`: the exports of `@maplacejs/maplace`, `@maplacejs/maplace/element` and its provider's entry above, so a page's own script calls `Maplace.createGoogleMap(...)` where an npm page imports `createGoogleMap`. The MapLibre script adds `Maplace.maplibre`, the maplibre-gl it bundles. It holds functions, no state: the store a page makes is its own ([with a script of your own](setup.md#with-a-script-of-your-own)).
 
-## `maplace/react`
+## `@maplacejs/maplace/react`
 
 The React binding, a client boundary (`"use client"`).
 
@@ -104,7 +104,7 @@ The React binding, a client boundary (`"use client"`).
 | `MyLocation`, `MyLocationProps` | component, type | [`<MyLocation>`](react.md#mylocation) |
 | `useMaplace` | hook | [`useMaplace()`](react.md#usemaplace) |
 
-## `maplace/testing`
+## `@maplacejs/maplace/testing`
 
 The conformance suite, for an adapter of your own; it needs `vitest` (an optional peer) in browser mode, and no page loads it.
 

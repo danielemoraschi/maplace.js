@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { section } from "../docs/markdown.ts";
 import { RFC } from "./rfc.ts";
 
-// A budget row of the Numbers table, e.g. | Core (`maplace`) | ≤ 15.5 kB |.
+// A budget row of the Numbers table, e.g. | Core (`@maplacejs/maplace`) | ≤ 15.5 kB |.
 const BUDGET_ROW = /^\| (.+?) \| ≤ ([\d.]+) kB \|$/gm;
 
 /** The size budgets RFC §3 Numbers sets, by row: the one place they are written. */

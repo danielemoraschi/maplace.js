@@ -1,4 +1,4 @@
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const notes: Readonly<Record<string, string>> = {
   london: "Capital of the United Kingdom.",

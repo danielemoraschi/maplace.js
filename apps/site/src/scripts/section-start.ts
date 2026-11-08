@@ -1,4 +1,4 @@
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import { type ConsentLatch, gateMaps } from "../consent/map-gate.ts";
 import type { WhenVisible } from "../consent/when-visible.ts";
 import { startFailureNotes } from "./map-failures.ts";

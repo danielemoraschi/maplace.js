@@ -11,8 +11,8 @@ import type {
   RouteStep,
   Snapshot,
   Viewport,
-} from "maplace";
-import { createMaplace } from "maplace";
+} from "@maplacejs/maplace";
+import { createMaplace } from "@maplacejs/maplace";
 import { expectTypeOf } from "vitest";
 
 declare const maplace: Maplace;

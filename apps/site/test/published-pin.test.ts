@@ -7,6 +7,7 @@ import { ROOT } from "../../../scripts/build/package.ts";
 import { integrityOf } from "../../../scripts/build/subresource-integrity.ts";
 import { tempDir } from "../../../scripts/build/temp-dir.ts";
 import { packedPackage } from "../../../scripts/release/fake-registry.ts";
+import { PACKAGE_NAME } from "../../../scripts/release/published-package.ts";
 import { type BuiltSite, buildAndServeSite, SITE_WAIT_MS } from "./built-site.ts";
 
 const VERSION = "1.2.0";
@@ -20,7 +21,7 @@ const preloaded = {
 const released = (file: string) => `/* released ${file} */`;
 const releasedIntegrity = (file: string) => integrityOf(new TextEncoder().encode(released(file)));
 const pinOf = (file: string) =>
-  `maplace@${VERSION}/dist/${file}"\n  integrity="${releasedIntegrity(file)}"`;
+  `/${PACKAGE_NAME}@${VERSION}/dist/${file}"\n  integrity="${releasedIntegrity(file)}"`;
 
 describe("a site build at a published version", () => {
   const tarballDir = tempDir("published-pin");

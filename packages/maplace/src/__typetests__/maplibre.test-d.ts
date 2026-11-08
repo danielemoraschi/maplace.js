@@ -1,13 +1,14 @@
-// Compile-time checks of maplace/maplibre's options: each @ts-expect-error must stay an error.
+// Compile-time checks of @maplacejs/maplace/maplibre's options: each @ts-expect-error must stay
+// an error.
 
-import type { Location, Maplace } from "maplace";
+import type { Location, Maplace } from "@maplacejs/maplace";
 import {
   createMapLibreAdapter,
   createMapLibreMap,
   type MapLibreAdapterOptions,
   type MapLibreMapList,
   type MapLibreMapMyLocation,
-} from "maplace/maplibre";
+} from "@maplacejs/maplace/maplibre";
 import { expectTypeOf } from "vitest";
 
 declare const pageMap: NonNullable<MapLibreAdapterOptions["map"]>;

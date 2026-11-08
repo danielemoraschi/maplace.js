@@ -1,5 +1,6 @@
 import type { LoaderContext } from "astro/loaders";
 import { describe, expect, it, vi } from "vitest";
+import { PACKAGE_NAME } from "../../../../scripts/release/published-package.ts";
 import { REPO_DOCS } from "./repo-docs.ts";
 import {
   repoDocMarkdown,
@@ -107,7 +108,7 @@ describe("repoDocMarkdown", () => {
 
   it("pins Getting started's CDN scripts and links Migrating to its page", () => {
     const markdown = repoDocMarkdown(doc("getting-started"), settings);
-    expect(markdown).toContain('maplace@1.2.3/dist/maplace-element.iife.js"');
+    expect(markdown).toContain(`/${PACKAGE_NAME}@1.2.3/dist/maplace-element.iife.js"`);
     expect(markdown).toContain('integrity="sha384-of-maplace-element.iife.js"');
     expect(markdown).toContain("](/migrating/)");
     expect(markdown).not.toMatch(/^# maplace/);

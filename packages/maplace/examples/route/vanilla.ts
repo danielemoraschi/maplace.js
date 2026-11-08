@@ -1,5 +1,5 @@
-import type { Location, RouteLeg } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location, RouteLeg } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const locations: Location[] = [
   { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },

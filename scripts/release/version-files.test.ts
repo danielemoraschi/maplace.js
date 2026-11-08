@@ -17,7 +17,7 @@ const constant = versionFile("element/version.ts");
 describe("withVersion", () => {
   it("changes the version and nothing else", () => {
     const text =
-      '{\n  "name": "maplace",\n  "version": "0.0.0",\n  "dependencies": {\n    "x": { "version": "1.0.0" }\n  }\n}\n';
+      '{\n  "name": "@maplacejs/maplace",\n  "version": "0.0.0",\n  "dependencies": {\n    "x": { "version": "1.0.0" }\n  }\n}\n';
     expect(withVersion(text, { file: manifest, version: "1.0.0-beta.1" })).toBe(
       text.replace('"version": "0.0.0"', '"version": "1.0.0-beta.1"'),
     );
@@ -32,6 +32,16 @@ describe("withVersion", () => {
         '"packages/maplace": {\n      "version": "0.0.0"',
         '"packages/maplace": {\n      "version": "1.0.0"',
       ),
+    );
+  });
+
+  it("writes the version into a lockfile entry that names the package", () => {
+    // npm writes the name once it differs from the folder's, as a scoped name does.
+    const text =
+      '{\n  "packages": {\n    "packages/maplace": {\n      "name": "@maplacejs/maplace",\n' +
+      '      "version": "0.0.0",\n      "license": "Apache-2.0"\n    }\n  }\n}\n';
+    expect(withVersion(text, { file: lockfile, version: "1.0.0" })).toBe(
+      text.replace('"version": "0.0.0"', '"version": "1.0.0"'),
     );
   });
 

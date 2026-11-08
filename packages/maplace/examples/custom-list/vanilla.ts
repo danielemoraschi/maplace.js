@@ -1,5 +1,5 @@
-import { createMaplace, type Location, listedLocations, type Maplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createMaplace, type Location, listedLocations, type Maplace } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
 
 const locations: Location[] = [
   { id: "london", lat: 51.5074, lng: -0.1278, title: "London" },

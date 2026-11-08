@@ -52,7 +52,7 @@ it("lets npm publish through OIDC: no registry-url token placeholder, no shared 
 });
 
 it("refuses a new version while the last one isn't on npm, before committing it", () => {
-  const guard = workflow.indexOf('npm view "maplace@$LAST" version');
+  const guard = workflow.indexOf('npm view "@maplacejs/maplace@$LAST" version');
   expect(guard).toBeGreaterThan(-1);
   expect(guard).toBeLessThan(workflow.indexOf("commit -q -m"));
 });

@@ -1,5 +1,5 @@
-import type { Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 /**
  * The brand's palette on a delivery area, at rest, hovered and selected: hex colours, which every

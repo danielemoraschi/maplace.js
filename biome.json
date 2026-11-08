@@ -37,7 +37,7 @@
               "level": "error",
               "options": {
                 "deniedGlobals": {
-                  "google": "Only maplace/google (src/google/) may use google.maps."
+                  "google": "Only @maplacejs/maplace/google (src/google/) may use google.maps."
                 }
               }
             }

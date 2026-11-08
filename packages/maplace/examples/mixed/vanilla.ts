@@ -1,5 +1,5 @@
-import type { Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const locations: Location[] = [
   { id: "tower-of-london", type: "marker", title: "Tower of London", lat: 51.5081, lng: -0.0759 },

@@ -9,7 +9,7 @@ import {
   type Maplace,
   type MaplaceError,
   type Route,
-} from "maplace";
+} from "@maplacejs/maplace";
 import {
   defineListView,
   defineProvider,
@@ -18,7 +18,7 @@ import {
   type MaplaceElementEventMap,
   type MaplaceLocationElement,
   type MaplaceMapElement,
-} from "maplace/element";
+} from "@maplacejs/maplace/element";
 import { expectTypeOf } from "vitest";
 
 const map = document.createElement("maplace-map");

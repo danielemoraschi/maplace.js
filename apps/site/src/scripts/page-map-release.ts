@@ -1,4 +1,4 @@
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import type { Provider } from "../examples/example-providers.ts";
 import { HELD_BY_EXAMPLE_ATTRIBUTE, PANEL_OPEN, runPageScripts } from "../examples/page-scripts.ts";
 import { byProvider } from "./by-provider.ts";

@@ -1,6 +1,6 @@
 // A map of your own on Google: the page loads Maps JS and makes it, and Maplace.js draws on it.
-import { createMaplace } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
+import { createMaplace } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
 
 const { Map: GoogleMap } = await google.maps.importLibrary("maps");
 const map = new GoogleMap(document.querySelector("#own-map") as HTMLElement, {

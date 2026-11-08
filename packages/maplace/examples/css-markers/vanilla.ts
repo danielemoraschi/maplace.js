@@ -1,5 +1,5 @@
-import type { Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const locations: Location[] = [
   { id: "rijks", lat: 52.36, lng: 4.8852, title: "Rijksmuseum", icon: pinFor("Rijks") },

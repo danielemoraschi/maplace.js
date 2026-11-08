@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Maplace } from "maplace";
+import type { Maplace } from "@maplacejs/maplace";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-lists.ts";
 import { createMaplace, MaplaceError } from "../../../../packages/maplace/src/index.ts";

@@ -8,10 +8,10 @@
 <p align="center"><a href="https://maplacejs.com">Website</a> · <a href="https://maplacejs.com/getting-started/">Documentation</a> · <a href="https://maplacejs.com/#examples">Examples</a> · <a href="https://maplacejs.com/builder/">Snippet builder</a> · <a href="https://maplacejs.com/migrating/">Migrating from 0.2</a></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/maplace"><img alt="npm version" src="https://img.shields.io/npm/v/maplace"></a>
+  <a href="https://www.npmjs.com/package/@maplacejs/maplace"><img alt="npm version" src="https://img.shields.io/npm/v/@maplacejs/maplace"></a>
   <a href="https://github.com/danielemoraschi/maplace.js/actions/workflows/ci.yml"><img alt="CI status" src="https://github.com/danielemoraschi/maplace.js/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/danielemoraschi/maplace.js/blob/main/LICENSE"><img alt="Apache-2.0 licence" src="https://img.shields.io/badge/license-Apache--2.0-blue"></a>
-  <a href="https://www.npmjs.com/package/maplace"><img alt="TypeScript types included" src="https://img.shields.io/npm/types/maplace"></a>
+  <a href="https://www.npmjs.com/package/@maplacejs/maplace"><img alt="TypeScript types included" src="https://img.shields.io/npm/types/@maplacejs/maplace"></a>
 </p>
 
 <p align="center"><img src="docs/media/maplibre-demo.gif" width="800" alt="A map of Italy on MapLibre beside a list of Rome, Milan and Venice. Picking Rome, then Milan, in the list pans the map to each and opens its popup; clicking Venice's marker on the map highlights it in the list."></p>
@@ -39,7 +39,7 @@ One script, no build step. On Google Maps:
 
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
@@ -54,7 +54,7 @@ On MapLibre, with no key and no map ID:
 
 <!-- example: packages/maplace/examples/quick-start/maplibre/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <maplace-map list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
@@ -65,7 +65,7 @@ On MapLibre, with no key and no map ID:
 
 On either:
 
-- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as Maplace.js's lists do (`listedLocations(snapshot)` from `maplace` gives the same to a list of your own outside the element, both before a scoped list narrows it to the map's view; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, `list-heading` shows a heading above it (on the map too), naming it for screen readers, and `list-scope="viewport"` shows a switch above it, "All" or "This area", which lists only what is in the map's view and follows the map. The list and popups come with default styles in `:where()`: any rule of yours wins, and `data-maplace-unstyled` turns them off ([Styling](docs/reference/styling.md) lists the classes to style instead). What goes on the map sits in a panel like the provider's own controls (`.maplace-control`): in the map's colour scheme on Google, light on MapLibre.
+- `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as Maplace.js's lists do (`listedLocations(snapshot)` from `@maplacejs/maplace` gives the same to a list of your own outside the element, both before a scoped list narrows it to the map's view; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, `list-heading` shows a heading above it (on the map too), naming it for screen readers, and `list-scope="viewport"` shows a switch above it, "All" or "This area", which lists only what is in the map's view and follows the map. The list and popups come with default styles in `:where()`: any rule of yours wins, and `data-maplace-unstyled` turns them off ([Styling](docs/reference/styling.md) lists the classes to style instead). What goes on the map sits in a panel like the provider's own controls (`.maplace-control`): in the map's colour scheme on Google, light on MapLibre.
 
 A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
 
@@ -85,35 +85,35 @@ The CDN has three scripts. Load exactly one of them. Two scripts on one page are
 
 A map with `cluster` on the first script fails to load and says to use the second.
 
-Each script also sets one global, `Maplace`: what the npm entries it stands for export (`maplace`, the provider's and `maplace/element`), so a page of your own script calls `Maplace.createGoogleMap(...)` where npm's would import it, and defines its own list view with `Maplace.defineListView(name, factory)`. The MapLibre script's `Maplace.maplibre` is the maplibre-gl it bundles.
+Each script also sets one global, `Maplace`: what the npm entries it stands for export (`@maplacejs/maplace`, the provider's and `@maplacejs/maplace/element`), so a page of your own script calls `Maplace.createGoogleMap(...)` where npm's would import it, and defines its own list view with `Maplace.defineListView(name, factory)`. The MapLibre script's `Maplace.maplibre` is the maplibre-gl it bundles.
 
 ## Pin it for production
 
-`maplace@1` follows the latest 1.x, so it can't carry an integrity hash. In production, pin the exact version and let the browser check the file:
+`@maplacejs/maplace@1` follows the latest 1.x, so it can't carry an integrity hash. In production, pin the exact version and let the browser check the file:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js"
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@x.y.z/dist/maplace-element.iife.js"
   integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
 or, with clustering:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element-cluster.iife.js"
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@x.y.z/dist/maplace-element-cluster.iife.js"
   integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
 or, on MapLibre:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element-maplibre.iife.js"
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@x.y.z/dist/maplace-element-maplibre.iife.js"
   integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
-The README published with each version has these filled in for it. unpkg serves the same paths (`https://unpkg.com/maplace@x.y.z/dist/…`). To compute a hash yourself:
+The README published with each version has these filled in for it. unpkg serves the same paths (`https://unpkg.com/@maplacejs/maplace@x.y.z/dist/…`). To compute a hash yourself:
 
 ```sh
-curl -s https://cdn.jsdelivr.net/npm/maplace@x.y.z/dist/maplace-element.iife.js | openssl dgst -sha384 -binary | openssl base64 -A
+curl -s https://cdn.jsdelivr.net/npm/@maplacejs/maplace@x.y.z/dist/maplace-element.iife.js | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
 ## From your own script
@@ -124,7 +124,7 @@ A page that makes its map in its own script needs no build step either: the CDN 
 ```html
 <!doctype html>
 <!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key. -->
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <style>
   #simple-script-map { height: 24rem; }
 </style>
@@ -142,7 +142,7 @@ On MapLibre, `Maplace.createMapLibreMap` on the MapLibre script, with no key; `M
 ## With a bundler
 
 ```sh
-npm install maplace
+npm install @maplacejs/maplace
 ```
 
 A store on a Google map in one call, `createGoogleMap`, on a page that loads Maps JS with [Google's bootstrap loader](https://developers.google.com/maps/documentation/javascript/load-maps-js-api) (or `@googlemaps/js-api-loader`) and gives the map's container its size:
@@ -166,7 +166,7 @@ A store on a Google map in one call, `createGoogleMap`, on a page that loads Map
 
 <!-- example: packages/maplace/examples/simple/vanilla.ts -->
 ```ts
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 createGoogleMap("#simple-vanilla-map", {
   locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
@@ -175,7 +175,7 @@ createGoogleMap("#simple-vanilla-map", {
 
 `list: true` adds Maplace.js's list on the map, top right; `list` also takes the list view's options with a corner (`position`) or an element of the page to go in (`container`). `createGoogleMap` is made of three parts a page can use itself, when it draws on its own Google map, puts a control of its own on the map, or opens the map again: the store (`createMaplace`), the adapter (`createGoogleAdapter`) and `attach(adapter, "#map")`, which takes an element or a selector.
 
-On MapLibre, `createMapLibreMap` from `maplace/maplibre` makes the same store in one call, with `mapStyle` and `mapOptions` for the map ([MapLibre adapter](docs/reference/maplibre.md#createmaplibremap)). The page installs `maplibre-gl` too (`npm install maplace maplibre-gl`), imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module, and needs no loader script and no key. Its parts are `createMaplace`, `createMapLibreAdapter` and `attach`. The simple example's MapLibre version is the whole page:
+On MapLibre, `createMapLibreMap` from `@maplacejs/maplace/maplibre` makes the same store in one call, with `mapStyle` and `mapOptions` for the map ([MapLibre adapter](docs/reference/maplibre.md#createmaplibremap)). The page installs `maplibre-gl` too (`npm install @maplacejs/maplace maplibre-gl`), imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module, and needs no loader script and no key. Its parts are `createMaplace`, `createMapLibreAdapter` and `attach`. The simple example's MapLibre version is the whole page:
 
 <!-- example: packages/maplace/examples/simple/maplibre/vanilla.html -->
 ```html
@@ -191,7 +191,7 @@ On MapLibre, `createMapLibreMap` from `maplace/maplibre` makes the same store in
 <!-- example: packages/maplace/examples/simple/maplibre/vanilla.ts -->
 ```ts
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMapLibreMap } from "maplace/maplibre";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 createMapLibreMap("#simple-maplibre-vanilla-map", {
   locations: [{ id: "london", lat: 51.5074, lng: -0.1278, title: "London" }],
@@ -200,28 +200,28 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 
 Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); Maplace.js's own selected and hovered look fills what they leave unset.
 
-For the element from npm, `import "maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider, and `import "maplace/element/maplibre"` with the MapLibre provider (on the page's maplibre-gl and its stylesheet).
+For the element from npm, `import "@maplacejs/maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider, and `import "@maplacejs/maplace/element/maplibre"` with the MapLibre provider (on the page's maplibre-gl and its stylesheet).
 
 | Entry | What it gives |
 |---|---|
-| `maplace` | `createMaplace` (the headless store), `createListView`, `createMyLocationControl`, `listedLocations`, `distanceTo`, `locationsFromGeoJSON` (a GeoJSON FeatureCollection as locations), the adapter contract and the types |
-| `maplace/google` | `createGoogleMap` (a store on a Google map in one call) and `createGoogleAdapter`: the only entry that knows `google.maps` |
-| `maplace/maplibre` | `createMapLibreMap` (a store on a MapLibre map in one call) and `createMapLibreAdapter`: the only entry that knows `maplibre-gl` |
-| `maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |
-| `maplace/element/google` | the element with the Google provider registered |
-| `maplace/element/maplibre` | the element with the MapLibre provider registered |
-| `maplace/react` | `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>` and `useMaplace()` |
-| `maplace/testing` | `describeConformance`: the conformance suite, to prove an adapter of your own, with `vitest` as an optional peer |
+| `@maplacejs/maplace` | `createMaplace` (the headless store), `createListView`, `createMyLocationControl`, `listedLocations`, `distanceTo`, `locationsFromGeoJSON` (a GeoJSON FeatureCollection as locations), the adapter contract and the types |
+| `@maplacejs/maplace/google` | `createGoogleMap` (a store on a Google map in one call) and `createGoogleAdapter`: the only entry that knows `google.maps` |
+| `@maplacejs/maplace/maplibre` | `createMapLibreMap` (a store on a MapLibre map in one call) and `createMapLibreAdapter`: the only entry that knows `maplibre-gl` |
+| `@maplacejs/maplace/element` | `<maplace-map>` and `<maplace-location>`, with `defineProvider` for other providers and `defineListView` for your own lists |
+| `@maplacejs/maplace/element/google` | the element with the Google provider registered |
+| `@maplacejs/maplace/element/maplibre` | the element with the MapLibre provider registered |
+| `@maplacejs/maplace/react` | `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>` and `useMaplace()` |
+| `@maplacejs/maplace/testing` | `describeConformance`: the conformance suite, to prove an adapter of your own, with `vitest` as an optional peer |
 
-`@googlemaps/markerclusterer` and `supercluster` are dependencies, each loaded only by a store that clusters on its provider. `maplibre-gl` (6.15 or a later 6.x) is an optional peer, for `maplace/maplibre` and `maplace/element/maplibre`; `vitest` is an optional peer, for `maplace/testing`, tested on 5; `@types/google.maps` is an optional peer, for TypeScript pages that use `maplace/google`; `react` and `react-dom` (19) are optional peers, for `maplace/react`; `vue` (3.3 or later) and `svelte` (4 or 5) are optional peers, for the element's types in their templates.
+`@googlemaps/markerclusterer` and `supercluster` are dependencies, each loaded only by a store that clusters on its provider. `maplibre-gl` (6.15 or a later 6.x) is an optional peer, for `@maplacejs/maplace/maplibre` and `@maplacejs/maplace/element/maplibre`; `vitest` is an optional peer, for `@maplacejs/maplace/testing`, tested on 5; `@types/google.maps` is an optional peer, for TypeScript pages that use `@maplacejs/maplace/google`; `react` and `react-dom` (19) are optional peers, for `@maplacejs/maplace/react`; `vue` (3.3 or later) and `svelte` (4 or 5) are optional peers, for the element's types in their templates.
 
 ## With React
 
 <!-- example: packages/maplace/examples/simple/react.tsx -->
 ```tsx
-import type { Location } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-import { MaplaceMap, MaplaceProvider } from "maplace/react";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
+import { MaplaceMap, MaplaceProvider } from "@maplacejs/maplace/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -244,14 +244,14 @@ createRoot(document.getElementById("simple-react-root") as HTMLElement).render(
 
 The file renders its own root, into [the page beside it](packages/maplace/examples/simple/react.html), which loads Maps JS as the vanilla page does and sizes the map's div. `<MaplaceProvider>` makes one store for its children. Its `locations` follow your state; `selectedId` with `onSelectionChange` controls the selection, or `defaultSelectedId` only starts it. `<MaplaceMap>` attaches a fresh adapter while it is mounted, to a div its `className` sizes (a map fills its container). Its `popupContent` gives popups React content, as [the popups example](packages/maplace/examples/popups/react.tsx) does, and its `markerIcon` gives markers React content, as [the markers example](packages/maplace/examples/markers/react.tsx) does. `<LocationList>` is the store's list, with a function child for each entry's content (inside `<MaplaceMap>`, its `position="top-right"` puts it on the map, and `<MapControl position>` puts your own content there), and `useMaplace()` returns the store to read with `useSyncExternalStore` or to call.
 
-On MapLibre, `createAdapter={createMapLibreAdapter}` from `maplace/maplibre` is the only change, the module importing maplibre-gl's stylesheet ([MapLibre adapter](docs/reference/maplibre.md#react)).
+On MapLibre, `createAdapter={createMapLibreAdapter}` from `@maplacejs/maplace/maplibre` is the only change, the module importing maplibre-gl's stylesheet ([MapLibre adapter](docs/reference/maplibre.md#react)).
 
-In a React Server Component, `maplace/react` is a client boundary (it starts with `"use client"`): the server component loads the data and renders the provider and the list with it, and a small client component of yours holds the map, since its adapter is made by a function:
+In a React Server Component, `@maplacejs/maplace/react` is a client boundary (it starts with `"use client"`): the server component loads the data and renders the provider and the list with it, and a small client component of yours holds the map, since its adapter is made by a function:
 
 <!-- example: scripts/checks/rsc-app/src/page.tsx -->
 ```tsx
-import type { Location } from "maplace";
-import { LocationList, MaplaceProvider } from "maplace/react";
+import type { Location } from "@maplacejs/maplace";
+import { LocationList, MaplaceProvider } from "@maplacejs/maplace/react";
 import { CityMap } from "./city-map";
 
 /** Where a server component's data would come from: a database, an API. */
@@ -281,8 +281,8 @@ export async function Page() {
 <!-- example: scripts/checks/rsc-app/src/city-map.tsx -->
 ```tsx
 "use client";
-import { createGoogleAdapter } from "maplace/google";
-import { MaplaceMap } from "maplace/react";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
+import { MaplaceMap } from "@maplacejs/maplace/react";
 
 // Functions can't cross from a server component: the map's adapter is made here, on the client.
 export function CityMap() {
@@ -324,4 +324,4 @@ Maplace.js is released under the [Apache License, Version 2.0](LICENSE) © 2026 
 
 ## The name
 
-Maplace.js, Maplace, maplacejs, maplace.js and maplace-js are this project's names, and the licence grants no rights to them (Apache-2.0 §6). Please publish a fork or a product under a name of its own, and don't present it as Maplace.js or as endorsed by it; saying it is built on or derived from Maplace.js, and carrying the NOTICE, is fine.
+Maplace.js, Maplace, maplacejs, maplace.js, maplace-js and @maplacejs/maplace are this project's names, and the licence grants no rights to them (Apache-2.0 §6). Please publish a fork or a product under a name of its own, and don't present it as Maplace.js or as endorsed by it; saying it is built on or derived from Maplace.js, and carrying the NOTICE, is fine.

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { join } from "node:path";
 import { setTimeout as pause } from "node:timers/promises";
 import { reasonOf } from "./error-reason.ts";
 import { filesInTarball } from "./tarball-files.ts";
@@ -9,7 +10,12 @@ export type Fetch = (url: string, init?: RequestInit) => Promise<Response>;
 export const UNPUBLISHED_VERSION = "0.0.0";
 
 /** The package's name, as `PINNED_SCRIPT` and the release workflow write it. */
-export const PACKAGE_NAME = "maplace";
+export const PACKAGE_NAME = "@maplacejs/maplace";
+
+/** Where the package is installed under `root`: a scoped name nests in its scope's folder. */
+export function installedPackageDir(root: string): string {
+  return join(root, "node_modules", ...PACKAGE_NAME.split("/"));
+}
 
 /** Long enough for a tarball of a few MB; a black-holed network fails rather than hangs. */
 export const READ_TIMEOUT_MS = 30_000;

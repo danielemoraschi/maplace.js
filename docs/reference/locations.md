@@ -4,8 +4,8 @@ A location is one item of your data: a marker, a circle, a polyline or a polygon
 
 <!-- example: packages/maplace/examples/polygon/vanilla.ts -->
 ```ts
-import type { Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 /** Your own code, writing an edited location back to your server. */
 declare function save(location: Location): Promise<void>;
@@ -128,7 +128,7 @@ A DOM marker carries `data-selected` and `data-hovered` while in that state, so 
 <!-- example: packages/maplace/examples/migrate/from-geojson.ts -->
 ```ts
 // Locations from a GeoJSON file: its Points, LineStrings and Polygons, each feature's id its own.
-import { locationsFromGeoJSON, type Maplace } from "maplace";
+import { locationsFromGeoJSON, type Maplace } from "@maplacejs/maplace";
 
 declare const maplace: Maplace; // your store, e.g. from createGoogleMap or createMapLibreMap
 
@@ -262,7 +262,7 @@ The "My location" button needs a visitor who shares their position. For anyone w
 // An address typed into your own form becomes the point the list measures from. `geocode` is yours;
 // a blank address clears the point. The button stays disabled until this runs: a submit without it
 // would put the address in the page's URL. Returns what stops listening.
-import type { LatLng, Maplace } from "maplace";
+import type { LatLng, Maplace } from "@maplacejs/maplace";
 
 /** Your geocoder: the address's point, or `undefined` when it finds none. */
 export type Geocode = (address: string) => Promise<LatLng | undefined>;

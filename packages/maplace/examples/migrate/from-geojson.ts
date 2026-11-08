@@ -1,5 +1,5 @@
 // Locations from a GeoJSON file: its Points, LineStrings and Polygons, each feature's id its own.
-import { locationsFromGeoJSON, type Maplace } from "maplace";
+import { locationsFromGeoJSON, type Maplace } from "@maplacejs/maplace";
 
 declare const maplace: Maplace; // your store, e.g. from createGoogleMap or createMapLibreMap
 

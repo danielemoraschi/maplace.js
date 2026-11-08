@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreMap } from "maplace/maplibre";
+import type { Location } from "@maplacejs/maplace";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 /** Your own code, writing an edited location back to your server. */
 declare function save(location: Location): Promise<void>;

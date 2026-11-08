@@ -62,7 +62,7 @@ describe("problemsIn", () => {
     expect(problemsIn("react/testing/render.ts", 'import { MaplaceMap } from "..";')).toEqual([]);
   });
 
-  it("keeps the element's Google wiring to the adapter, off maplace/google's entry", () => {
+  it("keeps the element's Google wiring to the adapter, off @maplacejs/maplace/google's entry", () => {
     expect(
       problemsIn("element/google.ts", 'import { createGoogleAdapter } from "../google";'),
     ).toEqual([
@@ -70,7 +70,7 @@ describe("problemsIn", () => {
     ]);
   });
 
-  it("keeps the element's MapLibre wiring to maplace/maplibre's entry (contract 5)", () => {
+  it("keeps the element's MapLibre wiring to @maplacejs/maplace/maplibre's entry (contract 5)", () => {
     const importing = (path: string) =>
       problemsIn("element/maplibre.ts", `import { createMapLibreAdapter } from "${path}";`);
     expect(importing("../maplibre/create-adapter")).toEqual([

@@ -181,14 +181,14 @@ function tablesOn(page: string, tables: readonly TableOf[]): ReferenceTable[] {
 
 /** The package's entries, as the API page heads them. */
 const ENTRY_NAMES: Readonly<Record<keyof typeof PUBLISHED_ENTRIES, string>> = {
-  core: "maplace",
-  google: "maplace/google",
-  maplibre: "maplace/maplibre",
-  element: "maplace/element",
-  elementGoogle: "maplace/element/google",
-  elementMapLibre: "maplace/element/maplibre",
-  react: "maplace/react",
-  testing: "maplace/testing",
+  core: "@maplacejs/maplace",
+  google: "@maplacejs/maplace/google",
+  maplibre: "@maplacejs/maplace/maplibre",
+  element: "@maplacejs/maplace/element",
+  elementGoogle: "@maplacejs/maplace/element/google",
+  elementMapLibre: "@maplacejs/maplace/element/maplibre",
+  react: "@maplacejs/maplace/react",
+  testing: "@maplacejs/maplace/testing",
 };
 
 /** One table per entry: its exports, read from its source. */

@@ -5,8 +5,12 @@ const DOCTYPE = /^\s*<!doctype html>\s*/i;
 /** A script's opening tag, with its attributes. */
 const SCRIPT_TAG = /<script\b([^>]*)>/g;
 
-/** An example's CDN script, which the site's own bundle stands in for. */
-const CDN_SCRIPT = /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/maplace@[^"]+"><\/script>\s*/g;
+/**
+ * An example's CDN script, which the site's own bundle stands in for: found by its host and its
+ * file name, not the package's path, as this file is bundled for the browser and can't read it.
+ */
+const CDN_SCRIPT =
+  /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/[^"]+\/dist\/maplace-element[^"]*\.iife\.js"><\/script>\s*/g;
 
 /** `html` without the CDN script it loads once: the site's bundle defines the element. */
 export function withoutCdnScript(html: string): string {

@@ -16,10 +16,14 @@ export interface VersionFile {
 export const VERSION_FILES: readonly VersionFile[] = [
   // The manifest's own version: the one key at two spaces' indent.
   { path: `${PACKAGE_DIR}/package.json`, pattern: /^( {2}"version": )"[^"]*"/gm },
-  // The workspace's entry in the lockfile, which `npm ci` holds to the manifest.
+  // The workspace's entry in the lockfile, which `npm ci` holds to the manifest; npm writes the
+  // package's name first when it differs from the folder's, as a scoped name does.
   {
     path: "package-lock.json",
-    pattern: new RegExp(String.raw`("${PACKAGE_DIR}": \{\s*"version": )"[^"]*"`, "g"),
+    pattern: new RegExp(
+      String.raw`("${PACKAGE_DIR}": \{\s*(?:"name": "[^"]*",\s*)?"version": )"[^"]*"`,
+      "g",
+    ),
   },
   // The version the element names when another copy already defined it.
   { path: `${SRC}/element/version.ts`, pattern: /(export const MAPLACE_VERSION = )"[^"]*"/g },

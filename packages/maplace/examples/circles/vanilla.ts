@@ -1,4 +1,4 @@
-import { createGoogleMap } from "maplace/google";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 const center = { lat: 41.9028, lng: 12.4964 };
 const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };

@@ -1,4 +1,4 @@
-import type { Adapter, AdapterHost, ErrorCode, LoadState, MaplaceError } from "maplace";
+import type { Adapter, AdapterHost, ErrorCode, LoadState, MaplaceError } from "@maplacejs/maplace";
 import { noteVersionMapFailure } from "./map-failures.ts";
 import { type MapFailure, NOT_LOADED } from "./version-failures.ts";
 

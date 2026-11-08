@@ -1,6 +1,6 @@
-import type * as Google from "maplace/google";
+import type * as Google from "@maplacejs/maplace/google";
 
-/** `maplace/google`'s two calls that make a map, as the site gives them its map ID. */
+/** `@maplacejs/maplace/google`'s two calls that make a map, as the site gives them its map ID. */
 export type GoogleEntry = Pick<typeof Google, "createGoogleAdapter" | "createGoogleMap">;
 
 /**

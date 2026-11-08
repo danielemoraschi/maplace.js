@@ -10,8 +10,11 @@ const TARBALL = packedPackage(VERSION, { "dist/a.js": "a();" });
 const npm = registryHolding(VERSION, TARBALL);
 const text = (bytes: Uint8Array | undefined) => new TextDecoder().decode(bytes);
 const failing = (status: number) => async () => new Response("no", { status });
-const metadataUrl = `https://registry.npmjs.org/maplace/${VERSION}`;
-const tarballUrl = `https://registry.npmjs.org/maplace/-/maplace-${VERSION}.tgz`;
+const metadataUrl = `https://registry.npmjs.org/${PACKAGE_NAME}/${VERSION}`;
+/** A scoped package's tarball keeps its name's last part, as npm names it. */
+const tarballUrl = `https://registry.npmjs.org/${PACKAGE_NAME}/-/${PACKAGE_NAME.split("/").at(-1)}-${VERSION}.tgz`;
+/** The failure's message, which opens with the package and the version. */
+const unreadable = (rest: string) => new RegExp(`^${PACKAGE_NAME}@1\\.2\\.0 can't be read${rest}`);
 
 /** npm, with reads of `url` given `answers` in turn, the last of them repeating. */
 function npmWith(url: string, ...answers: Array<Fetch>): Fetch {
@@ -24,7 +27,7 @@ function npmWith(url: string, ...answers: Array<Fetch>): Fetch {
 }
 
 const refused = (fetchUrl: Fetch) =>
-  expect(publishedFiles(VERSION, fetchUrl)).rejects.toThrow(`maplace@${VERSION} can't be read`);
+  expect(publishedFiles(VERSION, fetchUrl)).rejects.toThrow(unreadable(""));
 
 describe("publishedFiles", () => {
   it("answers 0.0.0 with no network", async () => {
@@ -82,7 +85,7 @@ describe("publishedFiles", () => {
     const other = packedPackage(VERSION, { "dist/b.js": "b();" });
     const corrupt = vi.fn(async () => new Response(new Uint8Array(other)));
     await expect(publishedFiles(VERSION, npmWith(tarballUrl, corrupt))).rejects.toThrow(
-      /maplace@1\.2\.0 can't be read.*npm's metadata says sha512-/,
+      unreadable(".*npm's metadata says sha512-"),
     );
     expect(corrupt).toHaveBeenCalledOnce();
   });
@@ -104,7 +107,7 @@ describe("publishedFiles", () => {
       throw new TypeError("fetch failed", { cause: new Error("ECONNREFUSED") });
     };
     await expect(publishedFiles(VERSION, npmWith(metadataUrl, down))).rejects.toThrow(
-      /maplace@1\.2\.0 can't be read from npm.*fetch failed \(ECONNREFUSED\)/,
+      unreadable(" from npm.*fetch failed \\(ECONNREFUSED\\)"),
     );
   });
 

@@ -1,5 +1,5 @@
 // Compile-time checks of location input: each @ts-expect-error must stay an error.
-import type { Location } from "maplace";
+import type { Location } from "@maplacejs/maplace";
 
 declare function accept(location: Location): void;
 

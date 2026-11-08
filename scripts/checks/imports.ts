@@ -49,7 +49,7 @@ const LAYERS = {
     imports: ["data", "contract", "adapter-kit", "testing"],
     packages: ["vitest"],
   },
-  // `maplace/testing` (P12): the suite as a third party's adapter proves itself with it.
+  // `@maplacejs/maplace/testing` (P12): the suite as a third party's adapter proves itself with it.
   "testing-entry": {
     files: /^testing\/index$/,
     imports: ["adapter-kit", "testing", "conformance"],
@@ -63,7 +63,7 @@ const LAYERS = {
   },
   // Running the examples as readers copy them: the HTML around them, the stores they make (T5),
   // what each does on its fake map (W13), read through the fake's types and looks, and
-  // maplace/google and maplace/maplibre on the fake (A9).
+  // @maplacejs/maplace/google and @maplacejs/maplace/maplibre on the fake (A9).
   examples: {
     files: /^testing\/examples\//,
     imports: [
@@ -114,8 +114,8 @@ const LAYERS = {
     files: /^element\/google(-[a-z-]+)?$/,
     imports: ["data", "contract", "element", "google", "validation"],
   },
-  // The element's MapLibre provider uses maplace/maplibre only through its entry (contract 5), and
-  // maplibre-gl for types only; it checks its attributes with the store's checks.
+  // The element's MapLibre provider uses @maplacejs/maplace/maplibre only through its entry
+  // (contract 5), and maplibre-gl for types only; it checks its attributes with the store's checks.
   "maplibre-wiring": {
     files: /^element\/maplibre(-[a-z-]+)?$/,
     imports: ["data", "contract", "element", "maplibre-entry", "validation"],
@@ -147,8 +147,8 @@ const LAYERS = {
     imports: ["data", "contract", "adapter-kit", "validation"],
     packages: ["@googlemaps/markerclusterer"],
   },
-  // maplace/google: the adapter, and a store on a Google map in one call (A9), which uses the
-  // core through its entry, as React does.
+  // @maplacejs/maplace/google: the adapter, and a store on a Google map in one call (A9), which
+  // uses the core through its entry, as React does.
   "google-entry": {
     files: /^google\/(index|google-map(-options)?)$/,
     imports: ["data", "contract", "entry", "google", "shortcut"],
@@ -174,7 +174,7 @@ const LAYERS = {
     imports: ["data", "contract", "adapter-kit", "validation"],
     packages: ["maplibre-gl", "supercluster"],
   },
-  // maplace/maplibre: the adapter, and a store on a MapLibre map in one call.
+  // @maplacejs/maplace/maplibre: the adapter, and a store on a MapLibre map in one call.
   "maplibre-entry": {
     files: /^maplibre\/(index|maplibre-map(-options)?)$/,
     imports: ["data", "contract", "entry", "maplibre", "shortcut", "validation"],

@@ -4,7 +4,7 @@ import { INERT_SCRIPT_TYPE } from "./page-scripts.ts";
 
 const SCRIPT_VERSION = `<!doctype html>
 <!-- A page of your own script. -->
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <style>
   #m { height: 24rem; }
 </style>

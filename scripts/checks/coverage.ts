@@ -13,7 +13,7 @@ export type CoverageSummary = Readonly<
 /** The share of lines covered, in %: the core entry's files, and the package's. */
 export type CoverageShares = CoverageFloors;
 
-/** The source files a page importing `maplace` loads, relative to the repo, as the report's. */
+/** What a page importing `@maplacejs/maplace` loads, relative to the repo, as the report's. */
 export async function coreSourceFiles(): Promise<Set<string>> {
   const { metafile } = await bundleInMemory(esmBuildOptions());
   return sourcesOf(metafile, reachableOutputs(metafile, PACKAGE_ENTRIES.core));

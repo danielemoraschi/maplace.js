@@ -34,7 +34,7 @@ const QUOTED_VALUE = /"[^"]*"|'[^']*'/g;
  *   page sets none (a page's own `map-id` stays); its hosts' bootstrap gets the key, or keeps the
  *   placeholder when the site has none (the frame then says so before running anything), and so
  *   does its script versions' `apiKey`. The site's map ID reaches the hosts' modules, and the
- *   page's `Maplace` the script versions call, through the site's `maplace/google`
+ *   page's `Maplace` the script versions call, through the site's `@maplacejs/maplace/google`
  *   (`example-map-id.ts`).
  * - MapLibre's map takes no key or map ID; its hosts load nothing but their module.
  */

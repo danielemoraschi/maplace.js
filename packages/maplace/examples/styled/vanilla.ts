@@ -1,5 +1,5 @@
-import { createMaplace, type Location } from "maplace";
-import { createGoogleAdapter, type GoogleAdapterOptions } from "maplace/google";
+import { createMaplace, type Location } from "@maplacejs/maplace";
+import { createGoogleAdapter, type GoogleAdapterOptions } from "@maplacejs/maplace/google";
 
 type ColorScheme = NonNullable<GoogleAdapterOptions["colorScheme"]>;
 

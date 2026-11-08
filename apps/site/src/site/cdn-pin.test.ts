@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { builtCdnScript, CDN_SCRIPTS } from "../../../../scripts/build/cdn-builds.ts";
 import { integrityOf } from "../../../../scripts/build/subresource-integrity.ts";
 import { packedPackage, registryHolding } from "../../../../scripts/release/fake-registry.ts";
-import type { Fetch } from "../../../../scripts/release/published-package.ts";
+import { type Fetch, PACKAGE_NAME } from "../../../../scripts/release/published-package.ts";
 import { pinOfVersion } from "./cdn-pin.ts";
 
 /** Each script's bytes stand in for its build: the in-memory build is cdn-builds.test.ts's. */
@@ -18,7 +18,7 @@ vi.mock("../../../../scripts/build/cdn-builds.ts", async (actual) => ({
 }));
 vi.mock("../../../../scripts/build/package.ts", async (actual) => ({
   ...(await actual<object>()),
-  packageManifest: () => ({ name: "maplace", version: "1.2.0" }),
+  packageManifest: () => ({ name: "@maplacejs/maplace", version: "1.2.0" }),
 }));
 vi.mock("node:timers/promises", () => ({ setTimeout: async () => undefined }));
 
@@ -73,7 +73,7 @@ describe("pinOfVersion once the version is on npm", () => {
   it("refuses a script the published package doesn't have, naming it and the version", async () => {
     const pin = await pinOfVersion(VERSION, npm);
     expect(() => pin.integrityOf(CDN_SCRIPTS.maplibre)).toThrow(
-      `${CDN_SCRIPTS.maplibre} isn't in maplace@${VERSION} on npm`,
+      `${CDN_SCRIPTS.maplibre} isn't in ${PACKAGE_NAME}@${VERSION} on npm`,
     );
   });
 

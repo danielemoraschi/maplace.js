@@ -5,16 +5,16 @@ One dated line per change a reader would notice, newest first, written in the co
 ## 1.0.0 (2026-11-07)
 
 - 2026-11-07 Changed everything: Maplace.js 1.0 is a rewrite with no jQuery. A list of locations becomes a map with a list kept in sync beside it, on Google Maps or MapLibre, from HTML, a page's own script, a bundler or React; see [the README](README.md), [MIGRATION.md](MIGRATION.md) for moving a 0.2 page, and [the 1.0 RFC](docs/rfc-1.0.md)
-- 2026-11-07 Changed the npm package's name to `maplace` (0.2 was `maplace-js`)
+- 2026-11-07 Changed the npm package's name to `@maplacejs/maplace` (0.2 was `maplace-js`)
 - 2026-11-07 Changed the licence from MIT to Apache-2.0
-- 2026-11-07 Changed what Maplace.js needs: evergreen browsers (ES2022) and ES modules only, with no CommonJS build; React 19 for `maplace/react`, and `maplibre-gl` installed beside `maplace/maplibre`, both optional peers
+- 2026-11-07 Changed what Maplace.js needs: evergreen browsers (ES2022) and ES modules only, with no CommonJS build; React 19 for `@maplacejs/maplace/react`, and `maplibre-gl` installed beside `@maplacejs/maplace/maplibre`, both optional peers
 - 2026-11-07 Removed 0.2's API: `new Maplace(options).Load()`, its options and its callbacks each have a 1.0 replacement, named in [MIGRATION.md](MIGRATION.md)
 - 2026-11-07 Added a headless store, `createMaplace`, holding the locations, the selection, hover, a filter, a route and the view, with an event for each change, drawn on a map by a provider's adapter
-- 2026-11-07 Added `<maplace-map>` and `<maplace-location>` (`maplace/element`): a map, its list and its locations written in HTML, with `maplace-*` DOM events, and template types for Vue and Svelte
+- 2026-11-07 Added `<maplace-map>` and `<maplace-location>` (`@maplacejs/maplace/element`): a map, its list and its locations written in HTML, with `maplace-*` DOM events, and template types for Vue and Svelte
 - 2026-11-07 Added three CDN scripts and no build step: Google's, Google's with clustering, and MapLibre's with maplibre-gl bundled, each pinnable with an integrity hash and setting a `Maplace` global for a page's own script
-- 2026-11-07 Added `maplace/google`: Google Maps through its current libraries (advanced markers, map IDs, Routes), `createGoogleMap` as 0.2's one call, and Maps JS added to the page by Maplace.js itself given `apiKey`
-- 2026-11-07 Added `maplace/maplibre`: MapLibre GL JS on OpenFreeMap's tiles or any style, with no key, drawing everything Google does but routes
-- 2026-11-07 Added `maplace/react`: `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>`, `<MapControl>`, `<MyLocation>` and `useMaplace()`, popups and markers as React content, ready for Server Components
+- 2026-11-07 Added `@maplacejs/maplace/google`: Google Maps through its current libraries (advanced markers, map IDs, Routes), `createGoogleMap` as 0.2's one call, and Maps JS added to the page by Maplace.js itself given `apiKey`
+- 2026-11-07 Added `@maplacejs/maplace/maplibre`: MapLibre GL JS on OpenFreeMap's tiles or any style, with no key, drawing everything Google does but routes
+- 2026-11-07 Added `@maplacejs/maplace/react`: `<MaplaceProvider>`, `<MaplaceMap>`, `<LocationList>`, `<MapControl>`, `<MyLocation>` and `useMaplace()`, popups and markers as React content, ready for Server Components
 - 2026-11-07 Added HTML popups made safe: `content` as text or a node of yours, and `html` passed through your sanitizer (`sanitize`), never written to the page as it came
 - 2026-11-07 Added support for a strict Content Security Policy: no inline styles (default styles are adopted stylesheets), a `nonce` for the Maps JS script Maplace.js adds, and the MapLibre script's worker started from a `blob:` URL
 - 2026-11-07 Added the map's look per provider: on Google a map ID, a light, dark or system colour scheme and Google's map options (`color-scheme`, `map-options`); on MapLibre any style URL or style object (`map-style`)
@@ -37,7 +37,7 @@ One dated line per change a reader would notice, newest first, written in the co
 - 2026-11-07 Added a recipe for addresses: a short Node script that geocodes a file of places once, before the page ships #174
 - 2026-11-07 Added maps that cope with real pages: a map in a closed tab or a hidden panel, or resized, shows its view again when it comes back, and a page with many maps doesn't run out of WebGL contexts
 - 2026-11-07 Added TypeScript types for the whole API, and errors with a code and the field at fault for every misuse
-- 2026-11-07 Added `maplace/testing`: the conformance suite Maplace.js's own adapters pass, for proving an adapter of your own
+- 2026-11-07 Added `@maplacejs/maplace/testing`: the conformance suite Maplace.js's own adapters pass, for proving an adapter of your own
 - 2026-11-07 Added a new site at maplacejs.com: 25 examples, each run live as HTML, Script, Bundler and React on both providers; a reference page for each part of the API; a snippet builder taking CSV, JSON, GeoJSON or a 0.2 config; and the docs in Markdown with an agent skill for AI tools
 - 2026-11-07 Added contributing rules, a security policy, a code of conduct and forms for bug reports and feature requests
 

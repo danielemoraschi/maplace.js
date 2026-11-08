@@ -4,14 +4,14 @@
 
 <!-- example: packages/maplace/examples/quick-start/page.html -->
 ```html
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <maplace-map api-key="YOUR_KEY" list>
   <maplace-location location-id="rome" lat="41.9028" lng="12.4964" title="Rome"></maplace-location>
   <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
 </maplace-map>
 ```
 
-From npm, `import "maplace/element/google"` defines the same elements with the Google provider, `import "maplace/element/maplibre"` with the MapLibre provider, and `maplace/element` with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of Maplace.js on the page logs an error and leaves the first in place.
+From npm, `import "@maplacejs/maplace/element/google"` defines the same elements with the Google provider, `import "@maplacejs/maplace/element/maplibre"` with the MapLibre provider, and `@maplacejs/maplace/element` with none ([Setup](setup.md)). Defining them twice is harmless; a second, different copy of Maplace.js on the page logs an error and leaves the first in place.
 
 ## Size
 
@@ -214,7 +214,7 @@ A map's locations come from the `locations` property once it is set; else from o
 <!-- example: packages/maplace/examples/polygon/page.html -->
 ```html
 <!doctype html>
-<script src="https://cdn.jsdelivr.net/npm/maplace@1/dist/maplace-element.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
 <!-- An editable area; edits are written back and announced. -->
 <maplace-map id="polygon-map" api-key="YOUR_KEY">
   <script type="application/json">
@@ -231,7 +231,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 ## Providers
 
-`defineProvider(name, factory)` registers a provider for `provider="<name>"`: the factory gets the element and returns an adapter. `maplace/element/google` registers `google`, and `maplace/element/maplibre` registers `maplibre`. With both registered (both element entries imported from npm), each map names one with `provider`, else the map is misuse naming `provider` (`several providers are registered ("google", "maplibre"): set provider`). A map naming a provider not registered yet opens once it is.
+`defineProvider(name, factory)` registers a provider for `provider="<name>"`: the factory gets the element and returns an adapter. `@maplacejs/maplace/element/google` registers `google`, and `@maplacejs/maplace/element/maplibre` registers `maplibre`. With both registered (both element entries imported from npm), each map names one with `provider`, else the map is misuse naming `provider` (`several providers are registered ("google", "maplibre"): set provider`). A map naming a provider not registered yet opens once it is.
 
 ## List views
 
@@ -274,9 +274,9 @@ vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith("m
 
 ```vue
 <script setup lang="ts">
-import "maplace/element/google";
-import type { Location } from "maplace";
-import type { MaplaceElementEventMap } from "maplace/element";
+import "@maplacejs/maplace/element/google";
+import type { Location } from "@maplacejs/maplace";
+import type { MaplaceElementEventMap } from "@maplacejs/maplace/element";
 
 const locations: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
 const showSelected = (event: MaplaceElementEventMap["maplace-selectionchange"]) =>
@@ -293,8 +293,8 @@ Svelte takes the tags as they are:
 
 ```svelte
 <script lang="ts">
-  import "maplace/element/google";
-  import type { Location } from "maplace";
+  import "@maplacejs/maplace/element/google";
+  import type { Location } from "@maplacejs/maplace";
 
   const locations: Location[] = [{ id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome" }];
 </script>
@@ -309,4 +309,4 @@ Svelte takes the tags as they are:
 - **Popups and icons** in Vue come through `locations`, not a `<maplace-location>`'s `<template>` child: Vue renders a template's children into the element, not its content, so the child arrives empty.
 - **Anything more** goes through the element itself, taken with `ref` in Vue or `bind:this` in Svelte: its [properties and methods](#properties-and-methods), such as its `maplace` store.
 
-The types of `maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those three properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.
+The types of `@maplacejs/maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those three properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.

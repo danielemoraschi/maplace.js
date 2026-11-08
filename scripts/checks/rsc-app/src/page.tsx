@@ -1,5 +1,5 @@
-import type { Location } from "maplace";
-import { LocationList, MaplaceProvider } from "maplace/react";
+import type { Location } from "@maplacejs/maplace";
+import { LocationList, MaplaceProvider } from "@maplacejs/maplace/react";
 import { CityMap } from "./city-map";
 
 /** Where a server component's data would come from: a database, an API. */

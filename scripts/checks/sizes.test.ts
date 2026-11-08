@@ -9,7 +9,7 @@ describe("size budgets", () => {
     const budgets = new Map([[core.rfcRow, 15.5]]);
     expect(await check([{ measure: core, kilobytes: 15.5 }], budgets)).toEqual([]);
     expect(await check([{ measure: core, kilobytes: 15.51 }], budgets)).toEqual([
-      "maplace is 15.51 kB gzip, over its 15.5 kB budget",
+      "@maplacejs/maplace is 15.51 kB gzip, over its 15.5 kB budget",
     ]);
   });
 
@@ -17,7 +17,7 @@ describe("size budgets", () => {
     expect(
       await check([{ measure: core, kilobytes: 1 }], new Map([["Element CDN build", 30]])),
     ).toEqual([
-      "Core (`maplace`) has no budget in docs/rfc-1.0.md",
+      "Core (`@maplacejs/maplace`) has no budget in docs/rfc-1.0.md",
       "Element CDN build in docs/rfc-1.0.md is never measured",
     ]);
   });

@@ -1,13 +1,13 @@
 // Compile-time checks of createGoogleMap's options: each @ts-expect-error must stay an error.
 
-import type { Location, Maplace } from "maplace";
+import type { Location, Maplace } from "@maplacejs/maplace";
 import {
   createGoogleAdapter,
   createGoogleMap,
   type GoogleAdapterOptions,
   type GoogleMapList,
   type GoogleMapMyLocation,
-} from "maplace/google";
+} from "@maplacejs/maplace/google";
 import { expectTypeOf } from "vitest";
 
 declare const pageMap: NonNullable<GoogleAdapterOptions["map"]>;

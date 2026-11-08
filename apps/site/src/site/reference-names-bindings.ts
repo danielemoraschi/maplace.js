@@ -1,7 +1,15 @@
-import type { ListViewOptions, MaplaceOptions } from "maplace";
-import type { MaplaceMapElement } from "maplace/element";
-import type { GoogleAdapterOptions, GoogleMapList, GoogleMapOptions } from "maplace/google";
-import type { MapLibreAdapterOptions, MapLibreMapList, MapLibreMapOptions } from "maplace/maplibre";
+import type { ListViewOptions, MaplaceOptions } from "@maplacejs/maplace";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
+import type {
+  GoogleAdapterOptions,
+  GoogleMapList,
+  GoogleMapOptions,
+} from "@maplacejs/maplace/google";
+import type {
+  MapLibreAdapterOptions,
+  MapLibreMapList,
+  MapLibreMapOptions,
+} from "@maplacejs/maplace/maplibre";
 import type {
   LocationListProps,
   MapControlProps,
@@ -9,7 +17,7 @@ import type {
   MaplaceMapProps,
   MaplaceProviderProps,
   MyLocationProps,
-} from "maplace/react";
+} from "@maplacejs/maplace/react";
 import { everyName } from "./reference-names.ts";
 
 // The names of the entries beyond the core: the Google and MapLibre adapters, the element and React.

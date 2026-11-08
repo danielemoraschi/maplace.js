@@ -1,5 +1,5 @@
 // Compile-time checks of the adapter contract: each @ts-expect-error must stay an error.
-import type { Adapter, AdapterHost, Drawable, LatLng } from "maplace";
+import type { Adapter, AdapterHost, Drawable, LatLng } from "@maplacejs/maplace";
 import { expectTypeOf } from "vitest";
 
 declare const host: AdapterHost;

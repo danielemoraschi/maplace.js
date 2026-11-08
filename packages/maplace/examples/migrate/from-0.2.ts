@@ -1,5 +1,5 @@
 // Converting 0.2 locations: ids from the old 1-based index, `lon` → `lng`, `zoom` kept.
-import { createMaplace, type MarkerLocation } from "maplace";
+import { createMaplace, type MarkerLocation } from "@maplacejs/maplace";
 
 export interface Legacy {
   readonly lat: number;

@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMapLibreMap } from "maplace/maplibre";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 const center = { lat: 41.9028, lng: 12.4964 };
 const selectedStyle = { stroke: "#c2410c", fill: "#f97316" };

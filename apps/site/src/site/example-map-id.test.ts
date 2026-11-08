@@ -18,34 +18,38 @@ function loaded(): string {
 }
 
 describe("exampleMapId", () => {
-  it("resolves before Vite does, which would take maplace/google for the package", () => {
+  it("resolves before Vite does, which would take @maplacejs/maplace/google for the package", () => {
     expect(exampleMapId().enforce).toBe("pre");
   });
 
-  it("sends an example's import of maplace/google to the site's, the dev server's query aside", () => {
-    expect(resolved("maplace/google", `${ROOT}/simple/vanilla.ts`)).toBe(ON_SITE);
-    expect(resolved("maplace/google", `${ROOT}/simple/react.tsx?v=1a2b`)).toBe(ON_SITE);
+  it("sends an example's import of @maplacejs/maplace/google to the site's, the dev server's query aside", () => {
+    expect(resolved("@maplacejs/maplace/google", `${ROOT}/simple/vanilla.ts`)).toBe(ON_SITE);
+    expect(resolved("@maplacejs/maplace/google", `${ROOT}/simple/react.tsx?v=1a2b`)).toBe(ON_SITE);
   });
 
-  it("sends the site's Maplace's import of maplace/google to the site's", () => {
+  it("sends the site's Maplace's import of @maplacejs/maplace/google to the site's", () => {
     expect(existsSync(SITE_MAPLACE), SITE_MAPLACE).toBe(true);
-    expect(resolved("maplace/google", `${SITE_MAPLACE}?v=1a2b`)).toBe(ON_SITE);
+    expect(resolved("@maplacejs/maplace/google", `${SITE_MAPLACE}?v=1a2b`)).toBe(ON_SITE);
   });
 
   it("leaves any other importer's import, and any other import, alone", () => {
-    expect(resolved("maplace/google", "/repo/apps/site/src/scripts/site.ts")).toBeUndefined();
-    expect(resolved("maplace/google", ON_SITE)).toBeUndefined();
-    expect(resolved("maplace", `${ROOT}/simple/vanilla.ts`)).toBeUndefined();
+    expect(
+      resolved("@maplacejs/maplace/google", "/repo/apps/site/src/scripts/site.ts"),
+    ).toBeUndefined();
+    expect(resolved("@maplacejs/maplace/google", ON_SITE)).toBeUndefined();
+    expect(resolved("@maplacejs/maplace", `${ROOT}/simple/vanilla.ts`)).toBeUndefined();
   });
 
-  it("leaves a MapLibre module's maplace/maplibre alone", () => {
-    expect(resolved("maplace/maplibre", `${ROOT}/simple/maplibre/vanilla.ts`)).toBeUndefined();
+  it("leaves a MapLibre module's @maplacejs/maplace/maplibre alone", () => {
+    expect(
+      resolved("@maplacejs/maplace/maplibre", `${ROOT}/simple/maplibre/vanilla.ts`),
+    ).toBeUndefined();
   });
 
-  it("writes the site's maplace/google, its calls defaulting to SITE_MAPS_MAP_ID", () => {
+  it("writes the site's @maplacejs/maplace/google, its calls defaulting to SITE_MAPS_MAP_ID", () => {
     const code = loaded();
     expect(code).toContain('import { SITE_MAPS_MAP_ID } from "astro:env/client";');
-    expect(code).toContain('export * from "maplace/google";');
+    expect(code).toContain('export * from "@maplacejs/maplace/google";');
     expect(code).toContain("googleWithMapId(google, SITE_MAPS_MAP_ID)");
   });
 });

@@ -1,7 +1,7 @@
 // A map of your own on MapLibre: the page makes it, and Maplace.js draws on it.
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMaplace } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
+import { createMaplace } from "@maplacejs/maplace";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
 import { Map as MapLibreMap } from "maplibre-gl";
 
 const map = new MapLibreMap({

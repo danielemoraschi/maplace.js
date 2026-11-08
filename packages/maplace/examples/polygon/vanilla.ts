@@ -1,5 +1,5 @@
-import type { Location } from "maplace";
-import { createGoogleMap } from "maplace/google";
+import type { Location } from "@maplacejs/maplace";
+import { createGoogleMap } from "@maplacejs/maplace/google";
 
 /** Your own code, writing an edited location back to your server. */
 declare function save(location: Location): Promise<void>;

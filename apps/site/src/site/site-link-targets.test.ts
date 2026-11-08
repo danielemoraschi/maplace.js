@@ -66,7 +66,7 @@ describe("headingSlug", () => {
     ["## With a bundler", "with-a-bundler"],
     ["### Location fields", "location-fields"],
     ["## `<MaplaceProvider>`", "maplaceprovider"],
-    ["## `maplace/element/google`", "maplaceelementgoogle"],
+    ["## `@maplacejs/maplace/element/google`", "maplacejsmaplaceelementgoogle"],
     ["## `useMaplace()`", "usemaplace"],
     ["## Using C#", "using-c"],
     ["## Closed ##  ", "closed"],

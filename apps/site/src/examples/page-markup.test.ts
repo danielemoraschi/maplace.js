@@ -1,11 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { attributeValue, inertScripts, requireOnce, withoutDoctype } from "./page-markup.ts";
+import {
+  attributeValue,
+  inertScripts,
+  requireOnce,
+  withoutCdnScript,
+  withoutDoctype,
+} from "./page-markup.ts";
 import { INERT_SCRIPT_TYPE } from "./page-scripts.ts";
 
 describe("withoutDoctype", () => {
   it("leaves out a leading doctype, whatever its case, and what follows it as it is", () => {
     expect(withoutDoctype("<!DOCTYPE html>\n<p></p>")).toBe("<p></p>");
     expect(withoutDoctype("<p></p>")).toBe("<p></p>");
+  });
+});
+
+describe("withoutCdnScript", () => {
+  it("leaves out the CDN script, whichever path on jsDelivr the package has", () => {
+    for (const path of ["maplace@1", "@maplacejs/maplace@1.0.0"]) {
+      const html = `<script src="https://cdn.jsdelivr.net/npm/${path}/dist/maplace-element-maplibre.iife.js"></script>\n<p></p>`;
+      expect(withoutCdnScript(html)).toBe("<p></p>");
+    }
   });
 });
 

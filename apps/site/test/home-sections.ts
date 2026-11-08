@@ -1,4 +1,4 @@
-import type { MaplaceMapElement } from "maplace/element";
+import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import type { Locator, Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
 import { findGroupOfSection, groupPath } from "../src/examples/example-sections.ts";

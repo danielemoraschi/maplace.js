@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMaplace, type Location } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
+import { createMaplace, type Location } from "@maplacejs/maplace";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
 
 const locations: Location[] = [
   { id: "lisbon", lat: 38.7223, lng: -9.1393, title: "Lisbon" },

@@ -37,7 +37,7 @@ describe("providerFor", () => {
       "none is registered",
       [],
       undefined,
-      /no provider is registered: import maplace\/element\/google or maplace\/element\/maplibre/,
+      /no provider is registered: import @maplacejs\/maplace\/element\/google or @maplacejs\/maplace\/element\/maplibre/,
     ],
     [
       "the one named isn't",

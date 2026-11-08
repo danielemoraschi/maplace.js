@@ -16,7 +16,7 @@ import * as elementEntry from "./index";
 // The script versions (W33), as readers copy them: a page of its own script on the CDN script's
 // `Maplace`, here the fake's. Its stores are recorded, as the module versions' are, by the
 // recorder the factory loads itself.
-vi.mock("maplace", async (importOriginal) => {
+vi.mock("@maplacejs/maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
   const { recordingCreateMaplace } = await import("../testing/examples/recorded-stores");
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };

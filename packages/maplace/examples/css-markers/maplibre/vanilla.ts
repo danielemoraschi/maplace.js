@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Location } from "maplace";
-import { createMapLibreMap } from "maplace/maplibre";
+import type { Location } from "@maplacejs/maplace";
+import { createMapLibreMap } from "@maplacejs/maplace/maplibre";
 
 const locations: Location[] = [
   { id: "rijks", lat: 52.36, lng: 4.8852, title: "Rijksmuseum", icon: pinFor("Rijks") },

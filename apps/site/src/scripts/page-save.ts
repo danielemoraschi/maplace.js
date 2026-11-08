@@ -1,4 +1,4 @@
-import type { Location } from "maplace";
+import type { Location } from "@maplacejs/maplace";
 import { SHOWN_NOTES } from "./version-notes.ts";
 
 /** What `save(location)` is given: a location, of any type. */

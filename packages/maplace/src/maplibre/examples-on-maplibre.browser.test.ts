@@ -33,7 +33,7 @@ import { TEST_STYLE } from "./testing/test-style";
 // the machine: OpenFreeMap's styles are answered with the tests' local one. The recorder is loaded
 // by the factory itself: the element's import of the entry runs it before this file's own imports
 // are in.
-vi.mock("maplace", async (importOriginal) => {
+vi.mock("@maplacejs/maplace", async (importOriginal) => {
   const real = await importOriginal<typeof Core>();
   const { recordingCreateMaplace } = await import("../testing/examples/recorded-stores");
   return { ...real, createMaplace: recordingCreateMaplace(real.createMaplace) };

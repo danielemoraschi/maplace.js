@@ -1,6 +1,6 @@
-import { type Location, listedLocations, type Snapshot, type View } from "maplace";
-import { createGoogleAdapter } from "maplace/google";
-import { MapControl, MaplaceMap, MaplaceProvider, useMaplace } from "maplace/react";
+import { type Location, listedLocations, type Snapshot, type View } from "@maplacejs/maplace";
+import { createGoogleAdapter } from "@maplacejs/maplace/google";
+import { MapControl, MaplaceMap, MaplaceProvider, useMaplace } from "@maplacejs/maplace/react";
 import { StrictMode, useRef, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";

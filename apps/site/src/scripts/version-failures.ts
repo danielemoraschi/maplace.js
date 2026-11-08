@@ -1,4 +1,4 @@
-import type { MaplaceError } from "maplace";
+import type { MaplaceError } from "@maplacejs/maplace";
 
 /** As much of a map's error as the note reads. */
 export type MapFailure = Pick<MaplaceError, "code"> & Partial<Pick<MaplaceError, "field">>;

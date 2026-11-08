@@ -74,8 +74,8 @@ jobs:
         env:
           LAST: ${{ steps.prepare.outputs.last }}
         run: |
-          test "$(npm view "maplace@$LAST" version)" = "$LAST" || {
-            echo "::error::maplace $LAST is tagged and not on npm: re-run its release's publish job first"
+          test "$(npm view "@maplacejs/maplace@$LAST" version)" = "$LAST" || {
+            echo "::error::@maplacejs/maplace $LAST is tagged and not on npm: re-run its release's publish job first"
             exit 1
           }
       - name: The release commit, holding only what the release wrote
@@ -127,8 +127,8 @@ jobs:
           node-version-file: .nvmrc
       - name: Publish, unless a run before did
         run: |
-          if [ "$(npm view "maplace@$VERSION" version)" = "$VERSION" ]; then
-            echo "maplace $VERSION is already on npm: this is a re-run"
+          if [ "$(npm view "@maplacejs/maplace@$VERSION" version)" = "$VERSION" ]; then
+            echo "@maplacejs/maplace $VERSION is already on npm: this is a re-run"
             exit 0
           fi
           # Trusted publishing needs npm 11.5.1 or later.

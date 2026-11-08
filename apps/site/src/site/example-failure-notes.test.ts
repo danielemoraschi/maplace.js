@@ -26,35 +26,39 @@ describe("exampleFailureNotes", () => {
     expect(exampleFailureNotes().enforce).toBe("pre");
   });
 
-  it("sends the site's map-ID module's maplace/google to the noted Google entry", () => {
-    expect(resolved("maplace/google", ON_SITE)).toBe(GOOGLE_NOTED);
+  it("sends the site's map-ID module's @maplacejs/maplace/google to the noted Google entry", () => {
+    expect(resolved("@maplacejs/maplace/google", ON_SITE)).toBe(GOOGLE_NOTED);
   });
 
-  it("sends a version module's and the site's Maplace's maplace/maplibre to the noted MapLibre entry, the dev server's query aside", () => {
-    expect(resolved("maplace/maplibre", `${ROOT}/simple/maplibre/vanilla.ts`)).toBe(MAPLIBRE_NOTED);
-    expect(resolved("maplace/maplibre", `${ROOT}/simple/maplibre/react.tsx?v=1a2b`)).toBe(
+  it("sends a version module's and the site's Maplace's @maplacejs/maplace/maplibre to the noted MapLibre entry, the dev server's query aside", () => {
+    expect(resolved("@maplacejs/maplace/maplibre", `${ROOT}/simple/maplibre/vanilla.ts`)).toBe(
       MAPLIBRE_NOTED,
     );
-    expect(resolved("maplace/maplibre", `${SITE_MAPLACE}?v=1a2b`)).toBe(MAPLIBRE_NOTED);
+    expect(
+      resolved("@maplacejs/maplace/maplibre", `${ROOT}/simple/maplibre/react.tsx?v=1a2b`),
+    ).toBe(MAPLIBRE_NOTED);
+    expect(resolved("@maplacejs/maplace/maplibre", `${SITE_MAPLACE}?v=1a2b`)).toBe(MAPLIBRE_NOTED);
   });
 
-  it("leaves a version module's maplace/google to the map ID, which comes first", () => {
-    expect(resolved("maplace/google", `${ROOT}/simple/vanilla.ts`)).toBeUndefined();
-    expect(resolved("maplace/google", SITE_MAPLACE)).toBeUndefined();
+  it("leaves a version module's @maplacejs/maplace/google to the map ID, which comes first", () => {
+    expect(resolved("@maplacejs/maplace/google", `${ROOT}/simple/vanilla.ts`)).toBeUndefined();
+    expect(resolved("@maplacejs/maplace/google", SITE_MAPLACE)).toBeUndefined();
   });
 
   it("leaves a noted entry's own import, any other importer and any other import alone", () => {
-    expect(resolved("maplace/google", GOOGLE_NOTED)).toBeUndefined();
-    expect(resolved("maplace/maplibre", MAPLIBRE_NOTED)).toBeUndefined();
-    expect(resolved("maplace/maplibre", "/repo/apps/site/src/scripts/site.ts")).toBeUndefined();
-    expect(resolved("maplace", `${ROOT}/simple/maplibre/vanilla.ts`)).toBeUndefined();
+    expect(resolved("@maplacejs/maplace/google", GOOGLE_NOTED)).toBeUndefined();
+    expect(resolved("@maplacejs/maplace/maplibre", MAPLIBRE_NOTED)).toBeUndefined();
+    expect(
+      resolved("@maplacejs/maplace/maplibre", "/repo/apps/site/src/scripts/site.ts"),
+    ).toBeUndefined();
+    expect(resolved("@maplacejs/maplace", `${ROOT}/simple/maplibre/vanilla.ts`)).toBeUndefined();
     expect(loaded("\0maplace-other")).toBeUndefined();
   });
 
   it("writes each noted entry: the package's exports, its two calls wrapped, from the wraps' file", () => {
     const calls = [
-      [GOOGLE_NOTED, "maplace/google", "createGoogleAdapter", "createGoogleMap"],
-      [MAPLIBRE_NOTED, "maplace/maplibre", "createMapLibreAdapter", "createMapLibreMap"],
+      [GOOGLE_NOTED, "@maplacejs/maplace/google", "createGoogleAdapter", "createGoogleMap"],
+      [MAPLIBRE_NOTED, "@maplacejs/maplace/maplibre", "createMapLibreAdapter", "createMapLibreMap"],
     ] as const;
     for (const [id, entry, adapter, map] of calls) {
       const code = loaded(id) ?? "";

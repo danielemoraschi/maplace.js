@@ -17,13 +17,13 @@ const PROVIDER_INSTALLS = [
   {
     provider: "google",
     label: "Google Maps",
-    npmCommand: "npm install maplace",
+    npmCommand: "npm install @maplacejs/maplace",
     file: CDN_SCRIPTS.plain,
   },
   {
     provider: "maplibre",
     label: "MapLibre",
-    npmCommand: "npm install maplace maplibre-gl",
+    npmCommand: "npm install @maplacejs/maplace maplibre-gl",
     file: CDN_SCRIPTS.maplibre,
   },
 ] as const satisfies readonly {

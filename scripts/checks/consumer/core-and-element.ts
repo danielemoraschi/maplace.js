@@ -1,8 +1,8 @@
 // A page using maplace without Google, type-checked against the packed package
 // (scripts/checks/consumer-types.ts): it needs no @types/google.maps.
-import { createListView, createMaplace, type Location, MaplaceError } from "maplace";
-import type { MaplaceElementEventMap } from "maplace/element";
-import "maplace/element";
+import { createListView, createMaplace, type Location, MaplaceError } from "@maplacejs/maplace";
+import type { MaplaceElementEventMap } from "@maplacejs/maplace/element";
+import "@maplacejs/maplace/element";
 
 const cities: Location<{ population: number }>[] = [
   { id: "rome", lat: 41.9028, lng: 12.4964, title: "Rome", data: { population: 2_750_000 } },

@@ -23,7 +23,7 @@ function modulesIn(dir: string, matches: RegExp): string[] {
 function packagesImportedBy(modules: string[], imports: RegExp): string[] {
   return modules
     .flatMap((code) => [...code.matchAll(imports)].map(([, specifier = ""]) => specifier))
-    .filter((specifier) => !specifier.startsWith("maplace"));
+    .filter((specifier) => !specifier.startsWith("@maplacejs/maplace"));
 }
 
 describe("PREBUNDLED_DEPS", () => {

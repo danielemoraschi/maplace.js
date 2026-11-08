@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMaplace, type Location, listedLocations, type Maplace } from "maplace";
-import { createMapLibreAdapter } from "maplace/maplibre";
+import { createMaplace, type Location, listedLocations, type Maplace } from "@maplacejs/maplace";
+import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
 
 /** What the card beside the map says of a venue, besides its name and category. */
 interface VenueDetails {

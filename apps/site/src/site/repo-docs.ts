@@ -107,7 +107,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/api.md",
     title: "API reference",
     description:
-      "Every export of every entry of the maplace package, with its error codes and the capabilities of each map provider.",
+      "Every export of every entry of the @maplacejs/maplace package, with its error codes and the capabilities of each map provider.",
     label: "API",
   },
   {

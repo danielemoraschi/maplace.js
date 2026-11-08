@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll } from "vitest";
+import { installedPackageDir } from "../release/published-package.ts";
 import { CDN_SCRIPTS } from "./cdn-builds.ts";
 import { buildEsm } from "./esm-build.ts";
 import type { VersionedManifest } from "./package.ts";
@@ -22,7 +23,7 @@ interface StagedTestPackage {
  */
 export function stagedBeforeTests(prefix: string): StagedTestPackage {
   const consumerDir = tempDir(prefix);
-  const packageDir = join(consumerDir, "node_modules", "maplace");
+  const packageDir = installedPackageDir(consumerDir);
   beforeAll(() => {
     const dist = join(consumerDir, "dist");
     buildEsm(dist);

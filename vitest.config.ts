@@ -57,7 +57,8 @@ export default defineConfig({
       },
       {
         extends: true,
-        // The examples import `maplace` by name, as readers do: resolved to the source, as in tsconfig.
+        // The examples import `@maplacejs/maplace` by name, as readers do: resolved to the source,
+        // as in tsconfig.
         resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
         // React pre-bundled from the start: a dependency Vite finds mid-run is optimized and
         // reloaded, and a component holding the old copy breaks the hooks of the new.

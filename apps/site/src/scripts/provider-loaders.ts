@@ -10,8 +10,8 @@ export type ProviderImports = ElementLoaders & {
 
 /** The site's own imports: maplibre-gl joins no page that runs no MapLibre map. */
 const SITE_IMPORTS: ProviderImports = {
-  google: () => import("maplace/element/google"),
-  maplibre: () => import("maplace/element/maplibre"),
+  google: () => import("@maplacejs/maplace/element/google"),
+  maplibre: () => import("@maplacejs/maplace/element/maplibre"),
   mapLibreAssets: () => import("./maplibre-assets.ts"),
 };
 

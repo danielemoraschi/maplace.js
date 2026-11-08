@@ -1,8 +1,12 @@
 // A page using maplace on Google, type-checked against the packed package
 // (scripts/checks/consumer-types.ts): Google's types come in through maplace's references.
-import { createMaplace } from "maplace";
-import "maplace/element/google";
-import { createGoogleAdapter, createGoogleMap, type GoogleAdapterOptions } from "maplace/google";
+import { createMaplace } from "@maplacejs/maplace";
+import "@maplacejs/maplace/element/google";
+import {
+  createGoogleAdapter,
+  createGoogleMap,
+  type GoogleAdapterOptions,
+} from "@maplacejs/maplace/google";
 
 declare const pageMap: google.maps.Map;
 const options: GoogleAdapterOptions = { mapId: "DEMO_MAP_ID", map: pageMap };
