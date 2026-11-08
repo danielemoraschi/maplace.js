@@ -7,9 +7,14 @@ import { pageMapState } from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { SETTLE_MS } from "./site-session.ts";
 import { DESKTOP, type Visitor } from "./visitor.ts";
-import { choosePreviewOnGoogle, writtenSnippetPage } from "./written-snippet.ts";
+import {
+  choosePreviewOnGoogle,
+  pinnedScriptsBeforeTests,
+  writtenSnippetPage,
+} from "./written-snippet.ts";
 
 const site = siteOnMapLibreBeforeTests();
+pinnedScriptsBeforeTests();
 
 const POINTS =
   "{ lat: 45, lon: 9, title: 'A' }, { lat: 46, lon: 10, title: 'B' }, { lat: 45.5, lon: 11, title: 'C' }";
