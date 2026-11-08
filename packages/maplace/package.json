@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "2.6.2",
-    "supercluster": "8.0.1"
+    "supercluster": "9.1.0"
   },
   "peerDependencies": {
     "@types/google.maps": "^3.66.0",
