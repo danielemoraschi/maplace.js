@@ -94,6 +94,11 @@ describe("the npm ESM build", () => {
     for (const entry of entries) expect(built.has(entry), entry).toBe(true);
   });
 
+  it("names the core's types at the top level too, for tools that read only that field", () => {
+    const manifest = stagedManifest();
+    expect(manifest.exports["."]).toMatchObject({ types: manifest.types });
+  });
+
   it("has one MaplaceError for every entry", () => {
     const built = [...scripts(join(packageDir, "dist")).values()];
     expect(

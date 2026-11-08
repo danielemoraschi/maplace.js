@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-08 Fixed tools that read only `package.json`'s top-level `types` field, such as npm's types badge, finding no TypeScript types: the field now names the core entry's declarations
+
 ## 1.0.0 (2026-11-07)
 
 - 2026-11-07 Changed everything: Maplace.js 1.0 is a rewrite with no jQuery. A list of locations becomes a map with a list kept in sync beside it, on Google Maps or MapLibre, from HTML, a page's own script, a bundler or React; see [the README](README.md), [MIGRATION.md](MIGRATION.md) for moving a 0.2 page, and [the 1.0 RFC](docs/rfc-1.0.md)
