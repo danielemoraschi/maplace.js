@@ -2,6 +2,7 @@ import { globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { packageManifest } from "../../../scripts/build/package.ts";
+import { pngSize } from "../../../scripts/build/png-size.ts";
 import { PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { lastChangeOf } from "../src/site/git-dates.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "../src/site/markdown-routes.ts";
@@ -116,7 +117,7 @@ describe("the site's search metadata", () => {
     const response = await fetch(new URL(pathname, site.url));
     expect(response.headers.get("content-type")).toBe("image/png");
     const png = Buffer.from(await response.arrayBuffer());
-    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630]);
+    expect(pngSize(png)).toEqual({ width: 1200, height: 630 });
   });
 
   it("writes JSON-LD that parses and names what the page shows", () => {

@@ -40,6 +40,10 @@ describe("issuesClosedBy", () => {
     expect(issuesClosedBy("Fixes: #7, closes #8")).toEqual([7, 8]);
   });
 
+  it("closes nothing for a website-only fix, which names its issue without a keyword (CLAUDE.md)", () => {
+    expect(issuesClosedBy("[fix] The builder's paste box\n\nSite fix for #12")).toEqual([]);
+  });
+
   it("ignores the [fix] prefix, mentions, and another repo's issues", () => {
     expect(issuesClosedBy("[fix] G7: see #3 and fixes owner/repo#4")).toEqual([]);
     expect(issuesClosedBy("prefix #5; postfix #6")).toEqual([]);

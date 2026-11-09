@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { setTimeout as pause } from "node:timers/promises";
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
@@ -20,6 +21,7 @@ import {
   PRIVACY_PAGE,
 } from "../src/site/footer-pages.ts";
 import { docRoute, REPO_DOCS } from "../src/site/repo-docs.ts";
+import { daysUntilExpiry, securityTxt } from "../src/site/security-txt.ts";
 import { SITE_MAINTAINER } from "../src/site/site-owner.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
@@ -68,7 +70,7 @@ const footerLinks = (page: Page) =>
     );
 
 describe("the site's icon", () => {
-  it("is the repo's favicon at a URL that changes with it, so no browser keeps an old one", async () => {
+  it("is the repo's favicon at a URL that changes with it, beside the touch icon at the root", async () => {
     const { page, context } = await openPage("/");
     const href = (await page.locator('link[rel="icon"]').getAttribute("href")) ?? "";
     expect(href).toMatch(/^\/_astro\/favicon\.[\w-]+\.svg$/);
@@ -76,11 +78,6 @@ describe("the site's icon", () => {
     expect(served).toBe(
       readFileSync(new URL("../src/assets/favicon.svg", import.meta.url), "utf8"),
     );
-    await context.close();
-  }, 30_000);
-
-  it("names the touch icon at the site's root", async () => {
-    const { page, context } = await openPage("/");
     expect(await page.locator('link[rel="apple-touch-icon"]').getAttribute("href")).toBe(
       "/apple-touch-icon.png",
     );
@@ -89,7 +86,12 @@ describe("the site's icon", () => {
 });
 
 describe("the site's root files", () => {
-  it.each(["/_redirects", "/favicon.ico", "/apple-touch-icon.png", "/.well-known/security.txt"])(
+  it("builds public/'s _redirects, which Cloudflare reads as rules, into the site's root", () => {
+    const built = readFileSync(join(site.dir, "_redirects"));
+    expect(built.equals(readFileSync(new URL("../public/_redirects", import.meta.url)))).toBe(true);
+  });
+
+  it.each(["/favicon.ico", "/apple-touch-icon.png"])(
     "serves %s from the site's root as the file in public/",
     async (path) => {
       const response = await fetch(new URL(path, site.url));
@@ -100,6 +102,15 @@ describe("the site's root files", () => {
     },
     30_000,
   );
+
+  it("serves security.txt as built, expiring 11 months after the build", async () => {
+    const response = await fetch(new URL("/.well-known/security.txt", site.url));
+    expect(response.status).toBe(200);
+    const served = await response.text();
+    const withoutExpires = (text: string) => text.replace(/^Expires: .*$/m, "");
+    expect(withoutExpires(served)).toBe(withoutExpires(securityTxt(new Date())));
+    expect(daysUntilExpiry(served, new Date())).toBeGreaterThan(300);
+  }, 30_000);
 });
 
 describe("an example's guide", () => {

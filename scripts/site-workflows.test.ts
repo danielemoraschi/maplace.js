@@ -5,8 +5,8 @@ import { ROOT } from "./build/package.ts";
 import { jobNamed, stepsOf, stepWith } from "./checks/workflow-text.ts";
 
 /**
- * Holds the site's production workflows (R4, W10c), which run only from main, to the preview's build
- * and to the site's own address.
+ * Holds the site's production workflows (R4, W10c), which run only from main, to the preview's build,
+ * to the site's own address, and to what a deploy may put live (R9, R10).
  */
 const read = (path: string) => readFileSync(resolve(ROOT, path), "utf8");
 const deploy = read(".github/workflows/deploy.yml");
@@ -15,14 +15,21 @@ const ci = read(".github/workflows/ci.yml");
 const SITE = /^\s+site: "([^"]+)",$/m.exec(read("apps/site/astro.config.ts"))?.[1] ?? "";
 const OFFSITE_CHECK = `node apps/site/src/site/offsite-check.ts ${SITE}`;
 
+/** The deploy's choice of release and commit (R9, R10), tested in scripts/release/deploy-target.test.ts. */
+const DEPLOY_TARGET = 'node scripts/deploy-target.ts > "$RUNNER_TEMP/deploy-target.env" || {';
+
+/** The two Node setups: main's, for the deploy-target script, then the deployed commit's, to build. */
+const MAINS_NODE = "uses: actions/setup-node@";
+const BUILDS_NODE = "cache: npm";
+
 it("reads the site's address from its Astro config", () => {
   expect(SITE).toMatch(/^https:\/\/[\w.-]+$/);
 });
 
 describe("deploy.yml", () => {
-  it("can be called by the release and dispatched by hand, reading contents only", () => {
+  it("can be called by the release and dispatched by hand, reading contents and CI's runs only", () => {
     expect(deploy).toMatch(/^on:\n {2}workflow_dispatch:\n {2}workflow_call:\n/m);
-    expect(deploy).toMatch(/^permissions:\n {2}contents: read\n\n/m);
+    expect(deploy).toMatch(/^permissions:\n {2}contents: read\n {2}actions: read\n\n/m);
   });
 
   it("deploys only from main, before checking anything out", () => {
@@ -36,17 +43,21 @@ describe("deploy.yml", () => {
     expect(checkout).toContain("persist-credentials: false");
   });
 
-  it("deploys the newest stable release tag on main, before setting up Node", () => {
-    const pick = stepWith(deploy, "git tag --list 'v[0-9]*'");
-    const step = stepsOf(deploy)[pick];
-    expect(step).toContain("--sort=-v:refname");
-    expect(step).toContain("grep -v -- -");
-    expect(step).toMatch(/git merge-base --is-ancestor "\$tag" origin\/main \|\| \{[^}]*exit 1/);
-    expect(step).toContain('git checkout --quiet "$tag"');
-    expect(step).toContain('echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"');
-    expect(pick).toBeGreaterThan(stepWith(deploy, "uses: actions/checkout@"));
-    for (const later of ["uses: actions/setup-node@", "npm view", "run: npm ci"]) {
-      expect(pick).toBeLessThan(stepWith(deploy, later));
+  it("deploys what main's deploy-target script picks, on main's Node, refusing when it refuses", () => {
+    const pick = stepWith(deploy, DEPLOY_TARGET);
+    const step = stepsOf(deploy)[pick] ?? "";
+    expect(step).toMatch(/\|\| \{\n\s+echo "::error::[^"]+"\n\s+exit 1\n\s+\}/);
+    expect(step).toContain('cat "$RUNNER_TEMP/deploy-target.env" >> "$GITHUB_ENV"');
+    expect(step).toMatch(/GH_TOKEN: \$\{\{ github\.token \}\}/);
+    const mainsNode = stepsOf(deploy).findIndex(
+      (text) => text.includes(MAINS_NODE) && !text.includes(BUILDS_NODE),
+    );
+    const checkout = stepWith(deploy, 'git checkout --quiet "$DEPLOY_COMMIT"');
+    expect(mainsNode).toBeGreaterThan(stepWith(deploy, "uses: actions/checkout@"));
+    expect(mainsNode).toBeLessThan(pick);
+    expect(checkout).toBe(pick + 1);
+    for (const later of [BUILDS_NODE, "npm view", "run: npm ci"]) {
+      expect(checkout).toBeLessThan(stepWith(deploy, later));
     }
   });
 
@@ -101,6 +112,14 @@ describe("offsite.yml", () => {
   it("checks the site on the 1st and 15th, and by hand", () => {
     expect(offsite).toMatch(/^\s+- cron: "\d+ \d+ 1,15 \* \*"$/m);
     expect(offsite).toMatch(/^\s+workflow_dispatch:$/m);
+  });
+
+  it("checks the live security.txt has a month left, after the offsite check", () => {
+    const expiry = stepWith(offsite, `node scripts/security-txt-expiry.ts ${SITE}`);
+    expect(expiry).toBeGreaterThan(stepWith(offsite, OFFSITE_CHECK));
+    expect(stepsOf(offsite)[expiry], "run whatever the offsite check found").toContain(
+      "if: ${{ !cancelled() }}",
+    );
   });
 
   it("runs the check on Node alone, with no install", () => {

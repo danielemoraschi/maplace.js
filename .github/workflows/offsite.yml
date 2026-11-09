@@ -3,7 +3,8 @@
 # pages with no push (Cloudflare's Web Analytics beacon appeared on wavelace's domain the day it went live), so a check
 # run only on a deploy would not see it. It only looks; it deploys nothing, and needs no install: the check imports
 # only the site's own modules. Schedules run from the default branch alone, main from R3; GitHub turns a public
-# repo's schedules off after 60 days with no activity, turned on again from the Actions tab.
+# repo's schedules off after 60 days with no activity, turned on again from the Actions tab. Then whether the live
+# security.txt has a month left before its Expires (scripts/security-txt-expiry.ts).
 name: Offsite
 
 on:
@@ -26,3 +27,7 @@ jobs:
         with:
           node-version-file: .nvmrc
       - run: node apps/site/src/site/offsite-check.ts https://maplacejs.com
+      # The live security.txt (W59): every deploy renews its Expires, so it lapses only if deploys stop. Checked
+      # whatever the offsite check found, so one red step doesn't hide the other.
+      - if: ${{ !cancelled() }}
+        run: node scripts/security-txt-expiry.ts https://maplacejs.com

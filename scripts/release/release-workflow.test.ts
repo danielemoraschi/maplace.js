@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
+import { parse } from "yaml";
 import { ROOT } from "../build/package.ts";
 import { jobNamed } from "../checks/workflow-text.ts";
 import { CDN_DEADLINE_MS, LONGEST_CDN_ATTEMPT_MS } from "./cdn-check.ts";
@@ -88,6 +89,14 @@ it("deploys the site after announce, through the deploy workflow", () => {
   expect(deploy).toMatch(/^\s+uses: \.\/\.github\/workflows\/deploy\.yml$/m);
   // Without them the deploy fails, and only after an irreversible publish.
   expect(deploy).toMatch(/^\s+secrets: inherit$/m);
+});
+
+it("grants the deploy every permission the deploy workflow asks for, or it can't start", () => {
+  const asked = parse(
+    readFileSync(resolve(ROOT, ".github/workflows/deploy.yml"), "utf8"),
+  ).permissions;
+  expect(Object.keys(asked).length).toBeGreaterThan(0);
+  expect(parse(workflow).jobs.deploy.permissions).toMatchObject(asked);
 });
 
 it("never deploys a pre-release", () => {

@@ -37,10 +37,10 @@ npx playwright install chromium
 - **Files** hold one concept each, 100–200 lines; `npm run check` says when one is too long or a new one needs a place in the import layers.
 - **Examples** are programs readers copy. Each one is the same map as a page, a script, vanilla TypeScript and React, on each provider it runs on, so a new one comes with all of them. Never change an example to suit a test.
 - **API changes** edit [the RFC](docs/rfc-1.0.md) in the same commit as the types. A new error code, event or capability also goes in [`api-lists.ts`](packages/maplace/src/__typetests__/api-lists.ts).
-- **`CHANGELOG.md`** gets one line at the top for a change a reader would notice, in the format [its opening](CHANGELOG.md) gives.
+- **`CHANGELOG.md`** gets one line at the top for a change a reader of the library would notice, in the format [its opening](CHANGELOG.md) gives. A change to the website alone gets none: the site goes live without a release, and a line would hold it back until one.
 
 ## Pull requests
 
-Keep each one to a single change, branched from the default branch, and say `Fixes #N` if it closes an issue.
+Keep each one to a single change, branched from the default branch, and say `Fixes #N` if it closes an issue. A fix to the website alone says `Site fix for #N` instead: the issue is closed once the fix is live.
 
 Contributions are under the project's [Apache-2.0 licence](LICENSE) (section 5). This project has a [code of conduct](CODE_OF_CONDUCT.md).

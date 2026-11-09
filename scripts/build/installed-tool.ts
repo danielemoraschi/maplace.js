@@ -12,6 +12,9 @@ const GIT_PLACES = [
   String.raw`C:\Program Files\Git\cmd\git.exe`,
 ];
 
+/** Where the GitHub CLI is installed: GitHub's Ubuntu runners, Homebrew on Intel and Apple silicon. */
+const GH_PLACES = ["/usr/bin/gh", "/usr/local/bin/gh", "/opt/homebrew/bin/gh"];
+
 /** npm's own CLI, beside the Node running this, in the Unix and the Windows layout. */
 const NPM_CLI_PLACES = ["../lib/node_modules", "node_modules"].map((modules) =>
   join(dirname(process.execPath), modules, "npm/bin/npm-cli.js"),
@@ -20,6 +23,11 @@ const NPM_CLI_PLACES = ["../lib/node_modules", "node_modules"].map((modules) =>
 /** The installed git's absolute path: never looked up on `PATH`. */
 export function installedGit(): string {
   return installedTool("git", GIT_PLACES);
+}
+
+/** The installed GitHub CLI's absolute path: never looked up on `PATH`. */
+export function installedGh(): string {
+  return installedTool("gh", GH_PLACES);
 }
 
 /** The installed npm CLI's absolute path, to run with `process.execPath`: never looked up on `PATH`. */

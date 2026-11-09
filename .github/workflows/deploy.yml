@@ -1,14 +1,19 @@
 # The site to production, maplacejs.com (R4): run by hand from the Actions tab on main, and by release.yml after each
-# stable release's announce. It deploys the newest stable release tag on main (R9), never main's unreleased work, so
-# the site pins the version npm has: refused for a pre-release, which the site doesn't pin apart, and for a version
-# not on npm, whose scripts would 404 (W46). Then every page is checked for requests to another origin (W10c), which
-# only the edge can add. The preview, main's, is ci.yml's deploy-preview, built the same way
+# stable release's announce. It deploys main's newest commit whose library, what a reader of it sees, is still the
+# newest stable release's (R10): main's head when only the site changed since, so a site change goes live without a
+# release; never main's unreleased library work (R9), so the site pins the version npm has. A commit that isn't the
+# release's own needs CI's verify to have passed on it on main. Refused for a pre-release, which the site doesn't pin
+# apart, and for a version not on npm, whose scripts would 404 (W46). Called by a release, main may have moved
+# during publish and announce: its site changes since then go live with the release, once CI passed on them.
+# Re-running an old run deploys what the rule picks now. Then every page is checked for requests to another origin
+# (W10c), which only the edge can add. The preview, main's, is ci.yml's deploy-preview, built the same way
 # (scripts/site-workflows.test.ts). maplacejs.com is attached to the Worker in Cloudflare's dashboard, not in
 # wrangler.jsonc: with no routes there, wrangler deploy leaves the Worker's domains and DNS alone. R4's first run
 # comes before the domain is attached, so the dashboard's Hello World is replaced while no address serves it; its
 # offsite check is then red, as maplacejs.com isn't the Worker's yet: attach the domain, then re-run the job once its
-# certificate is ready. The steps are main's; what they run before the offsite check (.nvmrc, npm ci, the build) is
-# the tag's. So a step calling a script that only main has would break by-hand deploys until the next release.
+# certificate is ready. The steps are main's, and main's Node runs the deploy-target script; what they run after it,
+# before the offsite check (.nvmrc, npm ci, the build), is the deployed commit's. So a step calling a script that only
+# main has, after the checkout, could break by-hand deploys until it's deployed.
 name: Deploy
 
 on:
@@ -17,13 +22,14 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # One deploy at a time, a running one never cancelled; a newer waiting one replaces an older, both deploying the
-    # newest tag.
+    # One deploy at a time, a running one never cancelled; a newer waiting one replaces an older, both deploying what
+    # the rule picks.
     concurrency:
       group: deploy-production
       cancel-in-progress: false
@@ -36,15 +42,25 @@ jobs:
           ref: main
           fetch-depth: 0 # every tag, and the pages' dates from git
           persist-credentials: false # it never pushes, and npm's install scripts run here
-      # The newest stable release, not main's head, which carries work npm hasn't published (R9). Tags aren't
-      # protected: refused unless it is on main here, and unless it is its manifest's version in the guard below.
-      - name: The newest release's tag
+      # Main's Node, for main's deploy-target script: Node alone, before anything is picked or installed.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      # What to deploy (R9, R10, scripts/deploy-target.ts): the newest stable release on main (tags aren't protected:
+      # refused unless it is on main, and unless it is its manifest's version in the guard below), and main's newest
+      # commit whose reader-facing files are still the release's, refused unless it is the release's own or CI's
+      # verify passed on it on main.
+      - name: What to deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          tag=$(git tag --list 'v[0-9]*' --sort=-v:refname | grep -v -- - | head -n 1)
-          test -n "$tag" || { echo "::error::no release tag to deploy"; exit 1; }
-          git merge-base --is-ancestor "$tag" origin/main || { echo "::error::$tag isn't on main"; exit 1; }
-          git checkout --quiet "$tag"
-          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+          node scripts/deploy-target.ts > "$RUNNER_TEMP/deploy-target.env" || {
+            echo "::error::deploy refused: see the lines above"
+            exit 1
+          }
+          cat "$RUNNER_TEMP/deploy-target.env" >> "$GITHUB_ENV"
+      - run: git checkout --quiet "$DEPLOY_COMMIT"
+      # The deployed commit's Node, for its install and build.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
@@ -83,7 +99,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       # What the edge adds, which the build never sees (W10c): every page as a browser gets it may ask no other origin
       # before consent. By main's rules, the newest, as offsite.yml checks: the check needs no install, and runs on
-      # the tag's Node.
+      # the deployed commit's Node.
       - run: |
           git checkout --quiet main
           node apps/site/src/site/offsite-check.ts https://maplacejs.com

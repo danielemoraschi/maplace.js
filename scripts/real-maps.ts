@@ -1,4 +1,4 @@
-import { gitIn } from "./build/git.ts";
+import { gitIn, outputLines } from "./build/git.ts";
 import { ROOT } from "./build/package.ts";
 import { needsRealMaps } from "./checks/real-maps.ts";
 
@@ -22,8 +22,7 @@ function decide(base: string): void {
 function changedSince(base: string): string[] | undefined {
   if (base === "") return undefined;
   try {
-    const names = gitIn(ROOT, ["diff", "--name-only", base, "HEAD"]);
-    return names.split("\n").filter((name) => name !== "");
+    return outputLines(gitIn(ROOT, ["diff", "--name-only", base, "HEAD"]));
   } catch (error) {
     // A base the checkout lacks (a rewritten history): what changed can't be told.
     console.error(
