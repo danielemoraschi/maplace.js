@@ -1,9 +1,15 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { hasSize, sizeOf } from "../../adapter-kit/map-size";
 import { hasMapSize, sizeTakenIn } from "../map-size";
+import { RENDER_WAIT } from "./rendered";
 
-/** The longest the probe waits for the map to settle, so a check fails rather than hangs. */
-const SETTLE_WAIT_MS = 3000;
+/**
+ * The longest the probe waits for the map to settle, so a check fails rather than hangs: half the
+ * tests' budget for a busy run (a cold map can take seconds to load, T32), so a check polling a
+ * settle that waits for the map's idle within that budget still gets a second try and fails on its
+ * own assertion.
+ */
+const SETTLE_WAIT_MS = RENDER_WAIT.timeout / 2;
 
 /**
  * The map watched for moves and resizes: `settled` waits out any since it last settled, and data

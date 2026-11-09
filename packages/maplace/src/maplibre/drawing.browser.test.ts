@@ -1,5 +1,5 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { SELECTED_LOOK } from "../adapter-kit/shape-looks";
 import { frames } from "../google/frames";
 import type { LocationState } from "../location";
@@ -17,6 +17,8 @@ import {
   updating,
 } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
+import { DRAW_WAIT_MS, LOAD_WAIT_MS } from "./map-waits";
+import { wait } from "./testing/map-settle";
 import { mountedMapLibre, mountedOnPageMap } from "./testing/mounted";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { removePageMaps } from "./testing/subject";
@@ -146,7 +148,7 @@ describe("MapLibre's drawing", () => {
     map.triggerRepaint();
     const released = performance.now();
     await settling;
-    // Well before the settle's own 3 s timeout: it waited for the map's idle, not for the clock.
+    // Well before the settle's own timeout: it waited for the map's idle, not for the clock.
     expect(performance.now() - released).toBeLessThan(2000);
   });
 
@@ -168,10 +170,46 @@ describe("MapLibre's apply", () => {
     await expect(applying).resolves.toBeUndefined();
   });
 
+  it("waits past its draw cap while MapLibre is still loading what it was sent (T32)", async () => {
+    const { map, adapter } = await mountedMapLibre();
+    // As cold workers on a busy machine: the data takes longer to load than a draw may take.
+    const loading = vi.spyOn(map, "isSourceLoaded").mockReturnValue(false);
+    onTestFinished(() => loading.mockRestore());
+    let applied = false;
+    const applying = adapter.apply(adding(markerDrawable("a"))).then(() => {
+      applied = true;
+    });
+    await wait(DRAW_WAIT_MS + 500);
+    expect(applied, "resolved before MapLibre had loaded it").toBe(false);
+    loading.mockRestore();
+    // A source loading again (another apply's data) is what the wait hears: the restore alone fires nothing.
+    const restored = performance.now();
+    await adapter.apply(adding(markerDrawable("b")));
+    await applying;
+    expect(performance.now() - restored, "resolved on the load, not the backstop").toBeLessThan(
+      5000,
+    );
+    expect(renderedIds(map, ["maplace-pins"])).toEqual(["a", "b"]);
+  });
+
+  it("resolves at its load backstop for a source that never says it loaded", async () => {
+    const { map, adapter } = await mountedMapLibre();
+    const loading = vi.spyOn(map, "isSourceLoaded").mockReturnValue(false);
+    onTestFinished(() => loading.mockRestore());
+    const started = performance.now();
+    await adapter.apply(adding(markerDrawable("a")));
+    const waited = performance.now() - started;
+    expect(waited).toBeGreaterThanOrEqual(LOAD_WAIT_MS - 50);
+    expect(waited).toBeLessThan(LOAD_WAIT_MS + 2000);
+  }, 30_000);
+
   it("resolves on a map that repaints every frame, which never idles", async () => {
     const { map, adapter } = await mountedOnPageMap();
+    // Loaded once first, so what is timed below is the draw's cap, not a cold load.
+    await adapter.apply(adding(markerDrawable("warm-up")));
     map.repaint = true;
-    const hung = new Promise((resolve) => setTimeout(() => resolve("hung"), 10_000));
+    // Between the draw's cap and the load's backstop: it resolved on the cap.
+    const hung = new Promise((resolve) => setTimeout(() => resolve("hung"), 5000));
     await expect(
       Promise.race([adapter.apply(adding(markerDrawable("a"))), hung]),
     ).resolves.toBeUndefined();
