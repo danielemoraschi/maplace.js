@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import { type PreviewServer, preview } from "vite";
 import { ROOT } from "../../../scripts/build/package.ts";
@@ -68,12 +69,18 @@ export async function servedSite(
   };
 }
 
+/** A test build's env: `env` over an npm without the package (the preload), over this process's. */
+export function testBuildEnv(env: Record<string, string>): NodeJS.ProcessEnv {
+  const npmUnpublished = pathToFileURL(resolve(SITE, "test/npm-unpublished-preload.ts")).href;
+  return { ...process.env, NODE_OPTIONS: `--import=${npmUnpublished}`, ...env };
+}
+
 /** Astro logs a failed build to stdout: the error carries both streams. */
 async function buildSite(outDir: string, env: Record<string, string>): Promise<void> {
   try {
     await run(ASTRO, ["build", "--outDir", outDir], {
       cwd: SITE,
-      env: { ...process.env, ...env },
+      env: testBuildEnv(env),
       timeout: BUILD_LIMIT_MS,
     });
   } catch (error) {

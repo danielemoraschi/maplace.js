@@ -1,8 +1,9 @@
+import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
-import { SITE_WAIT_MS, servedSite } from "./built-site.ts";
+import { SITE_WAIT_MS, servedSite, testBuildEnv } from "./built-site.ts";
 
 const serving = (local: string[]) => ({
   resolvedUrls: { local, network: [] },
@@ -21,6 +22,18 @@ describe("servedSite", () => {
       "the site served from /tmp/site has no local URL",
     );
     expect(server.close).toHaveBeenCalledOnce();
+  });
+});
+
+describe("testBuildEnv", () => {
+  it("gives a build an npm without the package, so it downloads nothing npm would count", () => {
+    const asked = "https://registry.npmjs.org/@maplacejs/maplace/1.0.2";
+    const status = execFileSync(
+      process.execPath,
+      ["--input-type=module", "-e", `console.log((await fetch("${asked}")).status)`],
+      { env: testBuildEnv({}), encoding: "utf8" },
+    );
+    expect(status.trim()).toBe("404");
   });
 });
 
