@@ -1,0 +1,7 @@
+# 0.2's script, where the old maplacejs.com served it: old pages loading it from here get the
+# same file, 0.2.10, the version that site served, from jsDelivr.
+/dist/maplace.min.js https://cdn.jsdelivr.net/npm/maplace-js@0.2.10/dist/maplace.min.js 301
+/dist/maplace.js https://cdn.jsdelivr.net/npm/maplace-js@0.2.10/dist/maplace.js 301
+/src/maplace.js https://cdn.jsdelivr.net/npm/maplace-js@0.2.10/src/maplace.js 301
+# The name older iOS asks for: the one touch icon answers both.
+/apple-touch-icon-precomposed.png /apple-touch-icon.png 301

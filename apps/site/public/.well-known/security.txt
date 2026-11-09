@@ -1,0 +1,5 @@
+Contact: https://github.com/danielemoraschi/maplace.js/security/advisories/new
+Contact: mailto:maplace@dmoraschi.com
+Expires: 2027-11-09T00:00:00.000Z
+Preferred-Languages: en
+Policy: https://github.com/danielemoraschi/maplace.js/blob/main/SECURITY.md

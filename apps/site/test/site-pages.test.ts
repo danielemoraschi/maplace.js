@@ -78,6 +78,28 @@ describe("the site's icon", () => {
     );
     await context.close();
   }, 30_000);
+
+  it("names the touch icon at the site's root", async () => {
+    const { page, context } = await openPage("/");
+    expect(await page.locator('link[rel="apple-touch-icon"]').getAttribute("href")).toBe(
+      "/apple-touch-icon.png",
+    );
+    await context.close();
+  }, 30_000);
+});
+
+describe("the site's root files", () => {
+  it.each(["/_redirects", "/favicon.ico", "/apple-touch-icon.png", "/.well-known/security.txt"])(
+    "serves %s from the site's root as the file in public/",
+    async (path) => {
+      const response = await fetch(new URL(path, site.url));
+      expect(response.status).toBe(200);
+      const served = Buffer.from(await response.arrayBuffer());
+      const written = readFileSync(new URL(`../public${path}`, import.meta.url));
+      expect(served.equals(written), path).toBe(true);
+    },
+    30_000,
+  );
 });
 
 describe("an example's guide", () => {

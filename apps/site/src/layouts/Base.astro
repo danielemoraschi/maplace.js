@@ -35,6 +35,7 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
     <link rel="describedby" href={AGENT_SKILLS_INDEX_PATH} type="application/json" />
     <SearchMetadata title={title} description={description} />
     <link rel="icon" href={faviconUrl} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {/* Before the first paint, so a returning visitor's placeholders never show. */}
     <script is:inline define:vars={{ key: CONSENT_KEY, granted: CONSENT_GRANTED }}>
       try {
