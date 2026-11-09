@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+## 1.0.2 (2026-11-09)
+
 - 2026-11-09 Fixed `whenReady()` and `loadState` `ready` on MapLibre (and its adapter's `apply`) resolving before the locations were drawn when MapLibre was slow to load them (its workers starting, a busy machine): they now wait for the load, up to 10 s, and give only the drawing its 1 s cap, so a click or a hover right after finds what was added
 
 ## 1.0.1 (2026-11-08)
