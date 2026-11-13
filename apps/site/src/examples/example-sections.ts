@@ -44,7 +44,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "popups",
         title: "Popups",
-        summary: "Each place's text in a popup, ending in links to open it in Maps or get there.",
+        summary:
+          "A place card in each popup: photo, rating, hours, and buttons to open it in Maps or get there.",
       },
       {
         name: "click-to-add",

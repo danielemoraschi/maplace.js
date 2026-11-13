@@ -2,7 +2,12 @@ import { afterEach, describe, expect, it, onTestFinished } from "vitest";
 import { POPUP_CLASS, POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { POPUP_LINKS_CLASS } from "../adapter-kit/popup-links";
 import { unstyledPage } from "../testing/unstyled-page";
-import { GOOGLE_POPUP_ATTRIBUTE, POPUP_STYLES } from "./popup-styles";
+import {
+  BLOCK_GUTTER_PROPERTY,
+  GOOGLE_POPUP_ATTRIBUTE,
+  INLINE_GUTTER_PROPERTY,
+  POPUP_STYLES,
+} from "./popup-styles";
 
 afterEach(() => document.body.replaceChildren());
 
@@ -27,6 +32,37 @@ function outerMargins(popup: HTMLElement): string[] {
 describe("POPUP_STYLES in a browser", () => {
   it("insets its content from a left-to-right bubble's right and bottom as Google does its left", () => {
     expect(getComputedStyle(popupHolding("<p>One</p>")).padding).toBe("0px 12px 12px 0px");
+  });
+
+  it("insets every side as far as Google's scrollbar takes at the end, where it takes more than 12px", () => {
+    const popup = popupHolding("<p>One</p>");
+    popup.style.setProperty(INLINE_GUTTER_PROPERTY, "18px");
+    expect(getComputedStyle(popup).padding).toBe("0px 0px 18px 6px");
+  });
+
+  it("insets the bottom as far, less the room Google's scrollbar takes below the content", () => {
+    const popup = popupHolding("<p>One</p>");
+    popup.style.setProperty(INLINE_GUTTER_PROPERTY, "18px");
+    popup.style.setProperty(BLOCK_GUTTER_PROPERTY, "12px");
+    expect(getComputedStyle(popup).padding).toBe("0px 0px 6px 6px");
+  });
+
+  it("lines the heading up with the content: in from Google's 12px as far as the content", () => {
+    popupHolding("<p>One</p>");
+    const heading = document.createElement("span");
+    heading.className = POPUP_HEADING_CLASS;
+    heading.setAttribute(GOOGLE_POPUP_ATTRIBUTE, "");
+    document.body.append(heading);
+    expect(getComputedStyle(heading).paddingInlineStart).toBe("0px");
+    heading.style.setProperty(INLINE_GUTTER_PROPERTY, "18px");
+    expect(getComputedStyle(heading).paddingInlineStart).toBe("6px");
+  });
+
+  it("insets a right-to-left page's sides as far as Google's scrollbar takes at its inline end, the left", () => {
+    const popup = popupHolding("<p>One</p>");
+    popup.dir = "rtl";
+    popup.style.setProperty(INLINE_GUTTER_PROPERTY, "18px");
+    expect(getComputedStyle(popup).padding).toBe("0px 6px 18px 0px");
   });
 
   it("insets the inline end on a right-to-left page, not the right", () => {

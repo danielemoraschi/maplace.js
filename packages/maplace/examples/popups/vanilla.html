@@ -6,8 +6,17 @@
     v: "weekly",
   });
 </script>
+<!-- This example's look lives in the examples' styles/popups.css, which every version links. -->
+<link rel="stylesheet" href="../styles/popups.css">
 <style>
   #popups-vanilla-map { height: 24rem; }
 </style>
 <div id="popups-vanilla-map"></div>
+<template id="popups-vanilla-card">
+  <div class="place-card">
+    <img class="place-photo" alt="">
+    <p class="place-meta"><span class="place-category"></span> · Open <span class="place-hours"></span></p>
+    <p class="place-rating">★ <span class="place-score"></span> <span class="place-reviews"></span></p>
+  </div>
+</template>
 <script type="module" src="./vanilla.ts"></script>

@@ -124,13 +124,22 @@ describe("the examples' pages, as built (W38)", () => {
   });
 
   it("link the stylesheet an example's versions link to the site's copy, once, under its section", async () => {
-    const href = "/examples/styles/whats-on.css";
     expect(pages.flatMap(({ stylesheetLinks }) => stylesheetLinks)).toEqual([
-      ["whats-on", href, "whats-on.css"],
+      ["popups", "/examples/styles/popups.css", "popups.css"],
+      ["whats-on", "/examples/styles/whats-on.css", "whats-on.css"],
     ]);
-    const served = await fetch(new URL(href, site.url));
-    expect(served.headers.get("content-type")).toMatch(/^text\/css/);
-    expect(await served.text()).toBe(exampleFile("styles", "whats-on.css"));
+    for (const file of ["popups.css", "whats-on.css"]) {
+      const served = await fetch(new URL(`/examples/styles/${file}`, site.url));
+      expect(served.headers.get("content-type"), file).toMatch(/^text\/css/);
+      expect(await served.text(), file).toBe(exampleFile("styles", file));
+    }
+  });
+
+  it("serve an example's photo, byte for byte, as WebP", async () => {
+    const served = await fetch(new URL("/examples/data/photos/colosseum.webp", site.url));
+    expect(served.headers.get("content-type")).toMatch(/^image\/webp/);
+    const file = readFileSync(new URL(`${EXAMPLES}data/photos/colosseum.webp`, import.meta.url));
+    expect(Buffer.from(await served.arrayBuffer()).equals(file)).toBe(true);
   });
 
   it("use no id twice on a page", () => {

@@ -16,7 +16,13 @@ describe("exampleFilePaths", () => {
       { folder: "data/icons", name: "c" },
     ]);
     expect(exampleFilePaths("css").map(({ params }) => params)).toEqual([
+      { folder: "styles", name: "popups" },
       { folder: "styles", name: "whats-on" },
+    ]);
+    expect(exampleFilePaths("webp").map(({ params }) => params)).toEqual([
+      { folder: "data/photos", name: "colosseum" },
+      { folder: "data/photos", name: "duomo" },
+      { folder: "data/photos", name: "st-marks" },
     ]);
   });
 

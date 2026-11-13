@@ -2,19 +2,25 @@ import { expect } from "vitest";
 import { type ExampleBehaviour, firstView, textIn, textsIn } from "./reading";
 
 const FIRST_VIEW = { kind: "center", center: { lat: 44, lng: 11 }, zoom: 6 };
-const VENICE_FACTS = ["Over 400 bridges", "No cars, only boats"];
 
-/** The map opens on Italy's north; Rome's popup shows its line and links, Venice's a list too. */
+/** The map opens on Italy's north; each place's popup is its card, then its two links. */
 export const popups: ExampleBehaviour = async ({ adapter }) => {
   expect(firstView(adapter)).toEqual(FIRST_VIEW);
   const probe = adapter.probe();
-  probe.click("rome");
+  probe.click("colosseum");
   await probe.settle();
-  await expect.poll(() => textIn(probe.shownPopup()?.element, "p")).toBe("Capital of Italy.");
-  expect(probe.shownPopup()?.heading).toBe("Rome");
-  expect(textsIn(probe.shownPopup()?.element, "a")).toEqual(["Open in Maps", "Directions"]);
-  probe.click("venice");
+  await expect.poll(() => textIn(probe.shownPopup()?.element, ".place-category")).toBe("Landmark");
+  const popup = probe.shownPopup()?.element;
+  expect(probe.shownPopup()?.heading).toBe("Colosseum");
+  expect(popup?.querySelector("img")?.getAttribute("alt")).toBe(
+    "The Colosseum's arches behind a row of cypresses",
+  );
+  expect(textIn(popup, ".place-hours")).toBe("9:00–19:15");
+  expect(textIn(popup, ".place-score")).toBe("4.7");
+  expect(textIn(popup, ".place-reviews")).toBe("(412,301 reviews)");
+  expect(textsIn(popup, "a")).toEqual(["Open in Maps", "Directions"]);
+  probe.click("st-marks");
   await probe.settle();
-  await expect.poll(() => probe.shownPopup()?.heading).toBe("Venice");
-  expect(textsIn(probe.shownPopup()?.element, "li")).toEqual(VENICE_FACTS);
+  await expect.poll(() => probe.shownPopup()?.heading).toBe("St Mark's Basilica");
+  expect(textIn(probe.shownPopup()?.element, ".place-category")).toBe("Basilica");
 };

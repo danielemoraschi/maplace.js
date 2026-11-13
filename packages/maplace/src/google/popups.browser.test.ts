@@ -12,6 +12,7 @@ import {
 import type { MountSettings } from "../testing/conformance/harness";
 import { unmountAll } from "../testing/conformance/harness";
 import type { GoogleMapState } from "./map-state";
+import { BLOCK_GUTTER_PROPERTY, INLINE_GUTTER_PROPERTY } from "./popup-styles";
 import { cameraAt } from "./testing/camera-at";
 import { drawnOverlayOn } from "./testing/map-input";
 import { drawnMarker } from "./testing/map-waits";
@@ -85,11 +86,12 @@ describeWithMaps("Google popups under real input", () => {
     }
   });
 
-  it("insets its content as far from the bubble's right and bottom as from its left", async () => {
+  it("insets its content as far from the bubble's right and bottom as from its left, its heading in line", async () => {
     const { adapter, state } = await drawn([TITLED]);
     adapter.present(presented({ selectedId: "a" }));
     const element = await openedPopup(state);
-    const bubble = element.closest('[role="dialog"]')?.getBoundingClientRect() as DOMRect;
+    const dialog = element.closest('[role="dialog"]');
+    const bubble = dialog?.getBoundingClientRect() as DOMRect;
     const text = (element.firstElementChild as Element).getBoundingClientRect();
     const [left, right, bottom] = [
       text.left - bubble.left,
@@ -98,6 +100,20 @@ describeWithMaps("Google popups under real input", () => {
     ];
     expect(Math.abs(right - left)).toBeLessThanOrEqual(1);
     expect(Math.abs(bottom - left)).toBeLessThanOrEqual(1);
+    const headingText = document.createRange();
+    headingText.selectNodeContents(dialog?.querySelector(`.${POPUP_HEADING_CLASS}`) as Node);
+    expect(Math.abs(headingText.getBoundingClientRect().left - text.left)).toBeLessThanOrEqual(1);
+    // What the insets rest on: the content sits in Google's scroll box, its gutters measured.
+    const box = element.parentElement as HTMLElement;
+    expect(getComputedStyle(box).overflowY).not.toBe("visible");
+    expect(
+      [INLINE_GUTTER_PROPERTY, BLOCK_GUTTER_PROPERTY].map((name) =>
+        element.style.getPropertyValue(name),
+      ),
+    ).toEqual([
+      `${box.offsetWidth - box.clientWidth}px`,
+      `${box.offsetHeight - box.clientHeight}px`,
+    ]);
   });
 
   it("leaves focus where it was for a popup opened from outside the map", async () => {

@@ -8,7 +8,7 @@ Maplace.js adds its styles to the page itself (adopted stylesheets, so no `<link
 
 - **The element:** `<maplace-map>` is 24rem tall, and a list beside the map goes under it on a screen narrower than 40rem.
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
-- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset as Google insets its start; on MapLibre, the heading on a line of its own, clear of the close button; its links in a row at the end, each 1.5rem tall.
+- **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset the same on every side, as far as Google's start or the room its scrollbars keep, whichever is larger, the heading in line with the content; on MapLibre, the heading on a line of its own, clear of the close button; its links in a row at the end, each 1.5rem tall.
 - **The dot where distances are measured from:** 18px, blue with a white border and a soft shadow. It takes no pointer input, inside `data-maplace-unstyled` too, so a click reaches the map.
 - **Clusters:** a round badge with the count, blue with white text. `--maplace-cluster-background` and `--maplace-cluster-color`, set on the map or anything above it, change its colours.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).

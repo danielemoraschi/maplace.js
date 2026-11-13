@@ -1,0 +1,68 @@
+/* The Popups example's place cards, and the links of a popup holding one: scoped to it, so other
+   maps' popups on the same page keep their look. */
+
+.place-card {
+  width: 16rem;
+  max-width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.place-card p {
+  margin: 0.25rem 0 0;
+}
+
+.place-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 10 / 3;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.place-meta,
+.place-reviews {
+  color: #5f6368;
+}
+
+.place-hours {
+  white-space: nowrap;
+}
+
+.place-category {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.place-score {
+  font-weight: 600;
+}
+
+.place-rating::first-letter {
+  color: #e8a200;
+}
+
+/* The built-in Open in Maps and Directions links, as two buttons; Directions, the last, filled. */
+.maplace-popup:has(.place-card) .maplace-popup-links {
+  gap: 0.5rem;
+}
+
+.maplace-popup:has(.place-card) .maplace-popup-links a {
+  flex: 1 0 auto;
+  padding: 0.3rem 0.45rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border: 1px solid #1a73e8;
+  border-radius: 999px;
+  color: #1a73e8;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.maplace-popup:has(.place-card) .maplace-popup-links a:last-of-type {
+  background: #1a73e8;
+  color: #fff;
+}

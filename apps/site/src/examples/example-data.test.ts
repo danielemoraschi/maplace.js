@@ -31,14 +31,21 @@ describe("servedExampleFiles", () => {
       "data/live-data-c.json",
       "data/live-data-d.json",
       "data/live-data-e.json",
+      "data/photos/colosseum.webp",
+      "data/photos/duomo.webp",
+      "data/photos/st-marks.webp",
       "data/points-4k.json",
+      "styles/popups.css",
       "styles/whats-on.css",
     ]);
   });
 
-  it("is each file as written, byte for byte", () => {
+  it("is each file as written, byte for byte: a photo as bytes, the rest as text", () => {
     for (const { path, body } of served) {
-      expect(body, path).toBe(readFileSync(new URL(path, EXAMPLES), "utf8"));
+      const file = readFileSync(new URL(path, EXAMPLES));
+      expect(typeof body === "string", path).toBe(!path.endsWith(".webp"));
+      if (typeof body === "string") expect(body, path).toBe(file.toString("utf8"));
+      else expect(Buffer.from(body).equals(file), path).toBe(true);
     }
   });
 
@@ -46,5 +53,6 @@ describe("servedExampleFiles", () => {
     expect(at("data/points-4k.json")?.contentType).toBe("application/json");
     expect(at("data/icons/a.svg")?.contentType).toBe("image/svg+xml");
     expect(at("styles/whats-on.css")?.contentType).toBe("text/css; charset=utf-8");
+    expect(at("data/photos/colosseum.webp")?.contentType).toBe("image/webp");
   });
 });

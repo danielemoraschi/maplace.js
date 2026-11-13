@@ -4,6 +4,7 @@ import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import { holdsFocus, type PopupWindow, type PopupWindowEvents } from "../adapter-kit/popup-window";
 import type { MountedMap } from "./mounted-map";
 import type { PopupPlace } from "./placed-location";
+import { type Gutter, gutterOf, withGutter } from "./popup-gutter";
 import { createPopupPan } from "./popup-pan";
 import { GOOGLE_POPUP_ATTRIBUTE } from "./popup-styles";
 
@@ -29,7 +30,23 @@ export function createPopupWindow(
     // A hover popup follows the pointer, and the list's keyboard focus: it never moves the camera.
     disableAutoPan: openOn === "hover",
   });
-  infoWindow.addListener("domready", () => events.contentShown());
+  let shown: HTMLElement | undefined;
+  let heading: HTMLElement | undefined;
+  // The last gutter measured, given to new content and headings until Google shows them, so their
+  // insets don't jump.
+  let gutter: Gutter | undefined;
+  infoWindow.addListener("domready", () => {
+    const box = shown?.parentElement;
+    if (box) gutter = gutterOf(box);
+    for (const element of [shown, heading]) if (element) withGutter(element, gutter);
+    events.contentShown();
+  });
+  /** `element` marked as Google's, with the last gutter measured. */
+  const fitted = (element: HTMLElement) => withGutter(markedAsGoogles(element), gutter);
+  const nowShown = (element: HTMLElement) => {
+    shown = fitted(element);
+    return shown;
+  };
   const pan = createPopupPan(mounted.map, infoWindow);
   infoWindow.addListener("closeclick", () => {
     pan.stop();
@@ -42,8 +59,9 @@ export function createPopupWindow(
 
   /** The window headed and named by `title`, as text beside the close button; bare without one. */
   function headed(title: string | undefined): google.maps.InfoWindowOptions {
+    heading = undefined;
     if (title === undefined) return { headerContent: null, ariaLabel: null };
-    const heading = mapDiv.ownerDocument.createElement("span");
+    heading = fitted(mapDiv.ownerDocument.createElement("span"));
     heading.className = POPUP_HEADING_CLASS;
     heading.textContent = title;
     return { headerContent: heading, ariaLabel: title };
@@ -56,12 +74,12 @@ export function createPopupWindow(
     infoWindow,
     open({ element, place, title }) {
       if (openOn === "click") pan.panWhenSettled();
-      infoWindow.setOptions({ content: markedAsGoogles(element), ...headed(title) });
+      infoWindow.setOptions({ content: nowShown(element), ...headed(title) });
       follow(place);
       const anchor = "anchor" in place ? place.anchor : null;
       infoWindow.open({ map: mounted.map, anchor, shouldFocus: takesFocus() });
     },
-    refresh: (element) => infoWindow.setContent(markedAsGoogles(element)),
+    refresh: (element) => infoWindow.setContent(nowShown(element)),
     retitle: (title) => infoWindow.setOptions(headed(title)),
     follow,
     close() {
@@ -71,7 +89,7 @@ export function createPopupWindow(
   };
 }
 
-/** `element` marked as Google's popup content, which Google's popup rules alone reach. */
+/** `element` marked as Google's popup content or heading, which Google's popup rules alone reach. */
 function markedAsGoogles(element: HTMLElement): HTMLElement {
   element.setAttribute(GOOGLE_POPUP_ATTRIBUTE, "");
   return element;
