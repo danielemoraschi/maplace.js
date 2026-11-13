@@ -5,24 +5,23 @@ import LabelledCode from "./LabelledCode.astro";
 const entry = await getEntry("install", "element");
 if (entry === undefined) throw new Error("the install collection has no element entry");
 const { version, providers } = entry.data;
-const HEADING = "mt-2 mb-2 text-xl";
 /** One provider per column, Google's then MapLibre's; one under the other on a phone. */
 const PAIR = "grid grid-cols-2 gap-x-6 max-[720px]:grid-cols-1";
-/** A heading from 720px wide; on a phone, a row that folds the box, its sign on the right. */
+/** The row that folds the box, its sign on the right; folded until opened, on every screen. */
 const SUMMARY =
-  "flex list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden max-[720px]:cursor-pointer";
+  "flex cursor-pointer list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden";
 ---
 
-<details open class="group border-t-3 border-ink pt-4">
+<details class="group border-t-3 border-ink pt-4">
   <summary class={SUMMARY}>
-    <h2 class={`${HEADING} max-[720px]:my-0`}>Install</h2>
-    <span class="text-sm text-muted min-[720px]:hidden">npm and CDN script</span>
+    <h2 class="m-0 text-xl">Install</h2>
+    <span class="text-sm text-muted">npm and CDN script</span>
     <span
       aria-hidden="true"
-      class="ml-auto text-xl after:content-['+'] group-open:after:content-['−'] min-[720px]:hidden"
+      class="ml-auto text-xl after:content-['+'] group-open:after:content-['−']"
     ></span>
   </summary>
-  <div class="max-[720px]:mt-3">
+  <div class="mt-3">
     <div class={PAIR}>
       {
         providers.map(({ provider, label, npmCommand }) => (
@@ -30,7 +29,7 @@ const SUMMARY =
         ))
       }
     </div>
-    <h2 class={HEADING}>CDN script</h2>
+    <h2 class="mt-2 mb-2 text-xl">CDN script</h2>
     <div class={PAIR}>
       {
         providers.map(({ provider, label, cdnSnippet }) => (
@@ -41,18 +40,3 @@ const SUMMARY =
     <p class="m-0 text-sm text-muted">Maplace.js {version}, checked by the browser against its hash.</p>
   </div>
 </details>
-{/* Folded on a phone (under 720px, as the classes' `max-[720px]`) before the first paint, and as the screen crosses that width; its heading folds it only there. Open everywhere without scripts. */}
-<script is:inline>
-  {
-    const box = document.currentScript.previousElementSibling;
-    const phone = matchMedia("(width < 720px)");
-    const followWidth = () => {
-      box.open = !phone.matches;
-    };
-    followWidth();
-    phone.addEventListener("change", followWidth);
-    box.querySelector("summary").addEventListener("click", (event) => {
-      if (!phone.matches) event.preventDefault();
-    });
-  }
-</script>
