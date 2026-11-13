@@ -94,9 +94,9 @@ export function holdHandle(placed: PlacedShape, role: HandleRole, to: LatLng) {
 }
 
 /**
- * A point a user would point at: a circle's centre, halfway along a polyline as drawn (an arc
- * too), or a tenth of the way from a polygon's first corner to the middle of its bounds, inside it
- * and clear of a hole there.
+ * A point a user would point at: a circle's centre, halfway along a polyline as drawn (bowed or
+ * geodesic too), or a tenth of the way from a polygon's first corner to the middle of its bounds,
+ * inside it and clear of a hole there.
  */
 function pointOn(geometry: Geometry): LatLng {
   if (geometry.type === "circle") return geometry.center;

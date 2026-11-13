@@ -1,4 +1,4 @@
-import { drawnPath } from "../curved-path";
+import { drawnPath } from "../drawn-path";
 import type { CircleGeometry } from "../geometry";
 import type { Location } from "../location";
 import { narrowestArc, wrapLongitude } from "../longitude-arc";

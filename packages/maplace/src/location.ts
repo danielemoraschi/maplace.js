@@ -92,11 +92,16 @@ export interface PolylineLocation<Data = unknown>
     PolylineGeometry,
     StyledShape<LineStyle> {
   /**
-   * How far each segment bows from a straight line, -1 to 1: at 1, its middle sits half its length
-   * (in degrees) to the left going from the first point to the last; to the right when negative.
-   * Default 0, straight; not with `editable`.
+   * How far each segment bows from a straight line, for the look, -1 to 1: at 1, its middle sits
+   * half its length (in degrees) to the left going from the first point to the last; to the right
+   * when negative. Default 0, straight; not with `geodesic` or `editable`.
    */
   readonly curve?: number | undefined;
+  /**
+   * Draws each segment along its great circle, the shortest way on the earth: a flight's path,
+   * sampled a point a degree of arc. Default false; not with `curve` or `editable`.
+   */
+  readonly geodesic?: boolean | undefined;
 }
 
 export interface PolygonLocation<Data = unknown>

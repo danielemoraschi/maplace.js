@@ -11,9 +11,9 @@ export type StyleField = (typeof STYLE_FIELDS)[number];
  * A location as an adapter draws it, resolved by the store: default styles applied, user
  * callbacks bound. Each field keeps its reference while its inputs are shallowly unchanged (same
  * scalars, same `path`, `center`, `style`, `selectedStyle`, `hoveredStyle`, `icon` and `content`
- * references; a curved line's drawn path is kept while its `path` and `curve` are, unless two lines
- * share one `path` with different curves), so adapters compare fields with `===` and redo only
- * what changed.
+ * references; a drawn line's path is kept while its `path`, `curve` and `geodesic` are, unless
+ * two lines share one `path` drawn differently), so adapters compare fields with `===` and redo
+ * only what changed.
  */
 export interface Drawable {
   readonly id: string;

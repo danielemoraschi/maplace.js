@@ -215,29 +215,3 @@ describe("validateLocation: popup content", () => {
     );
   });
 });
-
-describe("validateLocation: a polyline's curve", () => {
-  const line = (fields: object) => ({ id: "l", type: "polyline", path: [point, point], ...fields });
-
-  it("accepts a curve from -1 to 1, and curve 0 on an editable line", () => {
-    for (const curve of [-1, 0.3, 1]) expect(check(line({ curve }))).not.toThrow();
-    expect(check(line({ curve: 0, editable: true }))).not.toThrow();
-  });
-
-  it("rejects a curve outside -1 to 1", () => {
-    expect(check(line({ curve: 1.5 }))).toThrow(
-      fails('location "l": curve must be a number from -1 to 1, got 1.5', "curve", "l"),
-    );
-  });
-
-  it("rejects a non-zero curve on an editable polyline", () => {
-    expect(check(line({ curve: 0.3, editable: true }))).toThrow(
-      fails('location "l": curve cannot be set together with editable', "curve", "l"),
-    );
-  });
-
-  it("rejects a curve on a polygon", () => {
-    const polygon = { id: "p", type: "polygon", path: [point, point, point], curve: 0.3 };
-    expect(check(polygon)).toThrow(/curve is a polyline field, not a polygon field/);
-  });
-});

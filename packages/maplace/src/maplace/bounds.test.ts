@@ -49,6 +49,19 @@ describe("boundsAround", () => {
     expect(boundsAround([arc])?.north).toBeCloseTo(10);
   });
 
+  it("fits a great circle's northern reach", () => {
+    const flight: Location = {
+      id: "l",
+      type: "polyline",
+      path: [
+        { lat: 51.5074, lng: -0.1278 },
+        { lat: 35.6895, lng: 139.6917 },
+      ],
+      geodesic: true,
+    };
+    expect(boundsAround([flight])?.north).toBeGreaterThan(70);
+  });
+
   it("crosses ±180 when that box is narrower, with west greater than east", () => {
     const fiji = [marker("a", -17, 178), marker("b", -16, -179)];
     expect(boundsAround(fiji)).toEqual({ south: -17, west: 178, north: -16, east: -179 });

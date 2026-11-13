@@ -2,7 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
-- 2026-11-13 Added `curve` on a polyline: each segment drawn as an arc, the same on Google and MapLibre, for flights and lanes between places
+- 2026-11-13 Added `geodesic` on a polyline: each segment drawn along its great circle, the shortest way, the same on Google and MapLibre
+- 2026-11-13 Added `curve` on a polyline: each segment bowed, for the look, the same on Google and MapLibre
 
 ## 1.0.2 (2026-11-09)
 

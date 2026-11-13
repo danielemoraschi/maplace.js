@@ -68,6 +68,7 @@ const TYPE_CHECKS: {
   polyline: {
     path: pathOf(2),
     curve: optional(numberIn({ min: -1, max: 1 })),
+    geodesic: optional(checkBoolean),
     ...shapeStyleChecks(checkLineStyle),
   },
   polygon: {
@@ -96,7 +97,7 @@ export function validateLocation(
   checkOneOf(type, child(field, "type"), TYPES);
   const checkRecord: Check = RECORD_BY_TYPE[type];
   checkRecord(value, field);
-  checkCurve(value, field);
+  checkDrawnLine(value, field);
   checkPopupContent(value, field, context.sanitize);
 }
 
@@ -135,11 +136,16 @@ function misplacedFields(type: LocationType): Record<string, string> {
   );
 }
 
-/** An edit would write the drawn arc back as the path, so a curved line isn't editable. */
-function checkCurve(value: Readonly<Record<string, unknown>>, field: Field): void {
-  if (value.curve && value.editable === true) {
-    reject(child(field, "curve"), "cannot be set together with editable");
-  }
+/**
+ * A line bowed by `curve` or along great circles is drawn from points of its own, which an edit
+ * would write back as its path: neither is editable, and they don't combine.
+ */
+function checkDrawnLine(value: Readonly<Record<string, unknown>>, field: Field): void {
+  const drawnBy = value.geodesic ? "geodesic" : "curve";
+  if (value.geodesic && value.curve)
+    reject(child(field, "curve"), "cannot be set together with geodesic");
+  if (value[drawnBy] && value.editable)
+    reject(child(field, drawnBy), "cannot be set together with editable");
 }
 
 function checkPopupContent(

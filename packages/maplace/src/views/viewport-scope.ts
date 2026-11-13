@@ -1,4 +1,4 @@
-import { drawnPath } from "../curved-path";
+import { drawnPath } from "../drawn-path";
 import type { Location } from "../location";
 import { hasArea, isInBox, unwrapped, type ViewBox } from "../view-box";
 import type { Viewport } from "../viewport";

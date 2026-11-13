@@ -1,5 +1,4 @@
 import { expect } from "vitest";
-import type { LatLng } from "../../../geometry";
 import { byText, type ExampleBehaviour, labelsIn } from "./reading";
 
 const CITIES = [
@@ -18,11 +17,10 @@ export const flights: ExampleBehaviour = async ({ store, adapter, root }) => {
   await expect.poll(() => labelsIn(root)).toEqual(CITIES.map((city) => `London → ${city}`));
   const probe = adapter.probe();
   for (const city of ["london", "tokyo"]) expect(probe.location(city)).toBeDefined();
-  // Each flight is drawn as an arc: its middle north of both ends, London and Tokyo.
+  // Each flight follows its great circle: London to Tokyo's middle is near 69° north.
   const drawn = probe.location("london-tokyo")?.geometry;
   const path = drawn?.type === "polyline" ? drawn.path : [];
-  const [london, middle, tokyo] = [path[0], path[path.length >> 1], path.at(-1)] as LatLng[];
-  expect(middle?.lat).toBeGreaterThan(Math.max(london?.lat ?? 90, tokyo?.lat ?? 90));
+  expect(path[path.length >> 1]?.lat).toBeGreaterThan(65);
   byText(root, "[role=option]", "London → Tokyo").click();
   await expect.poll(() => store.getSnapshot().selectedId).toBe("london-tokyo");
 };

@@ -1,12 +1,12 @@
-import { drawnPath } from "../curved-path";
+import { drawnPath } from "../drawn-path";
 import type { Geometry } from "../geometry";
 import type { Location, MarkerLocation } from "../location";
 import { frozenPath, frozenPoint } from "./frozen";
 
 /**
- * Where a location is, as adapters receive it, a curved polyline as the path it is drawn along;
- * paths and centres keep their reference. Each type always writes the same keys, so geometries
- * compare field by field.
+ * Where a location is, as adapters receive it, a curved or geodesic polyline as the path it is
+ * drawn along; paths and centres keep their reference. Each type always writes the same keys, so
+ * geometries compare field by field.
  */
 export function geometryOf(location: Location): Geometry {
   switch (location.type) {
@@ -24,9 +24,9 @@ export function geometryOf(location: Location): Geometry {
 
 /**
  * `location` with its geometry replaced: the inverse of `geometryOf` for a geometry of the
- * location's own type (a curved line, the one exception, is never editable). Points are copied
- * and frozen, so whoever reported them can't change them; `type` is left as the location has it,
- * so a marker written back never gains one.
+ * location's own type (but for a drawn line, curved or geodesic, which is never editable). Points
+ * are copied and frozen, so whoever reported them can't change them; `type` is left as the
+ * location has it, so a marker written back never gains one.
  */
 export function withGeometry<Data>(location: Location<Data>, geometry: Geometry): Location<Data> {
   return { ...location, ...frozenFields(geometry) } as Location<Data>;

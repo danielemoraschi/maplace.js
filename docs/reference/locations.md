@@ -44,7 +44,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
 | `visible` | `boolean` | `false` keeps it in the data but not drawn, listed or selected. Default `true` | |
 | `listed` | `boolean` | `false` leaves it out of every list view; the map still draws it and it is selected there. Default `true` | `listed` |
-| `editable` | `boolean` | Lets the user drag a marker or reshape a shape; needs the `edit` capability; not with a polyline's `curve` | `editable` |
+| `editable` | `boolean` | Lets the user drag a marker or reshape a shape; needs the `edit` capability; not with a polyline's `curve` or `geodesic` | `editable` |
 | `data` | your type | Your own fields, handed back to content, icon and render functions | |
 
 ## Markers
@@ -69,46 +69,56 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | Field | Type | What | In HTML |
 |---|---|---|---|
 | `path` | `{ lat, lng }[]` | Its points, at least 2 | |
-| `curve` | `number` | How far each segment bows from a straight line, -1 to 1: at 1, its middle sits half its length (in degrees) to the left going from the first point to the last; to the right when negative. Default 0, straight; not with `editable` | |
+| `curve` | `number` | How far each segment bows from a straight line, for the look, -1 to 1: at 1, its middle sits half its length (in degrees) to the left going from the first point to the last; to the right when negative. Default 0, straight; not with `geodesic` or `editable` | |
+| `geodesic` | `boolean` | Draws each segment along its great circle, the shortest way on the earth: a flight's path, a point a degree of arc. Default false; not with `curve` or `editable` | |
 | `style` | `LineStyle` | How it is drawn: a stroke, no fill | `shape-style` (JSON) |
 | `selectedStyle` | `LineStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
 | `hoveredStyle` | `LineStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 
 A polyline or a polygon is one location with a `path`; in HTML, give it in the map's inline JSON script ([the element's data](element.md#data)).
 
-### Arcs
+### Curves and great circles
 
-A polyline with a `curve` is drawn as an arc: a flight, a shipping lane, any line from one place to another where a straight one looks flat. Each segment bows by its `curve`, the same on every map, and crosses ±180 the short way; its popup points halfway along the arc, and fit-all takes in the whole bow. A curved line isn't editable: an edit would write its drawn points back as the path.
+Two ways to draw a line other than straight. Either is drawn the same on every map, crosses ±180 the short way, and keeps its popup and fit-all on the drawn line; neither is editable, as an edit would write the drawn points back as the path.
+
+- `geodesic: true` follows the earth: on a flat map, a long line bows towards the pole, as a flight does.
+- `curve` bows each segment for the look, with no geographic meaning: a lane, a link between two places. [Trade lanes](../../packages/maplace/examples/trade-lanes/) bows its lanes this way:
+
+```ts
+const lane = { id: "rotterdam-new-york", type: "polyline", curve: -0.2,
+  path: [{ lat: 51.9244, lng: 4.4777 }, { lat: 40.7128, lng: -74.006 }] };
+```
+
+London's flights, each on its great circle:
 
 <!-- example: packages/maplace/examples/flights/vanilla.ts -->
 ```ts
 import type { LatLng, Location } from "@maplacejs/maplace";
 import { createGoogleMap } from "@maplacejs/maplace/google";
 
-// London's flights out, each an arc from the hub. A curve bows to the left of travel, a negative
-// one to the right: the flights west take a negative one.
+// London's flights out, each along its great circle, the shortest way on the earth.
 const london: LatLng = { lat: 51.5074, lng: -0.1278 };
 const cities = [
-  { id: "new-york", name: "New York", lat: 40.7128, lng: -74.006, curve: -0.2 },
-  { id: "sao-paulo", name: "São Paulo", lat: -23.5505, lng: -46.6333, curve: -0.2 },
-  { id: "cape-town", name: "Cape Town", lat: -33.9249, lng: 18.4241, curve: 0.2 },
-  { id: "dubai", name: "Dubai", lat: 25.2048, lng: 55.2708, curve: 0.2 },
-  { id: "mumbai", name: "Mumbai", lat: 19.076, lng: 72.8777, curve: 0.2 },
-  { id: "singapore", name: "Singapore", lat: 1.3521, lng: 103.8198, curve: 0.2 },
-  { id: "tokyo", name: "Tokyo", lat: 35.6895, lng: 139.6917, curve: 0.2 },
-  { id: "sydney", name: "Sydney", lat: -33.8688, lng: 151.2093, curve: 0.2 },
+  { id: "new-york", name: "New York", lat: 40.7128, lng: -74.006 },
+  { id: "sao-paulo", name: "São Paulo", lat: -23.5505, lng: -46.6333 },
+  { id: "cape-town", name: "Cape Town", lat: -33.9249, lng: 18.4241 },
+  { id: "dubai", name: "Dubai", lat: 25.2048, lng: 55.2708 },
+  { id: "mumbai", name: "Mumbai", lat: 19.076, lng: 72.8777 },
+  { id: "singapore", name: "Singapore", lat: 1.3521, lng: 103.8198 },
+  { id: "tokyo", name: "Tokyo", lat: 35.6895, lng: 139.6917 },
+  { id: "sydney", name: "Sydney", lat: -33.8688, lng: 151.2093 },
 ];
 const flights: Location[] = [
   // The cities on the map only; the list holds the flights.
   { id: "london", ...london, title: "London", listed: false },
   ...cities.map(({ id, name, lat, lng }) => ({ id, lat, lng, title: name, listed: false })),
   ...cities.map(
-    ({ id, name, lat, lng, curve }): Location => ({
+    ({ id, name, lat, lng }): Location => ({
       id: `london-${id}`,
       type: "polyline",
       title: `London → ${name}`,
       path: [london, { lat, lng }],
-      curve,
+      geodesic: true,
       style: { stroke: "#2563eb" },
     }),
   ),

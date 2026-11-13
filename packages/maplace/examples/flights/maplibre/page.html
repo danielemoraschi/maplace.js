@@ -1,8 +1,7 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
-<!-- London's flights out, each an arc from the hub to a city, listed beside the map; the
-     cities are on the map only. A curve bows to the left of travel, a negative one to the right:
-     the flights west take a negative one. -->
+<!-- London's flights out, each along its great circle, the shortest way on the earth, from
+     the hub to a city, listed beside the map; the cities are on the map only. -->
 <maplace-map list list-heading="Flights from London">
   <script type="application/json">
     [{ "id": "london", "lat": 51.5074, "lng": -0.1278, "title": "London", "listed": false },
@@ -14,28 +13,28 @@
      { "id": "singapore", "lat": 1.3521, "lng": 103.8198, "title": "Singapore", "listed": false },
      { "id": "tokyo", "lat": 35.6895, "lng": 139.6917, "title": "Tokyo", "listed": false },
      { "id": "sydney", "lat": -33.8688, "lng": 151.2093, "title": "Sydney", "listed": false },
-     { "id": "london-new-york", "type": "polyline", "title": "London → New York", "curve": -0.2,
+     { "id": "london-new-york", "type": "polyline", "title": "London → New York", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": 40.7128, "lng": -74.006 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-sao-paulo", "type": "polyline", "title": "London → São Paulo", "curve": -0.2,
+     { "id": "london-sao-paulo", "type": "polyline", "title": "London → São Paulo", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": -23.5505, "lng": -46.6333 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-cape-town", "type": "polyline", "title": "London → Cape Town", "curve": 0.2,
+     { "id": "london-cape-town", "type": "polyline", "title": "London → Cape Town", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": -33.9249, "lng": 18.4241 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-dubai", "type": "polyline", "title": "London → Dubai", "curve": 0.2,
+     { "id": "london-dubai", "type": "polyline", "title": "London → Dubai", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": 25.2048, "lng": 55.2708 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-mumbai", "type": "polyline", "title": "London → Mumbai", "curve": 0.2,
+     { "id": "london-mumbai", "type": "polyline", "title": "London → Mumbai", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": 19.076, "lng": 72.8777 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-singapore", "type": "polyline", "title": "London → Singapore", "curve": 0.2,
+     { "id": "london-singapore", "type": "polyline", "title": "London → Singapore", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": 1.3521, "lng": 103.8198 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-tokyo", "type": "polyline", "title": "London → Tokyo", "curve": 0.2,
+     { "id": "london-tokyo", "type": "polyline", "title": "London → Tokyo", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": 35.6895, "lng": 139.6917 }],
        "style": { "stroke": "#2563eb" } },
-     { "id": "london-sydney", "type": "polyline", "title": "London → Sydney", "curve": 0.2,
+     { "id": "london-sydney", "type": "polyline", "title": "London → Sydney", "geodesic": true,
        "path": [{ "lat": 51.5074, "lng": -0.1278 }, { "lat": -33.8688, "lng": 151.2093 }],
        "style": { "stroke": "#2563eb" } }]
   </script>

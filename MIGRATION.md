@@ -203,7 +203,7 @@ From the source and README of tag `0.2.10` and the old docs site. "Dropped" alwa
 | `visible` | kept, default `true` (0.2's docs said `false`, its code did `true`) |
 | `animation` | dropped: animate the `icon` node with CSS, and remove `google.maps.Animation.DROP` from your data ([below](#behaviour-that-changes)) |
 | `stopover` | `route.via`: list the stops to pass through without ending a leg; in 0.2 that was every inner stop not marked `stopover: true` |
-| `stroke_options`, `circle_options` | `style`; the circle's `radius` |
+| `stroke_options`, `circle_options` | `style`; the circle's `radius`; a polyline's `geodesic` is now the location's own `geodesic` |
 | `type` | kept: `marker`, `circle`, `polyline`, `polygon`; a polyline or polygon is one location with a `path`. 0.2 also drew a marker with its popup at each point, and at a circle's centre: add markers if you want them |
 | `zIndex` | dropped: stacking order is fixed ([RFC §3, decisions from the 0.2 issues](docs/rfc-1.0.md#decisions-from-the-02-issues)) |
 | `on_menu` | `listed: false` (element `listed="false"`): on the map and selectable there, left out of every list view |

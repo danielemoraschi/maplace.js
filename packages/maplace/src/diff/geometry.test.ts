@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SAMPLES_PER_SEGMENT } from "../curved-path";
+import { SAMPLES_PER_SEGMENT } from "../drawn-path";
 import type { Location } from "../location";
 import { geometryOf, withGeometry } from "./geometry";
 

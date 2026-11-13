@@ -4,8 +4,8 @@ import { LocationList, MaplaceMap, MaplaceProvider } from "@maplacejs/maplace/re
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-// Sea and air lanes, each an arc coloured by its mode. The volumes are made up, for the example.
-// A curve bows to the left of travel, a negative one to the right.
+// Sea and air lanes, each coloured by its mode. The volumes are made up, for the example.
+// A curve bows each lane for the look: to the left of travel, to the right when negative.
 const colours: Record<string, string> = { Sea: "#0f766e", Air: "#7c3aed" };
 const routes = [
   {

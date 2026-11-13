@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drawnPath, SAMPLES_PER_SEGMENT } from "./curved-path";
+import { drawnPath, SAMPLES_PER_SEGMENT } from "./drawn-path";
 import type { LatLng } from "./geometry";
 import type { PolylineLocation } from "./location";
 import { wrapLongitude } from "./longitude-arc";
@@ -10,6 +10,16 @@ const line = (path: readonly LatLng[], curve?: number): PolylineLocation => ({
   path,
   curve,
 });
+
+const geodesicLine = (path: readonly LatLng[], curve?: number): PolylineLocation => ({
+  ...line(path, curve),
+  geodesic: true,
+});
+
+const LONDON_TO_TOKYO: readonly LatLng[] = [
+  { lat: 51.5074, lng: -0.1278 },
+  { lat: 35.6895, lng: 139.6917 },
+];
 
 const EAST: readonly LatLng[] = [
   { lat: 0, lng: 0 },
@@ -22,9 +32,10 @@ const HALFWAY = SAMPLES_PER_SEGMENT / 2;
 const middleOf = (path: readonly LatLng[]) => path[HALFWAY] as LatLng;
 
 describe("drawnPath", () => {
-  it("draws a polyline without a curve along its own path", () => {
+  it("draws a polyline without a curve or geodesic along its own path", () => {
     expect(drawnPath(line(EAST))).toBe(EAST);
     expect(drawnPath(line(EAST, 0))).toBe(EAST);
+    expect(drawnPath({ ...line(EAST), geodesic: false })).toBe(EAST);
   });
 
   it("leaves a path too short to bow as it is, for a caller that didn't validate it", () => {
@@ -86,6 +97,40 @@ describe("drawnPath", () => {
     const left = drawnPath(line(EAST, 0.3));
     expect(drawnPath(line(EAST, 0.3))).toBe(left);
     expect(drawnPath(line(EAST, -0.3))).not.toBe(left);
+  });
+
+  it("draws a geodesic line along great circles", () => {
+    const drawn = drawnPath(geodesicLine(LONDON_TO_TOKYO));
+    // A point a degree of arc: 86 steps and the end.
+    expect(drawn).toHaveLength(87);
+    expect(drawn[drawn.length >> 1]?.lat).toBeCloseTo(69, 0);
+    expect(drawn.at(-1)).toEqual(LONDON_TO_TOKYO[1]);
+  });
+
+  it("draws a short geodesic hop as its two ends", () => {
+    const hop = [LONDON_TO_TOKYO[0] as LatLng, { lat: 51.5, lng: 0 }];
+    expect(drawnPath(geodesicLine(hop))).toEqual(hop);
+  });
+
+  it("keeps a geodesic drawing apart from a curved one on the same path", () => {
+    const bowed = drawnPath(line(LONDON_TO_TOKYO, 0.2));
+    const geodesic = drawnPath(geodesicLine(LONDON_TO_TOKYO));
+    expect(geodesic).not.toBe(bowed);
+    expect(drawnPath(geodesicLine(LONDON_TO_TOKYO))).toBe(geodesic);
+  });
+
+  it("takes geodesic over curve for a line no one validated", () => {
+    expect(drawnPath(geodesicLine(LONDON_TO_TOKYO, 0.2))).toBe(
+      drawnPath(geodesicLine(LONDON_TO_TOKYO)),
+    );
+  });
+
+  it("draws a geodesic segment straight where no single great circle joins its points", () => {
+    const antipodes = [
+      { lat: 0, lng: 0 },
+      { lat: 0, lng: 180 },
+    ];
+    expect(middleOf(drawnPath(geodesicLine(antipodes)))).toEqual({ lat: 0, lng: -90 });
   });
 
   it("freezes what it gives, points included", () => {

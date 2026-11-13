@@ -1,4 +1,4 @@
-import { drawnPath } from "./curved-path";
+import { drawnPath } from "./drawn-path";
 import type { Geometry, LatLng } from "./geometry";
 import type { Location } from "./location";
 import { arcSpan, narrowestArc, wrapLongitude } from "./longitude-arc";
@@ -9,7 +9,7 @@ type Path = readonly LatLng[];
 /**
  * The point a location's popup points at, on every map alike: a marker's point, a circle's
  * centre, the centre of a polygon's bounds (crossing ±180 as fit-all does), and the point
- * halfway along a polyline as drawn, which is always on the line, an arc's too.
+ * halfway along a polyline as drawn, which is always on the line, a curved or geodesic one's too.
  */
 export function anchorOf(where: Geometry | Location): LatLng {
   switch (where.type) {
