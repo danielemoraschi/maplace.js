@@ -57,6 +57,14 @@ describe("toDrawable", () => {
     expect(moved.geometry).not.toBe(previous.drawable.geometry);
   });
 
+  it("keeps a curved polyline's geometry while its path and curve are unchanged", () => {
+    const arc: Location = { id: "l", type: "polyline", path, curve: 0.3 };
+    const previous = drawn(arc);
+    expect(toDrawable({ ...arc }, previous, CONTEXT)).toBe(previous.drawable);
+    const flatter = toDrawable({ ...arc, curve: 0.1 }, previous, CONTEXT);
+    expect(flatter.geometry).not.toBe(previous.drawable.geometry);
+  });
+
   it("keeps the style while its fields are the same, even in a new object", () => {
     const previous = drawn({ id: "l", type: "polyline", path, style: { strokeWidth: 3 } });
     const next = toDrawable(

@@ -28,6 +28,27 @@ describe("distanceTo", () => {
   });
 });
 
+describe("a curved polyline's distance", () => {
+  const arc: Location = {
+    id: "arc",
+    type: "polyline",
+    path: [
+      { lat: 0, lng: -20 },
+      { lat: 0, lng: 20 },
+    ],
+    curve: 0.5,
+  };
+  const middleOfArc = metresTo(10, 0);
+
+  it("is measured, and sorted nearest-first, by the middle of its arc, where its popup points", () => {
+    expect(distanceTo(origin, arc)).toBeCloseTo(middleOfArc, -3);
+    const between: Location = { id: "m", lat: 5, lng: 0 };
+    const { listing, distances } = sortedByDistance([arc, between], origin, String);
+    expect(listing.map(({ id }) => id)).toEqual(["m", "arc"]);
+    expect(distances.of.get("arc")?.metres).toBeCloseTo(middleOfArc, -3);
+  });
+});
+
 describe("distanceTo: the location", () => {
   it.for([
     ["a latitude that isn't a number", { id: "m", lat: "x", lng: 0 }],

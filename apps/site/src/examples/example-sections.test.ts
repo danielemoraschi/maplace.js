@@ -57,7 +57,7 @@ describe("EXAMPLE_GROUPS", () => {
     expect(groups).toEqual([
       ["basics", "Basics", ["simple", "markers", "popups", "click-to-add"]],
       ["lists", "Lists", ["menu", "tags", "search", "nearest", "this-area", "custom-list", "tabs"]],
-      ["shapes", "Shapes", ["circles", "polyline", "polygon", "mixed"]],
+      ["shapes", "Shapes", ["circles", "polyline", "flights", "trade-lanes", "polygon", "mixed"]],
       [
         "data-routes",
         "Data & routes",
@@ -111,9 +111,9 @@ describe("EXAMPLE_GROUPS", () => {
     expect(findGroupOfSection("main")).toBeUndefined();
   });
 
-  it("numbers the sections 1 to 25 across the groups, in order, Basics on the home page", () => {
+  it("numbers the sections 1 to 27 across the groups, in order, Basics on the home page", () => {
     const numbers = EXAMPLE_GROUPS.flatMap(({ sections }) => sections.map(sectionNumber));
-    expect(numbers).toEqual(Array.from({ length: 25 }, (_, index) => index + 1));
+    expect(numbers).toEqual(Array.from({ length: 27 }, (_, index) => index + 1));
     expect(HOME_GROUP.id).toBe("basics");
   });
 });

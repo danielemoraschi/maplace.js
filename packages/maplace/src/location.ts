@@ -90,7 +90,14 @@ export interface CircleLocation<Data = unknown>
 export interface PolylineLocation<Data = unknown>
   extends LocationBase<Data>,
     PolylineGeometry,
-    StyledShape<LineStyle> {}
+    StyledShape<LineStyle> {
+  /**
+   * How far each segment bows from a straight line, -1 to 1: at 1, its middle sits half its length
+   * (in degrees) to the left going from the first point to the last; to the right when negative.
+   * Default 0, straight; not with `editable`.
+   */
+  readonly curve?: number | undefined;
+}
 
 export interface PolygonLocation<Data = unknown>
   extends LocationBase<Data>,

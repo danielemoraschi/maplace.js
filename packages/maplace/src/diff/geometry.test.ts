@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SAMPLES_PER_SEGMENT } from "../curved-path";
 import type { Location } from "../location";
 import { geometryOf, withGeometry } from "./geometry";
 
@@ -26,6 +27,15 @@ describe("geometryOf", () => {
     const geometry = geometryOf({ id: "l", type: "polyline", path });
     expect(geometry).toEqual({ type: "polyline", path });
     expect(geometry.type === "polyline" && geometry.path).toBe(path);
+  });
+
+  it("gives a curved polyline's adapter the path it is drawn along", () => {
+    const path = [
+      { lat: 0, lng: 0 },
+      { lat: 0, lng: 40 },
+    ];
+    const geometry = geometryOf({ id: "l", type: "polyline", path, curve: 0.5 });
+    expect(geometry.type === "polyline" && geometry.path).toHaveLength(SAMPLES_PER_SEGMENT + 1);
   });
 
   it("always gives a polygon a holes field, so geometries compare field by field", () => {

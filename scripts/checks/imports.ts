@@ -17,7 +17,7 @@ const LAYERS = {
   // The data types, and pure helpers on them that every layer may share.
   data: {
     files:
-      /^(geometry|style|location|location-state|location-index|longitude-arc|anchor|sphere|view-box|options|route|viewport|popup|drawable|errors|events|adopted-styles|unstyled|map-failure-words)$/,
+      /^(geometry|style|location|location-state|location-index|longitude-arc|curved-path|anchor|sphere|view-box|options|route|viewport|popup|drawable|errors|events|adopted-styles|unstyled|map-failure-words)$/,
   },
   validation: { files: /^validate\//, imports: ["data"] },
   diff: { files: /^diff\//, imports: ["data", "contract", "validation"] },

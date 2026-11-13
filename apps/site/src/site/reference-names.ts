@@ -56,6 +56,7 @@ export const LOCATION_FIELDS = {
   }),
   polyline: everyName<Exclude<keyof PolylineLocation, CommonField>>({
     path: true,
+    curve: true,
     style: true,
     selectedStyle: true,
     hoveredStyle: true,

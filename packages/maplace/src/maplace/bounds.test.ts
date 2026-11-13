@@ -36,6 +36,19 @@ describe("boundsAround", () => {
     });
   });
 
+  it("fits a curved polyline's bow", () => {
+    const arc: Location = {
+      id: "l",
+      type: "polyline",
+      path: [
+        { lat: 0, lng: 0 },
+        { lat: 0, lng: 40 },
+      ],
+      curve: 0.5,
+    };
+    expect(boundsAround([arc])?.north).toBeCloseTo(10);
+  });
+
   it("crosses ±180 when that box is narrower, with west greater than east", () => {
     const fiji = [marker("a", -17, 178), marker("b", -16, -179)];
     expect(boundsAround(fiji)).toEqual({ south: -17, west: 178, north: -16, east: -179 });

@@ -1,0 +1,32 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- Sea and air lanes as arcs, each coloured by its mode and wider hovered or selected, listed under
+     Sea and Air; pick one for its volume (the figures are made up, for the example). -->
+<maplace-map api-key="YOUR_KEY" list list-heading="Trade lanes">
+  <script type="application/json">
+    [{ "id": "shanghai-los-angeles", "type": "polyline", "title": "Shanghai → Los Angeles", "group": "Sea", "curve": 0.2,
+       "path": [{ "lat": 31.2304, "lng": 121.4737 }, { "lat": 34.0522, "lng": -118.2437 }],
+       "style": { "stroke": "#0f766e" }, "hoveredStyle": { "strokeWidth": 5 }, "selectedStyle": { "strokeWidth": 6 },
+       "content": "24,800 TEU a week" },
+     { "id": "singapore-rotterdam", "type": "polyline", "title": "Singapore → Rotterdam", "group": "Sea", "curve": 0.2,
+       "path": [{ "lat": 1.3521, "lng": 103.8198 }, { "lat": 51.9244, "lng": 4.4777 }],
+       "style": { "stroke": "#0f766e" }, "hoveredStyle": { "strokeWidth": 5 }, "selectedStyle": { "strokeWidth": 6 },
+       "content": "9,400 TEU a week" },
+     { "id": "rotterdam-new-york", "type": "polyline", "title": "Rotterdam → New York", "group": "Sea", "curve": -0.2,
+       "path": [{ "lat": 51.9244, "lng": 4.4777 }, { "lat": 40.7128, "lng": -74.006 }],
+       "style": { "stroke": "#0f766e" }, "hoveredStyle": { "strokeWidth": 5 }, "selectedStyle": { "strokeWidth": 6 },
+       "content": "3,100 TEU a week" },
+     { "id": "hong-kong-anchorage", "type": "polyline", "title": "Hong Kong → Anchorage", "group": "Air", "curve": 0.2,
+       "path": [{ "lat": 22.3193, "lng": 114.1694 }, { "lat": 61.2181, "lng": -149.9003 }],
+       "style": { "stroke": "#7c3aed" }, "hoveredStyle": { "strokeWidth": 5 }, "selectedStyle": { "strokeWidth": 6 },
+       "content": "1,500 t a week" },
+     { "id": "frankfurt-chicago", "type": "polyline", "title": "Frankfurt → Chicago", "group": "Air", "curve": -0.2,
+       "path": [{ "lat": 50.1109, "lng": 8.6821 }, { "lat": 41.8781, "lng": -87.6298 }],
+       "style": { "stroke": "#7c3aed" }, "hoveredStyle": { "strokeWidth": 5 }, "selectedStyle": { "strokeWidth": 6 },
+       "content": "820 t a week" },
+     { "id": "dubai-nairobi", "type": "polyline", "title": "Dubai → Nairobi", "group": "Air", "curve": 0.2,
+       "path": [{ "lat": 25.2048, "lng": 55.2708 }, { "lat": -1.2921, "lng": 36.8219 }],
+       "style": { "stroke": "#7c3aed" }, "hoveredStyle": { "strokeWidth": 5 }, "selectedStyle": { "strokeWidth": 6 },
+       "content": "310 t a week" }]
+  </script>
+</maplace-map>

@@ -89,6 +89,21 @@ describe("inViewOf", () => {
     expect(listed(scopeIn("area", undefined, WEST_ONLY), [line, away])).toEqual(["line"]);
   });
 
+  it("lists an arc whose bow alone is in view", () => {
+    // West along 30° north, bowed to its left, south, by its whole length: its middle at 20°.
+    const arc: Location = {
+      id: "arc",
+      type: "polyline",
+      path: [
+        { lat: 30, lng: 50 },
+        { lat: 30, lng: 30 },
+      ],
+      curve: 1,
+    };
+    const southOf30 = viewport({ south: 15, west: 35, north: 25, east: 45 });
+    expect(listed(scopeIn("area", undefined, southOf30), [arc])).toEqual(["arc"]);
+  });
+
   it("finds a location across the antimeridian", () => {
     const across = viewport({ south: -10, west: 170, north: 10, east: -170 });
     const fiji: Location = { id: "fiji", lat: 0, lng: 178 };

@@ -65,7 +65,11 @@ const TYPE_CHECKS: {
 } = {
   marker: { lat: numberIn(LATITUDE), lng: numberIn(LONGITUDE), icon: optional(checkRenderable) },
   circle: { center: checkLatLng, radius: numberIn(POSITIVE), ...shapeStyleChecks(checkShapeStyle) },
-  polyline: { path: pathOf(2), ...shapeStyleChecks(checkLineStyle) },
+  polyline: {
+    path: pathOf(2),
+    curve: optional(numberIn({ min: -1, max: 1 })),
+    ...shapeStyleChecks(checkLineStyle),
+  },
   polygon: {
     path: pathOf(3),
     holes: optional(arrayOf("an array of rings", pathOf(3))),
@@ -92,6 +96,7 @@ export function validateLocation(
   checkOneOf(type, child(field, "type"), TYPES);
   const checkRecord: Check = RECORD_BY_TYPE[type];
   checkRecord(value, field);
+  checkCurve(value, field);
   checkPopupContent(value, field, context.sanitize);
 }
 
@@ -128,6 +133,13 @@ function misplacedFields(type: LocationType): Record<string, string> {
   return Object.fromEntries(
     [...owners].map(([key, types]) => [key, `is a ${types.join("/")} field, not a ${type} field`]),
   );
+}
+
+/** An edit would write the drawn arc back as the path, so a curved line isn't editable. */
+function checkCurve(value: Readonly<Record<string, unknown>>, field: Field): void {
+  if (value.curve && value.editable === true) {
+    reject(child(field, "curve"), "cannot be set together with editable");
+  }
 }
 
 function checkPopupContent(

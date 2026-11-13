@@ -3,6 +3,7 @@ import { circles } from "./behaviours/circles";
 import { clickToAdd } from "./behaviours/click-to-add";
 import { cssMarkers } from "./behaviours/css-markers";
 import { customList } from "./behaviours/custom-list";
+import { flights } from "./behaviours/flights";
 import { linkToPlace } from "./behaviours/link-to-place";
 import { liveData, liveDataWithoutRoute } from "./behaviours/live-data";
 import { loadOnDemand } from "./behaviours/load-on-demand";
@@ -20,6 +21,7 @@ import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
 import { tags } from "./behaviours/tags";
 import { thisArea } from "./behaviours/this-area";
+import { tradeLanes } from "./behaviours/trade-lanes";
 import { unstyled } from "./behaviours/unstyled";
 import { whatsOn } from "./behaviours/whats-on";
 import type { Provider } from "./example-files";
@@ -39,6 +41,8 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   "this-area": thisArea,
   tags,
   polyline,
+  flights,
+  "trade-lanes": tradeLanes,
   route,
   polygon,
   mixed,

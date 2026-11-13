@@ -1,3 +1,4 @@
+import { drawnPath } from "../curved-path";
 import type { Location } from "../location";
 import { hasArea, isInBox, unwrapped, type ViewBox } from "../view-box";
 import type { Viewport } from "../viewport";
@@ -37,7 +38,10 @@ function sameCamera(a: Viewport, b: Viewport): boolean {
   return a.zoom === b.zoom && a.center.lat === b.center.lat && a.center.lng === b.center.lng;
 }
 
-/** A marker by its point, a circle by its centre, a line or polygon by any point of its path. */
+/**
+ * A marker by its point, a circle by its centre, a line or polygon by any point of its path as
+ * drawn.
+ */
 function isLocationInBox(location: Location, box: ViewBox): boolean {
   switch (location.type) {
     case undefined:
@@ -47,6 +51,6 @@ function isLocationInBox(location: Location, box: ViewBox): boolean {
       return isInBox(location.center, box);
     case "polyline":
     case "polygon":
-      return location.path.some((point) => isInBox(point, box));
+      return drawnPath(location).some((point) => isInBox(point, box));
   }
 }

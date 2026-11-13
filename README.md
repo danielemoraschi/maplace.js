@@ -302,7 +302,7 @@ export function CityMap() {
 - [maplacejs.com](https://maplacejs.com): every example running live, and these docs.
 - [Reference](docs/reference/api.md): every export, with where it is explained, its error codes and each provider's capabilities.
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): twenty-five scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
+- [Examples](packages/maplace/examples/): twenty-seven scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 - [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md).

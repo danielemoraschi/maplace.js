@@ -103,9 +103,9 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     id: "shapes",
     label: "Shapes",
     summary:
-      "Circles, lines and areas in their own colours, some to edit, and all of them with markers on one map.",
+      "Circles, lines, arcs and areas in their own colours, some to edit, and all of them with markers on one map.",
     description:
-      "Shapes on a map with Maplace.js: circles, lines and areas in their own colours, some to edit and save, and all of them with markers on one map.",
+      "Shapes on a map with Maplace.js: circles, lines, arcs and areas in their own colours, some to edit and save, and all of them with markers on one map.",
     sections: [
       {
         name: "circles",
@@ -113,6 +113,16 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         summary: "Areas in their own colours, with popups; resize the third and see its radius.",
       },
       { name: "polyline", title: "Polyline", summary: "A trail to edit, with places along it." },
+      {
+        name: "flights",
+        title: "Flights",
+        summary: "Arcs from one city to eight; pick a flight in the list.",
+      },
+      {
+        name: "trade-lanes",
+        title: "Trade lanes",
+        summary: "Air and sea lanes by colour; hover one, pick one for its volume.",
+      },
       {
         name: "polygon",
         title: "Polygon",

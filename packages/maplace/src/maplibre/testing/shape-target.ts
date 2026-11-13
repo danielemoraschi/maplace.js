@@ -1,4 +1,5 @@
 import { samePoint } from "../../adapter-kit/same-geometry";
+import { anchorOf } from "../../anchor";
 import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
 import type { ShapeStyle } from "../../style";
 import { pointAtBearing } from "../circle-sphere";
@@ -93,13 +94,13 @@ export function holdHandle(placed: PlacedShape, role: HandleRole, to: LatLng) {
 }
 
 /**
- * A point a user would point at: a circle's centre, halfway along a polyline's first segment, or
- * a tenth of the way from a polygon's first corner to the middle of its bounds, inside it and
- * clear of a hole there.
+ * A point a user would point at: a circle's centre, halfway along a polyline as drawn (an arc
+ * too), or a tenth of the way from a polygon's first corner to the middle of its bounds, inside it
+ * and clear of a hole there.
  */
 function pointOn(geometry: Geometry): LatLng {
   if (geometry.type === "circle") return geometry.center;
-  if (geometry.type === "polyline") return between(geometry.path[0], geometry.path[1], 0.5);
+  if (geometry.type === "polyline") return anchorOf(geometry);
   if (geometry.type === "polygon") return between(geometry.path[0], middleOf(geometry.path), 0.1);
   throw new Error(`the probe points at shapes, not a ${geometry.type}`);
 }

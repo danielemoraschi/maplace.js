@@ -1,3 +1,4 @@
+import { drawnPath } from "../curved-path";
 import type { CircleGeometry } from "../geometry";
 import type { Location } from "../location";
 import { narrowestArc, wrapLongitude } from "../longitude-arc";
@@ -37,7 +38,7 @@ function include(extent: Extent, location: Location): void {
       includeCircle(extent, location);
       break;
     default:
-      for (const point of location.path) includePoint(extent, point.lat, point.lng);
+      for (const point of drawnPath(location)) includePoint(extent, point.lat, point.lng);
   }
 }
 

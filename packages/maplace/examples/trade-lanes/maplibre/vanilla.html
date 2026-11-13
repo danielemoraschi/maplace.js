@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #trade-lanes-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #trade-lanes-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #trade-lanes-maplibre-vanilla-list { display: contents; }
+  #trade-lanes-maplibre-vanilla-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #trade-lanes-maplibre-vanilla-map-and-list { flex-direction: column; }
+    #trade-lanes-maplibre-vanilla-list .maplace-list-view { flex: none; max-height: 40%; }
+  }
+</style>
+<div id="trade-lanes-maplibre-vanilla-map-and-list">
+  <div id="trade-lanes-maplibre-vanilla-map"></div>
+  <div id="trade-lanes-maplibre-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

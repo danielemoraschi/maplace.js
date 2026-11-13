@@ -20,6 +20,13 @@ accept({ id: "a", lat: 1, lng: 2, draggable: true });
 // @ts-expect-error a polyline has no fill
 accept({ id: "l", type: "polyline", path: [], style: { fill: "red" } });
 
+// A polyline may bow into an arc; no other location has a curve.
+accept({ id: "l", type: "polyline", path: [], curve: 0.3 });
+// @ts-expect-error a marker has no curve
+accept({ id: "a", type: "marker", lat: 1, lng: 2, curve: 0.3 });
+// @ts-expect-error a polygon has no curve
+accept({ id: "p", type: "polygon", path: [], curve: 0.3 });
+
 // Any location may have the zoom selecting it shows it at.
 accept({ id: "a", lat: 1, lng: 2, zoom: 12 });
 accept({ id: "c", type: "circle", center: { lat: 1, lng: 2 }, radius: 50, zoom: 9 });
