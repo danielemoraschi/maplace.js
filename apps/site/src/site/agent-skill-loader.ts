@@ -1,8 +1,9 @@
-import type { Loader, LoaderContext } from "astro/loaders";
+import type { Loader } from "astro/loaders";
 import { agentSkillMarkdown } from "./agent-skill.ts";
 import { AGENT_SKILL_NAME } from "./agent-skill-paths.ts";
 import { agentSkillsIndex } from "./agent-skills-index.ts";
 import { cdnPin } from "./cdn-pin.ts";
+import { configuredSite } from "./configured-site.ts";
 import { siteBlobBase } from "./site-blob-base.ts";
 
 /**
@@ -16,17 +17,10 @@ export function agentSkillLoader(): Loader {
       const markdown = agentSkillMarkdown({
         pin: await cdnPin(),
         blobBase: siteBlobBase(),
-        site: siteOf(config),
+        site: configuredSite(config.site),
       });
       store.clear();
       store.set({ id: AGENT_SKILL_NAME, data: { markdown, index: agentSkillsIndex(markdown) } });
     },
   };
-}
-
-function siteOf({ site }: LoaderContext["config"]): string {
-  if (site === undefined) {
-    throw new Error("astro.config.ts names no site: the agent skill's links are absolute on it");
-  }
-  return site;
 }

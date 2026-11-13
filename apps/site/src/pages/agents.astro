@@ -1,6 +1,8 @@
 ---
+import LabelledCode from "../components/LabelledCode.astro";
 import ProsePage from "../components/ProsePage.astro";
-import { AGENT_LINKS } from "../site/agent-links.ts";
+import { AGENT_LINKS, skillInstallCommand } from "../site/agent-links.ts";
+import { configuredSite } from "../site/configured-site.ts";
 import { AGENTS_PAGE } from "../site/footer-pages.ts";
 ---
 
@@ -18,6 +20,19 @@ import { AGENTS_PAGE } from "../site/footer-pages.ts";
         ))
       }
     </ul>
+  </section>
+
+  <section aria-labelledby="install-the-skill">
+    <h2 id="install-the-skill">Install the skill</h2>
+    <p>
+      The <a href="https://github.com/vercel-labs/skills">skills</a> CLI reads the index above and
+      installs the skill for your agent.
+    </p>
+    <LabelledCode
+      id="skill-install"
+      label="With the skills CLI"
+      text={skillInstallCommand(configuredSite(Astro.site))}
+    />
   </section>
 
   <section aria-labelledby="in-markdown">

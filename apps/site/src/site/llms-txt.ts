@@ -1,5 +1,5 @@
 import { EXAMPLE_GROUPS, groupDescription, groupPath } from "../examples/example-sections.ts";
-import { type AgentLink, LLMS_TXT_ROUTE } from "./agent-links.ts";
+import { type AgentLink, LLMS_TXT_ROUTE, skillInstallCommand } from "./agent-links.ts";
 import { FOOTER_PAGES } from "./footer-pages.ts";
 import { markdownAddressAt } from "./markdown-routes.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
@@ -33,6 +33,7 @@ export function llmsTxt(site: URL, agentLinks: readonly AgentLink[]): string {
   return [
     "# Maplace.js",
     `> ${SITE_IN_A_PARAGRAPH}`,
+    `Install the agent skill with \`${skillInstallCommand(site)}\`.`,
     `## Pages\n\n${pages.join("\n")}`,
     ...agentsSection(site, agentLinks),
   ]

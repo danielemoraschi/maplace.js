@@ -20,7 +20,7 @@ export const AGENT_LINKS: readonly AgentLink[] = [
   {
     href: AGENT_SKILL_PATH,
     label: "SKILL.md",
-    what: "The agent skill: install, the element, locations, adapters and React, with links to the events and error codes, in one file an agent can load.",
+    what: "The agent skill: installing the library, the element, locations, adapters and React, with links to the events and error codes, in one file an agent can load.",
   },
   {
     href: AGENT_SKILLS_INDEX_PATH,
@@ -28,3 +28,8 @@ export const AGENT_LINKS: readonly AgentLink[] = [
     what: "The Agent Skills Discovery index: the skill's name, its description and the sha256 of its bytes.",
   },
 ];
+
+/** The one command that installs the skill, through the site's Agent Skills index. */
+export function skillInstallCommand(site: URL): string {
+  return `npx skills add ${site.origin}`;
+}

@@ -12,9 +12,7 @@ import { PRIVACY_CHANGED_ON } from "../src/site/privacy-changed-on.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import { SITE_MAINTAINER } from "../src/site/site-owner.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
-import { siteBuiltBeforeTests } from "./site-session.ts";
-
-const PRODUCTION = "https://maplacejs.com";
+import { PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 
 /** A node of a page's JSON-LD graph. */
 type GraphNode = Record<string, unknown>;
@@ -94,7 +92,7 @@ describe("the site's search metadata", () => {
 
   it("gives every route its canonical at the production address", () => {
     for (const route of SITE_ROUTES) {
-      expect(headOf(route).canonical, route).toBe(`${PRODUCTION}${route}`);
+      expect(headOf(route).canonical, route).toBe(`${PUBLIC_SITE}${route}`);
     }
   });
 
@@ -136,7 +134,7 @@ describe("the site's search metadata", () => {
         sameAs: `https://www.npmjs.com/package/${name}`,
       });
       expect(nodeOf(route, "Person").name, route).toBe(SITE_MAINTAINER);
-      expect(nodeOf(route, "WebSite").url, route).toBe(`${PRODUCTION}/`);
+      expect(nodeOf(route, "WebSite").url, route).toBe(`${PUBLIC_SITE}/`);
     }
   });
 
@@ -167,7 +165,7 @@ describe("the site's search metadata", () => {
 
   it("names the sitemap in robots.txt", () => {
     const robots = readFileSync(join(site.dir, "robots.txt"), "utf8");
-    expect(robots.split("\n")).toContain(`Sitemap: ${PRODUCTION}/sitemap.xml`);
+    expect(robots.split("\n")).toContain(`Sitemap: ${PUBLIC_SITE}/sitemap.xml`);
   });
 
   it("gives each page's Markdown the page as its canonical, in a header", () => {
@@ -176,7 +174,7 @@ describe("the site's search metadata", () => {
       ([, address, canonical]) => [address, canonical],
     );
     expect(rules).toEqual(
-      MARKDOWN_ROUTES.map((route) => [markdownAddress(route), `${PRODUCTION}${route}`]),
+      MARKDOWN_ROUTES.map((route) => [markdownAddress(route), `${PUBLIC_SITE}${route}`]),
     );
   });
 
@@ -186,7 +184,7 @@ describe("the site's search metadata", () => {
       ([, loc = "", lastModified = ""]) => [loc, lastModified],
     );
     const expected = SITE_ROUTES.map((route) => [
-      `${PRODUCTION}${route}`,
+      `${PUBLIC_SITE}${route}`,
       nodeOf(route, "WebPage").dateModified,
     ]);
     expect(listed).toEqual(expected);

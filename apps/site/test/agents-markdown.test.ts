@@ -5,7 +5,7 @@ import { packageManifest, readRootFile } from "../../../scripts/build/package.ts
 import { CHANGELOG_FILE, listLines } from "../../../scripts/docs/changelog-lines.ts";
 import { captures, section } from "../../../scripts/docs/markdown.ts";
 import { PACKAGE_NAME } from "../../../scripts/release/published-package.ts";
-import { AGENT_LINKS, LLMS_TXT_ROUTE } from "../src/site/agent-links.ts";
+import { AGENT_LINKS, LLMS_TXT_ROUTE, skillInstallCommand } from "../src/site/agent-links.ts";
 import { AGENTS_PAGE, BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import {
   MARKDOWN_ROUTES,
@@ -14,7 +14,7 @@ import {
 } from "../src/site/markdown-routes.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { groupLink } from "./home-sections.ts";
-import { opened, siteBuiltBeforeTests } from "./site-session.ts";
+import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 import { DESKTOP } from "./visitor.ts";
 
 const NOT_FOUND_PAGE = "/404.html";
@@ -179,7 +179,7 @@ describe("a page's head and its link", () => {
 });
 
 describe("the AI agents page", () => {
-  it("links each agent link and says what is in Markdown", async () => {
+  it("links each agent link, says what is in Markdown and how to install the skill", async () => {
     const { page, context } = await open(AGENTS_PAGE.route);
     const main = page.locator("main");
     for (const { href, what } of AGENT_LINKS) {
@@ -187,6 +187,8 @@ describe("the AI agents page", () => {
       expect(await main.textContent(), href).toContain(what);
     }
     expect(await main.locator('a[href="/setup/index.md"]').count()).toBe(1);
+    const install = await main.locator("code#skill-install").textContent();
+    expect(install).toBe(skillInstallCommand(new URL(PUBLIC_SITE)));
     await context.close();
   });
 });

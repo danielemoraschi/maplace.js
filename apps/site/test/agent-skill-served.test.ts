@@ -7,12 +7,11 @@ import { LLMS_TXT_ROUTE } from "../src/site/agent-links.ts";
 import { AGENT_SKILL_PATH, AGENT_SKILLS_INDEX_PATH } from "../src/site/agent-skill-paths.ts";
 import { AGENTS_PAGE } from "../src/site/footer-pages.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
-import { opened, siteBuiltBeforeTests } from "./site-session.ts";
+import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 import { DESKTOP } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
-const PUBLIC_SITE = "https://maplacejs.com";
 const LINK_ON_PUBLIC_SITE = /\]\(https:\/\/maplacejs\.com([^)\s]*)\)/g;
 
 const served = (path: string) => fetch(new URL(path, site.url));

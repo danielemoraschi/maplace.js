@@ -58,6 +58,9 @@ export async function opened(
 export type SeenSite = Pick<VisitorOptions, "google" | "openFreeMap" | "seenAt">;
 
 /** The map ID the site is built with. */
+/** The site `astro.config.ts` names, which the pages write: not the local server they are tested on. */
+export const PUBLIC_SITE = "https://maplacejs.com";
+
 export const SITE_MAP_ID = "site-map-id";
 
 /** The site's build settings as it ships, its key never a real one. */

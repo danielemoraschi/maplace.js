@@ -27,6 +27,11 @@ describe("llmsTxt", () => {
     expect(paragraph).toContain("agent skill");
   });
 
+  it("says how to install the skill, before the pages", () => {
+    const install = "Install the agent skill with `npx skills add https://maplacejs.com`.";
+    expect(TEXT).toContain(`\n\n${install}\n\n## Pages\n`);
+  });
+
   it("says what the file holds, on the AI agents page, Agents section included", () => {
     expect(OWN_LINK.what).toContain("agent skill");
   });

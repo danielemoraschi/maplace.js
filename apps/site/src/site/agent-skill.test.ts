@@ -13,6 +13,7 @@ import { readRootFile } from "../../../../scripts/build/package.ts";
 import { fencedBlocks, isFence, relativeLinksIn } from "../../../../scripts/docs/markdown.ts";
 import { PACKAGE_NAME } from "../../../../scripts/release/published-package.ts";
 import { agentSkillMarkdown } from "./agent-skill.ts";
+import { mistakesToAvoid } from "./agent-skill-mistakes.ts";
 import {
   AGENT_SKILL_DESCRIPTION,
   AGENT_SKILL_NAME,
@@ -147,6 +148,10 @@ describe("what the skill teaches", () => {
 
   it("links every page of the docs", () => {
     for (const { id } of REPO_DOCS) expect(skill).toContain(`](${SITE}${docRoute(id)})`);
+  });
+
+  it("ends with its mistakes to avoid, a checklist before finishing", () => {
+    expect(skill.endsWith(`\n\n${mistakesToAvoid()}\n`)).toBe(true);
   });
 
   it("tells 0.2's API from today's", () => {
