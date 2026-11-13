@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+## 1.1.0 (2026-11-13)
+
 - 2026-11-13 Fixed a Google popup's content sitting 12px from the bubble's left edge but 30px from its right and bottom in Chromium and Safari: its sides and bottom now match the room Google keeps for its scrollbars, 18px there, 12px where it keeps none, and its title lines up with it
 - 2026-11-13 Added `geodesic` on a polyline: each segment drawn along its great circle, the shortest way, the same on Google and MapLibre
 - 2026-11-13 Added `curve` on a polyline: each segment bowed, for the look, the same on Google and MapLibre
