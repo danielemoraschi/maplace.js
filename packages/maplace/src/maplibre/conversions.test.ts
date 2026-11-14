@@ -21,6 +21,7 @@ describe("zoom", () => {
   it("is one less on MapLibre's 512-pixel tiles, both ways", () => {
     expect(toMapLibreZoom(15)).toBe(14);
     expect(fromMapLibreZoom(14)).toBe(15);
+    expect([fromMapLibreZoom(-1), fromMapLibreZoom(-2)]).toEqual([0, 0]);
   });
 });
 

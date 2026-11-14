@@ -23,7 +23,7 @@ type Attributes<Name extends string, Value = AttributeValue> = { [N in Name]?: V
 /** Any other attribute (`class`, `id`, `data-*`) passes as it is. */
 type OtherAttributes = { [attribute: string]: unknown };
 
-/** Attributes read by a name in no list this entry can import: the map's own, then Google's. */
+/** Attributes read by a name in no list this entry can import: the map's own, Google's, MapLibre's. */
 type NamedMapAttribute =
   | "provider"
   | "skip-map-label"
@@ -44,7 +44,9 @@ type NamedMapAttribute =
   | "nonce"
   | "version"
   | "language"
-  | "region";
+  | "region"
+  | "globe-position"
+  | "globe-label";
 
 /** Switches read `"false"` as off, so `false` is their off value. */
 type SwitchAttribute =
@@ -55,7 +57,8 @@ type SwitchAttribute =
   | "open-in-maps-link"
   | "directions-link"
   | "cluster"
-  | "hold";
+  | "hold"
+  | "globe";
 
 type MapAttribute =
   | Exclude<(typeof LIST_ATTRIBUTES)[number], SwitchAttribute>

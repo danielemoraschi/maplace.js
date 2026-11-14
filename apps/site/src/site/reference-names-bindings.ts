@@ -7,6 +7,7 @@ import type {
 } from "@maplacejs/maplace/google";
 import type {
   MapLibreAdapterOptions,
+  MapLibreGlobe,
   MapLibreMapList,
   MapLibreMapOptions,
 } from "@maplacejs/maplace/maplibre";
@@ -58,17 +59,26 @@ export const GOOGLE_MAP_OPTIONS = [
   "myLocation.position",
 ];
 
-export const MAPLIBRE_OPTIONS = everyName<keyof MapLibreAdapterOptions>({
-  mapStyle: true,
-  map: true,
-  mapOptions: true,
-});
+const GLOBE_OPTIONS = everyName<keyof MapLibreGlobe>({ position: true, label: true }).map(
+  (name) => `globe.${name}`,
+);
+
+export const MAPLIBRE_OPTIONS = [
+  ...everyName<keyof MapLibreAdapterOptions>({
+    mapStyle: true,
+    map: true,
+    mapOptions: true,
+    globe: true,
+  }),
+  ...GLOBE_OPTIONS,
+];
 
 /** `createMapLibreMap`'s own options, as `GOOGLE_MAP_OPTIONS` lists `createGoogleMap`'s. */
 export const MAPLIBRE_MAP_OPTIONS = [
   ...everyName<Exclude<keyof MapLibreMapOptions, keyof MaplaceOptions>>({
     mapStyle: true,
     mapOptions: true,
+    globe: true,
     list: true,
     myLocation: true,
   }),
@@ -77,6 +87,7 @@ export const MAPLIBRE_MAP_OPTIONS = [
     container: true,
   }).map((name) => `list.${name}`),
   "myLocation.position",
+  ...GLOBE_OPTIONS,
 ];
 
 /** What `<maplace-map>` adds to an HTML element. */

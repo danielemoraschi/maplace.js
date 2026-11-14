@@ -31,11 +31,12 @@ describe("checkMapLibreMapOptions", () => {
 });
 
 describe("splitMapLibreMapOptions", () => {
-  it("hands the adapter its two keys, the store the rest, and keeps the list apart", () => {
+  it("hands the adapter its keys, the store the rest, and keeps the list apart", () => {
     const style = { stroke: "#ff0000" };
-    const split = splitMapLibreMapOptions({ mapStyle: "s", mapOptions: {}, style, list: true });
+    const options = { mapStyle: "s", mapOptions: {}, globe: true, style, list: true } as const;
+    const split = splitMapLibreMapOptions(options);
     expect(split).toEqual({
-      adapterOptions: { mapStyle: "s", mapOptions: {} },
+      adapterOptions: { mapStyle: "s", mapOptions: {}, globe: true },
       storeOptions: { style },
       list: true,
     });

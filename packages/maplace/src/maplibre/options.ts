@@ -1,9 +1,17 @@
 import type { Map as MapLibreMap, MapOptions, StyleSpecification } from "maplibre-gl";
+import { CONTROL_POSITIONS, type ControlPosition } from "../adapter";
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import { type Assert, recordOf } from "../validate/record";
 import { refusedKeysCheck, ZERO_TWO_MAP_OPTIONS } from "../validate/refused-keys";
-import { checkNonEmptyString, isElement, optional } from "../validate/values";
+import {
+  checkNonBlankString,
+  checkNonEmptyString,
+  isElement,
+  members,
+  oneOf,
+  optional,
+} from "../validate/values";
 
 /** MapLibre's map options maplace sets elsewhere: kept out of `mapOptions`, by type and by check. */
 type SetElsewhere = "container" | "style" | "center" | "zoom" | "bounds";
@@ -24,6 +32,18 @@ export interface MapLibreAdapterOptions {
    * and `maxZoom` are MapLibre's, one below maplace's zoom.
    */
   readonly mapOptions?: Omit<MapOptions, SetElsewhere> | undefined;
+  /**
+   * The earth as a globe, with a toggle on the map to flatten it and back: `true` for the toggle
+   * top-left, named "Globe". MapLibre's globe turns flat by itself once zoomed in past a city.
+   * Refused with the page's own `map`, which keeps its own projection.
+   */
+  readonly globe?: true | MapLibreGlobe | undefined;
+}
+
+/** The globe's toggle: its corner (default top-left) and its words (default "Globe"). */
+export interface MapLibreGlobe {
+  readonly position?: ControlPosition | undefined;
+  readonly label?: string | undefined;
 }
 
 /** What `mapOptions` takes: MapLibre's map options without those maplace sets elsewhere. */
@@ -68,11 +88,21 @@ function isPageMap(value: unknown): boolean {
   return typeof value.getContainer === "function" && isElement(value.getContainer());
 }
 
+const checkGlobeOptions: Assert<MapLibreGlobe> = recordOf<MapLibreGlobe>({
+  checks: {
+    position: optional(oneOf(members(CONTROL_POSITIONS))),
+    label: optional(checkNonBlankString),
+  },
+  unknown: "is not a globe option",
+  expected: "true or an object",
+});
+
 const checkOptionFields: Assert<MapLibreAdapterOptions> = recordOf<MapLibreAdapterOptions>({
   checks: {
     mapStyle: optional(checkMapStyle),
     map: optional(checkPageMap),
     mapOptions: optional(checkCreatedMapOptions),
+    globe: optional((value, field) => value === true || checkGlobeOptions(value, field)),
   },
   unknown: "is not a MapLibre adapter option",
   remarks: {
@@ -82,11 +112,14 @@ const checkOptionFields: Assert<MapLibreAdapterOptions> = recordOf<MapLibreAdapt
   expected: "an object of MapLibre adapter options",
 });
 
-/** The page's own map keeps the style and options the page gave it. */
+/** The page's own map keeps the style, options and projection the page gave it. */
 function refuseCreatedMapOptions(options: MapLibreAdapterOptions, field: Field): void {
-  for (const key of ["mapStyle", "mapOptions"] as const) {
-    if (options[key] !== undefined) {
-      reject(child(field, key), "is for a map maplace creates: set it on your own map");
-    }
+  for (const key of ["mapStyle", "mapOptions", "globe"] as const) {
+    if (options[key] === undefined) continue;
+    const instead =
+      key === "globe"
+        ? "your own map keeps its projection (setProjection)"
+        : "set it on your own map";
+    reject(child(field, key), `is for a map maplace creates: ${instead}`);
   }
 }

@@ -19,6 +19,7 @@ import { LIST_VIEW_CLASS } from "../../../../packages/maplace/src/list-view.ts";
 import { MAP_FAILURE_CLASS } from "../../../../packages/maplace/src/map-failure-words.ts";
 import { SKIP_MAP_CLASS } from "../../../../packages/maplace/src/maplace/map-aids.ts";
 import { MAPLIBRE_MAP_CLASS } from "../../../../packages/maplace/src/maplibre/control-styles.ts";
+import { GLOBE_CLASS } from "../../../../packages/maplace/src/maplibre/globe.ts";
 import { eventPropName } from "../../../../packages/maplace/src/react/store-binding.ts";
 import { UNSTYLED_ATTRIBUTE } from "../../../../packages/maplace/src/unstyled.ts";
 import {
@@ -98,6 +99,7 @@ export const STYLING_CLASSES = [
   POPUP_LINKS_CLASS,
   CLUSTER_CLASS,
   CONTROL_CLASS,
+  GLOBE_CLASS,
   ORIGIN_DOT_CLASS,
   SKIP_MAP_CLASS,
   LOAD_PANEL_CLASS,

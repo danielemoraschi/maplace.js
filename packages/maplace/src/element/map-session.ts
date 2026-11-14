@@ -8,14 +8,13 @@ import { runPageCode } from "./element-error";
 import type { ElementList } from "./element-list";
 import type { MaplaceMapElement, ProviderFactory } from "./index";
 import { myLocationAsked } from "./map-my-location";
-import type { MapSettingAttribute } from "./map-settings-watch";
 import { mapSettingsReadBy } from "./provider-description";
 import { providerFor } from "./providers";
 
 /** One map on the element: its provider's adapter, attached to the store, with the list on it. */
 export interface MapSession {
   /** The map settings the session's provider reads: a change of one opens the map again. */
-  readonly mapSettings: readonly MapSettingAttribute[];
+  readonly mapSettings: readonly string[];
   /** Shows a list built again on this map. */
   showList(list: ElementList | undefined): void;
   /** Takes the list off and detaches, which returns the store to `idle`. */

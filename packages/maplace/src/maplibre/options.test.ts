@@ -100,6 +100,49 @@ describe("checkMapLibreOptions", () => {
     ),
   );
 
+  it("takes `globe: true`, or a corner and a label", () => {
+    expect(() => checkMapLibreOptions({ globe: true })).not.toThrow();
+    const globe = { position: "bottom-left", label: "Earth" };
+    expect(() => checkMapLibreOptions({ globe })).not.toThrow();
+    expect(() => checkMapLibreOptions({ globe: {} })).not.toThrow();
+  });
+
+  it(
+    "refuses a globe corner that isn't one, naming it",
+    refusal(
+      { globe: { position: "middle" } },
+      "options.globe.position",
+      'options.globe.position must be one of "top-left", "top-right", "bottom-left", "bottom-right", got "middle"',
+    ),
+  );
+
+  it(
+    "refuses a blank globe label",
+    refusal(
+      { globe: { label: " " } },
+      "options.globe.label",
+      'options.globe.label must be a non-blank string, got " "',
+    ),
+  );
+
+  it(
+    "refuses a globe that is neither true nor its options",
+    refusal(
+      { globe: false },
+      "options.globe",
+      "options.globe must be true or an object, got false",
+    ),
+  );
+
+  it(
+    "refuses `globe` with the page's own map, saying it keeps its projection",
+    refusal(
+      { map: pageMap, globe: true },
+      "options.globe",
+      "options.globe is for a map maplace creates: your own map keeps its projection (setProjection)",
+    ),
+  );
+
   it.each(Object.entries(GOOGLE_NAMES_ON_MAPLIBRE))(
     "refuses Google's %s in mapOptions, saying MapLibre's",
     (key, remark) => {

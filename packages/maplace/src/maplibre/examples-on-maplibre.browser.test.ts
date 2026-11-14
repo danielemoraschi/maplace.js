@@ -26,6 +26,7 @@ import {
   shownIds,
   storeAttachedSince,
 } from "../testing/examples/recorded-stores";
+import { GLOBE_CLASS } from "./globe";
 import "./testing/stylesheet";
 import { TEST_STYLE } from "./testing/test-style";
 
@@ -60,13 +61,14 @@ const NO_BACKGROUND = "rgba(0, 0, 0, 0)";
 /**
  * What a version does on real MapLibre beyond opening, where only a real map shows it: styled's
  * select loads OpenFreeMap's dark style; css-markers' pins, brand's cluster badges and whats-on's
- * pins and panel take their looks from the page's CSS.
+ * pins and panel take their looks from the page's CSS; flights opens on the globe.
  */
 const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = {
   styled: expectDarkStyleOnChoosing,
   "css-markers": expectSelectedPinLook,
   brand: expectBadgeInBrandColours,
   "whats-on": expectCategoryLook,
+  flights: expectOnTheGlobe,
 };
 
 let offsite: OffsiteLog;
@@ -146,6 +148,13 @@ function expectNothingElseOffsite(): void {
 async function expectSelectedPinLook({ store, root }: RealRun): Promise<void> {
   store.select("rijks");
   await expect.poll(() => styleOf(root, SELECTED_PIN)?.backgroundColor, LOAD).toBe(PIN_ACCENT);
+}
+
+/** Flights opens on the globe, its toggle pressed: every version asks for it. */
+async function expectOnTheGlobe({ root }: RealRun): Promise<void> {
+  await expect
+    .poll(() => root.querySelector(`.${GLOBE_CLASS}`)?.getAttribute("aria-pressed"), LOAD)
+    .toBe("true");
 }
 
 /** The shops' cluster badges take the brand's colours from the custom properties around the map. */

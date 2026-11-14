@@ -31,5 +31,7 @@ const flights: Location[] = [
 ];
 createMapLibreMap("#flights-maplibre-vanilla-map", {
   locations: flights,
+  // The earth as a globe, with a toggle on the map to flatten it.
+  globe: true,
   list: { container: "#flights-maplibre-vanilla-list", heading: "Flights from London" },
 });

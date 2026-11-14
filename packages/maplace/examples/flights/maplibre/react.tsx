@@ -33,11 +33,14 @@ const flights: Location[] = [
   ),
 ];
 
+// The earth as a globe, with a toggle on the map to flatten it.
+const onTheGlobe = () => createMapLibreAdapter({ globe: true });
+
 function Flights() {
   return (
     <MaplaceProvider locations={flights}>
       <div className="map-and-list">
-        <MaplaceMap createAdapter={createMapLibreAdapter} className="map" />
+        <MaplaceMap createAdapter={onTheGlobe} className="map" />
         <LocationList heading="Flights from London" />
       </div>
     </MaplaceProvider>

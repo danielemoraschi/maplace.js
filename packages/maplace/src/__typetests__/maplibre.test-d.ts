@@ -6,6 +6,7 @@ import {
   createMapLibreAdapter,
   createMapLibreMap,
   type MapLibreAdapterOptions,
+  type MapLibreGlobe,
   type MapLibreMapList,
   type MapLibreMapMyLocation,
 } from "@maplacejs/maplace/maplibre";
@@ -35,6 +36,15 @@ createMapLibreMap("#map", {
 expectTypeOf<MapLibreMapList["position"]>().toEqualTypeOf<
   "top-left" | "top-right" | "bottom-left" | "bottom-right" | undefined
 >();
+
+// The globe, with its toggle's corner and words, on the adapter and the shortcut.
+createMapLibreAdapter({ globe: true });
+createMapLibreMap("#map", { globe: { position: "bottom-left", label: "Earth" } });
+expectTypeOf<MapLibreGlobe["position"]>().toEqualTypeOf<MapLibreMapList["position"]>();
+// @ts-expect-error globe is true or its options
+createMapLibreAdapter({ globe: "yes" });
+// @ts-expect-error the toggle goes in a corner
+createMapLibreAdapter({ globe: { position: "middle" } });
 
 // @ts-expect-error a style URL is mapStyle: the store's style is the shapes' default style
 createMapLibreMap("#map", { style: "https://tiles.example/style.json" });

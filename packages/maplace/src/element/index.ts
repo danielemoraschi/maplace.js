@@ -68,7 +68,8 @@ export { defineListView } from "./list-views";
  * - `color-scheme`, `map-style`, `map-options`: the map's settings (Google: its colour scheme,
  *   `light`, `dark` or `follow-system`, and a JSON object of its map options; MapLibre: the style
  *   URL or JSON style object, and a JSON object of its map options). A change of one its provider
- *   reads opens the map again where it was.
+ *   reads opens the map again where it was. MapLibre also reads `globe`, `globe-position` and
+ *   `globe-label`: the earth as a globe, with a toggle to flatten it, in that corner and words.
  * - `list`: present (empty, or `"true"` as Svelte 5 writes it) = list view; `list="select"` =
  *   native select; `list="<name>"` = a view given to `defineListView`; absent = no list.
  * - `list-position`: a `ListPosition`; `outside` (beside the map) by default.

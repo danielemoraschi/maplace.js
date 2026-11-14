@@ -28,7 +28,7 @@ export interface ViewFollower {
   setView(view: ResolvedView): void;
   /** Shows a view still waiting for its location, once the location is placed. */
   sync(): void;
-  /** The map's size changed: the standing view is shown again. */
+  /** The map's size or projection changed: the standing view is shown again. */
   resized(): void;
   open(site: ViewSite): void;
   close(): void;

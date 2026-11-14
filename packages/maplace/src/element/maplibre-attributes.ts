@@ -6,13 +6,19 @@ import type { Assert } from "../validate/record";
 import { refusedKeysCheck } from "../validate/refused-keys";
 import { givenAttribute, jsonOrRaw } from "./attribute-values";
 import { MAP_ELEMENT } from "./element-error";
+import { CORNERS, oneOfAttribute, switchAttribute } from "./element-list";
 import { MAP_SETTING_ATTRIBUTES } from "./map-settings-watch";
+import { nonBlank } from "./store-attributes";
 import { VIEW_IN_MAP_OPTIONS } from "./view-attributes";
 
 /** The map settings MapLibre's provider reads; `color-scheme` isn't one: the style sets the colours. */
 export const MAPLIBRE_MAP_SETTINGS = [
   MAP_SETTING_ATTRIBUTES.mapStyle,
   MAP_SETTING_ATTRIBUTES.mapOptions,
+  // The globe, and its toggle's corner and words: MapLibre's own, as Google's map has no globe.
+  "globe",
+  "globe-position",
+  "globe-label",
 ] as const;
 
 type MapLibreStyle = NonNullable<MapLibreAdapterOptions["mapStyle"]>;
@@ -40,9 +46,22 @@ const checkMapOptionsAttribute: Assert<MapLibreMapOptionsAttribute> = refusedKey
   "a JSON object",
 );
 
-/** `map-style` and `map-options` as `element` writes them; a bad value is misuse naming it. */
-export function mapLibreSettingsOf(element: Element): MapLibreAdapterOptions {
-  return { mapStyle: mapStyleOf(element), mapOptions: mapOptionsOf(element) };
+/** `map-style`, `map-options` and `globe*` as `element` writes them; a bad value is misuse naming it. */
+export function mapLibreSettingsOf(element: HTMLElement): MapLibreAdapterOptions {
+  return {
+    mapStyle: mapStyleOf(element),
+    mapOptions: mapOptionsOf(element),
+    globe: globeOf(element),
+  };
+}
+
+/** The globe `globe` asks for, `globe="false"` none, with the toggle's corner and words. */
+function globeOf(element: HTMLElement): MapLibreAdapterOptions["globe"] {
+  if (!switchAttribute(element, "globe")) return undefined;
+  return {
+    position: oneOfAttribute(element, "globe-position", CORNERS),
+    label: nonBlank(element.getAttribute("globe-label")),
+  };
 }
 
 /**

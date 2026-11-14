@@ -2,6 +2,9 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-13 Fixed a MapLibre map under 256px tall, zoomed all the way out, reporting a zoom below 0, which the store refused with an uncaught `invalid-input`: it reports 0
+- 2026-11-13 Added `globe` on MapLibre maps (`createMapLibreAdapter`, `createMapLibreMap`, and `globe`, `globe-position` and `globe-label` on `<maplace-map>`): the map opens as a globe, with a toggle on the map that flattens it and turns it back
+
 ## 1.1.0 (2026-11-13)
 
 - 2026-11-13 Fixed a Google popup's content sitting 12px from the bubble's left edge but 30px from its right and bottom in Chromium and Safari: its sides and bottom now match the room Google keeps for its scrollbars, 18px there, 12px where it keeps none, and its title lines up with it

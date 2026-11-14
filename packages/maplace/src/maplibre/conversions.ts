@@ -10,7 +10,11 @@ import type { Bounds } from "../viewport";
 const ZOOM_OFFSET = 1;
 
 export const toMapLibreZoom = (zoom: number) => zoom - ZOOM_OFFSET;
-export const fromMapLibreZoom = (zoom: number) => zoom + ZOOM_OFFSET;
+/**
+ * maplace's zoom has no value below 0: a map MapLibre lets out past its −1 (a globe, or a flat map
+ * shorter than the world at 0) is at 0, the whole earth either way.
+ */
+export const fromMapLibreZoom = (zoom: number) => Math.max(0, zoom + ZOOM_OFFSET);
 
 /** A longitude in −180..180, 180 kept east: MapLibre's world copies give longitudes past ±180. */
 export function wrappedLongitude(lng: number): number {

@@ -2,7 +2,6 @@
 import { describe, expect, it, onTestFinished } from "vitest";
 import { defineBuiltInProvider } from "./built-in-provider";
 import type { ProviderFactory } from "./index";
-import type { MapSettingAttribute } from "./map-settings-watch";
 import { loadSourceNamedBy, mapSettingsReadBy } from "./provider-description";
 import { onProviderRegistered } from "./providers";
 
@@ -12,7 +11,7 @@ describe("defineBuiltInProvider", () => {
       throw new Error("not built in this test");
     };
     const loadSource = () => "Somewhere";
-    let seen: readonly MapSettingAttribute[] | undefined;
+    let seen: readonly string[] | undefined;
     let seenSource: unknown;
     // Stands in for a waiting map's setup retry, registered the same way.
     const stop = onProviderRegistered(() => {
