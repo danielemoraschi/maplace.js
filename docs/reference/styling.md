@@ -99,6 +99,7 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-popup-links` | The links at the end of a popup (`openInMapsLink`, `directionsLink`); a page's `a` rule colours them, so a pale one needs `.maplace-popup-links a` for the white bubble |
 | `maplace-cluster` | The badge with the count on a cluster of markers, on either provider |
 | `maplace-control` | The panel around anything placed on a Google or MapLibre map: a list, a select, the "My location" control, your own controls |
+| `maplace-globe` | The globe's toggle, a button, on a MapLibre map with [`globe`](maplibre.md#globe): `[aria-pressed=true]` while the map is a globe |
 | `maplace-skip-map` | The [link past the map](store.md#on-every-map), hidden until focused; `display: none` removes it |
 | `maplace-google-map` | The element a Google map is drawn in, when Maplace.js creates the map rather than being handed one |
 | `maplace-maplibre-map` | The element a MapLibre map is drawn in, when Maplace.js creates the map rather than being handed one |

@@ -25,7 +25,7 @@ export interface MapLibreMapOptions<Data = unknown>
     Omit<MapLibreAdapterOptions, "map"> {}
 
 /** The options `createMapLibreMap` hands to `createMapLibreAdapter`; the rest go to the store. */
-type AdapterKey = "mapStyle" | "mapOptions";
+type AdapterKey = "mapStyle" | "mapOptions" | "globe";
 
 export const MAPLIBRE_MAP_NAMES: ShortcutNames = {
   shortcut: "createMapLibreMap",
@@ -50,6 +50,6 @@ export function checkMapLibreMapOptions<Data = unknown>(
 export function splitMapLibreMapOptions<Data>(
   options: MapLibreMapOptions<Data>,
 ): SplitOptions<Data, Pick<MapLibreAdapterOptions, AdapterKey>> {
-  const { mapStyle, mapOptions, list, myLocation, ...storeOptions } = options;
-  return { storeOptions, adapterOptions: { mapStyle, mapOptions }, list, myLocation };
+  const { mapStyle, mapOptions, globe, list, myLocation, ...storeOptions } = options;
+  return { storeOptions, adapterOptions: { mapStyle, mapOptions, globe }, list, myLocation };
 }

@@ -11,12 +11,15 @@ The store, its list, its events and its errors are the same as on Google; what d
 | `mapStyle` | `string \| StyleSpecification` | The map's style: a style URL or a style object; OpenFreeMap's `bright` when left out ([styles and tiles](#styles-and-tiles)). Named `mapStyle` because the store's `style` is the shapes' default style |
 | `map` | `maplibregl.Map` | Your own map to draw on, instead of one Maplace.js creates; on the CDN script, made with `Maplace.maplibre` ([loading maplibre-gl](#loading-maplibre-gl)) |
 | `mapOptions` | `MapOptions` | Extra options for a map Maplace.js creates; not `container`, `style`, `center`, `zoom` or `bounds`, which Maplace.js sets ([the first view](store.md#the-first-view)). `minZoom` and `maxZoom` are on MapLibre's scale ([zoom](#zoom)) |
+| `globe` | `true \| MapLibreGlobe` | The earth as a globe, with a toggle on the map to flatten it and back ([globe](#globe)); not with your own `map` |
+| `globe.position` | `ControlPosition` | The corner the toggle goes in; default `top-left` |
+| `globe.label` | `string` | The toggle's words; default "Globe" |
 
 An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` Maplace.js sets, saying where it goes (`style` is `mapStyle`), or one of Google's names MapLibre has its own for, saying which (`scrollwheel` is `scrollZoom`).
 
 ## `createMapLibreMap`
 
-`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle` and `mapOptions`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one (its page, `vanilla.html` beside it, sizes the map and holds the North-only checkbox):
+`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle`, `mapOptions` and `globe`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one (its page, `vanilla.html` beside it, sizes the map and holds the North-only checkbox):
 
 <!-- example: packages/maplace/examples/menu/maplibre/vanilla.ts -->
 ```ts
@@ -44,6 +47,9 @@ Its own options, beside the store's:
 |---|---|---|
 | `mapStyle` | `string \| StyleSpecification` | As the adapter's |
 | `mapOptions` | `MapOptions` | As the adapter's |
+| `globe` | `true \| MapLibreGlobe` | As the adapter's |
+| `globe.position` | `ControlPosition` | As the adapter's |
+| `globe.label` | `string` | As the adapter's |
 | `list` | `true \| MapLibreMapList` | Maplace.js's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner the list goes in; default `top-right` |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map; not with `position` |
@@ -96,7 +102,7 @@ On the CDN script, make it with `new Maplace.maplibre.Map(…)`, the copy Maplac
 
 - `attach`'s container must be `map.getContainer()` or hold it.
 - Unlike a map Maplace.js creates, your map shows no panel when it fails: hear the `error` event.
-- `mapStyle` and `mapOptions` are refused: your map's own style and options apply.
+- `mapStyle`, `mapOptions` and `globe` are refused: your map's own style, options and projection apply (`map.setProjection({ type: "globe" })` for a globe).
 - The store's first view moves your map: by default it fits the locations. To keep your map where it is, give the store `view: { kind: "center", center: map.getCenter(), zoom: map.getZoom() + 1 }`: the store speaks [Google's zoom](#zoom), one higher.
 - Maplace.js never moves your map in the page, and `destroy` removes only what Maplace.js added: its sources, layers, markers and controls.
 
@@ -110,8 +116,11 @@ The element's MapLibre provider reads these attributes of `<maplace-map>` when t
 |---|---|
 | `map-style` | A style URL, or a JSON style object, as `mapStyle`; OpenFreeMap's `bright` when left out |
 | `map-options` | A JSON object of MapLibre's map options, as `mapOptions`, with the same exclusions |
+| `globe` | Present (or `"true"`): the earth as a globe, with a toggle to flatten it, as `globe` ([globe](#globe)); `"false"` none |
+| `globe-position` | The toggle's corner, as `globe.position`; default `top-left` |
+| `globe-label` | The toggle's words, as `globe.label`; default "Globe" |
 
-A change of either opens the map again where it was, keeping the store's state. A bad value is `invalid-input` naming the attribute (`map-options.bounds`; `map-options.style` is told to use `map-style`, `map-options.center`, `map-options.zoom` and 0.2's `map-options.set_center` the [`center` and `zoom` attributes](element.md#map-attributes)). `color-scheme` isn't read: the style sets the colours.
+A change of any opens the map again where it was, keeping the store's state. A bad value is `invalid-input` naming the attribute (`map-options.bounds`; `map-options.style` is told to use `map-style`, `map-options.center`, `map-options.zoom` and 0.2's `map-options.set_center` the [`center` and `zoom` attributes](element.md#map-attributes)). `color-scheme` isn't read: the style sets the colours.
 
 ## With the CDN script
 
@@ -187,6 +196,14 @@ MapLibre has no routing, so `route` isn't among this adapter's capabilities. `se
 What goes on the map (`createMapLibreMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like MapLibre's own controls, `.maplace-control`, in MapLibre's corners with their margins. It is light, as MapLibre's controls are, and `.maplace-control { color-scheme: dark }` gives a dark one.
 
 Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. Classes and how to turn the defaults off: [Styling](styling.md).
+
+## Globe
+
+`globe: true` opens the map as a globe, the whole earth at a glance, with a toggle on the map, "Globe", pressed while it is one: a click flattens the map, another turns it back. `globe: { position, label }` puts the toggle in another corner, with other words; the element's `globe`, `globe-position` and `globe-label` [attributes](#provider-attributes) do the same, and in React `createAdapter={() => createMapLibreAdapter({ globe: true })}`. The Flights example's MapLibre version is one.
+
+The store's first view fits the globe as it fits a flat map; a view wider than half the earth shows the half around its middle, the rest behind the globe, until the reader turns it or flattens it. A switch shows the store's view again on the new projection, unless the reader moved the map. MapLibre's globe turns flat by itself once zoomed in past a city, so the toggle changes nothing there.
+
+On the globe, a pin with an icon and a cluster's badge behind it are faded, as MapLibre fades them, and still answer a click and the Tab key; a default pin and shapes behind it don't show; a popup whose place turns behind it is faded. A list's "This area" counts what is in the box around the globe's visible side, which can include places behind it once a pole shows; a click beside the globe lands on its rim. Google's map has no globe: `globe` is MapLibre's only. Your own map keeps its projection: `globe` is refused with `map`, and `map.setProjection({ type: "globe" })` gives it a globe without the toggle.
 
 ## React
 

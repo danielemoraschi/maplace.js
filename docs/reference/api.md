@@ -53,7 +53,7 @@ The MapLibre GL JS adapter, on OpenFreeMap's tiles unless a style says otherwise
 | Export | Kind | Explained in |
 |---|---|---|
 | `createMapLibreAdapter` | function | [MapLibre adapter](maplibre.md) |
-| `MapLibreAdapterOptions` | type | [Options](maplibre.md#options) |
+| `MapLibreAdapterOptions`, `MapLibreGlobe` | types | [Options](maplibre.md#options) |
 | `createMapLibreMap` | function | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
 | `MapLibreMapOptions`, `MapLibreMapList`, `MapLibreMapMyLocation` | types | [`createMapLibreMap`](maplibre.md#createmaplibremap) |
 

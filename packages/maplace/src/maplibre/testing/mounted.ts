@@ -17,6 +17,11 @@ export async function mountedMapLibre(
   return { state: parts.state, map, ...mounted };
 }
 
+/** A MapLibre adapter mounted on a map it created as a globe, with the toggle `globe` asks for. */
+export function mountedOnGlobe(globe: MapLibreAdapterOptions["globe"] = true) {
+  return mountedMapLibre({ ...TEST_OPTIONS, globe });
+}
+
 /** A MapLibre adapter starting to mount, not waited for: a load that may fail. */
 export function mountingMapLibre(options: MapLibreAdapterOptions) {
   const parts = maplibreParts(options);

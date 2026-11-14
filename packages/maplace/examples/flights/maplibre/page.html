@@ -1,8 +1,9 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <!-- London's flights out, each along its great circle, the shortest way on the earth, from
-     the hub to a city, listed beside the map; the cities are on the map only. -->
-<maplace-map list list-heading="Flights from London">
+     the hub to a city, listed beside the map, on a globe its toggle flattens; the cities are on
+     the map only. -->
+<maplace-map list list-heading="Flights from London" globe>
   <script type="application/json">
     [{ "id": "london", "lat": 51.5074, "lng": -0.1278, "title": "London", "listed": false },
      { "id": "new-york", "lat": 40.7128, "lng": -74.006, "title": "New York", "listed": false },

@@ -27,9 +27,13 @@ export const viewportReports: MapPart = {
       if (moved) report();
     };
     map.on("moveend", markMoved);
+    // A switch of projection moves nothing, yet the map shows another area: reported once settled
+    // (a style loaded again in the same one reports the same view, which the store drops).
+    map.on("projectiontransition", markMoved);
     map.on("idle", settled);
     mounted.onDestroy(() => {
       map.off("moveend", markMoved);
+      map.off("projectiontransition", markMoved);
       map.off("idle", settled);
     });
     if (!map.isMoving()) report();

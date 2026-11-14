@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { AdapterHost } from "../adapter";
 import type { LocationState } from "../location";
 import { adding, markerDrawable, presented, withContent } from "../testing/conformance/fixtures";
-import { unmountAll } from "../testing/conformance/harness";
+import { reportedViewport, unmountAll } from "../testing/conformance/harness";
 import { createRecordingHost } from "../testing/conformance/recording-host";
 import { sizedContainer } from "../testing/container";
 import type { MapLibreState } from "./map-state";
@@ -27,6 +27,16 @@ describe("MapLibre's viewport reports", () => {
     await wait(300);
     await probe.settle();
     expect(host.reportsOf("reportViewportChange")).toHaveLength(reportedBefore);
+  });
+
+  it("report zoom 0 for a short map zoomed all the way out, never below", async () => {
+    const mounted = await mountedMapLibre();
+    mounted.container.style.height = "200px";
+    mounted.map.resize();
+    mounted.map.setZoom(-2);
+    await mounted.probe.settle();
+    expect(mounted.map.getZoom()).toBeLessThan(-1);
+    expect(reportedViewport(mounted).zoom).toBe(0);
   });
 
   it("report the view of a page's map already still when the adapter opens on it", async () => {

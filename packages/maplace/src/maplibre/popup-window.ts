@@ -150,6 +150,8 @@ function popupOptions({ maxWidth }: ResolvedPopupOptions): PopupOptions {
     closeOnMove: false,
     focusAfterOpen: false,
     maxWidth: maxWidth === undefined ? "none" : `${maxWidth}px`,
+    // On a globe, faded once its place turns behind it, as MapLibre fades markers there.
+    locationOccludedOpacity: 0.2,
   };
 }
 

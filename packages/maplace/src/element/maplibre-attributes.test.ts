@@ -30,6 +30,28 @@ describe("MAPLIBRE_MAP_SETTINGS", () => {
 });
 
 describe("mapLibreSettingsOf", () => {
+  it("reads globe as the globe, with its corner and words; none without it or with false", () => {
+    const asked = { globe: "", "globe-position": "bottom-left", "globe-label": "Earth" };
+    expect(mapLibreSettingsOf(elementWith(asked)).globe).toEqual({
+      position: "bottom-left",
+      label: "Earth",
+    });
+    expect(mapLibreSettingsOf(elementWith({ globe: "" })).globe).toEqual({
+      position: undefined,
+      label: undefined,
+    });
+    expect(mapLibreSettingsOf(elementWith({})).globe).toBeUndefined();
+    expect(mapLibreSettingsOf(elementWith({ globe: "false" })).globe).toBeUndefined();
+  });
+
+  it("refuses a globe-position that isn't a corner, naming it", () => {
+    refusal(
+      { globe: "", "globe-position": "middle" },
+      "globe-position",
+      'must be "top-left" or "top-right" or "bottom-left" or "bottom-right", got "middle"',
+    );
+  });
+
   it("reads map-style as a style URL, or as a style object written as JSON", () => {
     const url = "https://tiles.example/style.json";
     expect(mapLibreSettingsOf(elementWith({ "map-style": url })).mapStyle).toBe(url);

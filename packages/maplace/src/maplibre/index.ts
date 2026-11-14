@@ -5,4 +5,4 @@ export {
   type MapLibreMapMyLocation,
   type MapLibreMapOptions,
 } from "./maplibre-map";
-export type { MapLibreAdapterOptions } from "./options";
+export type { MapLibreAdapterOptions, MapLibreGlobe } from "./options";

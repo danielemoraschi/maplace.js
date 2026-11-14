@@ -20,7 +20,7 @@ export const MAP_SETTINGS: readonly MapSettingAttribute[] = Object.values(MAP_SE
 /** Calls back once per task in which a watched map setting changed value, while started. */
 export interface MapSettingsWatch {
   /** Watches `settings`, replacing what it watched: a change of one of them calls back. */
-  start(settings: readonly MapSettingAttribute[]): void;
+  start(settings: readonly string[]): void;
   /** Stops watching, dropping a change not yet called back for. */
   stop(): void;
 }

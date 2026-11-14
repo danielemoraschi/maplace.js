@@ -1,5 +1,5 @@
 import type { ProviderFactory } from "./index";
-import { MAP_SETTINGS, type MapSettingAttribute } from "./map-settings-watch";
+import { MAP_SETTINGS } from "./map-settings-watch";
 
 /** Whom a map on `element` loads from, for its panel; `undefined` names no one. */
 export type LoadSource = (element: Element) => string | undefined;
@@ -7,7 +7,7 @@ export type LoadSource = (element: Element) => string | undefined;
 /** What one of maplace's own providers says about itself. */
 export interface ProviderDescription {
   /** A change of one of these map settings, and of no other, opens its map again. */
-  readonly mapSettings: readonly MapSettingAttribute[];
+  readonly mapSettings: readonly string[];
   readonly loadSource: LoadSource;
 }
 
@@ -22,7 +22,7 @@ export function describeProvider(
 }
 
 /** The map settings `provider` reads; every one for a provider that named none, as a page's own. */
-export function mapSettingsReadBy(provider: ProviderFactory): readonly MapSettingAttribute[] {
+export function mapSettingsReadBy(provider: ProviderFactory): readonly string[] {
   return descriptions.get(provider)?.mapSettings ?? MAP_SETTINGS;
 }
 

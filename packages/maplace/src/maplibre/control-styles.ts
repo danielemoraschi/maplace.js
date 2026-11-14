@@ -1,5 +1,6 @@
 import { CONTROL_CLASS, MAPLACE_LISTS, SHARED_CONTROL_STYLES } from "../adapter-kit/control-styles";
 import { outsideUnstyled } from "../unstyled";
+import { GLOBE_CLASS } from "./globe";
 
 /** The class of the element a map maplace creates is drawn in. */
 export const MAPLIBRE_MAP_CLASS = "maplace-maplibre-map";
@@ -12,6 +13,17 @@ export const LIST_ROOM_PROPERTY = "--maplace-list-room";
 
 /** How far the bottom-left corner sits up, set on it by `corner-watch.ts`. */
 export const LIFT_PROPERTY = "--maplace-bottom-left-lift";
+
+/**
+ * The globe's toggle, a button in its panel: tinted from its text's colour while pressed and on
+ * hover, as the list's switch is, its outline inside it. Bold through its panel, as every panel's
+ * buttons take the panel's font (`font:inherit`). The tints are background images: MapLibre's
+ * own stylesheet sets a hovered or pressed control button's background colour, and would win.
+ */
+const GLOBE_BUTTON = `${PANEL_SELECTOR}>.${GLOBE_CLASS}`;
+
+/** `percent` of the text's colour, over the button's background. */
+const tint = (percent: number) => `color-mix(in srgb,currentColor ${percent}%,transparent)`;
 
 /**
  * What goes on a MapLibre map sits in a panel like MapLibre's own controls: their 4px rounding and
@@ -31,4 +43,9 @@ export const CONTROL_STYLES = `
 ${outsideUnstyled(PANEL_SELECTOR)}{padding:4px;border-radius:4px;box-shadow:0 0 0 2px rgba(0,0,0,.1);background:light-dark(#fff,#444);color:light-dark(#1f1f1f,#e3e3e3);color-scheme:light;font-size:13px}
 ${outsideUnstyled(`${PANEL_SELECTOR} ${MAPLACE_LISTS}`)}{box-sizing:border-box;max-height:var(${LIST_ROOM_PROPERTY})}
 ${outsideUnstyled(`.maplibregl-ctrl-bottom-left:has(>${PANEL_SELECTOR})`)}{margin-bottom:var(${LIFT_PROPERTY})}
+${outsideUnstyled(`${PANEL_SELECTOR}:has(>.${GLOBE_CLASS})`)}{font-weight:600}
+${outsideUnstyled(GLOBE_BUTTON)}{display:block;padding:.375rem .625rem;border:0;border-radius:2px;background:none;color:inherit;cursor:pointer}
+${outsideUnstyled(`${GLOBE_BUTTON}:hover`)}{background-image:linear-gradient(${tint(8)},${tint(8)})}
+${outsideUnstyled(`${GLOBE_BUTTON}[aria-pressed=true]`)}{background-image:linear-gradient(${tint(16)},${tint(16)})}
+${outsideUnstyled(`${GLOBE_BUTTON}:focus-visible`)}{outline:2px solid;outline-offset:-2px}
 ${SHARED_CONTROL_STYLES}`;

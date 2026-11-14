@@ -5,6 +5,7 @@ import { createCamera } from "./camera";
 import { clusterRegrouping } from "./cluster-regrouping";
 import { createControls } from "./controls";
 import { createDrawing } from "./drawing";
+import { globePart } from "./globe";
 import { layerHover } from "./layer-hover";
 import { mapClicks } from "./map-clicks";
 import { mapSourceFor } from "./map-source";
@@ -43,6 +44,9 @@ export function assembleMapLibreAdapter(
   const controls = createControls();
   const pointedAt = (event: MapMouseEvent) => locationAt(state, event.point);
   const parts = [
+    // The globe first: setting the projection loads every source again, and the first view is
+    // fitted on the projection the map opens in.
+    ...(options.globe ? [globePart(options.globe, controls.mountControl)] : []),
     drawing.part,
     clusterRegrouping(state),
     markerStacking,
