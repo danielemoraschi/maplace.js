@@ -42,7 +42,8 @@ CI (`.github/workflows/ci.yml`) runs `check`, `typecheck` and `test` on every pu
 - The old open GitHub issues and pull requests (R5's list) stay untouched until R5's last step, each closed by a comment drafted for the user and posted on their word.
 
 ## Agent workflow
-- Work on a short-lived branch, fast-forward merged into `main`. Commit only when asked; no attribution lines in commit messages.
+- Work on a short-lived branch, fast-forward merged into its base. Commit only when asked; no attribution lines in commit messages.
+- Two bases (R11): `main` is the last release plus site-only changes, so Deploy can always ship it; `next` is the library's next version: any change to the package, its examples, its docs or `CHANGELOG.md` branches from `next` and merges into it, as do site changes that show unreleased library work. After a change lands on `main`, `next` is rebased onto it (a force push to `next`). To release: rebase `next` onto `main`, fast-forward `main` to `next`, push, and run Release from `main`. CI's check, typecheck and tests run on `next`; the billed real-Maps tests, Sonar and the preview stay on `main`, so they first see `next`'s work when it lands there before a release.
 - Before any change merges, run on the branch diff, in order: `/simplify`, then `/code-review`, then `/clean-code` (a user skill; skip it if unavailable and say so). Fix findings, then merge. Documentation-only changes skip the chain.
 - After the chain, before committing: `npm run sonar`, then read the quality gate and open issues. A red gate is fixed, or explained to the user, before the change merges; CI's own scan is report-only.
 - A fix lands with a test shown failing first.
