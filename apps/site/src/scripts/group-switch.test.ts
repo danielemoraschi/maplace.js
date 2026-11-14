@@ -4,6 +4,7 @@ import {
   EXAMPLE_GROUPS,
   findGroupAtPath,
   groupPath,
+  groupTitle,
   HOME_GROUP,
 } from "../examples/example-sections.ts";
 import { startGroupSwitch } from "./group-switch.ts";
@@ -26,6 +27,8 @@ function page(path = "/", { failWiring = false } = {}) {
   const current = findGroupAtPath(path) ?? HOME_GROUP;
   document.title = `${current.label} page`;
   document.body.innerHTML = `
+    <h1><span data-hero-lead>${current.headingLead}</span></h1>
+    <p data-hero-intro>${current.intro}</p>
     <div data-group-bar>
       <nav aria-label="Examples">${EXAMPLE_GROUPS.map(
         (group) =>
@@ -98,14 +101,17 @@ afterEach(() => {
 });
 
 describe("startGroupSwitch", () => {
-  it("shows a clicked group in place, then pushes its path, titles the page and marks its link", async () => {
+  it("shows a clicked group in place, then pushes its path, titles and heads the page, introduces it and marks its link", async () => {
     click("lists");
     expect(location.pathname, "nothing pushed before the group shows").toBe("/");
     pending[0]?.resolve();
     await settle();
     expect(shownPanels()).toEqual(["lists"]);
     expect(location.pathname).toBe("/examples/lists/");
-    expect(document.title).toBe("Lists: Maplace.js examples");
+    const lists = EXAMPLE_GROUPS.find(({ id }) => id === "lists");
+    expect(document.title).toBe(lists && groupTitle(lists));
+    expect(document.querySelector("[data-hero-lead]")?.textContent).toBe(lists?.headingLead);
+    expect(document.querySelector("[data-hero-intro]")?.textContent).toBe(lists?.intro);
     expect(current()).toBe("lists");
     expect(started).toEqual(["lists"]);
   });

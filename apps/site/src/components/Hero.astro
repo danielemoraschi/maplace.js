@@ -1,14 +1,21 @@
 ---
 import quickStartMapLibre from "../../../../packages/maplace/examples/quick-start/maplibre/page.html?raw";
 import quickStart from "../../../../packages/maplace/examples/quick-start/page.html?raw";
+import { type ExampleGroup, HEADING_TAIL } from "../examples/example-sections.ts";
 import { REPOSITORY_URL } from "../site/repo-docs.ts";
 import { starButtonShadow } from "../site/star-button-markup.ts";
 import SourceCode from "./SourceCode.astro";
+
+interface Props {
+  group: ExampleGroup;
+}
+
+const { group } = Astro.props;
 ---
 
-<div class="relative pt-10 pb-4">
+<div class="flow-root pt-10 pb-4">
   <svg
-    class="absolute top-10 right-0 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[70rem]:hidden"
+    class="float-right ml-4 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[70rem]:hidden"
     viewBox="0 0 320 180"
     aria-hidden="true"
   >
@@ -16,15 +23,11 @@ import SourceCode from "./SourceCode.astro";
     <path class="stroke-ink" d="M90 180 V126 L134 82 H320" />
     <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
   </svg>
-  <h1 class="relative m-0 text-hero leading-[0.95]">
-    A JavaScript library<br />for Google Maps<br />and MapLibre.
+  <h1 class="m-0 text-hero leading-[0.95]">
+    <span data-hero-lead>{group.headingLead}</span>{HEADING_TAIL.map((line) => <><br />{line}</>)}.
   </h1>
-  <p class="relative mt-4 mb-4 text-lg">
-    <strong>Maplace.js</strong> puts your locations on Google Maps or MapLibre: markers, shapes and, on Google,
-    routes, and the list or menu that goes with them, in sync with the map. One script tag, with
-    a Maps key on Google and none on MapLibre; npm and React too.
-  </p>
-  <p class="relative mt-0 mb-6 h-7">
+  <p class="mt-4 mb-4 text-lg" data-hero-intro>{group.intro}</p>
+  <p class="mt-0 mb-6 h-7">
     <span data-star-button
       ><template shadowrootmode="open" set:html={starButtonShadow(REPOSITORY_URL)} /><a
         href={REPOSITORY_URL}>GitHub</a

@@ -17,23 +17,30 @@ export interface ExampleGroup {
   /** Its page's last path segment, `/examples/<id>/`, but for the first group's, the home page. */
   readonly id: string;
   readonly label: string;
+  /** Its page's H1's first line, before `HEADING_TAIL`: what its examples show. */
+  readonly headingLead: string;
+  /** The hero's paragraph under the H1 on its page: what its examples show, in a sentence. */
+  readonly intro: string;
   readonly summary: string;
   /** Its page's description, for search and sharing: 80 to 160 characters, unlike the summary it shows. */
   readonly description: string;
   readonly sections: readonly ExampleSection[];
 }
 
-/** The home page's title, the first group's page. */
-const HOME_TITLE = "Maplace.js: JavaScript library for Google Maps and MapLibre";
+/** The lines that follow a group's `headingLead` in its page's H1. */
+export const HEADING_TAIL = ["on Google Maps", "and MapLibre"] as const;
 
 /** The examples in their groups, each group a page; the sections numbered in this order (W38). */
 export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "basics",
     label: "Basics",
+    headingLead: "A JavaScript library for markers",
+    intro:
+      "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and, on Google, routes, and the list or menu that goes with them, in sync with the map. One script tag, with a Maps key on Google and none on MapLibre; npm and React too.",
     summary: "Places on a map: one pin, your own markers, popups, and a click to add one.",
     description:
-      "A list of locations becomes a map in a few lines, with your own markers, popups and a click to add one, on Google Maps or MapLibre.",
+      "A JavaScript library for Google Maps and MapLibre: a list of locations becomes a map with markers, popups and a click to add one, in a few lines.",
     sections: [
       { name: "simple", title: "Simple", summary: "One place on a map." },
       {
@@ -57,10 +64,13 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "lists",
     label: "Lists",
+    headingLead: "A list beside the map,",
+    intro:
+      "Your locations as a list kept in sync with the map: a select menu, tag filters, a search box, nearest first, only what's in view, your own markup, or tabs with a details panel.",
     summary:
       "The list beside the map, your way: a menu, tags, a search box, nearest first, what's in view, your own markup, or tabs.",
     description:
-      "Lists beside a map with Maplace.js: a native menu, tags, a search box, nearest first, what's in view, your own markup, or tabs.",
+      "A list beside the map on Google Maps or MapLibre, in sync with it: a select menu, tag filters, a search box, nearest first, what's in view, or tabs.",
     sections: [
       {
         name: "menu",
@@ -103,10 +113,13 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "shapes",
     label: "Shapes",
+    headingLead: "Circles, lines and areas",
+    intro:
+      "Circles, polylines, great-circle flights and polygons in your own colours, with popups and markers on the same map. Circles, polylines and polygons can be made editable, each edit written back to your data.",
     summary:
       "Circles, lines (straight, bowed or on great circles) and areas in their own colours, some to edit, and all of them with markers on one map.",
     description:
-      "Shapes on a map with Maplace.js: circles, lines (straight, bowed or on great circles) and areas, some to edit and save, all with markers on one map.",
+      "Circles, polylines, great-circle flights and polygons on Google Maps or MapLibre, in your own colours, with popups and markers; editable as an option.",
     sections: [
       {
         name: "circles",
@@ -139,10 +152,13 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "data-routes",
     label: "Data & routes",
+    headingLead: "Live data, clusters and routes",
+    intro:
+      "Locations fetched as JSON and swapped in live, markers grouped into clusters that show a count, a map that loads only when the visitor presses a button, a link that opens the map on a place, and on Google a driving route through your stops.",
     summary:
       "Data fetched and swapped in live, thousands of points clustered, a drive through your places, a map loaded on a press, a link to a place.",
     description:
-      "Data swapped in live with Maplace.js, thousands of points clustered, a drive, a map loaded on a press, and a link to a place.",
+      "Live data from JSON, marker clustering, a map loaded on demand, a link to a place and, on Google, a driving route: on Google Maps or MapLibre.",
     sections: [
       {
         name: "live-data",
@@ -176,9 +192,12 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   {
     id: "styling",
     label: "Styling",
+    headingLead: "Your own look",
+    intro:
+      "The provider's map styles, markers of your own HTML and CSS, one brand palette for areas, cluster badges and the list, or Maplace.js's styles turned off for yours.",
     summary: "Your map's look: the provider's own styles, and Maplace.js's parts drawn your way.",
     description:
-      "Style a map with Maplace.js: the provider's own basemaps, your own markers and colours, or none of Maplace.js's styles.",
+      "Your own look on Google Maps or MapLibre: map styles, custom HTML markers, brand colours, or Maplace.js's own styles turned off.",
     sections: [
       {
         name: "whats-on",
@@ -234,9 +253,14 @@ export function groupPath(group: ExampleGroup): string {
   return isHomeGroup(group) ? "/" : `/examples/${group.id}/`;
 }
 
-/** The title of `group`'s page: the home page's for the first group. */
+/** The H1 of `group`'s page, on one line. */
+export function groupHeading(group: ExampleGroup): string {
+  return [group.headingLead, ...HEADING_TAIL].join(" ");
+}
+
+/** The title of `group`'s page: its heading. */
 export function groupTitle(group: ExampleGroup): string {
-  return isHomeGroup(group) ? HOME_TITLE : `${group.label}: Maplace.js examples`;
+  return `${groupHeading(group)} · Maplace.js`;
 }
 
 /** The description of `group`'s page. */

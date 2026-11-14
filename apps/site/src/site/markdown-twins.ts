@@ -3,8 +3,8 @@ import {
   EXAMPLE_GROUPS,
   type ExampleGroup,
   type ExampleSection,
+  groupHeading,
   groupPath,
-  groupTitle,
 } from "../examples/example-sections.ts";
 import {
   codeTabsOf,
@@ -80,7 +80,7 @@ function requiredBody(entries: readonly StoredMarkdown[], id: string, collection
 
 function exampleGroupMarkdown(group: ExampleGroup, guides: readonly StoredMarkdown[]): string {
   const sections = group.sections.map((section) => sectionMarkdown(section, guides));
-  return markdownPage(groupTitle(group), group.summary, sections.join("\n\n"));
+  return markdownPage(groupHeading(group), group.intro, [group.summary, ...sections].join("\n\n"));
 }
 
 /** A section: its summary, why it runs on Google only if it does, its guide if it has one, its code. */

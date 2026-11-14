@@ -85,17 +85,23 @@ describe("EXAMPLE_GROUPS", () => {
   it("describes each group's page by its own description, not the summary it shows", () => {
     const descriptions = EXAMPLE_GROUPS.map(groupDescription);
     expect(descriptions).toEqual(EXAMPLE_GROUPS.map(({ description }) => description));
-    expect(descriptions[0]).toMatch(/^A list of locations becomes a map/);
+    expect(descriptions[0]).toMatch(/^A JavaScript library for Google Maps and MapLibre/);
   });
 
-  it("titles the first group's page as the home page, the others by their label", () => {
+  it("titles each group's page by its heading", () => {
     expect(EXAMPLE_GROUPS.map(groupTitle)).toEqual([
-      "Maplace.js: JavaScript library for Google Maps and MapLibre",
-      "Lists: Maplace.js examples",
-      "Shapes: Maplace.js examples",
-      "Data & routes: Maplace.js examples",
-      "Styling: Maplace.js examples",
+      "A JavaScript library for markers on Google Maps and MapLibre · Maplace.js",
+      "A list beside the map, on Google Maps and MapLibre · Maplace.js",
+      "Circles, lines and areas on Google Maps and MapLibre · Maplace.js",
+      "Live data, clusters and routes on Google Maps and MapLibre · Maplace.js",
+      "Your own look on Google Maps and MapLibre · Maplace.js",
     ]);
+  });
+
+  it("introduces each group's page by its own paragraph, the home page's naming Maplace.js", () => {
+    const intros = EXAMPLE_GROUPS.map(({ intro }) => intro);
+    expect(new Set(intros).size).toBe(EXAMPLE_GROUPS.length);
+    expect(HOME_GROUP.intro).toMatch(/^Maplace\.js /);
   });
 
   it("finds each group at its path, and none at a path no group has", () => {

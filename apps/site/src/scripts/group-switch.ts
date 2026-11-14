@@ -27,7 +27,8 @@ type NoPanel = "dropped" | "failed";
  * restoring each entry's scroll. Only the latest request shows: one overtaken shows, pushes and
  * leaves nothing. Focus stays on the link clicked, the group announced in the bar; focus in a
  * panel hidden goes to the group's link. A switch that fails is logged and the page goes to the
- * group's page (a click) or reloads (back or forward).
+ * group's page (a click) or reloads (back or forward). The page's title and the hero's heading
+ * and paragraph become the group's (W62), as its own page has them.
  */
 export function startGroupSwitch({
   document,
@@ -41,6 +42,8 @@ export function startGroupSwitch({
   if (view === null || bar === null || first === null) return;
   const links = [...bar.querySelectorAll<HTMLAnchorElement>("nav a")];
   const announcer = bar.querySelector<HTMLElement>("[data-group-announce]");
+  const heroLead = document.querySelector<HTMLElement>("[data-hero-lead]");
+  const heroIntro = document.querySelector<HTMLElement>("[data-hero-intro]");
   const panels = new Map([[first.dataset.groupPanel ?? "", Promise.resolve(first)]]);
   /** The panels on the page, the page's own first, in the order added. */
   const added = [first];
@@ -100,6 +103,8 @@ export function startGroupSwitch({
       else link.removeAttribute("aria-current");
     }
     document.title = groupTitle(group);
+    if (heroLead !== null) heroLead.textContent = group.headingLead;
+    if (heroIntro !== null) heroIntro.textContent = group.intro;
     if (announcer !== null) announcer.textContent = `${group.label} examples`;
     // Not scrolled to: back and forward leave the scroll to the browser.
     if (focusHidden) current?.focus({ preventScroll: true });

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { fencedBlocks } from "../../../../scripts/docs/markdown.ts";
-import { EXAMPLE_GROUPS, EXAMPLE_SECTIONS, groupPath } from "../examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_SECTIONS,
+  groupHeading,
+  groupPath,
+} from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
@@ -51,6 +56,14 @@ describe("markdownTwins", () => {
     expect(twinAt(CHANGELOG_PAGE.route).markdown).toBe(
       `# ${CHANGELOG_PAGE.label}\n\n${CHANGELOG_PAGE.description}\n\n## Unreleased\n`,
     );
+  });
+
+  it("heads and introduces a group's twin as its page, then its summary", () => {
+    for (const group of EXAMPLE_GROUPS) {
+      const { markdown } = twinAt(groupPath(group));
+      const opening = `# ${groupHeading(group)}\n\n${group.intro}\n\n${group.summary}\n`;
+      expect(markdown.startsWith(opening), group.id).toBe(true);
+    }
   });
 
   it("writes a group's sections in order, each with its summary", () => {

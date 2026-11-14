@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS } from "../src/examples/example-sections.ts";
+import { EXAMPLE_GROUPS, type ExampleGroup, groupTitle } from "../src/examples/example-sections.ts";
 import { mapLibreDrawn } from "./drawn-on-maplibre.ts";
 import { chooseProvider, chooseVersion, groupLink, sectionPage } from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
@@ -27,6 +27,16 @@ const shownGroups = (page: Page) =>
         .map((panel) => panel.getAttribute("data-group-panel")),
     );
 
+/** The page's H1s: one, the hero's. */
+const pageHeading = (page: Page) => page.getByRole("heading", { level: 1 });
+
+/** The group with `id`, which the test needs there. */
+function groupWithId(id: string): ExampleGroup {
+  const group = EXAMPLE_GROUPS.find((each) => each.id === id);
+  if (group === undefined) throw new Error(`no examples' group ${id}`);
+  return group;
+}
+
 /** Clicks `label`'s link and waits for its group to show. */
 async function switchTo(page: Page, label: string, id: string): Promise<void> {
   await groupLink(page, label).click();
@@ -34,16 +44,17 @@ async function switchTo(page: Page, label: string, id: string): Promise<void> {
 }
 
 describe("switching the examples' group in place (W38)", () => {
-  it("keeps the document, the header and hero in place, the URL, title and link the group's", async () => {
+  it("keeps the document, the header and hero in place, the URL, title, heading and link the group's", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     await markDocument(page);
     await switchTo(page, "Lists", "lists");
     expect(await sameDocument(page)).toBe(true);
     expect(new URL(page.url()).pathname).toBe("/examples/lists/");
-    expect(await page.title()).toBe("Lists: Maplace.js examples");
+    expect(await page.title()).toBe(groupTitle(groupWithId("lists")));
     expect(await groupLink(page, "Lists").getAttribute("aria-current")).toBe("page");
     expect(await page.locator("header").isVisible()).toBe(true);
-    expect(await page.getByRole("heading", { level: 1 }).count()).toBe(1);
+    expect(await pageHeading(page).count()).toBe(1);
+    expect(await pageHeading(page).textContent()).toContain(groupWithId("lists").headingLead);
     expect(await page.locator("[data-group-announce]").textContent()).toBe("Lists examples");
     expect(await groupLink(page, "Lists").evaluate((link) => link === document.activeElement)).toBe(
       true,
@@ -53,9 +64,10 @@ describe("switching the examples' group in place (W38)", () => {
 
   it("opens a group's page loaded directly with the hero and its group", async () => {
     const { page, context } = await opened(site, "/examples/shapes/", DESKTOP);
-    expect(await page.getByRole("heading", { level: 1 }).count()).toBe(1);
+    expect(await pageHeading(page).count()).toBe(1);
+    expect(await pageHeading(page).textContent()).toContain(groupWithId("shapes").headingLead);
     expect(await shownGroups(page)).toEqual(["shapes"]);
-    expect(await page.title()).toBe("Shapes: Maplace.js examples");
+    expect(await page.title()).toBe(groupTitle(groupWithId("shapes")));
     await context.close();
   }, 30_000);
 

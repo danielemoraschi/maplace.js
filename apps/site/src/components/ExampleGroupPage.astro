@@ -22,7 +22,7 @@ const { group } = Astro.props;
 
 {/* Every group's page is the home page with that group's examples: its panel is what another group's page fetches to switch to it in place (`group-switch.ts`). */}
 <Base title={groupTitle(group)} description={groupDescription(group)}>
-  <Hero />
+  <Hero group={group} />
   <InstallBox />
   <ExampleGroupBar current={group} />
   {/* After the bar, not on it: the page's scroll padding already counts it, so the landing holds it under the header. */}

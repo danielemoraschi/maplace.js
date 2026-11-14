@@ -7,6 +7,7 @@ import type { Provider } from "../src/examples/example-providers.ts";
 import {
   EXAMPLE_GROUPS,
   EXAMPLE_SECTIONS,
+  groupHeading,
   groupPath,
   HOME_GROUP,
 } from "../src/examples/example-sections.ts";
@@ -14,7 +15,7 @@ import { exampleFile, exampleProviders } from "../src/examples/example-sources.t
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 import { chooseProvider, groupLink } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { duplicateIds, grantConsent } from "./visitor.ts";
+import { boxOf, duplicateIds, grantConsent, type VisitorOptions } from "./visitor.ts";
 
 /** One page map per example (D23) on each of its providers, across the examples' pages. */
 const PAGE_MAP_COUNT = EXAMPLE_SECTIONS.flatMap(({ name }) => exampleProviders(name)).length;
@@ -33,8 +34,11 @@ const EXAMPLES = "../../../packages/maplace/examples/";
 const site = siteBuiltBeforeTests();
 
 /** What `look` finds on each examples' page, in the groups' order, one page after another. */
-async function onEveryGroupPage<Found>(look: (page: Page) => Promise<Found>): Promise<Found[]> {
-  const { page, context } = await site.visitor();
+async function onEveryGroupPage<Found>(
+  look: (page: Page) => Promise<Found>,
+  visiting: VisitorOptions = {},
+): Promise<Found[]> {
+  const { page, context } = await site.visitor(visiting);
   const found: Found[] = [];
   for (const group of EXAMPLE_GROUPS) {
     await page.goto(new URL(groupPath(group), site.url).href, { waitUntil: "domcontentloaded" });
@@ -199,4 +203,34 @@ describe("the examples' pages, shown (W38)", () => {
     expect(offsite().filter((url) => !goesToMapProvider(url))).toEqual([]);
     await context.close();
   }, 120_000);
+});
+
+describe("the examples' pages' hero (W62)", () => {
+  /**
+   * The H1's words, the paragraph under it, and how far the H1 stays left of the hero's drawing
+   * from 70rem, where the drawing shows; once fonts are in.
+   */
+  const heroFit = async (page: Page) => {
+    await page.evaluate(() => document.fonts.ready);
+    const heading = page.locator("h1");
+    // biome-ignore lint/performance/useDomNodeTextContent: Playwright's, and the text as rendered: the H1's <br>s are its spaces.
+    const words = (await heading.innerText()).replace(/\s+/g, " ");
+    const intro = await page.locator("[data-hero-intro]").textContent();
+    const drawing = await boxOf(page.locator("svg:has(+ h1)"));
+    const textRight = await heading.evaluate((h1) => {
+      const range = document.createRange();
+      range.selectNodeContents(h1);
+      return Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+    });
+    return { words, intro, clearance: drawing.x - textRight };
+  };
+
+  it("heads and introduces each group's page as its own, the lead clear of the drawing beside it", async () => {
+    const fits = await onEveryGroupPage(heroFit, { viewport: { width: 1120, height: 800 } });
+    for (const [index, group] of EXAMPLE_GROUPS.entries()) {
+      expect(fits[index]?.words, group.id).toBe(`${groupHeading(group)}.`);
+      expect(fits[index]?.intro, group.id).toBe(group.intro);
+      expect(fits[index]?.clearance, group.id).toBeGreaterThan(0);
+    }
+  }, 60_000);
 });

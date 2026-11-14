@@ -12,6 +12,7 @@ import {
   markdownAddress,
   markdownAddressAt,
 } from "../src/site/markdown-routes.ts";
+import { REPO_DOCS } from "../src/site/repo-docs.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { groupLink } from "./home-sections.ts";
 import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
@@ -72,7 +73,8 @@ describe("a page's Markdown", () => {
 
   it("has Getting started's pinned scripts", async () => {
     const markdown = await (await served("/getting-started/index.md")).text();
-    expect(markdown).toContain("# Getting started");
+    const gettingStarted = REPO_DOCS.find(({ id }) => id === "getting-started");
+    expect(markdown.startsWith(`# ${gettingStarted?.title}\n`)).toBe(true);
     expect(markdown).toContain(`/${PACKAGE_NAME}@${packageManifest().version}`);
   });
 

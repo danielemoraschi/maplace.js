@@ -24,9 +24,9 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "getting-started",
     file: "README.md",
-    title: "Getting started",
+    title: "Embed Google Maps or MapLibre with markers on a website",
     description:
-      "Install Maplace.js and put a map with a synced list on a page, with one script or a bundler.",
+      "Put a Google Map or a MapLibre map with markers and a synced list on a website: one script tag, or npm and React.",
     label: "Getting started",
     pinsScripts: true,
   },
@@ -113,7 +113,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "migrating",
     file: "MIGRATION.md",
-    title: "Migrating from 0.2",
+    title: "Migrating from the 0.2 jQuery plugin",
     description:
       "Every 0.2 option, location field, method and callback, and what 1.0 does with it.",
     label: "Migrating",
