@@ -42,21 +42,21 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     description:
       "A JavaScript library for Google Maps and MapLibre: a list of locations becomes a map with markers, popups and a click to add one, in a few lines.",
     sections: [
-      { name: "simple", title: "Simple", summary: "One place on a map." },
+      { name: "simple", title: "One marker", summary: "One place on a map." },
       {
         name: "markers",
-        title: "Markers",
+        title: "Custom marker icons",
         summary: "Image icons, an icon of your own markup, and a place with its own zoom.",
       },
       {
         name: "popups",
-        title: "Popups",
+        title: "Place cards in popups",
         summary:
           "A place card in each popup: photo, rating, hours, and buttons to open it in Maps or get there.",
       },
       {
         name: "click-to-add",
-        title: "Click to add",
+        title: "Click to add and drag markers",
         summary: "A click on the map adds a pin there, and every pin drags to a new place.",
       },
     ],
@@ -74,17 +74,17 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     sections: [
       {
         name: "menu",
-        title: "Menu",
+        title: "Select menu",
         summary: "A native select on the map, grouped by region, with an entry for all.",
       },
       {
         name: "tags",
-        title: "Tags",
+        title: "Filter by tags",
         summary: "Places with several tags: tick some to see those with all of them.",
       },
       {
         name: "search",
-        title: "Search",
+        title: "Search box",
         summary: "A box above the list that narrows the list and the map as you type.",
       },
       {
@@ -126,7 +126,11 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         title: "Circles",
         summary: "Areas in their own colours, with popups; resize the third and see its radius.",
       },
-      { name: "polyline", title: "Polyline", summary: "A trail to edit, with places along it." },
+      {
+        name: "polyline",
+        title: "Editable polyline",
+        summary: "A trail to edit, with places along it.",
+      },
       {
         name: "flights",
         title: "Flights",
@@ -139,12 +143,12 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       },
       {
         name: "polygon",
-        title: "Polygon",
+        title: "Editable polygon",
         summary: "An area to edit: drag a corner, and the edit is written back.",
       },
       {
         name: "mixed",
-        title: "Mixed",
+        title: "Markers and shapes together",
         summary: "A marker, a circle, an area and a line on one map and in one list.",
       },
     ],
@@ -162,18 +166,18 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     sections: [
       {
         name: "live-data",
-        title: "Live data",
+        title: "Live data from JSON",
         summary:
           "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
       },
       {
         name: "big",
-        title: "Cluster",
+        title: "Marker clustering",
         summary: "4,000 points, those near each other drawn as one badge counting them.",
       },
       {
         name: "route",
-        title: "Route",
+        title: "Driving route",
         summary: "A drive through your own places, passing through one, with directions by leg.",
         googleOnlyBecause: "MapLibre has no routing.",
       },
@@ -201,20 +205,20 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     sections: [
       {
         name: "whats-on",
-        title: "Your own look",
+        title: "Restyled venue map",
         summary:
           "A dark frame, pins coloured by category, a legend that filters them and a card of the venues, or of the one picked.",
         drawsOwnFrame: true,
       },
       {
         name: "styled",
-        title: "Basemaps",
+        title: "Map styles",
         summary:
           "The provider's own looks: a choice of styles, and on Google the map-type control.",
       },
       {
         name: "css-markers",
-        title: "Your markers",
+        title: "HTML markers with CSS states",
         summary: "Pins of your own markup, their hovered and selected looks in your CSS.",
       },
       {

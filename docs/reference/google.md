@@ -1,4 +1,4 @@
-# Google adapter
+# Google Maps adapter: map IDs, routes and clustering
 
 `createGoogleAdapter(options)` from `@maplacejs/maplace/google` draws a store on Google Maps; `@maplacejs/maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`@maplacejs/maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store. On MapLibre: [MapLibre adapter](maplibre.md).
 

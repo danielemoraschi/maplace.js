@@ -1,4 +1,4 @@
-# Popups
+# Place cards in popups
 
 Picking a place opens a card: its title as the popup's heading, then its photo, category, opening hours and rating, and two buttons, one showing the place in a maps site, one getting directions there.
 

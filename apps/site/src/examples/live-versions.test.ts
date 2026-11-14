@@ -68,7 +68,7 @@ describe("liveVersions", () => {
     for (const { markup } of onMapLibre) expect(markup).not.toMatch(/site-key|site-map/);
   });
 
-  it("writes in the stylesheet each of Your own look's versions links", () => {
+  it("writes in the stylesheet each of the whats-on example's versions links", () => {
     const written = `<style>\n${exampleFile("styles", "whats-on.css")}</style>`;
     for (const { kind, provider, markup } of liveVersions("whats-on", { apiKey: "k" })) {
       expect(markup, `${provider} ${kind}`).toContain(written);

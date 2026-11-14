@@ -1,4 +1,4 @@
-# Polyline
+# Editable polyline
 
 A trail you can edit, Cinque Terre's coastal path, with the villages along it as markers of their own and in the list beside the map.
 

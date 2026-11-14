@@ -1,4 +1,4 @@
-# Route
+# Driving route
 
 A drive through your own places, passing through one without stopping, with its directions leg by leg below the map. It runs on Google only, as MapLibre doesn't route.
 

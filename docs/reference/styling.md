@@ -1,4 +1,4 @@
-# Styling
+# Styling markers, popups and the list with CSS
 
 Maplace.js comes with a few default styles. They make a map usable as soon as it is on a page, and the page can change any of them or turn them all off. What Maplace.js draws carries the classes below, for the page's own styles.
 

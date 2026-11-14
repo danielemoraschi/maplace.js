@@ -1,4 +1,4 @@
-# React
+# React components for Google Maps and MapLibre
 
 `@maplacejs/maplace/react` is the store as React components: a provider that makes one store for its children, a map, a list, controls on the map and a hook. It needs `react` and `react-dom` 19. Nothing touches the DOM on import or on a server render.
 

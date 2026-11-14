@@ -1,4 +1,4 @@
-# Menu
+# Select menu
 
 A native `<select>` on the map, top right, its places under their regions and a first entry that shows them all.
 

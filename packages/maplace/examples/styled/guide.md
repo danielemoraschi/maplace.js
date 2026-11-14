@@ -1,4 +1,4 @@
-# Basemaps
+# Map styles
 
 The provider's own looks: on Google a light or dark map, or the visitor's system setting, with Google's map options; on MapLibre a choice of OpenFreeMap's styles, or any style's URL.
 

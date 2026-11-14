@@ -1,4 +1,4 @@
-# Polygon
+# Editable polygon
 
 A three-cornered park you can edit: each edit is written back to the store and announced, for your page to save.
 

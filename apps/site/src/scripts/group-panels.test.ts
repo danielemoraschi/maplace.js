@@ -16,7 +16,7 @@ function answering(body: string, status = 200): void {
 
 const LISTS_PAGE = `<!doctype html><html><head><title>Lists</title></head><body>
   <header>Maplace.js</header>
-  <div data-group-panel="lists"><section id="menu"><h2>04 Menu</h2></section></div>
+  <div data-group-panel="lists"><section id="menu"><h2>05 Select menu</h2></section></div>
 </body></html>`;
 
 afterEach(() => {
@@ -29,7 +29,7 @@ describe("fetchGroupPanel", () => {
     const panel = await fetchGroupPanel(LISTS, document);
     expect(panel.ownerDocument).toBe(document);
     expect(panel.hidden).toBe(true);
-    expect(panel.querySelector("h2")?.textContent).toBe("04 Menu");
+    expect(panel.querySelector("h2")?.textContent).toBe("05 Select menu");
     expect(fetch).toHaveBeenCalledWith("/examples/lists/");
   });
 

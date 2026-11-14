@@ -1,4 +1,4 @@
-# Search
+# Search box
 
 A box above the list narrows the list and the map when your typing pauses: by a place's name, its group or its `searchText`, ignoring case and accents. A line under the box says how many are found, or that none is. The map doesn't move: choose an entry and it pans there.
 

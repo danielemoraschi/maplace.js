@@ -3,6 +3,8 @@ import { fencedBlocks } from "../../../../scripts/docs/markdown.ts";
 import {
   EXAMPLE_GROUPS,
   EXAMPLE_SECTIONS,
+  type ExampleSection,
+  findGroupOfSection,
   groupHeading,
   groupPath,
 } from "../examples/example-sections.ts";
@@ -30,6 +32,20 @@ function twinAt(route: string): MarkdownTwin {
   const twin = TWINS.find(({ address }) => address === markdownAddress(route));
   if (twin === undefined) throw new Error(`no twin of ${route}`);
   return twin;
+}
+
+/** The example section named `name`. */
+function sectionNamed(name: string): ExampleSection {
+  const section = EXAMPLE_SECTIONS.find((each) => each.name === name);
+  if (section === undefined) throw new Error(`no section ${name}`);
+  return section;
+}
+
+/** The twin of the group page holding the section named `name`, under that section's heading. */
+function twinSectionOf(name: string): string {
+  const group = findGroupOfSection(name);
+  if (group === undefined) throw new Error(`no group holds ${name}`);
+  return sectionOf(twinAt(groupPath(group)).markdown, sectionNamed(name).title);
 }
 
 /** `markdown` under the heading `## title`, up to the next section's. */
@@ -79,9 +95,12 @@ describe("markdownTwins", () => {
 
   it("puts a section's guide under it, and leaves it out for an example without one", () => {
     const { markdown } = twinAt("/examples/lists/");
-    expect(sectionOf(markdown, "Your own list")).toContain("The custom list's guide.");
-    expect(sectionOf(markdown, "Menu")).not.toContain("The custom list's guide.");
-    expect(sectionOf(markdown, "Menu")).toContain("### ");
+    expect(sectionOf(markdown, sectionNamed("custom-list").title)).toContain(
+      "The custom list's guide.",
+    );
+    const menu = sectionOf(markdown, sectionNamed("menu").title);
+    expect(menu).not.toContain("The custom list's guide.");
+    expect(menu).toContain("### ");
   });
 
   it("gives every file of every version on every provider back as written, in its fence", () => {
@@ -100,9 +119,7 @@ describe("markdownTwins", () => {
   });
 
   it("gives the stylesheet a section's versions link once, under its own heading, as written", () => {
-    const whatsOn = EXAMPLE_SECTIONS.find(({ name }) => name === "whats-on");
-    const group = EXAMPLE_GROUPS.find(({ sections }) => sections.includes(whatsOn as never));
-    const section = sectionOf(twinAt(groupPath(group as never)).markdown, whatsOn?.title as string);
+    const section = twinSectionOf("whats-on");
     const [stylesheet] = exampleStylesheets(codeTabsOf("whats-on").flatMap(({ codes }) => codes));
     const [, underHeading = ""] = section.split(`${STYLESHEETS_HEADING}\n\n`);
     expect(underHeading.startsWith("`packages/maplace/examples/styles/whats-on.css`")).toBe(true);
@@ -111,12 +128,10 @@ describe("markdownTwins", () => {
   });
 
   it("names route on Google only", () => {
-    const route = EXAMPLE_SECTIONS.find(({ name }) => name === "route");
-    const group = EXAMPLE_GROUPS.find(({ sections }) => sections.includes(route as never));
-    const section = sectionOf(twinAt(groupPath(group as never)).markdown, route?.title as string);
+    const section = twinSectionOf("route");
     expect(section).toContain("on Google");
     expect(section).not.toContain("on MapLibre");
-    expect(section).toContain(route?.googleOnlyBecause);
+    expect(section).toContain(sectionNamed("route").googleOnlyBecause);
   });
 
   it("refuses a doc with no Markdown, naming it", () => {

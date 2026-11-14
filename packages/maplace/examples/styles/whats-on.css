@@ -1,4 +1,5 @@
-/* Your own look, which every version links: page, script, vanilla and React, on either map. */
+/* The whats-on example's look, which every version links: page, script, vanilla and React, on
+   either map. */
 /* The frame: a dark page of its own around a rounded map and, beside it, a card. */
 .whats-on {
   display: flex;

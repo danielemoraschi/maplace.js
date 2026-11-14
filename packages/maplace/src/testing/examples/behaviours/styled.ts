@@ -33,7 +33,10 @@ const reopensOnDark: ExampleBehaviour = async (run) => {
   expect(adapter.destroyed).toBe(true);
 };
 
-/** Basemaps offering `options`, the same in every version on a provider, then reopening on Dark. */
+/**
+ * The styled example offering `options`, the same in every version on a provider, then reopening
+ * on Dark.
+ */
 const offering =
   (options: readonly string[]): ExampleBehaviour =>
   async (run) => {

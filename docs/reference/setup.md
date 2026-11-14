@@ -1,4 +1,4 @@
-# Setup
+# Setup: a Google Maps key and map ID, or a MapLibre style
 
 A Maplace.js map draws on Google Maps or on MapLibre. On Google it needs Maps JS on the page and an API key, a map ID being optional. The element (its CDN script, or `@maplacejs/maplace/element/google` from npm) adds Maps JS itself; with the adapter from npm, the page loads it. On MapLibre it needs no key and no map ID, only a [style URL](#style-url), OpenFreeMap's by default: the MapLibre CDN script brings everything else, and from npm the page installs maplibre-gl.
 

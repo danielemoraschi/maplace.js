@@ -1,4 +1,4 @@
-# Cluster
+# Marker clustering
 
 4,000 points fetched by the page: those near each other are drawn as one badge counting them, so the map stays fast and readable.
 
