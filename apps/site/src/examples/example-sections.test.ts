@@ -104,6 +104,18 @@ describe("EXAMPLE_GROUPS", () => {
     expect(HOME_GROUP.intro).toMatch(/^Maplace\.js /);
   });
 
+  it("titles each section once", () => {
+    const titles = EXAMPLE_SECTIONS.map(({ title }) => title);
+    expect(new Set(titles).size).toBe(titles.length);
+  });
+
+  it("titles no section as its group's heading lead", () => {
+    for (const group of EXAMPLE_GROUPS) {
+      for (const section of group.sections)
+        expect(section.title, section.name).not.toBe(group.headingLead);
+    }
+  });
+
   it("finds each group at its path, and none at a path no group has", () => {
     for (const group of EXAMPLE_GROUPS) expect(findGroupAtPath(groupPath(group))).toBe(group);
     for (const path of ["/examples/lists", "/index.html", "/store/"])

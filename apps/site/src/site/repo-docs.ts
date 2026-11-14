@@ -33,7 +33,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "setup",
     file: "docs/reference/setup.md",
-    title: "Setup",
+    title: "Setup: a Google Maps key and map ID, or a MapLibre style",
     description:
       "What a map needs: on Google a key, Maps JS and, for production, a map ID; on MapLibre maplibre-gl and a style. With the element, a script of your own, or npm.",
     label: "Setup",
@@ -41,7 +41,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "element",
     file: "docs/reference/element.md",
-    title: "The element",
+    title: "The element: a web component for Google Maps and MapLibre",
     description:
       "The maplace-map and maplace-location elements: attributes, properties, events, providers and list views.",
     label: "Element",
@@ -49,7 +49,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "locations",
     file: "docs/reference/locations.md",
-    title: "Locations",
+    title: "Locations: markers, circles, polylines and polygons",
     description:
       "Every location field, by type: markers, circles, polylines and polygons, with what each one draws and takes.",
     label: "Locations",
@@ -65,7 +65,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "google",
     file: "docs/reference/google.md",
-    title: "Google adapter",
+    title: "Google Maps adapter: map IDs, routes and clustering",
     description:
       "The Google Maps adapter: options, your own map, loading Maps JS, map IDs, routes and clustering.",
     label: "Google",
@@ -73,7 +73,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "maplibre",
     file: "docs/reference/maplibre.md",
-    title: "MapLibre adapter",
+    title: "MapLibre adapter: styles, tiles and clustering",
     description:
       "The MapLibre adapter: options, your own map, styles and tiles, loading maplibre-gl, zoom, clustering, and what differs from Google.",
     label: "MapLibre",
@@ -81,7 +81,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "react",
     file: "docs/reference/react.md",
-    title: "React",
+    title: "React components for Google Maps and MapLibre",
     description:
       "The React binding of Maplace.js: provider, map, list, map controls and the hook that reads the store.",
     label: "React",
@@ -89,7 +89,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "styling",
     file: "docs/reference/styling.md",
-    title: "Styling",
+    title: "Styling markers, popups and the list with CSS",
     description:
       "Maplace.js's default styles, turning them off, and the classes to style its markup by.",
     label: "Styling",

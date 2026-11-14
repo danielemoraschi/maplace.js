@@ -1,4 +1,4 @@
-# MapLibre adapter
+# MapLibre adapter: styles, tiles and clustering
 
 `createMapLibreAdapter(options)` from `@maplacejs/maplace/maplibre` draws a store on MapLibre GL JS; `@maplacejs/maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`@maplacejs/maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `bright` style unless you give another, so it needs no key and no map ID.
 

@@ -1,4 +1,4 @@
-# Mixed
+# Markers and shapes together
 
 A marker, a circle, a polygon and a polyline on one map and in one list: each location says what it is with its own `type`, and everything else about them works alike.
 

@@ -1,4 +1,4 @@
-# Click to add
+# Click to add and drag markers
 
 A click on the map adds a pin where it landed, and every pin here can be dragged to a new place.
 

@@ -1,4 +1,4 @@
-# The element
+# The element: a web component for Google Maps and MapLibre
 
 `<maplace-map>` is a map with an optional list, and `<maplace-location>` one location inside it. They are the whole API of a page with no build step: one script from the CDN defines both, with the Google provider, or, the MapLibre script, with MapLibre's.
 

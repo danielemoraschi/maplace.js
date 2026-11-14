@@ -1,4 +1,4 @@
-# Your markers
+# HTML markers with CSS states
 
 Each pin is a node of yours, styled by the page's CSS: Maplace.js marks it `data-hovered` while the reader points at it and `data-selected` once they pick it, so a rule on each attribute gives that state its look.
 

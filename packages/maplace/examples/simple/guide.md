@@ -1,4 +1,4 @@
-# Simple
+# One marker
 
 The shortest map: one place, its pin on the map, and the map centred on it.
 
