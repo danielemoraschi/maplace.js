@@ -16,9 +16,10 @@ export const LIFT_PROPERTY = "--maplace-bottom-left-lift";
 
 /**
  * The globe's toggle, a button in its panel: tinted from its text's colour while pressed and on
- * hover, as the list's switch is, its outline inside it. Bold through its panel, as every panel's
- * buttons take the panel's font (`font:inherit`). The tints are background images: MapLibre's
- * own stylesheet sets a hovered or pressed control button's background colour, and would win.
+ * hover where something can hover, as the list's switch is, its outline inside it. Bold through
+ * its panel, as every panel's buttons take the panel's font (`font:inherit`). The tints are
+ * background images: MapLibre's own stylesheet sets a hovered or pressed control button's
+ * background colour, and would win.
  */
 const GLOBE_BUTTON = `${PANEL_SELECTOR}>.${GLOBE_CLASS}`;
 
@@ -45,7 +46,7 @@ ${outsideUnstyled(`${PANEL_SELECTOR} ${MAPLACE_LISTS}`)}{box-sizing:border-box;m
 ${outsideUnstyled(`.maplibregl-ctrl-bottom-left:has(>${PANEL_SELECTOR})`)}{margin-bottom:var(${LIFT_PROPERTY})}
 ${outsideUnstyled(`${PANEL_SELECTOR}:has(>.${GLOBE_CLASS})`)}{font-weight:600}
 ${outsideUnstyled(GLOBE_BUTTON)}{display:block;padding:.375rem .625rem;border:0;border-radius:2px;background:none;color:inherit;cursor:pointer}
-${outsideUnstyled(`${GLOBE_BUTTON}:hover`)}{background-image:linear-gradient(${tint(8)},${tint(8)})}
-${outsideUnstyled(`${GLOBE_BUTTON}[aria-pressed=true]`)}{background-image:linear-gradient(${tint(16)},${tint(16)})}
+@media (hover:hover){${outsideUnstyled(`${GLOBE_BUTTON}:hover`)}{background:linear-gradient(${tint(8)},${tint(8)})}}
+${outsideUnstyled(`${GLOBE_BUTTON}[aria-pressed=true]`)}{background:linear-gradient(${tint(16)},${tint(16)})}
 ${outsideUnstyled(`${GLOBE_BUTTON}:focus-visible`)}{outline:2px solid;outline-offset:-2px}
 ${SHARED_CONTROL_STYLES}`;

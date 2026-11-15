@@ -77,12 +77,12 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-list-view` | The element of every list view Maplace.js builds, whichever kind: the class to style a list by (a view you define with `defineListView` is your own element) |
 | `maplace-list` | The block around a list's entries and its heading, area switch or search box; only on a list with one of those three |
 | `maplace-list-heading` | A list's visible heading (`heading`, `list-heading`) |
-| `maplace-area-switch` | The "All" and "This area" switch of a list with `scope`: two buttons, the one in use `[aria-pressed=true]` |
+| `maplace-area-switch` | The "All" and "This area" switch of a list with `scope`: two buttons, the one in use `[aria-pressed=true]`, its tint a background image (`background` replaces it) |
 | `maplace-show-all` | The switch's "All" button |
 | `maplace-area-only` | The switch's "This area" button |
 | `maplace-empty-area` | What a list with `scope` says when no location is in the map's view (`emptyAreaLabel`); empty otherwise |
 | `maplace-my-location` | The whole "My location" control: the box with its button, and the line under it that says when no position comes |
-| `maplace-my-location-box` | The box around the control's button; the button is `[aria-pressed=true]` while the visitor's position is in use |
+| `maplace-my-location-box` | The box around the control's button; the button is `[aria-pressed=true]` while the visitor's position is in use, its tint a background image (`background` replaces it) |
 | `maplace-my-location-status` | What the control says when it gets no position (`unavailableLabel`); empty otherwise |
 | `maplace-listbox` | The element holding a list's entries, without its heading, switch or search box |
 | `maplace-group` | A group's heading and entries in the list |

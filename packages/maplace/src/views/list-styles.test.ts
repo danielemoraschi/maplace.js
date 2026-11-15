@@ -1,6 +1,11 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { selectorsOf, unguardedSelectorsOf, weighsNothing } from "../testing/selectors";
+import {
+  hoverSelectorsOutsideHoverMedia,
+  selectorsOf,
+  unguardedSelectorsOf,
+  weighsNothing,
+} from "../testing/selectors";
 import { LIST_STYLES } from "./list-styles";
 
 describe("LIST_STYLES", () => {
@@ -12,5 +17,9 @@ describe("LIST_STYLES", () => {
 
   it("turns off inside the opt-out, every rule of it", () => {
     expect(unguardedSelectorsOf(LIST_STYLES)).toEqual([]);
+  });
+
+  it("tints under the pointer only where something can hover, so a tap leaves no tint", () => {
+    expect(hoverSelectorsOutsideHoverMedia(LIST_STYLES)).toEqual([]);
   });
 });

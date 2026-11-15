@@ -5,18 +5,41 @@ export function cssTextOf(sheet: CSSStyleSheet): string {
   return Array.from(sheet.cssRules, (rule) => rule.cssText).join("");
 }
 
-/** Each rule's selector text in `css`, as the DOM parses it, the rules in `@media` included. */
-export function selectorsOf(css: string): string[] {
+/**
+ * Each rule's selector text in `css`, as the DOM parses it, the rules in `@media` included but
+ * those in a group whose condition `skipsGroup` is true for.
+ */
+export function selectorsOf(
+  css: string,
+  skipsGroup: (condition: string) => boolean = () => false,
+): string[] {
   const sheet = new CSSStyleSheet();
   sheet.replaceSync(css);
-  return styleRulesIn(sheet.cssRules).map(({ selectorText }) => selectorText);
+  return styleRulesIn(sheet.cssRules, skipsGroup).map(({ selectorText }) => selectorText);
 }
 
-/** The style rules in `rules`, those in a group (`@media`) too: read by shape, as DOMs differ. */
-function styleRulesIn(rules: CSSRuleList): CSSStyleRule[] {
+/**
+ * The selectors in `css` with `:hover` outside `@media (hover:hover)`: a pointer that can't hover,
+ * a finger, would still leave their look on what it last tapped.
+ */
+export function hoverSelectorsOutsideHoverMedia(css: string): string[] {
+  const isHoverMedia = (condition: string) => withoutSpaces(condition) === "(hover:hover)";
+  return selectorsOf(css, isHoverMedia).filter((selector) => selector.includes(":hover"));
+}
+
+/**
+ * The style rules in `rules`, those in a group (`@media`) too but for a group whose condition
+ * `skipsGroup` is true for: read by shape, as DOMs differ.
+ */
+function styleRulesIn(
+  rules: CSSRuleList,
+  skipsGroup: (condition: string) => boolean,
+): CSSStyleRule[] {
   return Array.from(rules).flatMap((rule) => {
     if ("selectorText" in rule) return [rule as CSSStyleRule];
-    return "cssRules" in rule ? styleRulesIn((rule as CSSGroupingRule).cssRules) : [];
+    if (!("cssRules" in rule)) return [];
+    const { conditionText = "", cssRules } = rule as CSSGroupingRule & { conditionText?: string };
+    return skipsGroup(conditionText) ? [] : styleRulesIn(cssRules, skipsGroup);
   });
 }
 

@@ -19,8 +19,11 @@ const ENTRY = `:is(.${OPTION_CLASS},.${FIT_ALL_CLASS})`;
 const SWITCH = `:is(.${AREA_SWITCH_CLASS},.${MY_LOCATION_BOX_CLASS})`;
 const SWITCH_BUTTON = `${SWITCH}>button`;
 
+/** `percent` of the text's colour, over the background. */
+const tint = (percent: number) => `color-mix(in srgb,currentColor ${percent}%,transparent)`;
+
 /** The colour of the line around the switch and between its buttons. */
-const LINE = "color-mix(in srgb,currentColor 30%,transparent)";
+const LINE = tint(30);
 
 /**
  * The line around the switch. Between its buttons, each draws one on its left and top, and the
@@ -35,9 +38,12 @@ const SWITCH_LINE = `1px solid ${LINE}`;
  * the native `<select>` keeps the browser's look. A heading, the search box and its status, the
  * area switch (a segmented control: two joined buttons, the pressed one filled like a selected
  * entry) and the empty-area status (room only while it says something, wrapping within the
- * list's width rather than widening it) stay in view over entries that scroll; a `display` is set only on what isn't `hidden`, so
- * `hidden` holds. They apply wherever the list is (on the map, beside or under it, in a container
- * of the page's); all of it turns off inside the opt-out (`unstyled.ts`).
+ * list's width rather than widening it) stay in view over entries that scroll; a `display` is set
+ * only on what isn't `hidden`, so `hidden` holds. The switch's tints are background images: in a
+ * MapLibre panel, MapLibre's own stylesheet sets a hovered or pressed button's background colour,
+ * and would win; its hover tint only where something can hover, so a tap leaves none. They apply
+ * wherever the list is (on the map, beside or under it, in a container of the page's); all of it
+ * turns off inside the opt-out (`unstyled.ts`).
  */
 export const LIST_STYLES = `
 ${outsideUnstyled(`.${LISTBOX_CLASS}`)}{padding:.25rem;overflow:auto}
@@ -46,8 +52,8 @@ ${outsideUnstyled(`.${LIST_CLASS}>.${LISTBOX_CLASS}`)}{min-height:0}
 ${outsideUnstyled(`.${LIST_HEADING_CLASS}`)}{flex:none;padding:.5rem .75rem .25rem;font-weight:600}
 ${outsideUnstyled(`${SWITCH}:not([hidden])`)}{display:flex;flex-wrap:wrap;flex:none;margin:.25rem;border:${SWITCH_LINE};border-radius:.375rem;overflow:hidden}
 ${outsideUnstyled(SWITCH_BUTTON)}{flex:1 1 0;white-space:nowrap;padding:.375rem .5rem;border:0;box-shadow:-1px 0 0 ${LINE},0 -1px 0 ${LINE};background:none;color:inherit;font:inherit;font-weight:600;cursor:pointer}
-${outsideUnstyled(`${SWITCH_BUTTON}:hover`)}{background:color-mix(in srgb,currentColor 8%,transparent)}
-${outsideUnstyled(`${SWITCH_BUTTON}[aria-pressed=true]`)}{background:color-mix(in srgb,currentColor 16%,transparent)}
+@media (hover:hover){${outsideUnstyled(`${SWITCH_BUTTON}:hover`)}{background:linear-gradient(${tint(8)},${tint(8)})}}
+${outsideUnstyled(`${SWITCH_BUTTON}[aria-pressed=true]`)}{background:linear-gradient(${tint(16)},${tint(16)})}
 ${outsideUnstyled(`${SWITCH_BUTTON}[aria-busy=true]`)}{opacity:.6;cursor:progress}
 ${outsideUnstyled(`.${SEARCH_CLASS}`)}{flex:none;box-sizing:border-box;contain:inline-size;margin:.25rem;padding:.375rem .5rem;border:${SWITCH_LINE};border-radius:.375rem;background:none;color:inherit;font:inherit}
 @media (pointer:coarse){${outsideUnstyled(`.${SEARCH_CLASS}`)}{font-size:16px}}
@@ -57,6 +63,6 @@ ${outsideUnstyled(`.${DISTANCE_CLASS}`)}{float:inline-end;margin-inline-start:.7
 ${outsideUnstyled(`.${GROUP_CLASS}`)}{padding-top:.25rem}
 ${outsideUnstyled(`.${HEADING_CLASS}`)}{padding:.5rem .75rem .25rem;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;opacity:.7}
 ${outsideUnstyled(ENTRY)}{display:block;padding:.5rem .75rem;border-radius:.375rem;cursor:pointer}
-${outsideUnstyled(`${ENTRY}[data-hovered]`)}{background:color-mix(in srgb,currentColor 8%,transparent)}
-${outsideUnstyled(`${ENTRY}[data-selected]`)}{background:color-mix(in srgb,currentColor 16%,transparent);font-weight:600}
+${outsideUnstyled(`${ENTRY}[data-hovered]`)}{background:${tint(8)}}
+${outsideUnstyled(`${ENTRY}[data-selected]`)}{background:${tint(16)};font-weight:600}
 `;

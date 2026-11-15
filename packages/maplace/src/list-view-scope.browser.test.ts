@@ -52,9 +52,9 @@ describe("list view with scope in a browser", () => {
 
   it("fills the pressed button only, off the map panel too, and none of the look inside the opt-out", async () => {
     const { all, area, group } = await scopedList();
-    const fill = (button: HTMLElement) => getComputedStyle(button).backgroundColor;
-    expect(fill(all)).not.toBe(fill(area));
-    expect(fill(area)).toBe("rgba(0, 0, 0, 0)");
+    const fill = (button: HTMLElement) => getComputedStyle(button).backgroundImage;
+    expect(fill(all)).toContain("linear-gradient");
+    expect(fill(area)).toBe("none");
     onTestFinished(unstyledPage());
     expect(fill(all)).toBe(fill(area));
     expect(getComputedStyle(group).display).toBe("block");

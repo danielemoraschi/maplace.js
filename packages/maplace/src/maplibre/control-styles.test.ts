@@ -1,7 +1,12 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { SHARED_CONTROL_STYLES } from "../adapter-kit/control-styles";
-import { selectorsOf, unguardedSelectorsOf, weighsNothing } from "../testing/selectors";
+import {
+  hoverSelectorsOutsideHoverMedia,
+  selectorsOf,
+  unguardedSelectorsOf,
+  weighsNothing,
+} from "../testing/selectors";
 import { LIST_CLASS } from "../views/list-block";
 import { LISTBOX_CLASS } from "../views/listbox-nodes";
 import { CONTROL_STYLES } from "./control-styles";
@@ -35,6 +40,10 @@ describe("CONTROL_STYLES on MapLibre", () => {
     expect(unguardedSelectorsOf(CONTROL_STYLES)).toEqual([
       ":where(.maplace-control:has(>[hidden]:only-child))",
     ]);
+  });
+
+  it("tints under the pointer only where something can hover, so a tap leaves no tint", () => {
+    expect(hoverSelectorsOutsideHoverMedia(CONTROL_STYLES)).toEqual([]);
   });
 
   it("ends with the rules every provider's panels share, so a page holding both sheets gets them alike", () => {

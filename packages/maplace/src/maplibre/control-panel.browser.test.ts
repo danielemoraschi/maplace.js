@@ -1,12 +1,15 @@
 import { NavigationControl } from "maplibre-gl";
 import { afterEach, describe, expect, it, onTestFinished } from "vitest";
+import { userEvent } from "vitest/browser";
 import type { ControlPosition } from "../adapter";
 import { darkPage } from "../google/testing/dark-page";
 import { places } from "../google/testing/places";
 import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { panelOf } from "../testing/panel-of";
+import { queried } from "../testing/queried";
 import { unstyledPage } from "../testing/unstyled-page";
+import { AREA_ONLY_CLASS, SHOW_ALL_CLASS } from "../views/area-switch";
 import { onPageMapLibre } from "./testing/control-site";
 
 afterEach(() => {
@@ -21,6 +24,16 @@ async function buttonOn(position: ControlPosition = "top-left") {
   node.textContent = "Mine";
   const remove = site.adapter.mountControl(node, position);
   return { ...site, node, remove, panel: getComputedStyle(panelOf(node)) };
+}
+
+/** A list with "All" and "This area", pressed "All", in a corner of the page's own MapLibre map. */
+async function scopedListOnMap() {
+  const maplace = createMaplace({ locations: places() });
+  const { adapter } = await onPageMapLibre(maplace);
+  const view = createListView(maplace, { scope: "viewport" });
+  onTestFinished(() => view.destroy());
+  adapter.mountControl(view.element, "top-right");
+  return view;
 }
 
 /** A rule of the page's, for this test. */
@@ -101,16 +114,26 @@ describe("the panel of a control on a MapLibre map", () => {
   });
 
   it("fits a scoped list's switch in the 12em panel, each button on one line", async () => {
-    const maplace = createMaplace({ locations: places() });
-    const { adapter } = await onPageMapLibre(maplace);
-    const view = createListView(maplace, { scope: "viewport" });
-    onTestFinished(() => view.destroy());
-    adapter.mountControl(view.element, "top-right");
+    const view = await scopedListOnMap();
     const lineHeight = Number.parseFloat(getComputedStyle(view.element).lineHeight);
     for (const button of view.element.querySelectorAll(".maplace-area-switch>button")) {
       expect(button.getBoundingClientRect().height).toBeLessThan(lineHeight * 2);
     }
     expect(view.element.getBoundingClientRect().width).toBe(12 * 13);
+  });
+
+  it("keeps a scoped list's pressed switch button tinted under the pointer, over MapLibre's own hover", async () => {
+    const view = await scopedListOnMap();
+    const tintUnderPointer = async (selector: string) => {
+      const button = queried(view.element, selector);
+      await userEvent.hover(button);
+      return getComputedStyle(button).backgroundImage;
+    };
+    const pressedTint = await tintUnderPointer(`.${SHOW_ALL_CLASS}`);
+    expect(pressedTint).toContain("linear-gradient");
+    const hoverTint = await tintUnderPointer(`.${AREA_ONLY_CLASS}`);
+    expect(hoverTint).toContain("linear-gradient");
+    expect(hoverTint).not.toBe(pressedTint);
   });
 
   it("lets the page's own rule win", async () => {

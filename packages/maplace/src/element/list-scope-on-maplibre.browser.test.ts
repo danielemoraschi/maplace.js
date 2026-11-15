@@ -61,7 +61,7 @@ describe("<maplace-map list-scope> on MapLibre, the list off the map", () => {
       pane.getBoundingClientRect().right,
     );
     expect([entries(), all.getAttribute("aria-pressed")]).toEqual([20, "true"]);
-    expect(getComputedStyle(all).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(getComputedStyle(all).backgroundImage).toContain("linear-gradient");
     map.maplace.setView({ lat: 0, lng: 2 }, 8);
     await expect.poll(() => map.maplace.getSnapshot().viewport?.center.lng, LOAD).toBe(2);
     expect(entries()).toBe(20);
