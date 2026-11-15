@@ -8,6 +8,7 @@ import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
 import { sameState } from "../location-state";
 import { cutOnBlur, type GiveBack, takeEditingAway } from "./blur-cuts";
+import { liftedOutline } from "./lifted-outline";
 import type { GoogleShape, PlacedShape, PlacingSite } from "./placed-location";
 import { showGeometry } from "./shape-geometry";
 import {
@@ -34,7 +35,7 @@ export const SHAPE_PLACERS: Readonly<Record<ShapeType, ShapePlacer>> = {
 /**
  * One circle, polyline, polygon or multipolygon: clickable, styled in its state's look, reshaped
  * by the user when `editable`, its `zIndex` its rank among shapes by size (Google draws every
- * marker above every shape).
+ * marker above every shape), its outline drawn again over the others while hovered or selected.
  * Each change redoes only what it touches; an edit is reported once, when the user lets go.
  */
 function shapePlacer(kind: ShapeKind): ShapePlacer {
@@ -45,10 +46,14 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
     let drawn = drawable;
     let look = site.lookOf(id);
     const { shape, geometry } = newShape(kind, { drawable, site, look, order });
+    const outline = liftedOutline(kind, site.mounted, shape);
+    const lift = () => outline.draw(drawn, look);
+    lift();
     const stopCutting = cutOnBlur(site.mounted, () => cutHandleDrag(shape, () => drawn.editable));
 
     return {
       shape,
+      outlineCopy: outline.copy,
       drawable: () => drawn,
       popupPlace: () => ({ position: anchorOf(drawn.geometry) }),
       update(next) {
@@ -61,6 +66,7 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
         }
         if (next.editable !== drawn.editable) shape.setValues({ editable: next.editable });
         drawn = next;
+        lift();
       },
       present(next: Look) {
         if (!sameState(look.state, next.state)) {
@@ -69,9 +75,11 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
         if (next.visible !== look.visible) shape.setValues({ visible: next.visible });
         if (!next.visible) site.hover.gone(id);
         look = next;
+        lift();
       },
       remove() {
         stopCutting();
+        outline.remove();
         geometry.stop();
         shape.setMap(null);
         site.hover.gone(id);

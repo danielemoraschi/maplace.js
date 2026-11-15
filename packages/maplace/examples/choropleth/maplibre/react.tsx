@@ -24,10 +24,11 @@ const CLASSES = [
 const NO_DATA = { fill: "#d1d5db", label: "No data" };
 /**
  * Every country's outline, white between neighbours; under the pointer, its colour at full
- * strength, which its neighbours' outlines can't hide, and a dark outline.
+ * strength and a dark outline; selected, a wider one.
  */
 const OUTLINE = { stroke: "#ffffff", strokeWidth: 1, fillOpacity: 0.75 };
 const HOVERED = { stroke: "#111827", strokeWidth: 2, fillOpacity: 1 };
+const SELECTED = { ...HOVERED, strokeWidth: 3 };
 /** The world from Europe and Africa, where the globe opens too, rather than fitted round it. */
 const FIRST_VIEW = { kind: "center", center: { lat: 20, lng: 10 }, zoom: 2 } as const;
 const dollars = new Intl.NumberFormat("en", {
@@ -45,6 +46,7 @@ function shaded(country: Location<Country>): Location<Country> {
     ...country,
     style: { ...OUTLINE, fill: classOf(value).fill },
     hoveredStyle: HOVERED,
+    selectedStyle: SELECTED,
     content,
   };
 }

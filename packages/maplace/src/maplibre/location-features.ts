@@ -20,28 +20,31 @@ export function pinFeature(drawable: Drawable, rank: number): LocationFeature {
 }
 
 /**
- * A shape's feature (a circle, polyline, polygon or multipolygon): its geometry, its style in its
- * state (the fields it sets, the layers' defaults for the rest) and where it stacks.
+ * How a shape is drawn in its state: its style (the fields it sets, the layers' defaults for the
+ * rest), where it stacks, and where its outline stacks: its front rank while hovered or selected
+ * (`frontRank`), else its rank.
  */
-export function shapeFeature(
-  drawable: Drawable,
-  style: ShapeStyle | undefined,
-  rank: number,
-): LocationFeature {
+export interface ShapeDrawing {
+  readonly style: ShapeStyle | undefined;
+  readonly rank: number;
+  readonly strokeRank: number;
+}
+
+/** A shape's feature (a circle, polyline, polygon or multipolygon): its geometry, drawn so. */
+export function shapeFeature(drawable: Drawable, drawing: ShapeDrawing): LocationFeature {
   return {
     type: "Feature",
     geometry: shapeGeometryOf(drawable.geometry),
-    properties: shapeProperties(drawable, style, rank),
+    properties: shapeProperties(drawable, drawing),
   };
 }
 
 /** What a shape's feature carries besides its geometry: what changes with its state. */
 export function shapeProperties(
-  drawable: Drawable,
-  style: ShapeStyle | undefined,
-  rank: number,
+  { id }: Drawable,
+  { style, rank, strokeRank }: ShapeDrawing,
 ): LocationProperties {
-  return { id: drawable.id, rank, ...definedFields(style) };
+  return { id, rank, strokeRank, ...definedFields(style) };
 }
 
 function shapeGeometryOf(geometry: Geometry): GeoJSON.Geometry {

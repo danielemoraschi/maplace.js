@@ -11,9 +11,13 @@ type Path = google.maps.MVCArray<google.maps.LatLng>;
  * A circle, polyline, polygon or multipolygon as a user reaches it. It reads Google's objects
  * itself, never the adapter's conversions, so it can't share their mistakes; an edit changes one
  * handle at a time, as Google's handles do, each firing its one event. A multipolygon of one
- * polygon reads as a polygon: Google's rings alone can't tell them apart.
+ * polygon reads as a polygon: Google's rings alone can't tell them apart. Its style is what a user
+ * sees: the stroke of the copy drawn over it while one is (`outlineCopy`), else its own.
  */
-export function shapeTarget(shape: GoogleShape): ProbeTarget {
+export function shapeTarget(
+  shape: GoogleShape,
+  outlineCopy: () => GoogleShape | undefined = () => undefined,
+): ProbeTarget {
   const onMap = () => shape.getMap() != null;
   const shown = () => onMap() && shape.getVisible() !== false;
   const trigger = (name: string) => google.maps.event.trigger(shape, name, {});
@@ -26,7 +30,7 @@ export function shapeTarget(shape: GoogleShape): ProbeTarget {
       title: undefined,
       visible: shown(),
       icon: undefined,
-      style: styleOf(shape),
+      style: seenStyleOf(shape, outlineCopy()),
     }),
     stack: () => shape.get("zIndex") ?? 0,
     click: () => trigger("click"),
@@ -54,6 +58,16 @@ function styleOf(shape: GoogleShape): ShapeStyle {
       .map(([name, option]) => [name, shape.get(option)])
       .filter(([, value]) => value !== undefined),
   );
+}
+
+/** The shape's fill, and the stroke of its outline's copy while one is drawn over it. */
+function seenStyleOf(shape: GoogleShape, copy: GoogleShape | undefined): ShapeStyle {
+  if (copy === undefined) return styleOf(shape);
+  const isStroke = ([name]: [string, unknown]) => name.startsWith("stroke");
+  return Object.fromEntries([
+    ...Object.entries(styleOf(shape)).filter((field) => !isStroke(field)),
+    ...Object.entries(styleOf(copy)).filter(isStroke),
+  ]);
 }
 
 function geometryOf(shape: GoogleShape): Geometry {

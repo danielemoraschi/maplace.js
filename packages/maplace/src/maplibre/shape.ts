@@ -1,7 +1,7 @@
 import type { Look } from "../adapter-kit/presentation-changes";
 import { sameGeometry } from "../adapter-kit/same-geometry";
 import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
-import { shapeStackRank } from "../adapter-kit/stacking";
+import { frontRank, shapeStackRank } from "../adapter-kit/stacking";
 import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
 import type { Geometry } from "../geometry";
@@ -27,13 +27,18 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
   show({ reshaped: true });
   syncEditing({ reshaped: false });
 
-  /** Draws it as it is now; a change of style alone sends MapLibre its properties only. */
+  /**
+   * Draws it as it is now, its outline lifted while hovered or selected; a change of style alone
+   * sends MapLibre its properties only.
+   */
   function show({ reshaped }: { readonly reshaped: boolean }): void {
-    const style = styleInState(drawn, look.state);
+    const { state } = look;
+    const strokeRank = frontRank(state) ?? rank;
+    const drawing = { style: styleInState(drawn, state), rank, strokeRank };
     if (!look.visible) shapes.remove(drawn.id);
     else if (reshaped || shapes.featureOf(drawn.id) === undefined) {
-      shapes.put(shapeFeature(drawn, style, rank));
-    } else shapes.restyle(shapeProperties(drawn, style, rank));
+      shapes.put(shapeFeature(drawn, drawing));
+    } else shapes.restyle(shapeProperties(drawn, drawing));
   }
 
   /** Handles while it is editable and shown, moved when the store `reshaped` it. */

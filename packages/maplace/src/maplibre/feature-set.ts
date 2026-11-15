@@ -7,12 +7,13 @@ import type {
 import type { ShapeStyle } from "../style";
 
 /**
- * What a location's feature carries: its id (the source's `promoteId`), where it stacks, and a
- * shape's style in its state.
+ * What a location's feature carries: its id (the source's `promoteId`), where it stacks, and for
+ * a shape its style in its state and where its outline stacks (`strokeRank`).
  */
 export interface LocationProperties extends ShapeStyle {
   readonly id: string;
   readonly rank: number;
+  readonly strokeRank?: number;
 }
 
 export type LocationFeature = GeoJSON.Feature<GeoJSON.Geometry, LocationProperties>;

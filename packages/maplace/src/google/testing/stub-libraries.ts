@@ -25,6 +25,8 @@ export class StubMap extends StubMVCObject {
   readonly controls = Array.from({ length: 25 }, () => new StubMVCArray<HTMLElement>());
   /** The pane Google puts popups in, which it gives an overlay added to the map. */
   readonly floatPane = document.createElement("div");
+  /** The shapes on the map now: each stub shape's `setMap` keeps it. */
+  readonly shapes = new Set<unknown>();
   shown: StubView | undefined;
   /** Drawn already, as a map Google has initialised; `UNINITIALIZED` until Google has said more. */
   renderingType = "RASTER";

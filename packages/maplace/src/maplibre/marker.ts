@@ -1,5 +1,5 @@
 import type { Look } from "../adapter-kit/presentation-changes";
-import { stackRank } from "../adapter-kit/stacking";
+import { isInFront, stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
 import type { MarkerGeometry } from "../geometry";
 import type { LocationState } from "../location";
@@ -157,11 +157,6 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       site.hover.gone(id);
     },
   };
-}
-
-/** Drawn in front of the other pins: what the user points at or chose. */
-function isInFront(state: LocationState): boolean {
-  return state.selected || state.hovered;
 }
 
 /** A marker's drawable always has a marker's geometry: a type change removes and adds it. */

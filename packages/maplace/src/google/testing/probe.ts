@@ -50,7 +50,7 @@ export function probedMapState(): { state: GoogleMapState; probe: MapProbe } {
  * cluster, out of sight, it isn't drawn), so one left on a map after destroy shows.
  */
 function targetOf(placed: PlacedLocation, stillPlaced: () => boolean): ProbeTarget {
-  if (!("marker" in placed)) return shapeTarget(placed.shape);
+  if (!("marker" in placed)) return shapeTarget(placed.shape, placed.outlineCopy);
   const { marker } = placed;
   return markerTarget(marker, () => stillPlaced() || marker.map != null);
 }

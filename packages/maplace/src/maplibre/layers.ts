@@ -45,6 +45,8 @@ function styled<T extends string | number>(
 }
 
 const RANK = ["get", "rank"] as const;
+/** An outline's place among outlines: a hovered or selected shape's over its neighbours'. */
+const STROKE_RANK = ["get", "strokeRank"] as const;
 const POLYGONS = ["in", ["geometry-type"], ["literal", ["Polygon", "MultiPolygon"]]] as const;
 const LINES = ["==", ["geometry-type"], "LineString"] as const;
 
@@ -69,7 +71,7 @@ const LAYERS: readonly LayerSpecification[] = [
     type: "line",
     source: SHAPE_SOURCE,
     filter: POLYGONS as never,
-    layout: { "line-sort-key": RANK as never, "line-join": "round" },
+    layout: { "line-sort-key": STROKE_RANK as never, "line-join": "round" },
     paint: LINE_PAINT,
   },
   {
@@ -77,7 +79,7 @@ const LAYERS: readonly LayerSpecification[] = [
     type: "line",
     source: SHAPE_SOURCE,
     filter: LINES as never,
-    layout: { "line-sort-key": RANK as never, "line-join": "round", "line-cap": "round" },
+    layout: { "line-sort-key": STROKE_RANK as never, "line-join": "round", "line-cap": "round" },
     paint: LINE_PAINT,
   },
   {

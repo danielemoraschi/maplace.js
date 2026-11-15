@@ -16,8 +16,22 @@ export const ORIGIN_DOT_RANK = 0;
  * rest the later added in front (RFC #60). `order` is its place in the order added, from 1.
  */
 export function stackRank(order: number, state: LocationState): number {
+  return frontRank(state) ?? order;
+}
+
+/**
+ * Where what is in front stacks, over every location: the hovered one on top, then the selected
+ * one; none for the rest. Markers stack so (`stackRank`), and so do shapes' outlines, over their
+ * smaller neighbours, whose areas stay in front.
+ */
+export function frontRank(state: LocationState): number | undefined {
   if (state.hovered) return ON_TOP + 1;
-  return state.selected ? ON_TOP : order;
+  return state.selected ? ON_TOP : undefined;
+}
+
+/** Drawn in front of the rest: what the user points at or chose. */
+export function isInFront(state: LocationState): boolean {
+  return frontRank(state) !== undefined;
 }
 
 /**

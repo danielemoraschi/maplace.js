@@ -17,9 +17,12 @@ describe("pinFeature", () => {
   });
 });
 
+/** A shape drawn at rest, first in the stack. */
+const AT_REST = { style: undefined, rank: 1, strokeRank: 1 };
+
 describe("shapeFeature", () => {
   it("closes a polygon's rings, its holes included, as GeoJSON wants", () => {
-    const { geometry } = shapeFeature(polygonDrawable("p"), undefined, 1);
+    const { geometry } = shapeFeature(polygonDrawable("p"), AT_REST);
     expect(geometry).toEqual({
       type: "Polygon",
       coordinates: [
@@ -42,7 +45,7 @@ describe("shapeFeature", () => {
   });
 
   it("gives a polyline its path as a line", () => {
-    const { geometry } = shapeFeature(polylineDrawable("l"), undefined, 1);
+    const { geometry } = shapeFeature(polylineDrawable("l"), AT_REST);
     expect(geometry).toEqual({
       type: "LineString",
       coordinates: [
@@ -57,11 +60,7 @@ describe("shapeFeature", () => {
       { lat: 0, lng: 179 },
       { lat: 1, lng: -179 },
     ];
-    const { geometry } = shapeFeature(
-      polylineDrawable("l", { geometry: lineOf(path) }),
-      undefined,
-      1,
-    );
+    const { geometry } = shapeFeature(polylineDrawable("l", { geometry: lineOf(path) }), AT_REST);
     expect(geometry).toEqual({
       type: "LineString",
       coordinates: [
@@ -78,7 +77,7 @@ describe("shapeFeature", () => {
       // The hole's first corner west of ±180, the outline's east of it.
       holes: [[...squareAcross(1).slice(1), ...squareAcross(1).slice(0, 1)]],
     };
-    const feature = shapeFeature(polygonDrawable("p", { geometry }), undefined, 1);
+    const feature = shapeFeature(polygonDrawable("p", { geometry }), AT_REST);
     const [, hole = []] = (feature.geometry as GeoJSON.Polygon).coordinates;
     expect(hole.every(([lng = 0]) => lng > 0)).toBe(true);
   });
@@ -89,17 +88,13 @@ describe("shapeFeature", () => {
       { lat: 0.2, lng: 0.3 },
       { lat: -0.7, lng: -0.3 },
     ];
-    const { geometry } = shapeFeature(
-      polylineDrawable("l", { geometry: lineOf(path) }),
-      undefined,
-      1,
-    );
+    const { geometry } = shapeFeature(polylineDrawable("l", { geometry: lineOf(path) }), AT_REST);
     const longitudes = (geometry as GeoJSON.LineString).coordinates.map(([lng]) => lng);
     expect(longitudes).toEqual(path.map(({ lng }) => lng));
   });
 
   it("gives a circle a closed polygon ring around its centre", () => {
-    const { geometry } = shapeFeature(circleDrawable("c"), undefined, 1);
+    const { geometry } = shapeFeature(circleDrawable("c"), AT_REST);
     const [ring = []] = (geometry as GeoJSON.Polygon).coordinates;
     expect(geometry.type).toBe("Polygon");
     expect(ring).toHaveLength(CIRCLE_SEGMENTS + 1);
@@ -108,14 +103,20 @@ describe("shapeFeature", () => {
 
   it("carries a circle's style fields, as a polygon's", () => {
     const style = { fill: "#00ff00", fillOpacity: 0.5 };
-    const { properties } = shapeFeature(circleDrawable("c"), style, 2);
-    expect(properties).toEqual({ id: "c", rank: 2, ...style });
+    const { properties } = shapeFeature(circleDrawable("c"), { style, rank: 2, strokeRank: 2 });
+    expect(properties).toEqual({ id: "c", rank: 2, strokeRank: 2, ...style });
   });
 
   it("carries the style fields set, and only those, for the layers' paint", () => {
     const style = { stroke: "#ff0000", strokeWidth: 2, fill: undefined };
-    const { properties } = shapeFeature(polygonDrawable("p"), style, 3);
-    expect(properties).toEqual({ id: "p", rank: 3, stroke: "#ff0000", strokeWidth: 2 });
+    const { properties } = shapeFeature(polygonDrawable("p"), { style, rank: 3, strokeRank: 3 });
+    expect(properties).toEqual({
+      id: "p",
+      rank: 3,
+      strokeRank: 3,
+      stroke: "#ff0000",
+      strokeWidth: 2,
+    });
   });
 });
 

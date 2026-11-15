@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Geometry } from "../geometry";
+import { ORIGIN, squareAround } from "../testing/conformance/fixtures";
 import {
   CLUSTER_RANK,
   createOrderCounter,
+  frontRank,
   ROUTE_LINE_RANK,
   shapeStackRank,
   stackRank,
@@ -38,6 +40,20 @@ const line: Geometry = {
     { lat: 1, lng: 1 },
   ],
 };
+
+describe("frontRank", () => {
+  it("puts the hovered on top, then the selected, over every shape", () => {
+    const hovered = frontRank({ hovered: true, selected: false }) as number;
+    const selected = frontRank({ hovered: false, selected: true }) as number;
+    const tiny = { type: "polygon", path: squareAround(ORIGIN, 1e-6) } as const;
+    const frontmostShape = shapeStackRank(tiny, 99_999);
+    expect([hovered > selected, selected > frontmostShape]).toEqual([true, true]);
+  });
+
+  it("gives what is at rest none", () => {
+    expect(frontRank({ hovered: false, selected: false })).toBeUndefined();
+  });
+});
 
 describe("shapeStackRank", () => {
   it("stacks the smaller shape in front, whichever came first", () => {

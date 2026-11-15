@@ -11,6 +11,7 @@ import {
   polygonDrawable,
   polylineDrawable,
   reshaped,
+  squareAround,
 } from "../testing/conformance/fixtures";
 import { mapClicks } from "./map-clicks";
 import { SHAPE_PLACERS } from "./shape";
@@ -185,5 +186,59 @@ describe("shape placers", () => {
     ];
     p.update(reshaped(drawable, { type: "polygon", path: larger }));
     expect(stub.get("zIndex")).toBeLessThan(before);
+  });
+
+  it("draw a hovered or selected shape's outline again above every shape, unfilled and not clickable", () => {
+    const style = { stroke: "red", strokeWidth: 3, fillOpacity: 0.7 };
+    const { placed: p, stub, site } = placed(polygonDrawable("p", { style }));
+    const map = site.mounted.map as unknown as StubMap;
+    const outlines = () => [...map.shapes].filter((shape) => shape !== stub) as StubPolygon[];
+    expect(outlines()).toEqual([]);
+    p.present({ state: { selected: false, hovered: true }, visible: true });
+    const [outline] = outlines();
+    expect(outline?.get("zIndex")).toBeGreaterThan(stub.get("zIndex") as number);
+    expect([outline?.get("strokeColor"), outline?.get("strokeWeight")]).toEqual(["red", 3]);
+    expect([outline?.get("fillOpacity"), outline?.get("clickable")]).toEqual([0, false]);
+    expect(outline?.getPaths().getArray()).toHaveLength(2);
+    expect([stub.get("strokeOpacity"), stub.get("strokeWeight")]).toEqual([0, 3]);
+    p.present({ state: { selected: false, hovered: false }, visible: true });
+    expect(outlines()).toEqual([]);
+    expect(stub.get("strokeOpacity")).toBeUndefined();
+  });
+
+  it("lift no outline of an editable or hidden shape, and none once taken off", () => {
+    const { placed: p, stub, site } = placed(polygonDrawable("p", { editable: true }));
+    const map = site.mounted.map as unknown as StubMap;
+    const others = () => [...map.shapes].filter((shape) => shape !== stub);
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    expect(others()).toEqual([]);
+    p.update(polygonDrawable("p"));
+    expect(others()).toHaveLength(1);
+    p.present({ state: { selected: true, hovered: false }, visible: false });
+    expect(others()).toEqual([]);
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    p.remove();
+    expect([...map.shapes]).toEqual([]);
+  });
+
+  it("give a shape its own stroke back once its outline is no longer lifted", () => {
+    const style = { strokeOpacity: 0.5 };
+    const { placed: p, stub } = placed(polygonDrawable("p", { style }));
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    expect(stub.get("strokeOpacity")).toBe(0);
+    p.update(polygonDrawable("p", { editable: true, style }));
+    expect(stub.get("strokeOpacity")).toBe(0.5);
+  });
+
+  it("keep a lifted outline in step with its shape's new geometry and style", () => {
+    const drawable = polygonDrawable("p");
+    const { placed: p, stub, site } = placed(drawable);
+    const map = site.mounted.map as unknown as StubMap;
+    const outline = () => [...map.shapes].find((shape) => shape !== stub) as StubPolygon;
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    const square = { type: "polygon", path: squareAround(ORIGIN, 1) } as const;
+    p.update({ ...reshaped(drawable, square), style: { stroke: "blue" } });
+    expect(outline().getPaths().getArray()).toHaveLength(1);
+    expect(outline().get("strokeColor")).toBe("blue");
   });
 });

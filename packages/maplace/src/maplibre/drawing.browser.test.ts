@@ -32,6 +32,13 @@ afterEach(() => {
 const iconWhenSelected = (node: Node) => (state: LocationState) =>
   state.selected ? node : undefined;
 
+/** Where MapLibre stacks each stroke rendered in `layer`: its sort key, by the location's id. */
+function strokeKeys(map: MapLibreMap, layer: string): Record<string, number> {
+  const [, field] = map.getLayoutProperty(layer, "line-sort-key") as [string, string];
+  const features = map.queryRenderedFeatures({ layers: [layer] });
+  return Object.fromEntries(features.map(({ properties }) => [properties.id, properties[field]]));
+}
+
 /** The properties of the first area MapLibre renders. */
 const renderedFill = (map: MapLibreMap) =>
   map.queryRenderedFeatures({ layers: ["maplace-fills"] })[0]?.properties;
@@ -97,6 +104,54 @@ describe("MapLibre's drawing", () => {
       expect(fill).toBeDefined();
       expect(fill?.fillOpacity).toBeUndefined();
     }, RENDER_WAIT);
+  });
+
+  it("draws a selected area's outline over its smaller neighbours', its area where it was, and back once deselected", async () => {
+    const { map, adapter, probe } = await mountedMapLibre();
+    const large = { type: "polygon", path: squareAround(ORIGIN, 2) } as const;
+    const small = { type: "polygon", path: squareAround({ lat: 0, lng: 1 }, 1) } as const;
+    await adapter.apply(
+      adding(reshaped(polygonDrawable("large"), large), reshaped(polygonDrawable("small"), small)),
+    );
+    const largeOnTop = async (expected: boolean) =>
+      vi.waitFor(async () => {
+        await probe.settle();
+        const keys = strokeKeys(map, "maplace-outlines");
+        expect((keys.large as number) > (keys.small as number)).toBe(expected);
+      }, RENDER_WAIT);
+    adapter.present(presented({ selectedId: "large" }));
+    await largeOnTop(true);
+    const fills = map.queryRenderedFeatures({ layers: ["maplace-fills"] });
+    const rank = (id: string) =>
+      fills.find(({ properties }) => properties.id === id)?.properties.rank;
+    expect(rank("small")).toBeGreaterThan(rank("large"));
+    adapter.present(presented({}));
+    await largeOnTop(false);
+  });
+
+  it("draws a hovered line over the lines in front of it, and back once the pointer leaves", async () => {
+    const { map, adapter, probe } = await mountedMapLibre();
+    const across = {
+      type: "polyline",
+      path: [
+        { lat: 1, lng: 0 },
+        { lat: -1, lng: 1 },
+      ],
+    } as const;
+    await adapter.apply(
+      adding(polylineDrawable("first"), reshaped(polylineDrawable("later"), across)),
+    );
+    const firstOnTop = async (expected: boolean) =>
+      vi.waitFor(async () => {
+        await probe.settle();
+        const keys = strokeKeys(map, "maplace-lines");
+        expect((keys.first as number) > (keys.later as number)).toBe(expected);
+      }, RENDER_WAIT);
+    await firstOnTop(false);
+    adapter.present(presented({ hoveredId: "first" }));
+    await firstOnTop(true);
+    adapter.present(presented({}));
+    await firstOnTop(false);
   });
 
   it("draws a shape reshaped after a state change in its latest style", async () => {

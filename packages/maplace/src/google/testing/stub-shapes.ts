@@ -1,5 +1,6 @@
 /// <reference types="google.maps" />
 import type { LatLng } from "../../geometry";
+import type { StubMap } from "./stub-libraries";
 import { StubMVCObject } from "./stub-mvc";
 
 /** A point as Google holds one. */
@@ -46,11 +47,17 @@ export class StubPath extends StubMVCObject {
 /** What every shape shares: options, its map, and listeners. */
 class StubShape extends StubMVCObject {
   setMap(map: unknown): void {
+    (this.getMap() as StubMap | null | undefined)?.shapes.delete(this);
+    (map as StubMap | null)?.shapes.add(this);
     this.set("map", map);
   }
 
   getMap(): unknown {
     return this.get("map");
+  }
+
+  getVisible(): boolean | undefined {
+    return this.get("visible") as boolean | undefined;
   }
 }
 
