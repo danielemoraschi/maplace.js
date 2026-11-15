@@ -2,14 +2,16 @@
 import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
 import type { ShapeStyle } from "../../style";
 import type { GoogleShape } from "../placed-location";
+import { polygonsByContainment } from "./polygons-by-containment";
 import { type ProbeTarget, probedPoint } from "./probe-target";
 
 type Path = google.maps.MVCArray<google.maps.LatLng>;
 
 /**
- * A circle, polyline or polygon as a user reaches it. It reads Google's objects itself, never
- * the adapter's conversions, so it can't share their mistakes; an edit changes one handle at a
- * time, as Google's handles do, each firing its one event.
+ * A circle, polyline, polygon or multipolygon as a user reaches it. It reads Google's objects
+ * itself, never the adapter's conversions, so it can't share their mistakes; an edit changes one
+ * handle at a time, as Google's handles do, each firing its one event. A multipolygon of one
+ * polygon reads as a polygon: Google's rings alone can't tell them apart.
  */
 export function shapeTarget(shape: GoogleShape): ProbeTarget {
   const onMap = () => shape.getMap() != null;
@@ -58,9 +60,12 @@ function geometryOf(shape: GoogleShape): Geometry {
   if (shape instanceof google.maps.Circle) {
     return { type: "circle", center: probedPoint(shape.getCenter()), radius: shape.getRadius() };
   }
-  const [path = [], ...holes] = ringsOf(shape).map((ring) => ring.getArray().map(probedPoint));
-  if (shape instanceof google.maps.Polyline) return { type: "polyline", path };
-  return { type: "polygon", path, holes: holes.length > 0 ? holes : undefined };
+  const rings = ringsOf(shape).map((ring) => ring.getArray().map(probedPoint));
+  if (shape instanceof google.maps.Polyline) return { type: "polyline", path: rings[0] ?? [] };
+  const polygons = polygonsByContainment(rings);
+  const [only] = polygons;
+  if (only && polygons.length === 1) return { type: "polygon", ...only };
+  return { type: "multipolygon", polygons };
 }
 
 function ringsOf(shape: google.maps.Polyline | google.maps.Polygon): Path[] {

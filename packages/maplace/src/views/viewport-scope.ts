@@ -40,7 +40,7 @@ function sameCamera(a: Viewport, b: Viewport): boolean {
 
 /**
  * A marker by its point, a circle by its centre, a line or polygon by any point of its path as
- * drawn.
+ * drawn, a multipolygon by any point of any of its polygons' outlines.
  */
 function isLocationInBox(location: Location, box: ViewBox): boolean {
   switch (location.type) {
@@ -52,5 +52,7 @@ function isLocationInBox(location: Location, box: ViewBox): boolean {
     case "polyline":
     case "polygon":
       return drawnPath(location).some((point) => isInBox(point, box));
+    case "multipolygon":
+      return location.polygons.some(({ path }) => path.some((point) => isInBox(point, box)));
   }
 }

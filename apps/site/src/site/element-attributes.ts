@@ -17,6 +17,7 @@ const MAP_READS = [
   "open-in-maps-label",
   "directions-link",
   "directions-label",
+  "popup-open-on",
   "hold",
   "loading",
   "load-label",

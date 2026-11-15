@@ -1,5 +1,5 @@
 import { drawnPath } from "../drawn-path";
-import type { CircleGeometry } from "../geometry";
+import type { CircleGeometry, LatLng } from "../geometry";
 import type { Location } from "../location";
 import { narrowestArc, wrapLongitude } from "../longitude-arc";
 import { EARTH_RADIUS, RADIANS_PER_DEGREE } from "../sphere";
@@ -37,9 +37,16 @@ function include(extent: Extent, location: Location): void {
     case "circle":
       includeCircle(extent, location);
       break;
+    case "multipolygon":
+      for (const { path } of location.polygons) includePath(extent, path);
+      break;
     default:
-      for (const point of drawnPath(location)) includePoint(extent, point.lat, point.lng);
+      includePath(extent, drawnPath(location));
   }
+}
+
+function includePath(extent: Extent, path: readonly LatLng[]): void {
+  for (const point of path) includePoint(extent, point.lat, point.lng);
 }
 
 function includePoint(extent: Extent, lat: number, lng: number): void {

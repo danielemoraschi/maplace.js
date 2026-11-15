@@ -83,6 +83,21 @@ export function polygonDrawable(id: string, overrides?: Partial<Drawable>): Draw
   };
 }
 
+/** `polygonDrawable`'s square and hole, and a second square 5° east of them: two polygons, one id. */
+export function multipolygonDrawable(id: string, overrides?: Partial<Drawable>): Drawable {
+  return {
+    ...plainDrawable(id),
+    geometry: {
+      type: "multipolygon",
+      polygons: [
+        { path: square(2), holes: [square(1)] },
+        { path: squareAround({ lat: 0, lng: 5 }, 2) },
+      ],
+    },
+    ...overrides,
+  };
+}
+
 /** Where a user moves one corner of `polygonDrawable`'s hole. */
 export const MOVED_HOLE_CORNER: LatLng = { lat: 0.6, lng: 0.6 };
 

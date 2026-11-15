@@ -1,5 +1,5 @@
 import type { Drawable } from "../drawable";
-import type { Geometry, LatLng, MarkerGeometry } from "../geometry";
+import type { Geometry, LatLng, MarkerGeometry, PolygonRings } from "../geometry";
 import type { ShapeStyle } from "../style";
 import { circleRing } from "./circle-sphere";
 import { nearestLongitude } from "./conversions";
@@ -20,8 +20,8 @@ export function pinFeature(drawable: Drawable, rank: number): LocationFeature {
 }
 
 /**
- * A shape's feature (a circle, polyline or polygon): its geometry, its style in its state (the
- * fields it sets, the layers' defaults for the rest) and where it stacks.
+ * A shape's feature (a circle, polyline, polygon or multipolygon): its geometry, its style in its
+ * state (the fields it sets, the layers' defaults for the rest) and where it stacks.
  */
 export function shapeFeature(
   drawable: Drawable,
@@ -51,20 +51,21 @@ function shapeGeometryOf(geometry: Geometry): GeoJSON.Geometry {
         type: "LineString",
         coordinates: continuousFrom(startOf(geometry.path), geometry.path),
       };
-    case "polygon": {
-      const start = startOf(geometry.path);
-      return {
-        type: "Polygon",
-        coordinates: [geometry.path, ...(geometry.holes ?? [])].map((ring) =>
-          closedRing(continuousFrom(start, ring)),
-        ),
-      };
-    }
+    case "polygon":
+      return { type: "Polygon", coordinates: polygonCoordinates(geometry) };
+    case "multipolygon":
+      return { type: "MultiPolygon", coordinates: geometry.polygons.map(polygonCoordinates) };
     case "circle":
       return { type: "Polygon", coordinates: [circleRing(geometry)] };
     default:
       throw new Error(`a ${geometry.type} isn't drawn as a shape feature on MapLibre`);
   }
+}
+
+/** A polygon's rings as GeoJSON's, each run on from its outline's first point across ±180. */
+function polygonCoordinates({ path, holes = [] }: PolygonRings): GeoJSON.Position[][] {
+  const start = startOf(path);
+  return [path, ...holes].map((ring) => closedRing(continuousFrom(start, ring)));
 }
 
 /**

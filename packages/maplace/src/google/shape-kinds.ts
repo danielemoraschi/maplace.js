@@ -3,7 +3,9 @@ import type {
   CircleGeometry,
   Geometry,
   LatLng,
+  MultiPolygonGeometry,
   PolygonGeometry,
+  PolygonRings,
   PolylineGeometry,
 } from "../geometry";
 import { latLngOf } from "./lat-lng";
@@ -14,13 +16,16 @@ type Path = google.maps.MVCArray<google.maps.LatLng>;
 /** A circle's centre before one is set, which never shows: the kind always sets one. */
 const NO_POINT = { lat: Number.NaN, lng: Number.NaN };
 
-/** How Google draws one type of shape: its object, and its geometry in maplace's terms. */
+/**
+ * How Google draws one type of shape: its object, and its geometry in maplace's terms. A kind that
+ * is never edited has no `read` or `watch`: what it showed stands.
+ */
 export interface ShapeKind<G extends Geometry = Geometry, S extends GoogleShape = GoogleShape> {
   create(maps: google.maps.MapsLibrary): S;
   show(shape: S, geometry: G): void;
-  read(shape: S): G;
+  read?(shape: S): G;
   /** Calls `edited` on each event a user's edit fires; returns what stops watching. */
-  watch(shape: S, edited: () => void): () => void;
+  watch?(shape: S, edited: () => void): () => void;
 }
 
 export const CIRCLE: ShapeKind<CircleGeometry, google.maps.Circle> = {
@@ -48,8 +53,7 @@ export const POLYLINE: ShapeKind<PolylineGeometry, google.maps.Polyline> = {
 /** The outer ring first, then the holes, as Google keeps them. */
 export const POLYGON: ShapeKind<PolygonGeometry, google.maps.Polygon> = {
   create: (maps) => new maps.Polygon(),
-  show: (polygon, { path, holes = [] }) =>
-    polygon.setPaths([path, ...holes].map((ring) => [...ring])),
+  show: (polygon, rings) => polygon.setPaths(ringsToShow(rings)),
   read(polygon) {
     const [path = [], ...holes] = polygon.getPaths().getArray().map(ringOf);
     return { type: "polygon", path, holes: holes.length > 0 ? holes : undefined };
@@ -57,7 +61,22 @@ export const POLYGON: ShapeKind<PolygonGeometry, google.maps.Polygon> = {
   watch: (polygon, edited) => watchRings(polygon.getPaths().getArray(), edited),
 };
 
+/**
+ * Every polygon's rings in one Google polygon, which fills disjoint outlines as separate areas,
+ * so a multipolygon is hovered, clicked and styled as one shape. Never editable, so never read
+ * back.
+ */
+export const MULTIPOLYGON: ShapeKind<MultiPolygonGeometry, google.maps.Polygon> = {
+  create: (maps) => new maps.Polygon(),
+  show: (polygon, { polygons }) => polygon.setPaths(polygons.flatMap(ringsToShow)),
+};
+
 export type ShapeType = Exclude<Geometry["type"], "marker">;
+
+/** A polygon's rings as Google takes them: the outline first, then its holes. */
+function ringsToShow({ path, holes = [] }: PolygonRings): LatLng[][] {
+  return [path, ...holes].map((ring) => [...ring]);
+}
 
 /** A vertex handle's drag, a midpoint's drag and an undo each fire one of these, on release. */
 function watchRings(rings: readonly Path[], edited: () => void): () => void {

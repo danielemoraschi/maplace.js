@@ -25,9 +25,9 @@ function container(): HTMLElement {
 }
 
 describe("the assembled MapLibre adapter", () => {
-  it("declares circles, clustering and editing, and no routes: MapLibre has no routing", () => {
+  it("declares circles, clustering, editing and multipolygons, and no routes: MapLibre has no routing", () => {
     const adapter = createMapLibreAdapter();
-    expect([...adapter.capabilities].sort()).toEqual(["circle", "cluster", "edit"]);
+    expect([...adapter.capabilities].sort()).toEqual(["circle", "cluster", "edit", "multipolygon"]);
     expect(adapter.routeStopLimit).toBeUndefined();
   });
 

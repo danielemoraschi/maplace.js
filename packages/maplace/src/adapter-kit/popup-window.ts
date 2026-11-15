@@ -37,6 +37,11 @@ export interface PopupWindow<Place> {
   retitle(title: string | undefined): void;
   /** Keeps up with a point that moved, as a shape's centre after an edit. */
   follow(place: Place): void;
+  /**
+   * Whether the pointer goes through the popup (`pointer-through.ts`), to the map under it: so
+   * while it shows the hovered location alone, what it covers answers hover and click.
+   */
+  passPointer(through: boolean): void;
   close(): void;
 }
 

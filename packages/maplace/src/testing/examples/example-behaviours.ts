@@ -1,4 +1,5 @@
 import { brand } from "./behaviours/brand";
+import { choropleth } from "./behaviours/choropleth";
 import { circles } from "./behaviours/circles";
 import { clickToAdd } from "./behaviours/click-to-add";
 import { cssMarkers } from "./behaviours/css-markers";
@@ -47,6 +48,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   polygon,
   mixed,
   "live-data": liveData,
+  choropleth,
   "load-on-demand": loadOnDemand,
   "link-to-place": linkToPlace,
   "custom-list": customList,

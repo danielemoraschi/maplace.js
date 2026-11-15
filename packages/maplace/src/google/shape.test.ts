@@ -6,6 +6,7 @@ import {
   circleDrawable,
   holeCornerMoved,
   MOVED_HOLE_CORNER,
+  multipolygonDrawable,
   ORIGIN,
   polygonDrawable,
   polylineDrawable,
@@ -47,6 +48,20 @@ describe("shape placers", () => {
     expect(placed<StubPolyline>(polylineDrawable("l")).stub.getPath().getLength()).toBe(2);
     const circle = placed<StubCircle>(circleDrawable("c")).stub;
     expect([circle.getCenter()?.toJSON(), circle.getRadius()]).toEqual([ORIGIN, 1000]);
+  });
+
+  it("draw a multipolygon as one shape of every polygon's rings, not drawn again unchanged", () => {
+    const drawable = multipolygonDrawable("mp");
+    const shape = placed(drawable);
+    expect(
+      shape.stub
+        .getPaths()
+        .getArray()
+        .map((ring) => ring.getLength()),
+    ).toEqual([4, 4, 4]);
+    const shown = shape.stub.getPaths().getArray();
+    shape.placed.update({ ...drawable, geometry: structuredClone(drawable.geometry) });
+    expect(shape.stub.getPaths().getArray(), "the same geometry isn't drawn again").toBe(shown);
   });
 
   it("redo only what an update gives a new reference", () => {

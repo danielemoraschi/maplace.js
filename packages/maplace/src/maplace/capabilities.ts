@@ -31,14 +31,16 @@ export function checkCluster(limits: AdapterLimits, field: Field): void {
   if (!limits.capabilities.has("cluster")) unsupported(field, "cluster");
 }
 
+/** The location types an adapter draws only with the capability of the same name. */
+const TYPES_NEEDING_CAPABILITY = ["circle", "multipolygon"] as const;
+
 function checkLocations(locations: readonly Location[], limits: AdapterLimits): void {
-  const needsCircle = !limits.capabilities.has("circle");
+  const missing = TYPES_NEEDING_CAPABILITY.filter((type) => !limits.capabilities.has(type));
   const needsEdit = !limits.capabilities.has("edit");
-  if (!needsCircle && !needsEdit) return;
+  if (missing.length === 0 && !needsEdit) return;
   for (const location of locations) {
-    if (needsCircle && location.type === "circle") {
-      unsupported(child(locationRoot(location.id), "type"), "circle");
-    }
+    const type = missing.find((each) => each === location.type);
+    if (type !== undefined) unsupported(child(locationRoot(location.id), "type"), type);
     if (needsEdit && location.editable === true) {
       unsupported(child(locationRoot(location.id), "editable"), "edit");
     }

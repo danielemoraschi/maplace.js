@@ -55,6 +55,21 @@ accept({ id: "l", type: "polyline", path: [], selectedStyle: { fill: "red" } });
 // @ts-expect-error a marker has no shape styles
 accept({ id: "a", type: "marker", lat: 1, lng: 2, selectedStyle: { stroke: "red" } });
 
+// A multipolygon: several polygons, one location, never editable.
+const ring = [center, center, center];
+accept({
+  id: "m",
+  type: "multipolygon",
+  polygons: [{ path: ring, holes: [ring] }, { path: ring }],
+});
+accept({ id: "m", type: "multipolygon", polygons: [{ path: ring }], style: { fill: "red" } });
+// @ts-expect-error a multipolygon has polygons, not a path
+accept({ id: "m", type: "multipolygon", path: ring });
+// @ts-expect-error a multipolygon isn't editable
+accept({ id: "m", type: "multipolygon", polygons: [{ path: ring }], editable: true });
+// @ts-expect-error each polygon is rings, without its own style
+accept({ id: "m", type: "multipolygon", polygons: [{ path: ring, style: {} }] });
+
 // Absence is undefined, so mapping optional fields across compiles.
 declare const legacyTitle: string | undefined;
 accept({ id: "a", lat: 1, lng: 2, title: legacyTitle });

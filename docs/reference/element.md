@@ -96,6 +96,7 @@ Maplace.js builds its list once its script has run, and a map with `hold` only o
 | `cluster` | Groups nearby markers into a cluster with a count (on Google's CDN, the cluster script; the MapLibre script clusters as it is). A switch, as `fit-all` is; can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `skip-map-label` | The words of the [link past the map](store.md#on-every-map), which keyboard users reach first; default "Skip the map"; can't change once the store exists; a blank one is misuse |
 | `selected-label` | The word announced before a selected location's name, "Selected: Rome"; default "Selected"; can't change once the store exists; a blank one is misuse |
+| `popup-open-on` | What opens a location's popup: `click` (the default), or `hover`, with the selection while nothing is hovered, so a tap still opens it ([popup options](store.md#popup-options)); can't change once the store exists; not with a popup's links |
 | `open-in-maps-link` | Adds a [link at the end of each popup](store.md#popup-options), to the location on the provider's maps site: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
 | `open-in-maps-label` | The words of the link to the provider's maps site; "Open in Maps" when left out; does nothing without `open-in-maps-link`; can't change once the store exists; a blank one is misuse |
 | `directions-link` | Adds a link at the end of each popup, to directions to the location: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
@@ -190,7 +191,7 @@ With React, or a store of your own, read and write the address around `select`, 
 | `location-id` | The location's `id` (not `id`, which must be unique on the page) |
 | `lat`, `lng` | A marker's position, or a circle's centre |
 | `title` | Its `title`: the list label, the accessible name on the map and its popup's heading |
-| `type` | `marker` (the default) or `circle`; a polyline or polygon needs a `path`, so it goes in the map's inline JSON ([data](#data)) |
+| `type` | `marker` (the default) or `circle`; a polyline or polygon needs a `path`, and a multipolygon its `polygons`, so they go in the map's inline JSON ([data](#data)) |
 | `group` | Its `group` |
 | `tags` | Its `tags`, split on spaces, as `class` is: a tag written here can't hold a space |
 | `search-text` | Its `searchText` |

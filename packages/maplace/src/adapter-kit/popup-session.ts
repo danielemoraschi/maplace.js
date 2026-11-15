@@ -1,6 +1,8 @@
 import type { AdapterHost, PresentationState } from "../adapter";
+import { adoptStyles } from "../adopted-styles";
 import type { Geometry } from "../geometry";
 import type { ResolvedPopupOptions } from "../popup";
+import { POINTER_THROUGH_RULE } from "./pointer-through";
 import { createPopupChoice } from "./popup-choice";
 import { type PopupStep, popupContent, popupStep } from "./popup-content";
 import type { PopupLinkSettings } from "./popup-links";
@@ -45,6 +47,7 @@ interface OpenPopup<Place, Window> extends SessionPopup<Window> {
 export function startPopupSession<Place, Window extends PopupWindow<Place>>(
   site: PopupSessionSite<Place, Window>,
 ): PopupSession {
+  adoptStyles(site.document, POINTER_THROUGH_RULE);
   const choice = createPopupChoice(site.openOn);
   const window = site.openWindow({ contentShown, closedByUser });
   let open: OpenPopup<Place, Window> | undefined;
@@ -52,7 +55,8 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
   let announced: string | undefined;
 
   function sync(): void {
-    const placed = wantedLocation();
+    const presented = site.presented();
+    const placed = wantedLocation(presented);
     const step = stepTo(placed);
     if (open === undefined || placed === undefined || step === "replace") replace(placed);
     else if (step === "reopen") reopen(placed);
@@ -61,10 +65,20 @@ export function startPopupSession<Place, Window extends PopupWindow<Place>>(
       if (step === "refresh") refresh(open, placed);
       else follow(open, placed);
     }
+    window.passPointer(showsHoverAlone(presented));
   }
 
-  function wantedLocation(): PopupTarget<Place> | undefined {
-    const id = choice.wanted(site.presented());
+  /**
+   * Whether the popup shows the hovered location, not the selected one: it covers its neighbours,
+   * which the pointer reaches through it. The selected one's popup takes the pointer, for its
+   * close button and links.
+   */
+  function showsHoverAlone({ hoveredId, selectedId }: PresentationState): boolean {
+    return open !== undefined && open.id === hoveredId && open.id !== selectedId;
+  }
+
+  function wantedLocation(presented: PresentationState): PopupTarget<Place> | undefined {
+    const id = choice.wanted(presented);
     return id === undefined ? undefined : site.placedOf(id);
   }
 

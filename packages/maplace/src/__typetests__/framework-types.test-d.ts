@@ -131,6 +131,7 @@ export const noSwitches: VueMap = {
   cluster: false,
   hold: false,
 };
+export const hoverPopups: VueMap = { "popup-open-on": "hover" };
 export const myLocationInVue: VueMap = {
   "my-location": "",
   "my-location-label": "Near me",

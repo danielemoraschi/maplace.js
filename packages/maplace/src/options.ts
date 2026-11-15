@@ -14,7 +14,7 @@ export interface MaplaceOptions<Data = unknown> {
   /** Required before any location uses `html`; return safe HTML. */
   readonly sanitize?: ((html: string) => string) | undefined;
   readonly popup?: PopupOptions | undefined;
-  /** Default style of circles, polylines and polygons; a location's `style` overrides it. */
+  /** Default style of every shape; a location's `style` overrides it. */
   readonly style?: ShapeStyle | undefined;
   /** Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it. */
   readonly selectedStyle?: ShapeStyle | undefined;

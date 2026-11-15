@@ -75,6 +75,39 @@ describe("locationsFromGeoJSON", () => {
     ]);
   });
 
+  it("turns a MultiPolygon into one multipolygon, each polygon's rings as a polygon's", () => {
+    const island = square.map(([lng = 0, lat = 0]) => [lng + 20, lat]);
+    const country = feature("a", { type: "MultiPolygon", coordinates: [[square, hole], [island]] });
+    const [location] = locationsFromGeoJSON(collection(country));
+    expect(location).toMatchObject({
+      id: "a",
+      type: "multipolygon",
+      polygons: [
+        {
+          path: [{ lng: 0 }, { lng: 10 }, { lng: 10 }],
+          holes: [[{ lng: 2 }, { lng: 4 }, { lng: 4 }]],
+        },
+        { path: [{ lng: 20 }, { lng: 30 }, { lng: 30 }] },
+      ],
+    });
+    expect(location).not.toHaveProperty("polygons.1.holes");
+  });
+
+  it("keeps a MultiPolygon of one polygon a multipolygon", () => {
+    const one = feature("a", { type: "MultiPolygon", coordinates: [[square]] });
+    expect(locationsFromGeoJSON(collection(one))[0]).toMatchObject({
+      type: "multipolygon",
+      polygons: [{ path: [{ lng: 0 }, { lng: 10 }, { lng: 10 }] }],
+    });
+  });
+
+  it("names a MultiPolygon's bad ring by its place in the coordinates", () => {
+    const bad = feature("a", { type: "MultiPolygon", coordinates: [[square], ["ring"]] });
+    expect(() => locationsFromGeoJSON(collection(bad))).toThrow(
+      /features\[0\]\.geometry\.coordinates\[1\]\[0\] must be an array of positions/,
+    );
+  });
+
   it("leaves a ring GeoJSON left unclosed as it is", () => {
     const open = feature("a", { type: "Polygon", coordinates: [square.slice(0, 3)] });
     const [polygon] = locationsFromGeoJSON(collection(open));
@@ -164,6 +197,7 @@ describe("locationsFromGeoJSON", () => {
           ],
         }),
         feature("area", { type: "Polygon", coordinates: [square, hole] }, null),
+        feature("country", { type: "MultiPolygon", coordinates: [[square, hole], [square]] }),
       ),
     );
     const maplace = createMaplace({ locations });
@@ -171,6 +205,7 @@ describe("locationsFromGeoJSON", () => {
       "point",
       "line",
       "area",
+      "country",
     ]);
   });
 

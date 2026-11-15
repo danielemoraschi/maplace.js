@@ -1,0 +1,73 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map mounts on, and the map made with Maplace, which adds Maps JS with your key; the countries come from countries.json, Natural Earth's, each filled by its GDP per person, its value in a popup on hover, and a legend with the countries' select on the map. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- This example's look lives in the examples' styles/choropleth.css, which every version links. -->
+<link rel="stylesheet" href="../styles/choropleth.css">
+<style>
+  #choropleth-script-map { height: 24rem; }
+</style>
+<div id="choropleth-script-map"></div>
+<script type="module">
+  // The legend's classes, lowest first, each with its colour: a scale colour-blind readers
+  // can tell apart.
+  const CLASSES = [
+    { below: 1500, fill: "#ffffcc", label: "Under $1,500" },
+    { below: 4000, fill: "#a1dab4", label: "$1,500–4,000" },
+    { below: 10000, fill: "#41b6c4", label: "$4,000–10,000" },
+    { below: 30000, fill: "#2c7fb8", label: "$10,000–30,000" },
+    { below: Number.POSITIVE_INFINITY, fill: "#253494", label: "Over $30,000" },
+  ];
+  const NO_DATA = { fill: "#d1d5db", label: "No data" };
+  // Every country's outline, white between neighbours; under the pointer, its colour at full
+  // strength, which its neighbours' outlines can't hide, and a dark outline.
+  const OUTLINE = { stroke: "#ffffff", strokeWidth: 1, fillOpacity: 0.75 };
+  const HOVERED = { stroke: "#111827", strokeWidth: 2, fillOpacity: 1 };
+  const dollars = new Intl.NumberFormat("en", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+  const maplace = Maplace.createMaplace({
+    popup: { openOn: "hover" },
+    // The world from Europe and Africa, where the globe opens too, rather than fitted round it.
+    view: { kind: "center", center: { lat: 20, lng: 10 }, zoom: 2 },
+  });
+  const adapter = Maplace.createGoogleAdapter({ apiKey: "YOUR_KEY" });
+  maplace.attach(adapter, "#choropleth-script-map");
+  const countries = Maplace.createListView(maplace, { as: "select", label: "Country" });
+  adapter.mountControl(legendWith(countries.element), "bottom-left");
+
+  const response = await fetch("/examples/data/countries.json");
+  maplace.setLocations(Maplace.locationsFromGeoJSON(await response.json()).map(shaded));
+
+  // A country filled in its class's colour, its value in the popup hovering it opens.
+  function shaded(country) {
+    const value = country.data?.gdpPerPerson ?? null;
+    const content = value === null ? NO_DATA.label : `${dollars.format(value)} per person`;
+    return { ...country, style: { ...OUTLINE, fill: classOf(value).fill }, hoveredStyle: HOVERED, content };
+  }
+
+  function classOf(value) {
+    return value === null ? NO_DATA : (CLASSES.find(({ below }) => value < below) ?? NO_DATA);
+  }
+
+  // The legend: each class with its colour, then the countries' select, for the keyboard.
+  function legendWith(select) {
+    const legend = document.createElement("div");
+    legend.className = "choropleth-legend";
+    const title = document.createElement("p");
+    title.className = "choropleth-legend-title";
+    title.textContent = "GDP per person";
+    const classes = document.createElement("ul");
+    classes.className = "choropleth-classes";
+    classes.append(...[...CLASSES, NO_DATA].map(legendEntry));
+    legend.append(title, classes, select);
+    return legend;
+  }
+
+  function legendEntry({ fill, label }) {
+    const entry = document.createElement("li");
+    const swatch = document.createElement("span");
+    swatch.className = "choropleth-swatch";
+    swatch.style.background = fill;
+    entry.append(swatch, label);
+    return entry;
+  }
+</script>

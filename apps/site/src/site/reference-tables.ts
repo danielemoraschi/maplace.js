@@ -120,6 +120,7 @@ export function referenceTables(): ReferenceTable[] {
       ["## Circles", LOCATION_FIELDS.circle, "CircleLocation"],
       ["## Polylines", LOCATION_FIELDS.polyline, "PolylineLocation"],
       ["## Polygons", LOCATION_FIELDS.polygon, "PolygonLocation"],
+      ["## Multipolygons", LOCATION_FIELDS.multipolygon, "MultiPolygonLocation"],
       ["## Styles", SHAPE_STYLE_FIELDS, "ShapeStyle"],
     ]),
     ...tablesOn("store.md", [

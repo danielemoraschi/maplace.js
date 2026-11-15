@@ -1,11 +1,13 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi } from "vitest";
+import { POINTER_THROUGH_ATTRIBUTE } from "../adapter-kit/pointer-through";
 import {
   BLOCK_GUTTER_PROPERTY,
   GOOGLE_POPUP_ATTRIBUTE,
   INLINE_GUTTER_PROPERTY,
 } from "./popup-styles";
 import { createPopupWindow } from "./popup-window";
+import type { StubMap } from "./testing/stub-libraries";
 import type { StubInfoWindow } from "./testing/stub-popups";
 import { stubMounted } from "./testing/stub-site";
 
@@ -19,13 +21,21 @@ const settled = () => new Promise((resolve) => setTimeout(resolve, 0));
  * Google's styling: 18px at the inline end, 12px below.
  */
 function popupWindow() {
-  const { mounted } = stubMounted();
+  const { mounted, close } = stubMounted();
   const window = createPopupWindow(mounted, { contentShown: vi.fn(), closedByUser: vi.fn() });
   const stub = window.infoWindow as unknown as StubInfoWindow;
   const sizes = { offsetWidth: 280, clientWidth: 262, offsetHeight: 198, clientHeight: 186 };
   for (const [name, value] of Object.entries(sizes))
     Object.defineProperty(stub.box, name, { value });
-  return { window, heading: () => stub.get("headerContent") as HTMLElement };
+  const { floatPane } = mounted.map as unknown as StubMap;
+  document.body.append(floatPane);
+  return {
+    window,
+    stub,
+    floatPane,
+    close,
+    heading: () => stub.get("headerContent") as HTMLElement,
+  };
 }
 
 function contentOf(text: string): HTMLElement {
@@ -64,5 +74,21 @@ describe("createPopupWindow", () => {
     const { window, heading } = popupWindow();
     window.open({ element: contentOf("Alpha"), place: PLACE, title: "Alpha" });
     expect(heading().hasAttribute(GOOGLE_POPUP_ATTRIBUTE)).toBe(true);
+  });
+
+  it("gives Google's popup pane back as it was when the map closes", () => {
+    const { floatPane, close } = popupWindow();
+    close();
+    expect(floatPane.style.willChange).toBe("");
+  });
+
+  it("lets the pointer through its own box in the popup pane, and takes it again", async () => {
+    const { window, stub } = popupWindow();
+    window.open({ element: contentOf("Alpha"), place: PLACE, title: "Alpha" });
+    window.passPointer(true);
+    await settled();
+    expect(stub.box.hasAttribute(POINTER_THROUGH_ATTRIBUTE)).toBe(true);
+    window.passPointer(false);
+    expect(stub.box.hasAttribute(POINTER_THROUGH_ATTRIBUTE)).toBe(false);
   });
 });

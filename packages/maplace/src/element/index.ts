@@ -104,6 +104,8 @@ export { defineListView } from "./list-views";
  *   only when pressed; read when the map opens, as are `my-location-label` (its words),
  *   `my-location-unavailable-label` (what it says when no position comes) and
  *   `my-location-position` (its corner).
+ * - `popup-open-on`: `click` (the default) or `hover`, what opens a location's popup; can't
+ *   change afterwards.
  * - `open-in-maps-link`, `directions-link`: a link at the end of each popup, to the location on
  *   the provider's maps site, and to directions there (a location with no content has no popup);
  *   can't change afterwards.

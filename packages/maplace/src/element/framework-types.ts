@@ -30,6 +30,7 @@ type NamedMapAttribute =
   | "selected-label"
   | "open-in-maps-label"
   | "directions-label"
+  | "popup-open-on"
   | "my-location-label"
   | "my-location-unavailable-label"
   | "my-location-position"

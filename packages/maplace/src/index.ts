@@ -24,7 +24,9 @@ export type {
   Geometry,
   LatLng,
   MarkerGeometry,
+  MultiPolygonGeometry,
   PolygonGeometry,
+  PolygonRings,
   PolylineGeometry,
 } from "./geometry";
 export type { ListEntry, ListView, ListViewOptions } from "./list-view";
@@ -36,6 +38,7 @@ export type {
   Location,
   LocationState,
   MarkerLocation,
+  MultiPolygonLocation,
   PolygonLocation,
   PolylineLocation,
 } from "./location";

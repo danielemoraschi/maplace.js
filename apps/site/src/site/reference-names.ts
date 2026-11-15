@@ -1,9 +1,11 @@
 import type {
   CircleLocation,
   ListViewOptions,
+  Location,
   Maplace,
   MaplaceOptions,
   MarkerLocation,
+  MultiPolygonLocation,
   PolygonLocation,
   PolylineLocation,
   PopupOptions,
@@ -20,10 +22,7 @@ export function everyName<Name extends string>(
 }
 
 /** The fields every location type has, as `validate/location.ts` reads them. */
-type CommonField = keyof MarkerLocation &
-  keyof CircleLocation &
-  keyof PolylineLocation &
-  keyof PolygonLocation;
+type CommonField = keyof Location;
 
 /** Every location field: those of every type, and each type's own. */
 export const LOCATION_FIELDS = {
@@ -65,6 +64,12 @@ export const LOCATION_FIELDS = {
   polygon: everyName<Exclude<keyof PolygonLocation, CommonField>>({
     path: true,
     holes: true,
+    style: true,
+    selectedStyle: true,
+    hoveredStyle: true,
+  }),
+  multipolygon: everyName<Exclude<keyof MultiPolygonLocation, CommonField>>({
+    polygons: true,
     style: true,
     selectedStyle: true,
     hoveredStyle: true,

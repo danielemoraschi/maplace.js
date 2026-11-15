@@ -2,7 +2,13 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
-import { adding, circleDrawable, ORIGIN, polygonDrawable } from "../testing/conformance/fixtures";
+import {
+  adding,
+  circleDrawable,
+  multipolygonDrawable,
+  ORIGIN,
+  polygonDrawable,
+} from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { mountedMapLibre } from "./testing/mounted";
 import { RENDER_WAIT } from "./testing/rendered";
@@ -54,6 +60,25 @@ describe("shape features as MapLibre renders them", () => {
     const map = await drawnAround(across, ANTIMERIDIAN, 4);
     expect(filledAt(map, { lat: 0, lng: 170 })).toBe(false);
     expect(filledAt(map, { lat: 0, lng: -170 })).toBe(false);
+  });
+
+  it("fills each of a multipolygon's polygons as one location's, one of them across ±180", async () => {
+    const across = [
+      { lat: -2, lng: 178 },
+      { lat: -2, lng: -178 },
+      { lat: 2, lng: -178 },
+      { lat: 2, lng: 178 },
+    ];
+    const island = around({ lat: 0, lng: 170 }, 100_000);
+    const polygons = [{ path: across }, { path: island }];
+    const country = multipolygonDrawable("mp", { geometry: { type: "multipolygon", polygons } });
+    const map = await drawnAround(country, ANTIMERIDIAN, 4);
+    expect(filledAt(map, { lat: 0, lng: 170 })).toBe(true);
+    expect(filledAt(map, { lat: 0, lng: -170 })).toBe(false);
+    const idAt = ({ lat, lng }: LatLng) =>
+      map.queryRenderedFeatures(map.project([lng, lat]), { layers: ["maplace-fills"] })[0]
+        ?.properties.id;
+    expect([idAt(ANTIMERIDIAN), idAt({ lat: 0, lng: 170 })]).toEqual(["mp", "mp"]);
   });
 
   it("fills a 1 km circle 900 m from its centre and not 1,100 m from it", async () => {

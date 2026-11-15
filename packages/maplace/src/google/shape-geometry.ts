@@ -24,7 +24,8 @@ interface Showing {
  * again after, since setting a path replaces the arrays watched. Only a geometry that differs from
  * what the shape shows is drawn or reported: the store writes back a copy of each edit, and
  * redrawing it would replace the arrays the user is editing (0.2 lost edits that way, #64 and
- * #178); an edit that leaves the shape as it was reports nothing.
+ * #178); an edit that leaves the shape as it was reports nothing. A kind that is never edited is
+ * neither watched nor read back: what it was given stands as what it shows.
  */
 export function showGeometry(geometry: Geometry, { kind, shape, edited }: Showing): ShownGeometry {
   let shown = geometry;
@@ -33,12 +34,12 @@ export function showGeometry(geometry: Geometry, { kind, shape, edited }: Showin
   function draw(next: Geometry): void {
     stopWatching();
     kind.show(shape, next);
-    shown = kind.read(shape);
-    stopWatching = kind.watch(shape, reportEdit);
+    shown = kind.read?.(shape) ?? next;
+    stopWatching = kind.watch?.(shape, reportEdit) ?? (() => {});
   }
 
   function reportEdit(): void {
-    const read = kind.read(shape);
+    const read = kind.read?.(shape) ?? shown;
     if (sameGeometry(read, shown)) return;
     shown = read;
     edited(read);

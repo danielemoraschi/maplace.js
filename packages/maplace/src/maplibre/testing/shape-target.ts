@@ -1,6 +1,6 @@
 import { samePoint } from "../../adapter-kit/same-geometry";
 import { anchorOf } from "../../anchor";
-import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
+import type { CircleGeometry, Geometry, LatLng, PolygonRings } from "../../geometry";
 import type { ShapeStyle } from "../../style";
 import { pointAtBearing } from "../circle-sphere";
 import { wrappedLongitude } from "../conversions";
@@ -13,8 +13,8 @@ import { clickCanvas, leaveCanvas, moveOverCanvas } from "./pointer";
 import type { ProbeTarget, TargetSite } from "./probe-target";
 
 /**
- * A circle, polyline or polygon as a user reaches it: on the canvas, at a point on its line or
- * inside its area, and by its edit handles. It reads the feature as the shape source on the map
+ * A circle, polyline, polygon or multipolygon as a user reaches it: on the canvas, at a point on
+ * its line or inside its area, and by its edit handles. It reads the feature as the shape source on the map
  * was sent it, with its rings opened again, never through the adapter's conversions, so a shape
  * left after destroy shows.
  */
@@ -96,13 +96,19 @@ export function holdHandle(placed: PlacedShape, role: HandleRole, to: LatLng) {
 /**
  * A point a user would point at: a circle's centre, halfway along a polyline as drawn (bowed or
  * geodesic too), or a tenth of the way from a polygon's first corner to the middle of its bounds,
- * inside it and clear of a hole there.
+ * inside it and clear of a hole there; a multipolygon's first polygon.
  */
 function pointOn(geometry: Geometry): LatLng {
   if (geometry.type === "circle") return geometry.center;
   if (geometry.type === "polyline") return anchorOf(geometry);
-  if (geometry.type === "polygon") return between(geometry.path[0], middleOf(geometry.path), 0.1);
+  if (geometry.type === "polygon") return insideOf(geometry.path);
+  if (geometry.type === "multipolygon") return insideOf(geometry.polygons[0]?.path ?? []);
   throw new Error(`the probe points at shapes, not a ${geometry.type}`);
+}
+
+/** A tenth of the way from an outline's first corner to the middle of its bounds. */
+function insideOf(path: readonly LatLng[]): LatLng {
+  return between(path[0], middleOf(path), 0.1);
 }
 
 function between(from: LatLng | undefined, to: LatLng | undefined, share: number): LatLng {
@@ -136,12 +142,20 @@ function styleOf({ properties }: LocationFeature): ShapeStyle {
 function geometryOf({ geometry }: LocationFeature, placed: PlacedShape): Geometry {
   if (geometry.type === "LineString")
     return { type: "polyline", path: geometry.coordinates.map(latLngOf) };
+  if (geometry.type === "MultiPolygon")
+    return { type: "multipolygon", polygons: geometry.coordinates.map(openRings) };
   if (geometry.type !== "Polygon") throw new Error(`no shape is drawn as a ${geometry.type}`);
-  const [path = [], ...holes] = geometry.coordinates.map((ring) => ring.slice(0, -1).map(latLngOf));
+  const rings = openRings(geometry.coordinates);
   const shown = placed.drawable().geometry;
   // A ring round a pole runs over it, by points at ±90° that are not on the circle.
-  if (shown.type === "circle") return circleDrawn(path.filter(offPole), shown);
-  return { type: "polygon", path, holes: holes.length > 0 ? holes : undefined };
+  if (shown.type === "circle") return circleDrawn(rings.path.filter(offPole), shown);
+  return { type: "polygon", ...rings };
+}
+
+/** GeoJSON's rings of one polygon, opened again: maplace's paths don't repeat the first point. */
+function openRings(coordinates: GeoJSON.Position[][]): PolygonRings {
+  const [path = [], ...holes] = coordinates.map((ring) => ring.slice(0, -1).map(latLngOf));
+  return { path, holes: holes.length > 0 ? holes : undefined };
 }
 
 const offPole = ({ lat }: LatLng) => Math.abs(lat) !== 90;

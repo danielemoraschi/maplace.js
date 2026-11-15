@@ -25,7 +25,7 @@ It runs on Google Maps or MapLibre, as a `<maplace-map>` element, from your own 
 
 ## What it does
 
-- **Your data**: HTML children, JSON or JS objects, or GeoJSON ([locations](docs/reference/locations.md)): markers, circles, polylines and polygons on one map, and on Google one route through them.
+- **Your data**: HTML children, JSON or JS objects, or GeoJSON ([locations](docs/reference/locations.md)): markers, circles, polylines, polygons and multipolygons on one map, and on Google one route through them.
 - **Lists**: beside the map or on it, with search, groups and "this area", or a native select ([list options](docs/reference/store.md#list-view-options)).
 - **Nearest first**: sorted by straight-line distance from a point, with a "My location" button, and no provider service or quota ([distances](docs/reference/store.md#distances)).
 - **Many places**: clustering for long lists ([element](docs/reference/element.md#map-attributes)).
@@ -198,7 +198,7 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 });
 ```
 
-Circles, polylines and polygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); Maplace.js's own selected and hovered look fills what they leave unset.
+Circles, polylines, polygons and multipolygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); Maplace.js's own selected and hovered look fills what they leave unset.
 
 For the element from npm, `import "@maplacejs/maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider, and `import "@maplacejs/maplace/element/maplibre"` with the MapLibre provider (on the page's maplibre-gl and its stylesheet).
 
@@ -302,7 +302,7 @@ export function CityMap() {
 - [maplacejs.com](https://maplacejs.com): every example running live, and these docs.
 - [Reference](docs/reference/api.md): every export, with where it is explained, its error codes and each provider's capabilities.
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): twenty-seven scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
+- [Examples](packages/maplace/examples/): twenty-eight scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and all but `route` on MapLibre too, in each one's `maplibre/` folder.
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 - [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md).

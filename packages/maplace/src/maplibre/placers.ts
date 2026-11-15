@@ -7,4 +7,5 @@ export const PLACERS: Placers = {
   circle: placeShape,
   polyline: placeShape,
   polygon: placeShape,
+  multipolygon: placeShape,
 };

@@ -102,9 +102,11 @@ export function optionsOf(root: Element, label: string): string[] {
   return [...selectLabelled(root, label).options].map((option) => option.text.trim());
 }
 
-/** The select inside `root` its `<label>` names `label`, failing when there is none. */
+/** The select inside `root` its `<label>` or `aria-label` names `label`, failing when there is none. */
 function selectLabelled(root: Element, label: string): HTMLSelectElement {
-  const select = (byText(root, "label", label) as HTMLLabelElement).control;
+  const select =
+    root.querySelector(`select[aria-label="${label}"]`) ??
+    (byText(root, "label", label) as HTMLLabelElement).control;
   if (!(select instanceof HTMLSelectElement)) throw new Error(`no select labelled "${label}"`);
   return select;
 }

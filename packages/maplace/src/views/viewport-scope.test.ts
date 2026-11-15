@@ -68,6 +68,21 @@ describe("inViewOf", () => {
     expect(listed(scopeIn("area", undefined, WEST_ONLY), [near, inside])).toEqual(["in"]);
   });
 
+  it("lists a multipolygon with any of its polygons in view", () => {
+    const ring = (lng: number) => [
+      { lat: 10, lng },
+      { lat: 11, lng },
+      { lat: 10, lng: lng + 1 },
+    ];
+    const country: Location = {
+      id: "split",
+      type: "multipolygon",
+      polygons: [{ path: ring(50) }, { path: ring(15) }],
+    };
+    const away: Location = { id: "away", type: "multipolygon", polygons: [{ path: ring(50) }] };
+    expect(listed(scopeIn("area", undefined, WEST_ONLY), [country, away])).toEqual(["split"]);
+  });
+
   it("lists a polyline or polygon with any point in view", () => {
     const line: Location = {
       id: "line",

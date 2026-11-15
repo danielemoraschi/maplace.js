@@ -61,4 +61,20 @@ describe("sameGeometry", () => {
       true,
     );
   });
+
+  it("compares a multipolygon's polygons in order, holes included", () => {
+    const other = path.map(({ lat, lng }) => ({ lat: lat + 5, lng }));
+    const country: Geometry = {
+      type: "multipolygon",
+      polygons: [{ path, holes: [hole] }, { path: other }],
+    };
+    expect(sameGeometry(country, structuredClone(country))).toBe(true);
+    expect(
+      sameGeometry(country, { type: "multipolygon", polygons: [{ path, holes: [hole] }] }),
+    ).toBe(false);
+    expect(
+      sameGeometry(country, { type: "multipolygon", polygons: [{ path }, { path: other }] }),
+    ).toBe(false);
+    expect(sameGeometry(country, { type: "polygon", path })).toBe(false);
+  });
 });

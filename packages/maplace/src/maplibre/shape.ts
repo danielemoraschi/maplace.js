@@ -11,8 +11,8 @@ import { shapeFeature, shapeProperties } from "./location-features";
 import type { PlacedShape, PlacingSite } from "./placed-location";
 
 /**
- * One circle, polyline or polygon, a feature in the shape layers: drawn in its style for its
- * state, and stacked by its size, the later added in front among one size. A change sends it
+ * One circle, polyline, polygon or multipolygon, a feature in the shape layers: drawn in its style
+ * for its state, and stacked by its size, the later added in front among one size. A change sends it
  * again only when it changed what is drawn. An editable one shown has handles a user drags.
  */
 export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {

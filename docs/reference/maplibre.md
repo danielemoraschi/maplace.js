@@ -167,7 +167,7 @@ A marker with no icon is a pin like Google's, drawn in a layer of the map rather
 
 A marker with an `icon` is a DOM marker, focusable and pressed by Enter or Space. An `editable` marker is a DOM marker showing the pin, dragged there.
 
-Circles are polygons of 128 points on the sphere, their radius in metres as on Google. Polylines and polygons across ±180 are drawn the short way.
+Circles are polygons of 128 points on the sphere, their radius in metres as on Google. Polylines, polygons and each of a multipolygon's polygons across ±180 are drawn the short way.
 
 An `editable` shape gets Google's handles: one on each point and one between each two, and a circle's centre and four radius handles. They work with the pointer only. A shape's `locationEdit` comes as the drag goes, and its `locationChange` on release.
 

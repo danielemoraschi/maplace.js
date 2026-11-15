@@ -138,7 +138,10 @@ function withRing(
   change: (ring: Ring) => LatLng[],
 ): Geometry {
   const rings = ringsOf(geometry);
-  if (geometry.type === "marker" || geometry.type === "circle" || rings[role.ring] === undefined) {
+  if (
+    (geometry.type !== "polyline" && geometry.type !== "polygon") ||
+    rings[role.ring] === undefined
+  ) {
     throw unfitHandle(geometry, role);
   }
   const [path = [], ...holes] = rings.map((ring, index) =>

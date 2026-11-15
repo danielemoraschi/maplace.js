@@ -70,6 +70,42 @@ describe("resolveView", () => {
     });
   });
 
+  it("fits a selected multipolygon to its largest polygon, and fit-all to every polygon", () => {
+    const ring = (lat: number, lng: number, half: number) => [
+      { lat: lat - half, lng: lng - half },
+      { lat: lat - half, lng: lng + half },
+      { lat: lat + half, lng: lng },
+    ];
+    const country: Location = {
+      id: "fr",
+      type: "multipolygon",
+      polygons: [{ path: ring(4, -53, 1) }, { path: ring(46, 2, 4) }],
+    };
+    const scope = { locations: [country], filter: undefined };
+    expect(resolveView({ kind: "location", id: "fr", zoom: undefined }, scope)).toMatchObject({
+      bounds: { south: 42, west: -2, north: 50, east: 6 },
+    });
+    expect(resolveView(fitAll, scope)).toMatchObject({
+      bounds: { south: 3, west: -54, north: 50, east: 6 },
+    });
+  });
+
+  it("fits every polygon of a multipolygon across ±180, the short way", () => {
+    const ring = (lng: number) => [
+      { lat: 60, lng },
+      { lat: 62, lng },
+      { lat: 61, lng: lng + 1 },
+    ];
+    const russia: Location = {
+      id: "ru",
+      type: "multipolygon",
+      polygons: [{ path: ring(178) }, { path: ring(-176) }],
+    };
+    expect(resolveView(fitAll, { locations: [russia], filter: undefined })).toMatchObject({
+      bounds: { west: 178, east: -175 },
+    });
+  });
+
   it("keeps a marker's view, and a shape's with a zoom, as they are", () => {
     const scope = { locations: [...locations, ...shapes], filter: undefined };
     const marker: View = { kind: "location", id: "a", zoom: undefined };

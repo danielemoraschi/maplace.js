@@ -1,4 +1,5 @@
 import type { Adapter } from "../adapter";
+import { largestPolygon } from "../anchor";
 import { isMarker } from "../diff/geometry";
 import type { Location } from "../location";
 import { locationById } from "../location-index";
@@ -83,7 +84,15 @@ function locationShown(view: LocationView, { locations }: FilteredLocations): Re
   return isMarker(location) ? view : locationFitted(view, location);
 }
 
+/**
+ * A shape fitted to its box; a multipolygon to its largest polygon's, where its popup points:
+ * France, not French Guiana.
+ */
 function locationFitted(view: LocationView, location: Location): ResolvedView {
-  const bounds = boundsAround([location]);
+  const shown =
+    location.type === "multipolygon"
+      ? { ...location, polygons: [largestPolygon(location)] }
+      : location;
+  const bounds = boundsAround([shown]);
   return bounds ? boundsView(bounds) : view;
 }

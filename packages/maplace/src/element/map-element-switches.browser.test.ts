@@ -12,6 +12,42 @@ describe("<maplace-map>'s switches, read when the store or the map opens", () =>
     });
   });
 
+  it("reads popup-open-on into the store's popup options, click when left out", async () => {
+    await mapFrom(`<maplace-map popup-open-on="hover">${ROME}</maplace-map>`);
+    expect(lastAdapter().mounted?.popup.openOn).toBe("hover");
+    await mapFrom(`<maplace-map>${ROME}</maplace-map>`);
+    expect(lastAdapter().mounted?.popup.openOn).toBe("click");
+  });
+
+  it("a popup-open-on neither click nor hover stands as misuse, naming it", async () => {
+    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    map.setAttribute("popup-open-on", "focus");
+    expect(errors).toEqual([
+      expect.objectContaining({
+        field: "popup-open-on",
+        message: expect.stringContaining('popup-open-on must be "click" or "hover", got "focus"'),
+      }),
+    ]);
+    map.removeAttribute("popup-open-on");
+    expect(map.loadState).toBe("idle");
+  });
+
+  it('refuses popup-open-on="hover" beside a popup\'s link as misuse, and opens on click', async () => {
+    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    map.setAttribute("directions-link", "");
+    map.setAttribute("popup-open-on", "hover");
+    expect(errors.at(-1)).toMatchObject({
+      field: "popup-open-on",
+      message: expect.stringContaining('popup-open-on "hover" cannot be set together with a link'),
+    });
+    const both = await mapFrom(
+      `<maplace-map popup-open-on="hover" open-in-maps-link>${ROME}</maplace-map>`,
+    );
+    expect([both.loadState, lastAdapter().mounted?.popup.openOn]).toEqual(["error", "click"]);
+  });
+
   it("draws no link from its label alone", async () => {
     await mapFrom(
       `<maplace-map open-in-maps-label="Apri" directions-link="false">${ROME}</maplace-map>`,

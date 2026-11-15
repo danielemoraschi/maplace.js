@@ -49,9 +49,9 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "locations",
     file: "docs/reference/locations.md",
-    title: "Locations: markers, circles, polylines and polygons",
+    title: "Locations: markers, circles, polylines, polygons and multipolygons",
     description:
-      "Every location field, by type: markers, circles, polylines and polygons, with what each one draws and takes.",
+      "Every location field, by type: markers, circles, polylines, polygons and multipolygons, with what each one draws and takes.",
     label: "Locations",
   },
   {

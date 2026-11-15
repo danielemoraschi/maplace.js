@@ -1,6 +1,6 @@
-# Locations: markers, circles, polylines and polygons
+# Locations: markers, circles, polylines, polygons and multipolygons
 
-A location is one item of your data: a marker, a circle, a polyline or a polygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (Maplace.js never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
+A location is one item of your data: a marker, a circle, a polyline, a polygon or a multipolygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (Maplace.js never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
 
 <!-- example: packages/maplace/examples/polygon/vanilla.ts -->
 ```ts
@@ -34,7 +34,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | Field | Type | What | In HTML |
 |---|---|---|---|
 | `id` | `string` | Stable identity: updates, selection and routes refer to it. Required, unique | `location-id` |
-| `type` | `"marker" \| "circle" \| "polyline" \| "polygon"` | Which shape it is; a marker when left out | `type` |
+| `type` | `"marker" \| "circle" \| "polyline" \| "polygon" \| "multipolygon"` | Which shape it is; a marker when left out | `type` |
 | `title` | `string` | Plain text: the list label, the accessible name on the map and its popup's heading | `title` |
 | `content` | [`Content`](#content) | The popup's content | a `<template>` child |
 | `html` | `string` | Untrusted HTML for the popup instead of `content`, rendered only through the store's `sanitize` | |
@@ -44,7 +44,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
 | `visible` | `boolean` | `false` keeps it in the data but not drawn, listed or selected. Default `true` | |
 | `listed` | `boolean` | `false` leaves it out of every list view; the map still draws it and it is selected there. Default `true` | `listed` |
-| `editable` | `boolean` | Lets the user drag a marker or reshape a shape; needs the `edit` capability; not with a polyline's `curve` or `geodesic` | `editable` |
+| `editable` | `boolean` | Lets the user drag a marker or reshape a shape; needs the `edit` capability; not with a polyline's `curve` or `geodesic`, nor on a multipolygon | `editable` |
 | `data` | your type | Your own fields, handed back to content, icon and render functions | |
 
 ## Markers
@@ -139,6 +139,17 @@ createGoogleMap("#flights-vanilla-map", {
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 
+## Multipolygons
+
+Several polygons that are one location, such as a country with its islands: drawn, hovered and selected as one shape, with one entry in a list. It is shown at its largest polygon: its popup points at the centre of that polygon's bounds, and selecting it fits that polygon, so selecting France shows France rather than the ocean between it and French Guiana; fitting every location, and "This area", count all its polygons. A multipolygon isn't editable (`editable: true` is `invalid-input`): give the polygon to reshape a location of its own. It needs the `multipolygon` capability, which Google's and MapLibre's adapters have, from 1.2; an adapter written for 1.0 lacks it, so the store refuses a multipolygon there. A GeoJSON `MultiPolygon` becomes one ([From GeoJSON](#from-geojson)).
+
+| Field | Type | What | In HTML |
+|---|---|---|---|
+| `polygons` | `{ path, holes? }[]` | Its polygons, at least one: each a polygon's outer ring (`path`, at least 3 points) and its inner rings (`holes`, at least 3 points each) | |
+| `style` | [`ShapeStyle`](#styles) | How it is drawn, over the store's `style` | `shape-style` (JSON) |
+| `selectedStyle` | `ShapeStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
+| `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
+
 ## Styles
 
 A style says how a shape or a route line is drawn. Colours are CSS colours and widths are pixels. A `LineStyle` (polylines, routes) has the three stroke fields; a `ShapeStyle` (circles, polygons) adds the fill.
@@ -181,7 +192,7 @@ A DOM marker carries `data-selected` and `data-hovered` while in that state, so 
 
 <!-- example: packages/maplace/examples/migrate/from-geojson.ts -->
 ```ts
-// Locations from a GeoJSON file: its Points, LineStrings and Polygons, each feature's id its own.
+// Locations from a GeoJSON file: its Points, LineStrings, Polygons and MultiPolygons, ids its own.
 import { locationsFromGeoJSON, type Maplace } from "@maplacejs/maplace";
 
 declare const maplace: Maplace; // your store, e.g. from createGoogleMap or createMapLibreMap
@@ -192,18 +203,18 @@ maplace.setLocations(locationsFromGeoJSON(await response.json()));
 
 Each feature becomes one location:
 
-- a `Point` becomes a marker, a `LineString` a polyline, and a `Polygon` a polygon: its first ring is the `path` and the others its `holes`;
+- a `Point` becomes a marker, a `LineString` a polyline, a `Polygon` a polygon (its first ring is the `path` and the others its `holes`), and a `MultiPolygon` one [multipolygon](#multipolygons), each of its polygons read as a `Polygon`'s rings, even when it has only one;
 - positions are GeoJSON's `[lng, lat]`, turned into `{ lat, lng }`; an altitude is dropped, and so is a ring's closing point (a last point equal to the first);
 - `id` is the feature's `id`, a number becoming its string;
 - `title` and `group` are the properties' own: strings, or `null` or absent for none;
 - `tags` are the properties' own when they are a list; anything else called `tags`, such as an OpenStreetMap export's object, stays in `data` alone;
 - `data` is the properties whole, `title`, `group` and `tags` included; `null` or no properties means no `data`.
 
-A feature without an `id`, or with another geometry (`MultiPoint`, `MultiLineString`, `MultiPolygon`, a `GeometryCollection`, none), or a `title`, a `group` or a list of `tags` that isn't text, is `invalid-input` naming it, such as `features[2].geometry.type`. The values are checked as any location's are, when the store takes them. Map the features across first when the file doesn't fit, on the JSON as loaded (with your own types, cast `properties` to them):
+A feature without an `id`, or with another geometry (`MultiPoint`, `MultiLineString`, a `GeometryCollection`, none), or a `title`, a `group` or a list of `tags` that isn't text, is `invalid-input` naming it, such as `features[2].geometry.type`. The values are checked as any location's are, when the store takes them. Map the features across first when the file doesn't fit, on the JSON as loaded (with your own types, cast `properties` to them):
 
 - ids kept in a property: `locationsFromGeoJSON({ ...collection, features: collection.features.map((feature) => ({ ...feature, id: feature.properties?.code })) })`;
 - no ids at all, as files from many tools have: the same call with `map((feature, index) => ({ ...feature, id: String(index) }))`; such ids stay the same only while the file keeps its order;
-- other geometries: `features: collection.features.filter((feature) => ["Point", "LineString", "Polygon"].includes(feature.geometry?.type ?? ""))` in the same call keeps the ones it reads, or split them yourself, with ids of your own;
+- other geometries: `features: collection.features.filter((feature) => ["Point", "LineString", "Polygon", "MultiPolygon"].includes(feature.geometry?.type ?? ""))` in the same call keeps the ones it reads, or split them yourself, with ids of your own;
 - typed properties: `locationsFromGeoJSON<Shop>(json)` types each location's `data`, as `createMaplace<Shop>()` does.
 
 On `<maplace-map>`, set the `locations` property to the result. With React, compute it once, at module scope or in `useMemo`: `<MaplaceProvider locations>` applies every new array it is given.

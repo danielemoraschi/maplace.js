@@ -6,6 +6,7 @@ const CAPABILITIES: Readonly<Record<Capability, true>> = {
   cluster: true,
   circle: true,
   edit: true,
+  multipolygon: true,
 };
 
 /** Every capability the contract names. */

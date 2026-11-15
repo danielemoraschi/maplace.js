@@ -130,9 +130,10 @@ describe("the examples' pages, as built (W38)", () => {
   it("link the stylesheet an example's versions link to the site's copy, once, under its section", async () => {
     expect(pages.flatMap(({ stylesheetLinks }) => stylesheetLinks)).toEqual([
       ["popups", "/examples/styles/popups.css", "popups.css"],
+      ["choropleth", "/examples/styles/choropleth.css", "choropleth.css"],
       ["whats-on", "/examples/styles/whats-on.css", "whats-on.css"],
     ]);
-    for (const file of ["popups.css", "whats-on.css"]) {
+    for (const file of ["popups.css", "choropleth.css", "whats-on.css"]) {
       const served = await fetch(new URL(`/examples/styles/${file}`, site.url));
       expect(served.headers.get("content-type"), file).toMatch(/^text\/css/);
       expect(await served.text(), file).toBe(exampleFile("styles", file));

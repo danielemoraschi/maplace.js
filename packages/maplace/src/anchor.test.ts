@@ -72,4 +72,12 @@ describe("anchorOf", () => {
     ];
     expect(Math.abs(anchorOf({ type: "polyline", path }).lng)).toBe(180);
   });
+
+  it("points a multipolygon at its largest polygon's centre, not between its polygons", () => {
+    const polygons = [
+      { path: square({ lat: 5, lng: -52 }, 1) },
+      { path: square({ lat: 46, lng: 2 }, 4) },
+    ];
+    expect(anchorOf({ id: "fr", type: "multipolygon", polygons })).toEqual({ lat: 46, lng: 2 });
+  });
 });

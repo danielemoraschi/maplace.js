@@ -27,7 +27,13 @@ function recordingPlacers() {
     log.push(`place ${drawable.geometry.type} ${drawable.id}`);
     return placeRecorded(drawable);
   };
-  const placers: Placers = { marker: place, circle: place, polyline: place, polygon: place };
+  const placers: Placers = {
+    marker: place,
+    circle: place,
+    polyline: place,
+    polygon: place,
+    multipolygon: place,
+  };
   return { placers, log };
 }
 

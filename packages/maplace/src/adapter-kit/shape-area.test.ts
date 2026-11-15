@@ -45,4 +45,13 @@ describe("areaOf", () => {
     expect(areaOf({ type: "polyline", path: square(1) })).toBe(0);
     expect(areaOf({ type: "marker", lat: 0, lng: 0 })).toBe(0);
   });
+
+  it("is the sum of a multipolygon's polygons", () => {
+    const one = areaOf({ type: "polygon", path: square(1) });
+    const both = areaOf({
+      type: "multipolygon",
+      polygons: [{ path: square(1) }, { path: square(1) }],
+    });
+    expect(both).toBeCloseTo(2 * one);
+  });
 });

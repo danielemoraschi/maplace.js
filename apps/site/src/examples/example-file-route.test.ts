@@ -16,6 +16,7 @@ describe("exampleFilePaths", () => {
       { folder: "data/icons", name: "c" },
     ]);
     expect(exampleFilePaths("css").map(({ params }) => params)).toEqual([
+      { folder: "styles", name: "choropleth" },
       { folder: "styles", name: "popups" },
       { folder: "styles", name: "whats-on" },
     ]);

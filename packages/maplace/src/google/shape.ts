@@ -10,7 +10,14 @@ import { sameState } from "../location-state";
 import { cutOnBlur, type GiveBack, takeEditingAway } from "./blur-cuts";
 import type { GoogleShape, PlacedShape, PlacingSite } from "./placed-location";
 import { showGeometry } from "./shape-geometry";
-import { CIRCLE, POLYGON, POLYLINE, type ShapeKind, type ShapeType } from "./shape-kinds";
+import {
+  CIRCLE,
+  MULTIPOLYGON,
+  POLYGON,
+  POLYLINE,
+  type ShapeKind,
+  type ShapeType,
+} from "./shape-kinds";
 import { reportShapeInput } from "./shape-reports";
 import { styleValues } from "./shape-style";
 
@@ -21,12 +28,13 @@ export const SHAPE_PLACERS: Readonly<Record<ShapeType, ShapePlacer>> = {
   circle: shapePlacer(CIRCLE),
   polyline: shapePlacer(POLYLINE),
   polygon: shapePlacer(POLYGON),
+  multipolygon: shapePlacer(MULTIPOLYGON),
 };
 
 /**
- * One circle, polyline or polygon: clickable, styled in its state's look, reshaped by the user
- * when `editable`, its `zIndex` its rank among shapes by size (Google draws every marker above
- * every shape).
+ * One circle, polyline, polygon or multipolygon: clickable, styled in its state's look, reshaped
+ * by the user when `editable`, its `zIndex` its rank among shapes by size (Google draws every
+ * marker above every shape).
  * Each change redoes only what it touches; an edit is reported once, when the user lets go.
  */
 function shapePlacer(kind: ShapeKind): ShapePlacer {

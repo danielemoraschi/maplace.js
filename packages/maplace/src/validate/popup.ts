@@ -11,7 +11,8 @@ import {
   POSITIVE,
 } from "./values";
 
-const OPEN_ON = members<NonNullable<PopupOptions["openOn"]>>({ click: true, hover: true });
+/** What opens a popup: the store's `popup.openOn` values, which the element's attribute takes too. */
+export const OPEN_ON = members<NonNullable<PopupOptions["openOn"]>>({ click: true, hover: true });
 
 const checkPopupFields: Assert<PopupOptions> = recordOf<PopupOptions>({
   checks: {

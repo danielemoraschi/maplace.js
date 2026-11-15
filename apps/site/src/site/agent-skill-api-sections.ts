@@ -20,6 +20,7 @@ ${exampleSnippet("polygon", "vanilla.ts")}
 - A circle adds ${codeList(LOCATION_FIELDS.circle)}.
 - A polyline adds ${codeList(LOCATION_FIELDS.polyline)}.
 - A polygon adds ${codeList(LOCATION_FIELDS.polygon)}.
+- A multipolygon (several polygons, one location, not editable) adds ${codeList(LOCATION_FIELDS.multipolygon)}, each polygon a \`path\` and optional \`holes\`.
 - A shape's style has ${codeList(SHAPE_STYLE_FIELDS)}.`;
 }
 

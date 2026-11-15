@@ -2,6 +2,10 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-15 Changed a popup opened by hover (`openOn: "hover"`) to let the pointer through to the map while it shows the hovered location rather than the selected one, on Google and MapLibre: what it covers answers hover and click as if it were not there, so moving between neighbouring shapes no longer sticks to the last one or, on MapLibre, flickers over its own shape; the selected location's popup still takes the pointer, for its close button and links
+- 2026-11-15 Added `type: "multipolygon"` locations (`polygons`, each a polygon's `path` and `holes`): several polygons drawn, hovered, selected and listed as one location on Google and MapLibre, shown at their largest polygon, never editable, with the `multipolygon` capability an adapter declares to draw them; code with an exhaustive `switch` or `Record` over a location's or a `Geometry`'s `type`, an adapter's among them, gains a case
+- 2026-11-15 Changed `locationsFromGeoJSON` to read a `MultiPolygon` feature as one multipolygon location instead of refusing it
+- 2026-11-15 Added `popup-open-on` on `<maplace-map>`: `hover` opens a location's popup under the pointer, as the store's `popup.openOn` does
 - 2026-11-15 Fixed a pressed button of the list's area switch, or of the "My location" box, losing its tint under the pointer on a MapLibre map: the tints are background images now, so a page's own colour for the pressed button needs `background` or `background-image` to replace them
 - 2026-11-15 Fixed a tap on a touch screen leaving the list's area switch, or the "My location" box, tinted as if hovered
 - 2026-11-13 Fixed a MapLibre map under 256px tall, zoomed all the way out, reporting a zoom below 0, which the store refused with an uncaught `invalid-input`: it reports 0

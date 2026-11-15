@@ -36,7 +36,7 @@ describe("validateLocation: styles", () => {
 
   it("tells a marker the state styles are shape fields", () => {
     expect(check({ id: "m", lat: 1, lng: 2, selectedStyle: {} })).toThrow(
-      /selectedStyle is a circle\/polyline\/polygon field, not a marker field/,
+      /selectedStyle is a circle\/polyline\/polygon\/multipolygon field, not a marker field/,
     );
   });
 });

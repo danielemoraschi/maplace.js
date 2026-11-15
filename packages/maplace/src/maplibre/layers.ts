@@ -8,7 +8,7 @@ import { whenStyleLoaded } from "./style-load";
 
 /** Where default markers are: a pin each, stacked in the order added. */
 export const PIN_SOURCE = "maplace-pins";
-/** Where polylines and polygons are. */
+/** Where polylines, polygons and multipolygons are. */
 export const SHAPE_SOURCE = "maplace-shapes";
 
 /** maplace's own sources: what the store asked to draw. */
@@ -45,7 +45,7 @@ function styled<T extends string | number>(
 }
 
 const RANK = ["get", "rank"] as const;
-const POLYGONS = ["==", ["geometry-type"], "Polygon"] as const;
+const POLYGONS = ["in", ["geometry-type"], ["literal", ["Polygon", "MultiPolygon"]]] as const;
 const LINES = ["==", ["geometry-type"], "LineString"] as const;
 
 const LINE_PAINT = {

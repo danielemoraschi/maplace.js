@@ -6,7 +6,7 @@ import type { Route, RouteResult } from "./route";
 import type { ResolvedView, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
-export type Capability = "route" | "cluster" | "circle" | "edit";
+export type Capability = "route" | "cluster" | "circle" | "edit" | "multipolygon";
 
 /** Where an on-map control sits, in provider-neutral terms. */
 export type ControlPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";

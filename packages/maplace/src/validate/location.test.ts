@@ -43,6 +43,8 @@ describe("validateLocation: valid locations", () => {
     expect(check({ id: "c", type: "circle", center: point, radius: 5, zoom: 9 })).not.toThrow();
     expect(check({ id: "l", type: "polyline", path: [point, point] })).not.toThrow();
     expect(check({ id: "p", type: "polygon", path: ring, holes: [ring] })).not.toThrow();
+    const polygons = [{ path: ring, holes: [ring] }, { path: ring }];
+    expect(check({ id: "mp", type: "multipolygon", polygons })).not.toThrow();
   });
 
   it("accepts html when a sanitizer is set", () => {
@@ -93,10 +95,10 @@ describe("validateLocation: identity", () => {
     );
   });
 
-  it("rejects an unknown type, listing the four", () => {
+  it("rejects an unknown type, listing the five", () => {
     expect(check({ id: "d", type: "directions" })).toThrow(
       fails(
-        'location "d": type must be one of "marker", "circle", "polyline", "polygon", got "directions"',
+        'location "d": type must be one of "marker", "circle", "polyline", "polygon", "multipolygon", got "directions"',
         "type",
         "d",
       ),
@@ -128,7 +130,7 @@ describe("validateLocation: fields", () => {
       /lat is a marker field, not a polyline field/,
     );
     expect(check({ id: "m", lat: 1, lng: 2, style: {} })).toThrow(
-      /style is a circle\/polyline\/polygon field, not a marker field/,
+      /style is a circle\/polyline\/polygon\/multipolygon field, not a marker field/,
     );
   });
 
@@ -192,6 +194,48 @@ describe("validateLocation: geometry", () => {
         "p",
       ),
     );
+  });
+
+  it("needs at least one polygon in a multipolygon, each of three points, naming it", () => {
+    const ring = [point, point, point];
+    expect(check({ id: "mp", type: "multipolygon", polygons: [] })).toThrow(
+      fails('location "mp": polygons must hold at least 1 polygon, got 0', "polygons", "mp"),
+    );
+    expect(
+      check({ id: "mp", type: "multipolygon", polygons: [{ path: ring }, { path: [point] }] }),
+    ).toThrow(
+      fails(
+        'location "mp": polygons[1].path must be an array of at least 3 points, got 1 point',
+        "polygons[1].path",
+        "mp",
+      ),
+    );
+    expect(
+      check({ id: "mp", type: "multipolygon", polygons: [{ path: ring, fill: "red" }] }),
+    ).toThrow(/polygons\[0\]\.fill is not in a multipolygon's polygon/);
+  });
+
+  it("tells a polygon given whole inside polygons that each holds only a path and holes", () => {
+    const polygon = { type: "polygon", path: [point, point, point] };
+    expect(check({ id: "mp", type: "multipolygon", polygons: [polygon] })).toThrow(
+      fails(
+        'location "mp": polygons[0].type is not in a multipolygon\'s polygon, which is a path and its holes',
+        "polygons[0].type",
+        "mp",
+      ),
+    );
+  });
+
+  it("refuses an editable multipolygon", () => {
+    const polygons = [{ path: [point, point, point] }];
+    expect(check({ id: "mp", type: "multipolygon", polygons, editable: true })).toThrow(
+      fails(
+        'location "mp": editable is not for a multipolygon: give one of its polygons a location of its own to edit it',
+        "editable",
+        "mp",
+      ),
+    );
+    expect(check({ id: "mp", type: "multipolygon", polygons, editable: false })).not.toThrow();
   });
 });
 

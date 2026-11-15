@@ -1,15 +1,16 @@
 import { drawnPath } from "./drawn-path";
-import type { Geometry, LatLng } from "./geometry";
+import type { Geometry, LatLng, MultiPolygonGeometry, PolygonRings } from "./geometry";
 import type { Location } from "./location";
 import { arcSpan, narrowestArc, wrapLongitude } from "./longitude-arc";
-import { RADIANS_PER_DEGREE } from "./sphere";
+import { RADIANS_PER_DEGREE, ringArea } from "./sphere";
 
 type Path = readonly LatLng[];
 
 /**
  * The point a location's popup points at, on every map alike: a marker's point, a circle's
- * centre, the centre of a polygon's bounds (crossing ±180 as fit-all does), and the point
- * halfway along a polyline as drawn, which is always on the line, a curved or geodesic one's too.
+ * centre, the centre of a polygon's bounds (crossing ±180 as fit-all does), of a multipolygon's
+ * largest polygon, and the point halfway along a polyline as drawn, which is always on the line,
+ * a curved or geodesic one's too.
  */
 export function anchorOf(where: Geometry | Location): LatLng {
   switch (where.type) {
@@ -20,9 +21,31 @@ export function anchorOf(where: Geometry | Location): LatLng {
       return where.center;
     case "polygon":
       return centreOfBounds(where.path);
+    case "multipolygon":
+      return centreOfBounds(largestPolygon(where).path);
     case "polyline":
       return halfwayAlong(drawnPath(where));
   }
+}
+
+/** Each multipolygon's largest polygon, by the list it was found in: a new list measures again. */
+const largestOf = new WeakMap<readonly PolygonRings[], PolygonRings>();
+
+/**
+ * Where a multipolygon is shown, selected or pointed at: its largest polygon, so France is France
+ * and not the ocean between it and French Guiana. The first of equals; each area measured once.
+ */
+export function largestPolygon({ polygons }: MultiPolygonGeometry): PolygonRings {
+  const known = largestOf.get(polygons);
+  if (known !== undefined) return known;
+  let largest = polygons[0] as PolygonRings;
+  let largestArea = -1;
+  for (const polygon of polygons) {
+    const area = ringArea(polygon.path);
+    if (area > largestArea) [largest, largestArea] = [polygon, area];
+  }
+  largestOf.set(polygons, largest);
+  return largest;
 }
 
 /** One pass over the points: a path can be long enough to overflow a spread. */

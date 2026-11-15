@@ -16,6 +16,7 @@ import { BLOCK_GUTTER_PROPERTY, INLINE_GUTTER_PROPERTY } from "./popup-styles";
 import { cameraAt } from "./testing/camera-at";
 import { drawnOverlayOn } from "./testing/map-input";
 import { drawnMarker } from "./testing/map-waits";
+import { centreOf } from "./testing/page-input";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -183,5 +184,20 @@ describeWithMaps("Google popups under real input", () => {
     const pane = await floatPaneOf(state.mounted?.map as google.maps.Map);
     expect(pane.contains(element)).toBe(true);
     expect(getComputedStyle(pane).willChange).toBe("transform");
+  });
+
+  it("lets the pointer through a hovered location's popup, and takes it once it is selected", async () => {
+    const { adapter, state } = await drawn([ALPHA], { openOn: "hover" });
+    /** What the pointer reaches at the middle of `element`, as the browser hit-tests it. */
+    const reached = (element: Element) => {
+      const { x, y } = centreOf(element);
+      return document.elementFromPoint(x, y);
+    };
+    adapter.present(presented({ hoveredId: "a" }));
+    const element = await openedPopup(state);
+    const dialog = element.closest('[role="dialog"]') as Element;
+    await expect.poll(() => dialog.contains(reached(element))).toBe(false);
+    adapter.present(presented({ hoveredId: "a", selectedId: "a" }));
+    await expect.poll(() => dialog.contains(reached(element))).toBe(true);
   });
 });

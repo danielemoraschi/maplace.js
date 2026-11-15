@@ -1,4 +1,5 @@
 import type { Popup, PopupOptions } from "maplibre-gl";
+import { POINTER_THROUGH_ATTRIBUTE } from "../adapter-kit/pointer-through";
 import { POPUP_HEADING_CLASS } from "../adapter-kit/popup-content";
 import {
   holdsFocus,
@@ -120,6 +121,9 @@ export function createPopupWindow(
     },
     retitle: headWith,
     follow: place,
+    passPointer(through) {
+      popup.getElement()?.toggleAttribute(POINTER_THROUGH_ATTRIBUTE, through);
+    },
     close() {
       if (!popup.isOpen()) return;
       closing = true;

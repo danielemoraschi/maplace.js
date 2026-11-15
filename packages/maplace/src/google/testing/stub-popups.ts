@@ -46,7 +46,8 @@ export class StubOverlayView {
 
 /**
  * Google's InfoWindow as far as the adapter uses one: while open its heading and content are in a
- * box on the page, `domready` follows each open or new content in a microtask, and every close
+ * box in its map's popup pane while that is on the page (a test puts it there), else in the
+ * page's body, `domready` follows each open or new content in a microtask, and every close
  * fires `close`.
  */
 export class StubInfoWindow extends StubMVCObject {
@@ -86,7 +87,8 @@ export class StubInfoWindow extends StubMVCObject {
     if (this.#open) this.trigger("close");
     this.opens.push(options);
     this.#open = true;
-    document.body.append(this.box);
+    const pane = (options.map as unknown as Partial<StubPanes> | null | undefined)?.floatPane;
+    (pane?.isConnected ? pane : document.body).append(this.box);
     this.#ready();
   }
 

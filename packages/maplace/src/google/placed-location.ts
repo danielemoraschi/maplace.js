@@ -25,7 +25,7 @@ export interface PlacedMarker extends Placed {
   readonly marker: google.maps.marker.AdvancedMarkerElement;
 }
 
-/** What Google draws a circle, polyline or polygon with. */
+/** What Google draws a circle, polyline, polygon or multipolygon with. */
 export type GoogleShape = google.maps.Circle | google.maps.Polyline | google.maps.Polygon;
 
 export interface PlacedShape extends Placed {

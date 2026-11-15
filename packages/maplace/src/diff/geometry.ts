@@ -1,5 +1,5 @@
 import { drawnPath } from "../drawn-path";
-import type { Geometry } from "../geometry";
+import type { Geometry, PolygonRings } from "../geometry";
 import type { Location, MarkerLocation } from "../location";
 import { frozenPath, frozenPoint } from "./frozen";
 
@@ -19,6 +19,8 @@ export function geometryOf(location: Location): Geometry {
       return { type: "polyline", path: drawnPath(location) };
     case "polygon":
       return { type: "polygon", path: location.path, holes: location.holes };
+    case "multipolygon":
+      return { type: "multipolygon", polygons: location.polygons };
   }
 }
 
@@ -51,9 +53,12 @@ function frozenFields(geometry: Geometry): Partial<Location> {
     case "polyline":
       return { path: frozenPath(geometry.path) };
     case "polygon":
-      return {
-        path: frozenPath(geometry.path),
-        holes: geometry.holes && Object.freeze(geometry.holes.map(frozenPath)),
-      };
+      return frozenRings(geometry);
+    case "multipolygon":
+      return { polygons: Object.freeze(geometry.polygons.map(frozenRings)) };
   }
+}
+
+function frozenRings({ path, holes }: PolygonRings): PolygonRings {
+  return { path: frozenPath(path), holes: holes && Object.freeze(holes.map(frozenPath)) };
 }

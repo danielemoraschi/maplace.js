@@ -29,5 +29,20 @@ export interface PolygonGeometry {
   readonly holes?: readonly (readonly LatLng[])[] | undefined;
 }
 
+/** One polygon's rings: its outline and its holes. */
+export type PolygonRings = Omit<PolygonGeometry, "type">;
+
+/** Several polygons drawn as one shape: a country with its islands. */
+export interface MultiPolygonGeometry {
+  readonly type: "multipolygon";
+  /** At least one. */
+  readonly polygons: readonly PolygonRings[];
+}
+
 /** Where a location is; what a drag or edit changes. */
-export type Geometry = MarkerGeometry | CircleGeometry | PolylineGeometry | PolygonGeometry;
+export type Geometry =
+  | MarkerGeometry
+  | CircleGeometry
+  | PolylineGeometry
+  | PolygonGeometry
+  | MultiPolygonGeometry;

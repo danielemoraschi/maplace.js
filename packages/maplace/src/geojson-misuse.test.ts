@@ -16,7 +16,7 @@ function withProperties(properties: unknown): unknown {
 }
 
 const POSITION = "a position, [lng, lat] in numbers";
-const GEOMETRY_TYPES = 'one of "Point", "LineString", "Polygon"';
+const GEOMETRY_TYPES = 'one of "Point", "LineString", "Polygon", "MultiPolygon"';
 
 describe("locationsFromGeoJSON refuses what it can't read", () => {
   it.each([
@@ -77,13 +77,13 @@ describe("locationsFromGeoJSON refuses what it can't read", () => {
     [
       "a null geometry",
       withGeometry(null),
-      "features[0].geometry must be a Point, LineString or Polygon geometry, got null",
+      "features[0].geometry must be a Point, LineString, Polygon or MultiPolygon geometry, got null",
       "features[0].geometry",
     ],
     [
-      "a MultiPolygon",
-      withGeometry({ type: "MultiPolygon", coordinates: [] }),
-      `features[0].geometry.type must be ${GEOMETRY_TYPES}, got "MultiPolygon"`,
+      "a MultiLineString",
+      withGeometry({ type: "MultiLineString", coordinates: [] }),
+      `features[0].geometry.type must be ${GEOMETRY_TYPES}, got "MultiLineString"`,
       "features[0].geometry.type",
     ],
     [

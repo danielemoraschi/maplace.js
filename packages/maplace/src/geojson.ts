@@ -1,4 +1,4 @@
-import type { LatLng } from "./geometry";
+import type { LatLng, PolygonRings } from "./geometry";
 import type { Location } from "./location";
 import { child, type Field, item, mustBe, root } from "./validate/fail";
 import { checkObject, checkOneOf, checkString, checkTags } from "./validate/values";
@@ -21,22 +21,23 @@ export interface GeoJSONFeature {
   readonly properties?: object | null | undefined;
 }
 
-const GEOMETRY_TYPES = ["Point", "LineString", "Polygon"] as const;
+const GEOMETRY_TYPES = ["Point", "LineString", "Polygon", "MultiPolygon"] as const;
 const POSITION = "a position, [lng, lat] in numbers";
 
 /**
  * A GeoJSON FeatureCollection as locations, ready for `setLocations`: a `Point` becomes a marker,
  * a `LineString` a polyline, a `Polygon` a polygon (its first ring the path, the others its
- * holes, each without GeoJSON's closing point). Positions are `[lng, lat]`; an altitude is
- * dropped. The `id` is the feature's (a number as its string), `title`, `group` and a list of
+ * holes, each without GeoJSON's closing point), a `MultiPolygon` one multipolygon, its polygons
+ * read as a `Polygon`'s rings, even when it has only one. Positions are `[lng, lat]`; an altitude
+ * is dropped. The `id` is the feature's (a number as its string), `title`, `group` and a list of
  * `tags` its properties', and `data` its properties whole, typed `Data` as `createMaplace<Data>()`
  * types it.
  *
  * @throws `MaplaceError` `invalid-input` at the GeoJSON path (`features[2].geometry.type`) for a
  *   shape it can't read: not a FeatureCollection, a feature without an `id`, another geometry (a
- *   Multi* one, a `GeometryCollection`, none), a non-string `title` or `group`, a list of `tags`
- *   that aren't strings, a bad position. Values, such as ranges, are the store's to check when the
- *   locations are set.
+ *   `MultiPoint` or `MultiLineString`, a `GeometryCollection`, none), a non-string `title` or
+ *   `group`, a list of `tags` that aren't strings, a bad position. Values, such as ranges, are the
+ *   store's to check when the locations are set.
  */
 export function locationsFromGeoJSON<Data = unknown>(
   collection: GeoJSONFeatureCollection,
@@ -109,7 +110,7 @@ function textOf(value: unknown, field: Field): string | undefined {
 }
 
 function geometryOf(geometry: unknown, field: Field) {
-  checkObject(geometry, field, "a Point, LineString or Polygon geometry");
+  checkObject(geometry, field, "a Point, LineString, Polygon or MultiPolygon geometry");
   checkOneOf(geometry.type, child(field, "type"), GEOMETRY_TYPES);
   const coordinates = child(field, "coordinates");
   switch (geometry.type) {
@@ -118,16 +119,27 @@ function geometryOf(geometry: unknown, field: Field) {
     case "LineString":
       return { type: "polyline" as const, path: pathOf(geometry.coordinates, coordinates) };
     case "Polygon":
-      return polygonOf(geometry.coordinates, coordinates);
+      return { type: "polygon" as const, ...ringsOf(geometry.coordinates, coordinates) };
+    case "MultiPolygon":
+      return {
+        type: "multipolygon" as const,
+        polygons: polygonsOf(geometry.coordinates, coordinates),
+      };
   }
 }
 
-function polygonOf(rings: unknown, field: Field) {
+function polygonsOf(polygons: unknown, field: Field): PolygonRings[] {
+  if (!Array.isArray(polygons)) mustBe(field, "an array of polygons", polygons);
+  return polygons.map((rings, index) => ringsOf(rings, item(field, index)));
+}
+
+/** One polygon's rings: its first the outline, the others its holes. */
+function ringsOf(rings: unknown, field: Field): PolygonRings {
   if (!Array.isArray(rings)) mustBe(field, "an array of rings", rings);
   const [path = [], ...holes] = rings.map((ring, index) =>
     withoutClosingPoint(pathOf(ring, item(field, index))),
   );
-  return { type: "polygon" as const, path, ...(holes.length > 0 && { holes }) };
+  return { path, ...(holes.length > 0 && { holes }) };
 }
 
 function pathOf(positions: unknown, field: Field): LatLng[] {

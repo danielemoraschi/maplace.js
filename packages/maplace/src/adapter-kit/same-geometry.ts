@@ -1,4 +1,4 @@
-import type { Geometry, LatLng } from "../geometry";
+import type { Geometry, LatLng, PolygonRings } from "../geometry";
 
 type Ring = readonly LatLng[];
 
@@ -15,12 +15,14 @@ export function sameGeometry(a: Geometry, b: Geometry): boolean {
     case "polyline":
       return b.type === "polyline" && sameRing(a.path, b.path);
     case "polygon":
-      return (
-        b.type === "polygon" &&
-        sameRing(a.path, b.path) &&
-        sameList(a.holes ?? [], b.holes ?? [], sameRing)
-      );
+      return b.type === "polygon" && sameRings(a, b);
+    case "multipolygon":
+      return b.type === "multipolygon" && sameList(a.polygons, b.polygons, sameRings);
   }
+}
+
+function sameRings(a: PolygonRings, b: PolygonRings): boolean {
+  return sameRing(a.path, b.path) && sameList(a.holes ?? [], b.holes ?? [], sameRing);
 }
 
 export function samePoint(a: LatLng, b: LatLng): boolean {

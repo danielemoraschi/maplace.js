@@ -23,5 +23,5 @@ export const API_LISTS = {
     "routeChange",
     "error",
   ],
-  capabilities: ["route", "cluster", "circle", "edit"],
+  capabilities: ["route", "cluster", "circle", "edit", "multipolygon"],
 } as const;

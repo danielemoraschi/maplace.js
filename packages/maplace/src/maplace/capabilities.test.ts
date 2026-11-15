@@ -30,6 +30,15 @@ describe("createSupportCheck", () => {
         message: `location "c": type needs the circle capability, which this map's adapter lacks`,
       }),
     );
+    const ring = [marker, marker, marker].map(({ lat, lng }) => ({ lat, lng }));
+    const country: Location = { id: "fr", type: "multipolygon", polygons: [{ path: ring }] };
+    expect(() => check(snapshotWith({ locations: [country] }), "setLocations")).toThrow(
+      expect.objectContaining({
+        code: "unsupported-capability",
+        locationId: "fr",
+        message: `location "fr": type needs the multipolygon capability, which this map's adapter lacks`,
+      }),
+    );
     const editable: Location = { ...marker, editable: true };
     expect(() => check(snapshotWith({ locations: [editable] }), "setLocations")).toThrow(
       expect.objectContaining({ code: "unsupported-capability", field: "editable" }),

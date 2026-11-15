@@ -24,8 +24,8 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 | `listedLocations` | function | [Listed locations](store.md#listed-locations) |
 | `locationsFromGeoJSON` | function | [From GeoJSON](locations.md#from-geojson) |
 | `GeoJSONFeatureCollection`, `GeoJSONFeature` | types | [From GeoJSON](locations.md#from-geojson) |
-| `Location`, `MarkerLocation`, `CircleLocation`, `PolylineLocation`, `PolygonLocation` | types | [Locations](locations.md) |
-| `LatLng`, `Geometry`, `MarkerGeometry`, `CircleGeometry`, `PolylineGeometry`, `PolygonGeometry` | types | [Locations](locations.md#markers); a geometry is what a drag or edit changes |
+| `Location`, `MarkerLocation`, `CircleLocation`, `PolylineLocation`, `PolygonLocation`, `MultiPolygonLocation` | types | [Locations](locations.md) |
+| `LatLng`, `Geometry`, `MarkerGeometry`, `CircleGeometry`, `PolylineGeometry`, `PolygonGeometry`, `MultiPolygonGeometry`, `PolygonRings` | types | [Locations](locations.md#markers); a geometry is what a drag or edit changes |
 | `Content` | type | [Content](locations.md#content) |
 | `Icon`, `LocationState` | types | [Icons](locations.md#icons) |
 | `LineStyle`, `ShapeStyle` | types | [Styles](locations.md#styles) |
@@ -145,7 +145,7 @@ For the first two, `loadState` becomes `error` and `whenReady()` rejects; one th
 
 ## Capabilities
 
-A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all four; MapLibre all but `route`, as it has no routing ([routes](maplibre.md#routes)).
+A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all five; MapLibre all but `route`, as it has no routing ([routes](maplibre.md#routes)).
 
 | Capability | What it allows |
 |---|---|
@@ -153,6 +153,7 @@ A capability is a feature an adapter may or may not support; using one the adapt
 | `cluster` | The `cluster` option |
 | `circle` | Circle locations |
 | `edit` | `editable` locations |
+| `multipolygon` | Multipolygon locations (1.2); an adapter written for 1.0 lacks it, so the store refuses them there |
 
 ## Rules
 

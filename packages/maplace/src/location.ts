@@ -1,4 +1,10 @@
-import type { CircleGeometry, LatLng, PolygonGeometry, PolylineGeometry } from "./geometry";
+import type {
+  CircleGeometry,
+  LatLng,
+  MultiPolygonGeometry,
+  PolygonGeometry,
+  PolylineGeometry,
+} from "./geometry";
 import type { LineStyle, ShapeStyle } from "./style";
 
 /**
@@ -109,8 +115,20 @@ export interface PolygonLocation<Data = unknown>
     PolygonGeometry,
     StyledShape<ShapeStyle> {}
 
+/**
+ * One location drawn as several polygons, hovered, selected and shown as one: shown at its largest
+ * polygon. Not editable; needs the `multipolygon` capability.
+ */
+export interface MultiPolygonLocation<Data = unknown>
+  extends LocationBase<Data>,
+    MultiPolygonGeometry,
+    StyledShape<ShapeStyle> {
+  readonly editable?: false | undefined;
+}
+
 export type Location<Data = unknown> =
   | MarkerLocation<Data>
   | CircleLocation<Data>
   | PolylineLocation<Data>
-  | PolygonLocation<Data>;
+  | PolygonLocation<Data>
+  | MultiPolygonLocation<Data>;

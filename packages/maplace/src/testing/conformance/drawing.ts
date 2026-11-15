@@ -6,6 +6,7 @@ import {
   LARGE_DIFF,
   manyMarkers,
   markerDrawable,
+  multipolygonDrawable,
   ORIGIN,
   polygonDrawable,
   polylineDrawable,
@@ -20,6 +21,7 @@ import type { ConformanceSubject, Supports } from "./subject";
 export function drawingChecks(subject: ConformanceSubject, supports: Supports): void {
   const shapes = [polylineDrawable("l"), polygonDrawable("p")];
   if (supports.has("circle")) shapes.push(circleDrawable("c"));
+  if (supports.has("multipolygon")) shapes.push(multipolygonDrawable("mp"));
 
   describe("drawing", () => {
     it("resolves apply once its locations are drawn", async () => {

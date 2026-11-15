@@ -14,7 +14,6 @@ import { createGoogleOriginDot } from "./origin-dot";
 import { pageAuthHook } from "./page-auth";
 import { PLACERS } from "./placers";
 import { createPopup } from "./popup";
-import { popupPane } from "./popup-pane";
 import { createPresenting } from "./presenting";
 import { ROUTE_STOP_LIMIT } from "./route-conversions";
 import { createRouting } from "./routing";
@@ -24,7 +23,7 @@ import { viewportReports } from "./viewport-reports";
  * What the adapter draws beyond the contract's core. A capability is declared only once the
  * adapter draws it: declaring one it can't draw would fail silently instead of being refused.
  */
-const CAPABILITIES: readonly Capability[] = ["circle", "edit", "route", "cluster"];
+const CAPABILITIES: readonly Capability[] = ["circle", "edit", "route", "cluster", "multipolygon"];
 
 /**
  * One Google adapter from its parts, drawing into `state`, which its test probe reads too. The
@@ -50,7 +49,6 @@ export function assembleGoogleAdapter(
     drawing.part,
     camera.part,
     popup.part,
-    popupPane,
     routing.part,
     controls.part,
     originDot.part,
