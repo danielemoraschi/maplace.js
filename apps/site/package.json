@@ -18,8 +18,8 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.3.3",
+    "@tailwindcss/vite": "4.3.5",
     "github-buttons": "2.33.1",
-    "tailwindcss": "4.3.3"
+    "tailwindcss": "4.3.5"
   }
 }
