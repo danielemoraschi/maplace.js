@@ -1,0 +1,114 @@
+[
+  {
+    "id": "milan",
+    "lat": 45.46,
+    "lng": 9.19,
+    "title": "Milan",
+    "group": ["Europe", "Italy"]
+  },
+  {
+    "id": "rome",
+    "lat": 41.9,
+    "lng": 12.5,
+    "title": "Rome",
+    "group": ["Europe", "Italy"]
+  },
+  {
+    "id": "turin",
+    "lat": 45.07,
+    "lng": 7.69,
+    "title": "Turin",
+    "group": ["Europe", "Italy"]
+  },
+  {
+    "id": "paris",
+    "lat": 48.86,
+    "lng": 2.35,
+    "title": "Paris",
+    "group": ["Europe", "France"]
+  },
+  {
+    "id": "lyon",
+    "lat": 45.76,
+    "lng": 4.84,
+    "title": "Lyon",
+    "group": ["Europe", "France"]
+  },
+  {
+    "id": "london",
+    "lat": 51.51,
+    "lng": -0.13,
+    "title": "London",
+    "group": ["Europe", "United Kingdom"]
+  },
+  {
+    "id": "manchester",
+    "lat": 53.48,
+    "lng": -2.24,
+    "title": "Manchester",
+    "group": ["Europe", "United Kingdom"]
+  },
+  {
+    "id": "tokyo",
+    "lat": 35.68,
+    "lng": 139.69,
+    "title": "Tokyo",
+    "group": ["Asia", "Japan"]
+  },
+  {
+    "id": "osaka",
+    "lat": 34.69,
+    "lng": 135.5,
+    "title": "Osaka",
+    "group": ["Asia", "Japan"]
+  },
+  {
+    "id": "singapore",
+    "lat": 1.29,
+    "lng": 103.85,
+    "title": "Singapore",
+    "group": ["Asia", "Singapore"]
+  },
+  {
+    "id": "new-york",
+    "lat": 40.71,
+    "lng": -74.01,
+    "title": "New York",
+    "group": ["Americas", "United States"]
+  },
+  {
+    "id": "chicago",
+    "lat": 41.88,
+    "lng": -87.63,
+    "title": "Chicago",
+    "group": ["Americas", "United States"]
+  },
+  {
+    "id": "san-francisco",
+    "lat": 37.77,
+    "lng": -122.42,
+    "title": "San Francisco",
+    "group": ["Americas", "United States"]
+  },
+  {
+    "id": "sao-paulo",
+    "lat": -23.55,
+    "lng": -46.63,
+    "title": "São Paulo",
+    "group": ["Americas", "Brazil"]
+  },
+  {
+    "id": "rio",
+    "lat": -22.91,
+    "lng": -43.17,
+    "title": "Rio de Janeiro",
+    "group": ["Americas", "Brazil"]
+  },
+  {
+    "id": "recife",
+    "lat": -8.05,
+    "lng": -34.88,
+    "title": "Recife",
+    "group": ["Americas", "Brazil"]
+  }
+]

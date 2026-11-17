@@ -11,12 +11,12 @@ const IN_JAPAN = 51;
 /**
  * The quakes drawn as heat, each weighing its magnitude, the volcanoes as pins; the list's search
  * narrows the heat with the list: "Japan" leaves Japan's quakes alone, an empty box every location.
- * The page's checkboxes show a group alone, keeping what the search found.
+ * The list's checkbox for each group shows a group alone, keeping what the search found.
  */
 export const earthquakes: ExampleBehaviour = async ({ store, adapter, root }) => {
   await expect.poll(() => store.getSnapshot().locations.length).toBe(QUAKES + VOLCANOES);
   const probe = adapter.probe();
-  const quake = store.getSnapshot().locations.find(({ group }) => group === "quakes");
+  const quake = store.getSnapshot().locations.find(({ group }) => group === "Quakes");
   expect(quake && probe.location(quake.id)?.visible).toBe(true);
   expect(probe.location("etna")?.visible).toBe(true);
   typeInSearch(root, "Japan");
@@ -27,7 +27,7 @@ export const earthquakes: ExampleBehaviour = async ({ store, adapter, root }) =>
 
   const toggle = (label: string) => inputLabelled(root, label).click();
   toggle("Volcanoes");
-  await expect.poll(() => store.getSnapshot().filter?.groups).toEqual(["quakes"]);
+  await expect.poll(() => store.getSnapshot().filter?.groups).toEqual(["Quakes"]);
   expect(listedIn(root)).toHaveLength(IN_JAPAN);
   toggle("Volcanoes");
 

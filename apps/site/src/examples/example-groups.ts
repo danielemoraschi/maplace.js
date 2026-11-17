@@ -63,11 +63,11 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     label: "Lists",
     headingLead: "A list beside the map,",
     intro:
-      "Your locations as a list kept in sync with the map: a select menu, tag filters, a search box, nearest first, only what's in view, your own markup, or tabs with a details panel.",
+      "Your locations as a list kept in sync with the map: a select menu, tag filters, nested groups with a checkbox each, a search box, nearest first, only what's in view, your own markup, or tabs with a details panel.",
     summary:
-      "The list beside the map, your way: a menu, tags, a search box, nearest first, what's in view, your own markup, or tabs.",
+      "The list beside the map, your way: a menu, tags, nested groups, a search box, nearest first, what's in view, your own markup, or tabs.",
     description:
-      "A list beside the map on Google Maps or MapLibre, in sync with it: a select menu, tag filters, a search box, nearest first, what's in view, or tabs.",
+      "A list beside the map on Google Maps or MapLibre, in sync with it: a select menu, tag and group filters, a search box, nearest first, what's in view, or tabs.",
     sections: [
       {
         name: "menu",
@@ -78,6 +78,12 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "tags",
         title: "Filter by tags",
         summary: "Places with several tags: tick some to see those with all of them.",
+      },
+      {
+        name: "offices",
+        title: "Filter by group",
+        summary:
+          "Offices by region and country, nested in the list, with a checkbox for each region and country.",
       },
       {
         name: "search",

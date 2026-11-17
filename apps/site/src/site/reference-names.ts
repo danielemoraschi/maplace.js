@@ -165,5 +165,7 @@ export const STORE_NAMES = {
     searchLabel: true,
     noMatchesLabel: true,
     matchesLabel: true,
+    groupFilter: true,
+    groupFilterLabel: true,
   }),
 } as const;

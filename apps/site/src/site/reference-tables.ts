@@ -28,6 +28,7 @@ import {
   EMPTY_AREA_CLASS,
   SHOW_ALL_CLASS,
 } from "../../../../packages/maplace/src/views/area-switch.ts";
+import { GROUP_FILTER_CLASS } from "../../../../packages/maplace/src/views/group-filter.ts";
 import {
   LIST_CLASS,
   LIST_HEADING_CLASS,
@@ -80,6 +81,7 @@ export const STYLING_CLASSES = [
   LIST_HEADING_CLASS,
   SEARCH_CLASS,
   SEARCH_STATUS_CLASS,
+  GROUP_FILTER_CLASS,
   AREA_SWITCH_CLASS,
   SHOW_ALL_CLASS,
   AREA_ONLY_CLASS,

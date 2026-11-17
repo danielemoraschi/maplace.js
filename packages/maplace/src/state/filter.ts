@@ -1,4 +1,5 @@
 import { sameFilter } from "../diff/same";
+import type { LocationGroup } from "../group-path";
 import type { FilterRequest, LocationFilter } from "../location-state";
 import type { Snapshot } from "../store";
 import { child, root } from "../validate/fail";
@@ -15,8 +16,12 @@ export function setFilter<Data>(snapshot: Snapshot<Data>, request: FilterRequest
 
 function frozenCopy({ groups, tags, query }: LocationFilter): LocationFilter {
   return Object.freeze({
-    groups: groups && Object.freeze([...groups]),
+    groups: groups && Object.freeze(groups.map(frozenGroup)),
     tags: tags && Object.freeze([...tags]),
     query,
   });
+}
+
+function frozenGroup(group: LocationGroup): LocationGroup {
+  return typeof group === "string" ? group : Object.freeze([...group]);
 }

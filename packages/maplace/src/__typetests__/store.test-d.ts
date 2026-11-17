@@ -32,6 +32,8 @@ maplace.setFilter({ groups: ["North"], tags: ["parking"] });
 maplace.setFilter({ tags: [] });
 maplace.setFilter({ query: "rome", tags: ["parking"] });
 maplace.setFilter(undefined);
+maplace.setFilter([["Europe", "Italy"], "Asia"]);
+maplace.setFilter({ groups: [["Europe", "Italy"]] });
 // @ts-expect-error a filter's fields are groups and tags
 maplace.setFilter({ tag: ["parking"] });
 // @ts-expect-error absence is undefined, never null

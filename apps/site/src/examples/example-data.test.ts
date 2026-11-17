@@ -14,6 +14,7 @@ describe("exampleData", () => {
       "live-data-c",
       "live-data-d",
       "live-data-e",
+      "offices",
       "points-4k",
       "volcanoes",
     ]);
@@ -36,6 +37,7 @@ describe("servedExampleFiles", () => {
       "data/live-data-c.json",
       "data/live-data-d.json",
       "data/live-data-e.json",
+      "data/offices.json",
       "data/photos/colosseum.webp",
       "data/photos/duomo.webp",
       "data/photos/st-marks.webp",

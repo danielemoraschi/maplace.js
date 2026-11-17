@@ -55,6 +55,7 @@ type SwitchAttribute =
   | "group-counts"
   | "fit-all"
   | "search"
+  | "group-filter"
   | "my-location"
   | "open-in-maps-link"
   | "directions-link"

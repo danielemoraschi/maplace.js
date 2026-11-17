@@ -25,6 +25,8 @@ export const LIST_ATTRIBUTES = [
   "search-label",
   "no-matches-label",
   "matches-label",
+  "group-filter",
+  "group-filter-label",
 ] as const;
 
 const LIST_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(LIST_ATTRIBUTES);
@@ -94,10 +96,12 @@ function listOptionsOf(host: HTMLElement, name: string): ElementListOptions {
     areaOnlyLabel: textOf(host, "area-only-label"),
     showAllLabel: textOf(host, "show-all-label"),
     emptyAreaLabel: textOf(host, "empty-area-label"),
-    search: searchSwitch(host, name),
+    search: listOnlySwitch(host, "search", name),
     searchLabel: textOf(host, "search-label"),
     noMatchesLabel: textOf(host, "no-matches-label"),
     matchesLabel: textOf(host, "matches-label"),
+    groupFilter: listOnlySwitch(host, "group-filter", name),
+    groupFilterLabel: textOf(host, "group-filter-label"),
   };
 }
 
@@ -129,11 +133,11 @@ function textOf(host: HTMLElement, name: string): string | undefined {
   return text;
 }
 
-/** `search`, for a list with room for its box. */
-function searchSwitch(host: HTMLElement, name: string): boolean | undefined {
-  const search = switchAttribute(host, "search");
-  if (search && name === "select") throw selectMisuse("search");
-  return search;
+/** A switch adding what only a list has room for (`search`, `group-filter`): misuse on a select. */
+function listOnlySwitch(host: HTMLElement, attribute: string, name: string): boolean | undefined {
+  const on = switchAttribute(host, attribute);
+  if (on && name === "select") throw selectMisuse(attribute);
+  return on;
 }
 
 /** `attribute` on a native select, which has no room for what it adds. */

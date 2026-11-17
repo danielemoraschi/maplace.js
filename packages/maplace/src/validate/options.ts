@@ -1,5 +1,6 @@
 import { HEATMAP_ZOOMS, type HeatmapOptions, type MaplaceOptions } from "../options";
 import { child, mustBe, reject, root } from "./fail";
+import { checkGroup } from "./group";
 import { validateLocations } from "./locations";
 import { OLD_OPTIONS } from "./migration";
 import { checkPopupOptions } from "./popup";
@@ -21,9 +22,13 @@ const GROUPS = "an array of one or more groups";
 
 /** The heatmap's groups: one at least, as none would heat nothing (leave it out for every marker). */
 const checkGroups: Check = (value, field) => {
-  arrayOf(GROUPS, checkNonEmptyString)(value, field);
+  arrayOf(GROUPS, checkHeatGroup)(value, field);
   if ((value as readonly unknown[]).length === 0) mustBe(field, GROUPS, value);
 };
+
+/** A heatmap's group: a path, or a name that isn't empty. */
+const checkHeatGroup: Check = (value, field) =>
+  typeof value === "string" ? checkNonEmptyString(value, field) : checkGroup(value, field);
 
 const checkHeatmap: Assert<HeatmapOptions> = recordOf<HeatmapOptions>({
   checks: {

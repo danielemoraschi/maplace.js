@@ -5,6 +5,7 @@ import type {
   PolygonGeometry,
   PolylineGeometry,
 } from "./geometry";
+import type { LocationGroup } from "./group-path";
 import type { LineStyle, ShapeStyle } from "./style";
 
 /**
@@ -45,8 +46,11 @@ interface LocationBase<Data> {
   readonly content?: Content<Data> | undefined;
   /** Untrusted HTML for the popup, instead of `content`; rendered only through the `sanitize` option. */
   readonly html?: string | undefined;
-  /** Grouping key for list headings and `setFilter`: one per location. */
-  readonly group?: string | undefined;
+  /**
+   * Grouping key for list headings and `setFilter`: one per location, a name or a path of up to 3
+   * names, outermost first (`["Europe", "Italy"]`), which the list nests.
+   */
+  readonly group?: LocationGroup | undefined;
   /** What `setFilter` also filters on, as many as it has: "parking", "open-late". */
   readonly tags?: readonly string[] | undefined;
   /** What a filter's `query` also looks in, beside the name and group: an address, say. */

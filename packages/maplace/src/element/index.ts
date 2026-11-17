@@ -33,6 +33,8 @@ export type ElementListOptions = Pick<
   | "searchLabel"
   | "noMatchesLabel"
   | "matchesLabel"
+  | "groupFilter"
+  | "groupFilterLabel"
 >;
 
 /** What `<maplace-map>` gives a list view besides its store. */
@@ -40,7 +42,8 @@ export interface ListViewSetup {
   /**
    * The list options from the attributes (`fit-all`, `fit-all-label`, `list-heading`,
    * `group-counts`, `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`,
-   * `search`, `search-label`, `no-matches-label`, `matches-label`).
+   * `search`, `search-label`, `no-matches-label`, `matches-label`, `group-filter`,
+   * `group-filter-label`).
    */
   readonly options: ElementListOptions;
   /**
@@ -88,9 +91,14 @@ export { defineListView } from "./list-views";
  *   without `search`.
  * - `no-matches-label`, `matches-label`: what the line under the search box says when nothing
  *   matches, and before the count of matches.
+ * - `group-filter`: a button above a list opening a checkbox for each group, subgroups nested;
+ *   ticking or
+ *   unticking one sets the filter's groups. `group-filter-label` is the boxes' accessible name,
+ *   "Groups" by default.
  *   (`list`, `list-position`, `fit-all`, `fit-all-label`, `list-heading`, `group-counts`,
  *   `list-scope`, `area-only-label`, `show-all-label`, `empty-area-label`, `search`,
- *   `search-label`, `no-matches-label` and `matches-label` are live: the list is built again.)
+ *   `search-label`, `no-matches-label`, `matches-label`, `group-filter` and `group-filter-label`
+ *   are live: the list is built again.)
  * - `center`, `zoom`: the map's first view, given together (`center="41.9,12.5" zoom="6"`), over
  *   `selected-id`'s location, which is selected without moving the map (its popup may still pan
  *   to fit); can't change afterwards.
@@ -169,7 +177,8 @@ export interface MaplaceMapElement extends HTMLElement {
 /**
  * `<maplace-location location-id="…" lat lng title type group tags search-text radius icon zoom
  * weight listed editable shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's
- * position or a circle's centre, `tags` its tags split on spaces, `search-text` what a search box
+ * position or a circle's centre, `group` a name or, starting with `[`, a path as JSON
+ * (`group='["Europe","Italy"]'`), `tags` its tags split on spaces, `search-text` what a search box
  * also looks in, `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `weight` a
  * marker's weight on a heatmap (1 when absent), `listed="false"` keeps it out of the list (on the
  * map still),

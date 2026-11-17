@@ -147,6 +147,8 @@ export const REACT_PROPS = {
     searchLabel: true,
     noMatchesLabel: true,
     matchesLabel: true,
+    groupFilter: true,
+    groupFilterLabel: true,
     children: true,
     position: true,
   }),

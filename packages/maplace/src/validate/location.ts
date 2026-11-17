@@ -9,6 +9,7 @@ import type {
 } from "../location";
 import { child, type Field, item, mustBe, reject, root } from "./fail";
 import { checkLatLng, LATITUDE, LONGITUDE, pathOf } from "./geometry";
+import { checkGroup } from "./group";
 import { OLD_LOCATION_FIELDS } from "./migration";
 import { type Assert, recordOf } from "./record";
 import { checkLineStyle, checkShapeStyle, shapeStyleChecks } from "./style";
@@ -48,7 +49,7 @@ const COMMON_CHECKS = {
   title: optional(checkString),
   content: optional(checkRenderable),
   html: optional(checkString),
-  group: optional(checkString),
+  group: optional(checkGroup),
   tags: optional(checkTags),
   searchText: optional(checkString),
   visible: optional(checkBoolean),

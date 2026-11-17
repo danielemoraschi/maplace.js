@@ -135,6 +135,12 @@ describe("locationsFromGeoJSON", () => {
     ]);
   });
 
+  it("reads a group path from properties", () => {
+    const properties = { group: ["Europe", "Italy"] };
+    const point = feature("a", { type: "Point", coordinates: [1, 2] }, properties);
+    expect(locationsFromGeoJSON(collection(point))[0]?.group).toEqual(["Europe", "Italy"]);
+  });
+
   it("reads a null title or group, as GIS exports write empty attributes, as none", () => {
     const properties = { title: null, group: null, phone: "06 123" };
     const point = feature("a", { type: "Point", coordinates: [1, 2] }, properties);

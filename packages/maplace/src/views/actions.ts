@@ -1,4 +1,5 @@
 import { MaplaceError } from "../errors";
+import type { LocationGroup } from "../group-path";
 import type { Maplace } from "../store";
 
 /** What a list asks of the store: the only place a view calls it. */
@@ -11,6 +12,8 @@ export interface ListActions {
   unhover(id: string): void;
   /** Sets the filter's query, keeping the rest of what the page asked for. */
   search(text: string): void;
+  /** Sets the filter's groups (undefined: every group), keeping the rest of what the page asked for. */
+  filterGroups(groups: readonly LocationGroup[] | undefined): void;
 }
 
 type ListStore = Pick<Maplace, "select" | "fitAll" | "hover" | "setFilter" | "getSnapshot">;
@@ -50,5 +53,7 @@ export function listActionsFor(
       }),
     search: (text) =>
       whileStoreLives(() => store.setFilter({ ...store.getSnapshot().filter, query: text })),
+    filterGroups: (groups) =>
+      whileStoreLives(() => store.setFilter({ ...store.getSnapshot().filter, groups })),
   };
 }

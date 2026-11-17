@@ -11,13 +11,17 @@ const AREA_SWITCH = {
   emptyArea: "No locations in this area",
 };
 
-function listboxIn(parts: Omit<BlockParts, "search"> & Partial<BlockParts>) {
+function listboxIn(parts: Omit<BlockParts, "search" | "groupFilter"> & Partial<BlockParts>) {
   const listbox = createListbox(recordingActions(), {
     label: "Shops",
     fitAllLabel: undefined,
     render: undefined,
   });
-  const { variant: block, areaSwitch } = listBlock(listbox, { search: undefined, ...parts });
+  const { variant: block, areaSwitch } = listBlock(listbox, {
+    search: undefined,
+    groupFilter: undefined,
+    ...parts,
+  });
   return { listbox, block, areaSwitch, children: Array.from(block.element.children) };
 }
 

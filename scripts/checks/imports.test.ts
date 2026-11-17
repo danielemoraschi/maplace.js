@@ -110,6 +110,7 @@ describe("problemsIn", () => {
   it("keeps views to the store's public API and pure state lookups", () => {
     expect(layerOf("views/listbox")).toBe("view");
     expect(layerOf("list-view")).toBe("view");
+    expect(layerOf("list-view-options")).toBe("view");
     expect(layerOf("list-views")).toBeUndefined();
     expect(
       problemsIn("views/listbox.ts", 'import { attach } from "../maplace/attachment";'),

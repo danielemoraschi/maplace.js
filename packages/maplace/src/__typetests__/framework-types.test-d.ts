@@ -121,7 +121,7 @@ export const leftOut: SvelteMap = {
 export const badLocations: SvelteMap = { locations: [{ id: "a", lat: "1", lng: 2 }] };
 
 // A switch reads "false" as off, so a template's false is fine on it.
-export const noCounts: VueMap = { "group-counts": false };
+export const noCounts: VueMap = { "group-counts": false, "group-filter": false };
 export const noSwitches: VueMap = {
   "fit-all": false,
   search: false,

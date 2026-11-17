@@ -40,6 +40,34 @@ describe("createListbox: structure", () => {
     expect(groups).toEqual(["N", "S"]);
   });
 
+  it("a subgroup is a role=group inside its parent's, named by its own name", () => {
+    const { show } = listbox();
+    show([
+      { id: "milan", lat: 0, lng: 0, title: "Milan", group: ["Europe", "Italy"] },
+      { id: "hq", lat: 0, lng: 0, title: "HQ", group: "Europe" },
+    ]);
+    const europe = document.querySelector('[role="group"][aria-label="Europe"]');
+    const italy = europe?.querySelector(':scope > [role="group"][aria-label="Italy"]');
+    expect(italy?.querySelector('[role="option"]')?.textContent).toBe("Milan");
+    expect(labels()).toEqual(["HQ", "Milan"]);
+    expect(textsOf(".maplace-group-heading")).toEqual(["Europe", "Italy"]);
+  });
+
+  it("keeps namesakes under different parents apart across renders", () => {
+    const { show } = listbox();
+    const norths = [
+      { id: "turin", lat: 0, lng: 0, title: "Turin", group: ["Italy", "North"] },
+      { id: "lille", lat: 0, lng: 0, title: "Lille", group: ["France", "North"] },
+    ];
+    show(norths);
+    show([...norths]);
+    const northOf = (country: string) =>
+      document.querySelector(`[aria-label="${country}"] > [role="group"][aria-label="North"]`);
+    expect(northOf("Italy")?.textContent).toContain("Turin");
+    expect(northOf("France")?.textContent).toContain("Lille");
+    expect(labels()).toEqual(["Turin", "Lille"]);
+  });
+
   it("keeps each option element while its entry stays listed", () => {
     const { show } = listbox();
     const before = options();

@@ -86,6 +86,8 @@ function useListView<Data>(
     searchLabel,
     noMatchesLabel,
     matchesLabel,
+    groupFilter,
+    groupFilterLabel,
     position,
   }: LocationListProps<Data>,
   portals: EntryPortals<Data> | undefined,
@@ -114,6 +116,8 @@ function useListView<Data>(
       searchLabel,
       noMatchesLabel,
       matchesLabel,
+      groupFilter,
+      groupFilterLabel,
       render,
     } satisfies Record<keyof ListViewOptions<Data>, unknown>;
     const view = createListView(store, listOptions);
@@ -145,6 +149,8 @@ function useListView<Data>(
     searchLabel,
     noMatchesLabel,
     matchesLabel,
+    groupFilter,
+    groupFilterLabel,
     position,
     mountControl,
   ]);

@@ -1,9 +1,9 @@
+import type { LocationGroup } from "../group-path";
 import type { FilterRequest, LocationFilter } from "../location-state";
 import type { Field } from "./fail";
+import { checkGroups } from "./group";
 import { recordOf } from "./record";
-import { arrayOf, type Check, checkString, checkTags, optional } from "./values";
-
-const checkGroups = arrayOf("an array of groups", checkString);
+import { type Check, checkString, checkTags, optional } from "./values";
 
 const checkFilterFields: Check = recordOf<LocationFilter>({
   checks: {
@@ -32,6 +32,6 @@ export function filterFrom(request: FilterRequest, field: Field): LocationFilter
     : { groups, tags: askedTags, query: words };
 }
 
-function isGroupList(request: FilterRequest): request is readonly string[] {
+function isGroupList(request: FilterRequest): request is readonly LocationGroup[] {
   return Array.isArray(request);
 }

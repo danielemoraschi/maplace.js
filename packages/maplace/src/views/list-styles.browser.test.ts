@@ -40,6 +40,64 @@ describe("the list's default styles", () => {
     expect(style.paddingTop).not.toBe("0px");
   });
 
+  it("indent a subgroup's heading and options under its parent's", async () => {
+    const at = { lat: 0, lng: 0 };
+    const { list } = await listed({
+      locations: [
+        { id: "hq", title: "HQ", group: "Europe", ...at },
+        { id: "milan", title: "Milan", group: ["Europe", "Italy"], ...at },
+      ],
+    });
+    const left = (node: Element) => node.getBoundingClientRect().left;
+    const [europe, italy] = Array.from(list.element.querySelectorAll(".maplace-group-heading"));
+    expect(italy && europe && left(italy) > left(europe)).toBe(true);
+    expect(left(optionTitled(list.element, "Milan"))).toBeGreaterThan(
+      left(optionTitled(list.element, "HQ")),
+    );
+  });
+
+  it("keep the group filter's boxes behind its button, a row each, subgroups indented", async () => {
+    const at = { lat: 0, lng: 0 };
+    const { list } = await listed(
+      {
+        locations: [
+          { id: "milan", group: ["Europe", "Italy"], ...at },
+          { id: "paris", group: ["Europe", "France"], ...at },
+          { id: "tokyo", group: ["Asia", "Japan"], ...at },
+        ],
+      },
+      { groupFilter: true },
+    );
+    const opener = list.element.querySelector(".maplace-group-filter button") as HTMLElement;
+    expect(labelNamed(list.element, "Europe").checkVisibility()).toBe(false);
+    opener.click();
+    const box = (name: string) => labelNamed(list.element, name).getBoundingClientRect();
+    expect(box("Italy").top).toBeGreaterThan(box("Europe").top);
+    expect(box("France").top).toBeGreaterThan(box("Italy").top);
+    expect(box("Italy").left).toBeGreaterThan(box("Europe").left);
+    expect(box("Asia").left).toBe(box("Europe").left);
+    const leafLists = list.element.querySelectorAll(".maplace-group-filter ul[hidden]");
+    expect(Array.from(leafLists, (leaf) => getComputedStyle(leaf).display)).toEqual(
+      Array.from(leafLists, () => "none"),
+    );
+    expect(leafLists.length).toBeGreaterThan(0);
+  });
+
+  it("scroll a long group filter's boxes within their own height", async () => {
+    const at = { lat: 0, lng: 0 };
+    const locations = Array.from({ length: 40 }, (_, index) => ({
+      id: `p${index}`,
+      group: [`Region ${index}`, `Country ${index}`],
+      ...at,
+    }));
+    const { list } = await listed({ locations }, { groupFilter: true });
+    const filter = list.element.querySelector(".maplace-group-filter") as HTMLElement;
+    (filter.querySelector("button") as HTMLElement).click();
+    const boxes = filter.querySelector("[role=group]") as HTMLElement;
+    expect(boxes.scrollHeight).toBeGreaterThan(boxes.clientHeight);
+    expect(boxes.getBoundingClientRect().height).toBeLessThanOrEqual(13 * 16);
+  });
+
   it("turn off inside the opt-out, and come back when it goes", async () => {
     const styledAgain = unstyledPage();
     onTestFinished(styledAgain);
@@ -69,4 +127,9 @@ function headingIn(list: Element): HTMLElement {
 
 function optionTitled(list: Element, title: string): HTMLElement {
   return optionsIn(list).find((option) => option.textContent === title) as HTMLElement;
+}
+
+function labelNamed(list: Element, name: string): HTMLElement {
+  const labels = Array.from(list.querySelectorAll<HTMLElement>(".maplace-group-filter label"));
+  return labels.find((label) => label.textContent === name) as HTMLElement;
 }

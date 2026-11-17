@@ -1,3 +1,4 @@
+import { inAnyGroup, type LocationGroup } from "./group-path";
 import { isMarkerLocation, type Location, type MarkerLocation } from "./location";
 import type { PopupOptions } from "./popup";
 import type { ShapeStyle } from "./style";
@@ -21,7 +22,8 @@ export const HEATMAP_ZOOMS = { min: 3, max: 25 } as const;
  * `heatmap` capability; not with `cluster`.
  */
 export interface HeatmapOptions {
-  readonly groups?: readonly string[] | undefined;
+  /** A group here takes its subgroups, as in `setFilter`. */
+  readonly groups?: readonly LocationGroup[] | undefined;
   readonly maxZoom?: number | undefined;
 }
 
@@ -66,5 +68,5 @@ export function isHeatMarker(
 ): location is MarkerLocation {
   if (heatmap === undefined || !isMarkerLocation(location)) return false;
   const { groups } = heatmap;
-  return groups === undefined || (location.group !== undefined && groups.includes(location.group));
+  return groups === undefined || inAnyGroup(location.group, groups);
 }

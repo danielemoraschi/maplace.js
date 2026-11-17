@@ -85,9 +85,10 @@ Without the defaults, the page sizes the map (it has no height of its own) and l
 | `maplace-my-location-box` | The box around the control's button; the button is `[aria-pressed=true]` while the visitor's position is in use, its tint a background image (`background` replaces it) |
 | `maplace-my-location-status` | What the control says when it gets no position (`unavailableLabel`); empty otherwise |
 | `maplace-listbox` | The element holding a list's entries, without its heading, switch or search box |
-| `maplace-group` | A group's heading and entries in the list |
+| `maplace-group` | A group's heading and entries in the list, then its subgroups' groups, indented |
 | `maplace-search` | The search box (`search`) |
 | `maplace-search-status` | What the search box says: how many locations match, or that none does; empty with no query |
+| `maplace-group-filter` | The group filter (`groupFilter`): a `button` (`[aria-expanded=true]` while open; its first `span` says how many groups are ticked, its last the arrow), then a `[role=group]` of labelled checkboxes, a subgroup's in a list under its parent's, scrolling past 12rem |
 | `maplace-group-heading` | A group's heading, with its count in the same text (`groupCounts`) |
 | `maplace-option` | A location's entry in the list |
 | `maplace-distance` | An entry's distance, after its label, in a list with `sort: "distance"`; a custom `render` shows its own instead |

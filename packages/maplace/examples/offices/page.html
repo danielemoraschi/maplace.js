@@ -1,0 +1,29 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #offices-map { height: 36rem; }
+    #offices-map > .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<!-- A company's offices around the world, each in a region and a country (a group path, as JSON in the group attribute): the list nests the countries under their regions, with how many each holds, and a checkbox for each region and country above it filters the map and the list. -->
+<maplace-map id="offices-map" api-key="YOUR_KEY" list list-heading="Offices" group-counts group-filter search
+  search-label="Find an office">
+  <maplace-location location-id="milan" lat="45.46" lng="9.19" title="Milan" group='["Europe","Italy"]'></maplace-location>
+  <maplace-location location-id="rome" lat="41.9" lng="12.5" title="Rome" group='["Europe","Italy"]'></maplace-location>
+  <maplace-location location-id="turin" lat="45.07" lng="7.69" title="Turin" group='["Europe","Italy"]'></maplace-location>
+  <maplace-location location-id="paris" lat="48.86" lng="2.35" title="Paris" group='["Europe","France"]'></maplace-location>
+  <maplace-location location-id="lyon" lat="45.76" lng="4.84" title="Lyon" group='["Europe","France"]'></maplace-location>
+  <maplace-location location-id="london" lat="51.51" lng="-0.13" title="London" group='["Europe","United Kingdom"]'></maplace-location>
+  <maplace-location location-id="manchester" lat="53.48" lng="-2.24" title="Manchester" group='["Europe","United Kingdom"]'></maplace-location>
+  <maplace-location location-id="tokyo" lat="35.68" lng="139.69" title="Tokyo" group='["Asia","Japan"]'></maplace-location>
+  <maplace-location location-id="osaka" lat="34.69" lng="135.5" title="Osaka" group='["Asia","Japan"]'></maplace-location>
+  <maplace-location location-id="singapore" lat="1.29" lng="103.85" title="Singapore" group='["Asia","Singapore"]'></maplace-location>
+  <maplace-location location-id="new-york" lat="40.71" lng="-74.01" title="New York" group='["Americas","United States"]'></maplace-location>
+  <maplace-location location-id="chicago" lat="41.88" lng="-87.63" title="Chicago" group='["Americas","United States"]'></maplace-location>
+  <maplace-location location-id="san-francisco" lat="37.77" lng="-122.42" title="San Francisco" group='["Americas","United States"]'></maplace-location>
+  <maplace-location location-id="sao-paulo" lat="-23.55" lng="-46.63" title="São Paulo" group='["Americas","Brazil"]'></maplace-location>
+  <maplace-location location-id="rio" lat="-22.91" lng="-43.17" title="Rio de Janeiro" group='["Americas","Brazil"]'></maplace-location>
+  <maplace-location location-id="recife" lat="-8.05" lng="-34.88" title="Recife" group='["Americas","Brazil"]'></maplace-location>
+</maplace-map>

@@ -4,35 +4,35 @@
     "lat": 46.191,
     "lng": -122.194,
     "title": "Mount St. Helens",
-    "group": "volcanoes"
+    "group": "Volcanoes"
   },
   {
     "id": "popocatepetl",
     "lat": 19.023,
     "lng": -98.622,
     "title": "Popocatépetl",
-    "group": "volcanoes"
+    "group": "Volcanoes"
   },
-  { "id": "cotopaxi", "lat": -0.677, "lng": -78.436, "title": "Cotopaxi", "group": "volcanoes" },
-  { "id": "villarrica", "lat": -39.42, "lng": -71.93, "title": "Villarrica", "group": "volcanoes" },
-  { "id": "etna", "lat": 37.751, "lng": 14.993, "title": "Etna", "group": "volcanoes" },
-  { "id": "vesuvius", "lat": 40.821, "lng": 14.426, "title": "Vesuvius", "group": "volcanoes" },
-  { "id": "kilauea", "lat": 19.421, "lng": -155.287, "title": "Kīlauea", "group": "volcanoes" },
+  { "id": "cotopaxi", "lat": -0.677, "lng": -78.436, "title": "Cotopaxi", "group": "Volcanoes" },
+  { "id": "villarrica", "lat": -39.42, "lng": -71.93, "title": "Villarrica", "group": "Volcanoes" },
+  { "id": "etna", "lat": 37.751, "lng": 14.993, "title": "Etna", "group": "Volcanoes" },
+  { "id": "vesuvius", "lat": 40.821, "lng": 14.426, "title": "Vesuvius", "group": "Volcanoes" },
+  { "id": "kilauea", "lat": 19.421, "lng": -155.287, "title": "Kīlauea", "group": "Volcanoes" },
   {
     "id": "krakatau",
     "lat": -6.102,
     "lng": 105.423,
     "title": "Anak Krakatau",
-    "group": "volcanoes"
+    "group": "Volcanoes"
   },
-  { "id": "merapi", "lat": -7.54, "lng": 110.446, "title": "Merapi", "group": "volcanoes" },
-  { "id": "taal", "lat": 14.002, "lng": 120.993, "title": "Taal", "group": "volcanoes" },
-  { "id": "erebus", "lat": -77.53, "lng": 167.15, "title": "Mount Erebus", "group": "volcanoes" },
+  { "id": "merapi", "lat": -7.54, "lng": 110.446, "title": "Merapi", "group": "Volcanoes" },
+  { "id": "taal", "lat": 14.002, "lng": 120.993, "title": "Taal", "group": "Volcanoes" },
+  { "id": "erebus", "lat": -77.53, "lng": 167.15, "title": "Mount Erebus", "group": "Volcanoes" },
   {
     "id": "eyjafjallajokull",
     "lat": 63.63,
     "lng": -19.62,
     "title": "Eyjafjallajökull",
-    "group": "volcanoes"
+    "group": "Volcanoes"
   }
 ]

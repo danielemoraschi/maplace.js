@@ -1,7 +1,9 @@
 import type { LatLng, PolygonRings } from "./geometry";
+import type { LocationGroup } from "./group-path";
 import type { Location } from "./location";
 import { child, type Field, item, mustBe, root } from "./validate/fail";
-import { checkObject, checkOneOf, checkString, checkTags } from "./validate/values";
+import { checkGroup } from "./validate/group";
+import { type Check, checkObject, checkOneOf, checkString, checkTags } from "./validate/values";
 
 /**
  * A GeoJSON FeatureCollection, as `locationsFromGeoJSON` reads it. Its strings are wide and a
@@ -29,14 +31,14 @@ const POSITION = "a position, [lng, lat] in numbers";
  * a `LineString` a polyline, a `Polygon` a polygon (its first ring the path, the others its
  * holes, each without GeoJSON's closing point), a `MultiPolygon` one multipolygon, its polygons
  * read as a `Polygon`'s rings, even when it has only one. Positions are `[lng, lat]`; an altitude
- * is dropped. The `id` is the feature's (a number as its string), `title`, `group` and a list of
- * `tags` its properties', and `data` its properties whole, typed `Data` as `createMaplace<Data>()`
+ * is dropped. The `id` is the feature's (a number as its string), `title`, `group` (a name, or
+ * a path as a list of names) and a list of `tags` its properties', and `data` its properties whole, typed `Data` as `createMaplace<Data>()`
  * types it.
  *
  * @throws `MaplaceError` `invalid-input` at the GeoJSON path (`features[2].geometry.type`) for a
  *   shape it can't read: not a FeatureCollection, a feature without an `id`, another geometry (a
- *   `MultiPoint` or `MultiLineString`, a `GeometryCollection`, none), a non-string `title` or
- *   `group`, a list of `tags` that aren't strings, a bad position. Values, such as ranges, are the
+ *   `MultiPoint` or `MultiLineString`, a `GeometryCollection`, none), a non-string `title`, a
+ *   `group` that is neither a name nor a path, a list of `tags` that aren't strings, a bad position. Values, such as ranges, are the
  *   store's to check when the locations are set.
  */
 export function locationsFromGeoJSON<Data = unknown>(
@@ -79,11 +81,11 @@ function idOf(id: unknown, field: Field): string {
 function labelsOf(
   properties: unknown,
   field: Field,
-): { title?: string; group?: string; tags?: readonly string[] } {
+): { title?: string; group?: LocationGroup; tags?: readonly string[] } {
   if (properties === null || properties === undefined) return {};
   checkObject(properties, field);
-  const title = textOf(properties.title, child(field, "title"));
-  const group = textOf(properties.group, child(field, "group"));
+  const title = labelFrom<string>(properties.title, child(field, "title"), checkString);
+  const group = labelFrom<LocationGroup>(properties.group, child(field, "group"), checkGroup);
   const tags = tagsOf(properties.tags, child(field, "tags"));
   return {
     ...(title !== undefined && { title }),
@@ -102,11 +104,11 @@ function tagsOf(value: unknown, field: Field): readonly string[] | undefined {
   return value as readonly string[];
 }
 
-/** A label, `null` meaning none: GIS tools write an empty attribute as `null`. */
-function textOf(value: unknown, field: Field): string | undefined {
+/** A label `check` accepts, `null` meaning none: GIS tools write an empty attribute as `null`. */
+function labelFrom<T>(value: unknown, field: Field, check: Check): T | undefined {
   if (value === null || value === undefined) return undefined;
-  checkString(value, field);
-  return value;
+  check(value, field);
+  return value as T;
 }
 
 function geometryOf(geometry: unknown, field: Field) {

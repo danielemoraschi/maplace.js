@@ -1,5 +1,5 @@
 import type { ListActions } from "./actions";
-import { labelOf } from "./model";
+import { flatSections, labelOf } from "./model";
 import { createSections } from "./sections";
 import type { ListState, ListVariant } from "./variant";
 
@@ -12,7 +12,8 @@ export interface NativeSelectSettings {
 }
 
 /**
- * `as: 'select'`: a native `<select>`. It never hovers, and a state change only sets which option
+ * `as: 'select'`: a native `<select>`, one `<optgroup>` per group, as they can't nest (subgroups
+ * named by their path, `flatSections`). It never hovers, and a state change only sets which option
  * is selected, so an open picker isn't rebuilt by hover traffic from the map.
  */
 export function createNativeSelect<Data>(
@@ -73,7 +74,7 @@ export function createNativeSelect<Data>(
   return {
     element: select,
     renderStructure(structure) {
-      const listed = sections.render(structure, [nothingSelected]);
+      const listed = sections.render(flatSections(structure), [nothingSelected]);
       select.hidden = listed.length === 0 && fitAll === undefined;
       showSelection();
     },

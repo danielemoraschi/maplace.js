@@ -1,3 +1,4 @@
+import { groupKey } from "../group-path";
 import type { LocationFilter } from "../location-state";
 import { type Route, sameComputation } from "../route";
 
@@ -29,7 +30,7 @@ export function sameFilter(a: LocationFilter | undefined, b: LocationFilter | un
     a,
     b,
     (x, y) =>
-      sameOptional(x.groups, y.groups, sameItems) &&
+      sameOptional(x.groups, y.groups, (a, b) => sameItems(a.map(groupKey), b.map(groupKey))) &&
       sameOptional(x.tags, y.tags, sameItems) &&
       x.query === y.query,
   );

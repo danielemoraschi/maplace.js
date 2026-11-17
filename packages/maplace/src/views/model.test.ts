@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
-import { type ListRules, labelOf, listedEntries, listStructureOf } from "./model";
+import { flatSections, type ListRules, labelOf, listedEntries, listStructureOf } from "./model";
 
 const north: Location = { id: "n", lat: 0, lng: 0, title: "North", group: "N" };
 const south: Location = { id: "s", lat: 0, lng: 0, title: "  ", group: "S" };
@@ -87,6 +87,55 @@ describe("listStructureOf: counts", () => {
   it("gives no label without groupCounts", () => {
     expect(labels([north, south])).toEqual([undefined, undefined]);
     expect(labels([north, south], false)).toEqual([undefined, undefined]);
+  });
+});
+
+describe("listStructureOf: subgroups", () => {
+  const office = (id: string, ...group: string[]): Location => ({ id, lat: 0, lng: 0, group });
+  const offices = [
+    office("milan", "Europe", "Italy"),
+    office("rome", "Europe", "Italy"),
+    office("paris", "Europe", "France"),
+    office("lyon", "Europe", "France"),
+    office("nice", "Europe", "France"),
+    office("north-milan", "Italy", "North"),
+    office("north-lyon", "France", "North"),
+  ];
+  const structure = listStructureOf(
+    { locations: offices, filter: undefined },
+    { groupHeadings: undefined, groupCounts: true },
+  );
+
+  it("a parent's label counts everything under it: Europe (5)", () => {
+    const [europe] = structure.sections;
+    expect(europe?.label).toBe("Europe (5)");
+    expect(europe?.locations).toEqual([]);
+    expect(europe?.sections.map((section) => section.label)).toEqual(["Italy (2)", "France (3)"]);
+  });
+
+  it("two subgroups named North under different parents stay apart", () => {
+    const norths = structure.sections.slice(1).map((section) => section.sections[0]);
+    expect(norths.map((section) => section?.heading)).toEqual(["North", "North"]);
+    expect(norths.map((section) => section?.path)).toEqual([
+      ["Italy", "North"],
+      ["France", "North"],
+    ]);
+  });
+
+  it("flat sections label a subgroup with its path and its own count", () => {
+    const flat = flatSections(structure).sections;
+    expect(flat.map((section) => section.label)).toEqual([
+      "Europe › Italy (2)",
+      "Europe › France (3)",
+      "Italy › North (1)",
+      "France › North (1)",
+    ]);
+    const uncounted = listStructureOf(
+      { locations: offices, filter: undefined },
+      { groupHeadings: undefined },
+    );
+    expect(flatSections(uncounted).sections.every(({ label }) => label === undefined)).toBe(true);
+    expect(flat.every((section) => section.sections.length === 0)).toBe(true);
   });
 });
 

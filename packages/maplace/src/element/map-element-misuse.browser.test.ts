@@ -53,6 +53,18 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     expect(map.loadState).toBe("loading");
   });
 
+  it("starts in error for a child's group that starts with [ but isn't a JSON path", async () => {
+    const errors = errorsOn(document);
+    const map = await mapFrom(
+      '<maplace-map><maplace-location location-id="a" lat="1" lng="1" group="[Draft] Rome"></maplace-location></maplace-map>',
+    );
+    expect([map.loadState, errors.map(({ field }) => field)]).toEqual(["error", ["group"]]);
+    map.querySelector("maplace-location")?.setAttribute("group", '["Europe","Italy"]');
+    await nextTask();
+    expect(map.loadState).toBe("loading");
+    expect(map.locations[0]?.group).toEqual(["Europe", "Italy"]);
+  });
+
   it("starts without the selection an unknown selected-id names, in error until one is made", async () => {
     const map = await mapFrom(`<maplace-map selected-id="milan">${ROME}</maplace-map>`);
     expect(map.maplace.getSnapshot()).toMatchObject({

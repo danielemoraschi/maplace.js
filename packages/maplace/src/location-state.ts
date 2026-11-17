@@ -1,3 +1,4 @@
+import { inAnyGroup, type LocationGroup } from "./group-path";
 import type { Location, LocationState } from "./location";
 import { locationById } from "./location-index";
 
@@ -31,14 +32,15 @@ export function changedIds(previous: SelectionAndHover, next: SelectionAndHover)
  * `query`, each when given.
  */
 export interface LocationFilter {
-  readonly groups?: readonly string[] | undefined;
+  /** A group here takes its subgroups: `["Europe"]` shows Europe › Italy too. */
+  readonly groups?: readonly LocationGroup[] | undefined;
   readonly tags?: readonly string[] | undefined;
   /** Words a location has all of, in its name (its title, else its id), group or `searchText`. */
   readonly query?: string | undefined;
 }
 
 /** What `setFilter` takes: a list of groups, a filter, or undefined to show everything. */
-export type FilterRequest = readonly string[] | LocationFilter | undefined;
+export type FilterRequest = readonly LocationGroup[] | LocationFilter | undefined;
 
 /** Drawn and selectable: not `visible: false`, and with a filter, what it asks for. */
 export function isShown(location: Location, filter: LocationFilter | undefined): boolean {
@@ -52,7 +54,7 @@ export function isShown(location: Location, filter: LocationFilter | undefined):
 }
 
 function inGroups({ group }: Location, groups: LocationFilter["groups"]): boolean {
-  return groups === undefined || (group !== undefined && groups.includes(group));
+  return groups === undefined || inAnyGroup(group, groups);
 }
 
 function hasTags(location: Location, tags: LocationFilter["tags"]): boolean {
@@ -71,7 +73,9 @@ function matchesQuery(location: Location, query: LocationFilter["query"]): boole
 const folded = new WeakMap<Location, { readonly text: string; readonly fold: string }>();
 
 function searchableText(location: Location): string {
-  const text = [labelOf(location), location.group, location.searchText].join(" ");
+  const { group } = location;
+  const groupText = typeof group === "string" ? group : group?.join(" ");
+  const text = [labelOf(location), groupText, location.searchText].join(" ");
   const known = folded.get(location);
   if (known?.text === text) return known.fold;
   const fold = foldText(text);

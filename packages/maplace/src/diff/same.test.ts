@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { keepIfSame, sameFields, sameItems, sameOptional, sameValueSource } from "./same";
+import {
+  keepIfSame,
+  sameFields,
+  sameFilter,
+  sameItems,
+  sameOptional,
+  sameValueSource,
+} from "./same";
 
 describe("sameFields", () => {
   it("compares own fields with ===", () => {
@@ -71,5 +78,15 @@ describe("sameOptional", () => {
     expect(sameOptional(["a"], undefined, sameItems)).toBe(false);
     expect(sameOptional(undefined, [], sameItems)).toBe(false);
     expect(sameOptional(["a"], ["b"], sameItems)).toBe(false);
+  });
+});
+
+describe("sameFilter", () => {
+  it("the same path as a new array is the same filter", () => {
+    expect(sameFilter({ groups: [["Europe", "Italy"]] }, { groups: [["Europe", "Italy"]] })).toBe(
+      true,
+    );
+    expect(sameFilter({ groups: ["Italy"] }, { groups: [["Italy"]] })).toBe(true);
+    expect(sameFilter({ groups: [["Europe", "Italy"]] }, { groups: [["Europe"]] })).toBe(false);
   });
 });

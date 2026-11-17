@@ -12,13 +12,16 @@ interface LayerRule {
   readonly packages?: readonly string[];
 }
 
+/** The data types, and pure helpers on them that every layer may share. */
+const DATA_MODULES = [
+  "geometry style location location-state location-index longitude-arc drawn-path great-circle",
+  "anchor sphere group-path view-box options route viewport popup drawable errors events",
+  "adopted-styles unstyled map-failure-words",
+].flatMap((line) => line.split(" "));
+
 /** The layers of src. `google.maps` itself is fenced by Biome (`noRestrictedGlobals`). */
 const LAYERS = {
-  // The data types, and pure helpers on them that every layer may share.
-  data: {
-    files:
-      /^(geometry|style|location|location-state|location-index|longitude-arc|drawn-path|great-circle|anchor|sphere|view-box|options|route|viewport|popup|drawable|errors|events|adopted-styles|unstyled|map-failure-words)$/,
-  },
+  data: { files: new RegExp(`^(${DATA_MODULES.join("|")})$`) },
   validation: { files: /^validate\//, imports: ["data"] },
   diff: { files: /^diff\//, imports: ["data", "contract", "validation"] },
   state: { files: /^state\//, imports: ["data", "store", "validation", "diff"] },
@@ -87,7 +90,10 @@ const LAYERS = {
     imports: [],
     packages: ["vitest"],
   },
-  view: { files: /^(list-view$|views\/)/, imports: ["data", "store", "state", "validation"] },
+  view: {
+    files: /^(list-view(-options)?$|views\/)/,
+    imports: ["data", "store", "state", "validation"],
+  },
   // A GeoJSON FeatureCollection as locations (C13): checked with the store's checks, so its
   // misuse reads the same.
   geojson: { files: /^geojson$/, imports: ["data", "validation"] },

@@ -38,7 +38,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `title` | `string` | Plain text: the list label, the accessible name on the map and its popup's heading | `title` |
 | `content` | [`Content`](#content) | The popup's content | a `<template>` child |
 | `html` | `string` | Untrusted HTML for the popup instead of `content`, rendered only through the store's `sanitize` | |
-| `group` | `string` | Grouping key for list headings and `setFilter`: one per location | `group` |
+| `group` | `string \| string[]` | Grouping key for list headings and `setFilter`: one per location, a name or (1.2) a path of up to 3 names, outermost first, such as `["Europe", "Italy"]`, which the list nests ([Subgroups](store.md#subgroups)) | `group`: a name, or a path as JSON when it starts with `[` (`group='["Europe","Italy"]'`), so a name starting with `[` is written in `locations` instead |
 | `tags` | `string[]` | What [`setFilter`](store.md#methods) also filters on, as many as it has; never a heading | `tags`, split on spaces |
 | `searchText` | `string` | What a [`setFilter`](store.md#methods) query also looks in, beside the name and group: an address, say; `data` isn't searched | `search-text` |
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
@@ -207,7 +207,7 @@ Each feature becomes one location:
 - a `Point` becomes a marker, a `LineString` a polyline, a `Polygon` a polygon (its first ring is the `path` and the others its `holes`), and a `MultiPolygon` one [multipolygon](#multipolygons), each of its polygons read as a `Polygon`'s rings, even when it has only one;
 - positions are GeoJSON's `[lng, lat]`, turned into `{ lat, lng }`; an altitude is dropped, and so is a ring's closing point (a last point equal to the first);
 - `id` is the feature's `id`, a number becoming its string;
-- `title` and `group` are the properties' own: strings, or `null` or absent for none;
+- `title` and `group` are the properties' own: strings (`group` also a list of names, a path), or `null` or absent for none;
 - `tags` are the properties' own when they are a list; anything else called `tags`, such as an OpenStreetMap export's object, stays in `data` alone;
 - `data` is the properties whole, `title`, `group` and `tags` included; `null` or no properties means no `data`.
 

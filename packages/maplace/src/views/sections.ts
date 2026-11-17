@@ -1,3 +1,4 @@
+import { groupKey } from "../group-path";
 import type { Location } from "../location";
 import { reconcile } from "./keyed";
 import type { Distances, EntryDistance, ListSection, ListStructure } from "./model";
@@ -32,7 +33,7 @@ interface ShownEntry<Data> {
   readonly distance: EntryDistance | undefined;
 }
 
-/** The options and groups of one list, kept by id and heading across renders. */
+/** The options and groups of one list, kept by id and group path across renders. */
 export interface Sections<Data, E extends Element> {
   /** Renders `structure` after the `fixed` elements; returns the options in display order. */
   render(structure: ListStructure<Data>, fixed: readonly Element[]): readonly E[];
@@ -84,14 +85,19 @@ export function createSections<Data, E extends Element>(
     group.name(name);
   }
 
-  /** One section's options, at the top or in their group, recorded in this render's pass. */
+  /**
+   * One section's options, in `into` (the top's elements, or its parent group's) or in their own
+   * group, then its subgroups inside that group, recorded in this render's pass.
+   */
   function renderSection(
     pass: Pass<E>,
-    { heading, label, locations }: ListSection<Data>,
+    section: ListSection<Data>,
     distances: Distances | undefined,
+    into: Element[],
   ): void {
-    const group = heading === undefined ? undefined : (groups.get(heading) ?? newGroup());
-    const members: Element[] = group ? [...group.head] : pass.top;
+    const { heading, label, path, locations } = section;
+    const group = heading === undefined ? undefined : (groups.get(groupKey(path)) ?? newGroup());
+    const members: Element[] = group ? [...group.head] : into;
     for (const location of locations) {
       const option = optionFor(location, distances?.of.get(location.id));
       pass.options.set(location.id, option);
@@ -99,17 +105,18 @@ export function createSections<Data, E extends Element>(
       pass.ordered.push(option);
     }
     if (group === undefined || heading === undefined) return;
+    for (const child of section.sections) renderSection(pass, child, distances, members);
     nameGroup(group, label ?? heading);
     reconcile(group.element, members);
-    pass.groups.set(heading, group);
-    pass.top.push(group.element);
+    pass.groups.set(groupKey(path), group);
+    into.push(group.element);
   }
 
   return {
     render(structure, fixed) {
       const pass: Pass<E> = { top: [...fixed], ordered: [], options: new Map(), groups: new Map() };
       for (const section of structure.sections) {
-        renderSection(pass, section, structure.distances);
+        renderSection(pass, section, structure.distances, pass.top);
       }
       reconcile(container, pass.top);
       options = pass.options;

@@ -1,4 +1,4 @@
-import type { ListEntry, ListViewOptions } from "../list-view";
+import type { ListEntry, ListViewOptions } from "../list-view-options";
 import type { LocationState } from "../location";
 import { runSafely } from "../state/safely";
 import { child, describeValue, misuse, root } from "../validate/fail";

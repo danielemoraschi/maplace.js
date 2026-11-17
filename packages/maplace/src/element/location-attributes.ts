@@ -1,5 +1,7 @@
 import type { StyleField } from "../drawable";
 import type { Location } from "../index";
+import { child, mustBe } from "../validate/fail";
+import { locationRoot } from "../validate/location";
 import { booleanOrRaw, jsonOrRaw, numberOrRaw, wordsOf } from "./attribute-values";
 import type { LocationTemplates } from "./location-templates";
 
@@ -37,7 +39,7 @@ const NO_TEMPLATES: LocationTemplates = { content: undefined, icon: undefined };
 
 /**
  * A location from an element's attributes and its templates: `lat` and `lng` are a marker's
- * position or a circle's centre, and the `icon` attribute an image URL, which an icon template
+ * position or a circle's centre, `group` a name or a JSON path, and the `icon` attribute an image URL, which an icon template
  * stands in for; a shape's styles are JSON. Values are passed on as written when they aren't
  * numbers or JSON, so the store's own checks name the field and the value.
  */
@@ -54,7 +56,7 @@ export function locationFromAttributes(
   return withoutUndefined({
     id: element.getAttribute("location-id") ?? undefined,
     title: element.getAttribute("title") ?? undefined,
-    group: element.getAttribute("group") ?? undefined,
+    group: groupFrom(element),
     tags: tagsFrom(element),
     searchText: element.getAttribute("search-text") ?? undefined,
     zoom: numberOrRaw(element, "zoom"),
@@ -66,6 +68,24 @@ export function locationFromAttributes(
     ...geometry,
     ...stylesFromAttributes(element),
   }) as unknown as Location;
+}
+
+/** Whether a `group` attribute's text is read as a path, written as JSON: it starts with `[`. */
+function isWrittenAsPath(group: string): boolean {
+  return group.trimStart().startsWith("[");
+}
+
+/**
+ * The `group` attribute: one name, or a path when it starts with `[`, as JSON
+ * (`group='["Europe","Italy"]'`); such a value that isn't a JSON list is misuse, never a name.
+ */
+function groupFrom(element: Element): unknown {
+  const group = element.getAttribute("group");
+  if (group === null || !isWrittenAsPath(group)) return group ?? undefined;
+  const path = jsonOrRaw(group);
+  if (Array.isArray(path)) return path;
+  const field = child(locationRoot(element.getAttribute("location-id") ?? ""), "group");
+  return mustBe(field, 'a name, or a JSON path such as ["Europe","Italy"]', group);
 }
 
 /** The `tags` attribute's words, as `class` holds its: a tag there can't hold a space. */

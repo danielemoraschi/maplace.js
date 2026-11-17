@@ -1,5 +1,6 @@
 import { outsideUnstyled } from "../unstyled";
 import { AREA_SWITCH_CLASS, EMPTY_AREA_CLASS } from "./area-switch";
+import { GROUP_FILTER_CLASS } from "./group-filter";
 import { LIST_CLASS, LIST_HEADING_CLASS } from "./list-block";
 import {
   FIT_ALL_CLASS,
@@ -37,8 +38,10 @@ const SWITCH_LINE = `1px solid ${LINE}`;
  * the text's own (`currentColor`). Every selector is in `:where()`, so any rule of the page wins;
  * the native `<select>` keeps the browser's look. A heading, the search box and its status, the
  * area switch (a segmented control: two joined buttons, the pressed one filled like a selected
- * entry) and the empty-area status (room only while it says something, wrapping within the
- * list's width rather than widening it) stay in view over entries that scroll; a `display` is set
+ * entry), the group filter (a button that opens its boxes, rows like the entries, a group's
+ * subgroups indented under it, scrolling within its own height, ticked in the text's colour) and the empty-area status (room only while it says something,
+ * wrapping within the list's width rather than widening it) stay in view over entries that scroll;
+ * a subgroup's heading and entries are indented under its parent's; a `display` is set
  * only on what isn't `hidden`, so `hidden` holds. The switch's tints are background images: in a
  * MapLibre panel, MapLibre's own stylesheet sets a hovered or pressed button's background colour,
  * and would win; its hover tint only where something can hover, so a tap leaves none. They apply
@@ -55,12 +58,26 @@ ${outsideUnstyled(SWITCH_BUTTON)}{flex:1 1 0;white-space:nowrap;padding:.375rem 
 @media (hover:hover){${outsideUnstyled(`${SWITCH_BUTTON}:hover`)}{background:linear-gradient(${tint(8)},${tint(8)})}}
 ${outsideUnstyled(`${SWITCH_BUTTON}[aria-pressed=true]`)}{background:linear-gradient(${tint(16)},${tint(16)})}
 ${outsideUnstyled(`${SWITCH_BUTTON}[aria-busy=true]`)}{opacity:.6;cursor:progress}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}`)}{flex:none;margin:.25rem;border:${SWITCH_LINE};border-radius:.375rem}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}>button`)}{display:flex;gap:.5rem;width:100%;padding:.375rem .5rem;border:0;background:none;color:inherit;font:inherit;font-weight:600;text-align:start;cursor:pointer}
+@media (hover:hover){${outsideUnstyled(`.${GROUP_FILTER_CLASS}>button:hover`)}{background:linear-gradient(${tint(8)},${tint(8)})}}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}>button>span`)}{font-weight:400;opacity:.7}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}>button>span:first-of-type`)}{margin-inline-start:auto}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}>button[aria-expanded=true]>span:last-child`)}{transform:rotate(180deg)}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}>button:focus-visible`)}{outline:2px solid currentColor;outline-offset:-2px}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS}>div:not([hidden])`)}{max-height:12rem;overflow:auto;padding:0 .25rem .25rem;border-top:${SWITCH_LINE}}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS} ul`)}{margin:0;padding:0;list-style:none}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS} ul ul`)}{padding-inline-start:1.25rem}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS} label`)}{display:flex;align-items:center;gap:.5rem;padding:.375rem .5rem;border-radius:.375rem;cursor:pointer}
+@media (hover:hover){${outsideUnstyled(`.${GROUP_FILTER_CLASS} label:hover`)}{background:${tint(8)}}}
+${outsideUnstyled(`.${GROUP_FILTER_CLASS} input`)}{margin:0;accent-color:currentColor}
 ${outsideUnstyled(`.${SEARCH_CLASS}`)}{flex:none;box-sizing:border-box;contain:inline-size;margin:.25rem;padding:.375rem .5rem;border:${SWITCH_LINE};border-radius:.375rem;background:none;color:inherit;font:inherit}
 @media (pointer:coarse){${outsideUnstyled(`.${SEARCH_CLASS}`)}{font-size:16px}}
 ${outsideUnstyled(`:is(${SWITCH_BUTTON},.${SEARCH_CLASS},${ENTRY}):focus-visible`)}{outline:2px solid currentColor;outline-offset:-2px}
 ${outsideUnstyled(`:is(.${EMPTY_AREA_CLASS},.${SEARCH_STATUS_CLASS},.${MY_LOCATION_STATUS_CLASS}):not(:empty)`)}{flex:none;padding:.5rem 1rem;opacity:.7;contain:inline-size}
 ${outsideUnstyled(`.${DISTANCE_CLASS}`)}{float:inline-end;margin-inline-start:.75rem;opacity:.7}
 ${outsideUnstyled(`.${GROUP_CLASS}`)}{padding-top:.25rem}
+${outsideUnstyled(`.${GROUP_CLASS} .${GROUP_CLASS}`)}{padding-inline-start:.75rem}
 ${outsideUnstyled(`.${HEADING_CLASS}`)}{padding:.5rem .75rem .25rem;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;opacity:.7}
 ${outsideUnstyled(ENTRY)}{display:block;padding:.5rem .75rem;border-radius:.375rem;cursor:pointer}
 ${outsideUnstyled(`${ENTRY}[data-hovered]`)}{background:${tint(8)}}

@@ -4,7 +4,7 @@
     "lat": -32.31,
     "lng": 179.84,
     "title": "M5.2, south of the Kermadec Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -12,7 +12,7 @@
     "lat": -10.27,
     "lng": 149.58,
     "title": "M4.5, 95 km W of Alotau, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -20,7 +20,7 @@
     "lat": 13.48,
     "lng": 144.62,
     "title": "M4.5, 8 km WNW of Piti Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -28,7 +28,7 @@
     "lat": 40.64,
     "lng": 143.75,
     "title": "M4.9, 173 km ENE of Noda, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -36,7 +36,7 @@
     "lat": -43.02,
     "lng": 171.81,
     "title": "M4.9, 43 km NW of Oxford, New Zealand",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -44,7 +44,7 @@
     "lat": -15,
     "lng": 167.31,
     "title": "M4.9, 26 km E of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -52,7 +52,7 @@
     "lat": -11.53,
     "lng": 162.55,
     "title": "M5.0, 137 km SSE of Kirakira, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -60,7 +60,7 @@
     "lat": -20.77,
     "lng": 169.82,
     "title": "M4.6, 146 km SSE of Isangel, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -68,7 +68,7 @@
     "lat": -6.08,
     "lng": 131.49,
     "title": "M6.6, 148 km WSW of Tual, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.6
   },
   {
@@ -76,7 +76,7 @@
     "lat": -1.72,
     "lng": 149.81,
     "title": "M4.6, 144 km NW of Kavieng, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -84,7 +84,7 @@
     "lat": -14.98,
     "lng": -75.87,
     "title": "M4.7, 77 km WSW of Changuillo, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -92,7 +92,7 @@
     "lat": -14.84,
     "lng": -75.42,
     "title": "M4.8, 28 km SW of Changuillo, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -100,7 +100,7 @@
     "lat": -15.03,
     "lng": -76.03,
     "title": "M5.4, 95 km WSW of Changuillo, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -108,7 +108,7 @@
     "lat": 26.85,
     "lng": 129.63,
     "title": "M4.6, 113 km ESE of Wadomari, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -116,7 +116,7 @@
     "lat": 13.47,
     "lng": 50.74,
     "title": "M4.8, 166 km N of Caluula, Somalia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -124,7 +124,7 @@
     "lat": 49.98,
     "lng": 155.92,
     "title": "M4.5, 78 km S of Severo-Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -132,7 +132,7 @@
     "lat": 4.78,
     "lng": 125.43,
     "title": "M5.0, 68 km S of Sarangani, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -140,7 +140,7 @@
     "lat": 37.37,
     "lng": 136.74,
     "title": "M5.4, 20 km NW of Anamizu, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -148,7 +148,7 @@
     "lat": 52.49,
     "lng": 160.49,
     "title": "M4.8, 141 km ESE of Petropavlovsk-Kamchatsky, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -156,7 +156,7 @@
     "lat": 36.47,
     "lng": 70.92,
     "title": "M4.9, 44 km S of Jurm, Afghanistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -164,7 +164,7 @@
     "lat": -5.94,
     "lng": 128.75,
     "title": "M5.0, 256 km SSE of Ambon, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -172,7 +172,7 @@
     "lat": 36.09,
     "lng": 70.95,
     "title": "M5.0, 74 km N of Pārūn, Afghanistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -180,7 +180,7 @@
     "lat": 1.75,
     "lng": 122.13,
     "title": "M5.1, 169 km NW of Gorontalo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -188,7 +188,7 @@
     "lat": 9.69,
     "lng": 126.35,
     "title": "M4.6, 27 km ESE of Union, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -196,7 +196,7 @@
     "lat": 9.76,
     "lng": 126.2,
     "title": "M5.5, 9 km E of Union, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -204,7 +204,7 @@
     "lat": -20.59,
     "lng": -175.94,
     "title": "M4.7, 92 km NW of Houma, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -212,7 +212,7 @@
     "lat": -19.56,
     "lng": -177.82,
     "title": "M5.5, Fiji region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -220,7 +220,7 @@
     "lat": -31.32,
     "lng": -68.68,
     "title": "M4.8, 19 km NW of Albardón, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -228,7 +228,7 @@
     "lat": 3.73,
     "lng": -99.11,
     "title": "M4.7, east central Pacific Ocean",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -236,7 +236,7 @@
     "lat": -8.38,
     "lng": 120.44,
     "title": "M4.5, 25 km N of Ruteng, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -244,7 +244,7 @@
     "lat": -22.24,
     "lng": -63.65,
     "title": "M4.7, 24 km S of Yacuiba, Bolivia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -252,7 +252,7 @@
     "lat": 5.6,
     "lng": 126.61,
     "title": "M4.6, 96 km SSE of Pondaguitan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -260,7 +260,7 @@
     "lat": -24.05,
     "lng": -66.9,
     "title": "M4.6, 62 km WNW of San Antonio de los Cobres, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -268,7 +268,7 @@
     "lat": 8.4,
     "lng": 126.21,
     "title": "M4.9, 7 km SE of Tagbina, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -276,7 +276,7 @@
     "lat": -33,
     "lng": -178.34,
     "title": "M4.9, south of the Kermadec Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -284,7 +284,7 @@
     "lat": 52.36,
     "lng": 160.3,
     "title": "M4.5, 137 km SE of Petropavlovsk-Kamchatsky, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -292,7 +292,7 @@
     "lat": 30.12,
     "lng": -42.63,
     "title": "M5.5, northern Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -300,7 +300,7 @@
     "lat": -15.09,
     "lng": -173.45,
     "title": "M4.6, 102 km NNE of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -308,7 +308,7 @@
     "lat": 9.7,
     "lng": 147.36,
     "title": "M5.2, State of Yap, Federated States of Micronesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -316,7 +316,7 @@
     "lat": -36.46,
     "lng": -97.96,
     "title": "M4.8, West Chile Rise",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -324,7 +324,7 @@
     "lat": -50.37,
     "lng": 139.67,
     "title": "M4.5, western Indian-Antarctic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -332,7 +332,7 @@
     "lat": -23.94,
     "lng": -66.76,
     "title": "M4.7, 54 km NW of San Antonio de los Cobres, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -340,7 +340,7 @@
     "lat": 3.3,
     "lng": 92.83,
     "title": "M5.2, off the west coast of northern Sumatra",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -348,7 +348,7 @@
     "lat": -19.58,
     "lng": -177.74,
     "title": "M4.5, Fiji region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -356,7 +356,7 @@
     "lat": 7.85,
     "lng": 126.67,
     "title": "M4.5, 22 km NE of Kinablangan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -364,7 +364,7 @@
     "lat": -37.92,
     "lng": -74.72,
     "title": "M4.6, 100 km WSW of Lebu, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -372,7 +372,7 @@
     "lat": -1.5,
     "lng": 149.92,
     "title": "M5.1, 153 km NW of Kavieng, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -380,7 +380,7 @@
     "lat": 29.56,
     "lng": 130.48,
     "title": "M4.6, 74 km S of Yudomari, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -388,7 +388,7 @@
     "lat": -32.75,
     "lng": -178.64,
     "title": "M4.9, south of the Kermadec Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -396,7 +396,7 @@
     "lat": 13.22,
     "lng": -89.46,
     "title": "M4.6, 33 km SSW of La Libertad, El Salvador",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -404,7 +404,7 @@
     "lat": -1.47,
     "lng": 149.96,
     "title": "M4.8, 153 km NW of Kavieng, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -412,7 +412,7 @@
     "lat": 3.68,
     "lng": -75.56,
     "title": "M4.5, 9 km WSW of Chaparral, Colombia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -420,7 +420,7 @@
     "lat": -58.96,
     "lng": -25.73,
     "title": "M5.1, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -428,7 +428,7 @@
     "lat": -23.18,
     "lng": 178.92,
     "title": "M4.9, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -436,7 +436,7 @@
     "lat": -14.99,
     "lng": -75.88,
     "title": "M5.8, 79 km WSW of Changuillo, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.8
   },
   {
@@ -444,7 +444,7 @@
     "lat": 18.53,
     "lng": -69.05,
     "title": "M4.8, 10 km SW of Guaymate, Dominican Republic",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -452,7 +452,7 @@
     "lat": 42.17,
     "lng": 83.67,
     "title": "M5.2, 79 km NE of Kuqa, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -460,7 +460,7 @@
     "lat": -36.44,
     "lng": -97.98,
     "title": "M5.2, West Chile Rise",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -468,7 +468,7 @@
     "lat": -21.3,
     "lng": -175.85,
     "title": "M4.8, 59 km WSW of Houma, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -476,7 +476,7 @@
     "lat": -4.52,
     "lng": -75.33,
     "title": "M4.5, 86 km NNE of Lagunas, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -484,7 +484,7 @@
     "lat": -22.37,
     "lng": 173.45,
     "title": "M4.9, southeast of the Loyalty Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -492,7 +492,7 @@
     "lat": 8.21,
     "lng": 127.2,
     "title": "M4.6, 84 km E of Barcelona, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -500,7 +500,7 @@
     "lat": 7.78,
     "lng": -81.49,
     "title": "M4.6, 18 km WNW of Río Grande, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -508,7 +508,7 @@
     "lat": -8.26,
     "lng": 116.75,
     "title": "M4.7, 27 km NNE of Labuan Lombok, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -516,7 +516,7 @@
     "lat": 18.89,
     "lng": 145.6,
     "title": "M4.9, Pagan region, Northern Mariana Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -524,7 +524,7 @@
     "lat": -17.94,
     "lng": -178.05,
     "title": "M4.5, 278 km E of Levuka, Fiji",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -532,7 +532,7 @@
     "lat": -6.94,
     "lng": 22.68,
     "title": "M5.0, 85 km W of Mwene-Ditu, Democratic Republic of the Congo",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -540,7 +540,7 @@
     "lat": 34.7,
     "lng": 24.88,
     "title": "M5.1, 39 km S of Moíres, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -548,7 +548,7 @@
     "lat": -1.59,
     "lng": 149.89,
     "title": "M5.8, 148 km NW of Kavieng, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.8
   },
   {
@@ -556,7 +556,7 @@
     "lat": 64.65,
     "lng": -17.6,
     "title": "M4.6, 117 km S of Akureyri, Iceland",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -564,7 +564,7 @@
     "lat": -51.5,
     "lng": 139.8,
     "title": "M4.9, western Indian-Antarctic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -572,7 +572,7 @@
     "lat": -51.43,
     "lng": 139.59,
     "title": "M5.1, western Indian-Antarctic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -580,7 +580,7 @@
     "lat": 27.22,
     "lng": 104.19,
     "title": "M4.9, 41 km N of Weining, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -588,7 +588,7 @@
     "lat": 1.12,
     "lng": 126.11,
     "title": "M4.5, 115 km ESE of Bitung, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -596,7 +596,7 @@
     "lat": 35.73,
     "lng": 140.51,
     "title": "M4.5, 3 km E of Tako, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -604,7 +604,7 @@
     "lat": -8.07,
     "lng": 120.99,
     "title": "M4.7, 83 km NE of Ruteng, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -612,7 +612,7 @@
     "lat": 44.45,
     "lng": -129.62,
     "title": "M4.5, off the coast of Oregon",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -620,7 +620,7 @@
     "lat": 40.36,
     "lng": 143.61,
     "title": "M4.8, 155 km E of Noda, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -628,7 +628,7 @@
     "lat": -59.03,
     "lng": -26.03,
     "title": "M5.4, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -636,7 +636,7 @@
     "lat": 50.44,
     "lng": 156.61,
     "title": "M4.8, 43 km SE of Severo-Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -644,7 +644,7 @@
     "lat": 27.87,
     "lng": 87.89,
     "title": "M4.6, 73 km NNW of Gyalshing, India",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -652,7 +652,7 @@
     "lat": -7.99,
     "lng": -13.35,
     "title": "M4.9, 116 km E of Georgetown, Saint Helena",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -660,7 +660,7 @@
     "lat": -19.68,
     "lng": -69.33,
     "title": "M4.5, 41 km SSE of Camiña, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -668,7 +668,7 @@
     "lat": -23.5,
     "lng": -179.85,
     "title": "M4.5, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -676,7 +676,7 @@
     "lat": -41.55,
     "lng": -74.21,
     "title": "M4.9, 48 km NW of Ancud, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -684,7 +684,7 @@
     "lat": -6.33,
     "lng": 154.75,
     "title": "M5.1, 81 km W of Panguna, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -692,7 +692,7 @@
     "lat": -56.02,
     "lng": -27.74,
     "title": "M5.1, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -700,7 +700,7 @@
     "lat": -14.5,
     "lng": 167.26,
     "title": "M4.5, 62 km NNE of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -708,7 +708,7 @@
     "lat": -3.02,
     "lng": 130.78,
     "title": "M4.7, 168 km W of Fakfak, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -716,7 +716,7 @@
     "lat": -3.16,
     "lng": 130.14,
     "title": "M4.6, 130 km E of Masohi, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -724,7 +724,7 @@
     "lat": -22.54,
     "lng": -69.17,
     "title": "M5.1, 27 km WSW of Calama, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -732,7 +732,7 @@
     "lat": -7.94,
     "lng": 130.25,
     "title": "M5.1, Pulau Pulau Tanimbar, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -740,7 +740,7 @@
     "lat": -17.26,
     "lng": 167.97,
     "title": "M4.6, 64 km NW of Port-Vila, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -748,7 +748,7 @@
     "lat": 12.84,
     "lng": 143.33,
     "title": "M4.7, 152 km WSW of Merizo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -756,7 +756,7 @@
     "lat": -62.43,
     "lng": 155.02,
     "title": "M5.1, Balleny Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -764,7 +764,7 @@
     "lat": 44.39,
     "lng": 149.41,
     "title": "M5.0, 152 km SE of Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -772,7 +772,7 @@
     "lat": 38.76,
     "lng": 14.26,
     "title": "M4.6, 54 km WNW of Malfa, Italy",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -780,7 +780,7 @@
     "lat": 36.15,
     "lng": 142.19,
     "title": "M4.6, 130 km ENE of Hasaki, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -788,7 +788,7 @@
     "lat": 49.09,
     "lng": -127.69,
     "title": "M4.7, 130 km W of Tofino, Canada",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -796,7 +796,7 @@
     "lat": 32.66,
     "lng": 119.52,
     "title": "M4.5, 16 km SSE of Gaoyou, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -804,7 +804,7 @@
     "lat": 3.92,
     "lng": 97.36,
     "title": "M4.5, 61 km ENE of Blangpidie, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -812,7 +812,7 @@
     "lat": -13.93,
     "lng": 165.52,
     "title": "M4.9, 207 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -820,7 +820,7 @@
     "lat": -8.72,
     "lng": 148.04,
     "title": "M5.2, 21 km WNW of Popondetta, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -828,7 +828,7 @@
     "lat": -20.75,
     "lng": 68.48,
     "title": "M5.2, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -836,7 +836,7 @@
     "lat": -10.9,
     "lng": 165.74,
     "title": "M4.8, 20 km SSW of Lata, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -844,7 +844,7 @@
     "lat": -0.9,
     "lng": 128.7,
     "title": "M5.1, 139 km ESE of Labuha, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -852,7 +852,7 @@
     "lat": 13.62,
     "lng": -90.82,
     "title": "M4.8, 33 km S of Puerto San José, Guatemala",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -860,7 +860,7 @@
     "lat": 13.56,
     "lng": -90.85,
     "title": "M5.5, 40 km S of Puerto San José, Guatemala",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -868,7 +868,7 @@
     "lat": -6.95,
     "lng": 106.94,
     "title": "M4.7, Java, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -876,7 +876,7 @@
     "lat": 64.71,
     "lng": -17.28,
     "title": "M4.7, 111 km WNW of Höfn, Iceland",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -884,7 +884,7 @@
     "lat": -0.49,
     "lng": 132.86,
     "title": "M5.0, 58 km NE of Fef, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -892,7 +892,7 @@
     "lat": 34.88,
     "lng": -35.08,
     "title": "M4.8, northern Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -900,7 +900,7 @@
     "lat": 34.2,
     "lng": 140.14,
     "title": "M4.7, 90 km SSE of Tateyama, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -908,7 +908,7 @@
     "lat": 36.33,
     "lng": 141.47,
     "title": "M4.9, 78 km ESE of Hitachi, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -916,7 +916,7 @@
     "lat": -11.11,
     "lng": 165.34,
     "title": "M4.6, 65 km SW of Lata, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -924,7 +924,7 @@
     "lat": -10.78,
     "lng": 165.62,
     "title": "M5.2, 19 km WSW of Lata, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -932,7 +932,7 @@
     "lat": 86.72,
     "lng": 65.29,
     "title": "M4.9, north of Franz Josef Land",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -940,7 +940,7 @@
     "lat": -7.87,
     "lng": 130.29,
     "title": "M5.4, Pulau Pulau Tanimbar, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -948,7 +948,7 @@
     "lat": -2.39,
     "lng": 138.62,
     "title": "M4.5, 224 km W of Abepura, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -956,7 +956,7 @@
     "lat": -24.57,
     "lng": -177.38,
     "title": "M4.9, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -964,7 +964,7 @@
     "lat": -56.75,
     "lng": -23.87,
     "title": "M4.9, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -972,7 +972,7 @@
     "lat": 52.8,
     "lng": 171.65,
     "title": "M4.7, 103 km W of Attu Station, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -980,7 +980,7 @@
     "lat": -14.24,
     "lng": 165.95,
     "title": "M4.8, 149 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -988,7 +988,7 @@
     "lat": -23.67,
     "lng": -179.96,
     "title": "M4.6, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -996,7 +996,7 @@
     "lat": -10.53,
     "lng": 163.8,
     "title": "M4.6, 206 km E of Kirakira, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1004,7 +1004,7 @@
     "lat": -3.14,
     "lng": 130.33,
     "title": "M4.5, 152 km E of Masohi, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1012,7 +1012,7 @@
     "lat": -28.19,
     "lng": 74.37,
     "title": "M4.9, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1020,7 +1020,7 @@
     "lat": 37.39,
     "lng": 35.54,
     "title": "M4.7, 17 km NW of İmamoğlu, Turkey",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1028,7 +1028,7 @@
     "lat": 4.17,
     "lng": 127.78,
     "title": "M4.7, 271 km N of Tobelo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1036,7 +1036,7 @@
     "lat": -4.95,
     "lng": -75,
     "title": "M5.3, 80 km ENE of Lagunas, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -1044,7 +1044,7 @@
     "lat": -2.98,
     "lng": 130.58,
     "title": "M4.8, 183 km E of Masohi, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1052,7 +1052,7 @@
     "lat": -3.06,
     "lng": 130.39,
     "title": "M5.4, 160 km E of Masohi, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -1060,7 +1060,7 @@
     "lat": 55.83,
     "lng": 160.98,
     "title": "M4.6, 54 km S of Klyuchi, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1068,7 +1068,7 @@
     "lat": -10.91,
     "lng": 165.64,
     "title": "M4.8, 26 km SW of Lata, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1076,7 +1076,7 @@
     "lat": 36.49,
     "lng": 141.45,
     "title": "M4.6, 69 km ESE of Takahagi, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1084,7 +1084,7 @@
     "lat": 36.25,
     "lng": 141.83,
     "title": "M5.7, 106 km ENE of Hasaki, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.7
   },
   {
@@ -1092,7 +1092,7 @@
     "lat": -10.87,
     "lng": 165.56,
     "title": "M6.4, 30 km WSW of Lata, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.4
   },
   {
@@ -1100,7 +1100,7 @@
     "lat": -25.19,
     "lng": -177,
     "title": "M4.9, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1108,7 +1108,7 @@
     "lat": -23.68,
     "lng": 179.21,
     "title": "M5.1, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1116,7 +1116,7 @@
     "lat": -5.09,
     "lng": 151.49,
     "title": "M4.7, 119 km SW of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1124,7 +1124,7 @@
     "lat": 38.38,
     "lng": 141.94,
     "title": "M4.5, 43 km E of Onagawa Chō, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1132,7 +1132,7 @@
     "lat": 2.55,
     "lng": 128.68,
     "title": "M4.6, 117 km NE of Tobelo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1140,7 +1140,7 @@
     "lat": 7.7,
     "lng": -36.95,
     "title": "M4.8, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1148,7 +1148,7 @@
     "lat": -27.69,
     "lng": 64.44,
     "title": "M4.7, Southwest Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1156,7 +1156,7 @@
     "lat": -19.68,
     "lng": -70.06,
     "title": "M4.7, 46 km NW of Huara, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1164,7 +1164,7 @@
     "lat": 39.86,
     "lng": 143.53,
     "title": "M4.7, 137 km E of Miyako, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1172,7 +1172,7 @@
     "lat": 32.5,
     "lng": 130.47,
     "title": "M4.5, 11 km W of Honmachi, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1180,7 +1180,7 @@
     "lat": -15.68,
     "lng": -172.98,
     "title": "M5.1, 91 km ENE of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1188,7 +1188,7 @@
     "lat": 6.71,
     "lng": 123.65,
     "title": "M4.9, 41 km WSW of Gadung, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1196,7 +1196,7 @@
     "lat": 13.51,
     "lng": -91.46,
     "title": "M4.5, 77 km SW of La Gomera, Guatemala",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1204,7 +1204,7 @@
     "lat": 7.46,
     "lng": -36.82,
     "title": "M5.8, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.8
   },
   {
@@ -1212,7 +1212,7 @@
     "lat": -3.9,
     "lng": 128.51,
     "title": "M4.7, 43 km ESE of Ambon, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1220,7 +1220,7 @@
     "lat": 11.53,
     "lng": -87.05,
     "title": "M4.5, 65 km WSW of Masachapa, Nicaragua",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1228,7 +1228,7 @@
     "lat": -1.85,
     "lng": -81.14,
     "title": "M4.7, 45 km NNW of Salinas, Ecuador",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1236,7 +1236,7 @@
     "lat": 34.9,
     "lng": 137.61,
     "title": "M5.5, 9 km E of Shinshiro, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -1244,7 +1244,7 @@
     "lat": 7.51,
     "lng": -79.92,
     "title": "M4.5, 11 km ESE of Pedasí, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1252,7 +1252,7 @@
     "lat": -19.73,
     "lng": 14.77,
     "title": "M4.9, 73 km NNW of Khorixas, Namibia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1260,7 +1260,7 @@
     "lat": -20.84,
     "lng": -178.71,
     "title": "M4.5, Fiji region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1268,7 +1268,7 @@
     "lat": -18.16,
     "lng": -12.86,
     "title": "M4.9, southern Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1276,7 +1276,7 @@
     "lat": 36.22,
     "lng": 141.45,
     "title": "M5.5, 77 km NE of Hasaki, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -1284,7 +1284,7 @@
     "lat": -21.63,
     "lng": -68.67,
     "title": "M4.5, 62 km SW of Ollagüe, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1292,7 +1292,7 @@
     "lat": 0.01,
     "lng": 125.77,
     "title": "M4.6, 156 km ESE of Modisi, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1300,7 +1300,7 @@
     "lat": -5.44,
     "lng": 152.79,
     "title": "M4.6, 133 km SSE of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1308,7 +1308,7 @@
     "lat": 7.89,
     "lng": -37.07,
     "title": "M4.5, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1316,7 +1316,7 @@
     "lat": -57.96,
     "lng": -25.8,
     "title": "M4.6, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1324,7 +1324,7 @@
     "lat": 13.57,
     "lng": 144.99,
     "title": "M4.6, 11 km ENE of Yigo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1332,7 +1332,7 @@
     "lat": -1.24,
     "lng": 120.46,
     "title": "M4.8, 36 km WNW of Poso, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1340,7 +1340,7 @@
     "lat": 34.22,
     "lng": 26.46,
     "title": "M4.5, 110 km SE of Ierápetra, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1348,7 +1348,7 @@
     "lat": 34.97,
     "lng": 142.12,
     "title": "M6.1, 144 km SE of Hasaki, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.1
   },
   {
@@ -1356,7 +1356,7 @@
     "lat": 52.15,
     "lng": 157.98,
     "title": "M4.5, 91 km SSW of Vilyuchinsk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1364,7 +1364,7 @@
     "lat": 5.3,
     "lng": 125.1,
     "title": "M4.9, 41 km SW of Balangonan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1372,7 +1372,7 @@
     "lat": 53.63,
     "lng": -162.95,
     "title": "M4.7, 139 km SSE of False Pass, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1380,7 +1380,7 @@
     "lat": -19.36,
     "lng": 168.75,
     "title": "M4.6, 58 km WNW of Isangel, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1388,7 +1388,7 @@
     "lat": -5.92,
     "lng": 146.66,
     "title": "M4.6, 96 km NNW of Lae, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1396,7 +1396,7 @@
     "lat": 53.55,
     "lng": -162.95,
     "title": "M4.6, 147 km SSE of False Pass, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1404,7 +1404,7 @@
     "lat": -23.53,
     "lng": 179.94,
     "title": "M4.6, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1412,7 +1412,7 @@
     "lat": 37.99,
     "lng": 141.26,
     "title": "M4.6, 36 km E of Watari, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1420,7 +1420,7 @@
     "lat": -21.2,
     "lng": -178.71,
     "title": "M6.1, Fiji region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.1
   },
   {
@@ -1428,7 +1428,7 @@
     "lat": 35.61,
     "lng": 78.03,
     "title": "M5.0, 135 km ENE of Thang, India",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -1436,7 +1436,7 @@
     "lat": 49.26,
     "lng": 147.75,
     "title": "M4.8, Sea of Okhotsk",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1444,7 +1444,7 @@
     "lat": -3.46,
     "lng": 32.15,
     "title": "M5.1, 19 km NNW of Masumbwe, Tanzania",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1452,7 +1452,7 @@
     "lat": 40.41,
     "lng": -125.59,
     "title": "M5.0, 111 km W of Petrolia, CA",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.96
   },
   {
@@ -1460,7 +1460,7 @@
     "lat": -40.69,
     "lng": -87.6,
     "title": "M4.5, West Chile Rise",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1468,7 +1468,7 @@
     "lat": -25.16,
     "lng": 179.94,
     "title": "M4.6, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1476,7 +1476,7 @@
     "lat": -1.41,
     "lng": 88.08,
     "title": "M4.5, South Indian Ocean",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1484,7 +1484,7 @@
     "lat": 12.63,
     "lng": -87.15,
     "title": "M4.5, 2 km W of Chinandega, Nicaragua",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1492,7 +1492,7 @@
     "lat": 8.68,
     "lng": 137.61,
     "title": "M4.5, 107 km SSW of Colonia, Micronesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1500,7 +1500,7 @@
     "lat": 4.39,
     "lng": 127.03,
     "title": "M5.0, 207 km ESE of Sarangani, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -1508,7 +1508,7 @@
     "lat": -19.22,
     "lng": -177.48,
     "title": "M4.6, Fiji region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1516,7 +1516,7 @@
     "lat": 39.32,
     "lng": 73.38,
     "title": "M4.5, 99 km ESE of Kyzyl-Eshme, Kyrgyzstan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1524,7 +1524,7 @@
     "lat": 39.39,
     "lng": 72.97,
     "title": "M4.6, 63 km ESE of Kyzyl-Eshme, Kyrgyzstan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1532,7 +1532,7 @@
     "lat": 39.35,
     "lng": 73.38,
     "title": "M5.2, 98 km ESE of Kyzyl-Eshme, Kyrgyzstan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -1540,7 +1540,7 @@
     "lat": 44.47,
     "lng": 86.54,
     "title": "M4.7, 43 km ENE of Shihezi, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1548,7 +1548,7 @@
     "lat": -35.43,
     "lng": 78.27,
     "title": "M4.6, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1556,7 +1556,7 @@
     "lat": 32.43,
     "lng": -115.18,
     "title": "M4.9, 9 km N of Delta, B.C., MX",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8869503562808
   },
   {
@@ -1564,7 +1564,7 @@
     "lat": -35.67,
     "lng": 78.29,
     "title": "M5.2, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -1572,7 +1572,7 @@
     "lat": 24.18,
     "lng": 141.67,
     "title": "M5.2, Volcano Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -1580,7 +1580,7 @@
     "lat": -0.23,
     "lng": 123.15,
     "title": "M4.8, 85 km S of Gorontalo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1588,7 +1588,7 @@
     "lat": -58.8,
     "lng": -26.29,
     "title": "M5.0, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -1596,7 +1596,7 @@
     "lat": 34.33,
     "lng": 26.57,
     "title": "M4.9, 101 km SSE of Palekastro, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1604,7 +1604,7 @@
     "lat": 3.74,
     "lng": -75.72,
     "title": "M5.4, 24 km NNW of Rioblanco, Colombia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -1612,7 +1612,7 @@
     "lat": -6.14,
     "lng": 147.56,
     "title": "M4.5, 56 km NW of Finschhafen, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1620,7 +1620,7 @@
     "lat": -20.01,
     "lng": 65.89,
     "title": "M4.5, 261 km E of Port Mathurin, Mauritius",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1628,7 +1628,7 @@
     "lat": 35.66,
     "lng": 140.65,
     "title": "M4.8, 6 km S of Asahi, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1636,7 +1636,7 @@
     "lat": 23.6,
     "lng": 94.71,
     "title": "M4.5, 31 km E of Mawlaik, Burma (Myanmar)",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1644,7 +1644,7 @@
     "lat": 53.04,
     "lng": 159.74,
     "title": "M4.7, 74 km E of Petropavlovsk-Kamchatsky, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1652,7 +1652,7 @@
     "lat": 32.29,
     "lng": 93.78,
     "title": "M4.5, 186 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1660,7 +1660,7 @@
     "lat": -13.81,
     "lng": 165.39,
     "title": "M4.6, 226 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1668,7 +1668,7 @@
     "lat": 13.8,
     "lng": 146.61,
     "title": "M4.5, 168 km SE of San Jose Village, Northern Mariana Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1676,7 +1676,7 @@
     "lat": 32.45,
     "lng": 94,
     "title": "M4.5, 212 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1684,7 +1684,7 @@
     "lat": 34.41,
     "lng": 26.44,
     "title": "M5.1, 89 km S of Palekastro, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1692,7 +1692,7 @@
     "lat": 32.32,
     "lng": 93.77,
     "title": "M4.7, 187 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1700,7 +1700,7 @@
     "lat": -10.13,
     "lng": -78.54,
     "title": "M5.1, 43 km W of Huarmey, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1708,7 +1708,7 @@
     "lat": -25.54,
     "lng": 179.69,
     "title": "M4.7, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1716,7 +1716,7 @@
     "lat": -26.51,
     "lng": -177.19,
     "title": "M4.5, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1724,7 +1724,7 @@
     "lat": -35.55,
     "lng": 78.27,
     "title": "M4.5, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1732,7 +1732,7 @@
     "lat": 34.32,
     "lng": 26.53,
     "title": "M4.7, 100 km SSE of Palekastro, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1740,7 +1740,7 @@
     "lat": 19.8,
     "lng": 121.13,
     "title": "M4.7, 113 km SW of Basco, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1748,7 +1748,7 @@
     "lat": 1.39,
     "lng": 124.65,
     "title": "M5.1, 19 km WNW of Tomohon, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1756,7 +1756,7 @@
     "lat": -5.56,
     "lng": 154.09,
     "title": "M4.9, 175 km WNW of Panguna, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1764,7 +1764,7 @@
     "lat": 46.6,
     "lng": 149.58,
     "title": "M4.6, 201 km NE of Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1772,7 +1772,7 @@
     "lat": -35.96,
     "lng": 78.08,
     "title": "M4.7, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1780,7 +1780,7 @@
     "lat": 2.25,
     "lng": -101.38,
     "title": "M4.6, Galapagos Triple Junction region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1788,7 +1788,7 @@
     "lat": -2.94,
     "lng": 146.46,
     "title": "M4.5, 135 km SW of Lorengau, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1796,7 +1796,7 @@
     "lat": 24.32,
     "lng": 122.18,
     "title": "M4.5, 64 km SE of Yilan, Taiwan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1804,7 +1804,7 @@
     "lat": 30.84,
     "lng": 135.2,
     "title": "M4.5, 288 km SSE of Muroto-misakicho, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1812,7 +1812,7 @@
     "lat": -13.85,
     "lng": 165.59,
     "title": "M4.6, 207 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1820,7 +1820,7 @@
     "lat": -31.22,
     "lng": -177.72,
     "title": "M5.1, Kermadec Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1828,7 +1828,7 @@
     "lat": -6.92,
     "lng": 129.96,
     "title": "M5.1, Banda Sea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1836,7 +1836,7 @@
     "lat": -35.5,
     "lng": 78.38,
     "title": "M4.6, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1844,7 +1844,7 @@
     "lat": -27.25,
     "lng": -177.87,
     "title": "M4.7, Kermadec Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1852,7 +1852,7 @@
     "lat": -35.44,
     "lng": 78.42,
     "title": "M4.8, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1860,7 +1860,7 @@
     "lat": 19.76,
     "lng": 121.33,
     "title": "M4.6, 101 km SW of Basco, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1868,7 +1868,7 @@
     "lat": -23.87,
     "lng": 69.52,
     "title": "M5.0, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -1876,7 +1876,7 @@
     "lat": -23.95,
     "lng": 69.51,
     "title": "M4.6, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -1884,7 +1884,7 @@
     "lat": -56.26,
     "lng": -27.2,
     "title": "M5.1, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1892,7 +1892,7 @@
     "lat": 23.81,
     "lng": 123.27,
     "title": "M4.7, 78 km SSE of Yonakuni, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1900,7 +1900,7 @@
     "lat": 13.11,
     "lng": 145.42,
     "title": "M4.7, 74 km SE of Yigo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1908,7 +1908,7 @@
     "lat": -35.56,
     "lng": 78.29,
     "title": "M4.5, Mid-Indian Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1916,7 +1916,7 @@
     "lat": -13.99,
     "lng": 165.94,
     "title": "M4.5, 169 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1924,7 +1924,7 @@
     "lat": -13.87,
     "lng": 165.62,
     "title": "M4.8, 203 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1932,7 +1932,7 @@
     "lat": -14.08,
     "lng": 165.77,
     "title": "M4.8, 176 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1940,7 +1940,7 @@
     "lat": -14.17,
     "lng": 165.85,
     "title": "M5.1, 162 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1948,7 +1948,7 @@
     "lat": -14.17,
     "lng": 165.82,
     "title": "M6.0, 165 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6
   },
   {
@@ -1956,7 +1956,7 @@
     "lat": -13.8,
     "lng": 165.89,
     "title": "M4.8, 180 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -1964,7 +1964,7 @@
     "lat": 24.9,
     "lng": 122.08,
     "title": "M4.9, 32 km SE of Jiufen, Taiwan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -1972,7 +1972,7 @@
     "lat": -13.59,
     "lng": 165.9,
     "title": "M4.5, 181 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -1980,7 +1980,7 @@
     "lat": -13.95,
     "lng": 165.69,
     "title": "M4.7, 191 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -1988,7 +1988,7 @@
     "lat": -13.89,
     "lng": 165.61,
     "title": "M5.1, 202 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -1996,7 +1996,7 @@
     "lat": -13.85,
     "lng": 165.7,
     "title": "M5.4, 198 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2004,7 +2004,7 @@
     "lat": -23.59,
     "lng": -66.64,
     "title": "M4.8, 76 km NNW of San Antonio de los Cobres, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2012,7 +2012,7 @@
     "lat": -21.7,
     "lng": -68.43,
     "title": "M4.5, 55 km SSW of Ollagüe, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2020,7 +2020,7 @@
     "lat": -13.87,
     "lng": 165.66,
     "title": "M4.8, 199 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2028,7 +2028,7 @@
     "lat": -13.86,
     "lng": 165.6,
     "title": "M5.1, 205 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2036,7 +2036,7 @@
     "lat": -0.88,
     "lng": -24.7,
     "title": "M4.7, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2044,7 +2044,7 @@
     "lat": 33.78,
     "lng": 137.04,
     "title": "M6.0, 64 km SSE of Shima, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6
   },
   {
@@ -2052,7 +2052,7 @@
     "lat": 28.16,
     "lng": 51.58,
     "title": "M5.1, 115 km SE of Bushehr, Iran",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2060,7 +2060,7 @@
     "lat": 51.7,
     "lng": -172.79,
     "title": "M4.5, 111 km ESE of Atka, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2068,7 +2068,7 @@
     "lat": 51.52,
     "lng": -172.81,
     "title": "M4.5, 121 km SE of Atka, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2076,7 +2076,7 @@
     "lat": 7.51,
     "lng": -80.33,
     "title": "M5.2, 2 km SSW of Nuario, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -2084,7 +2084,7 @@
     "lat": -22.8,
     "lng": 170.41,
     "title": "M4.5, 295 km ESE of Tadine, New Caledonia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2092,7 +2092,7 @@
     "lat": -13.9,
     "lng": 165.61,
     "title": "M5.0, 202 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2100,7 +2100,7 @@
     "lat": -13.78,
     "lng": 165.31,
     "title": "M4.9, 236 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2108,7 +2108,7 @@
     "lat": -13.83,
     "lng": 165.52,
     "title": "M4.9, 214 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2116,7 +2116,7 @@
     "lat": -32.85,
     "lng": -179.06,
     "title": "M4.7, south of the Kermadec Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2124,7 +2124,7 @@
     "lat": 30.91,
     "lng": 142.52,
     "title": "M4.6, Izu Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2132,7 +2132,7 @@
     "lat": 7.09,
     "lng": -34.68,
     "title": "M4.5, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2140,7 +2140,7 @@
     "lat": 33.5,
     "lng": 141.92,
     "title": "M4.5, 234 km SE of Katsuura, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2148,7 +2148,7 @@
     "lat": -14.81,
     "lng": 168.1,
     "title": "M4.8, 113 km ENE of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2156,7 +2156,7 @@
     "lat": -14.87,
     "lng": 168.18,
     "title": "M4.5, 120 km E of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2164,7 +2164,7 @@
     "lat": -16.6,
     "lng": -69.46,
     "title": "M4.6, 31 km ENE of Mazo Cruz, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2172,7 +2172,7 @@
     "lat": -13.89,
     "lng": 165.51,
     "title": "M4.7, 211 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2180,7 +2180,7 @@
     "lat": 65.1,
     "lng": 155.76,
     "title": "M4.5, 236 km ESE of Zyryanka, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2188,7 +2188,7 @@
     "lat": 9.06,
     "lng": 126.28,
     "title": "M4.6, 7 km NE of Tago, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2196,7 +2196,7 @@
     "lat": -13.77,
     "lng": 165.45,
     "title": "M4.5, 224 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2204,7 +2204,7 @@
     "lat": 40.46,
     "lng": 142.51,
     "title": "M4.5, 69 km ENE of Kuji, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2212,7 +2212,7 @@
     "lat": -14.25,
     "lng": 165.96,
     "title": "M4.7, 148 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2220,7 +2220,7 @@
     "lat": 39.73,
     "lng": 24.23,
     "title": "M4.7, 42 km SE of Sykiá, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2228,7 +2228,7 @@
     "lat": 8.37,
     "lng": 127.36,
     "title": "M4.5, 104 km ENE of Barcelona, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2236,7 +2236,7 @@
     "lat": -62.45,
     "lng": 155.26,
     "title": "M5.1, Balleny Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2244,7 +2244,7 @@
     "lat": 43.36,
     "lng": 146.24,
     "title": "M4.6, 54 km E of Nemuro, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2252,7 +2252,7 @@
     "lat": -18.18,
     "lng": -177.05,
     "title": "M4.8, Fiji region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2260,7 +2260,7 @@
     "lat": 40.31,
     "lng": 142.36,
     "title": "M4.6, 51 km ENE of Noda, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2268,7 +2268,7 @@
     "lat": -5.81,
     "lng": 148.32,
     "title": "M5.1, 97 km NNE of Finschhafen, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2276,7 +2276,7 @@
     "lat": -13.92,
     "lng": 165.38,
     "title": "M4.7, 221 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2284,7 +2284,7 @@
     "lat": -18.06,
     "lng": 167.97,
     "title": "M4.7, 50 km SW of Port-Vila, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2292,7 +2292,7 @@
     "lat": -15.17,
     "lng": 167.42,
     "title": "M6.2, 39 km ESE of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.2
   },
   {
@@ -2300,7 +2300,7 @@
     "lat": 44.2,
     "lng": 148.07,
     "title": "M4.6, 115 km S of Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2308,7 +2308,7 @@
     "lat": 51.58,
     "lng": 15.97,
     "title": "M4.7, 2 km NE of Radwanice, Poland",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2316,7 +2316,7 @@
     "lat": -4.46,
     "lng": 132.57,
     "title": "M5.0, 130 km N of Tual, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2324,7 +2324,7 @@
     "lat": 53.57,
     "lng": -162.96,
     "title": "M5.0, 145 km SSE of False Pass, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2332,7 +2332,7 @@
     "lat": 39.85,
     "lng": 143.53,
     "title": "M4.5, 138 km E of Miyako, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2340,7 +2340,7 @@
     "lat": -0.22,
     "lng": -18.82,
     "title": "M4.7, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2348,7 +2348,7 @@
     "lat": 7.62,
     "lng": -80.64,
     "title": "M4.7, 4 km SE of Pitaloza Arriba, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2356,7 +2356,7 @@
     "lat": -7.53,
     "lng": 130.02,
     "title": "M4.6, Pulau Pulau Tanimbar, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2364,7 +2364,7 @@
     "lat": -18.5,
     "lng": 167.63,
     "title": "M4.9, 111 km SW of Port-Vila, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2372,7 +2372,7 @@
     "lat": 13.32,
     "lng": 91.63,
     "title": "M5.2, 214 km NNW of Bamboo Flat, India",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -2380,7 +2380,7 @@
     "lat": 38.05,
     "lng": -26.1,
     "title": "M4.6, 30 km NW of Mosteiros, Portugal",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2388,7 +2388,7 @@
     "lat": -36.46,
     "lng": -98.01,
     "title": "M6.4, southeast of Easter Island",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.4
   },
   {
@@ -2396,7 +2396,7 @@
     "lat": 8.44,
     "lng": 127.36,
     "title": "M5.4, 106 km ENE of Barcelona, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2404,7 +2404,7 @@
     "lat": -61.25,
     "lng": 161.36,
     "title": "M5.1, Balleny Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2412,7 +2412,7 @@
     "lat": -60.28,
     "lng": -27.87,
     "title": "M5.4, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2420,7 +2420,7 @@
     "lat": -5.7,
     "lng": 141.9,
     "title": "M5.7, 82 km NE of Kiunga, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.7
   },
   {
@@ -2428,7 +2428,7 @@
     "lat": 8.36,
     "lng": 127.42,
     "title": "M5.8, 110 km ENE of Barcelona, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.8
   },
   {
@@ -2436,7 +2436,7 @@
     "lat": 8.37,
     "lng": 127.44,
     "title": "M5.4, 113 km ENE of Barcelona, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2444,7 +2444,7 @@
     "lat": 12.95,
     "lng": 144.58,
     "title": "M4.8, 36 km SSW of Merizo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2452,7 +2452,7 @@
     "lat": -50.27,
     "lng": 139.41,
     "title": "M4.8, western Indian-Antarctic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2460,7 +2460,7 @@
     "lat": -15.02,
     "lng": 168.16,
     "title": "M4.9, 117 km E of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2468,7 +2468,7 @@
     "lat": -15.12,
     "lng": 168.1,
     "title": "M5.4, 109 km ENE of Luganville, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2476,7 +2476,7 @@
     "lat": 43.13,
     "lng": 144.4,
     "title": "M4.7, 17 km N of Kushiro, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2484,7 +2484,7 @@
     "lat": -11.91,
     "lng": 167.12,
     "title": "M4.5, 195 km SE of Lata, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2492,7 +2492,7 @@
     "lat": 44.34,
     "lng": 82.49,
     "title": "M4.5, 69 km NE of Mazha, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2500,7 +2500,7 @@
     "lat": -6.36,
     "lng": 130.41,
     "title": "M5.7, 271 km WSW of Tual, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.7
   },
   {
@@ -2508,7 +2508,7 @@
     "lat": 2.43,
     "lng": 126.74,
     "title": "M5.3, 161 km WNW of Tobelo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -2516,7 +2516,7 @@
     "lat": 58.11,
     "lng": -32.11,
     "title": "M5.2, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -2524,7 +2524,7 @@
     "lat": 57.96,
     "lng": -32.2,
     "title": "M4.7, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2532,7 +2532,7 @@
     "lat": 35.78,
     "lng": 140.65,
     "title": "M4.7, 6 km N of Asahi, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2540,7 +2540,7 @@
     "lat": 44.26,
     "lng": 82.78,
     "title": "M4.6, 81 km ENE of Mazha, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2548,7 +2548,7 @@
     "lat": 35.7,
     "lng": 140.58,
     "title": "M5.5, 2 km E of Yōkaichiba, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -2556,7 +2556,7 @@
     "lat": -61.29,
     "lng": 161.48,
     "title": "M4.6, Balleny Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2564,7 +2564,7 @@
     "lat": 8.91,
     "lng": 40.04,
     "title": "M4.5, 13 km E of Metahāra, Ethiopia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2572,7 +2572,7 @@
     "lat": -24.2,
     "lng": -177.04,
     "title": "M4.6, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2580,7 +2580,7 @@
     "lat": 58.22,
     "lng": -32.33,
     "title": "M5.0, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2588,7 +2588,7 @@
     "lat": -16.54,
     "lng": -173.24,
     "title": "M4.9, 88 km SE of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2596,7 +2596,7 @@
     "lat": 5.61,
     "lng": 125.42,
     "title": "M4.9, 1 km WSW of Butulan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2604,7 +2604,7 @@
     "lat": 58.36,
     "lng": -32.24,
     "title": "M5.0, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2612,7 +2612,7 @@
     "lat": 58.1,
     "lng": -32.15,
     "title": "M5.5, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -2620,7 +2620,7 @@
     "lat": 5.15,
     "lng": 125.39,
     "title": "M4.8, 29 km SSW of Sarangani, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2628,7 +2628,7 @@
     "lat": 24.37,
     "lng": 125.09,
     "title": "M4.5, 51 km SE of Tarama, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2636,7 +2636,7 @@
     "lat": -30.87,
     "lng": -65.53,
     "title": "M4.6, 29 km SSW of Serrezuela, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2644,7 +2644,7 @@
     "lat": 23.86,
     "lng": 122.46,
     "title": "M4.5, 86 km SW of Yonakuni, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2652,7 +2652,7 @@
     "lat": 51.35,
     "lng": 159.62,
     "title": "M5.0, 195 km SSE of Vilyuchinsk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2660,7 +2660,7 @@
     "lat": -13.75,
     "lng": 165.66,
     "title": "M5.0, 204 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2668,7 +2668,7 @@
     "lat": -13.77,
     "lng": 165.59,
     "title": "M4.6, 212 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2676,7 +2676,7 @@
     "lat": 45.83,
     "lng": 150.79,
     "title": "M4.5, 237 km ENE of Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2684,7 +2684,7 @@
     "lat": -14.07,
     "lng": 165.73,
     "title": "M5.6, 180 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.6
   },
   {
@@ -2692,7 +2692,7 @@
     "lat": -13.78,
     "lng": 165.78,
     "title": "M4.5, 191 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2700,7 +2700,7 @@
     "lat": -13.85,
     "lng": 165.54,
     "title": "M4.6, 211 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2708,7 +2708,7 @@
     "lat": -13.96,
     "lng": 165.6,
     "title": "M4.7, 198 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2716,7 +2716,7 @@
     "lat": -13.83,
     "lng": 165.59,
     "title": "M6.0, 208 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6
   },
   {
@@ -2724,7 +2724,7 @@
     "lat": -13.93,
     "lng": 165.42,
     "title": "M5.1, 216 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2732,7 +2732,7 @@
     "lat": -13.78,
     "lng": 165.45,
     "title": "M4.6, 223 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2740,7 +2740,7 @@
     "lat": -13.86,
     "lng": 165.45,
     "title": "M5.5, 218 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -2748,7 +2748,7 @@
     "lat": 5.67,
     "lng": 125.29,
     "title": "M5.1, 3 km SSE of Pangyan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2756,7 +2756,7 @@
     "lat": 5.7,
     "lng": 125.4,
     "title": "M5.1, 8 km WNW of Sugal, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -2764,7 +2764,7 @@
     "lat": 12.76,
     "lng": 142.97,
     "title": "M5.4, 192 km WSW of Merizo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2772,7 +2772,7 @@
     "lat": 23.06,
     "lng": 144.27,
     "title": "M4.6, Volcano Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2780,7 +2780,7 @@
     "lat": -13.95,
     "lng": 165.1,
     "title": "M4.6, 244 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2788,7 +2788,7 @@
     "lat": 32.47,
     "lng": 93.91,
     "title": "M5.4, 206 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2796,7 +2796,7 @@
     "lat": 18.27,
     "lng": 119.85,
     "title": "M4.9, 70 km WNW of Callaguip, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2804,7 +2804,7 @@
     "lat": -23.74,
     "lng": -179.84,
     "title": "M4.8, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2812,7 +2812,7 @@
     "lat": 7.68,
     "lng": -81.6,
     "title": "M5.0, 29 km W of Río Grande, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2820,7 +2820,7 @@
     "lat": -9.1,
     "lng": 110.39,
     "title": "M5.4, 126 km S of Pundong, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -2828,7 +2828,7 @@
     "lat": -9.37,
     "lng": 110.3,
     "title": "M4.9, 156 km S of Pundong, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2836,7 +2836,7 @@
     "lat": 36.2,
     "lng": 69.9,
     "title": "M4.6, 41 km S of Farkhār, Afghanistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2844,7 +2844,7 @@
     "lat": 16.4,
     "lng": -93.82,
     "title": "M4.6, 5 km ENE of Tierra y Libertad, Mexico",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2852,7 +2852,7 @@
     "lat": -23.15,
     "lng": -66.66,
     "title": "M4.6, 100 km W of El Aguilar, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2860,7 +2860,7 @@
     "lat": -31.79,
     "lng": -69.5,
     "title": "M4.5, 51 km S of Calingasta, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2868,7 +2868,7 @@
     "lat": -14.01,
     "lng": 165.65,
     "title": "M5.2, 191 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -2876,7 +2876,7 @@
     "lat": -13.94,
     "lng": 165.79,
     "title": "M5.0, 184 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2884,7 +2884,7 @@
     "lat": -13.9,
     "lng": 165.56,
     "title": "M5.0, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2892,7 +2892,7 @@
     "lat": -15.17,
     "lng": -173.41,
     "title": "M5.0, 95 km NNE of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -2900,7 +2900,7 @@
     "lat": -13.94,
     "lng": 165.61,
     "title": "M5.8, 199 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.8
   },
   {
@@ -2908,7 +2908,7 @@
     "lat": -10.67,
     "lng": 161.32,
     "title": "M4.9, 69 km WSW of Kirakira, Solomon Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2916,7 +2916,7 @@
     "lat": 33.28,
     "lng": 140.71,
     "title": "M4.6, 203 km SSE of Tateyama, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2924,7 +2924,7 @@
     "lat": 37.45,
     "lng": 141.45,
     "title": "M4.7, 40 km E of Namie, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2932,7 +2932,7 @@
     "lat": 42.21,
     "lng": 142.24,
     "title": "M4.5, 16 km SSW of Niikappu, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2940,7 +2940,7 @@
     "lat": -12.39,
     "lng": 46.25,
     "title": "M4.5, 114 km ENE of Pamandzi, Mayotte",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2948,7 +2948,7 @@
     "lat": -36.46,
     "lng": 138.53,
     "title": "M4.7, 98 km S of Encounter Bay, Australia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -2956,7 +2956,7 @@
     "lat": 12.8,
     "lng": 145.79,
     "title": "M4.5, 124 km ESE of Inarajan Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -2964,7 +2964,7 @@
     "lat": -32.29,
     "lng": -71.27,
     "title": "M4.6, 18 km NNW of La Ligua, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2972,7 +2972,7 @@
     "lat": 5.69,
     "lng": 126.69,
     "title": "M4.6, 93 km SE of Pondaguitan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -2980,7 +2980,7 @@
     "lat": -13.94,
     "lng": 165.61,
     "title": "M4.9, 199 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -2988,7 +2988,7 @@
     "lat": -30.01,
     "lng": -71.37,
     "title": "M4.8, 6 km SSW of Coquimbo, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -2996,7 +2996,7 @@
     "lat": 14.66,
     "lng": 54.68,
     "title": "M4.5, 233 km NNE of Hadibu, Yemen",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3004,7 +3004,7 @@
     "lat": -20.38,
     "lng": -68.72,
     "title": "M4.9, 97 km E of La Tirana, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3012,7 +3012,7 @@
     "lat": 38.63,
     "lng": 70.99,
     "title": "M4.5, 69 km SE of Rasht, Tajikistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3020,7 +3020,7 @@
     "lat": -13.78,
     "lng": 165.5,
     "title": "M4.5, 219 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3028,7 +3028,7 @@
     "lat": -13.78,
     "lng": 165.54,
     "title": "M4.5, 216 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3036,7 +3036,7 @@
     "lat": -13.87,
     "lng": 165.33,
     "title": "M4.6, 228 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3044,7 +3044,7 @@
     "lat": -14.21,
     "lng": 165.92,
     "title": "M4.6, 154 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3052,7 +3052,7 @@
     "lat": -13.9,
     "lng": 165.59,
     "title": "M4.6, 204 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3060,7 +3060,7 @@
     "lat": -13.86,
     "lng": 165.58,
     "title": "M5.2, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -3068,7 +3068,7 @@
     "lat": 53.49,
     "lng": -165.15,
     "title": "M4.6, 82 km SSE of Akutan, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3076,7 +3076,7 @@
     "lat": -13.82,
     "lng": 165.44,
     "title": "M5.0, 221 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3084,7 +3084,7 @@
     "lat": -59.84,
     "lng": -27.64,
     "title": "M4.6, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3092,7 +3092,7 @@
     "lat": -18.26,
     "lng": -178.01,
     "title": "M5.5, 283 km E of Levuka, Fiji",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -3100,7 +3100,7 @@
     "lat": 44.72,
     "lng": 147.93,
     "title": "M4.5, 56 km S of Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3108,7 +3108,7 @@
     "lat": 40.37,
     "lng": 77.97,
     "title": "M4.6, 107 km WNW of Tumxuk, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3116,7 +3116,7 @@
     "lat": -8.44,
     "lng": 121.6,
     "title": "M5.0, 45 km N of Ende, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3124,7 +3124,7 @@
     "lat": -14.08,
     "lng": 165.69,
     "title": "M4.8, 183 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3132,7 +3132,7 @@
     "lat": -13.95,
     "lng": 165.33,
     "title": "M4.5, 223 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3140,7 +3140,7 @@
     "lat": -13.96,
     "lng": 165.48,
     "title": "M4.6, 209 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3148,7 +3148,7 @@
     "lat": -10.02,
     "lng": 123.26,
     "title": "M4.8, 41 km WNW of Kupang, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3156,7 +3156,7 @@
     "lat": -13.84,
     "lng": 165.5,
     "title": "M4.6, 215 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3164,7 +3164,7 @@
     "lat": -13.9,
     "lng": 165.58,
     "title": "M5.0, 204 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3172,7 +3172,7 @@
     "lat": 29.32,
     "lng": -42.79,
     "title": "M4.6, northern Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3180,7 +3180,7 @@
     "lat": -13.93,
     "lng": 165.53,
     "title": "M4.6, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3188,7 +3188,7 @@
     "lat": -23.77,
     "lng": -112.05,
     "title": "M4.9, Easter Island region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3196,7 +3196,7 @@
     "lat": 27.84,
     "lng": 139.65,
     "title": "M4.8, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3204,7 +3204,7 @@
     "lat": 27.86,
     "lng": 139.68,
     "title": "M5.3, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -3212,7 +3212,7 @@
     "lat": 32.25,
     "lng": 93.66,
     "title": "M4.7, 174 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3220,7 +3220,7 @@
     "lat": -14.24,
     "lng": 165.74,
     "title": "M4.8, 168 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3228,7 +3228,7 @@
     "lat": -14.01,
     "lng": 165.43,
     "title": "M4.5, 210 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3236,7 +3236,7 @@
     "lat": -13.92,
     "lng": 165.45,
     "title": "M4.5, 214 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3244,7 +3244,7 @@
     "lat": 52.27,
     "lng": -178.77,
     "title": "M4.6, 153 km WNW of Adak, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3252,7 +3252,7 @@
     "lat": 36.29,
     "lng": 71.13,
     "title": "M5.2, 56 km SW of Ashkāsham, Afghanistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -3260,7 +3260,7 @@
     "lat": -16.01,
     "lng": -73.38,
     "title": "M4.7, 22 km W of Urasqui, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3268,7 +3268,7 @@
     "lat": 32.49,
     "lng": 93.83,
     "title": "M4.5, 201 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3276,7 +3276,7 @@
     "lat": -13.81,
     "lng": 165.31,
     "title": "M4.6, 233 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3284,7 +3284,7 @@
     "lat": -24.62,
     "lng": 179.92,
     "title": "M4.5, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3292,7 +3292,7 @@
     "lat": 0.11,
     "lng": 126.1,
     "title": "M4.6, 161 km WSW of Ternate, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3300,7 +3300,7 @@
     "lat": 32.47,
     "lng": 94.01,
     "title": "M5.9, 214 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.9
   },
   {
@@ -3308,7 +3308,7 @@
     "lat": 32.37,
     "lng": 93.86,
     "title": "M5.0, 197 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3316,7 +3316,7 @@
     "lat": -15.59,
     "lng": -172.45,
     "title": "M4.6, 149 km ENE of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3324,7 +3324,7 @@
     "lat": -4.35,
     "lng": 143.03,
     "title": "M5.4, 27 km ESE of Ambunti, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -3332,7 +3332,7 @@
     "lat": 22.66,
     "lng": 142.95,
     "title": "M4.5, Volcano Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3340,7 +3340,7 @@
     "lat": -13.73,
     "lng": 165.47,
     "title": "M4.9, 225 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3348,7 +3348,7 @@
     "lat": -13.9,
     "lng": 165.59,
     "title": "M5.4, 203 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -3356,7 +3356,7 @@
     "lat": -57.93,
     "lng": -25.9,
     "title": "M4.5, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3364,7 +3364,7 @@
     "lat": 53.63,
     "lng": -165.1,
     "title": "M4.6, 71 km SE of Akutan, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3372,7 +3372,7 @@
     "lat": 4.26,
     "lng": 97.52,
     "title": "M4.6, 55 km WSW of Langsa, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3380,7 +3380,7 @@
     "lat": -16.05,
     "lng": -74.73,
     "title": "M4.6, 48 km SW of Atiquipa, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3388,7 +3388,7 @@
     "lat": -23.02,
     "lng": -114.3,
     "title": "M4.6, Easter Island region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3396,7 +3396,7 @@
     "lat": 24.2,
     "lng": 142.71,
     "title": "M4.6, Volcano Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3404,7 +3404,7 @@
     "lat": 37.83,
     "lng": 141.82,
     "title": "M4.6, 75 km SSE of Onagawa Chō, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3412,7 +3412,7 @@
     "lat": -14.11,
     "lng": 165.91,
     "title": "M4.5, 162 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3420,7 +3420,7 @@
     "lat": -13.99,
     "lng": 165.69,
     "title": "M4.5, 188 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3428,7 +3428,7 @@
     "lat": -14.03,
     "lng": 165.77,
     "title": "M4.6, 179 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3436,7 +3436,7 @@
     "lat": 37.65,
     "lng": 21.06,
     "title": "M4.9, 20 km SE of Ambelókipoi, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3444,7 +3444,7 @@
     "lat": -13.85,
     "lng": 165.7,
     "title": "M4.6, 198 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3452,7 +3452,7 @@
     "lat": -14.27,
     "lng": 165.43,
     "title": "M4.5, 196 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3460,7 +3460,7 @@
     "lat": -6.19,
     "lng": 147.2,
     "title": "M5.1, 63 km NNE of Lae, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3468,7 +3468,7 @@
     "lat": 27.66,
     "lng": 139.65,
     "title": "M5.0, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3476,7 +3476,7 @@
     "lat": 27.82,
     "lng": 139.88,
     "title": "M4.5, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3484,7 +3484,7 @@
     "lat": -14.97,
     "lng": 167.27,
     "title": "M6.1, 22 km ENE of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.1
   },
   {
@@ -3492,7 +3492,7 @@
     "lat": 27.73,
     "lng": 139.81,
     "title": "M6.0, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6
   },
   {
@@ -3500,7 +3500,7 @@
     "lat": 27.81,
     "lng": 139.71,
     "title": "M6.5, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.5
   },
   {
@@ -3508,7 +3508,7 @@
     "lat": -13.91,
     "lng": 165.5,
     "title": "M4.9, 210 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3516,7 +3516,7 @@
     "lat": -14.46,
     "lng": 165.74,
     "title": "M5.1, 157 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3524,7 +3524,7 @@
     "lat": -14.36,
     "lng": 165.74,
     "title": "M5.1, 162 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3532,7 +3532,7 @@
     "lat": -14.04,
     "lng": 165.33,
     "title": "M4.5, 217 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3540,7 +3540,7 @@
     "lat": 31.79,
     "lng": 131.89,
     "title": "M5.1, 46 km ESE of Miyazaki, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3548,7 +3548,7 @@
     "lat": -13.88,
     "lng": 165.67,
     "title": "M5.0, 198 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3556,7 +3556,7 @@
     "lat": -13.88,
     "lng": 165.57,
     "title": "M4.8, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3564,7 +3564,7 @@
     "lat": -18.26,
     "lng": -133.53,
     "title": "M4.8, Tuamotu Archipelago, French Polynesia region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3572,7 +3572,7 @@
     "lat": -13.83,
     "lng": 165.35,
     "title": "M5.0, 229 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3580,7 +3580,7 @@
     "lat": 41.91,
     "lng": -126.82,
     "title": "M4.6, 204 km WSW of Pistol River, Oregon",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3588,7 +3588,7 @@
     "lat": -13.9,
     "lng": 165.57,
     "title": "M4.6, 204 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3596,7 +3596,7 @@
     "lat": -0.36,
     "lng": 132.28,
     "title": "M4.9, 52 km NNW of Fef, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3604,7 +3604,7 @@
     "lat": 52.12,
     "lng": 159.16,
     "title": "M5.3, 104 km SSE of Vilyuchinsk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -3612,7 +3612,7 @@
     "lat": -20.06,
     "lng": 168.83,
     "title": "M4.9, 74 km SW of Isangel, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3620,7 +3620,7 @@
     "lat": -13.97,
     "lng": 165.62,
     "title": "M4.7, 196 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3628,7 +3628,7 @@
     "lat": -14.28,
     "lng": 165.81,
     "title": "M4.5, 159 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3636,7 +3636,7 @@
     "lat": -14.21,
     "lng": 165.94,
     "title": "M4.8, 153 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3644,7 +3644,7 @@
     "lat": -13.94,
     "lng": 165.17,
     "title": "M4.7, 238 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3652,7 +3652,7 @@
     "lat": -54.03,
     "lng": 7.04,
     "title": "M5.9, Bouvet Island region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.9
   },
   {
@@ -3660,7 +3660,7 @@
     "lat": -13.87,
     "lng": 165.45,
     "title": "M4.9, 217 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3668,7 +3668,7 @@
     "lat": -13.83,
     "lng": 165.51,
     "title": "M4.8, 215 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3676,7 +3676,7 @@
     "lat": -13.78,
     "lng": 165.54,
     "title": "M4.8, 216 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3684,7 +3684,7 @@
     "lat": 32.56,
     "lng": 93.69,
     "title": "M4.6, 195 km NE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3692,7 +3692,7 @@
     "lat": -14.03,
     "lng": 165.69,
     "title": "M4.5, 186 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3700,7 +3700,7 @@
     "lat": 19.9,
     "lng": 121.99,
     "title": "M4.7, 60 km S of Basco, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3708,7 +3708,7 @@
     "lat": 13.25,
     "lng": 51.52,
     "title": "M5.0, 141 km NNW of Kilmia, Yemen",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3716,7 +3716,7 @@
     "lat": -13.86,
     "lng": 165.52,
     "title": "M4.7, 212 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3724,7 +3724,7 @@
     "lat": -13.84,
     "lng": 165.56,
     "title": "M5.1, 210 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3732,7 +3732,7 @@
     "lat": -14.02,
     "lng": 165.49,
     "title": "M4.6, 204 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3740,7 +3740,7 @@
     "lat": -13.93,
     "lng": 165.49,
     "title": "M4.5, 210 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3748,7 +3748,7 @@
     "lat": -14.17,
     "lng": 165.76,
     "title": "M5.1, 170 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3756,7 +3756,7 @@
     "lat": -13.98,
     "lng": 165.59,
     "title": "M4.5, 198 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3764,7 +3764,7 @@
     "lat": -14.09,
     "lng": 165.23,
     "title": "M5.0, 224 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -3772,7 +3772,7 @@
     "lat": -13.96,
     "lng": 165.66,
     "title": "M5.9, 193 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.9
   },
   {
@@ -3780,7 +3780,7 @@
     "lat": -13.96,
     "lng": 165.41,
     "title": "M4.5, 215 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3788,7 +3788,7 @@
     "lat": -13.92,
     "lng": 165.87,
     "title": "M4.7, 179 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3796,7 +3796,7 @@
     "lat": 32.54,
     "lng": 94.01,
     "title": "M5.3, 218 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -3804,7 +3804,7 @@
     "lat": 53.51,
     "lng": -165.07,
     "title": "M4.5, 83 km SSE of Akutan, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3812,7 +3812,7 @@
     "lat": 43.33,
     "lng": 82.14,
     "title": "M4.8, 40 km SSE of Kax, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3820,7 +3820,7 @@
     "lat": -13.78,
     "lng": 165.59,
     "title": "M5.1, 212 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3828,7 +3828,7 @@
     "lat": -13.89,
     "lng": 165.43,
     "title": "M5.1, 218 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3836,7 +3836,7 @@
     "lat": -13.8,
     "lng": 165.45,
     "title": "M4.7, 222 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3844,7 +3844,7 @@
     "lat": -13.91,
     "lng": 165.68,
     "title": "M4.7, 195 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3852,7 +3852,7 @@
     "lat": -13.81,
     "lng": 165.45,
     "title": "M4.9, 221 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3860,7 +3860,7 @@
     "lat": -14.62,
     "lng": 167.3,
     "title": "M5.5, 52 km NNE of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -3868,7 +3868,7 @@
     "lat": -13.83,
     "lng": 165.59,
     "title": "M4.6, 208 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3876,7 +3876,7 @@
     "lat": -14.15,
     "lng": 165.73,
     "title": "M5.3, 174 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -3884,7 +3884,7 @@
     "lat": -14.02,
     "lng": 165.65,
     "title": "M4.6, 190 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3892,7 +3892,7 @@
     "lat": -14.21,
     "lng": 166.01,
     "title": "M5.1, 147 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -3900,7 +3900,7 @@
     "lat": -14.08,
     "lng": 165.77,
     "title": "M5.8, 176 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.8
   },
   {
@@ -3908,7 +3908,7 @@
     "lat": -13.93,
     "lng": 165.45,
     "title": "M4.8, 213 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -3916,7 +3916,7 @@
     "lat": -13.93,
     "lng": 165.91,
     "title": "M4.5, 176 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3924,7 +3924,7 @@
     "lat": -13.83,
     "lng": 165.47,
     "title": "M4.7, 218 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -3932,7 +3932,7 @@
     "lat": -14.17,
     "lng": 165.88,
     "title": "M4.9, 160 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -3940,7 +3940,7 @@
     "lat": -14.17,
     "lng": 166.02,
     "title": "M4.6, 149 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3948,7 +3948,7 @@
     "lat": -13.85,
     "lng": 165.42,
     "title": "M4.5, 221 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3956,7 +3956,7 @@
     "lat": -13.7,
     "lng": 165.68,
     "title": "M5.2, 203 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -3964,7 +3964,7 @@
     "lat": -13.82,
     "lng": 165.62,
     "title": "M5.9, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.9
   },
   {
@@ -3972,7 +3972,7 @@
     "lat": -13.92,
     "lng": 165.57,
     "title": "M5.7, 203 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.7
   },
   {
@@ -3980,7 +3980,7 @@
     "lat": -36.78,
     "lng": 179.39,
     "title": "M4.6, 132 km NE of Hicks Bay, New Zealand",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -3988,7 +3988,7 @@
     "lat": -14.04,
     "lng": 165.88,
     "title": "M4.5, 169 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -3996,7 +3996,7 @@
     "lat": -14.04,
     "lng": 165.66,
     "title": "M4.9, 188 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4004,7 +4004,7 @@
     "lat": -13.9,
     "lng": 165.67,
     "title": "M4.8, 197 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4012,7 +4012,7 @@
     "lat": -13.89,
     "lng": 165.6,
     "title": "M5.2, 203 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -4020,7 +4020,7 @@
     "lat": -14.17,
     "lng": 165.87,
     "title": "M5.1, 161 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4028,7 +4028,7 @@
     "lat": -13.9,
     "lng": 165.55,
     "title": "M4.5, 207 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4036,7 +4036,7 @@
     "lat": -14.21,
     "lng": 165.82,
     "title": "M5.1, 163 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4044,7 +4044,7 @@
     "lat": -13.94,
     "lng": 165.67,
     "title": "M5.0, 194 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4052,7 +4052,7 @@
     "lat": -13.88,
     "lng": 165.63,
     "title": "M4.5, 202 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4060,7 +4060,7 @@
     "lat": -13.91,
     "lng": 165.38,
     "title": "M4.6, 221 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4068,7 +4068,7 @@
     "lat": -14.07,
     "lng": 165.7,
     "title": "M4.9, 182 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4076,7 +4076,7 @@
     "lat": -14.31,
     "lng": 165.64,
     "title": "M4.9, 174 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4084,7 +4084,7 @@
     "lat": -13.77,
     "lng": 165.21,
     "title": "M4.8, 245 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4092,7 +4092,7 @@
     "lat": 4.34,
     "lng": -76.13,
     "title": "M4.7, 5 km E of Bolívar, Colombia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4100,7 +4100,7 @@
     "lat": -13.83,
     "lng": 165.67,
     "title": "M5.1, 202 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4108,7 +4108,7 @@
     "lat": -13.78,
     "lng": 165.33,
     "title": "M4.7, 234 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4116,7 +4116,7 @@
     "lat": -13.99,
     "lng": 165.55,
     "title": "M4.8, 201 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4124,7 +4124,7 @@
     "lat": -13.64,
     "lng": 165.53,
     "title": "M4.5, 219 km W of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4132,7 +4132,7 @@
     "lat": -13.89,
     "lng": 165.22,
     "title": "M4.9, 237 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4140,7 +4140,7 @@
     "lat": -14.26,
     "lng": 165.82,
     "title": "M4.8, 160 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4148,7 +4148,7 @@
     "lat": -14.11,
     "lng": 165.89,
     "title": "M6.1, 163 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.1
   },
   {
@@ -4156,7 +4156,7 @@
     "lat": -13.94,
     "lng": 165.56,
     "title": "M6.8, 203 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.8
   },
   {
@@ -4164,7 +4164,7 @@
     "lat": -13.96,
     "lng": 165.64,
     "title": "M4.5, 195 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4172,7 +4172,7 @@
     "lat": 32.48,
     "lng": 93.96,
     "title": "M4.9, 211 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4180,7 +4180,7 @@
     "lat": 53.75,
     "lng": -169.19,
     "title": "M4.5, 93 km NNW of Nikolski, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4188,7 +4188,7 @@
     "lat": -15.46,
     "lng": 168.34,
     "title": "M4.9, 121 km NE of Norsup, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4196,7 +4196,7 @@
     "lat": 54.29,
     "lng": 86.23,
     "title": "M4.8, 5 km NNE of Starobachaty, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4204,7 +4204,7 @@
     "lat": -13.9,
     "lng": 165.56,
     "title": "M5.1, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4212,7 +4212,7 @@
     "lat": 7.93,
     "lng": 127.15,
     "title": "M4.6, 71 km ENE of Kinablangan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4220,7 +4220,7 @@
     "lat": 23.79,
     "lng": 121.95,
     "title": "M4.9, 40 km ESE of Hualien City, Taiwan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4228,7 +4228,7 @@
     "lat": 23.85,
     "lng": 121.93,
     "title": "M4.9, 35 km ESE of Hualien City, Taiwan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4236,7 +4236,7 @@
     "lat": 32.47,
     "lng": 93.94,
     "title": "M4.8, 209 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4244,7 +4244,7 @@
     "lat": 26,
     "lng": 95.74,
     "title": "M4.6, 96 km ESE of Tuensang, India",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4252,7 +4252,7 @@
     "lat": 40.35,
     "lng": 142.62,
     "title": "M5.1, 73 km ENE of Noda, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4260,7 +4260,7 @@
     "lat": 38.77,
     "lng": 14.23,
     "title": "M4.7, 57 km WNW of Malfa, Italy",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4268,7 +4268,7 @@
     "lat": 32.61,
     "lng": 94,
     "title": "M4.7, 222 km NE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4276,7 +4276,7 @@
     "lat": 38.77,
     "lng": 14.31,
     "title": "M5.2, 50 km WNW of Malfa, Italy",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -4284,7 +4284,7 @@
     "lat": -7.36,
     "lng": 128.48,
     "title": "M4.5, 207 km NE of Lospalos, Timor Leste",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4292,7 +4292,7 @@
     "lat": 38.72,
     "lng": 14.14,
     "title": "M5.7, 62 km WNW of Leni, Italy",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.7
   },
   {
@@ -4300,7 +4300,7 @@
     "lat": 38.69,
     "lng": 14.28,
     "title": "M4.9, 49 km WNW of Leni, Italy",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4308,7 +4308,7 @@
     "lat": 6.57,
     "lng": 123.87,
     "title": "M4.5, 18 km WNW of Bantogon, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4316,7 +4316,7 @@
     "lat": -61.51,
     "lng": 153.87,
     "title": "M4.5, Balleny Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4324,7 +4324,7 @@
     "lat": -14.22,
     "lng": 165.68,
     "title": "M4.6, 175 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4332,7 +4332,7 @@
     "lat": 27.97,
     "lng": 100.59,
     "title": "M4.5, 17 km NNW of Yongning, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4340,7 +4340,7 @@
     "lat": -21.72,
     "lng": -68.33,
     "title": "M4.5, 55 km S of Ollagüe, Chile",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4348,7 +4348,7 @@
     "lat": 48.37,
     "lng": 154.94,
     "title": "M4.8, 270 km SSW of Severo-Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4356,7 +4356,7 @@
     "lat": 0.14,
     "lng": 125.81,
     "title": "M4.7, 156 km ESE of Modisi, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4364,7 +4364,7 @@
     "lat": 0.15,
     "lng": 125.98,
     "title": "M4.9, 171 km WSW of Ternate, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4372,7 +4372,7 @@
     "lat": -5.78,
     "lng": 152.19,
     "title": "M5.0, 158 km S of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4380,7 +4380,7 @@
     "lat": -15.22,
     "lng": -173.37,
     "title": "M4.9, 92 km NNE of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4388,7 +4388,7 @@
     "lat": 32.39,
     "lng": 94.05,
     "title": "M5.0, 213 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4396,7 +4396,7 @@
     "lat": 44.12,
     "lng": 147.01,
     "title": "M4.8, 42 km NNE of Shikotan, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4404,7 +4404,7 @@
     "lat": 27.6,
     "lng": 139.98,
     "title": "M4.5, Bonin Islands, Japan region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4412,7 +4412,7 @@
     "lat": 28.03,
     "lng": 87.33,
     "title": "M4.5, 51 km E of Lobuche, Nepal",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4420,7 +4420,7 @@
     "lat": 32.34,
     "lng": 93.78,
     "title": "M4.7, 189 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4428,7 +4428,7 @@
     "lat": -22.71,
     "lng": -175.61,
     "title": "M4.7, 165 km SSW of ‘Ohonua, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4436,7 +4436,7 @@
     "lat": 32.47,
     "lng": 93.97,
     "title": "M4.5, 211 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4444,7 +4444,7 @@
     "lat": 32.36,
     "lng": 93.74,
     "title": "M4.6, 187 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4452,7 +4452,7 @@
     "lat": 32.49,
     "lng": 93.84,
     "title": "M4.9, 202 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4460,7 +4460,7 @@
     "lat": 32.78,
     "lng": 93.91,
     "title": "M4.5, 227 km NE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4468,7 +4468,7 @@
     "lat": 37.97,
     "lng": -26.19,
     "title": "M4.7, 33 km WNW of Mosteiros, Portugal",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4476,7 +4476,7 @@
     "lat": 33.82,
     "lng": 86.26,
     "title": "M4.9, western Xizang",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4484,7 +4484,7 @@
     "lat": 40.35,
     "lng": 77.35,
     "title": "M4.7, 151 km NE of Kashgar, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4492,7 +4492,7 @@
     "lat": 32.48,
     "lng": 93.88,
     "title": "M4.9, 204 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4500,7 +4500,7 @@
     "lat": 32.41,
     "lng": 93.84,
     "title": "M5.2, 197 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -4508,7 +4508,7 @@
     "lat": 32.36,
     "lng": 93.73,
     "title": "M4.6, 186 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4516,7 +4516,7 @@
     "lat": 32.38,
     "lng": 94.2,
     "title": "M4.5, 225 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4524,7 +4524,7 @@
     "lat": 32.34,
     "lng": 93.78,
     "title": "M7.0, 189 km ENE of Nagqu, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 7
   },
   {
@@ -4532,7 +4532,7 @@
     "lat": -13.93,
     "lng": 165.61,
     "title": "M4.9, 199 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4540,7 +4540,7 @@
     "lat": -2.88,
     "lng": 102.19,
     "title": "M4.9, 74 km NNW of Curup, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4548,7 +4548,7 @@
     "lat": 36.68,
     "lng": 71.39,
     "title": "M4.5, 12 km W of Ashkāsham, Afghanistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4556,7 +4556,7 @@
     "lat": 53.67,
     "lng": 160.28,
     "title": "M4.5, 129 km ENE of Petropavlovsk-Kamchatsky, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4564,7 +4564,7 @@
     "lat": 13.78,
     "lng": 145.13,
     "title": "M4.6, 37 km NE of Yigo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4572,7 +4572,7 @@
     "lat": -62.39,
     "lng": 163.46,
     "title": "M4.7, Balleny Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4580,7 +4580,7 @@
     "lat": -14.06,
     "lng": 165.3,
     "title": "M4.5, 220 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4588,7 +4588,7 @@
     "lat": -5.15,
     "lng": 152.32,
     "title": "M4.8, 89 km S of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4596,7 +4596,7 @@
     "lat": 56.85,
     "lng": -34.07,
     "title": "M4.8, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4604,7 +4604,7 @@
     "lat": 14.81,
     "lng": -93.93,
     "title": "M4.5, 107 km SW of El Palmarcito, Mexico",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4612,7 +4612,7 @@
     "lat": -55.98,
     "lng": -27.11,
     "title": "M5.0, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4620,7 +4620,7 @@
     "lat": 56.83,
     "lng": -34.12,
     "title": "M5.1, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4628,7 +4628,7 @@
     "lat": 57.23,
     "lng": -33.34,
     "title": "M4.5, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4636,7 +4636,7 @@
     "lat": 56.77,
     "lng": -34.19,
     "title": "M5.4, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -4644,7 +4644,7 @@
     "lat": -13.96,
     "lng": 165.88,
     "title": "M4.5, 175 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4652,7 +4652,7 @@
     "lat": -19.77,
     "lng": 14.69,
     "title": "M5.0, 72 km NNW of Khorixas, Namibia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4660,7 +4660,7 @@
     "lat": 56.3,
     "lng": -33.6,
     "title": "M4.5, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4668,7 +4668,7 @@
     "lat": 56.97,
     "lng": -34.24,
     "title": "M5.0, Reykjanes Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4676,7 +4676,7 @@
     "lat": -14.24,
     "lng": 165.43,
     "title": "M4.5, 198 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4684,7 +4684,7 @@
     "lat": -14.12,
     "lng": 165.6,
     "title": "M5.0, 188 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4692,7 +4692,7 @@
     "lat": -14.15,
     "lng": 165.43,
     "title": "M4.7, 202 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4700,7 +4700,7 @@
     "lat": -52.77,
     "lng": 27.52,
     "title": "M5.1, south of Africa",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4708,7 +4708,7 @@
     "lat": 52.64,
     "lng": 159.04,
     "title": "M4.5, 53 km SE of Vilyuchinsk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4716,7 +4716,7 @@
     "lat": 49.23,
     "lng": 158.15,
     "title": "M4.6, 216 km SE of Severo-Kuril’sk, Russia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4724,7 +4724,7 @@
     "lat": -14.1,
     "lng": 165.42,
     "title": "M4.9, 206 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4732,7 +4732,7 @@
     "lat": -14.09,
     "lng": 165.59,
     "title": "M5.0, 191 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4740,7 +4740,7 @@
     "lat": 42.52,
     "lng": 142.57,
     "title": "M4.7, 27 km NE of Shizunai-furukawachō, Japan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4748,7 +4748,7 @@
     "lat": -14.1,
     "lng": 165.46,
     "title": "M4.9, 203 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4756,7 +4756,7 @@
     "lat": 53.39,
     "lng": -163.54,
     "title": "M4.5, 163 km S of False Pass, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4764,7 +4764,7 @@
     "lat": -6.65,
     "lng": -11.73,
     "title": "M4.9, Ascension Island region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4772,7 +4772,7 @@
     "lat": 7.82,
     "lng": -81.53,
     "title": "M4.5, 20 km S of Zapotillo, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4780,7 +4780,7 @@
     "lat": -13.85,
     "lng": 165.68,
     "title": "M4.6, 199 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4788,7 +4788,7 @@
     "lat": 13,
     "lng": 125.54,
     "title": "M5.2, 63 km NNE of Cabatuan, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -4796,7 +4796,7 @@
     "lat": -7.54,
     "lng": 128.22,
     "title": "M5.1, 173 km NE of Lospalos, Timor Leste",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4804,7 +4804,7 @@
     "lat": -14.05,
     "lng": 165.42,
     "title": "M4.5, 209 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4812,7 +4812,7 @@
     "lat": -13.99,
     "lng": 165.73,
     "title": "M4.9, 185 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4820,7 +4820,7 @@
     "lat": 4.7,
     "lng": -82.8,
     "title": "M5.0, south of Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4828,7 +4828,7 @@
     "lat": -22.78,
     "lng": 172.83,
     "title": "M4.7, southeast of the Loyalty Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4836,7 +4836,7 @@
     "lat": -25.47,
     "lng": 179.59,
     "title": "M4.9, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4844,7 +4844,7 @@
     "lat": 37.31,
     "lng": 75.02,
     "title": "M4.6, 113 km NNE of Barishal, Pakistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4852,7 +4852,7 @@
     "lat": 7.56,
     "lng": -80.61,
     "title": "M4.5, 10 km S of La Mesa, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4860,7 +4860,7 @@
     "lat": -14,
     "lng": 165.65,
     "title": "M4.9, 191 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4868,7 +4868,7 @@
     "lat": 46.24,
     "lng": 152.94,
     "title": "M4.7, Kuril Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -4876,7 +4876,7 @@
     "lat": 37.98,
     "lng": -26.28,
     "title": "M5.1, 41 km WNW of Mosteiros, Portugal",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4884,7 +4884,7 @@
     "lat": 6.1,
     "lng": -82.65,
     "title": "M4.5, 215 km S of Burica, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4892,7 +4892,7 @@
     "lat": 6.16,
     "lng": -82.52,
     "title": "M5.4, 210 km S of Burica, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.4
   },
   {
@@ -4900,7 +4900,7 @@
     "lat": -24.12,
     "lng": -177.07,
     "title": "M4.8, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -4908,7 +4908,7 @@
     "lat": 4.02,
     "lng": 96,
     "title": "M5.0, 19 km SW of Meulaboh, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -4916,7 +4916,7 @@
     "lat": -23.53,
     "lng": -179.91,
     "title": "M4.5, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4924,7 +4924,7 @@
     "lat": -5.17,
     "lng": 151.93,
     "title": "M4.5, 99 km SSW of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4932,7 +4932,7 @@
     "lat": -3.78,
     "lng": 139.99,
     "title": "M4.6, 148 km SSW of Abepura, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -4940,7 +4940,7 @@
     "lat": 5.51,
     "lng": 125.05,
     "title": "M4.5, 31 km SW of Burias, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4948,7 +4948,7 @@
     "lat": -13.95,
     "lng": 165.71,
     "title": "M4.9, 190 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4956,7 +4956,7 @@
     "lat": 54.53,
     "lng": -160.25,
     "title": "M5.1, 90 km S of Sand Point, Alaska",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4964,7 +4964,7 @@
     "lat": -15.23,
     "lng": -178.44,
     "title": "M4.5, 107 km SSW of Alo, Wallis and Futuna",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4972,7 +4972,7 @@
     "lat": -13.92,
     "lng": 165.52,
     "title": "M4.9, 208 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -4980,7 +4980,7 @@
     "lat": 18.93,
     "lng": 145.43,
     "title": "M4.5, Pagan region, Northern Mariana Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -4988,7 +4988,7 @@
     "lat": 37.83,
     "lng": 95.65,
     "title": "M5.1, 266 km WSW of Yanglong, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -4996,7 +4996,7 @@
     "lat": -13.88,
     "lng": 165.59,
     "title": "M5.2, 204 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -5004,7 +5004,7 @@
     "lat": 11.75,
     "lng": 125.53,
     "title": "M4.6, 7 km E of San Julian, Philippines",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5012,7 +5012,7 @@
     "lat": -13.93,
     "lng": 165.59,
     "title": "M4.7, 201 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5020,7 +5020,7 @@
     "lat": -13.9,
     "lng": 165.5,
     "title": "M4.6, 211 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5028,7 +5028,7 @@
     "lat": -13.89,
     "lng": 165.45,
     "title": "M4.5, 215 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5036,7 +5036,7 @@
     "lat": -13.93,
     "lng": 165.57,
     "title": "M6.3, 202 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6.3
   },
   {
@@ -5044,7 +5044,7 @@
     "lat": 18.19,
     "lng": 146.08,
     "title": "M4.9, Pagan region, Northern Mariana Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5052,7 +5052,7 @@
     "lat": -14.32,
     "lng": 165.33,
     "title": "M4.6, 203 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5060,7 +5060,7 @@
     "lat": -13.98,
     "lng": 165.57,
     "title": "M4.8, 200 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -5068,7 +5068,7 @@
     "lat": 40.64,
     "lng": 84.13,
     "title": "M4.5, 156 km SE of Kuqa, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5076,7 +5076,7 @@
     "lat": -14.13,
     "lng": 165.28,
     "title": "M4.8, 218 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -5084,7 +5084,7 @@
     "lat": -14.03,
     "lng": 165.61,
     "title": "M5.0, 193 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -5092,7 +5092,7 @@
     "lat": -14.07,
     "lng": 165.34,
     "title": "M4.5, 215 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5100,7 +5100,7 @@
     "lat": -4.61,
     "lng": 152.28,
     "title": "M4.9, 29 km S of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5108,7 +5108,7 @@
     "lat": 48.24,
     "lng": 153.94,
     "title": "M4.5, Kuril Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5116,7 +5116,7 @@
     "lat": -54.04,
     "lng": 6.82,
     "title": "M4.6, Bouvet Island region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5124,7 +5124,7 @@
     "lat": -14.02,
     "lng": 165.55,
     "title": "M4.7, 199 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5132,7 +5132,7 @@
     "lat": -13.98,
     "lng": 165.49,
     "title": "M5.5, 206 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -5140,7 +5140,7 @@
     "lat": -14.02,
     "lng": 165.57,
     "title": "M5.7, 197 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.7
   },
   {
@@ -5148,7 +5148,7 @@
     "lat": -15.68,
     "lng": -174.49,
     "title": "M4.6, 80 km WNW of Hihifo, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5156,7 +5156,7 @@
     "lat": -0.36,
     "lng": -19.41,
     "title": "M4.6, central Mid-Atlantic Ridge",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5164,7 +5164,7 @@
     "lat": -56.28,
     "lng": -27.04,
     "title": "M5.1, South Sandwich Islands region",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -5172,7 +5172,7 @@
     "lat": -7.83,
     "lng": -74.48,
     "title": "M4.6, 61 km N of Pucallpa, Peru",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5180,7 +5180,7 @@
     "lat": -23.55,
     "lng": 179.85,
     "title": "M4.6, south of the Fiji Islands",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5188,7 +5188,7 @@
     "lat": 37.86,
     "lng": 73.19,
     "title": "M4.9, 76 km WSW of Murghob, Tajikistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5196,7 +5196,7 @@
     "lat": 14.46,
     "lng": -91.38,
     "title": "M4.6, 4 km ENE of San José El Ídolo, Guatemala",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5204,7 +5204,7 @@
     "lat": 64.51,
     "lng": -17.34,
     "title": "M5.3, 106 km WNW of Höfn, Iceland",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -5212,7 +5212,7 @@
     "lat": -8.11,
     "lng": 120.24,
     "title": "M4.7, 57 km NE of Labuan Bajo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5220,7 +5220,7 @@
     "lat": -14.11,
     "lng": 165.43,
     "title": "M4.8, 204 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.8
   },
   {
@@ -5228,7 +5228,7 @@
     "lat": 31.82,
     "lng": 104.56,
     "title": "M5.0, 15 km WNW of Jiangyou, China",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5
   },
   {
@@ -5236,7 +5236,7 @@
     "lat": -13.83,
     "lng": 165.31,
     "title": "M5.3, 231 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -5244,7 +5244,7 @@
     "lat": -13.92,
     "lng": 165.67,
     "title": "M5.5, 195 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.5
   },
   {
@@ -5252,7 +5252,7 @@
     "lat": -8.15,
     "lng": 119.95,
     "title": "M4.7, 38 km N of Labuan Bajo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5260,7 +5260,7 @@
     "lat": -8.01,
     "lng": 120.28,
     "title": "M4.9, 68 km NE of Labuan Bajo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5268,7 +5268,7 @@
     "lat": -12.93,
     "lng": 167.03,
     "title": "M4.9, 118 km NNW of Sola, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5276,7 +5276,7 @@
     "lat": 2.37,
     "lng": 126.54,
     "title": "M4.7, 178 km WNW of Tobelo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5284,7 +5284,7 @@
     "lat": -13.99,
     "lng": 165.47,
     "title": "M4.9, 208 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5292,7 +5292,7 @@
     "lat": 45.47,
     "lng": 26.26,
     "title": "M4.6, 0 km S of Lunca Jariștei, Romania",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5300,7 +5300,7 @@
     "lat": -13.97,
     "lng": 165.63,
     "title": "M5.2, 195 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.2
   },
   {
@@ -5308,7 +5308,7 @@
     "lat": -14.07,
     "lng": 165.65,
     "title": "M5.3, 187 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -5316,7 +5316,7 @@
     "lat": -14.01,
     "lng": 165.71,
     "title": "M4.9, 185 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5324,7 +5324,7 @@
     "lat": -14,
     "lng": 165.49,
     "title": "M5.3, 205 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.3
   },
   {
@@ -5332,7 +5332,7 @@
     "lat": -14.02,
     "lng": 165.72,
     "title": "M6.0, 184 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 6
   },
   {
@@ -5340,7 +5340,7 @@
     "lat": -14.01,
     "lng": 165.55,
     "title": "M4.5, 200 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5348,7 +5348,7 @@
     "lat": 36.8,
     "lng": 21.77,
     "title": "M4.5, 6 km ESE of Methóni, Greece",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5356,7 +5356,7 @@
     "lat": -24.31,
     "lng": -67.12,
     "title": "M4.5, 82 km W of San Antonio de los Cobres, Argentina",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5364,7 +5364,7 @@
     "lat": -14.1,
     "lng": 165.54,
     "title": "M4.9, 195 km WNW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5372,7 +5372,7 @@
     "lat": -13.9,
     "lng": 165.4,
     "title": "M4.9, 220 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5380,7 +5380,7 @@
     "lat": -13.94,
     "lng": 165.5,
     "title": "M4.5, 209 km NW of Port-Olry, Vanuatu",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5388,7 +5388,7 @@
     "lat": 37.21,
     "lng": 70.42,
     "title": "M4.5, 17 km NW of Fayzabad, Afghanistan",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5396,7 +5396,7 @@
     "lat": 23.32,
     "lng": 93.21,
     "title": "M4.7, 10 km SE of Khawhai, India",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5404,7 +5404,7 @@
     "lat": -6.31,
     "lng": 130.13,
     "title": "M4.5, Banda Sea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   },
   {
@@ -5412,7 +5412,7 @@
     "lat": 11.05,
     "lng": -86.44,
     "title": "M4.9, 65 km WSW of San Juan del Sur, Nicaragua",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.9
   },
   {
@@ -5420,7 +5420,7 @@
     "lat": 3.8,
     "lng": 128.22,
     "title": "M4.6, 230 km N of Tobelo, Indonesia",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5428,7 +5428,7 @@
     "lat": -5.44,
     "lng": 152.62,
     "title": "M5.1, 127 km SSE of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -5436,7 +5436,7 @@
     "lat": -5.66,
     "lng": 151.87,
     "title": "M4.7, 152 km SSW of Kokopo, Papua New Guinea",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.7
   },
   {
@@ -5444,7 +5444,7 @@
     "lat": 10.9,
     "lng": -86.87,
     "title": "M4.6, 105 km SSW of Masachapa, Nicaragua",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5452,7 +5452,7 @@
     "lat": -21.15,
     "lng": -174.22,
     "title": "M5.1, 79 km ENE of ‘Ohonua, Tonga",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 5.1
   },
   {
@@ -5460,7 +5460,7 @@
     "lat": 12.81,
     "lng": 144.69,
     "title": "M4.6, 50 km S of Merizo Village, Guam",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.6
   },
   {
@@ -5468,7 +5468,7 @@
     "lat": 7.7,
     "lng": -81.33,
     "title": "M4.5, 2 km S of Río Grande, Panama",
-    "group": "quakes",
+    "group": "Quakes",
     "weight": 4.5
   }
 ]

@@ -31,10 +31,19 @@ describe("filterFrom", () => {
 
   it("names a group that is not a string", () => {
     expect(() => filterFrom(["North", 2] as never, filter)).toThrow(
-      /filter\[1\] must be a string, got 2/,
+      /filter\[1\] must be a group name, or a path of 1 to 3 names, got 2/,
     );
     expect(() => filterFrom({ groups: [2] } as never, filter)).toThrow(
-      /filter\.groups\[0\] must be a string, got 2/,
+      /filter\.groups\[0\] must be a group name, or a path of 1 to 3 names, got 2/,
+    );
+  });
+
+  it("takes paths among groups", () => {
+    expect(filterFrom(["Asia", ["Europe", "Italy"]], filter)).toEqual({
+      groups: ["Asia", ["Europe", "Italy"]],
+    });
+    expect(() => filterFrom({ groups: [["Europe", ""]] }, filter)).toThrow(
+      /filter\.groups\[0\]\[1\] must be a non-blank string/,
     );
   });
 

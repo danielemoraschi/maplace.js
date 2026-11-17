@@ -16,6 +16,12 @@ describe("isHeatMarker", () => {
     expect(isHeatMarker(quake, undefined)).toBe(false);
   });
 
+  it("a heatmap group takes its subgroups", () => {
+    const tokyo: Location = { id: "t", lat: 0, lng: 0, group: ["Asia", "Japan"] };
+    expect(isHeatMarker(tokyo, { groups: ["Asia"] })).toBe(true);
+    expect(isHeatMarker(tokyo, { groups: [["Asia", "Korea"]] })).toBe(false);
+  });
+
   it("is never a shape", () => {
     const circle: Location = { id: "c", type: "circle", center: { lat: 0, lng: 0 }, radius: 1 };
     expect(isHeatMarker(circle, {})).toBe(false);

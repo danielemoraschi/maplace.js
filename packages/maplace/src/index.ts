@@ -29,6 +29,7 @@ export type {
   PolygonRings,
   PolylineGeometry,
 } from "./geometry";
+export type { LocationGroup } from "./group-path";
 export type { ListEntry, ListView, ListViewOptions } from "./list-view";
 export { createListView } from "./list-view";
 export type {

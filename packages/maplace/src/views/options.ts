@@ -1,4 +1,4 @@
-import type { ListViewOptions } from "../list-view";
+import type { ListViewOptions } from "../list-view-options";
 import { type Field, reject } from "../validate/fail";
 import { type Assert, recordOf } from "../validate/record";
 import {
@@ -33,12 +33,14 @@ const checkFields: Assert<ListViewOptions> = recordOf<ListViewOptions>({
     searchLabel: optional(checkNonBlankString),
     noMatchesLabel: optional(checkNonBlankString),
     matchesLabel: optional(checkNonBlankString),
+    groupFilter: optional(checkBoolean),
+    groupFilterLabel: optional(checkNonBlankString),
   },
   unknown: "is not a list view option",
 });
 
 /**
- * `createListView` options; `render`, `scope` or `search` with `as: 'select'`, and
+ * `createListView` options; `render`, `scope`, `search` or `groupFilter` with `as: 'select'`, and
  * `groupCounts` with `groupHeadings: false`, are refused, never ignored.
  */
 export function checkListViewOptions(
@@ -62,5 +64,8 @@ function refuseForSelect(value: ListViewOptions, field: Field): void {
   }
   if (value.search) {
     reject(field, "search needs as: 'list'; a native select has no room for its box");
+  }
+  if (value.groupFilter) {
+    reject(field, "groupFilter needs as: 'list'; a native select has no room for its boxes");
   }
 }

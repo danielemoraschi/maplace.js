@@ -44,6 +44,14 @@ describe("setFilter", () => {
     expect(Object.isFrozen(filter?.tags)).toBe(true);
   });
 
+  it("a page changing its path array doesn't change the store's filter", () => {
+    const path = ["Europe", "Italy"];
+    const filter = setFilter(SNAPSHOT, { groups: [path] }).patch.filter;
+    path[1] = "France";
+    expect(filter?.groups).toEqual([["Europe", "Italy"]]);
+    expect(Object.isFrozen(filter?.groups?.[0])).toBe(true);
+  });
+
   it("shows what is in any of the groups", () => {
     expect(shownUnder(["S"])).toEqual(["b"]);
     expect(shownUnder({ groups: ["N", "S"] })).toEqual(["a", "b", "c"]);

@@ -13,6 +13,7 @@ import { markers } from "./behaviours/markers";
 import { menu } from "./behaviours/menu";
 import { mixed } from "./behaviours/mixed";
 import { nearest } from "./behaviours/nearest";
+import { offices } from "./behaviours/offices";
 import { polygon } from "./behaviours/polygon";
 import { polyline } from "./behaviours/polyline";
 import { popups } from "./behaviours/popups";
@@ -42,6 +43,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   nearest,
   "this-area": thisArea,
   tags,
+  offices,
   polyline,
   flights,
   "trade-lanes": tradeLanes,

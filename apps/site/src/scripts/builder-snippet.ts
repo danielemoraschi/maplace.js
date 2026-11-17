@@ -113,15 +113,20 @@ function childrenOf(locations: readonly PastedLocation[]): readonly string[] | u
 
 /** Whether `<maplace-location>` has an attribute or template for all of `location`. */
 function canBeChild(location: PastedLocation): boolean {
-  const { type, tags, content, center } = location;
+  const { type, tags, content, center, group } = location;
   return (
     Object.keys(location).every((field) => CHILD_FIELDS.has(field)) &&
     (type === undefined || type === "marker" || type === "circle") &&
     (center === undefined || type === "circle") &&
     (tags === undefined || (Array.isArray(tags) && tags.every(isOneWord))) &&
-    (content === undefined || typeof content === "string")
+    (content === undefined || typeof content === "string") &&
+    !isReadAsPath(group)
   );
 }
+
+/** A name the `group` attribute would read as a JSON path, as it starts with `[`. */
+const isReadAsPath = (group: unknown) =>
+  typeof group === "string" && group.trimStart().startsWith("[");
 
 const isOneWord = (tag: unknown) => typeof tag === "string" && tag !== "" && !/\s/.test(tag);
 

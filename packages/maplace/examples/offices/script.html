@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script and what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key; the offices by region and country, a checkbox for each above the list. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #offices-script-map-and-list { display: flex; height: 24rem; }
+  #offices-script-map { flex: 1 1 auto; min-width: 0; }
+  #offices-script-list { display: contents; }
+  #offices-script-list .maplace-list { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #offices-script-map-and-list { flex-direction: column; height: 36rem; }
+    #offices-script-list .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="offices-script-map-and-list">
+  <div id="offices-script-map"></div>
+  <div id="offices-script-list"></div>
+</div>
+<script type="module">
+  // Each office in a region and a country: a group path, outermost first.
+  const offices = await fetch("/examples/data/offices.json").then((response) => response.json());
+  Maplace.createGoogleMap("#offices-script-map", {
+    apiKey: "YOUR_KEY",
+    locations: offices,
+    list: {
+      container: "#offices-script-list",
+      heading: "Offices",
+      groupCounts: true,
+      groupFilter: true,
+      search: true,
+      searchLabel: "Find an office",
+    },
+  });
+</script>

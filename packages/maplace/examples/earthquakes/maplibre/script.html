@@ -12,10 +12,6 @@
     #earthquakes-maplibre-script-list .maplace-list { flex: 0 0 50%; max-height: 50%; }
   }
 </style>
-<p id="earthquakes-maplibre-script-filters">
-  <label><input type="checkbox" value="quakes" checked /> Quakes</label>
-  <label><input type="checkbox" value="volcanoes" checked /> Volcanoes</label>
-</p>
 <div id="earthquakes-maplibre-script-map-and-list">
   <div id="earthquakes-maplibre-script-map"></div>
   <div id="earthquakes-maplibre-script-list"></div>
@@ -26,17 +22,15 @@
     fetch("/examples/data/earthquakes.json").then((response) => response.json()),
     fetch("/examples/data/volcanoes.json").then((response) => response.json()),
   ]);
-  const maplace = Maplace.createMapLibreMap("#earthquakes-maplibre-script-map", {
+  Maplace.createMapLibreMap("#earthquakes-maplibre-script-map", {
     locations: [...quakes, ...volcanoes],
-    heatmap: { groups: ["quakes"] },
+    heatmap: { groups: ["Quakes"] },
     view: { kind: "center", center: { lat: 20, lng: 160 }, zoom: 2 },
-    list: { container: "#earthquakes-maplibre-script-list", search: true, searchLabel: "Find a quake or a volcano" },
-  });
-
-  // The checkboxes show the groups ticked, keeping what the search box found.
-  const filters = document.querySelector("#earthquakes-maplibre-script-filters");
-  filters.addEventListener("change", () => {
-    const ticked = filters.querySelectorAll(":checked");
-    maplace.setFilter({ ...maplace.getSnapshot().filter, groups: Array.from(ticked, (box) => box.value) });
+    list: {
+      container: "#earthquakes-maplibre-script-list",
+      search: true,
+      searchLabel: "Find a quake or a volcano",
+      groupFilter: true,
+    },
   });
 </script>

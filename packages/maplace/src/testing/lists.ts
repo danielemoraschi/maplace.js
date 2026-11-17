@@ -15,6 +15,7 @@ export function recordingActions(): ListActions & { readonly calls: string[] } {
     hover: record("hover"),
     unhover: record("unhover"),
     search: record("search"),
+    filterGroups: (groups) => calls.push(`filterGroups:${JSON.stringify(groups)}`),
   };
 }
 

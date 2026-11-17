@@ -15,6 +15,29 @@ describe("locationFromAttributes", () => {
     expect(locationFromAttributes(element({ "location-id": "a", tags: " " })).tags).toEqual([]);
   });
 
+  it("reads a JSON path in group", () => {
+    const office = element({ "location-id": "a", group: ' ["Europe", "Italy"]' });
+    expect(locationFromAttributes(office).group).toEqual(["Europe", "Italy"]);
+  });
+
+  it("a group not starting with [ stays one name", () => {
+    const office = element({ "location-id": "a", group: "Europe [HQ]" });
+    expect(locationFromAttributes(office).group).toBe("Europe [HQ]");
+  });
+
+  it("a group starting with [ that isn't a JSON array is misuse", () => {
+    for (const group of ["[Draft] Rome", '["Europe"', "[ ]x"]) {
+      expect(() => locationFromAttributes(element({ "location-id": "a", group }))).toThrow(
+        expect.objectContaining({
+          code: "invalid-input",
+          locationId: "a",
+          field: "group",
+          message: expect.stringContaining('location "a": group must be a name, or a JSON path'),
+        }),
+      );
+    }
+  });
+
   it("no attribute, no tags", () => {
     expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("tags");
   });

@@ -273,7 +273,8 @@ function EventLegend() {
 
 /** The category the map shows alone, if any. */
 function shownAloneIn({ filter }: Snapshot): string | undefined {
-  return filter?.groups?.length === 1 ? filter.groups[0] : undefined;
+  const alone = filter?.groups?.length === 1 ? filter.groups[0] : undefined;
+  return typeof alone === "string" ? alone : undefined;
 }
 
 function WhatsOn() {

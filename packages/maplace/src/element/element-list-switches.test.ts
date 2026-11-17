@@ -36,6 +36,23 @@ describe("the list's switches", () => {
     expect(host.querySelector("input")?.getAttribute("aria-label")).toBe("Search");
   });
 
+  it("group-filter and its label reach the list", () => {
+    const host = elementWith({ list: "", "group-filter": "", "group-filter-label": "Regions" });
+    listFromAttributes(
+      host,
+      createMaplace({ locations: [{ id: "a", lat: 0, lng: 0, group: "N" }] }),
+    );
+    const filter = host.querySelector(".maplace-group-filter [role=group]");
+    expect(filter?.getAttribute("aria-label")).toBe("Regions");
+  });
+
+  it("refuses group-filter with list='select', naming it", () => {
+    const host = elementWith({ list: "select", "group-filter": "" });
+    expect(() => listFromAttributes(host, createMaplace())).toThrow(
+      expect.objectContaining({ code: "invalid-input", field: "group-filter" }),
+    );
+  });
+
   it("builds neither from its label alone", () => {
     const host = elementWith({ list: "", "fit-all-label": "All", "search-label": "Find" });
     listFromAttributes(host, createMaplace());

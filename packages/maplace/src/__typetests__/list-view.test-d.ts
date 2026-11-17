@@ -32,6 +32,7 @@ createListView(shop, {
 });
 
 createListView(shop, { groupCounts: true });
+createListView(shop, { groupFilter: true, groupFilterLabel: "Regions" });
 createListView(shop, {
   search: true,
   searchLabel: "Find",
@@ -44,6 +45,8 @@ createListView(shop, { searchLabel: true });
 createListView(shop, { search: "Find" });
 // @ts-expect-error the switch is on or off: its words are fitAllLabel
 createListView(shop, { fitAll: "All" });
+// @ts-expect-error groupFilter is on or off
+createListView(shop, { groupFilter: "yes" });
 // @ts-expect-error groupCounts is on or off
 createListView(shop, { groupCounts: "yes" });
 

@@ -56,6 +56,21 @@ describe("writeSnippet's children form", () => {
     expect(locationFromAttributes(child)).toEqual(location);
   });
 
+  it("reads a group path back through the element's own reader", () => {
+    const location = { id: "a", lat: 1, lng: 2, group: ["Europe", "Italy"] };
+    const child = page(write([{ ...location, html: "<b>x</b>" }]).text).querySelector(
+      "maplace-location",
+    ) as Element;
+    expect(locationFromAttributes(child)).toEqual(location);
+  });
+
+  it("writes a group name starting with [ in the JSON form, as the element reads it as a path", () => {
+    const location = { id: "a", lat: 1, lng: 2, group: "[Draft] Rome", html: "<b>x</b>" };
+    const { text } = write([location]);
+    expect(page(text).querySelector("maplace-location")).toBeNull();
+    expect(jsonOf(text)).toEqual([expect.objectContaining({ group: "[Draft] Rome" })]);
+  });
+
   it("reads back through the element's own reader, for a circle", () => {
     const circle = {
       id: "c",

@@ -1,5 +1,11 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { createMaplace, type Location, listedLocations, type Maplace } from "@maplacejs/maplace";
+import {
+  createMaplace,
+  type Location,
+  type LocationGroup,
+  listedLocations,
+  type Maplace,
+} from "@maplacejs/maplace";
 import { createMapLibreAdapter } from "@maplacejs/maplace/maplibre";
 
 /** What the card beside the map says of a venue, besides its name and category. */
@@ -137,7 +143,7 @@ function selectedName(maplace: Maplace): HTMLElement {
     const selected = maplace.getSnapshot().locations.find((location) => location.id === id);
     name.hidden = selected === undefined;
     name.textContent = selected?.title ?? "";
-    name.dataset.category = selected?.group ?? "";
+    name.dataset.category = categoryOf(selected?.group);
   };
   writeName(maplace.getSnapshot().selectedId);
   maplace.on("selectionChange", ({ id }) => writeName(id));
@@ -172,8 +178,8 @@ function showVenueIn(card: HTMLElement, maplace: Maplace<VenueDetails>): void {
       venuePart.remove();
       return;
     }
-    venuePart.dataset.category = selected.group;
-    write(".venue-category", selected.group ?? "");
+    venuePart.dataset.category = categoryOf(selected.group);
+    write(".venue-category", categoryOf(selected.group));
     write(".venue-name", selected.title ?? "");
     write(".venue-address", data.address);
     write(".venue-since", String(data.since));
@@ -213,7 +219,7 @@ function venueEntry({ id, title, group }: Location, maplace: Maplace, afterPick:
   const pick = document.createElement("button");
   pick.type = "button";
   pick.className = "venue-pick";
-  pick.dataset.category = group ?? "";
+  pick.dataset.category = categoryOf(group);
   pick.textContent = title ?? id;
   pick.dataset.id = id;
   pick.addEventListener("click", () => {
@@ -267,5 +273,10 @@ function categoryChip(maplace: Maplace, category: string): HTMLButtonElement {
 /** The category the map shows alone, if any. */
 function shownAlone(maplace: Maplace): string | undefined {
   const groups = maplace.getSnapshot().filter?.groups;
-  return groups?.length === 1 ? groups[0] : undefined;
+  return groups?.length === 1 ? categoryOf(groups[0]) || undefined : undefined;
+}
+
+/** A venue's category: its group, a plain name on this map. */
+function categoryOf(group: LocationGroup | undefined): string {
+  return typeof group === "string" ? group : "";
 }

@@ -45,6 +45,12 @@ export function listIn(root: Element): Element | null {
   return root.querySelector(`.maplace-list, ${MAPLACE_LIST_CONTROL}`);
 }
 
+/** The group headings the list inside `root` shows, subgroups' included, in order. */
+export function headingsIn(root: Element): (string | null)[] {
+  const groups = listIn(root)?.querySelectorAll("[role=listbox] [role=group]") ?? [];
+  return Array.from(groups, (group) => group.getAttribute("aria-label"));
+}
+
 /** The first `selector` inside `root` whose text is `text`, failing when there is none. */
 export function byText(root: Element, selector: string, text: string): HTMLElement {
   const elements = [...root.querySelectorAll<HTMLElement>(selector)];

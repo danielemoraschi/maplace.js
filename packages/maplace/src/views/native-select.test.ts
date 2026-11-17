@@ -141,6 +141,20 @@ describe("createNativeSelect: group names", () => {
     return { group, showOne: () => view.renderStructure(structureOf(inNorth.slice(0, 1), rules)) };
   }
 
+  it("a subgroup is an optgroup labelled Europe › Italy", () => {
+    const view = createNativeSelect(recordingActions(), { label: "Shops", fitAllLabel: undefined });
+    view.renderStructure(
+      structureOf([
+        { id: "milan", lat: 0, lng: 0, title: "Milan", group: ["Europe", "Italy"] },
+        { id: "hq", lat: 0, lng: 0, title: "HQ", group: "Europe" },
+      ]),
+    );
+    const groups = Array.from(view.element.querySelectorAll("optgroup"));
+    expect(groups.map((group) => group.label)).toEqual(["Europe", "Europe › Italy"]);
+    expect(groups.map((group) => group.textContent)).toEqual(["HQ", "Milan"]);
+    expect(view.element.querySelector("optgroup optgroup")).toBeNull();
+  });
+
   it("carries the count in an optgroup's label", () => {
     const { group, showOne } = shownWith({ groupHeadings: undefined, groupCounts: true });
     expect(group?.label).toBe("N (2)");

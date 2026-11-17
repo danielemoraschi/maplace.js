@@ -71,7 +71,7 @@ describe("locationsFromGeoJSON refuses what it can't read", () => {
     [
       "a group that isn't a string",
       withProperties({ group: 7 }),
-      "features[0].properties.group must be a string, got 7",
+      "features[0].properties.group must be a group name, or a path of 1 to 3 names, got 7",
       "features[0].properties.group",
     ],
     [

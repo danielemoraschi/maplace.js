@@ -53,6 +53,19 @@ describe("isShown", () => {
   it("with a filter, hides locations without a group", () => {
     expect(isShown({ id: "a", ...at }, { groups: ["N"] })).toBe(false);
   });
+
+  it("a group shows its subgroups", () => {
+    const milan = { id: "a", ...at, group: ["Europe", "Italy"] };
+    expect(isShown(milan, { groups: ["Europe"] })).toBe(true);
+    expect(isShown(milan, { groups: [["Europe", "Italy"]] })).toBe(true);
+    expect(isShown(milan, { groups: [["Europe", "France"]] })).toBe(false);
+  });
+
+  it("a query matches a path's names", () => {
+    const milan = { id: "a", ...at, title: "Milan", group: ["Europe", "Italy"] };
+    expect(isShown(milan, { query: "italy" })).toBe(true);
+    expect(isShown(milan, { query: "europe milan" })).toBe(true);
+  });
 });
 
 describe("isListed", () => {

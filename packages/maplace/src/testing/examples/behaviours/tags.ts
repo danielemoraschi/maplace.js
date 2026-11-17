@@ -2,18 +2,12 @@ import { expect } from "vitest";
 import {
   controlPositions,
   type ExampleBehaviour,
+  headingsIn,
   inputLabelled,
   listedIn,
-  listIn,
 } from "./reading";
 
 const ALL = ["Rome", "Bologna", "Milan", "Turin", "Naples"];
-
-/** The group headings the list inside `root` shows. */
-function headingsIn(root: Element): (string | null)[] {
-  const groups = listIn(root)?.querySelectorAll("[role=group]") ?? [];
-  return Array.from(groups, (group) => group.getAttribute("aria-label"));
-}
 
 /**
  * A list on the map that the page's checkboxes filter: one tag keeps the places with it, both

@@ -20,6 +20,12 @@ accept({ id: "a", lat: 1, lng: 2, draggable: true });
 // @ts-expect-error a polyline has no fill
 accept({ id: "l", type: "polyline", path: [], style: { fill: "red" } });
 
+// A group is a name or a path of names, outermost first.
+accept({ id: "a", lat: 1, lng: 2, group: "North" });
+accept({ id: "a", lat: 1, lng: 2, group: ["Europe", "Italy"] });
+// @ts-expect-error a group path holds names
+accept({ id: "a", lat: 1, lng: 2, group: [1] });
+
 // A polyline may be bowed; no other location has a curve.
 accept({ id: "l", type: "polyline", path: [], curve: 0.3 });
 // @ts-expect-error a marker has no curve

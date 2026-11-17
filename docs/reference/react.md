@@ -101,6 +101,8 @@ The store's [list view](store.md#list-view-options). A change of an option build
 | `searchLabel` | The search box's placeholder and accessible name; default "Search"; does nothing without `search` |
 | `noMatchesLabel` | What the line under the search box says when nothing matches; default "No locations match" |
 | `matchesLabel` | What the line under the search box says before the count of matches; default "Locations found", as "Locations found: 3" |
+| `groupFilter` | (1.2) A "Groups" button above the entries that opens a checkbox for each group, subgroups nested ([Subgroups](store.md#subgroups)); for `as: "list"` only. A `filter` prop on the provider sets the boxes again when its value changes |
+| `groupFilterLabel` | The boxes' accessible name; default "Groups"; does nothing without `groupFilter` |
 | `children` | For `as: "list"`, a function rendering an entry's content: plain content, since the entry itself is the option |
 | `position` | A corner, inside a `<MaplaceMap>`: the list itself goes on the map there while the map is attached, as the element's `list-position`, so its panel hides with it and its entries scroll under its heading. Without a `<MaplaceMap>` it is misuse |
 

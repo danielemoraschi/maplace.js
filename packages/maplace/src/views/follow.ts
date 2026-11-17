@@ -4,6 +4,7 @@ import type { Maplace, Snapshot } from "../store";
 import type { Viewport } from "../viewport";
 import type { AreaSwitch } from "./area-switch";
 import { distanceLabelIn, sortedByDistance } from "./distance";
+import type { GroupFilter } from "./group-filter";
 import { type Distances, type ListRules, listedEntries, structureOf } from "./model";
 import type { SearchBox, SearchFound } from "./search-box";
 import type { ListVariant } from "./variant";
@@ -17,6 +18,8 @@ export interface Following<Data> {
   readonly areaSwitch?: AreaSwitch | undefined;
   /** With `search`: the box, which follows the store's query and says what it found. */
   readonly searchBox?: SearchBox | undefined;
+  /** With `groupFilter`: the boxes, which follow the store's groups and the groups its locations have. */
+  readonly groupFilter?: GroupFilter | undefined;
 }
 
 /** What a list keeps, in its order, and how far each is when it sorts. */
@@ -33,7 +36,7 @@ interface OrderedListing<Data> {
  */
 export function follow<Data>(
   maplace: Maplace<Data>,
-  { variant, rules, areaSwitch, searchBox }: Following<Data>,
+  { variant, rules, areaSwitch, searchBox, groupFilter }: Following<Data>,
 ): () => void {
   let shown: Snapshot<Data> | undefined;
   const distanceLabel = rules.sort && distanceLabelIn(rules.distanceUnit);
@@ -53,6 +56,7 @@ export function follow<Data>(
         distanceLabel && snapshot.origin
           ? sortedByDistance(kept, snapshot.origin, distanceLabel)
           : { listing: kept };
+      groupFilter?.show(snapshot.locations, snapshot.filter?.groups);
       variant.renderStructure({ ...structureOf(listing, snapshot.locations, rules), distances });
       const found = searchBox && foundFor(snapshot, listing);
       searchBox?.show(snapshot.filter?.query, found);

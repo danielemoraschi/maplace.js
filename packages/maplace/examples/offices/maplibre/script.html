@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet and what the map and its list mount on, and the map made with Maplace; the offices by region and country, a checkbox for each above the list. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #offices-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #offices-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #offices-maplibre-script-list { display: contents; }
+  #offices-maplibre-script-list .maplace-list { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #offices-maplibre-script-map-and-list { flex-direction: column; height: 36rem; }
+    #offices-maplibre-script-list .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="offices-maplibre-script-map-and-list">
+  <div id="offices-maplibre-script-map"></div>
+  <div id="offices-maplibre-script-list"></div>
+</div>
+<script type="module">
+  // Each office in a region and a country: a group path, outermost first.
+  const offices = await fetch("/examples/data/offices.json").then((response) => response.json());
+  Maplace.createMapLibreMap("#offices-maplibre-script-map", {
+    locations: offices,
+    list: {
+      container: "#offices-maplibre-script-list",
+      heading: "Offices",
+      groupCounts: true,
+      groupFilter: true,
+      search: true,
+      searchLabel: "Find an office",
+    },
+  });
+</script>
