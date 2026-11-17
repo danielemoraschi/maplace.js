@@ -44,7 +44,7 @@ export type {
 } from "./location";
 export type { FilterRequest, LocationFilter } from "./location-state";
 export { createMaplace } from "./maplace/create";
-export type { MaplaceOptions } from "./options";
+export type { HeatmapOptions, MaplaceOptions } from "./options";
 export type { PopupOptions, ResolvedPopupOptions } from "./popup";
 export type { Route, RouteLeg, RouteResult, RouteStep, TravelMode } from "./route";
 export type { LoadState, Maplace, Snapshot } from "./store";

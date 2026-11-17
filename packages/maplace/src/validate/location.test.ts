@@ -28,6 +28,7 @@ describe("validateLocation: valid locations", () => {
       listed: false,
       zoom: 12,
       editable: true,
+      weight: 4.5,
       icon: () => node,
       data: { anything: [1] },
     };
@@ -52,6 +53,18 @@ describe("validateLocation: valid locations", () => {
     expect(
       check({ id: "h", lat: 1, lng: 2, html: "<b>x</b>" }, { index: 0, sanitize }),
     ).not.toThrow();
+  });
+});
+
+describe("validateLocation: weight", () => {
+  it.each([-1, "2", Number.NaN])("refuses a marker weight of %s", (weight) => {
+    expect(check({ id: "m", ...point, weight })).toThrow(/weight must be/);
+  });
+
+  it("refuses a weight on a shape", () => {
+    expect(check({ id: "c", type: "circle", center: point, radius: 5, weight: 1 })).toThrow(
+      /weight/,
+    );
   });
 });
 

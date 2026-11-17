@@ -1,5 +1,5 @@
 import type { MapGeoJSONFeature, Map as MapLibreMap, PointLike } from "maplibre-gl";
-import { LOCATION_LAYERS, PIN_SOURCE } from "./layers";
+import { PIN_SOURCE, POINTED_LAYERS } from "./layers";
 import type { MapLibreState } from "./map-state";
 import type { PlacedLocation } from "./placed-location";
 
@@ -13,7 +13,7 @@ import type { PlacedLocation } from "./placed-location";
 export function locationAt(state: MapLibreState, point: PointLike): string | undefined {
   const map = state.mounted?.map;
   if (map === undefined) return undefined;
-  const layers = LOCATION_LAYERS.filter((id) => map.getLayer(id) !== undefined);
+  const layers = POINTED_LAYERS.filter((id) => map.getLayer(id) !== undefined);
   const hit = map.queryRenderedFeatures(point, { layers });
   const shown = hit.flatMap((feature) => shownPlaced(state, feature));
   shown.sort(frontFirst);

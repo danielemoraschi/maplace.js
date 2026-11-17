@@ -1,7 +1,6 @@
-import { isMarker } from "../diff/geometry";
 import { stampState } from "../diff/icon";
 import type { MaplaceError } from "../errors";
-import type { Location, LocationState } from "../location";
+import { isMarkerLocation, type Location, type LocationState } from "../location";
 import { sameState } from "../location-state";
 import { pageCodeFailure } from "../validate/guarded";
 import { type ContentField, type ContentRenders, rendersAnything } from "./content-renders";
@@ -96,7 +95,7 @@ export function createContentSession<Data>(settings: SessionSettings<Data>): Con
   function hasIcon(id: string, state: LocationState): boolean {
     const render = renders.current.markerIcon;
     const location = liveLocation(id);
-    if (render === undefined || location === undefined || !isMarker(location)) return false;
+    if (render === undefined || location === undefined || !isMarkerLocation(location)) return false;
     return rendersAnything(() => render(location, state));
   }
 

@@ -1,5 +1,6 @@
 import type {
   DataDrivenPropertyValueSpecification,
+  FilterSpecification,
   LayerSpecification,
   Map as MapLibreMap,
 } from "maplibre-gl";
@@ -21,6 +22,17 @@ const FILL_LAYER = "maplace-fills";
 
 /** maplace's layers, front first: pins over lines, lines over areas' outlines over their fills. */
 export const LOCATION_LAYERS = [PIN_LAYER, LINE_LAYER, OUTLINE_LAYER, FILL_LAYER] as const;
+
+/** A heatmap's layers (`heat-layers.ts`), on a map whose store asks for one: dots, then heat. */
+export const HEAT_DOTS_LAYER = "maplace-heat-dots";
+export const HEAT_LAYER = "maplace-heat";
+
+/** The layers a pointer finds a location in (their hits sorted front first): a dot is a marker. */
+export const POINTED_LAYERS = [...LOCATION_LAYERS, HEAT_DOTS_LAYER];
+
+/** A heat marker's feature: drawn by the heat layers, and by the pin layer only while in front. */
+export const HEATED = ["has", "heat"] as const satisfies FilterSpecification;
+const PINNED = ["any", ["!", HEATED], ["==", ["get", "front"], true]] as const;
 
 export const isOwnSource = (sourceId: string) =>
   (OWN_SOURCES as readonly string[]).includes(sourceId);
@@ -86,6 +98,7 @@ const LAYERS: readonly LayerSpecification[] = [
     id: PIN_LAYER,
     type: "symbol",
     source: PIN_SOURCE,
+    filter: PINNED as never,
     layout: {
       "icon-image": PIN_IMAGE,
       "icon-anchor": "bottom",
@@ -124,7 +137,9 @@ export function removeLayers(map: MapLibreMap): void {
 }
 
 function takeOffLayers(map: MapLibreMap): void {
-  for (const id of LOCATION_LAYERS) if (map.getLayer(id) !== undefined) map.removeLayer(id);
+  for (const id of [...POINTED_LAYERS, HEAT_LAYER]) {
+    if (map.getLayer(id) !== undefined) map.removeLayer(id);
+  }
   for (const id of OWN_SOURCES) if (map.getSource(id) !== undefined) map.removeSource(id);
   if (map.hasImage(PIN_IMAGE)) map.removeImage(PIN_IMAGE);
 }

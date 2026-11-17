@@ -7,6 +7,7 @@ import { declarationChecks } from "./declarations";
 import { drawingChecks } from "./drawing";
 import { editingChecks } from "./editing";
 import { capabilitiesOf, unmountAll } from "./harness";
+import { heatmapChecks } from "./heatmap";
 import { lifecycleChecks } from "./lifecycle";
 import { originChecks } from "./origin";
 import { popupChecks } from "./popups";
@@ -52,6 +53,7 @@ const GROUPS: Readonly<Record<ConformanceGroup, CheckGroup>> = {
   editing: editingChecks,
   route: routeChecks,
   cluster: clusterChecks,
+  heatmap: heatmapChecks,
   controls: controlChecks,
   origin: originChecks,
 };

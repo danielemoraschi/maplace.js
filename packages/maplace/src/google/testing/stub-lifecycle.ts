@@ -42,6 +42,7 @@ export function mountContext(
     signal: controller.signal,
     host,
     cluster: false,
+    heatmap: undefined,
     popup: CLICK_POPUPS,
   };
 }

@@ -94,6 +94,8 @@ Maplace.js builds its list once its script has run, and a map with `hold` only o
 | `matches-label` | What the line under the search box says before the count of matches; default "Locations found", as "Locations found: 3" |
 | `provider` | The registered provider to draw with; defaults to the only one registered, and is required when several are. A change opens the map again on it |
 | `cluster` | Groups nearby markers into a cluster with a count (on Google's CDN, the cluster script; the MapLibre script clusters as it is). A switch, as `fit-all` is; can't change once the store exists; badges styled as [cluster badges](styling.md#cluster-badges) |
+| `heatmap` | Draws markers as a [heatmap](store.md#heatmaps) (1.2): empty or `true` for every marker, else the groups it names, space-separated; `false` for none. Not with `cluster`; can't change once the store exists |
+| `heatmap-max-zoom` | The zoom the heatmap gives way to its dots at, 3 to 25; default 9; misuse without `heatmap` |
 | `skip-map-label` | The words of the [link past the map](store.md#on-every-map), which keyboard users reach first; default "Skip the map"; can't change once the store exists; a blank one is misuse |
 | `selected-label` | The word announced before a selected location's name, "Selected: Rome"; default "Selected"; can't change once the store exists; a blank one is misuse |
 | `popup-open-on` | What opens a location's popup: `click` (the default), or `hover`, with the selection while nothing is hovered, so a tap still opens it ([popup options](store.md#popup-options)); can't change once the store exists; not with a popup's links |
@@ -198,6 +200,7 @@ With React, or a store of your own, read and write the address around `select`, 
 | `radius` | A circle's radius, in metres |
 | `icon` | A marker's image URL |
 | `zoom` | The zoom selecting it shows it at |
+| `weight` | A marker's weight on a [heatmap](store.md#heatmaps), as a number |
 | `listed` | `"false"` keeps it out of the list; on the map still |
 | `editable` | Lets the user drag or reshape it |
 | `shape-style`, `selected-style`, `hovered-style` | A shape's `style`, `selectedStyle` and `hoveredStyle`, as JSON (not `style`: that is HTML's inline CSS) |

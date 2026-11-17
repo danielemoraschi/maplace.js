@@ -2,7 +2,7 @@
 
 import { placementOf } from "../adapter-kit/placement";
 import type { Look } from "../adapter-kit/presentation-changes";
-import { stackRank } from "../adapter-kit/stacking";
+import { isInFront, stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
 import type { MarkerGeometry } from "../geometry";
 import type { LocationState } from "../location";
@@ -27,7 +27,18 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     mounted: site.mounted,
     isEditable: () => drawn.editable,
   });
-  showIcon(marker, drawable, look.state);
+  /** Google's default pin, drawn over a heat marker's dot while it is in front. */
+  let pin: HTMLElement | undefined;
+  const pinOf = () => {
+    pin ??= new site.mounted.libraries.marker.PinElement();
+    return pin;
+  };
+  const show = (shown: Drawable, state: LocationState) => {
+    const { heat } = site.mounted;
+    if (shown.heatWeight === undefined || heat === undefined) showIcon(marker, shown, state);
+    else heat.showMarker(marker, shown.heatWeight, isInFront(state) ? pinOf() : undefined);
+  };
+  show(drawable, look.state);
   const { markers } = site.mounted;
   markers.place(marker, look);
 
@@ -45,13 +56,15 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
         markers.moved(marker);
       }
       if (next.title !== drawn.title) marker.title = titleOf(next);
-      if (next.renderIcon !== drawn.renderIcon) showIcon(marker, next, look.state);
+      if (next.renderIcon !== drawn.renderIcon || next.heatWeight !== drawn.heatWeight) {
+        show(next, look.state);
+      }
       if (next.editable !== drawn.editable) marker.gmpDraggable = next.editable;
       drawn = next;
     },
     present(next: Look) {
       if (!sameState(look.state, next.state)) {
-        showIcon(marker, drawn, next.state);
+        show(drawn, next.state);
         marker.zIndex = stackRank(order, next.state);
       }
       if (placedElsewhere(look, next)) markers.place(marker, next);

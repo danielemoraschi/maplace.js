@@ -3,6 +3,7 @@ import { OPEN_ON } from "../validate/popup";
 import { booleanOrRaw } from "./attribute-values";
 import { elementMisuse } from "./element-error";
 import { oneOfAttribute, switchAttribute } from "./element-list";
+import { HEATMAP_ATTRIBUTES, heatmapOf } from "./heatmap-attributes";
 import type { StandingMisuse } from "./standing-misuse";
 import { firstViewOf, VIEW_ATTRIBUTES } from "./view-attributes";
 
@@ -12,7 +13,7 @@ import { firstViewOf, VIEW_ATTRIBUTES } from "./view-attributes";
  */
 export type StoreAttributes = Pick<
   MaplaceOptions,
-  "cluster" | "skipMapLabel" | "selectedLabel" | "popup" | "view"
+  "cluster" | "heatmap" | "skipMapLabel" | "selectedLabel" | "popup" | "view"
 >;
 
 const LABEL_ATTRIBUTES = [
@@ -32,6 +33,7 @@ export const STORE_ATTRIBUTES: readonly string[] = [
   ...LABEL_ATTRIBUTES,
   ...SWITCH_ATTRIBUTES,
   "popup-open-on",
+  ...HEATMAP_ATTRIBUTES,
   ...VIEW_ATTRIBUTES,
 ];
 
@@ -46,6 +48,7 @@ export function isStoreAttribute(name: string): boolean {
 export function readStoreAttributes(host: HTMLElement): StoreAttributes {
   return {
     cluster: booleanOrRaw(host, "cluster") === true,
+    heatmap: valueOrNone(() => heatmapOf(host)),
     skipMapLabel: nonBlank(host.getAttribute("skip-map-label")),
     selectedLabel: nonBlank(host.getAttribute("selected-label")),
     popup: {
@@ -60,8 +63,8 @@ export function readStoreAttributes(host: HTMLElement): StoreAttributes {
 }
 
 /**
- * A blank label, a bad switch, popup opening or view stands as misuse, as does a change from what
- * the store `taken`.
+ * A blank label, a bad switch, popup opening, heatmap (beside cluster, or a max zoom without it or
+ * out of range) or view stands as misuse, as does a change from what the store `taken`.
  */
 export function checkStoreAttributes(
   host: HTMLElement,
@@ -73,6 +76,7 @@ export function checkStoreAttributes(
     if (blank !== undefined) throw elementMisuse(`${blank} must not be blank`, { field: blank });
     for (const name of SWITCH_ATTRIBUTES) switchAttribute(host, name);
     popupOpeningOf(host);
+    heatmapOf(host);
     firstViewOf(host);
     if (JSON.stringify(readStoreAttributes(host)) !== JSON.stringify(taken)) {
       const problem = `${STORE_ATTRIBUTES.join(", ")} can't change once the map is created`;

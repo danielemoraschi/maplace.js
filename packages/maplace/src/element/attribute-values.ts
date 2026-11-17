@@ -43,3 +43,8 @@ export function booleanOrRaw(element: Element, name: string): boolean | string |
   if (value === "" || value === "true") return true;
   return value === "false" ? false : value;
 }
+
+/** `text`'s words, as `class` holds its: none in a blank one, and a word can't hold a space. */
+export function wordsOf(text: string): string[] {
+  return text.split(/\s+/).filter(Boolean);
+}

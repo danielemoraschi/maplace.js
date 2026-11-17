@@ -55,6 +55,7 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
     if (stopped()) return;
     drawingOn.mounted.clustering.flush();
     unrendered = flushAll(drawingOn.features) ?? unrendered;
+    drawingOn.mounted.heat?.drawn(drawingOn.mounted.map, state.placed.values());
   }
 
   function place(drawable: Drawable, on: PlacingSite): void {
@@ -88,7 +89,12 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
 
   function open(mounted: MountedMapLibre): void {
     const { map } = mounted;
-    addLayers(map);
+    /** maplace's layers, and a heatmap's with them: when the map opens, and after a restyle. */
+    const addAllLayers = () => {
+      addLayers(map);
+      mounted.heat?.add(map);
+    };
+    addAllLayers();
     const features: FeatureSets = {
       pins: createFeatureSet(map, PIN_SOURCE),
       shapes: createFeatureSet(map, SHAPE_SOURCE),
@@ -100,7 +106,7 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
     // loaded anew or applied as a diff), the layers go back on and the sources get every feature.
     const restyled = () => {
       if (!anyReplaced(features) || map.getStyle() === undefined) return;
-      addLayers(map);
+      addAllLayers();
       unrendered = resendReplaced(features) ?? unrendered;
     };
     map.on("styledata", restyled);

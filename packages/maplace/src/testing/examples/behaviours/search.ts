@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { controlPositions, type ExampleBehaviour, listedIn, textIn } from "./reading";
+import { controlPositions, type ExampleBehaviour, listedIn, textIn, typeInSearch } from "./reading";
 
 const ALL = ["Rome", "Bologna", "Forlì", "Milan", "Turin", "Genoa", "Naples", "Bari"];
 
@@ -8,12 +8,7 @@ const ALL = ["Rome", "Bologna", "Forlì", "Milan", "Turin", "Genoa", "Naples", "
  * word each narrow it, the status says how many or none, and an empty box lists every place.
  */
 export const search: ExampleBehaviour = async ({ adapter, root }) => {
-  const box = root.querySelector<HTMLInputElement>("input[type=search]");
-  if (box === null) throw new Error("no search box");
-  const type = (text: string) => {
-    box.value = text;
-    box.dispatchEvent(new InputEvent("input", { bubbles: true }));
-  };
+  const type = (text: string) => typeInSearch(root, text);
   const said = () => textIn(root, ".maplace-search-status");
   expect(controlPositions(adapter)).toEqual([]);
   await expect.poll(() => listedIn(root)).toEqual(ALL);

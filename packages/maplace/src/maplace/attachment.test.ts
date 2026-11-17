@@ -51,6 +51,17 @@ describe("attach", () => {
     expect(Object.isFrozen(offsetAdapter.mounted?.popup.offset)).toBe(true);
   });
 
+  it("mounts with the heatmap's maxZoom, 9 unless given, and none without one", () => {
+    const at = (options: Parameters<typeof createMaplace>[0]) => {
+      const adapter = createFakeAdapter();
+      createMaplace(options).attach(adapter, container());
+      return adapter.mounted?.heatmap;
+    };
+    expect(at({ heatmap: {} })).toEqual({ maxZoom: 9 });
+    expect(at({ heatmap: { maxZoom: 6 } })).toEqual({ maxZoom: 6 });
+    expect(at({})).toBeUndefined();
+  });
+
   it("mounts with no link's words when only labels are given", () => {
     const adapter = createFakeAdapter();
     const popup = { openInMapsLabel: "See it", directionsLabel: "Go there" };

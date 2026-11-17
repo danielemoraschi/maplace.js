@@ -36,6 +36,27 @@ describe("toDrawable", () => {
     });
   });
 
+  it("gives a marker in the heat its weight, or 1", () => {
+    const heated = { ...CONTEXT, heatmap: { groups: ["quakes"] } };
+    const quake = { id: "q", lat: 1, lng: 2, group: "quakes" };
+    expect(toDrawable({ ...quake, weight: 3 }, undefined, heated).heatWeight).toBe(3);
+    expect(toDrawable(quake, undefined, heated).heatWeight).toBe(1);
+    expect(toDrawable(quake, undefined, { ...CONTEXT, heatmap: {} }).heatWeight).toBe(1);
+  });
+
+  it("gives none to a marker of another group, to a shape, or without a heatmap", () => {
+    const heated = { ...CONTEXT, heatmap: { groups: ["quakes"] } };
+    expect(toDrawable({ id: "v", lat: 1, lng: 2, group: "v" }, undefined, heated).heatWeight).toBe(
+      undefined,
+    );
+    const line = toDrawable({ id: "l", type: "polyline", path }, undefined, {
+      ...CONTEXT,
+      heatmap: {},
+    });
+    expect(line.heatWeight).toBeUndefined();
+    expect(toDrawable({ id: "m", lat: 1, lng: 2 }, undefined, CONTEXT).heatWeight).toBeUndefined();
+  });
+
   it("keeps the geometry while the coordinates are the same", () => {
     const previous = drawn({ id: "a", lat: 1, lng: 2 });
     expect(toDrawable({ id: "a", lat: 1, lng: 2, title: "A" }, previous, CONTEXT).geometry).toBe(

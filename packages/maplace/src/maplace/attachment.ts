@@ -1,5 +1,5 @@
-import type { Adapter, AdapterHost } from "../adapter";
-import type { MaplaceOptions } from "../options";
+import type { Adapter, AdapterHost, ResolvedHeatmap } from "../adapter";
+import { DEFAULT_HEATMAP_MAX_ZOOM, type MaplaceOptions } from "../options";
 import type { CommitHooks } from "../state/core";
 import { runSafely } from "../state/safely";
 import type { InternalState } from "../state/state";
@@ -49,15 +49,22 @@ export function createAttacher<Data>({
     style: options?.style,
     selectedStyle: options?.selectedStyle,
     hoveredStyle: options?.hoveredStyle,
+    heatmap: options?.heatmap,
   };
   const popup = resolvePopup(options);
   const reports = createReports({ state, loadStates, openOn: popup.openOn });
   const cluster = options?.cluster ?? false;
+  const heatmap = resolveHeatmap(options);
   let current: Connection | undefined;
 
   function attach(adapter: Adapter, container: HTMLElement | string): () => void {
     state.checkNotDestroyed("attach");
-    const store = { attached: current !== undefined, cluster, snapshot: getSnapshot() };
+    const store = {
+      attached: current !== undefined,
+      cluster,
+      heatmap: heatmap !== undefined,
+      snapshot: getSnapshot(),
+    };
     const { checkSupport, container: element } = checkAttachable({ adapter, container }, store);
     markUsed(adapter);
     const controller = new AbortController();
@@ -83,7 +90,7 @@ export function createAttacher<Data>({
     } = connection;
     try {
       // Awaited inside the try, so a mount that throws instead of rejecting fails the load too.
-      await adapter.mount({ container, host, signal, cluster, popup });
+      await adapter.mount({ container, host, signal, cluster, heatmap, popup });
       if (signal.aborted) return;
       // No failure of these should cost a page its map.
       connection.removeAids = runSafely(() => addMapAids(container, state.store, options));
@@ -109,4 +116,9 @@ export function createAttacher<Data>({
     beforeCommit: (candidate, method) => current?.checkSupport(candidate, method),
     afterCommit: () => current?.sync.update(),
   };
+}
+
+function resolveHeatmap(options: MaplaceOptions | undefined): ResolvedHeatmap | undefined {
+  const heatmap = options?.heatmap;
+  return heatmap && { maxZoom: heatmap.maxZoom ?? DEFAULT_HEATMAP_MAX_ZOOM };
 }

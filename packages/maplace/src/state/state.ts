@@ -40,7 +40,7 @@ export function createInternalState<Data = unknown>(
 ): InternalState<Data> {
   const core = createCore(initialSnapshot(options));
   const { subscribers, emitter, getSnapshot } = core;
-  const context = { sanitize: options?.sanitize };
+  const context = { sanitize: options?.sanitize, heatmap: options?.heatmap };
   let destroyed = false;
 
   function checkNotDestroyed(method: string): void {

@@ -1,6 +1,11 @@
-import type { Icon, Location, LocationState, MarkerLocation } from "../location";
+import {
+  type Icon,
+  isMarkerLocation,
+  type Location,
+  type LocationState,
+  type MarkerLocation,
+} from "../location";
 import { type Guard, guardedRenderer } from "../validate/guarded";
-import { isMarker } from "./geometry";
 import { sameValueSource } from "./same";
 
 type IconRenderer = (state: LocationState) => Node | undefined;
@@ -14,7 +19,7 @@ export function iconRenderer(
   location: Location,
   { report }: Pick<Guard, "report">,
 ): IconRenderer | undefined {
-  if (!isMarker(location) || location.icon === undefined) return undefined;
+  if (!isMarkerLocation(location) || location.icon === undefined) return undefined;
   const guard = { locationId: location.id, field: "icon", report };
   const build = guardedRenderer(builderOf(location.icon, location), guard);
   return (state) => {
@@ -48,7 +53,7 @@ function valueBuilder(icon: string | Node): () => Node {
 }
 
 function iconOf(location: Location): Icon | undefined {
-  return isMarker(location) ? location.icon : undefined;
+  return isMarkerLocation(location) ? location.icon : undefined;
 }
 
 // An empty alt: the marker's accessible name is the location's title, set by the adapter.

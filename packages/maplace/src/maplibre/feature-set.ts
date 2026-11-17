@@ -14,6 +14,10 @@ export interface LocationProperties extends ShapeStyle {
   readonly id: string;
   readonly rank: number;
   readonly strokeRank?: number;
+  /** A heat marker's weight (`heat-layers.ts`). */
+  readonly heat?: number;
+  /** A heat marker drawn as a pin too, in front: selected or hovered. */
+  readonly front?: boolean;
 }
 
 export type LocationFeature = GeoJSON.Feature<GeoJSON.Geometry, LocationProperties>;

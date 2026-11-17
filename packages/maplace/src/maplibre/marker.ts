@@ -6,6 +6,7 @@ import type { LocationState } from "../location";
 import { sameState } from "../location-state";
 import type { ClusterMember } from "./clustering";
 import { createDomMarker, createPinIcon, type DomMarker } from "./dom-marker";
+import type { LocationProperties } from "./feature-set";
 import { pinFeature } from "./location-features";
 import { PIN_SIZE } from "./pin-image";
 import type { PlacedMarker, PlacingSite } from "./placed-location";
@@ -39,9 +40,11 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
 
   /**
    * What the marker shows in the DOM: the page's icon; else, while it can be dragged, the pin, as
-   * only a DOM marker drags; else nothing, a pin in the pin layer.
+   * only a DOM marker drags; else nothing, a pin in the pin layer. A heat marker shows nothing
+   * there, whatever icon the page draws for every marker (React's `markerIcon`): it is heat.
    */
   function iconFor(shown: Drawable, state: LocationState): Node | undefined {
+    if (shown.heatWeight !== undefined) return undefined;
     const pageIcon = shown.renderIcon?.(state);
     if (pageIcon !== undefined || !shown.editable) return pageIcon;
     pinIcon ??= createPinIcon(site.mounted.map.getContainer().ownerDocument);
@@ -91,7 +94,10 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       hidePin();
       return;
     }
-    if (moved || pins.featureOf(id) === undefined) pins.put(pinFeature(drawn, order));
+    const feature = pinFeature(drawn, { rank: order, front: isInFront(look.state) });
+    const sent = pins.featureOf(id);
+    if (moved || sent === undefined) pins.put(feature);
+    else if (!sameHeat(sent.properties, feature.properties)) pins.restyle(feature.properties);
     if (isInFront(look.state)) frontPins.show(id, pointOf(drawn), rank());
     else frontPins.hide(id);
   }
@@ -128,16 +134,18 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
         : { at: pointOf(drawn), marker: dom.marker.getElement() },
     update(next) {
       const moved = next.geometry !== drawn.geometry;
+      const reheated = next.heatWeight !== drawn.heatWeight;
       const newIcon = changesIcon(next);
       if (next.title !== drawn.title) dom?.retitle(next.title);
       const editableChanged = next.editable !== drawn.editable;
       drawn = next;
-      if (newIcon) icon = iconFor(next, look.state);
+      // Joining or leaving the heat changes the icon too: a heat marker shows none of the page's.
+      if (newIcon || reheated) icon = iconFor(next, look.state);
       if (moved) {
         dom?.moveTo(pointOf(next));
         clustering.moved(member);
       }
-      if (newIcon || (moved && dom === undefined)) show({ moved });
+      if (newIcon || reheated || (moved && dom === undefined)) show({ moved });
       // After `show`: a DOM marker drawn as a pin again is taken off there, its drag ending with
       // it; only one that stays, showing the page's icon, has its drag cut short.
       if (editableChanged) dom?.setDraggable(next.editable);
@@ -162,4 +170,9 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
 /** A marker's drawable always has a marker's geometry: a type change removes and adds it. */
 function pointOf(drawable: Drawable): MarkerGeometry {
   return drawable.geometry as MarkerGeometry;
+}
+
+/** Whether two pin features draw a heat marker alike: its weight, and whether it is in front. */
+function sameHeat(a: LocationProperties, b: LocationProperties): boolean {
+  return a.heat === b.heat && a.front === b.front;
 }

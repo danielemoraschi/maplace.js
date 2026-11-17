@@ -12,7 +12,11 @@ function opened(controller = new AbortController()) {
   const context = { host, signal: controller.signal, cluster: true, popup: {} } as MountContext;
   const map = {} as google.maps.Map;
   const inUse = { map, release: () => released.push("map") };
-  return { map, released, ...mountMap({ inUse, libraries, context, markerLayer: directMarkers }) };
+  return {
+    map,
+    released,
+    ...mountMap({ inUse, libraries, context, markerLayer: directMarkers, heat: undefined }),
+  };
 }
 
 describe("mountMap", () => {

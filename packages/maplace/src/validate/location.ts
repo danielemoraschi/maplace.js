@@ -22,6 +22,7 @@ import {
   checkRenderable,
   checkString,
   checkTags,
+  NON_NEGATIVE,
   numberIn,
   optional,
   POSITIVE,
@@ -82,7 +83,12 @@ const TYPE_CHECKS: {
   readonly polygon: OwnChecks<PolygonLocation>;
   readonly multipolygon: OwnChecks<MultiPolygonLocation>;
 } = {
-  marker: { lat: numberIn(LATITUDE), lng: numberIn(LONGITUDE), icon: optional(checkRenderable) },
+  marker: {
+    lat: numberIn(LATITUDE),
+    lng: numberIn(LONGITUDE),
+    icon: optional(checkRenderable),
+    weight: optional(numberIn(NON_NEGATIVE)),
+  },
   circle: { center: checkLatLng, radius: numberIn(POSITIVE), ...shapeStyleChecks(checkShapeStyle) },
   polyline: {
     path: pathOf(2),

@@ -11,6 +11,7 @@ const circle: Location = { id: "c", type: "circle", center: { lat: 0, lng: 0 }, 
 const free: StoreAtAttach = {
   attached: false,
   cluster: false,
+  heatmap: false,
   snapshot: initialSnapshot(undefined),
 };
 
@@ -73,10 +74,13 @@ describe("checkAttachable", () => {
     ).not.toThrow();
   });
 
-  it("refuses clustering, or locations, the adapter can't draw", () => {
+  it("refuses clustering, a heatmap, or locations, the adapter can't draw", () => {
     const noCapabilities = () => createFakeAdapter({ capabilities: [] });
     expect(attachWith({ cluster: true }, noCapabilities())).toThrow(
       expect.objectContaining({ code: "unsupported-capability", field: "options.cluster" }),
+    );
+    expect(attachWith({ heatmap: true }, noCapabilities())).toThrow(
+      expect.objectContaining({ code: "unsupported-capability", field: "options.heatmap" }),
     );
     const snapshot = initialSnapshot({ locations: [circle] });
     expect(attachWith({ snapshot }, noCapabilities())).toThrow(

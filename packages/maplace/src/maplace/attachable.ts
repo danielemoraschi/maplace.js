@@ -3,7 +3,7 @@ import type { Snapshot } from "../store";
 import { checkAdapter, containerOf } from "../validate/attach";
 import { child, reject, root } from "../validate/fail";
 import { refuseUsedAdapter } from "../validate/used-adapters";
-import { checkCluster, createSupportCheck, type SupportCheck } from "./capabilities";
+import { checkFixedCapability, createSupportCheck, type SupportCheck } from "./capabilities";
 
 /** What `attach` was given. */
 export interface AttachRequest {
@@ -23,6 +23,7 @@ export interface AttachCheck {
 export interface StoreAtAttach {
   readonly attached: boolean;
   readonly cluster: boolean;
+  readonly heatmap: boolean;
   readonly snapshot: Snapshot;
 }
 
@@ -33,7 +34,7 @@ const ATTACH = root("attach");
  */
 export function checkAttachable(
   { adapter, container }: AttachRequest,
-  { attached, cluster, snapshot }: StoreAtAttach,
+  { attached, cluster, heatmap, snapshot }: StoreAtAttach,
 ): AttachCheck {
   if (attached) {
     reject(ATTACH, "this maplace is already attached; call detach first", "already-attached");
@@ -45,7 +46,9 @@ export function checkAttachable(
     const problem = "must be the element of the page's map the adapter draws on, or hold it";
     reject(child(ATTACH, "container"), problem);
   }
-  if (cluster) checkCluster(adapter, child(child(ATTACH, "options"), "cluster"));
+  const options = child(ATTACH, "options");
+  if (cluster) checkFixedCapability(adapter, child(options, "cluster"), "cluster");
+  if (heatmap) checkFixedCapability(adapter, child(options, "heatmap"), "heatmap");
   const checkSupport = createSupportCheck(adapter);
   checkSupport(snapshot, "attach");
   return { checkSupport, container: element };

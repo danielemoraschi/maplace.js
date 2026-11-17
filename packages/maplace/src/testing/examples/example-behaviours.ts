@@ -4,6 +4,7 @@ import { circles } from "./behaviours/circles";
 import { clickToAdd } from "./behaviours/click-to-add";
 import { cssMarkers } from "./behaviours/css-markers";
 import { customList } from "./behaviours/custom-list";
+import { earthquakes } from "./behaviours/earthquakes";
 import { flights } from "./behaviours/flights";
 import { linkToPlace } from "./behaviours/link-to-place";
 import { liveData, liveDataWithoutRoute } from "./behaviours/live-data";
@@ -49,6 +50,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   mixed,
   "live-data": liveData,
   choropleth,
+  earthquakes,
   "load-on-demand": loadOnDemand,
   "link-to-place": linkToPlace,
   "custom-list": customList,

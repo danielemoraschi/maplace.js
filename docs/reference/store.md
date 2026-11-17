@@ -29,6 +29,7 @@ createGoogleMap("#simple-vanilla-map", {
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while a shape is hovered and not selected |
 | `cluster` | `boolean` | Clusters markers; needs the `cluster` capability; badges styled as [cluster badges](styling.md#cluster-badges) |
+| `heatmap` | [`HeatmapOptions`](#heatmaps) | Draws markers, by group, as a heatmap when zoomed out (1.2); needs the `heatmap` capability; not with `cluster` |
 | `view` | `View` | The first view (see below) |
 | `skipMapLabel` | `string` | The words of the [link past the map](#on-every-map); default "Skip the map" |
 | `selectedLabel` | `string` | Said before a selected location's name, "Selected: Rome"; default "Selected" |
@@ -144,6 +145,17 @@ A route is one path through your own locations, in order; it needs the `route` c
 | `style` | `LineStyle` | How the route's line is drawn |
 
 The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`, `to`, its distance and duration, and its turn-by-turn `steps`), the total `distanceMeters` and `durationSeconds`, and the `path`. A route is computed only when its stops, `via`, their positions, the travel mode or `avoid` change, since each computation is billed (the same things avoided in another order are no change); a change of `style` alone redraws the line. On Google: [routes](google.md#routes).
+
+## Heatmaps
+
+`heatmap` draws markers as a heatmap, weighted by their [`weight`](locations.md#markers) (1 when unset, so without weights it shows how many there are): the markers in its `groups`, or every marker when `groups` is left out. Other markers stay pins at every zoom. The heat's markers are locations as any other, so the list, its search and a filter narrow the heat with them, and the heaviest marker sets the scale, hidden ones included, so a filter doesn't reshade the rest.
+
+| Option | Type | What |
+|---|---|---|
+| `groups` | `string[]` | The groups drawn as heat, one or more; every marker when left out |
+| `maxZoom` | `number` | The zoom the heat gives way to its dots at, 3 to 25; default 9 |
+
+Over the 2 zooms below `maxZoom` the heat fades into a dot per marker, sized and coloured by its weight against the heaviest; a click on a dot selects its location and opens its popup. The selected or hovered one is drawn as a pin over the heat at any zoom. A marker in the heat can't have an `icon` or be `editable` (`invalid-input`): it is drawn as heat and a dot, and a page's icon for every marker (React's `markerIcon`) doesn't apply to it. MapLibre draws the heat and the dots in its own layers, under every pin and shape; Google, on a canvas over the map, the dots as markers. The heat's code loads only for a map that asks for one.
 
 ## List view options
 

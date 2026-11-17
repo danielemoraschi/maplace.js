@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the map and its list mount on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #earthquakes-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #earthquakes-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #earthquakes-maplibre-vanilla-list { display: contents; }
+  #earthquakes-maplibre-vanilla-list .maplace-list { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size as the quakes narrow. */
+  @media (width < 40rem) {
+    #earthquakes-maplibre-vanilla-map-and-list { flex-direction: column; height: 36rem; }
+    #earthquakes-maplibre-vanilla-list .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<p id="earthquakes-maplibre-vanilla-filters">
+  <label><input type="checkbox" value="quakes" checked /> Quakes</label>
+  <label><input type="checkbox" value="volcanoes" checked /> Volcanoes</label>
+</p>
+<div id="earthquakes-maplibre-vanilla-map-and-list">
+  <div id="earthquakes-maplibre-vanilla-map"></div>
+  <div id="earthquakes-maplibre-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

@@ -9,13 +9,26 @@ import { SHAPE_DEFAULTS } from "./layers";
 /** The style fields a shape's feature carries, read by the shape layers' paint. */
 export const STYLE_KEYS = Object.keys(SHAPE_DEFAULTS) as (keyof typeof SHAPE_DEFAULTS)[];
 
-/** A default marker's feature: its point, and where it stacks. */
-export function pinFeature(drawable: Drawable, rank: number): LocationFeature {
+/** How a default marker is drawn: where it stacks, and whether it is in front. */
+export interface PinDrawing {
+  readonly rank: number;
+  readonly front: boolean;
+}
+
+/**
+ * A default marker's feature: its point, where it stacks, and for a heat marker its weight, and
+ * `front` while it is drawn as a pin in front of the heat.
+ */
+export function pinFeature(drawable: Drawable, { rank, front }: PinDrawing): LocationFeature {
   const { lat, lng } = drawable.geometry as MarkerGeometry;
   return {
     type: "Feature",
     geometry: { type: "Point", coordinates: [lng, lat] },
-    properties: { id: drawable.id, rank },
+    properties: {
+      id: drawable.id,
+      rank,
+      ...(drawable.heatWeight === undefined ? {} : { heat: drawable.heatWeight, front }),
+    },
   };
 }
 

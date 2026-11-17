@@ -25,6 +25,7 @@ export class StubMap extends StubMVCObject {
   readonly controls = Array.from({ length: 25 }, () => new StubMVCArray<HTMLElement>());
   /** The pane Google puts popups in, which it gives an overlay added to the map. */
   readonly floatPane = document.createElement("div");
+  readonly overlayLayer = document.createElement("div");
   /** The shapes on the map now: each stub shape's `setMap` keeps it. */
   readonly shapes = new Set<unknown>();
   shown: StubView | undefined;
@@ -95,6 +96,15 @@ export class StubMarker extends HTMLElement {
 
 customElements.define("stub-advanced-marker", StubMarker);
 
+/** Google's default pin, an element of its own, as a marker shows it over a heat dot. */
+export class StubPinElement extends HTMLElement {
+  constructor() {
+    super();
+    this.className = "stub-pin";
+  }
+}
+customElements.define("stub-pin-element", StubPinElement);
+
 /** Google's `ControlPosition` values for the corners (Maps JS 3.66). */
 export const STUB_CONTROL_POSITIONS = {
   TOP_RIGHT: 3,
@@ -119,7 +129,7 @@ export function stubLibraries(): GoogleLibraries {
       OverlayView: StubOverlayView,
       RenderingType: STUB_RENDERING_TYPES,
     },
-    marker: { AdvancedMarkerElement: StubMarker },
+    marker: { AdvancedMarkerElement: StubMarker, PinElement: StubPinElement },
   } as unknown as GoogleLibraries;
 }
 

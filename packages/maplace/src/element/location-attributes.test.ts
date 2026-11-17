@@ -63,6 +63,13 @@ describe("locationFromAttributes", () => {
     expect(zoomed("near")).toMatchObject({ zoom: "near" });
   });
 
+  it("reads a marker's weight as a number, or as written when it isn't one", () => {
+    const weighed = (weight: string) =>
+      locationFromAttributes(element({ "location-id": "a", weight }));
+    expect(weighed("4.5")).toMatchObject({ weight: 4.5 });
+    expect(weighed("heavy")).toMatchObject({ weight: "heavy" });
+  });
+
   it.each(["listed", "editable"])(
     "reads %s as a boolean, or as written when it isn't true or false",
     (name) => {

@@ -11,6 +11,30 @@ export class StubSize {
 /** The panes Google gives an overlay, as far as the adapter reads them. */
 interface StubPanes {
   readonly floatPane: HTMLElement;
+  readonly overlayLayer?: HTMLElement | undefined;
+}
+
+/** A map an overlay is set on, as the stub reads it: its panes, centre and zoom. */
+interface StubOverlayMap extends StubPanes {
+  getZoom?(): number | undefined;
+}
+
+/**
+ * Google's projection into an overlay's panes, as a test can follow it: a world 256 pixels wide
+ * at zoom 0, twice as wide at each zoom above, with no curve (latitude maps straight to y).
+ */
+export class StubProjection {
+  constructor(readonly zoom: number) {}
+
+  getWorldWidth(): number {
+    return 256 * 2 ** this.zoom;
+  }
+
+  fromLatLngToDivPixel(at: google.maps.LatLng | google.maps.LatLngLiteral) {
+    const { lat, lng } = "toJSON" in at ? at.toJSON() : at;
+    const world = this.getWorldWidth();
+    return { x: ((lng + 180) / 360) * world, y: ((90 - lat) / 180) * world };
+  }
 }
 
 /**
@@ -26,21 +50,34 @@ export class StubOverlayView {
     // What the overlay does once removed: its user's too.
   }
 
+  draw(): void {
+    // What the overlay draws at each change of the view: its user's, as Google's is.
+  }
+
   #panes: StubPanes | null = null;
+  #map: StubOverlayMap | null = null;
 
   getPanes(): StubPanes | null {
     return this.#panes;
   }
 
-  /** `map` a stub map, which holds the pane popups go in. */
-  setMap(map: StubPanes | null): void {
+  /** The projection at the map's zoom while the overlay is on one. */
+  getProjection(): StubProjection | null {
+    return this.#map === null ? null : new StubProjection(this.#map.getZoom?.() ?? 0);
+  }
+
+  /** `map` a stub map, which holds the panes; added, the overlay draws once, as Google's does. */
+  setMap(map: StubOverlayMap | null): void {
     if (this.#panes !== null) {
       this.onRemove();
       this.#panes = null;
+      this.#map = null;
     }
     if (map === null) return;
-    this.#panes = { floatPane: map.floatPane };
+    this.#panes = { floatPane: map.floatPane, overlayLayer: map.overlayLayer };
+    this.#map = map;
     this.onAdd();
+    this.draw();
   }
 }
 

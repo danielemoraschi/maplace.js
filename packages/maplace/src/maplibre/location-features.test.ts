@@ -11,9 +11,20 @@ import { pinFeature, shapeFeature } from "./location-features";
 
 describe("pinFeature", () => {
   it("puts a marker at its point, longitude first, with its id and rank", () => {
-    const feature = pinFeature(markerDrawable("a", { lat: 10, lng: 20 }), 7);
+    const feature = pinFeature(markerDrawable("a", { lat: 10, lng: 20 }), { rank: 7, front: true });
     expect(feature.geometry).toEqual({ type: "Point", coordinates: [20, 10] });
     expect(feature.properties).toEqual({ id: "a", rank: 7 });
+  });
+
+  it("gives a heat marker its weight, and front while it is drawn in front", () => {
+    const quake = markerDrawable("q", undefined, { heatWeight: 3 });
+    expect(pinFeature(quake, { rank: 1, front: false }).properties).toEqual({
+      id: "q",
+      rank: 1,
+      heat: 3,
+      front: false,
+    });
+    expect(pinFeature(quake, { rank: 1, front: true }).properties).toMatchObject({ front: true });
   });
 });
 

@@ -159,6 +159,23 @@ describe("the npm ESM build", () => {
     expect(importsOfChunk(importsOf)).toEqual(importsOfChunk(dynamicImportsOf));
   });
 
+  it.each([
+    ["MapLibre's heat layers", "heatmap-density"],
+    ["Google's heat overlay", "getWorldWidth"],
+    ["Google's heat dots", "translate(-50%,50%)"],
+  ])("loads %s only on demand, in a chunk of their own", (_name, marker) => {
+    const built = [...scripts(join(packageDir, "dist"))];
+    const holding = built.filter(([, text]) => text.includes(marker));
+    expect(holding.map(([file]) => file)).toHaveLength(1);
+    const [[chunk]] = holding as [[string, string]];
+    const importsOfChunk = (imports: (text: string) => string[]) =>
+      built.flatMap(([file, text]) =>
+        imports(text).flatMap((path) => (join(dirname(file), path) === chunk ? [file] : [])),
+      );
+    expect(importsOfChunk(dynamicImportsOf)).not.toEqual([]);
+    expect(importsOfChunk(importsOf)).toEqual(importsOfChunk(dynamicImportsOf));
+  });
+
   it('opens the React entry, and only it, with "use client", for server components', () => {
     const clientEntries = [...scripts(join(packageDir, "dist"))].filter(([, text]) =>
       /^"use client";/.test(text),

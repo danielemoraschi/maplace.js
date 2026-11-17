@@ -143,6 +143,10 @@ Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older 
 
 The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing Maplace.js's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)). Circles, lines and polygons are never clustered, and the selected location is drawn on its own. Only the view and half a view around it are clustered and on the map, as on MapLibre, so a map zoomed in carries the markers it shows, not every one, and a short pan draws nothing again. A cluster still in view after a longer pan keeps its marker, and its focus. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
 
+## Heatmap
+
+A [heatmap](store.md#heatmaps) is drawn by Maplace.js, as Google retired its own heatmap layer in May 2026: the heat on a canvas in the map's overlay pane, over the map's tiles and, on a vector map, over its polygons too; each marker's dot, faded in near `maxZoom`, is an advanced marker, so a click or Enter on it selects its location. The heat is drawn again as the view changes. Its code loads with the map, only when the store asks for a heatmap; the CDN scripts include it.
+
 ## When Google refuses
 
 Google refusing the key (an invalid key, a referrer the key doesn't allow, the API or billing not enabled, a quota used up) is `provider-auth-failed` for every map on the page. Google checks the key as the first map opens, so this can come after `ready`: Maplace.js then stops drawing and leaves the map, with Google's message on it, until `destroy`. Your own `gm_authFailure` still runs. A missing key isn't refused (Google draws the map and logs `ApiProjectMapError`), so it reports nothing.

@@ -1,6 +1,7 @@
 import type { MountContext } from "../../adapter";
 import type { ResolvedPopupOptions } from "../../popup";
 import { createRecordingHost } from "../../testing/conformance/recording-host";
+import type { GoogleHeat } from "../heat-overlay";
 import { createMapState, type GoogleMapState } from "../map-state";
 import { directMarkers } from "../marker-layer";
 import { mountMap } from "../mounted-map";
@@ -23,6 +24,7 @@ export const CLICK_POPUPS: ResolvedPopupOptions = {
 export function stubMounted(
   state: GoogleMapState = createMapState(),
   popup: Partial<ResolvedPopupOptions> = {},
+  heat?: GoogleHeat,
 ) {
   const host = createRecordingHost();
   const controller = new AbortController();
@@ -34,6 +36,7 @@ export function stubMounted(
     host,
     signal: controller.signal,
     cluster: false,
+    heatmap: undefined,
     popup: { ...CLICK_POPUPS, ...popup },
   };
   const { mounted, close } = mountMap({
@@ -41,13 +44,14 @@ export function stubMounted(
     libraries,
     context,
     markerLayer: directMarkers,
+    heat,
   });
   state.mounted = mounted;
   return { state, mounted, host, controller, close };
 }
 
-/** A placing site on a stub map, reading the state's presentation. */
-export function stubSite(state: GoogleMapState = createMapState()) {
-  const mounted = stubMounted(state);
+/** A placing site on a stub map, reading the state's presentation, with `heat` when given. */
+export function stubSite(state: GoogleMapState = createMapState(), heat?: GoogleHeat) {
+  const mounted = stubMounted(state, {}, heat);
   return { ...mounted, site: createPlacingSite(mounted.mounted, state) };
 }

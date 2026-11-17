@@ -73,6 +73,8 @@ export interface MarkerLocation<Data = unknown> extends LocationBase<Data>, LatL
   /** Optional: a location without `type` is a marker. */
   readonly type?: "marker" | undefined;
   readonly icon?: Icon<Data> | undefined;
+  /** Its weight on a heatmap, relative to the others'; 1 when unset. */
+  readonly weight?: number | undefined;
 }
 
 /**
@@ -132,3 +134,8 @@ export type Location<Data = unknown> =
   | PolylineLocation<Data>
   | PolygonLocation<Data>
   | MultiPolygonLocation<Data>;
+
+/** Whether `location` is a marker: one without `type` is. */
+export function isMarkerLocation<Data>(location: Location<Data>): location is MarkerLocation<Data> {
+  return location.type === undefined || location.type === "marker";
+}

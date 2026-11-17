@@ -155,11 +155,11 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     label: "Data & routes",
     headingLead: "Live data, clusters and routes",
     intro:
-      "Locations fetched as JSON and swapped in live, markers grouped into clusters that show a count, the world's countries shaded by a value, a map that loads only when the visitor presses a button, a link that opens the map on a place, and on Google a driving route through your stops.",
+      "Locations fetched as JSON and swapped in live, markers grouped into clusters that show a count, the world's countries shaded by a value, a month of earthquakes as a heatmap, a map that loads only when the visitor presses a button, a link that opens the map on a place, and on Google a driving route through your stops.",
     summary:
-      "Data fetched and swapped in live, thousands of points clustered, countries shaded by a value, a drive through your places, a map loaded on a press, a link to a place.",
+      "Data fetched and swapped in live, thousands of points clustered, countries shaded by a value, a heatmap of earthquakes, a drive through your places, a map loaded on a press, a link to a place.",
     description:
-      "Live data from JSON, marker clustering, a choropleth, a map loaded on demand, a link to a place and, on Google, a driving route: on Google Maps or MapLibre.",
+      "Live data, clustering, a choropleth, a heatmap, a map loaded on demand, a link to a place and, on Google, a driving route: on Google Maps or MapLibre.",
     sections: [
       {
         name: "live-data",
@@ -177,6 +177,12 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         title: "Choropleth of the world",
         summary:
           "Every country filled by its GDP per person, its value on hover, with a legend on the map.",
+      },
+      {
+        name: "earthquakes",
+        title: "Heatmaps",
+        summary:
+          "A month of earthquakes as a heatmap by magnitude, dots when zoomed in, volcanoes as pins, a checkbox for each.",
       },
       {
         name: "route",

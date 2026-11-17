@@ -2,6 +2,7 @@ import type { Adapter } from "../adapter";
 import type { MapFailureNotice } from "../adapter-kit/map-failure";
 import type { MaplaceError } from "../errors";
 import { loadClustering } from "./clustering";
+import { loadHeat } from "./heat-loading";
 import { loadMapLibre } from "./library";
 import { routeMapErrors } from "./map-errors";
 import type { MapSource } from "./map-source";
@@ -30,7 +31,7 @@ interface ErrorRouting {
 
 /**
  * The map's life, from mount to destroy:
- * 1. maplibre-gl loads, and the clustering when the store clusters;
+ * 1. maplibre-gl loads, and the clustering when the store clusters, the heatmap when it asks;
  * 2. the page's worker is watched, and a worker known dead fails the mount, as it can't recover;
  * 3. the map opens in the container, unless the load was cancelled or the adapter destroyed
  *    meanwhile;
@@ -50,16 +51,17 @@ export function createMapLifecycle({
 
   return {
     async mount(context) {
-      const [maplibre, clustering] = await Promise.all([
+      const [maplibre, clustering, heat] = await Promise.all([
         loadMapLibre(),
         loadClustering(context.cluster),
+        loadHeat(context.heatmap),
       ]);
       if (destroyed || context.signal.aborted) return;
       const worker = watchWorker(maplibre);
       const known = worker.failure();
       if (known !== undefined) throw known;
       const inUse = source.open(context.container, maplibre);
-      open = mountMap({ inUse, maplibre, context, clustering });
+      open = mountMap({ inUse, maplibre, context, clustering, heat });
       const { mounted } = open;
       let loaded = false;
       const mountFailure = routeErrors(mounted, {

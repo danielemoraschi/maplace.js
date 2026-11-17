@@ -29,15 +29,18 @@ export function mountingMapLibre(options: MapLibreAdapterOptions) {
 }
 
 /** A MapLibre adapter mounted on a map the page made first, with the map. */
-export async function mountedOnPageMap() {
+export async function mountedOnPageMap(settings?: MountSettings) {
   const created: { map?: ReturnType<typeof pageMapIn> } = {};
-  const mounted = await mountSubject({
-    name: "maplibre on the page's map",
-    create(container) {
-      created.map = pageMapIn(container);
-      return maplibreParts({ map: created.map });
+  const mounted = await mountSubject(
+    {
+      name: "maplibre on the page's map",
+      create(container) {
+        created.map = pageMapIn(container);
+        return maplibreParts({ map: created.map });
+      },
     },
-  });
+    settings,
+  );
   const { map } = created;
   if (map === undefined) throw new Error("the page's map wasn't made");
   return { map, ...mounted };

@@ -67,7 +67,7 @@ function forwardEvent<Data, K extends MaplaceEventName>(
 
 /** Every option read once, named so a new one fails to compile until it is passed on. */
 function mountOptionsOf<Data>(props: Props<Data>): MaplaceOptions<Data> {
-  const { sanitize, popup, style, selectedStyle, hoveredStyle, cluster, view } = props;
+  const { sanitize, popup, style, selectedStyle, hoveredStyle, cluster, heatmap, view } = props;
   const { skipMapLabel, selectedLabel } = props;
   return {
     sanitize,
@@ -76,6 +76,7 @@ function mountOptionsOf<Data>(props: Props<Data>): MaplaceOptions<Data> {
     selectedStyle,
     hoveredStyle,
     cluster,
+    heatmap,
     view,
     skipMapLabel,
     selectedLabel,

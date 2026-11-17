@@ -117,6 +117,7 @@ export const REACT_PROPS = {
     selectedStyle: true,
     hoveredStyle: true,
     cluster: true,
+    heatmap: true,
     view: true,
     skipMapLabel: true,
     selectedLabel: true,

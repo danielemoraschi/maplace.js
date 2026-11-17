@@ -55,6 +55,7 @@ describe("the fake beyond the contract", () => {
       host,
       signal: new AbortController().signal,
       cluster: false,
+      heatmap: undefined,
       popup: {
         maxWidth: undefined,
         offset: [0, 0],

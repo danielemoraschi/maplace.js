@@ -24,6 +24,45 @@ describe("validateOptions", () => {
     expect(() => validateOptions(options)).not.toThrow();
   });
 
+  it("takes heatmap, with or without groups and a maxZoom", () => {
+    expect(() => validateOptions({ heatmap: {} })).not.toThrow();
+    expect(() => validateOptions({ heatmap: { groups: ["quakes"], maxZoom: 7 } })).not.toThrow();
+  });
+
+  it.each([[[]], [[""]], [["quakes", 2]], ["quakes"]])("refuses heatmap groups of %j", (groups) => {
+    expect(() => validateOptions({ heatmap: { groups } })).toThrow(
+      expect.objectContaining({ field: expect.stringMatching(/^options\.heatmap\.groups/) }),
+    );
+  });
+
+  it("refuses an icon on a heat marker among the first locations", () => {
+    const locations = [{ id: "q", lat: 0, lng: 0, group: "quakes", icon: "x" }];
+    expect(() => validateOptions({ heatmap: { groups: ["quakes"] }, locations })).toThrow(
+      expect.objectContaining({ locationId: "q", field: "icon" }),
+    );
+  });
+
+  it.each([2, 26, "9"])("refuses a heatmap maxZoom of %s, outside 3 to 25", (maxZoom) => {
+    expect(() => validateOptions({ heatmap: { maxZoom } })).toThrow(
+      expect.objectContaining({ field: "options.heatmap.maxZoom" }),
+    );
+  });
+
+  it("refuses an unknown heatmap field", () => {
+    expect(() => validateOptions({ heatmap: { radius: 4 } })).toThrow(
+      expect.objectContaining({ field: "options.heatmap.radius" }),
+    );
+  });
+
+  it("refuses heatmap with cluster", () => {
+    expect(() => validateOptions({ cluster: true, heatmap: {} })).toThrow(
+      expect.objectContaining({
+        message: "createMaplace: options.heatmap can't be used with cluster",
+        field: "options.heatmap",
+      }),
+    );
+  });
+
   it("rejects something that is not an object", () => {
     expect(() => validateOptions([])).toThrow(
       expect.objectContaining({

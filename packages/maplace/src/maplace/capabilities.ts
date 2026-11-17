@@ -26,9 +26,16 @@ export function createSupportCheck(limits: AdapterLimits): SupportCheck {
   };
 }
 
-/** `cluster` is fixed for the life of a store, so `attach` checks it once, when it is on. */
-export function checkCluster(limits: AdapterLimits, field: Field): void {
-  if (!limits.capabilities.has("cluster")) unsupported(field, "cluster");
+/**
+ * `cluster` and `heatmap` are fixed for the life of a store, so `attach` checks each once, when it
+ * is on.
+ */
+export function checkFixedCapability(
+  limits: AdapterLimits,
+  field: Field,
+  capability: Capability,
+): void {
+  if (!limits.capabilities.has(capability)) unsupported(field, capability);
 }
 
 /** The location types an adapter draws only with the capability of the same name. */

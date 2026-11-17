@@ -32,7 +32,15 @@ export function markerTarget(
   };
   const element = () => dom()?.getElement();
   const shown = () => (element()?.isConnected ?? false) || pinPoint() !== undefined;
-  const pin = () => ({ at: pinPoint() ?? (placed.drawable().geometry as LatLng), up: PIN_HEAD });
+  // A heat marker is a dot, aimed at its middle; in front, it is a pin as any other.
+  const isDot = () => {
+    const properties = pinFeature()?.properties;
+    return properties?.heat !== undefined && properties.front !== true;
+  };
+  const pin = () => ({
+    at: pinPoint() ?? (placed.drawable().geometry as LatLng),
+    up: isDot() ? 0 : PIN_HEAD,
+  });
   return {
     isMarker: true,
     onMap: () => (stillPlaced() && map.getSource(PIN_SOURCE) !== undefined) || shown(),

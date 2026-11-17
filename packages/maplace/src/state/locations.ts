@@ -16,11 +16,12 @@ import { pruneRoute } from "./route";
 export function setLocations<Data>(
   snapshot: Snapshot<Data>,
   locations: readonly Location<Data>[],
-  context: Pick<MaplaceOptions, "sanitize">,
+  context: Pick<MaplaceOptions, "sanitize" | "heatmap">,
 ): Change<Data> {
   validateLocations(locations, {
     caller: "setLocations",
     sanitize: context.sanitize,
+    heatmap: context.heatmap,
     isKnown: (value) => isHeld(snapshot.locations, value),
   });
   if (sameItems(snapshot.locations, locations)) return NO_CHANGE;

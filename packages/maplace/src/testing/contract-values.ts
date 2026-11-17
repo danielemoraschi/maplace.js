@@ -7,6 +7,7 @@ const CAPABILITIES: Readonly<Record<Capability, true>> = {
   circle: true,
   edit: true,
   multipolygon: true,
+  heatmap: true,
 };
 
 /** Every capability the contract names. */

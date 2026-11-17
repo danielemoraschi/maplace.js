@@ -98,6 +98,10 @@ export { defineListView } from "./list-views";
  *   another location wins); later changes go through `maplace`.
  * - `cluster`: cluster markers (a boolean, as `group-counts`; a CDN page needs the cluster build);
  *   can't change afterwards.
+ * - `heatmap`: draws markers as a heatmap when zoomed out, fading into a dot each: empty or `true`
+ *   for every marker, else the groups it names, space-separated; `false` for none. Not with
+ *   `cluster`. `heatmap-max-zoom` (3 to 25, default 9) is where the heat gives way to the dots;
+ *   neither can change afterwards.
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
  *   of a selection; can't change afterwards.
  * - `my-location`: puts the "My location" button on the map, which asks for the visitor's position
@@ -131,12 +135,12 @@ export { defineListView } from "./list-views";
  *   read when the map opens.
  *
  * The store is created when the element first connects (or `maplace`, `locations` or `route` is
- * first read), from `cluster`, `center` and `zoom`, `sanitize`, `selected-id` and the locations,
- * and lives as long as the element: disconnected, the map closes and the store goes back to
- * `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A
- * move within one task keeps the map. A map waits for the document to parse its children before
- * it opens, whether parsed or created by a script, so its first view and `selected-id` see them
- * all.
+ * first read), from `cluster`, `heatmap`, `center` and `zoom`, `sanitize`, `selected-id` and the
+ * locations, and lives as long as the element: disconnected, the map closes and the store goes
+ * back to `idle`, keeping its locations, selection and listeners; connected again, a new map
+ * opens. A move within one task keeps the map. A map waits for the document to parse its children
+ * before it opens, whether parsed or created by a script, so its first view and `selected-id` see
+ * them all.
  *
  * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent. It stands
  * until corrected: bad locations or route keep the previous ones until valid ones are given, and
@@ -164,10 +168,11 @@ export interface MaplaceMapElement extends HTMLElement {
 
 /**
  * `<maplace-location location-id="…" lat lng title type group tags search-text radius icon zoom
- * listed editable shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's position
- * or a circle's centre, `tags` its tags split on spaces, `search-text` what a search box also looks
- * in, `icon` a marker's image URL, `zoom` the zoom
- * selecting it shows it at, `listed="false"` keeps it out of the list (on the map still),
+ * weight listed editable shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's
+ * position or a circle's centre, `tags` its tags split on spaces, `search-text` what a search box
+ * also looks in, `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `weight` a
+ * marker's weight on a heatmap (1 when absent), `listed="false"` keeps it out of the list (on the
+ * map still),
  * `editable` lets the user drag or reshape it (both true when present with no value, or `"true"`),
  * and the three style attributes a shape's `style`, `selectedStyle` and `hoveredStyle` as JSON; a
  * `<template>` child is trusted popup content, and a `<template data-icon>` child the marker, in

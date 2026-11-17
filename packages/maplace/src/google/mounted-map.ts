@@ -2,6 +2,7 @@
 import type { AdapterHost, MountContext } from "../adapter";
 import { createTeardowns } from "../adapter-kit/teardowns";
 import type { ResolvedPopupOptions } from "../popup";
+import type { GoogleHeat } from "./heat-overlay";
 import type { GoogleLibraries } from "./libraries";
 import type { MapInUse } from "./map-source";
 import type { MarkerLayer, MarkerLayerFactory } from "./marker-layer";
@@ -14,6 +15,8 @@ export interface MountedMap {
   readonly popup: ResolvedPopupOptions;
   /** Where markers go on it, fixed for the life of the map: each on it, or into clusters. */
   readonly markers: MarkerLayer;
+  /** The heatmap's overlay, loaded for a store that asks for one. */
+  readonly heat: GoogleHeat | undefined;
   /** Whom to report to; undefined once the load is cancelled or the map closed. */
   live(): AdapterHost | undefined;
   /** Runs on destroy, the last added first: each part removes here what it added. */
@@ -39,6 +42,7 @@ interface MapToMount {
   readonly libraries: GoogleLibraries;
   readonly context: MountContext;
   readonly markerLayer: MarkerLayerFactory;
+  readonly heat: GoogleHeat | undefined;
 }
 
 /** The map in use as parts see it, and how to close it. */
@@ -59,7 +63,7 @@ export interface OpenMap {
  * teardowns, last added first. A map maplace created is off the page by then, where Google takes
  * markers off it for free (on the page, each costs more the more markers it holds).
  */
-export function mountMap({ inUse, libraries, context, markerLayer }: MapToMount): OpenMap {
+export function mountMap({ inUse, libraries, context, markerLayer, heat }: MapToMount): OpenMap {
   const markers = markerLayer(inUse.map, libraries);
   const teardowns = createTeardowns();
   // The layer lets go of its markers last, once every part has removed its own.
@@ -70,6 +74,7 @@ export function mountMap({ inUse, libraries, context, markerLayer }: MapToMount)
     libraries,
     popup: context.popup,
     markers,
+    heat,
     live: () => (teardowns.done() || context.signal.aborted ? undefined : context.host),
     onDestroy: teardowns.add,
   };

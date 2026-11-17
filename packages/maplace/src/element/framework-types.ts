@@ -31,6 +31,7 @@ type NamedMapAttribute =
   | "open-in-maps-label"
   | "directions-label"
   | "popup-open-on"
+  | "heatmap-max-zoom"
   | "my-location-label"
   | "my-location-unavailable-label"
   | "my-location-position"
@@ -58,6 +59,7 @@ type SwitchAttribute =
   | "open-in-maps-link"
   | "directions-link"
   | "cluster"
+  | "heatmap"
   | "hold"
   | "globe";
 

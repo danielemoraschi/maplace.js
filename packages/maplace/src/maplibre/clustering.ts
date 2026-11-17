@@ -1,6 +1,6 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
+import { loadOnDemand } from "../adapter-kit/load-on-demand";
 import type { Look } from "../adapter-kit/presentation-changes";
-import { MaplaceError } from "../errors";
 import type { LatLng } from "../geometry";
 import type { MapLibre } from "./library";
 
@@ -50,10 +50,9 @@ export const noClustering: ClusteringFactory = () => NONE;
 /** The clustering a store's `cluster` asks for: the clustered markers, and supercluster, loaded only then. */
 export async function loadClustering(cluster: boolean): Promise<ClusteringFactory> {
   if (!cluster) return noClustering;
-  const { clusteredMarkers } = await import("./clustered-markers").catch((cause: unknown) => {
-    throw new MaplaceError("provider-load-failed", "mount: maplace's clustering failed to load", {
-      cause,
-    });
-  });
+  const { clusteredMarkers } = await loadOnDemand(
+    "clustering",
+    () => import("./clustered-markers"),
+  );
   return clusteredMarkers;
 }

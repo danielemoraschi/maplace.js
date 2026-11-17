@@ -115,3 +115,11 @@ function selectLabelled(root: Element, label: string): HTMLSelectElement {
 export function controlPositions(adapter: FakeAdapter): readonly string[] {
   return adapter.callsOf("mountControl").map(({ position }) => position);
 }
+
+/** Types `text` in the list's search box, as a user's typing reaches it. */
+export function typeInSearch(root: Element, text: string): void {
+  const box = root.querySelector<HTMLInputElement>("input[type=search]");
+  if (box === null) throw new Error("no search box");
+  box.value = text;
+  box.dispatchEvent(new InputEvent("input", { bubbles: true }));
+}

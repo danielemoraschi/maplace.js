@@ -1,5 +1,6 @@
 import type { Drawable, StyleField } from "../drawable";
 import type { Location } from "../location";
+import { type HeatmapOptions, isHeatMarker } from "../options";
 import { type ContentContext, contentRenderer, sameContentSource } from "./content";
 import { geometryOf } from "./geometry";
 import { iconRenderer, sameIconSource } from "./icon";
@@ -10,7 +11,10 @@ import { type DrawStyles, styleOf } from "./style";
  * What drawables depend on besides the location: the store's options, and where the page's own
  * code reports failing while an adapter draws. Fixed for one attachment.
  */
-export interface DrawContext extends ContentContext, DrawStyles {}
+export interface DrawContext extends ContentContext, DrawStyles {
+  /** Which markers are drawn as heat. */
+  readonly heatmap?: HeatmapOptions | undefined;
+}
 
 /** A location as last given, with the drawable made from it. */
 export interface DrawnLocation {
@@ -37,10 +41,15 @@ export function toDrawable(
     selectedStyle: keptStyle("selectedStyle"),
     hoveredStyle: keptStyle("hoveredStyle"),
     editable: location.editable ?? false,
+    heatWeight: heatWeightOf(location, context.heatmap),
     renderContent: contentRendererOf(location, previous, context),
     renderIcon: iconRendererOf(location, previous, context),
   };
   return keepIfSame(previous?.drawable, drawable);
+}
+
+function heatWeightOf(location: Location, heatmap: HeatmapOptions | undefined): number | undefined {
+  return isHeatMarker(location, heatmap) ? (location.weight ?? 1) : undefined;
 }
 
 function contentRendererOf(

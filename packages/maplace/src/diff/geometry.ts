@@ -1,6 +1,6 @@
 import { drawnPath } from "../drawn-path";
 import type { Geometry, PolygonRings } from "../geometry";
-import type { Location, MarkerLocation } from "../location";
+import type { Location } from "../location";
 import { frozenPath, frozenPoint } from "./frozen";
 
 /**
@@ -37,10 +37,6 @@ export function withGeometry<Data>(location: Location<Data>, geometry: Geometry)
 /** A location without `type` is a marker. */
 export function geometryTypeOf(location: Location): Geometry["type"] {
   return location.type ?? "marker";
-}
-
-export function isMarker(location: Location): location is MarkerLocation {
-  return geometryTypeOf(location) === "marker";
 }
 
 /** A geometry's own fields, without `type`, with its points copied and frozen. */

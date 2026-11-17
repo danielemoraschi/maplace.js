@@ -10,6 +10,7 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 |---|---|---|
 | `createMaplace` | function | [Creating a store](store.md#creating-a-store) |
 | `MaplaceOptions` | type | [Store options](store.md#options) |
+| `HeatmapOptions` | type | [Heatmaps](store.md#heatmaps) |
 | `Maplace` | type | [Methods](store.md#methods) |
 | `Snapshot`, `LoadState` | types | [Snapshot](store.md#snapshot) |
 | `FilterRequest`, `LocationFilter` | types | [`setFilter`](store.md#methods) |
@@ -145,7 +146,7 @@ For the first two, `loadState` becomes `error` and `whenReady()` rejects; one th
 
 ## Capabilities
 
-A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all five; MapLibre all but `route`, as it has no routing ([routes](maplibre.md#routes)).
+A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all six; MapLibre all but `route`, as it has no routing ([routes](maplibre.md#routes)).
 
 | Capability | What it allows |
 |---|---|
@@ -154,6 +155,7 @@ A capability is a feature an adapter may or may not support; using one the adapt
 | `circle` | Circle locations |
 | `edit` | `editable` locations |
 | `multipolygon` | Multipolygon locations (1.2); an adapter written for 1.0 lacks it, so the store refuses them there |
+| `heatmap` | The `heatmap` option (1.2), drawn by maplace on both providers; an adapter written for 1.0 lacks it |
 
 ## Rules
 

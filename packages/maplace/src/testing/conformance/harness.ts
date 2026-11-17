@@ -1,4 +1,4 @@
-import type { Adapter, Capability } from "../../adapter";
+import type { Adapter, Capability, ResolvedHeatmap } from "../../adapter";
 import type { ResolvedPopupOptions } from "../../popup";
 import type { Viewport } from "../../viewport";
 import { sizedContainer } from "../container";
@@ -24,6 +24,7 @@ export interface MountedSubject {
 /** How the store would mount: clustering, when popups open, and the links they end in. */
 export interface MountSettings {
   readonly cluster?: boolean;
+  readonly heatmap?: ResolvedHeatmap;
   readonly openOn?: ResolvedPopupOptions["openOn"];
   readonly openInMapsLabel?: string;
   readonly directionsLabel?: string;
@@ -47,7 +48,13 @@ export async function mountSubject(
 /** Starts mounting without waiting for it, as the store does before a load completes. */
 export function startMount(
   subject: ConformanceSubject,
-  { cluster = false, openOn = "click", openInMapsLabel, directionsLabel }: MountSettings = {},
+  {
+    cluster = false,
+    heatmap,
+    openOn = "click",
+    openInMapsLabel,
+    directionsLabel,
+  }: MountSettings = {},
 ): MountedSubject {
   const container = sizedContainer();
   const { adapter, probe } = subject.create(container);
@@ -64,7 +71,14 @@ export function startMount(
     openInMapsLabel,
     directionsLabel,
   };
-  const mounting = adapter.mount({ container, host, signal: controller.signal, cluster, popup });
+  const mounting = adapter.mount({
+    container,
+    host,
+    signal: controller.signal,
+    cluster,
+    heatmap,
+    popup,
+  });
   return { adapter, probe, host, container, pageChildren, controller, mounting, destroy };
 }
 

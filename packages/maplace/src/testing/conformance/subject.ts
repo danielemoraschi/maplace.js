@@ -16,6 +16,7 @@ export type ConformanceGroup =
   | "editing"
   | "route"
   | "cluster"
+  | "heatmap"
   | "controls"
   | "origin";
 

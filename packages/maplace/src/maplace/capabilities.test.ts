@@ -4,7 +4,7 @@ import type { Location } from "../location";
 import { initialSnapshot } from "../state/initial";
 import type { Snapshot } from "../store";
 import { child, root } from "../validate/fail";
-import { checkCluster, createSupportCheck } from "./capabilities";
+import { checkFixedCapability, createSupportCheck } from "./capabilities";
 
 const field = (label: string, ...path: string[]) => path.reduce(child, root(label));
 
@@ -79,11 +79,12 @@ describe("createSupportCheck", () => {
   });
 });
 
-describe("checkCluster", () => {
-  it("needs the cluster capability", () => {
-    expect(() => checkCluster(limits([]), field("attach", "options", "cluster"))).toThrow(
-      "attach: options.cluster needs the cluster capability, which this map's adapter lacks",
+describe("checkFixedCapability", () => {
+  it("needs the capability a fixed option asks for", () => {
+    const heatmap = field("attach", "options", "heatmap");
+    expect(() => checkFixedCapability(limits([]), heatmap, "heatmap")).toThrow(
+      "attach: options.heatmap needs the heatmap capability, which this map's adapter lacks",
     );
-    expect(() => checkCluster(limits(["cluster"]), field("attach"))).not.toThrow();
+    expect(() => checkFixedCapability(limits(["heatmap"]), heatmap, "heatmap")).not.toThrow();
   });
 });

@@ -85,6 +85,29 @@ describe("<maplace-map>'s switches, read when the store or the map opens", () =>
     expect(map.loadState).toBe("loading");
   });
 
+  it("turns heatmap on from its switch, at maxZoom 9", async () => {
+    await mapFrom(`<maplace-map heatmap>${ROME}</maplace-map>`);
+    expect(lastAdapter().mounted?.heatmap).toEqual({ maxZoom: 9 });
+  });
+
+  it("with cluster, leaves heatmap off and stands as misuse", async () => {
+    const map = await mapFrom(`<maplace-map hold cluster heatmap>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    expect(map.loadState).toBe("error");
+    map.removeAttribute("cluster");
+    map.setAttribute("cluster", "");
+    expect(errors.at(-1)).toEqual(
+      expect.objectContaining({
+        field: "heatmap",
+        message: expect.stringContaining("heatmap can't be used with cluster"),
+      }),
+    );
+    map.removeAttribute("heatmap");
+    map.release();
+    await nextTask();
+    expect(lastAdapter().mounted).toMatchObject({ cluster: true, heatmap: undefined });
+  });
+
   it("reads cluster='false' as off", async () => {
     await mapFrom(`<maplace-map cluster="false">${ROME}</maplace-map>`);
     expect(lastAdapter().mounted?.cluster).toBe(false);

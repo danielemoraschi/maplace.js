@@ -1,7 +1,6 @@
 import { memo, type ReactNode, Suspense, useLayoutEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { isMarker } from "../diff/geometry";
-import type { Location, MarkerLocation } from "../location";
+import { isMarkerLocation, type Location, type MarkerLocation } from "../location";
 import { locationById } from "../location-index";
 import type { Maplace } from "../store";
 import { ContentBoundary, type FailureScope } from "./content-boundary";
@@ -41,7 +40,7 @@ export function MapContentPortals<Data>({
           const location = locationById(locations, slot.id);
           return (
             location &&
-            isMarker(location) && (
+            isMarkerLocation(location) && (
               <MarkerIconPortal
                 key={slot.id}
                 slot={slot}

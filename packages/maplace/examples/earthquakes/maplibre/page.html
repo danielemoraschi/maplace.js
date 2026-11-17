@@ -1,0 +1,32 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  /* On a phone the list goes under the map, its half staying that size as the quakes narrow. */
+  @media (width < 40rem) {
+    #earthquakes-maplibre-map { height: 36rem; }
+    #earthquakes-maplibre-map > .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<!-- A month of earthquakes of magnitude 4.5 and up, to November 2026 (USGS, in earthquakes.json), as a heatmap weighted by magnitude, with volcanoes (volcanoes.json) as pins: zoomed in, the heat fades into a dot per quake, and the list's search and the checkboxes narrow the heat with it. -->
+<p id="earthquakes-maplibre-filters">
+  <label><input type="checkbox" value="quakes" checked /> Quakes</label>
+  <label><input type="checkbox" value="volcanoes" checked /> Volcanoes</label>
+</p>
+<maplace-map id="earthquakes-maplibre-map" heatmap="quakes" center="20,160" zoom="2" list search
+  search-label="Find a quake or a volcano"></maplace-map>
+<script type="module">
+  // The quakes, each weighing its magnitude, in the group the heatmap draws; the volcanoes, pins.
+  const [quakes, volcanoes] = await Promise.all([
+    fetch("/examples/data/earthquakes.json").then((response) => response.json()),
+    fetch("/examples/data/volcanoes.json").then((response) => response.json()),
+  ]);
+  document.getElementById("earthquakes-maplibre-map").locations = [...quakes, ...volcanoes];
+</script>
+<script>
+  // The checkboxes show the groups ticked, keeping what the search box found.
+  document.getElementById("earthquakes-maplibre-filters").addEventListener("change", (event) => {
+    const ticked = event.currentTarget.querySelectorAll(":checked");
+    const { maplace } = document.getElementById("earthquakes-maplibre-map");
+    maplace.setFilter({ ...maplace.getSnapshot().filter, groups: Array.from(ticked, (box) => box.value) });
+  });
+</script>

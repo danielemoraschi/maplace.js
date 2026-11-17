@@ -1,6 +1,7 @@
 import { LIST_ATTRIBUTES } from "../../../../packages/maplace/src/element/element-list.ts";
 import { SCRIPT_ATTRIBUTES } from "../../../../packages/maplace/src/element/google-attributes.ts";
 import { GOOGLE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/google-map-attributes.ts";
+import { HEATMAP_ATTRIBUTES } from "../../../../packages/maplace/src/element/heatmap-attributes.ts";
 import { MAPLIBRE_MAP_SETTINGS } from "../../../../packages/maplace/src/element/maplibre-attributes.ts";
 import { VIEW_ATTRIBUTES } from "../../../../packages/maplace/src/element/view-attributes.ts";
 
@@ -38,6 +39,7 @@ export const ATTRIBUTES_READ_BY_NAME: readonly string[] = [...MAP_READS, ...GOOG
 export const MAP_ATTRIBUTES: readonly string[] = [
   ...LIST_ATTRIBUTES,
   ...VIEW_ATTRIBUTES,
+  ...HEATMAP_ATTRIBUTES,
   ...MAP_READS,
 ];
 

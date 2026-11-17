@@ -30,6 +30,8 @@ export interface Drawable {
   /** Drawn over `style` while hovered and not selected, resolved as `selectedStyle`. */
   readonly hoveredStyle: ShapeStyle | undefined;
   readonly editable: boolean;
+  /** A heat marker's weight (its `weight`, or 1); undefined for any other location. */
+  readonly heatWeight?: number | undefined;
   /**
    * Builds the popup content (sanitizing `html` on first call); undefined when there is none.
    * When `content` is a Node it returns that same Node, so content shown in two places at once

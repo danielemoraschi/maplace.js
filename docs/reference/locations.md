@@ -53,6 +53,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 |---|---|---|---|
 | `lat`, `lng` | `number` | Where it is: `lat` from -90 to 90, `lng` from -180 to 180 | `lat`, `lng` |
 | `icon` | [`Icon`](#icons) | A custom marker in place of the provider's own | `icon` (a URL), or a `<template data-icon>` child |
+| `weight` | `number` | Its weight on a [heatmap](store.md#heatmaps), against the other markers' (1.2); 1 when unset |
 
 ## Circles
 

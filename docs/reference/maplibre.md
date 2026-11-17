@@ -187,6 +187,10 @@ A click or Enter on a cluster eases to the zoom at which it splits. Circles, lin
 
 supercluster loads with the map, so `whenReady` waits for it, and a failed load is `provider-load-failed`. The MapLibre CDN script includes it: there is no separate cluster script.
 
+## Heatmap
+
+A [heatmap](store.md#heatmaps) is drawn in MapLibre's own `heatmap` and `circle` layers, reading the markers' source: under every pin and shape, and kept through a restyle as the pins are. A click on a dot finds its location as a click on a pin does. Its layers load with the map, only when the store asks for a heatmap; the MapLibre CDN script includes them.
+
 ## Routes
 
 MapLibre has no routing, so `route` isn't among this adapter's capabilities. `setRoute`, the element's `route` and React's `route` prop are `unsupported-capability`, checked as every capability is ([capabilities](api.md#capabilities)). For a route, draw on [Google](google.md#routes).

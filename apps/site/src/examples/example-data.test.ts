@@ -8,12 +8,14 @@ describe("exampleData", () => {
   it("is each data file the example pages fetch, by the name in its path", () => {
     expect(exampleData().map(({ name }) => name)).toEqual([
       "countries",
+      "earthquakes",
       "live-data-a",
       "live-data-b",
       "live-data-c",
       "live-data-d",
       "live-data-e",
       "points-4k",
+      "volcanoes",
     ]);
   });
 });
@@ -25,6 +27,7 @@ describe("servedExampleFiles", () => {
   it("is every file under the examples' data/ and styles/, by its path there", () => {
     expect(served.map(({ path }) => path)).toEqual([
       "data/countries.json",
+      "data/earthquakes.json",
       "data/icons/a.svg",
       "data/icons/b.svg",
       "data/icons/c.svg",
@@ -37,6 +40,7 @@ describe("servedExampleFiles", () => {
       "data/photos/duomo.webp",
       "data/photos/st-marks.webp",
       "data/points-4k.json",
+      "data/volcanoes.json",
       "styles/choropleth.css",
       "styles/popups.css",
       "styles/whats-on.css",

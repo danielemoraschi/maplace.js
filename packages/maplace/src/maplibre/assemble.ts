@@ -22,9 +22,15 @@ import { viewportReports } from "./viewport-reports";
 
 /**
  * What the adapter draws beyond the contract's core. A capability is declared only once the
- * adapter draws it: circles, clustering and editing; routes never, MapLibre has no routing.
+ * adapter draws it: circles, clustering, editing and heatmaps; routes never, MapLibre has no routing.
  */
-const CAPABILITIES: readonly Capability[] = ["circle", "cluster", "edit", "multipolygon"];
+const CAPABILITIES: readonly Capability[] = [
+  "circle",
+  "cluster",
+  "edit",
+  "heatmap",
+  "multipolygon",
+];
 
 /**
  * One MapLibre adapter from its parts, drawing into `state`, which its test probe reads too. The

@@ -1,6 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Adapter } from "../adapter";
 import type { AuthHook } from "./auth-hook";
+import { loadGoogleHeat } from "./heat-loading";
 import { type GoogleLibraries, loadLibraries } from "./libraries";
 import type { MapInUse, MapSource } from "./map-source";
 import type { GoogleMapState } from "./map-state";
@@ -61,13 +62,14 @@ export function createMapLifecycle({
 
   return {
     async mount(context) {
-      const [libraries, markerLayer] = await Promise.all([
+      const [libraries, markerLayer, heat] = await Promise.all([
         loadLibraries(),
         loadMarkerLayer(context.cluster),
+        loadGoogleHeat(context.heatmap),
       ]);
       if (destroyed || context.signal.aborted) return;
       const inUse = openUnlessRefused(context.container, libraries);
-      open = mountMap({ inUse, libraries, context, markerLayer });
+      open = mountMap({ inUse, libraries, context, markerLayer, heat });
       const { mounted } = open;
       state.mounted = mounted;
       mounted.onDestroy(keyRefusal.listen(keyRefused));

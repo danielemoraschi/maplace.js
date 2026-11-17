@@ -4,6 +4,7 @@ import { createMapFailureNotice, PAGE_MAP_FAILURES } from "../adapter-kit/map-fa
 import { createCamera } from "./camera";
 import { createControls } from "./controls";
 import { createDrawing } from "./drawing";
+import { createHeatPart } from "./heat-part";
 import { mapClicks } from "./map-clicks";
 import { mapInitialised } from "./map-initialised";
 import { mapSourceFor } from "./map-source";
@@ -23,7 +24,14 @@ import { viewportReports } from "./viewport-reports";
  * What the adapter draws beyond the contract's core. A capability is declared only once the
  * adapter draws it: declaring one it can't draw would fail silently instead of being refused.
  */
-const CAPABILITIES: readonly Capability[] = ["circle", "edit", "route", "cluster", "multipolygon"];
+const CAPABILITIES: readonly Capability[] = [
+  "circle",
+  "edit",
+  "route",
+  "cluster",
+  "multipolygon",
+  "heatmap",
+];
 
 /**
  * One Google adapter from its parts, drawing into `state`, which its test probe reads too. The
@@ -43,6 +51,7 @@ export function assembleGoogleAdapter(
   const camera = createCamera(state, drawing);
   const routing = createRouting(state, drawing);
   const controls = createControls(options.colorScheme);
+  const heat = createHeatPart(state);
   const parts = [
     mapClicks,
     viewportReports,
@@ -52,6 +61,7 @@ export function assembleGoogleAdapter(
     routing.part,
     controls.part,
     originDot.part,
+    heat.part,
   ];
   const failures = options.map ? PAGE_MAP_FAILURES : createMapFailureNotice();
   const lifecycle = createMapLifecycle({
@@ -61,7 +71,7 @@ export function assembleGoogleAdapter(
     verdict: mapInitialised,
     keyRefusal: pageAuthHook(),
   });
-  const followers = [camera, popup, routing];
+  const followers = [camera, popup, routing, heat];
   const afterDrawing = () => {
     for (const follower of followers) follower.sync();
   };
@@ -74,6 +84,7 @@ export function assembleGoogleAdapter(
       present(next);
       popup.sync();
       originDot.sync();
+      heat.present();
     },
     setView: camera.setView,
     setRoute: routing.setRoute,

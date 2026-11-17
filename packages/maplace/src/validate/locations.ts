@@ -1,11 +1,14 @@
 import type { Location } from "../location";
+import type { HeatmapOptions } from "../options";
 import { child, mustBe, reject, root } from "./fail";
+import { checkHeatMarker } from "./heat-marker";
 import { locationRoot, validateLocation } from "./location";
 
 /** The method being called, for messages, and the store's `sanitize` option. */
 export interface LocationsContext {
   readonly caller: string;
   readonly sanitize: unknown;
+  readonly heatmap?: HeatmapOptions | undefined;
   /** Locations validated before (the store's own): only their ids are checked again, for duplicates. */
   readonly isKnown?: ((value: unknown) => boolean) | undefined;
 }
@@ -22,6 +25,7 @@ export function validateLocations(
   for (const [index, location] of value.entries()) {
     if (context.isKnown?.(location) !== true) {
       validateLocation(location, { index, sanitize: context.sanitize });
+      checkHeatMarker(location, context.heatmap, locationRoot(location.id));
     }
     checkUnique(location.id, index, firstIndexById);
   }

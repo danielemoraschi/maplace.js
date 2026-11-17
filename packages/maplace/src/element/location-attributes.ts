@@ -1,6 +1,6 @@
 import type { StyleField } from "../drawable";
 import type { Location } from "../index";
-import { booleanOrRaw, jsonOrRaw, numberOrRaw } from "./attribute-values";
+import { booleanOrRaw, jsonOrRaw, numberOrRaw, wordsOf } from "./attribute-values";
 import type { LocationTemplates } from "./location-templates";
 
 /**
@@ -26,6 +26,7 @@ export const LOCATION_ATTRIBUTES = [
   "radius",
   "icon",
   "zoom",
+  "weight",
   "listed",
   "editable",
   ...Object.values(STYLE_ATTRIBUTES),
@@ -57,6 +58,7 @@ export function locationFromAttributes(
     tags: tagsFrom(element),
     searchText: element.getAttribute("search-text") ?? undefined,
     zoom: numberOrRaw(element, "zoom"),
+    weight: numberOrRaw(element, "weight"),
     listed: booleanOrRaw(element, "listed"),
     editable: booleanOrRaw(element, "editable"),
     content,
@@ -68,7 +70,8 @@ export function locationFromAttributes(
 
 /** The `tags` attribute's words, as `class` holds its: a tag there can't hold a space. */
 function tagsFrom(element: Element): string[] | undefined {
-  return element.getAttribute("tags")?.split(/\s+/).filter(Boolean);
+  const tags = element.getAttribute("tags");
+  return tags === null ? undefined : wordsOf(tags);
 }
 
 function stylesFromAttributes(element: Element): Record<string, unknown> {

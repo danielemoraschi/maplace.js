@@ -1,7 +1,6 @@
 import type { Adapter } from "../adapter";
 import { largestPolygon } from "../anchor";
-import { isMarker } from "../diff/geometry";
-import type { Location } from "../location";
+import { isMarkerLocation, type Location } from "../location";
 import { locationById } from "../location-index";
 import { type FilteredLocations, isShown } from "../location-state";
 import { runSafely } from "../state/safely";
@@ -81,7 +80,7 @@ function locationShown(view: LocationView, { locations }: FilteredLocations): Re
   const location = locationById(locations, view.id);
   if (view.zoom !== undefined || location === undefined) return view;
   if (location.zoom !== undefined) return locationView(view.id, location.zoom);
-  return isMarker(location) ? view : locationFitted(view, location);
+  return isMarkerLocation(location) ? view : locationFitted(view, location);
 }
 
 /**

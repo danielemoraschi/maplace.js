@@ -6,7 +6,7 @@ import type { Route, RouteResult } from "./route";
 import type { ResolvedView, Viewport } from "./viewport";
 
 /** Features that differ between providers. Asking for a missing one is misuse and throws. */
-export type Capability = "route" | "cluster" | "circle" | "edit" | "multipolygon";
+export type Capability = "route" | "cluster" | "circle" | "edit" | "multipolygon" | "heatmap";
 
 /** Where an on-map control sits, in provider-neutral terms. */
 export type ControlPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -90,6 +90,11 @@ export interface AdapterHost {
   reportError(error: MaplaceError, route?: Route): void;
 }
 
+/** A heatmap as the store resolved it: where it gives way to markers. */
+export interface ResolvedHeatmap {
+  readonly maxZoom: number;
+}
+
 /** Everything `mount` needs, as one object. */
 export interface MountContext {
   readonly container: HTMLElement;
@@ -98,6 +103,8 @@ export interface MountContext {
   readonly signal: AbortSignal;
   /** Fixed for the life of the map, unlike `PresentationState`. */
   readonly cluster: boolean;
+  /** The markers drawn as a heatmap when zoomed out, fixed as `cluster` is; none when undefined. */
+  readonly heatmap: ResolvedHeatmap | undefined;
   readonly popup: ResolvedPopupOptions;
 }
 

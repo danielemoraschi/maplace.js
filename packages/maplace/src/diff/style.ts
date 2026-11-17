@@ -1,8 +1,7 @@
 import type { StyleField } from "../drawable";
-import type { Location } from "../location";
+import { isMarkerLocation, type Location } from "../location";
 import type { MaplaceOptions } from "../options";
 import type { LineStyle, ShapeStyle } from "../style";
-import { isMarker } from "./geometry";
 
 /** The store's default for each of a drawable's styles. */
 export type DrawStyles = { readonly [Field in StyleField]: MaplaceOptions[Field] };
@@ -24,7 +23,7 @@ export function styleOf(
   field: StyleField,
   defaultStyle: ShapeStyle | undefined,
 ): ShapeStyle | undefined {
-  if (isMarker(location)) return undefined;
+  if (isMarkerLocation(location)) return undefined;
   const ownStyle = location[field];
   if (ownStyle === undefined && defaultStyle === undefined) return undefined;
   const style = { ...definedFields(defaultStyle), ...definedFields(ownStyle) };

@@ -45,6 +45,7 @@ export const LOCATION_FIELDS = {
     lat: true,
     lng: true,
     icon: true,
+    weight: true,
   }),
   circle: everyName<Exclude<keyof CircleLocation, CommonField>>({
     center: true,
@@ -95,6 +96,7 @@ export const STORE_NAMES = {
     selectedStyle: true,
     hoveredStyle: true,
     cluster: true,
+    heatmap: true,
     view: true,
     skipMapLabel: true,
     selectedLabel: true,
