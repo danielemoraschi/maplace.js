@@ -1,7 +1,6 @@
-import { pageSources } from "../../apps/site/src/site/page-sources.ts";
-import { SITE_ROUTES } from "../../apps/site/src/site/site-routes.ts";
 import { outputLines } from "../build/git.ts";
-import { PACKAGE_DIR } from "../build/package.ts";
+import { EXAMPLES_DIR, PACKAGE_DIR, SRC } from "../build/package.ts";
+import { CHANGELOG_FILE } from "../docs/changelog-lines.ts";
 import { type Gh, verifiedOnMain } from "./ci-verified.ts";
 import { ReleaseRefused } from "./release-refused.ts";
 import { TAG_PREFIX, tagOf } from "./tags.ts";
@@ -10,31 +9,30 @@ import { compareVersions, isPrerelease, tryParseVersion, type Version } from "./
 /** Git in the checkout a deploy runs from, with fixed arguments: its output; throws on a failure. */
 export type Git = (args: readonly string[]) => string;
 
-/** What production deploys (R9, R10): a commit, the release it holds to, and what holds it back. */
+/** What production deploys (R9, R10, R12): a commit, its release, and what holds it back. */
 export interface DeployTarget {
   /** The newest stable release's tag, `v<version>`, on `main`. */
   readonly tag: string;
   readonly commit: string;
   /** The release tag's own commit: its gates are the release's, so CI's need not be asked. */
   readonly isRelease: boolean;
-  /** The first commit since the release that changed what a reader of the library sees. */
+  /** The first commit since the release that changed what only a release may change. */
   readonly heldBackBy?: string;
 }
 
-/** The site's own files: whatever a page shows from them goes live with any deploy. */
-const SITE_DIR = "apps/site/";
-
 /**
- * What a reader of the library sees on the site: the package (the site imports it, its examples
- * and their guides), and every repo file a page shows outside the site's own and the package
- * (`pageSources`: the README, the reference pages, MIGRATION, the CHANGELOG).
+ * What only a release may change on `main`, as git pathspecs: what it builds and numbers (the
+ * package, but its examples, their runners and its tests, which npm never gets and which can use
+ * only the released API there) and the CHANGELOG, whose unreleased lines would show on the site.
  */
-export function readerFacingPaths(): string[] {
-  const shown = SITE_ROUTES.flatMap((route) => pageSources(route)).filter(
-    (file) => !file.startsWith(SITE_DIR) && !file.startsWith(`${PACKAGE_DIR}/`),
-  );
-  return [...new Set([PACKAGE_DIR, ...shown])].sort((a, b) => a.localeCompare(b));
-}
+const RELEASE_ONLY_PATHSPECS = [
+  PACKAGE_DIR,
+  `:(exclude)${EXAMPLES_DIR}`,
+  `:(exclude)${SRC}/testing/examples`,
+  `:(exclude,glob)${SRC}/**/*.test.*`,
+  `:(exclude,glob)${SRC}/**/*.test-d.*`,
+  CHANGELOG_FILE,
+];
 
 /**
  * What production deploys from `main` of `repo`: `deployTarget`'s commit, refused unless it is the
@@ -51,9 +49,9 @@ export function verifiedDeployTarget(git: Git, gh: Gh, repo: string, main: strin
 }
 
 /**
- * Against the newest stable release on `main`: the newest commit on `main` whose reader-facing
- * files are still the release's, `main` itself when only the site changed since, else the commit
- * before the first that changed them, so a deploy never goes back past what an earlier one put live.
+ * Against the newest stable release on `main`: the newest commit on `main` whose release-only
+ * files are still the release's, `main` itself when none changed since, else the commit before
+ * the first that changed them, so a deploy never goes back past what an earlier one put live.
  */
 export function deployTarget(git: Git, main: string): DeployTarget {
   const tag = newestStableTag(git, main);
@@ -63,7 +61,7 @@ export function deployTarget(git: Git, main: string): DeployTarget {
     "--first-parent",
     `${tag}..${main}`,
     "--",
-    ...readerFacingPaths(),
+    ...RELEASE_ONLY_PATHSPECS,
   ]);
   const [heldBackBy] = outputLines(changes);
   const commit = commitOf(git, heldBackBy === undefined ? main : `${heldBackBy}^`);

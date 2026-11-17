@@ -1,11 +1,10 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
-import { REPO_DOCS } from "../../apps/site/src/site/repo-docs.ts";
 import { PACKAGE_DIR } from "../build/package.ts";
 import { commitAll, newTestRepo, testGit } from "../build/test-repo.ts";
 import { CHANGELOG_FILE } from "../docs/changelog-lines.ts";
-import { deployTarget, readerFacingPaths, verifiedDeployTarget } from "./deploy-target.ts";
+import { deployTarget, verifiedDeployTarget } from "./deploy-target.ts";
 import { fakeGh } from "./fake-gh.ts";
 
 /** A repo of its own per test: a release `v1.0.0` on `main`, then what each test commits. */
@@ -14,12 +13,14 @@ const git = (args: readonly string[]) => testGit(repo, ...args);
 const commitOf = (revision: string) => git(["rev-parse", revision]).trim();
 const tag = (name: string) => git(["tag", "--annotate", name, "--message", name]);
 
-/** Commits a change to `file` on the branch checked out, returning the commit. */
-function commitChange(file: string): string {
-  const path = join(repo, file);
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, `${file} at ${Date.now()} ${Math.random()}\n`);
-  commitAll(repo, `change ${file}`);
+/** Commits a change to each of `files` on the branch checked out, in one commit, returning it. */
+function commitChange(...files: string[]): string {
+  for (const file of files) {
+    const path = join(repo, file);
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, `${file} at ${Date.now()} ${Math.random()}\n`);
+  }
+  commitAll(repo, `change ${files.join(", ")}`);
   return commitOf("HEAD");
 }
 
@@ -45,16 +46,40 @@ describe("deployTarget", () => {
     expect(deployTarget(git, "main")).toEqual({ tag: "v1.0.0", commit: head, isRelease: false });
   });
 
-  it("stops before the first change a reader of the library sees, holding later site changes back", () => {
+  it("deploys main's head when only examples, the package's tests and docs changed since the release", () => {
+    commitChange(
+      `${PACKAGE_DIR}/examples/whats-on/page.html`,
+      `${PACKAGE_DIR}/examples/nearest/guide.md`,
+      `${PACKAGE_DIR}/src/testing/examples/behaviours/nearest.ts`,
+      `${PACKAGE_DIR}/src/examples.browser.test.ts`,
+      `${PACKAGE_DIR}/src/element/list.test.tsx`,
+      `${PACKAGE_DIR}/src/__typetests__/location.test-d.ts`,
+      "docs/reference/api.md",
+      "README.md",
+      "MIGRATION.md",
+    );
+    const head = commitChange("apps/site/public/robots.txt");
+    expect(deployTarget(git, "main")).toEqual({ tag: "v1.0.0", commit: head, isRelease: false });
+  });
+
+  it("stops before the first change a release ships, holding later site changes back", () => {
     const site = commitChange("apps/site/src/pages/builder.astro");
-    const docs = commitChange("docs/reference/api.md");
+    const manifest = commitChange(`${PACKAGE_DIR}/package.json`);
     commitChange("apps/site/public/robots.txt");
     expect(deployTarget(git, "main")).toEqual({
       tag: "v1.0.0",
       commit: site,
       isRelease: false,
-      heldBackBy: docs,
+      heldBackBy: manifest,
     });
+  });
+
+  it("holds a commit that changes an example together with the package source", () => {
+    const both = commitChange(
+      `${PACKAGE_DIR}/examples/whats-on/page.html`,
+      `${PACKAGE_DIR}/src/store.ts`,
+    );
+    expect(deployTarget(git, "main")).toMatchObject({ heldBackBy: both });
   });
 
   it("deploys the release itself when the library changed right after it", () => {
@@ -68,8 +93,12 @@ describe("deployTarget", () => {
     });
   });
 
-  it("counts the CHANGELOG, MIGRATION and the README as the library's", () => {
-    for (const file of [CHANGELOG_FILE, "MIGRATION.md", "README.md"]) {
+  it("counts the CHANGELOG, the build config and the published test kit as the release's", () => {
+    for (const file of [
+      CHANGELOG_FILE,
+      `${PACKAGE_DIR}/tsconfig.build.json`,
+      `${PACKAGE_DIR}/src/testing/index.ts`,
+    ]) {
       const before = commitOf("HEAD");
       const change = commitChange(file);
       expect(deployTarget(git, "main"), file).toMatchObject({ heldBackBy: change });
@@ -121,16 +150,5 @@ describe("verifiedDeployTarget", () => {
     expect(() => verifiedDeployTarget(git, gh, "owner/repo", "main")).toThrow(
       `CI's verify hasn't passed on ${head}`,
     );
-  });
-});
-
-describe("readerFacingPaths", () => {
-  it("are the package and every repo document the site renders, none of the site's own", () => {
-    const paths = readerFacingPaths();
-    expect(paths).toContain(PACKAGE_DIR);
-    expect(paths.filter((path) => path.startsWith(`${PACKAGE_DIR}/`))).toEqual([]);
-    expect(paths).toEqual(expect.arrayContaining(REPO_DOCS.map(({ file }) => file)));
-    expect(paths).toContain(CHANGELOG_FILE);
-    expect(paths.filter((path) => path.startsWith("apps/site/"))).toEqual([]);
   });
 });

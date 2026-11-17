@@ -7,6 +7,8 @@ export const ROOT = resolve(import.meta.dirname, "../..");
 
 export const PACKAGE_DIR = "packages/maplace";
 export const SRC = `${PACKAGE_DIR}/src`;
+/** The examples, from the repo root: never published. */
+export const EXAMPLES_DIR = `${PACKAGE_DIR}/examples`;
 export const DIST = `${PACKAGE_DIR}/dist`;
 /** The package as npm packs it (`stage-package.ts`): what T4 checks and P2 publishes. */
 export const PACKED = `${PACKAGE_DIR}/packed`;

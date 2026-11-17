@@ -1,5 +1,5 @@
-// What production deploys (R9, R10), for deploy.yml, run from main's checkout before anything is
-// checked out or installed:
+// What production deploys (R9, R10, R12), for deploy.yml, run from main's checkout before anything
+// is checked out or installed:
 //   node scripts/deploy-target.ts
 // RELEASE_TAG= and DEPLOY_COMMIT= lines on stdout, for $GITHUB_ENV; why on stderr. Refused, exit 1,
 // with no release on main, or for a commit that isn't the release's own when CI's verify hasn't
@@ -20,11 +20,13 @@ try {
   const { tag, commit, isRelease, heldBackBy } = verifiedDeployTarget(git, gh, repo, "origin/main");
   if (heldBackBy !== undefined) {
     console.error(
-      `${heldBackBy} changes the library since ${tag}: site changes after it wait for a release`,
+      `${heldBackBy} changes the library since ${tag}: site, example and doc changes after it wait for a release`,
     );
   }
   console.error(
-    isRelease ? `deploying ${tag}` : `deploying ${commit}: main's site changes since ${tag}`,
+    isRelease
+      ? `deploying ${tag}`
+      : `deploying ${commit}: main's site, example and doc changes since ${tag}`,
   );
   console.log(`RELEASE_TAG=${tag}`);
   console.log(`DEPLOY_COMMIT=${commit}`);

@@ -1,10 +1,11 @@
 # The site to production, maplacejs.com (R4): run by hand from the Actions tab on main, and by release.yml after each
-# stable release's announce. It deploys main's newest commit whose library, what a reader of it sees, is still the
-# newest stable release's (R10): main's head when only the site changed since, so a site change goes live without a
-# release; never main's unreleased library work (R9), so the site pins the version npm has. A commit that isn't the
-# release's own needs CI's verify to have passed on it on main. Refused for a pre-release, which the site doesn't pin
-# apart, and for a version not on npm, whose scripts would 404 (W46). Called by a release, main may have moved
-# during publish and announce: its site changes since then go live with the release, once CI passed on them.
+# stable release's announce. It deploys main's newest commit whose release-only files (the package but its examples
+# and tests, and the CHANGELOG) are still the newest stable release's (R10, R12): main's head when none changed
+# since, so a site, example or doc change goes live without a release; never main's unreleased library work (R9),
+# so the site pins the version npm has. A commit that isn't the release's own needs CI's verify to have passed on it
+# on main. Refused for a pre-release, which the site doesn't pin apart, and for a version not on npm, whose scripts
+# would 404 (W46). Called by a release, main may have moved during publish and announce: its site, example and doc
+# changes since then go live with the release, once CI passed on them.
 # Re-running an old run deploys what the rule picks now. Then every page is checked for requests to another origin
 # (W10c), which only the edge can add. The preview, main's, is ci.yml's deploy-preview, built the same way
 # (scripts/site-workflows.test.ts). maplacejs.com is attached to the Worker in Cloudflare's dashboard, not in
@@ -46,10 +47,10 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
-      # What to deploy (R9, R10, scripts/deploy-target.ts): the newest stable release on main (tags aren't protected:
-      # refused unless it is on main, and unless it is its manifest's version in the guard below), and main's newest
-      # commit whose reader-facing files are still the release's, refused unless it is the release's own or CI's
-      # verify passed on it on main.
+      # What to deploy (R9, R10, R12, scripts/deploy-target.ts): the newest stable release on main (tags aren't
+      # protected: refused unless it is on main, and unless it is its manifest's version in the guard below), and
+      # main's newest commit whose release-only files are still the release's, refused unless it is the release's
+      # own or CI's verify passed on it on main.
       - name: What to deploy
         env:
           GH_TOKEN: ${{ github.token }}

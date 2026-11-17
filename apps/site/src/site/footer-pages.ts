@@ -17,7 +17,7 @@ export const CHANGELOG_PAGE: SitePage = {
   route: "/changelog/",
   label: "Changelog",
   description:
-    "Every change to Maplace.js a reader would notice, newest first, with the issue it closed if any.",
+    "Every change to the Maplace.js library that a reader would notice, newest first, with the issue it closed if any.",
 };
 
 export const AGENTS_PAGE: SitePage = {

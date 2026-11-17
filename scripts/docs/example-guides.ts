@@ -1,11 +1,9 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { PACKAGE_DIR, ROOT } from "../build/package.ts";
+import { EXAMPLES_DIR, ROOT } from "../build/package.ts";
 
 /** The file beside an example's versions that says how it works; the site shows it. */
 export const EXAMPLE_GUIDE_FILE = "guide.md";
-
-const EXAMPLES_DIR = `${PACKAGE_DIR}/examples`;
 
 /** An example's guide: the example's folder name and the guide's path in the repo. */
 export interface ExampleGuideFile {
