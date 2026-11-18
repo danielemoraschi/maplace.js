@@ -133,6 +133,8 @@ function featureDiff(before: LocationFeature, after: LocationFeature): GeoJSONFe
 export interface FeatureSets {
   readonly pins: FeatureSet;
   readonly shapes: FeatureSet;
+  /** The store's route, while one is drawn. */
+  readonly route: FeatureSet;
 }
 
 /** Sends every set's changes; resolves once MapLibre has them, none when nothing was sent. */
@@ -150,8 +152,8 @@ export function resendReplaced(features: FeatureSets): Promise<void> | undefined
   return settledAll(eachSet(features).map((set) => set.resendIfReplaced()));
 }
 
-function eachSet({ pins, shapes }: FeatureSets): FeatureSet[] {
-  return [pins, shapes];
+function eachSet({ pins, shapes, route }: FeatureSets): FeatureSet[] {
+  return [pins, shapes, route];
 }
 
 function settledAll(sending: readonly (Promise<void> | undefined)[]): Promise<void> | undefined {

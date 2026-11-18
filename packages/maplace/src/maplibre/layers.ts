@@ -1,9 +1,5 @@
-import type {
-  DataDrivenPropertyValueSpecification,
-  FilterSpecification,
-  LayerSpecification,
-  Map as MapLibreMap,
-} from "maplibre-gl";
+import type { FilterSpecification, LayerSpecification, Map as MapLibreMap } from "maplibre-gl";
+import { linePaint, ROUTE_DEFAULTS, styled } from "./line-paint";
 import { addPinImage, PIN_IMAGE } from "./pin-image";
 import { whenStyleLoaded } from "./style-load";
 
@@ -12,13 +8,21 @@ export const PIN_SOURCE = "maplace-pins";
 /** Where polylines, polygons and multipolygons are. */
 export const SHAPE_SOURCE = "maplace-shapes";
 
+/** Where the store's route is drawn, under every location. */
+export const ROUTE_SOURCE = "maplace-route";
+
+/** Where the store's locations are drawn, which an `apply` waits for MapLibre to load. */
+export const LOCATION_SOURCES = [PIN_SOURCE, SHAPE_SOURCE] as const;
+
 /** maplace's own sources: what the store asked to draw. */
-export const OWN_SOURCES = [PIN_SOURCE, SHAPE_SOURCE] as const;
+export const OWN_SOURCES = [...LOCATION_SOURCES, ROUTE_SOURCE] as const;
 
 const PIN_LAYER = "maplace-pins";
 const LINE_LAYER = "maplace-lines";
 const OUTLINE_LAYER = "maplace-outlines";
 const FILL_LAYER = "maplace-fills";
+/** The route's line: below every location, and no pointer finds it, so a click on it is the map's. */
+const ROUTE_LAYER = "maplace-route";
 
 /** maplace's layers, front first: pins over lines, lines over areas' outlines over their fills. */
 export const LOCATION_LAYERS = [PIN_LAYER, LINE_LAYER, OUTLINE_LAYER, FILL_LAYER] as const;
@@ -37,24 +41,8 @@ const PINNED = ["any", ["!", HEATED], ["==", ["get", "front"], true]] as const;
 export const isOwnSource = (sourceId: string) =>
   (OWN_SOURCES as readonly string[]).includes(sourceId);
 
-/**
- * A shape's look when its style leaves a field unset, as Google draws one: a black line 3 pixels
- * wide, over a black fill at 30%.
- */
-export const SHAPE_DEFAULTS = {
-  stroke: "#000000",
-  strokeOpacity: 1,
-  strokeWidth: 3,
-  fill: "#000000",
-  fillOpacity: 0.3,
-} as const;
-
-/** A style field from the feature's properties, or its default. */
-function styled<T extends string | number>(
-  field: keyof typeof SHAPE_DEFAULTS,
-): DataDrivenPropertyValueSpecification<T> {
-  return ["coalesce", ["get", field], SHAPE_DEFAULTS[field]] as never;
-}
+export const isLocationSource = (sourceId: string) =>
+  (LOCATION_SOURCES as readonly string[]).includes(sourceId);
 
 const RANK = ["get", "rank"] as const;
 /** An outline's place among outlines: a hovered or selected shape's over its neighbours'. */
@@ -62,14 +50,17 @@ const STROKE_RANK = ["get", "strokeRank"] as const;
 const POLYGONS = ["in", ["geometry-type"], ["literal", ["Polygon", "MultiPolygon"]]] as const;
 const LINES = ["==", ["geometry-type"], "LineString"] as const;
 
-const LINE_PAINT = {
-  "line-color": styled<string>("stroke"),
-  "line-opacity": styled<number>("strokeOpacity"),
-  "line-width": styled<number>("strokeWidth"),
-};
+const LINE_PAINT = linePaint();
 
 /** The layers, back first, as they are added on top of the page's style. */
 const LAYERS: readonly LayerSpecification[] = [
+  {
+    id: ROUTE_LAYER,
+    type: "line",
+    source: ROUTE_SOURCE,
+    layout: { "line-join": "round", "line-cap": "round" },
+    paint: linePaint(ROUTE_DEFAULTS),
+  },
   {
     id: FILL_LAYER,
     type: "fill",
@@ -137,7 +128,7 @@ export function removeLayers(map: MapLibreMap): void {
 }
 
 function takeOffLayers(map: MapLibreMap): void {
-  for (const id of [...POINTED_LAYERS, HEAT_LAYER]) {
+  for (const id of [...POINTED_LAYERS, HEAT_LAYER, ROUTE_LAYER]) {
     if (map.getLayer(id) !== undefined) map.removeLayer(id);
   }
   for (const id of OWN_SOURCES) if (map.getSource(id) !== undefined) map.removeSource(id);

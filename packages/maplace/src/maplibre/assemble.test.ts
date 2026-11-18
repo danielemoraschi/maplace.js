@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Maplace } from "../index";
 import { createMaplace } from "../maplace/create";
+import { straightRoutes } from "../testing/straight-routes";
 import { createMapLibreAdapter } from "./create-adapter";
 
 // maplibre-gl never loads: these tests read what attach and setRoute decide at once.
@@ -25,7 +26,7 @@ function container(): HTMLElement {
 }
 
 describe("the assembled MapLibre adapter", () => {
-  it("declares circles, clustering, editing, heatmaps and multipolygons, and no routes: MapLibre has no routing", () => {
+  it("declares circles, clustering, editing, heatmaps and multipolygons, and no routes without the page's routing", () => {
     const adapter = createMapLibreAdapter();
     expect([...adapter.capabilities].sort()).toEqual([
       "circle",
@@ -35,6 +36,19 @@ describe("the assembled MapLibre adapter", () => {
       "multipolygon",
     ]);
     expect(adapter.routeStopLimit).toBeUndefined();
+  });
+
+  it("declares routes, with no stop limit, given the page's routing", () => {
+    const adapter = createMapLibreAdapter({ computeRoute: straightRoutes });
+    expect(adapter.capabilities.has("route")).toBe(true);
+    expect(adapter.routeStopLimit).toBeUndefined();
+  });
+
+  it("takes a store's route given the page's routing", () => {
+    store = createMaplace({ locations });
+    store.attach(createMapLibreAdapter({ computeRoute: straightRoutes }), container());
+    store.setRoute({ stops: ["a", "b"] });
+    expect(store.getSnapshot().route).toEqual({ stops: ["a", "b"] });
   });
 
   it("refuses a store's setRoute with unsupported-capability, leaving its route unset", () => {

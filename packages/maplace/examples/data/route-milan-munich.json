@@ -1,0 +1,765 @@
+{
+  "attribution": "Route by OSRM, roads © OpenStreetMap contributors (ODbL)",
+  "stops": ["milan", "zurich", "paris", "munich"],
+  "legs": [
+    {
+      "from": "milan",
+      "to": "paris",
+      "distanceMeters": 938053.4,
+      "durationSeconds": 38316.2,
+      "steps": [
+        {
+          "instruction": "Head out onto Via Guglielmo Marconi",
+          "distanceMeters": 98,
+          "durationSeconds": 37.2
+        },
+        {
+          "instruction": "Turn right onto Piazza Armando Diaz",
+          "distanceMeters": 16.7,
+          "durationSeconds": 7.9
+        },
+        {
+          "instruction": "Turn left onto Piazza Armando Diaz",
+          "distanceMeters": 79.2,
+          "durationSeconds": 13.7
+        },
+        {
+          "instruction": "Turn right onto Via Maurizio Gonzaga",
+          "distanceMeters": 114.7,
+          "durationSeconds": 17.2
+        },
+        {
+          "instruction": "Continue onto Piazza Giuseppe Missori",
+          "distanceMeters": 118.8,
+          "durationSeconds": 19.4
+        },
+        {
+          "instruction": "Continue onto Corso Italia",
+          "distanceMeters": 895.8,
+          "durationSeconds": 91.8
+        },
+        {
+          "instruction": "Turn right onto Piazzale di Porta Lodovica",
+          "distanceMeters": 60.9,
+          "durationSeconds": 5.5
+        },
+        {
+          "instruction": "Continue onto Viale Gian Galeazzo",
+          "distanceMeters": 341.6,
+          "durationSeconds": 32.8
+        },
+        {
+          "instruction": "Keep right onto Viale Gian Galeazzo",
+          "distanceMeters": 64.2,
+          "durationSeconds": 6.1
+        },
+        {
+          "instruction": "Continue onto Piazza Ventiquattro Maggio",
+          "distanceMeters": 172.9,
+          "durationSeconds": 17.6
+        },
+        {
+          "instruction": "Continue onto Viale Gabriele d'Annunzio",
+          "distanceMeters": 471.1,
+          "durationSeconds": 44.1
+        },
+        {
+          "instruction": "Continue onto Piazzale Antonio Cantore",
+          "distanceMeters": 162.4,
+          "durationSeconds": 16.6
+        },
+        {
+          "instruction": "Continue onto Viale Papiniano",
+          "distanceMeters": 850.7,
+          "durationSeconds": 86.8
+        },
+        {
+          "instruction": "Keep right onto Viale di Porta Vercellina",
+          "distanceMeters": 524.9,
+          "durationSeconds": 40.1
+        },
+        {
+          "instruction": "Continue onto Piazzale Francesco Baracca",
+          "distanceMeters": 168,
+          "durationSeconds": 23
+        },
+        {
+          "instruction": "At the roundabout, continue onto Via Alberto da Giussano",
+          "distanceMeters": 111.2,
+          "durationSeconds": 11.7
+        },
+        {
+          "instruction": "Leave the roundabout onto Via Alberto da Giussano",
+          "distanceMeters": 180.5,
+          "durationSeconds": 11.7
+        },
+        {
+          "instruction": "Continue onto Via Guido d'Arezzo",
+          "distanceMeters": 228,
+          "durationSeconds": 16.9
+        },
+        {
+          "instruction": "Continue onto Via del Burchiello",
+          "distanceMeters": 237.8,
+          "durationSeconds": 17.4
+        },
+        {
+          "instruction": "Continue onto Via Giotto",
+          "distanceMeters": 271.8,
+          "durationSeconds": 27.1
+        },
+        {
+          "instruction": "At the roundabout, continue onto Piazza Michelangelo Buonarroti",
+          "distanceMeters": 38.9,
+          "durationSeconds": 3.5
+        },
+        {
+          "instruction": "Leave the roundabout onto Piazza Michelangelo Buonarroti",
+          "distanceMeters": 41.7,
+          "durationSeconds": 5.8
+        },
+        {
+          "instruction": "Continue onto Via Michelangelo Buonarroti",
+          "distanceMeters": 247.6,
+          "durationSeconds": 22.5
+        },
+        {
+          "instruction": "Turn slight right onto Piazzale Giulio Cesare",
+          "distanceMeters": 47.1,
+          "durationSeconds": 12.6
+        },
+        {
+          "instruction": "Turn left onto Piazzale Giulio Cesare",
+          "distanceMeters": 169.5,
+          "durationSeconds": 19.3
+        },
+        {
+          "instruction": "Continue onto Viale Ezio",
+          "distanceMeters": 224.4,
+          "durationSeconds": 22.3
+        },
+        {
+          "instruction": "Keep right onto Viale Berengario",
+          "distanceMeters": 299.4,
+          "durationSeconds": 30.9
+        },
+        {
+          "instruction": "Continue onto Viale Eginardo",
+          "distanceMeters": 466.1,
+          "durationSeconds": 71.4
+        },
+        {
+          "instruction": "Continue onto Viale Lodovico Scarampo",
+          "distanceMeters": 533.8,
+          "durationSeconds": 50
+        },
+        {
+          "instruction": "Continue onto Viale Lodovico Scarampo",
+          "distanceMeters": 182.7,
+          "durationSeconds": 7.7
+        },
+        {
+          "instruction": "Continue onto Viale Alcide De Gasperi",
+          "distanceMeters": 1276.1,
+          "durationSeconds": 80
+        },
+        {
+          "instruction": "Continue onto Cavalcavia del Ghisallo",
+          "distanceMeters": 914.6,
+          "durationSeconds": 58.9
+        },
+        {
+          "instruction": "Continue onto Svincolo Autostradale Viale Certosa",
+          "distanceMeters": 1381,
+          "durationSeconds": 79.2
+        },
+        {
+          "instruction": "Continue onto Raccordo A8-Viale Certosa",
+          "distanceMeters": 1151.1,
+          "durationSeconds": 63.7
+        },
+        {
+          "instruction": "Continue onto Autostrada dei Laghi",
+          "distanceMeters": 9853.4,
+          "durationSeconds": 420.3
+        },
+        {
+          "instruction": "Take the exit onto Autostrada dei Laghi",
+          "distanceMeters": 1269.9,
+          "durationSeconds": 77.6
+        },
+        {
+          "instruction": "Merge right onto Autostrada dei Laghi",
+          "distanceMeters": 30520.4,
+          "durationSeconds": 1333
+        },
+        { "instruction": "Continue", "distanceMeters": 153382.5, "durationSeconds": 6496.6 },
+        { "instruction": "Take the exit", "distanceMeters": 611.4, "durationSeconds": 33.7 },
+        { "instruction": "Keep left", "distanceMeters": 353, "durationSeconds": 26.5 },
+        { "instruction": "Continue", "distanceMeters": 299.8, "durationSeconds": 23.6 },
+        {
+          "instruction": "At the roundabout, continue onto Umfahrungstunnel Flüelen",
+          "distanceMeters": 93.8,
+          "durationSeconds": 9.4
+        },
+        {
+          "instruction": "Continue onto Flüelertunnel",
+          "distanceMeters": 5410.5,
+          "durationSeconds": 316.7
+        },
+        { "instruction": "Continue", "distanceMeters": 2097.4, "durationSeconds": 189.1 },
+        {
+          "instruction": "At the roundabout, continue onto Axenstrasse",
+          "distanceMeters": 4203.9,
+          "durationSeconds": 317
+        },
+        { "instruction": "Continue", "distanceMeters": 34331.5, "durationSeconds": 1374.6 },
+        { "instruction": "Turn slight left", "distanceMeters": 17315, "durationSeconds": 696.3 },
+        { "instruction": "Keep right", "distanceMeters": 5510.5, "durationSeconds": 252.8 },
+        {
+          "instruction": "Keep left onto Zürich Süd",
+          "distanceMeters": 608.7,
+          "durationSeconds": 34.2
+        },
+        { "instruction": "Merge left", "distanceMeters": 2363.9, "durationSeconds": 152.1 },
+        {
+          "instruction": "Continue onto Manessestrasse",
+          "distanceMeters": 217.6,
+          "durationSeconds": 21.6
+        },
+        {
+          "instruction": "Keep right onto Manessestrasse",
+          "distanceMeters": 137.3,
+          "durationSeconds": 14.5
+        },
+        {
+          "instruction": "Turn left onto Stauffacherquai",
+          "distanceMeters": 592.5,
+          "durationSeconds": 59.4
+        },
+        {
+          "instruction": "Continue onto Kasernenstrasse",
+          "distanceMeters": 329.8,
+          "durationSeconds": 31.9
+        },
+        {
+          "instruction": "Turn right onto Kasernenstrasse",
+          "distanceMeters": 105.4,
+          "durationSeconds": 12
+        },
+        {
+          "instruction": "Turn right onto Gessnerbrücke",
+          "distanceMeters": 193.3,
+          "durationSeconds": 25.1
+        },
+        {
+          "instruction": "Continue onto Löwenstrasse",
+          "distanceMeters": 224.6,
+          "durationSeconds": 35.8
+        },
+        {
+          "instruction": "Continue onto Bahnhofplatz",
+          "distanceMeters": 239.5,
+          "durationSeconds": 29.7
+        },
+        {
+          "instruction": "Turn left onto Bahnhofquai",
+          "distanceMeters": 192.8,
+          "durationSeconds": 23.7
+        },
+        {
+          "instruction": "Turn left onto Museumstrasse",
+          "distanceMeters": 327.2,
+          "durationSeconds": 32.6
+        },
+        {
+          "instruction": "Turn right onto Sihlquai",
+          "distanceMeters": 1592.5,
+          "durationSeconds": 168.3
+        },
+        {
+          "instruction": "Keep right onto Sihlquai",
+          "distanceMeters": 231.3,
+          "durationSeconds": 35.5
+        },
+        {
+          "instruction": "Turn slight left onto Hardstrasse",
+          "distanceMeters": 62.2,
+          "durationSeconds": 12.2
+        },
+        {
+          "instruction": "Continue onto Hardturmstrasse",
+          "distanceMeters": 336.1,
+          "durationSeconds": 43.2
+        },
+        {
+          "instruction": "Continue onto Förrlibuckstrasse",
+          "distanceMeters": 360.9,
+          "durationSeconds": 41
+        },
+        {
+          "instruction": "Turn left onto Duttweilerstrasse",
+          "distanceMeters": 248.5,
+          "durationSeconds": 26.8
+        },
+        {
+          "instruction": "Turn right onto Pfingstweidstrasse",
+          "distanceMeters": 770.3,
+          "durationSeconds": 79.4
+        },
+        {
+          "instruction": "Continue onto Pfingstweidbrücke",
+          "distanceMeters": 365.9,
+          "durationSeconds": 27.2
+        },
+        { "instruction": "Keep left", "distanceMeters": 289.7, "durationSeconds": 21.9 },
+        { "instruction": "Keep right", "distanceMeters": 21503.4, "durationSeconds": 926.8 },
+        { "instruction": "Keep right", "distanceMeters": 104.8, "durationSeconds": 4.7 },
+        { "instruction": "Continue", "distanceMeters": 44027.9, "durationSeconds": 1757.2 },
+        { "instruction": "Keep left", "distanceMeters": 8437.6, "durationSeconds": 351 },
+        { "instruction": "Keep left", "distanceMeters": 4649.8, "durationSeconds": 254.6 },
+        { "instruction": "Keep right", "distanceMeters": 3703.9, "durationSeconds": 220.1 },
+        {
+          "instruction": "Continue onto Autoroute des Cigognes",
+          "distanceMeters": 198.5,
+          "durationSeconds": 45.9
+        },
+        { "instruction": "Turn right", "distanceMeters": 158.6, "durationSeconds": 38.7 },
+        {
+          "instruction": "Merge left onto Autoroute des Cigognes",
+          "distanceMeters": 25188.2,
+          "durationSeconds": 971.6
+        },
+        {
+          "instruction": "Keep left onto Autoroute des Cigognes",
+          "distanceMeters": 1753.4,
+          "durationSeconds": 124.5
+        },
+        {
+          "instruction": "Merge left onto La Comtoise",
+          "distanceMeters": 226814.3,
+          "durationSeconds": 8168.7
+        },
+        {
+          "instruction": "Merge left onto Autoroute de Lorraine-Bourgogne",
+          "distanceMeters": 2388.8,
+          "durationSeconds": 82.8
+        },
+        { "instruction": "Take the exit", "distanceMeters": 380.4, "durationSeconds": 13.2 },
+        { "instruction": "Continue", "distanceMeters": 1061.9, "durationSeconds": 44.7 },
+        {
+          "instruction": "Merge left onto Autoroute du Soleil",
+          "distanceMeters": 251726.4,
+          "durationSeconds": 8727.9
+        },
+        {
+          "instruction": "Keep left onto Autoroute du Soleil",
+          "distanceMeters": 26706.6,
+          "durationSeconds": 1019.2
+        },
+        {
+          "instruction": "Keep left onto Autoroute du Soleil",
+          "distanceMeters": 11057.8,
+          "durationSeconds": 452.6
+        },
+        {
+          "instruction": "Keep left onto Autoroute du Soleil",
+          "distanceMeters": 9203.4,
+          "durationSeconds": 399.3
+        },
+        { "instruction": "Take the exit", "distanceMeters": 383.3, "durationSeconds": 27.5 },
+        { "instruction": "Merge right", "distanceMeters": 3856.8, "durationSeconds": 248 },
+        {
+          "instruction": "Merge left onto Boulevard Périphérique Extérieur",
+          "distanceMeters": 2559.5,
+          "durationSeconds": 230.2
+        },
+        { "instruction": "Take the exit", "distanceMeters": 40.7, "durationSeconds": 3.7 },
+        { "instruction": "Keep left", "distanceMeters": 281.4, "durationSeconds": 33.8 },
+        { "instruction": "Turn left", "distanceMeters": 153.7, "durationSeconds": 13.8 },
+        {
+          "instruction": "Continue onto Rue Robert-Etlin",
+          "distanceMeters": 155.8,
+          "durationSeconds": 13.9
+        },
+        {
+          "instruction": "Continue onto Quai de Bercy",
+          "distanceMeters": 1494.2,
+          "durationSeconds": 134.4
+        },
+        {
+          "instruction": "Continue onto Quai de la Rapée",
+          "distanceMeters": 394.7,
+          "durationSeconds": 35.5
+        },
+        {
+          "instruction": "Keep left onto Quai de la Rapée",
+          "distanceMeters": 415.6,
+          "durationSeconds": 41.2
+        },
+        {
+          "instruction": "Turn left onto Quai de la Rapée",
+          "distanceMeters": 89,
+          "durationSeconds": 15.3
+        },
+        {
+          "instruction": "Keep right onto Quai de la Rapée",
+          "distanceMeters": 191.9,
+          "durationSeconds": 34.8
+        },
+        {
+          "instruction": "Continue onto Pont Morland",
+          "distanceMeters": 129.4,
+          "durationSeconds": 21.3
+        },
+        {
+          "instruction": "Continue onto Boulevard Morland",
+          "distanceMeters": 475.4,
+          "durationSeconds": 81.3
+        },
+        {
+          "instruction": "Continue onto Quai des Célestins",
+          "distanceMeters": 430.3,
+          "durationSeconds": 76.6
+        },
+        {
+          "instruction": "Continue onto Quai de l'Hôtel de Ville",
+          "distanceMeters": 426.8,
+          "durationSeconds": 68.2
+        },
+        {
+          "instruction": "Turn right onto Rue de Lobau",
+          "distanceMeters": 200.1,
+          "durationSeconds": 41.1
+        },
+        {
+          "instruction": "Turn left onto Rue de Rivoli",
+          "distanceMeters": 117.3,
+          "durationSeconds": 23.1
+        },
+        { "instruction": "Turn left", "distanceMeters": 5.3, "durationSeconds": 1.3 },
+        { "instruction": "Arrive", "distanceMeters": 0, "durationSeconds": 0 }
+      ]
+    },
+    {
+      "from": "paris",
+      "to": "munich",
+      "distanceMeters": 831768.7,
+      "durationSeconds": 31126.9,
+      "steps": [
+        { "instruction": "Head out", "distanceMeters": 5.3, "durationSeconds": 37.2 },
+        {
+          "instruction": "Turn left onto Rue de Rivoli",
+          "distanceMeters": 75,
+          "durationSeconds": 13.9
+        },
+        {
+          "instruction": "Turn left onto Rue de la Coutellerie",
+          "distanceMeters": 157.7,
+          "durationSeconds": 30.4
+        },
+        {
+          "instruction": "Turn left onto Rue Saint-Martin",
+          "distanceMeters": 69.9,
+          "durationSeconds": 17
+        },
+        {
+          "instruction": "Turn left onto Quai de Gesvres",
+          "distanceMeters": 147.2,
+          "durationSeconds": 26.1
+        },
+        {
+          "instruction": "Continue onto Quai de l'Hôtel de Ville",
+          "distanceMeters": 605.3,
+          "durationSeconds": 98.7
+        },
+        {
+          "instruction": "Continue onto Quai des Célestins",
+          "distanceMeters": 420.8,
+          "durationSeconds": 71.2
+        },
+        {
+          "instruction": "Continue onto Quai Henri IV",
+          "distanceMeters": 557.2,
+          "durationSeconds": 85.5
+        },
+        {
+          "instruction": "Continue onto Voie Mazas",
+          "distanceMeters": 293.4,
+          "durationSeconds": 26.5
+        },
+        {
+          "instruction": "Continue onto Quai de la Rapée",
+          "distanceMeters": 881,
+          "durationSeconds": 79.2
+        },
+        {
+          "instruction": "Continue onto Quai de Bercy",
+          "distanceMeters": 1493.4,
+          "durationSeconds": 134.7
+        },
+        { "instruction": "Take the ramp", "distanceMeters": 478.5, "durationSeconds": 43.2 },
+        { "instruction": "Continue", "distanceMeters": 7216.7, "durationSeconds": 422.3 },
+        {
+          "instruction": "Keep left onto Autoroute de l’Est",
+          "distanceMeters": 32320,
+          "durationSeconds": 1269.2
+        },
+        {
+          "instruction": "Keep left onto Autoroute de l’Est",
+          "distanceMeters": 24721.7,
+          "durationSeconds": 866.9
+        },
+        { "instruction": "Take the exit", "distanceMeters": 133.2, "durationSeconds": 6.7 },
+        {
+          "instruction": "Merge right onto Autoroute de l’Est",
+          "distanceMeters": 262058.2,
+          "durationSeconds": 9121.9
+        },
+        {
+          "instruction": "Keep left onto Autoroute de l’Est",
+          "distanceMeters": 42481.4,
+          "durationSeconds": 1518.8
+        },
+        {
+          "instruction": "Keep left onto Autoroute de l’Est",
+          "distanceMeters": 101749.3,
+          "durationSeconds": 3587.8
+        },
+        {
+          "instruction": "Keep right onto Autoroute de l’Est",
+          "distanceMeters": 950.8,
+          "durationSeconds": 47.3
+        },
+        { "instruction": "Take the exit", "distanceMeters": 1081.5, "durationSeconds": 97.3 },
+        { "instruction": "Continue", "distanceMeters": 32223.3, "durationSeconds": 1144 },
+        { "instruction": "Take the exit", "distanceMeters": 335.6, "durationSeconds": 28 },
+        { "instruction": "Continue", "distanceMeters": 833.7, "durationSeconds": 56.3 },
+        {
+          "instruction": "At the roundabout, continue",
+          "distanceMeters": 38.9,
+          "durationSeconds": 2.6
+        },
+        {
+          "instruction": "Leave the roundabout",
+          "distanceMeters": 2525.8,
+          "durationSeconds": 121.4
+        },
+        {
+          "instruction": "At the roundabout, continue",
+          "distanceMeters": 44.3,
+          "durationSeconds": 2.7
+        },
+        { "instruction": "Leave the roundabout", "distanceMeters": 1178, "durationSeconds": 106 },
+        { "instruction": "Continue", "distanceMeters": 6395.3, "durationSeconds": 372.6 },
+        { "instruction": "Take the exit", "distanceMeters": 391.4, "durationSeconds": 31.3 },
+        { "instruction": "Keep left", "distanceMeters": 559.5, "durationSeconds": 44.9 },
+        { "instruction": "Merge left", "distanceMeters": 28810.6, "durationSeconds": 948.5 },
+        { "instruction": "Take the exit", "distanceMeters": 67457.1, "durationSeconds": 2665.2 },
+        { "instruction": "Take the exit", "distanceMeters": 358.7, "durationSeconds": 11.5 },
+        { "instruction": "Keep left", "distanceMeters": 892.8, "durationSeconds": 38.8 },
+        { "instruction": "Keep right", "distanceMeters": 282.1, "durationSeconds": 9 },
+        { "instruction": "Keep left", "distanceMeters": 787.2, "durationSeconds": 25.3 },
+        { "instruction": "Keep left", "distanceMeters": 40582.2, "durationSeconds": 1518.1 },
+        { "instruction": "Continue", "distanceMeters": 150408.2, "durationSeconds": 4907.1 },
+        { "instruction": "Keep left", "distanceMeters": 7050.2, "durationSeconds": 270.9 },
+        {
+          "instruction": "Continue onto Verdistraße",
+          "distanceMeters": 2384.2,
+          "durationSeconds": 237.3
+        },
+        {
+          "instruction": "Continue onto Amalienburgstraße",
+          "distanceMeters": 602.5,
+          "durationSeconds": 56.4
+        },
+        {
+          "instruction": "Continue onto Menzinger Straße",
+          "distanceMeters": 1145.3,
+          "durationSeconds": 115.6
+        },
+        {
+          "instruction": "Turn left onto Wintrichring",
+          "distanceMeters": 742,
+          "durationSeconds": 61.9
+        },
+        {
+          "instruction": "Turn right onto Nederlinger Straße",
+          "distanceMeters": 486,
+          "durationSeconds": 46.1
+        },
+        {
+          "instruction": "Continue onto Baldurstraße",
+          "distanceMeters": 1246.9,
+          "durationSeconds": 119.5
+        },
+        {
+          "instruction": "Turn right onto Dachauer Straße",
+          "distanceMeters": 2812.3,
+          "durationSeconds": 248.9
+        },
+        {
+          "instruction": "Turn right onto Sandstraße",
+          "distanceMeters": 67.6,
+          "durationSeconds": 12.2
+        },
+        {
+          "instruction": "Turn left onto Sandstraße",
+          "distanceMeters": 70.6,
+          "durationSeconds": 13.6
+        },
+        {
+          "instruction": "Continue onto Gabelsbergerstraße",
+          "distanceMeters": 1185,
+          "durationSeconds": 116.7
+        },
+        {
+          "instruction": "Keep right onto Gabelsbergerstraße",
+          "distanceMeters": 124.7,
+          "durationSeconds": 13.2
+        },
+        {
+          "instruction": "Keep left onto Gabelsbergerstraße",
+          "distanceMeters": 42.1,
+          "durationSeconds": 5.7
+        },
+        {
+          "instruction": "Continue onto Oskar-von-Miller-Ring",
+          "distanceMeters": 156.3,
+          "durationSeconds": 14
+        },
+        {
+          "instruction": "Continue onto Altstadtringtunnel",
+          "distanceMeters": 483.4,
+          "durationSeconds": 43.5
+        },
+        {
+          "instruction": "Keep right onto Franz-Josef-Strauß-Ring",
+          "distanceMeters": 375.1,
+          "durationSeconds": 35.8
+        },
+        {
+          "instruction": "Continue onto Karl-Scharnagl-Ring",
+          "distanceMeters": 362.9,
+          "durationSeconds": 36.7
+        },
+        {
+          "instruction": "Continue onto Thomas-Wimmer-Ring",
+          "distanceMeters": 409.9,
+          "durationSeconds": 41.4
+        },
+        { "instruction": "Turn right onto Tal", "distanceMeters": 19.4, "durationSeconds": 2.4 },
+        { "instruction": "Arrive", "distanceMeters": 0, "durationSeconds": 0 }
+      ]
+    }
+  ],
+  "path": [
+    { "lat": 45.463581, "lng": 9.189984 },
+    { "lat": 45.575901, "lng": 9.011548 },
+    { "lat": 45.81344, "lng": 9.059865 },
+    { "lat": 45.85966, "lng": 8.972302 },
+    { "lat": 45.917935, "lng": 8.984712 },
+    { "lat": 45.99914, "lng": 8.915607 },
+    { "lat": 46.131223, "lng": 8.919082 },
+    { "lat": 46.157685, "lng": 8.989699 },
+    { "lat": 46.231698, "lng": 9.032689 },
+    { "lat": 46.349944, "lng": 8.96293 },
+    { "lat": 46.465845, "lng": 8.819961 },
+    { "lat": 46.528058, "lng": 8.59945 },
+    { "lat": 46.591215, "lng": 8.564918 },
+    { "lat": 46.782691, "lng": 8.669051 },
+    { "lat": 46.928745, "lng": 8.612192 },
+    { "lat": 47.026721, "lng": 8.629302 },
+    { "lat": 47.055367, "lng": 8.517074 },
+    { "lat": 47.155533, "lng": 8.433278 },
+    { "lat": 47.211696, "lng": 8.471146 },
+    { "lat": 47.28901, "lng": 8.424224 },
+    { "lat": 47.348017, "lng": 8.464569 },
+    { "lat": 47.344498, "lng": 8.519167 },
+    { "lat": 47.390532, "lng": 8.525087 },
+    { "lat": 47.459966, "lng": 8.302271 },
+    { "lat": 47.456705, "lng": 8.138927 },
+    { "lat": 47.541737, "lng": 7.980091 },
+    { "lat": 47.543163, "lng": 7.620322 },
+    { "lat": 47.621045, "lng": 7.511707 },
+    { "lat": 47.780273, "lng": 7.399633 },
+    { "lat": 47.71116, "lng": 7.047265 },
+    { "lat": 47.641675, "lng": 6.887168 },
+    { "lat": 47.515913, "lng": 6.850143 },
+    { "lat": 47.42356, "lng": 6.685979 },
+    { "lat": 47.407549, "lng": 6.451525 },
+    { "lat": 47.340332, "lng": 6.28949 },
+    { "lat": 47.336153, "lng": 6.1544 },
+    { "lat": 47.271969, "lng": 5.931373 },
+    { "lat": 47.199557, "lng": 5.821871 },
+    { "lat": 47.127438, "lng": 5.404342 },
+    { "lat": 47.034117, "lng": 5.191773 },
+    { "lat": 47.061085, "lng": 4.913778 },
+    { "lat": 47.034004, "lng": 4.86496 },
+    { "lat": 47.061173, "lng": 4.774164 },
+    { "lat": 47.18542, "lng": 4.677302 },
+    { "lat": 47.261901, "lng": 4.521737 },
+    { "lat": 47.329428, "lng": 4.481765 },
+    { "lat": 47.445418, "lng": 4.292891 },
+    { "lat": 47.512551, "lng": 3.995943 },
+    { "lat": 47.652859, "lng": 3.9014 },
+    { "lat": 47.721683, "lng": 3.755796 },
+    { "lat": 47.849665, "lng": 3.603095 },
+    { "lat": 47.930932, "lng": 3.25329 },
+    { "lat": 48.103708, "lng": 3.021991 },
+    { "lat": 48.324065, "lng": 2.608037 },
+    { "lat": 48.555576, "lng": 2.492024 },
+    { "lat": 48.704262, "lng": 2.306505 },
+    { "lat": 48.804815, "lng": 2.344578 },
+    { "lat": 48.827425, "lng": 2.392703 },
+    { "lat": 48.857243, "lng": 2.352316 },
+    { "lat": 48.817352, "lng": 2.415363 },
+    { "lat": 48.83561, "lng": 2.808139 },
+    { "lat": 49.031119, "lng": 3.173066 },
+    { "lat": 49.153616, "lng": 3.709464 },
+    { "lat": 49.206751, "lng": 3.773354 },
+    { "lat": 49.247842, "lng": 3.942634 },
+    { "lat": 49.166203, "lng": 4.184964 },
+    { "lat": 49.049604, "lng": 4.297599 },
+    { "lat": 49.026792, "lng": 4.510619 },
+    { "lat": 49.099385, "lng": 5.027662 },
+    { "lat": 49.110649, "lng": 5.56885 },
+    { "lat": 49.185528, "lng": 5.80617 },
+    { "lat": 49.204077, "lng": 5.951171 },
+    { "lat": 49.179148, "lng": 6.046024 },
+    { "lat": 49.207106, "lng": 6.129955 },
+    { "lat": 49.182738, "lng": 6.242921 },
+    { "lat": 49.126228, "lng": 6.275588 },
+    { "lat": 49.139189, "lng": 6.813387 },
+    { "lat": 49.079082, "lng": 6.884088 },
+    { "lat": 49.034388, "lng": 7.063671 },
+    { "lat": 48.811565, "lng": 7.160739 },
+    { "lat": 48.760456, "lng": 7.351707 },
+    { "lat": 48.769052, "lng": 7.642179 },
+    { "lat": 48.673099, "lng": 7.734341 },
+    { "lat": 48.719437, "lng": 7.879347 },
+    { "lat": 48.854242, "lng": 8.054072 },
+    { "lat": 48.79147, "lng": 8.161656 },
+    { "lat": 48.971885, "lng": 8.437574 },
+    { "lat": 48.909749, "lng": 8.629933 },
+    { "lat": 48.924051, "lng": 8.750483 },
+    { "lat": 48.848551, "lng": 8.804696 },
+    { "lat": 48.776835, "lng": 9.021983 },
+    { "lat": 48.729681, "lng": 9.053413 },
+    { "lat": 48.691921, "lng": 9.306323 },
+    { "lat": 48.631398, "lng": 9.453936 },
+    { "lat": 48.631964, "lng": 9.563853 },
+    { "lat": 48.58264, "lng": 9.664812 },
+    { "lat": 48.558952, "lng": 9.630228 },
+    { "lat": 48.533994, "lng": 9.656491 },
+    { "lat": 48.518658, "lng": 9.812498 },
+    { "lat": 48.456499, "lng": 9.950012 },
+    { "lat": 48.46467, "lng": 10.118893 },
+    { "lat": 48.399871, "lng": 10.543775 },
+    { "lat": 48.420005, "lng": 10.800551 },
+    { "lat": 48.395762, "lng": 11.058812 },
+    { "lat": 48.166276, "lng": 11.454086 },
+    { "lat": 48.169738, "lng": 11.53277 },
+    { "lat": 48.135193, "lng": 11.582126 }
+  ]
+}

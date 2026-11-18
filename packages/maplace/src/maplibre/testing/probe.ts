@@ -128,6 +128,7 @@ function createMapLibreProbe(state: MapLibreState, sources: ProbeSources): MapPr
     },
     async settle() {
       await clickHeld;
+      await state.routeSettling;
       await sources.watch()?.settled();
       // A popup's content is reported in a microtask after it shows.
       await wait(0);

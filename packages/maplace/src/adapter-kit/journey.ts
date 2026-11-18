@@ -1,3 +1,5 @@
+import { anchorOf } from "../anchor";
+import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
 import { type Avoidance, type Route, sameComputation, type TravelMode } from "../route";
 import { sameList, samePoint } from "./same-geometry";
@@ -19,6 +21,14 @@ export interface Journey {
 
 /** Where a stop is on the map, if it is there: its anchor, the point its popup points at. */
 export type StopPoint = (id: string) => LatLng | undefined;
+
+/** Where each location placed on a map is: its anchor, the point its popup points at. */
+export function anchorsOf(placed: ReadonlyMap<string, { drawable(): Drawable }>): StopPoint {
+  return (id) => {
+    const geometry = placed.get(id)?.drawable().geometry;
+    return geometry && anchorOf(geometry);
+  };
+}
 
 /** The journey through the stops where they are; undefined until every stop is on the map. */
 export function journeyOf(route: Route, pointOf: StopPoint): Journey | undefined {

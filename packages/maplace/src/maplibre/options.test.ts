@@ -100,6 +100,19 @@ describe("checkMapLibreOptions", () => {
     ),
   );
 
+  it("takes the page's routing", () => {
+    expect(() => checkMapLibreOptions({ computeRoute: async () => ({}) })).not.toThrow();
+  });
+
+  it(
+    "refuses a computeRoute that isn't a function, naming it",
+    refusal(
+      { computeRoute: "osrm" },
+      "options.computeRoute",
+      'options.computeRoute must be a function, got "osrm"',
+    ),
+  );
+
   it("takes `globe: true`, or a corner and a label", () => {
     expect(() => checkMapLibreOptions({ globe: true })).not.toThrow();
     const globe = { position: "bottom-left", label: "Earth" };

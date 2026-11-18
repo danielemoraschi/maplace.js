@@ -15,7 +15,8 @@ interface LayerRule {
 /** The data types, and pure helpers on them that every layer may share. */
 const DATA_MODULES = [
   "geometry style location location-state location-index longitude-arc drawn-path great-circle",
-  "anchor sphere group-path view-box options route viewport popup drawable errors events",
+  "anchor sphere group-path view-box options route route-request viewport popup drawable errors",
+  "events",
   "adopted-styles unstyled map-failure-words",
 ].flatMap((line) => line.split(" "));
 

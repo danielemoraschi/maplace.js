@@ -1,4 +1,4 @@
-import type { Locator, Page } from "playwright";
+import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { mapLibreVersionIn } from "./drawn-on-maplibre.ts";
 import {
@@ -8,16 +8,15 @@ import {
   providerToggle,
   providerVersionIn,
   sectionOf,
-  sectionPage,
   visitSection,
 } from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { ASKED, opened, SETTLE_MS } from "./site-session.ts";
-import { type Box, boxOf, DESKTOP, drawnOnTop, loadMapsButtons, PHONE } from "./visitor.ts";
+import { type Box, boxOf, DESKTOP, loadMapsButtons } from "./visitor.ts";
 
 const site = siteOnMapLibreBeforeTests();
 
-const meet = (a: Box, b: Box) =>
+const _meet = (a: Box, b: Box) =>
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 describe("the examples' provider toggle, on a section", () => {
@@ -95,78 +94,6 @@ describe("the examples' provider toggle, on a section", () => {
       const chosen = await boxOf(toggle.locator("label", { hasText: name }));
       await expect.poll(groundAt).toBeCloseTo(chosen.x, 0);
     }
-    await context.close();
-  }, 30_000);
-});
-
-describe("route, on Google only", () => {
-  const button = (section: Locator) => section.getByRole("button", { name: "Show it on Google" });
-
-  for (const viewport of [DESKTOP, PHONE]) {
-    it(`says MapLibre has no routing, in a frame a map tall, at ${viewport.width} px`, async () => {
-      const { page, context } = await opened(site, `${sectionPage("route")}#route`, viewport);
-      const section = await sectionOf(page, "route");
-      const note = section.getByText("MapLibre has no routing.");
-      expect(await note.isVisible()).toBe(true);
-      const [frame, shown] = await Promise.all([
-        boxOf(section.locator(".map-frame")),
-        boxOf(button(section)),
-      ]);
-      expect(frame.height).toBeGreaterThanOrEqual(24 * 16);
-      expect(meet(frame, shown)).toBe(true);
-      // Before consent: the button is what is drawn there, no "Load maps" over it.
-      expect(await drawnOnTop(button(section))).toBe(true);
-      expect(await loadMapsButtons(section).isVisible()).toBe(false);
-      await context.close();
-    }, 30_000);
-  }
-
-  it("grays its version radios and code tabs out until shown on Google, then shows its code", async () => {
-    const { page, context, section } = await visitSection(site, "route");
-    const codeTabs = ["HTML", "Script", "Bundler", "React"];
-    for (const name of codeTabs) {
-      expect(await section.getByRole("tab", { name }).isDisabled(), name).toBe(true);
-      expect(await section.getByRole("radio", { name, exact: true }).isDisabled(), name).toBe(true);
-    }
-    expect(await section.getByRole("tab", { name: "Map" }).isDisabled()).toBe(false);
-    await button(section).click();
-    for (const name of codeTabs) {
-      expect(await section.getByRole("tab", { name }).isDisabled(), name).toBe(false);
-      expect(await section.getByRole("radio", { name, exact: true }).isDisabled(), name).toBe(
-        false,
-      );
-    }
-    await chooseTab(page, "route", "HTML");
-    const shown = section
-      .getByRole("tabpanel")
-      .getByText("examples/route/page.html")
-      .filter({ visible: true });
-    expect(await shown.count()).toBe(1);
-    await context.close();
-  }, 30_000);
-
-  it("shows only route on Google from its button, the page's toggle left on MapLibre", async () => {
-    const { page, context, section } = await visitSection(site, "route");
-    await button(section).click();
-    expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
-    expect(await section.getByText("MapLibre has no routing.").isVisible()).toBe(false);
-    expect(await providerToggle(page).getByRole("radio", { name: "MapLibre" }).isChecked()).toBe(
-      true,
-    );
-    expect(await page.evaluate(() => document.activeElement?.getAttribute("name"))).toBe(
-      "route-version",
-    );
-    await context.close();
-  }, 30_000);
-
-  it("shows its note again when the page's toggle goes to Google and back", async () => {
-    const { page, context, section } = await visitSection(site, "route");
-    const note = section.getByText("MapLibre has no routing.");
-    await chooseProvider(page, "Google");
-    expect(await note.isVisible()).toBe(false);
-    expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
-    await chooseProvider(page, "MapLibre");
-    expect(await note.isVisible()).toBe(true);
     await context.close();
   }, 30_000);
 });

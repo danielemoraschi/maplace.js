@@ -7,7 +7,7 @@ import { createMapState } from "./fake/map-state";
 import { type MountedMap, mountMap } from "./fake/mounted-map";
 import { createFakeOriginDot } from "./fake/origin-dot";
 import { createProbe } from "./fake/probe";
-import { createRouting } from "./fake/route";
+import { createFakeRouting } from "./fake/route";
 import type { FakeAdapter, FakeAdapterOptions, FakeCall } from "./fake/types";
 import { MAP_SIZE } from "./map-probe";
 import { createRecorder } from "./recorder";
@@ -24,7 +24,7 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): FakeAdapter
   const map = createMapState();
   const sizeOf = options.sizeOf;
   const camera = createCamera(() => (context && sizeOf ? sizeOf(context.container) : MAP_SIZE));
-  const routing = createRouting();
+  const routing = createFakeRouting();
   let context: MountContext | undefined;
   let mountedMap: MountedMap | undefined;
   let destroyed = false;

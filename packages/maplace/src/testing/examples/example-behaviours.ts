@@ -63,8 +63,8 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
 };
 
 /**
- * Where a provider's version does otherwise: on MapLibre, live-data has no route, nor a button for
- * one; styled offers each provider's own looks.
+ * Where a provider's version does otherwise: on MapLibre, live-data has no route stored for its
+ * places, nor a button for one; styled offers each provider's own looks.
  */
 const ON_PROVIDER: Readonly<Record<Provider, Readonly<Record<string, ExampleBehaviour>>>> = {
   google: { styled: styledOnGoogle },

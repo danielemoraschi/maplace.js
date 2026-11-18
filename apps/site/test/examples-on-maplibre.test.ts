@@ -5,7 +5,6 @@ import {
 } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
 import { openingStyleOf } from "../../../packages/maplace/src/testing/examples/opening-style.ts";
 import { EXAMPLE_SECTIONS } from "../src/examples/example-sections.ts";
-import { exampleProviders } from "../src/examples/example-sources.ts";
 import { VERSION_LABELS } from "../src/examples/example-versions.ts";
 import {
   mapLibreDrawn,
@@ -32,12 +31,10 @@ import { MAPLIBRE_GL_CHUNKS, mapLibreLibraryChunk, VANILLA_CHUNK } from "./site-
 import { holdsItself, loadMapButton, loadMapsButtons } from "./visitor.ts";
 
 /**
- * Each section with MapLibre versions, its versions in the order the test opens them: the first
- * readies MapLibre for the page, in turn the element or a vanilla or React version's module.
+ * Each section, its versions in the order the test opens them: the first readies MapLibre for the
+ * page, in turn the element or a vanilla or React version's module.
  */
-const SECTIONS = EXAMPLE_SECTIONS.filter(({ name }) =>
-  exampleProviders(name).includes("maplibre"),
-).map(({ name }, index) => {
+const SECTIONS = EXAMPLE_SECTIONS.map(({ name }, index) => {
   const order = versionsInTurn(index);
   return { name, order, first: order[0] };
 });

@@ -5,6 +5,7 @@ const PAGE_PROPERTIES = [
   "locations",
   "route",
   "sanitize",
+  "computeRoute",
 ] as const satisfies readonly (keyof MaplaceMapElement)[];
 
 /**

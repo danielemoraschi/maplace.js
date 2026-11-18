@@ -16,6 +16,7 @@ describe("exampleData", () => {
       "live-data-e",
       "offices",
       "points-4k",
+      "route-milan-munich",
       "volcanoes",
     ]);
   });
@@ -42,6 +43,7 @@ describe("servedExampleFiles", () => {
       "data/photos/duomo.webp",
       "data/photos/st-marks.webp",
       "data/points-4k.json",
+      "data/route-milan-munich.json",
       "data/volcanoes.json",
       "styles/choropleth.css",
       "styles/popups.css",

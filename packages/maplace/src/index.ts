@@ -48,6 +48,12 @@ export { createMaplace } from "./maplace/create";
 export type { HeatmapOptions, MaplaceOptions } from "./options";
 export type { PopupOptions, ResolvedPopupOptions } from "./popup";
 export type { Route, RouteLeg, RouteResult, RouteStep, TravelMode } from "./route";
+export type {
+  RouteAnswer,
+  RouteComputer,
+  RouteRequest,
+  RouteRequestStop,
+} from "./route-request";
 export type { LoadState, Maplace, Snapshot } from "./store";
 export type { LineStyle, ShapeStyle } from "./style";
 export type {

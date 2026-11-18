@@ -18,7 +18,11 @@ function regroupingOn(clustering: Clustering) {
   const { map } = stub.asMapLibre();
   const mounted = { map, clustering, onDestroy: teardowns.add } as unknown as MountedMapLibre;
   const state = createMapState();
-  const features: FeatureSets = { pins: recordingSet(), shapes: recordingSet() };
+  const features: FeatureSets = {
+    pins: recordingSet(),
+    shapes: recordingSet(),
+    route: recordingSet(),
+  };
   state.mounted = mounted;
   state.features = features;
   clusterRegrouping(state).open(mounted);

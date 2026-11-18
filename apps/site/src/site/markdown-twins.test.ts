@@ -127,13 +127,6 @@ describe("markdownTwins", () => {
     expect(fencedBlocks(section, "css")).toEqual([stylesheet?.code.trimEnd()]);
   });
 
-  it("names route on Google only", () => {
-    const section = twinSectionOf("route");
-    expect(section).toContain("on Google");
-    expect(section).not.toContain("on MapLibre");
-    expect(section).toContain(sectionNamed("route").googleOnlyBecause);
-  });
-
   it("refuses a doc with no Markdown, naming it", () => {
     expect(() => markdownTwins({ ...STORED, docs: [] })).toThrow(
       "the docs collection has no Markdown for getting-started",

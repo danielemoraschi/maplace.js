@@ -1,5 +1,5 @@
 // Compile-time checks of the elements in Vue's and Svelte's templates (element/framework-types.ts): each @ts-expect-error must stay an error.
-import type { Location, Route } from "@maplacejs/maplace";
+import type { Location, Route, RouteComputer } from "@maplacejs/maplace";
 import type {
   MaplaceElementEventMap,
   MaplaceLocationElement,
@@ -79,6 +79,7 @@ expectTypeOf<SvelteMap["on:maplace-selectionchange"]>().toEqualTypeOf<
 // The properties a template sets are the element's own.
 expectTypeOf<VueMap["locations"]>().toEqualTypeOf<readonly Location[] | undefined>();
 expectTypeOf<VueMap["route"]>().toEqualTypeOf<Route | undefined>();
+expectTypeOf<VueMap["computeRoute"]>().toEqualTypeOf<RouteComputer | undefined>();
 expectTypeOf<SvelteMap["sanitize"]>().toEqualTypeOf<((html: string) => string) | undefined>();
 
 // The first view's attributes are plain ones, as `selected-id` is: no `false`, which isn't a view.

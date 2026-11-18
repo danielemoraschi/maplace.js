@@ -1,0 +1,76 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<!-- One route through your own locations, passing through Zurich, with directions from its steps. MapLibre has no routing of its own: the page's computeRoute answers, here from a route stored beside the example (a live service such as OSRM in your page). -->
+<style>
+  /* The directions in a panel of their own, below the map: its legs' headings stay in view as
+     their steps scroll, and a shade at the bottom shows there is more, gone at the end. */
+  #route-maplibre-directions:empty { display: none; }
+  #route-maplibre-directions {
+    margin-top: 1rem; max-height: 18rem; overflow: auto; padding: 0 1.25rem 0.5rem;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent); border-radius: 0.5rem;
+    background:
+      linear-gradient(transparent, Canvas 70%) bottom / 100% 1.5rem no-repeat local,
+      linear-gradient(transparent, color-mix(in srgb, currentColor 8%, transparent)) bottom / 100% 0.75rem no-repeat,
+      Canvas;
+  }
+  #route-maplibre-directions h3 {
+    position: sticky; top: 0; margin: 0; padding: 0.75rem 0 0.5rem; background: Canvas;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  }
+  #route-maplibre-directions ol { margin: 0.5rem 0 1rem; line-height: 1.6; }
+</style>
+<maplace-map id="route-maplibre-map" list>
+  <maplace-location location-id="milan" lat="45.4642" lng="9.19" title="Milan"></maplace-location>
+  <maplace-location location-id="zurich" lat="47.3769" lng="8.5417" title="Zurich"></maplace-location>
+  <maplace-location location-id="paris" lat="48.8566" lng="2.3522" title="Paris"></maplace-location>
+  <maplace-location location-id="munich" lat="48.1351" lng="11.582" title="Munich"></maplace-location>
+</maplace-map>
+<div id="route-maplibre-directions"></div>
+<p>Total: <output id="route-maplibre-distance"></output></p>
+<script>
+  const routeMaplibreMap = document.getElementById('route-maplibre-map');
+
+  /**
+   * Answers as a routing service would, from the route stored beside the example (its stops' ids,
+   * legs and path); any other journey is refused.
+   */
+  async function routeMaplibreStored({ stops, signal }) {
+    const response = await fetch('/examples/data/route-milan-munich.json', { signal });
+    if (!response.ok) throw new Error(`The stored route: ${response.status}`);
+    const route = await response.json();
+    if (stops.map(({ id }) => id).join() !== route.stops.join()) {
+      throw new Error('This example has one stored route: Milan to Munich');
+    }
+    return route;
+  }
+
+  routeMaplibreMap.computeRoute = routeMaplibreStored;
+  routeMaplibreMap.route = { stops: ['milan', 'zurich', 'paris', 'munich'], via: ['zurich'], travelMode: 'driving' };
+
+  function routeMaplibreKm(meters) {
+    return `${Math.round(meters / 1000)} km`;
+  }
+
+  function routeMaplibreTitleOf(id) {
+    return routeMaplibreMap.locations.find((location) => location.id === id)?.title ?? id;
+  }
+
+  /** A leg's steps, headed by where it runs and how far; a step without words shows its distance. */
+  function routeMaplibreLegDirections(leg) {
+    const heading = document.createElement('h3');
+    heading.textContent = `${routeMaplibreTitleOf(leg.from)} → ${routeMaplibreTitleOf(leg.to)}, ${routeMaplibreKm(leg.distanceMeters)}`;
+    const steps = document.createElement('ol');
+    for (const step of leg.steps) {
+      const item = document.createElement('li');
+      item.textContent = step.instruction ?? `${(step.distanceMeters / 1000).toFixed(1)} km`;
+      steps.append(item);
+    }
+    return [heading, steps];
+  }
+
+  routeMaplibreMap.addEventListener('maplace-routechange', (event) => {
+    const result = event.detail.result;
+    document.getElementById('route-maplibre-directions').replaceChildren(...(result?.legs.flatMap(routeMaplibreLegDirections) ?? []));
+    document.getElementById('route-maplibre-distance').textContent = result ? routeMaplibreKm(result.distanceMeters) : '';
+  });
+</script>

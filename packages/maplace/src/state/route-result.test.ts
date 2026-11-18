@@ -42,6 +42,26 @@ describe("setRouteResult", () => {
     expect(Object.isFrozen(stored?.legs[0]?.steps[0])).toBe(true);
   });
 
+  it("keeps only a leg's and a step's own fields, as a service's answer may carry more", () => {
+    const step = {
+      instruction: "Turn left",
+      distanceMeters: 1,
+      durationSeconds: 1,
+      name: "Via Roma",
+    };
+    const extra = {
+      ...result,
+      legs: [{ ...leg("a", "b"), steps: [step], weight: 3 }, leg("b", "c")],
+    };
+    const stored = setRouteResult(routed, { route: ABC, result: extra }).patch.routeResult;
+    expect(stored?.legs[0]).not.toHaveProperty("weight");
+    expect(stored?.legs[0]?.steps[0]).toEqual({
+      instruction: "Turn left",
+      distanceMeters: 1,
+      durationSeconds: 1,
+    });
+  });
+
   it("takes a result whose legs run between the stops not passed through", () => {
     const passing = { ...routed, route: THROUGH };
     const direct = { ...result, legs: [leg("a", "c")] };

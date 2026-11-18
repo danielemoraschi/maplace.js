@@ -2,7 +2,7 @@ import type { Drawable } from "../../drawable";
 import { markerDrawable } from "../../testing/conformance/fixtures";
 import { createMapState } from "../map-state";
 import type { PlacedLocation } from "../placed-location";
-import { createRouting } from "../routing";
+import { createGoogleRouting } from "../routing";
 import { wait } from "./map-waits";
 import { stubDrawingProgress } from "./stub-drawing";
 import { routesOnPage, StubRoute } from "./stub-routes";
@@ -26,7 +26,7 @@ export function routingOnStubs() {
   const opened = stubMounted(state);
   state.mounted = undefined;
   const { counts: drawing, progress } = stubDrawingProgress();
-  const routing = createRouting(state, progress);
+  const routing = createGoogleRouting(state, progress);
   const place = (drawable: Drawable) => {
     state.placed.set(drawable.id, { drawable: () => drawable } as unknown as PlacedLocation);
   };

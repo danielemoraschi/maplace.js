@@ -3,6 +3,7 @@ import { nextTask } from "../adapter-kit/chunks";
 import "../maplibre/testing/stylesheet";
 import { TEST_STYLE } from "../maplibre/testing/test-style";
 import "./maplibre";
+import { straightRoutes } from "../testing/straight-routes";
 import { box, errorsOn } from "./testing/dom";
 
 // Its own file: it registers only `maplibre`, so a map without `provider` opens on MapLibre.
@@ -119,5 +120,22 @@ describe("<maplace-map> on MapLibre", () => {
     map.release();
     await map.maplace.whenReady();
     expect(box(map.querySelector(".maplibregl-canvas"))).toEqual({ width: 600, height: 300 });
+  });
+
+  it("draws its route through the computeRoute set before it was defined", async () => {
+    const inert = document.implementation.createHTMLDocument();
+    inert.body.innerHTML = `<maplace-map ${styled()} style="width: 600px; height: 300px">${LOCATIONS}</maplace-map>`;
+    const early = inert.querySelector("maplace-map") as HTMLElement & { computeRoute: unknown };
+    early.computeRoute = straightRoutes;
+    document.body.replaceChildren(document.adoptNode(early));
+    const map = early as unknown as HTMLElementTagNameMap["maplace-map"];
+    expect(map.computeRoute).toBe(straightRoutes);
+    map.route = { stops: ["rome", "milan"] };
+    await expect
+      .poll(
+        () => map.maplace.getSnapshot().routeResult?.legs.map(({ from, to }) => [from, to]),
+        LOAD,
+      )
+      .toEqual([["rome", "milan"]]);
   });
 });

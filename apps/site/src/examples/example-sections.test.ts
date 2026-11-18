@@ -34,16 +34,10 @@ describe("EXAMPLE_SECTIONS", () => {
     expect(saving.map(({ name }) => name)).toEqual(["polygon"]);
   });
 
-  it("says why a section runs on Google only exactly when it has no MapLibre versions", () => {
-    for (const { name, googleOnlyBecause } of EXAMPLE_SECTIONS) {
-      const onMapLibre = exampleProviders(name).includes("maplibre");
-      expect(googleOnlyBecause === undefined, name).toBe(onMapLibre);
+  it("shows each section first on the page's first provider", () => {
+    for (const { name } of EXAMPLE_SECTIONS) {
+      expect(exampleProviders(name)[0], name).toBe(FIRST_PROVIDER);
     }
-  });
-
-  it("shows each section first on the page's first provider, route on Google, the one it has", () => {
-    for (const { name, googleOnlyBecause } of EXAMPLE_SECTIONS)
-      expect(exampleProviders(name)[0], name).toBe(googleOnlyBecause ? "google" : FIRST_PROVIDER);
   });
 });
 

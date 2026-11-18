@@ -19,6 +19,7 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 | `View`, `Viewport`, `Bounds`, `FitOptions`, `SelectOptions` | types | [The first view](store.md#the-first-view), [methods](store.md#methods) |
 | `MaplaceEvents`, `MaplaceEventName`, `Listener`, `ListenOptions`, `Unsubscribe` | types | [Events](store.md#events) |
 | `Route`, `RouteResult`, `RouteLeg`, `RouteStep`, `TravelMode` | types | [Routes](store.md#routes) |
+| `RouteComputer`, `RouteRequest`, `RouteRequestStop`, `RouteAnswer` | types | [Routes on MapLibre](maplibre.md#routes) |
 | `createListView` | function | [List view options](store.md#list-view-options) |
 | `distanceTo` | function | [Distances](store.md#distances) |
 | `createMyLocationControl`, `MyLocationControl`, `MyLocationOptions` | function, types | [The "My location" control](store.md#the-my-location-control) |
@@ -147,7 +148,7 @@ For the first two, `loadState` becomes `error` and `whenReady()` rejects; one th
 
 ## Capabilities
 
-A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all six; MapLibre all but `route`, as it has no routing ([routes](maplibre.md#routes)).
+A capability is a feature an adapter may or may not support; using one the adapter lacks is `unsupported-capability`. Google has all six; MapLibre has `route` only with your own routing, as it has none ([routes](maplibre.md#routes)).
 
 | Capability | What it allows |
 |---|---|

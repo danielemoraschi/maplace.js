@@ -69,6 +69,7 @@ const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = {
   brand: expectBadgeInBrandColours,
   "whats-on": expectCategoryLook,
   flights: expectOnTheGlobe,
+  route: expectRouteFromStoredAnswer,
 };
 
 let offsite: OffsiteLog;
@@ -148,6 +149,15 @@ function expectNothingElseOffsite(): void {
 async function expectSelectedPinLook({ store, root }: RealRun): Promise<void> {
   store.select("rijks");
   await expect.poll(() => styleOf(root, SELECTED_PIN)?.backgroundColor, LOAD).toBe(PIN_ACCENT);
+}
+
+/** The route, computed by the page's own function from the stored answer, runs through its stops. */
+async function expectRouteFromStoredAnswer({ store }: RealRun): Promise<void> {
+  const legs = () => store.getSnapshot().routeResult?.legs.map(({ from, to }) => [from, to]);
+  await expect.poll(legs, LOAD).toEqual([
+    ["milan", "paris"],
+    ["paris", "munich"],
+  ]);
 }
 
 /** Flights opens on the globe, its toggle pressed: every version asks for it. */

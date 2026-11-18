@@ -17,10 +17,8 @@ const setShown: Show = (element, shown) => {
  * switches: the page's own, then each group's panel added later (`group-switch.ts`). Each section
  * shows the version its `[data-site-switch]` radios chose, on the provider the toggle chose:
  * - in its frame, that `[data-live-version]`, faded in, the others hidden at once, each with its
- *   own notes, shown and hidden with it (`frame.css`); a section with no version on the provider
- *   (route on MapLibre) shows none, its frame marked `data-no-version` for its note, whose
- *   `[data-show-on]` button shows that section alone on the provider it names;
- * - in each code tab, the provider's files; a section with none for it keeps the files it has.
+ *   own notes, shown and hidden with it (`frame.css`);
+ * - in each code tab, the provider's files.
  *
  * Sections are rendered on the first provider; on another, chosen earlier in the visit or before a
  * section came, they are shown on it at once, before any map is released. A page without the
@@ -33,15 +31,12 @@ export function startProviderToggle(
   const toggle = page.querySelector<HTMLElement>("[data-provider-choice]");
   if (toggle === null) return () => {};
   const sections: HTMLElement[] = [];
-  const ownProvider = new Map<HTMLElement, Provider>();
   let pageProvider = providerAtStart(toggle, storage);
-  const showSection = (section: HTMLElement, show: Show) =>
-    showChoice(section, ownProvider.get(section) ?? pageProvider, show);
+  const showSection = (section: HTMLElement, show: Show) => showChoice(section, pageProvider, show);
 
   toggle.addEventListener("change", () => {
     pageProvider = chosenProvider(toggle) ?? pageProvider;
     keepProvider(storage, pageProvider);
-    ownProvider.clear();
     // Only what the visitor sees fades in; the sections off screen change at once.
     for (const section of sections) showSection(section, isOnScreen(section) ? reveal : setShown);
   });
@@ -53,29 +48,17 @@ export function startProviderToggle(
   return (root) => {
     for (const section of root.querySelectorAll<HTMLElement>("[data-version-switch]")) {
       sections.push(section);
-      followSection(section, (show) => showSection(section, show), ownProvider);
+      followSection(section, (show) => showSection(section, show));
       if (pageProvider !== FIRST_PROVIDER) showSection(section, setShown);
     }
   };
 }
 
-/** Wires `section`'s version radios and its `[data-show-on]` button to show its choice. */
-function followSection(
-  section: HTMLElement,
-  showSection: (show: Show) => void,
-  ownProvider: Map<HTMLElement, Provider>,
-): void {
+/** Wires `section`'s version radios to show its choice. */
+function followSection(section: HTMLElement, showSection: (show: Show) => void): void {
   for (const radios of section.querySelectorAll("[data-site-switch]")) {
     radios.addEventListener("change", () => showSection(reveal));
   }
-  section.querySelector<HTMLElement>("[data-show-on]")?.addEventListener("click", (event) => {
-    const named = (event.currentTarget as HTMLElement).dataset.showOn ?? "";
-    if (!isProvider(named)) return;
-    ownProvider.set(section, named);
-    showSection(reveal);
-    // The button hides with its note: focus goes to what the section now shows.
-    checkedRadioIn(section, `${section.dataset.versionSwitch}-version`)?.focus();
-  });
 }
 
 /**
@@ -96,53 +79,22 @@ function isOnScreen(element: Element): boolean {
 function showChoice(section: HTMLElement, provider: Provider, show: Show): void {
   const version =
     checkedRadioIn(section, `${section.dataset.versionSwitch}-version`)?.value ?? FIRST_VERSION;
-  const shown = showVersion(section, version, provider, show);
-  section.querySelector<HTMLElement>(".map-frame")?.toggleAttribute("data-no-version", !shown);
-  offerVersions(section, shown);
+  showVersion(section, version, provider, show);
   showProviderFiles(section, provider);
 }
 
-/**
- * Offers the section's versions, its version radios and code tabs, or grays them out while it has
- * none on the provider shown (route on MapLibre); a code tab shown then gives way to the Map tab.
- */
-function offerVersions(section: HTMLElement, offered: boolean): void {
-  const radios = section.querySelector<HTMLFieldSetElement>("[data-site-switch]");
-  if (radios) radios.disabled = !offered;
-  const [mapTab, ...codeTabs] = section.querySelectorAll<HTMLButtonElement>('[role="tab"]');
-  for (const tab of codeTabs) tab.disabled = !offered;
-  if (!offered && codeTabs.some((tab) => tab.getAttribute("aria-selected") === "true")) {
-    mapTab?.click();
-  }
-}
-
-/**
- * Shows the section's `version` on `provider`, and hides the others. Whether the section has that
- * version.
- */
-function showVersion(
-  section: ParentNode,
-  version: string,
-  provider: Provider,
-  show: Show,
-): boolean {
-  let found = false;
+/** Shows the section's `version` on `provider`, and hides the others. */
+function showVersion(section: ParentNode, version: string, provider: Provider, show: Show): void {
   for (const live of section.querySelectorAll<HTMLElement>("[data-live-version]")) {
-    const chosen = live.dataset.liveVersion === version && live.dataset.provider === provider;
-    show(live, chosen);
-    found ||= chosen;
+    show(live, live.dataset.liveVersion === version && live.dataset.provider === provider);
   }
-  return found;
 }
 
-/**
- * Shows `provider`'s files in each of the section's code tabs, and no other's; a section with no
- * files for it (route on MapLibre) keeps the ones it shows. The tabs' panels aren't faded.
- */
+/** Shows `provider`'s files in each of the section's code tabs, and no other's; not faded. */
 function showProviderFiles(section: ParentNode, provider: Provider): void {
-  const files = [...section.querySelectorAll<HTMLElement>("[data-provider-files]")];
-  if (!files.some(({ dataset }) => dataset.providerFiles === provider)) return;
-  for (const panel of files) panel.hidden = panel.dataset.providerFiles !== provider;
+  for (const panel of section.querySelectorAll<HTMLElement>("[data-provider-files]")) {
+    panel.hidden = panel.dataset.providerFiles !== provider;
+  }
 }
 
 /** The provider the page's toggle has checked, if any. */

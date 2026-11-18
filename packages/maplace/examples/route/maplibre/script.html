@@ -1,0 +1,92 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map, its list, the directions and the total mount on, and the map made with Maplace, routing through the page's computeRoute: here a route stored beside the example. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #route-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #route-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #route-maplibre-script-list { display: contents; }
+  #route-maplibre-script-list [role="listbox"] { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, as the element's does. */
+  @media (width < 40rem) {
+    #route-maplibre-script-map-and-list { flex-direction: column; }
+    #route-maplibre-script-list [role="listbox"] { flex: none; max-height: 40%; }
+  }
+  /* The directions in a panel of their own, below the map: its legs' headings stay in view as
+     their steps scroll, and a shade at the bottom shows there is more, gone at the end. */
+  #route-maplibre-script-directions:empty { display: none; }
+  #route-maplibre-script-directions {
+    margin-top: 1rem; max-height: 18rem; overflow: auto; padding: 0 1.25rem 0.5rem;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent); border-radius: 0.5rem;
+    background:
+      linear-gradient(transparent, Canvas 70%) bottom / 100% 1.5rem no-repeat local,
+      linear-gradient(transparent, color-mix(in srgb, currentColor 8%, transparent)) bottom / 100% 0.75rem no-repeat,
+      Canvas;
+  }
+  #route-maplibre-script-directions h3 {
+    position: sticky; top: 0; margin: 0; padding: 0.75rem 0 0.5rem; background: Canvas;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  }
+  #route-maplibre-script-directions ol { margin: 0.5rem 0 1rem; line-height: 1.6; }
+</style>
+<div id="route-maplibre-script-map-and-list">
+  <div id="route-maplibre-script-map"></div>
+  <div id="route-maplibre-script-list"></div>
+</div>
+<div id="route-maplibre-script-directions"></div>
+<p>Total: <output id="route-maplibre-script-distance"></output></p>
+<script type="module">
+  const locations = [
+    { id: "milan", lat: 45.4642, lng: 9.19, title: "Milan" },
+    { id: "zurich", lat: 47.3769, lng: 8.5417, title: "Zurich" },
+    { id: "paris", lat: 48.8566, lng: 2.3522, title: "Paris" },
+    { id: "munich", lat: 48.1351, lng: 11.582, title: "Munich" },
+  ];
+  /**
+   * Answers as a routing service would, from the route stored beside the example (its stops' ids,
+   * legs and path); any other journey is refused.
+   */
+  async function storedRoute({ stops, signal }) {
+    const response = await fetch("/examples/data/route-milan-munich.json", { signal });
+    if (!response.ok) throw new Error(`The stored route: ${response.status}`);
+    const route = await response.json();
+    if (stops.map(({ id }) => id).join() !== route.stops.join()) {
+      throw new Error("This example has one stored route: Milan to Munich");
+    }
+    return route;
+  }
+
+  const maplace = Maplace.createMapLibreMap("#route-maplibre-script-map", {
+    locations,
+    computeRoute: storedRoute,
+    list: { container: "#route-maplibre-script-list" },
+  });
+  maplace.setRoute({
+    stops: ["milan", "zurich", "paris", "munich"],
+    via: ["zurich"],
+    travelMode: "driving",
+  });
+
+  const km = (meters) => `${Math.round(meters / 1000)} km`;
+  const titleOf = (id) => locations.find((location) => location.id === id)?.title ?? id;
+  const directions = document.querySelector("#route-maplibre-script-directions");
+  const distance = document.querySelector("#route-maplibre-script-distance");
+  maplace.on("routeChange", ({ result }) => {
+    directions?.replaceChildren(...(result?.legs.flatMap(legDirections) ?? []));
+    if (distance) distance.textContent = result ? km(result.distanceMeters) : "";
+  });
+
+  /**
+   * A leg's steps, headed by where it runs and how far; a step without words shows its distance.
+   */
+  function legDirections(leg) {
+    const heading = document.createElement("h3");
+    heading.textContent = `${titleOf(leg.from)} → ${titleOf(leg.to)}, ${km(leg.distanceMeters)}`;
+    const steps = document.createElement("ol");
+    for (const step of leg.steps) {
+      const item = document.createElement("li");
+      item.textContent = step.instruction ?? `${(step.distanceMeters / 1000).toFixed(1)} km`;
+      steps.append(item);
+    }
+    return [heading, steps];
+  }
+</script>

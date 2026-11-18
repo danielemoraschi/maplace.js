@@ -48,9 +48,6 @@ export function isPageOnly(name: string): boolean {
   return PAGE_ONLY.has(name);
 }
 
-/** Drawn on Google only: MapLibre has no routing. */
-const GOOGLE_ONLY: ReadonlySet<string> = new Set(["route"]);
-
 /** Where a provider's versions sit in an example's folder. */
 const FOLDER: Readonly<Record<Provider, string>> = { google: "", maplibre: "maplibre/" };
 
@@ -91,12 +88,9 @@ const NAMES = EXAMPLE_PAGES.filter(onProvider("google"))
   .map(({ name }) => name)
   .filter((name) => !isPageOnly(name));
 
-/**
- * Every example but the page-only ones, on each provider it is drawn on: a missing file throws
- * here.
- */
+/** Every example but the page-only ones, on each provider: a missing file throws here. */
 export const EXAMPLES: readonly Example[] = PROVIDERS.flatMap((provider) =>
-  NAMES.filter((name) => isDrawnOn(name, provider)).map((name) => exampleOf(name, provider)),
+  NAMES.map((name) => exampleOf(name, provider)),
 );
 
 export const SCRIPT_VERSIONS: readonly ScriptVersion[] = EXAMPLES.map(({ script }) => script);
@@ -113,11 +107,6 @@ export function googleTwinOf({ name }: Example): Example {
   const twin = EXAMPLES.find((example) => example.name === name && example.provider === "google");
   if (twin === undefined) throw new Error(`${name} has no Google version`);
   return twin;
-}
-
-/** Whether the example `name` is drawn on `provider`: all on Google, all but route elsewhere. */
-export function isDrawnOn(name: string, provider: Provider): boolean {
-  return provider === "google" || !GOOGLE_ONLY.has(name);
 }
 
 function exampleOf(name: string, provider: Provider): Example {

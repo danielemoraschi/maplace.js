@@ -17,7 +17,7 @@ import { PLACERS } from "./placers";
 import { createPopup } from "./popup";
 import { createPresenting } from "./presenting";
 import { ROUTE_STOP_LIMIT } from "./route-conversions";
-import { createRouting } from "./routing";
+import { createGoogleRouting } from "./routing";
 import { viewportReports } from "./viewport-reports";
 
 /**
@@ -49,7 +49,7 @@ export function assembleGoogleAdapter(
   const popup = createPopup(state);
   const originDot = createGoogleOriginDot(state);
   const camera = createCamera(state, drawing);
-  const routing = createRouting(state, drawing);
+  const routing = createGoogleRouting(state, drawing);
   const controls = createControls(options.colorScheme);
   const heat = createHeatPart(state);
   const parts = [

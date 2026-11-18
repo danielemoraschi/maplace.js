@@ -1,8 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 
 import type { Journey } from "../adapter-kit/journey";
-import { withTotals } from "../adapter-kit/route-result";
-import { MaplaceError } from "../errors";
+import { routeFailed, withTotals } from "../adapter-kit/route-result";
 import {
   type Avoidance,
   legStops,
@@ -88,11 +87,6 @@ export function routeResultOf(
     legOf(leg, ends[index] as string, ends[index + 1] as string),
   );
   return withTotals(named, (answer.path ?? []).map(latLngOf));
-}
-
-/** A route that can't be reported: the reason, and Google's own error when there is one. */
-export function routeFailed(reason: string, cause?: unknown): MaplaceError {
-  return new MaplaceError("route-failed", `setRoute: ${reason}`, { cause });
 }
 
 /** The stop at `index`, where Google passes through it or stops over (its default). */

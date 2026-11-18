@@ -23,6 +23,8 @@ export interface MapLibreState {
   popup: ShownMapLibrePopup | undefined;
   /** The dot at the store's origin, while one shows. */
   originMarker: Marker | undefined;
+  /** The route's computation scheduled last, which the probe's `settle` waits on. */
+  routeSettling: Promise<void> | undefined;
 }
 
 export function createMapState(): MapLibreState {
@@ -33,5 +35,6 @@ export function createMapState(): MapLibreState {
     features: undefined,
     popup: undefined,
     originMarker: undefined,
+    routeSettling: undefined,
   };
 }

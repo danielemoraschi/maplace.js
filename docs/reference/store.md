@@ -134,17 +134,17 @@ On the element the same events are DOM events ([the element's events](element.md
 
 ## Routes
 
-A route is one path through your own locations, in order; it needs the `route` capability, which Google has and MapLibre lacks ([routes](maplibre.md#routes)). Removing a stop's location drops it from the route; below two stops the route clears, with no error.
+A route is one path through your own locations, in order; it needs the `route` capability, which Google has, and MapLibre has through your own routing (`computeRoute`, [routes on MapLibre](maplibre.md#routes)). Removing a stop's location drops it from the route; below two stops the route clears, with no error.
 
 | Field | Type | What |
 |---|---|---|
-| `stops` | `string[]` | Location ids, from 2 to the adapter's `routeStopLimit` (27 on Google) |
+| `stops` | `string[]` | Location ids, from 2 to the adapter's `routeStopLimit` (27 on Google, none on MapLibre but your service's) |
 | `via` | `string[]` | Inner stops the route passes through without ending a leg |
 | `travelMode` | `"driving" \| "walking" \| "bicycling" \| "transit"` | Driving when left out |
 | `avoid` | `("tolls" \| "highways" \| "ferries")[]` | What the route keeps off where it reasonably can, in any order; on Google, driving routes only ([routes](google.md#routes)) |
 | `style` | `LineStyle` | How the route's line is drawn |
 
-The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`, `to`, its distance and duration, and its turn-by-turn `steps`), the total `distanceMeters` and `durationSeconds`, and the `path`. A route is computed only when its stops, `via`, their positions, the travel mode or `avoid` change, since each computation is billed (the same things avoided in another order are no change); a change of `style` alone redraws the line. On Google: [routes](google.md#routes).
+The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`, `to`, its distance and duration, and its turn-by-turn `steps`), the total `distanceMeters` and `durationSeconds`, and the `path`. A route is computed only when its stops, `via`, their positions, the travel mode or `avoid` change, since each computation may be billed (the same things avoided in another order are no change); a change of `style` alone redraws the line. On Google: [routes](google.md#routes).
 
 ## Heatmaps
 

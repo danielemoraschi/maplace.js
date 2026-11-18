@@ -1,5 +1,5 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { isOwnSource, OWN_SOURCES } from "./layers";
+import { isLocationSource, LOCATION_SOURCES } from "./layers";
 import { hasMapSize } from "./map-size";
 import type { MountedMapLibre } from "./mounted-map";
 
@@ -65,15 +65,18 @@ async function renderedOn(
   await idle(map, signal);
 }
 
-/** Resolves once maplace's sources have loaded what they were given; a source gone counts. */
+/**
+ * Resolves once the locations' sources have loaded what they were given; a source gone counts.
+ * The route's isn't waited for: its line is drawn apart from any `apply`.
+ */
 function ownSourcesLoaded(map: MapLibreMap, signal: AbortSignal): Promise<void> {
   const loaded = () =>
-    OWN_SOURCES.every((id) => map.getSource(id) === undefined || map.isSourceLoaded(id));
+    LOCATION_SOURCES.every((id) => map.getSource(id) === undefined || map.isSourceLoaded(id));
   if (loaded()) return Promise.resolve();
   const ownLoaded = (event: object) =>
     "sourceId" in event &&
     typeof event.sourceId === "string" &&
-    isOwnSource(event.sourceId) &&
+    isLocationSource(event.sourceId) &&
     loaded();
   return nextEvent(map, "sourcedata", ownLoaded, signal);
 }

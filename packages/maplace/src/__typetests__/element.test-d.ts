@@ -9,6 +9,7 @@ import {
   type Maplace,
   type MaplaceError,
   type Route,
+  type RouteComputer,
 } from "@maplacejs/maplace";
 import {
   defineListView,
@@ -35,6 +36,10 @@ map.route = { stops: ["a", "b", "c"], via: ["b"] };
 map.release();
 expectTypeOf(map.sanitize).toEqualTypeOf<((html: string) => string) | undefined>();
 map.sanitize = (html) => html;
+expectTypeOf(map.computeRoute).toEqualTypeOf<RouteComputer | undefined>();
+map.computeRoute = async ({ stops }) => ({ legs: [], path: stops });
+// @ts-expect-error routing is a function answering the route
+map.computeRoute = "https://router.project-osrm.org";
 // @ts-expect-error sanitize turns HTML into safe HTML, a string
 map.sanitize = (html: string) => document.createTextNode(html);
 

@@ -4,6 +4,7 @@ import {
   type Route,
   type RouteLeg,
   type RouteResult,
+  type RouteStep,
   runsThrough,
   sameComputation,
 } from "../route";
@@ -81,7 +82,17 @@ function frozenResult(result: RouteResult): RouteResult {
   });
 }
 
-function frozenLeg(leg: RouteLeg): RouteLeg {
-  const steps = Object.freeze(leg.steps.map((step) => Object.freeze({ ...step })));
-  return Object.freeze({ ...leg, steps });
+/** A leg with only the fields a leg has: an adapter may relay a provider's answer with more. */
+function frozenLeg({ from, to, distanceMeters, durationSeconds, steps }: RouteLeg): RouteLeg {
+  return Object.freeze({
+    from,
+    to,
+    distanceMeters,
+    durationSeconds,
+    steps: Object.freeze(steps.map(frozenStep)),
+  });
+}
+
+function frozenStep({ instruction, distanceMeters, durationSeconds }: RouteStep): RouteStep {
+  return Object.freeze({ instruction, distanceMeters, durationSeconds });
 }

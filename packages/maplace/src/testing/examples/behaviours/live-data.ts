@@ -16,7 +16,7 @@ export const liveData: ExampleBehaviour = async (run) => {
   await expectAreaFitted(run);
 };
 
-/** On MapLibre, which has no routing: no route to show, so no button for it. */
+/** On MapLibre, with no route stored for its places: no route to show, so no button for it. */
 export const liveDataWithoutRoute: ExampleBehaviour = async (run) => {
   await expectStartsOnMarkers(run, ["Markers", "More markers", "Area", "Circle"]);
   await expectAreaFitted(run);

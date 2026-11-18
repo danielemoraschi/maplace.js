@@ -2,7 +2,7 @@
 
 `createMapLibreAdapter(options)` from `@maplacejs/maplace/maplibre` draws a store on MapLibre GL JS; `@maplacejs/maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`@maplacejs/maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `bright` style unless you give another, so it needs no key and no map ID.
 
-The store, its list, its events and its errors are the same as on Google; what differs is in [capabilities](api.md#capabilities): no routes. Provider options belong to the adapter, never to the store. On Google: [Google adapter](google.md).
+The store, its list, its events and its errors are the same as on Google; what differs is in [capabilities](api.md#capabilities): routes only through your own routing ([routes](#routes)). Provider options belong to the adapter, never to the store. On Google: [Google adapter](google.md).
 
 ## Options
 
@@ -14,12 +14,13 @@ The store, its list, its events and its errors are the same as on Google; what d
 | `globe` | `true \| MapLibreGlobe` | The earth as a globe, with a toggle on the map to flatten it and back ([globe](#globe)); not with your own `map` |
 | `globe.position` | `ControlPosition` | The corner the toggle goes in; default `top-left` |
 | `globe.label` | `string` | The toggle's words; default "Globe" |
+| `computeRoute` | `RouteComputer` | Your own routing, as MapLibre has none: with it the map draws the store's route ([routes](#routes)); also with your own `map` |
 
 An option the adapter doesn't know is `invalid-input`, and so is a key of `mapOptions` Maplace.js sets, saying where it goes (`style` is `mapStyle`), or one of Google's names MapLibre has its own for, saying which (`scrollwheel` is `scrollZoom`).
 
 ## `createMapLibreMap`
 
-`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle`, `mapOptions` and `globe`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one (its page, `vanilla.html` beside it, sizes the map and holds the North-only checkbox):
+`createMapLibreMap(container, options)` is a store on a MapLibre map in one call, as [`createGoogleMap`](google.md#creategooglemap) is on Google. It makes the store with the [store's options](store.md#options), makes the adapter with `mapStyle`, `mapOptions`, `globe` and `computeRoute`, attaches it in `container` (an element, or a selector the page matches), and returns the store; `destroy()` takes the map and its list down. The menu example's MapLibre version is one (its page, `vanilla.html` beside it, sizes the map and holds the North-only checkbox):
 
 <!-- example: packages/maplace/examples/menu/maplibre/vanilla.ts -->
 ```ts
@@ -50,6 +51,7 @@ Its own options, beside the store's:
 | `globe` | `true \| MapLibreGlobe` | As the adapter's |
 | `globe.position` | `ControlPosition` | As the adapter's |
 | `globe.label` | `string` | As the adapter's |
+| `computeRoute` | `RouteComputer` | As the adapter's |
 | `list` | `true \| MapLibreMapList` | Maplace.js's list: `true` for the default one, or the [list view's options](store.md#list-view-options) with its place |
 | `list.position` | `ControlPosition` | The corner the list goes in; default `top-right` |
 | `list.container` | `HTMLElement \| string` | An element, or a selector, to put the list in instead, beside the map; not with `position` |
@@ -193,7 +195,130 @@ A [heatmap](store.md#heatmaps) is drawn in MapLibre's own `heatmap` and `circle`
 
 ## Routes
 
-MapLibre has no routing, so `route` isn't among this adapter's capabilities. `setRoute`, the element's `route` and React's `route` prop are `unsupported-capability`, checked as every capability is ([capabilities](api.md#capabilities)). For a route, draw on [Google](google.md#routes).
+MapLibre has no routing of its own, so a route draws through yours: `computeRoute`, a function you give the adapter (`createMapLibreAdapter({ computeRoute })`, `createMapLibreMap`'s option, the element's `computeRoute` property). With it, `route` is among the adapter's capabilities, and `setRoute`, `via`, `travelMode`, `avoid`, `routeChange` and `route-failed` work as on [Google](google.md#routes); without it they are `unsupported-capability`, checked as every capability is ([capabilities](api.md#capabilities)).
+
+It is asked once for each new journey (the stops, which are passed through, the travel mode, what to avoid, or where a stop is), never for a new style alone, with a `RouteRequest`: each stop's `id`, its `lat` and `lng` where it is drawn and whether it is passed through (`via`), the `travelMode` (`driving` when the route leaves it out), `avoid` (empty when left out), and a `signal` aborted once the answer would be dropped. It answers with the route's `legs` (one between each two stops that end legs, those not passed through, in order, each with its steps) and its `path`, at least 2 points; the totals are the legs'. Other fields of the answer are ignored, but a leg and a step have only Maplace.js's fields: one it doesn't know, a typo it would drop, fails the route. A rejection, or an answer that isn't a route, fails the route with `route-failed`, its cause what went wrong. There is no stop limit but your service's. The route is drawn under every location in a blue line, its `style` over it, and takes no click: a click on it is the map's.
+
+The route example's MapLibre versions answer from a route stored beside the example. A live service is a few lines; this one asks an OSRM server, whose public demo (driving only, no `avoid`) is for trying it out, not for production:
+
+<!-- example: scripts/recipes/osrm-route.ts -->
+```ts
+// Routes on MapLibre from an OSRM server: createMapLibreAdapter({ computeRoute: osrmRoute() }).
+// OSRM's public demo server is for trying it out, not for production: run your own, or use a
+// hosted one, and pass its URL. The demo routes cars only, whatever profile is asked, and
+// refuses `exclude`, so this leaves `avoid` out; a server built with those classes takes it.
+import type {
+  LatLng,
+  RouteAnswer,
+  RouteComputer,
+  RouteRequest,
+  RouteStep,
+} from "@maplacejs/maplace";
+
+/** The parts of OSRM's route answer read here (`steps=true`, `geometries=geojson`). */
+export interface OsrmAnswer {
+  readonly code: string;
+  readonly message?: string;
+  readonly routes?: readonly {
+    readonly geometry: { readonly coordinates: readonly (readonly number[])[] };
+    readonly legs: readonly {
+      readonly distance: number;
+      readonly duration: number;
+      readonly steps: readonly OsrmStep[];
+    }[];
+  }[];
+}
+
+interface OsrmStep {
+  readonly name: string;
+  readonly distance: number;
+  readonly duration: number;
+  readonly maneuver: { readonly type: string; readonly modifier?: string };
+}
+
+/** OSRM's profile for each travel mode; it has no transit. */
+const PROFILES = { driving: "driving", walking: "foot", bicycling: "bike" } as const;
+
+/** A routing function asking the OSRM server at `server`. */
+export function osrmRoute(server = "https://router.project-osrm.org"): RouteComputer {
+  return async (request) => {
+    const response = await fetch(routeUrl(server, request), { signal: request.signal });
+    // OSRM answers its own refusals in JSON, with a code; anything else is the server's status.
+    const answer: OsrmAnswer = await response.json().catch(() => {
+      throw new Error(`OSRM: ${response.status} ${response.statusText}`);
+    });
+    if (answer.code !== "Ok") throw new Error(`OSRM: ${answer.message ?? answer.code}`);
+    return answerOf(answer, request);
+  };
+}
+
+/** The request's URL: every stop, the legs ending at those not passed through. */
+function routeUrl(server: string, { stops, travelMode }: RouteRequest): string {
+  if (travelMode === "transit") throw new Error("OSRM has no transit");
+  const points = stops.map(({ lat, lng }) => `${lng},${lat}`).join(";");
+  const ends = stops.flatMap(({ via }, index) => (via ? [] : [index])).join(";");
+  const query = `waypoints=${ends}&overview=simplified&steps=true&geometries=geojson`;
+  return `${server}/route/v1/${PROFILES[travelMode]}/${points}?${query}`;
+}
+
+/** OSRM's answer as maplace's: a leg between each two stops not passed through, in order. */
+export function answerOf(answer: OsrmAnswer, { stops }: Pick<RouteRequest, "stops">): RouteAnswer {
+  const route = answer.routes?.[0];
+  if (route === undefined) throw new Error("OSRM found no route");
+  const ends = stops.filter(({ via }) => !via).map(({ id }) => id);
+  return {
+    legs: route.legs.map((leg, index) => ({
+      from: ends[index] ?? "",
+      to: ends[index + 1] ?? "",
+      distanceMeters: leg.distance,
+      durationSeconds: leg.duration,
+      steps: leg.steps.map(stepOf),
+    })),
+    // A point that isn't two numbers is passed on as it is, for maplace to refuse.
+    path: route.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }) as LatLng),
+  };
+}
+
+function stepOf({ name, distance, duration, maneuver }: OsrmStep): RouteStep {
+  return {
+    instruction: instructionOf(maneuver, name),
+    distanceMeters: distance,
+    durationSeconds: duration,
+  };
+}
+
+/** OSRM gives no words, only the manoeuvre and the road's name: a short English instruction. */
+function instructionOf({ type, modifier = "" }: OsrmStep["maneuver"], name: string): string {
+  const onto = name ? ` onto ${name}` : "";
+  const side = modifier.replace("slight ", "").replace("sharp ", "");
+  switch (type) {
+    case "depart":
+      return `Head out${onto}`;
+    case "arrive":
+      return "Arrive";
+    case "fork":
+      return `Keep ${side}${onto}`;
+    case "merge":
+      return `Merge ${side}${onto}`;
+    case "on ramp":
+      return `Take the ramp${onto}`;
+    case "off ramp":
+      return `Take the exit${onto}`;
+    case "roundabout":
+    case "rotary":
+    case "roundabout turn":
+      return `At the roundabout, continue${onto}`;
+    case "exit roundabout":
+    case "exit rotary":
+      return `Leave the roundabout${onto}`;
+    default:
+      if (modifier === "uturn") return `Make a U-turn${onto}`;
+      return modifier === "straight" || modifier === "" || type === "new name"
+        ? `Continue${onto}`
+        : `Turn ${modifier}${onto}`;
+  }
+}
+```
 
 ## On-map controls
 

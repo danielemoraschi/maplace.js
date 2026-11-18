@@ -69,6 +69,7 @@ export const MAPLIBRE_OPTIONS = [
     map: true,
     mapOptions: true,
     globe: true,
+    computeRoute: true,
   }),
   ...GLOBE_OPTIONS,
 ];
@@ -79,6 +80,7 @@ export const MAPLIBRE_MAP_OPTIONS = [
     mapStyle: true,
     mapOptions: true,
     globe: true,
+    computeRoute: true,
     list: true,
     myLocation: true,
   }),
@@ -97,6 +99,7 @@ export const MAP_ELEMENT_PROPERTIES = everyName<
   locations: true,
   route: true,
   sanitize: true,
+  computeRoute: true,
   maplace: true,
   loadState: true,
   release: true,

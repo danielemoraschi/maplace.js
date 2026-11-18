@@ -3,7 +3,7 @@ import { getEntry, render } from "astro:content";
 import { dataFetchedBy, exampleDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
 import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import type { ExampleSection } from "../examples/example-sections.ts";
-import { codeTabsOf, exampleProviders, exampleStylesheets } from "../examples/example-sources.ts";
+import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
@@ -13,14 +13,8 @@ interface Props extends ExampleSection {
   number: number;
 }
 
-const { number, name, title, summary, drawsOwnList, drawsOwnFrame, googleOnlyBecause } =
-  Astro.props;
+const { number, name, title, summary, drawsOwnList, drawsOwnFrame } = Astro.props;
 const codeTabs = codeTabsOf(name);
-// Its code tabs open on the first provider it has: route's Google, the others' the page's first.
-const [firstProvider] = exampleProviders(name);
-// Without a version on the page's first provider (route on MapLibre), its version radios and code
-// tabs open grayed out, until the visitor shows it on Google (`version-switch.ts`).
-const offered = firstProvider === FIRST_PROVIDER;
 const codes = codeTabs.flatMap(({ codes }) => codes);
 const fetched = dataFetchedBy(codes.flatMap(({ files }) => files).map(({ code }) => code));
 const dataLinks = exampleDataLinks(fetched);
@@ -64,7 +58,6 @@ const panel = (tab: string) => `example-${name}-${tab}`;
           aria-controls={panel(tab)}
           aria-selected={index === 0 ? "true" : "false"}
           tabindex={index === 0 ? 0 : -1}
-          disabled={index > 0 && !offered}
         >
           {label}
         </button>
@@ -72,8 +65,8 @@ const panel = (tab: string) => `example-${name}-${tab}`;
     }
   </div>
   <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <VersionSwitch name={name} disabled={!offered} />
-    <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} googleOnlyBecause={googleOnlyBecause} />
+    <VersionSwitch name={name} />
+    <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
   </div>
   {
     codeTabs.map(({ kind, codes }) => (
@@ -81,7 +74,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
         {codes.map((code) => (
           <div
             data-provider-files={code.provider}
-            hidden={code.provider !== firstProvider}
+            hidden={code.provider !== FIRST_PROVIDER}
           >
             <ExampleFiles version={code} />
           </div>

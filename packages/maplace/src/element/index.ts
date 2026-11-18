@@ -3,6 +3,7 @@ import type { MaplaceEvents } from "../events";
 import type { ListView, ListViewOptions } from "../list-view";
 import type { Location } from "../location";
 import type { Route } from "../route";
+import type { RouteComputer } from "../route-request";
 import type { LoadState, Maplace } from "../store";
 import { defineElements } from "./define";
 // Vue's and Svelte's template types for the elements: declarations only.
@@ -163,6 +164,13 @@ export interface MaplaceMapElement extends HTMLElement {
    * so set it before the map opens; set later, it is misuse.
    */
   sanitize: ((html: string) => string) | undefined;
+  /**
+   * The page's own routing, for a provider with none of its own: MapLibre's reads it when the map
+   * opens (as `createMapLibreAdapter({ computeRoute })`), so `route` draws there; Google's has
+   * its own and ignores it. Set it before the map opens; set later, it applies when the map next
+   * opens. On MapLibre, not a function is misuse naming `computeRoute`.
+   */
+  computeRoute: RouteComputer | undefined;
   /** The underlying store, for anything the attributes don't cover. */
   readonly maplace: Maplace;
   /**

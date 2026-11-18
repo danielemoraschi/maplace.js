@@ -51,9 +51,9 @@ describe("exampleCode", () => {
     expect(vanilla).toMatchObject({ provider: "maplibre", folder: "simple/maplibre" });
   });
 
-  it("refuses an example that isn't there, or a provider it doesn't run on", () => {
+  it("refuses an example that isn't there, on either provider", () => {
     expect(() => exampleCode("nowhere", "google")).toThrow(/nowhere/);
-    expect(() => exampleCode("route", "maplibre")).toThrow(/route\/maplibre/);
+    expect(() => exampleCode("nowhere", "maplibre")).toThrow(/nowhere\/maplibre/);
   });
 });
 
@@ -87,9 +87,9 @@ describe("exampleFile", () => {
 });
 
 describe("exampleProviders", () => {
-  it("lists MapLibre, then Google, for an example with both; Google alone for route", () => {
+  it("lists MapLibre, then Google", () => {
     expect(exampleProviders("simple")).toEqual(["maplibre", "google"]);
-    expect(exampleProviders("route")).toEqual(["google"]);
+    expect(exampleProviders("route")).toEqual(["maplibre", "google"]);
   });
 
   it("refuses an example without a page", () => {
@@ -109,11 +109,5 @@ describe("codeTabsOf", () => {
       ["vanilla", ["maplibre simple/maplibre", "google simple"]],
       ["react", ["maplibre simple/maplibre", "google simple"]],
     ]);
-  });
-
-  it("has Google's code alone for an example on Google only", () => {
-    expect(
-      codeTabsOf("route").flatMap(({ codes }) => codes.map(({ provider }) => provider)),
-    ).toEqual(["google", "google", "google", "google"]);
   });
 });

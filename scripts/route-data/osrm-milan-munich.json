@@ -1,0 +1,1627 @@
+{
+  "code": "Ok",
+  "routes": [
+    {
+      "geometry": {
+        "coordinates": [
+          [9.189984, 45.463581],
+          [9.011548, 45.575901],
+          [9.059865, 45.81344],
+          [8.972302, 45.85966],
+          [8.984712, 45.917935],
+          [8.915607, 45.99914],
+          [8.919082, 46.131223],
+          [8.989699, 46.157685],
+          [9.032689, 46.231698],
+          [8.96293, 46.349944],
+          [8.819961, 46.465845],
+          [8.59945, 46.528058],
+          [8.564918, 46.591215],
+          [8.669051, 46.782691],
+          [8.612192, 46.928745],
+          [8.629302, 47.026721],
+          [8.517074, 47.055367],
+          [8.433278, 47.155533],
+          [8.471146, 47.211696],
+          [8.424224, 47.28901],
+          [8.464569, 47.348017],
+          [8.519167, 47.344498],
+          [8.525087, 47.390532],
+          [8.302271, 47.459966],
+          [8.138927, 47.456705],
+          [7.980091, 47.541737],
+          [7.620322, 47.543163],
+          [7.511707, 47.621045],
+          [7.399633, 47.780273],
+          [7.047265, 47.71116],
+          [6.887168, 47.641675],
+          [6.850143, 47.515913],
+          [6.685979, 47.42356],
+          [6.451525, 47.407549],
+          [6.28949, 47.340332],
+          [6.1544, 47.336153],
+          [5.931373, 47.271969],
+          [5.821871, 47.199557],
+          [5.404342, 47.127438],
+          [5.191773, 47.034117],
+          [4.913778, 47.061085],
+          [4.86496, 47.034004],
+          [4.774164, 47.061173],
+          [4.677302, 47.18542],
+          [4.521737, 47.261901],
+          [4.481765, 47.329428],
+          [4.292891, 47.445418],
+          [3.995943, 47.512551],
+          [3.9014, 47.652859],
+          [3.755796, 47.721683],
+          [3.603095, 47.849665],
+          [3.25329, 47.930932],
+          [3.021991, 48.103708],
+          [2.608037, 48.324065],
+          [2.492024, 48.555576],
+          [2.306505, 48.704262],
+          [2.344578, 48.804815],
+          [2.392703, 48.827425],
+          [2.352316, 48.857243],
+          [2.415363, 48.817352],
+          [2.808139, 48.83561],
+          [3.173066, 49.031119],
+          [3.709464, 49.153616],
+          [3.773354, 49.206751],
+          [3.942634, 49.247842],
+          [4.184964, 49.166203],
+          [4.297599, 49.049604],
+          [4.510619, 49.026792],
+          [5.027662, 49.099385],
+          [5.56885, 49.110649],
+          [5.80617, 49.185528],
+          [5.951171, 49.204077],
+          [6.046024, 49.179148],
+          [6.129955, 49.207106],
+          [6.242921, 49.182738],
+          [6.275588, 49.126228],
+          [6.813387, 49.139189],
+          [6.884088, 49.079082],
+          [7.063671, 49.034388],
+          [7.160739, 48.811565],
+          [7.351707, 48.760456],
+          [7.642179, 48.769052],
+          [7.734341, 48.673099],
+          [7.879347, 48.719437],
+          [8.054072, 48.854242],
+          [8.161656, 48.79147],
+          [8.437574, 48.971885],
+          [8.629933, 48.909749],
+          [8.750483, 48.924051],
+          [8.804696, 48.848551],
+          [9.021983, 48.776835],
+          [9.053413, 48.729681],
+          [9.306323, 48.691921],
+          [9.453936, 48.631398],
+          [9.563853, 48.631964],
+          [9.664812, 48.58264],
+          [9.630228, 48.558952],
+          [9.656491, 48.533994],
+          [9.812498, 48.518658],
+          [9.950012, 48.456499],
+          [10.118893, 48.46467],
+          [10.543775, 48.399871],
+          [10.800551, 48.420005],
+          [11.058812, 48.395762],
+          [11.454086, 48.166276],
+          [11.53277, 48.169738],
+          [11.582126, 48.135193]
+        ],
+        "type": "LineString"
+      },
+      "legs": [
+        {
+          "distance": 938053.4,
+          "duration": 38316.2,
+          "steps": [
+            {
+              "name": "Via Guglielmo Marconi",
+              "distance": 98,
+              "duration": 37.2,
+              "maneuver": {
+                "type": "depart",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Piazza Armando Diaz",
+              "distance": 16.7,
+              "duration": 7.9,
+              "maneuver": {
+                "type": "end of road",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Piazza Armando Diaz",
+              "distance": 79.2,
+              "duration": 13.7,
+              "maneuver": {
+                "type": "continue",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Via Maurizio Gonzaga",
+              "distance": 114.7,
+              "duration": 17.2,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Piazza Giuseppe Missori",
+              "distance": 118.8,
+              "duration": 19.4,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Corso Italia",
+              "distance": 895.8,
+              "duration": 91.8,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Piazzale di Porta Lodovica",
+              "distance": 60.9,
+              "duration": 5.5,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Viale Gian Galeazzo",
+              "distance": 341.6,
+              "duration": 32.8,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Gian Galeazzo",
+              "distance": 64.2,
+              "duration": 6.1,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Piazza Ventiquattro Maggio",
+              "distance": 172.9,
+              "duration": 17.6,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Gabriele d'Annunzio",
+              "distance": 471.1,
+              "duration": 44.1,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Piazzale Antonio Cantore",
+              "distance": 162.4,
+              "duration": 16.6,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Papiniano",
+              "distance": 850.7,
+              "duration": 86.8,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale di Porta Vercellina",
+              "distance": 524.9,
+              "duration": 40.1,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Piazzale Francesco Baracca",
+              "distance": 168,
+              "duration": 23,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Via Alberto da Giussano",
+              "distance": 111.2,
+              "duration": 11.7,
+              "maneuver": {
+                "type": "rotary",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Via Alberto da Giussano",
+              "distance": 180.5,
+              "duration": 11.7,
+              "maneuver": {
+                "type": "exit rotary",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Via Guido d'Arezzo",
+              "distance": 228,
+              "duration": 16.9,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Via del Burchiello",
+              "distance": 237.8,
+              "duration": 17.4,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Via Giotto",
+              "distance": 271.8,
+              "duration": 27.1,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Piazza Michelangelo Buonarroti",
+              "distance": 38.9,
+              "duration": 3.5,
+              "maneuver": {
+                "type": "rotary",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Piazza Michelangelo Buonarroti",
+              "distance": 41.7,
+              "duration": 5.8,
+              "maneuver": {
+                "type": "exit rotary",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Via Michelangelo Buonarroti",
+              "distance": 247.6,
+              "duration": 22.5,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Piazzale Giulio Cesare",
+              "distance": 47.1,
+              "duration": 12.6,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Piazzale Giulio Cesare",
+              "distance": 169.5,
+              "duration": 19.3,
+              "maneuver": {
+                "type": "continue",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Viale Ezio",
+              "distance": 224.4,
+              "duration": 22.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Berengario",
+              "distance": 299.4,
+              "duration": 30.9,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Viale Eginardo",
+              "distance": 466.1,
+              "duration": 71.4,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Lodovico Scarampo",
+              "distance": 533.8,
+              "duration": 50,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Lodovico Scarampo",
+              "distance": 182.7,
+              "duration": 7.7,
+              "maneuver": {
+                "type": "continue",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Viale Alcide De Gasperi",
+              "distance": 1276.1,
+              "duration": 80,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Cavalcavia del Ghisallo",
+              "distance": 914.6,
+              "duration": 58.9,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Svincolo Autostradale Viale Certosa",
+              "distance": 1381,
+              "duration": 79.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Raccordo A8-Viale Certosa",
+              "distance": 1151.1,
+              "duration": 63.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Autostrada dei Laghi",
+              "distance": 9853.4,
+              "duration": 420.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Autostrada dei Laghi",
+              "distance": 1269.9,
+              "duration": 77.6,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Autostrada dei Laghi",
+              "distance": 30520.4,
+              "duration": 1333,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 153382.5,
+              "duration": 6496.6,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 611.4,
+              "duration": 33.7,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 353,
+              "duration": 26.5,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 299.8,
+              "duration": 23.6,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Umfahrungstunnel Fl\u00fcelen",
+              "distance": 93.8,
+              "duration": 9.4,
+              "maneuver": {
+                "type": "roundabout turn",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Fl\u00fcelertunnel",
+              "distance": 5410.5,
+              "duration": 316.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 2097.4,
+              "duration": 189.1,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Axenstrasse",
+              "distance": 4203.9,
+              "duration": 317,
+              "maneuver": {
+                "type": "roundabout turn",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 34331.5,
+              "duration": 1374.6,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 17315,
+              "duration": 696.3,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 5510.5,
+              "duration": 252.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Z\u00fcrich S\u00fcd",
+              "distance": 608.7,
+              "duration": 34.2,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 2363.9,
+              "duration": 152.1,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Manessestrasse",
+              "distance": 217.6,
+              "duration": 21.6,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Manessestrasse",
+              "distance": 137.3,
+              "duration": 14.5,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Stauffacherquai",
+              "distance": 592.5,
+              "duration": 59.4,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Kasernenstrasse",
+              "distance": 329.8,
+              "duration": 31.9,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Kasernenstrasse",
+              "distance": 105.4,
+              "duration": 12,
+              "maneuver": {
+                "type": "continue",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Gessnerbr\u00fccke",
+              "distance": 193.3,
+              "duration": 25.1,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "L\u00f6wenstrasse",
+              "distance": 224.6,
+              "duration": 35.8,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Bahnhofplatz",
+              "distance": 239.5,
+              "duration": 29.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Bahnhofquai",
+              "distance": 192.8,
+              "duration": 23.7,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Museumstrasse",
+              "distance": 327.2,
+              "duration": 32.6,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Sihlquai",
+              "distance": 1592.5,
+              "duration": 168.3,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Sihlquai",
+              "distance": 231.3,
+              "duration": 35.5,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Hardstrasse",
+              "distance": 62.2,
+              "duration": 12.2,
+              "maneuver": {
+                "type": "end of road",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Hardturmstrasse",
+              "distance": 336.1,
+              "duration": 43.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "F\u00f6rrlibuckstrasse",
+              "distance": 360.9,
+              "duration": 41,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Duttweilerstrasse",
+              "distance": 248.5,
+              "duration": 26.8,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Pfingstweidstrasse",
+              "distance": 770.3,
+              "duration": 79.4,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Pfingstweidbr\u00fccke",
+              "distance": 365.9,
+              "duration": 27.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 289.7,
+              "duration": 21.9,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 21503.4,
+              "duration": 926.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 104.8,
+              "duration": 4.7,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 44027.9,
+              "duration": 1757.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 8437.6,
+              "duration": 351,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 4649.8,
+              "duration": 254.6,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 3703.9,
+              "duration": 220.1,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Autoroute des Cigognes",
+              "distance": 198.5,
+              "duration": 45.9,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 158.6,
+              "duration": 38.7,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Autoroute des Cigognes",
+              "distance": 25188.2,
+              "duration": 971.6,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute des Cigognes",
+              "distance": 1753.4,
+              "duration": 124.5,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "La Comtoise",
+              "distance": 226814.3,
+              "duration": 8168.7,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute de Lorraine-Bourgogne",
+              "distance": 2388.8,
+              "duration": 82.8,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 380.4,
+              "duration": 13.2,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 1061.9,
+              "duration": 44.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Autoroute du Soleil",
+              "distance": 251726.4,
+              "duration": 8727.9,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute du Soleil",
+              "distance": 26706.6,
+              "duration": 1019.2,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute du Soleil",
+              "distance": 11057.8,
+              "duration": 452.6,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute du Soleil",
+              "distance": 9203.4,
+              "duration": 399.3,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 383.3,
+              "duration": 27.5,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 3856.8,
+              "duration": 248,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Boulevard P\u00e9riph\u00e9rique Ext\u00e9rieur",
+              "distance": 2559.5,
+              "duration": 230.2,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 40.7,
+              "duration": 3.7,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 281.4,
+              "duration": 33.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 153.7,
+              "duration": 13.8,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Rue Robert-Etlin",
+              "distance": 155.8,
+              "duration": 13.9,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai de Bercy",
+              "distance": 1494.2,
+              "duration": 134.4,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Quai de la Rap\u00e9e",
+              "distance": 394.7,
+              "duration": 35.5,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai de la Rap\u00e9e",
+              "distance": 415.6,
+              "duration": 41.2,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Quai de la Rap\u00e9e",
+              "distance": 89,
+              "duration": 15.3,
+              "maneuver": {
+                "type": "continue",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Quai de la Rap\u00e9e",
+              "distance": 191.9,
+              "duration": 34.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Pont Morland",
+              "distance": 129.4,
+              "duration": 21.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Boulevard Morland",
+              "distance": 475.4,
+              "duration": 81.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai des C\u00e9lestins",
+              "distance": 430.3,
+              "duration": 76.6,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Quai de l'H\u00f4tel de Ville",
+              "distance": 426.8,
+              "duration": 68.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Rue de Lobau",
+              "distance": 200.1,
+              "duration": 41.1,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Rue de Rivoli",
+              "distance": 117.3,
+              "duration": 23.1,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 5.3,
+              "duration": 1.3,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 0,
+              "duration": 0,
+              "maneuver": {
+                "type": "arrive",
+                "modifier": "straight"
+              }
+            }
+          ]
+        },
+        {
+          "distance": 831768.7,
+          "duration": 31126.9,
+          "steps": [
+            {
+              "name": "",
+              "distance": 5.3,
+              "duration": 37.2,
+              "maneuver": {
+                "type": "depart",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Rue de Rivoli",
+              "distance": 75,
+              "duration": 13.9,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Rue de la Coutellerie",
+              "distance": 157.7,
+              "duration": 30.4,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Rue Saint-Martin",
+              "distance": 69.9,
+              "duration": 17,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Quai de Gesvres",
+              "distance": 147.2,
+              "duration": 26.1,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Quai de l'H\u00f4tel de Ville",
+              "distance": 605.3,
+              "duration": 98.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai des C\u00e9lestins",
+              "distance": 420.8,
+              "duration": 71.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai Henri IV",
+              "distance": 557.2,
+              "duration": 85.5,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Voie Mazas",
+              "distance": 293.4,
+              "duration": 26.5,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai de la Rap\u00e9e",
+              "distance": 881,
+              "duration": 79.2,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Quai de Bercy",
+              "distance": 1493.4,
+              "duration": 134.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 478.5,
+              "duration": 43.2,
+              "maneuver": {
+                "type": "on ramp",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 7216.7,
+              "duration": 422.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Autoroute de l\u2019Est",
+              "distance": 32320,
+              "duration": 1269.2,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute de l\u2019Est",
+              "distance": 24721.7,
+              "duration": 866.9,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 133.2,
+              "duration": 6.7,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute de l\u2019Est",
+              "distance": 262058.2,
+              "duration": 9121.9,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Autoroute de l\u2019Est",
+              "distance": 42481.4,
+              "duration": 1518.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute de l\u2019Est",
+              "distance": 101749.3,
+              "duration": 3587.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Autoroute de l\u2019Est",
+              "distance": 950.8,
+              "duration": 47.3,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 1081.5,
+              "duration": 97.3,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 32223.3,
+              "duration": 1144,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 335.6,
+              "duration": 28,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 833.7,
+              "duration": 56.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 38.9,
+              "duration": 2.6,
+              "maneuver": {
+                "type": "roundabout",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 2525.8,
+              "duration": 121.4,
+              "maneuver": {
+                "type": "exit roundabout",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 44.3,
+              "duration": 2.7,
+              "maneuver": {
+                "type": "roundabout",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 1178,
+              "duration": 106,
+              "maneuver": {
+                "type": "exit roundabout",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 6395.3,
+              "duration": 372.6,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 391.4,
+              "duration": 31.3,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 559.5,
+              "duration": 44.9,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 28810.6,
+              "duration": 948.5,
+              "maneuver": {
+                "type": "merge",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 67457.1,
+              "duration": 2665.2,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 358.7,
+              "duration": 11.5,
+              "maneuver": {
+                "type": "off ramp",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 892.8,
+              "duration": 38.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 282.1,
+              "duration": 9,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "",
+              "distance": 787.2,
+              "duration": 25.3,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 40582.2,
+              "duration": 1518.1,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "",
+              "distance": 150408.2,
+              "duration": 4907.1,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "",
+              "distance": 7050.2,
+              "duration": 270.9,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Verdistra\u00dfe",
+              "distance": 2384.2,
+              "duration": 237.3,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Amalienburgstra\u00dfe",
+              "distance": 602.5,
+              "duration": 56.4,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Menzinger Stra\u00dfe",
+              "distance": 1145.3,
+              "duration": 115.6,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Wintrichring",
+              "distance": 742,
+              "duration": 61.9,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Nederlinger Stra\u00dfe",
+              "distance": 486,
+              "duration": 46.1,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Baldurstra\u00dfe",
+              "distance": 1246.9,
+              "duration": 119.5,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Dachauer Stra\u00dfe",
+              "distance": 2812.3,
+              "duration": 248.9,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Sandstra\u00dfe",
+              "distance": 67.6,
+              "duration": 12.2,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Sandstra\u00dfe",
+              "distance": 70.6,
+              "duration": 13.6,
+              "maneuver": {
+                "type": "continue",
+                "modifier": "left"
+              }
+            },
+            {
+              "name": "Gabelsbergerstra\u00dfe",
+              "distance": 1185,
+              "duration": 116.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Gabelsbergerstra\u00dfe",
+              "distance": 124.7,
+              "duration": 13.2,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Gabelsbergerstra\u00dfe",
+              "distance": 42.1,
+              "duration": 5.7,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight left"
+              }
+            },
+            {
+              "name": "Oskar-von-Miller-Ring",
+              "distance": 156.3,
+              "duration": 14,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Altstadtringtunnel",
+              "distance": 483.4,
+              "duration": 43.5,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Franz-Josef-Strau\u00df-Ring",
+              "distance": 375.1,
+              "duration": 35.8,
+              "maneuver": {
+                "type": "fork",
+                "modifier": "slight right"
+              }
+            },
+            {
+              "name": "Karl-Scharnagl-Ring",
+              "distance": 362.9,
+              "duration": 36.7,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Thomas-Wimmer-Ring",
+              "distance": 409.9,
+              "duration": 41.4,
+              "maneuver": {
+                "type": "new name",
+                "modifier": "straight"
+              }
+            },
+            {
+              "name": "Tal",
+              "distance": 19.4,
+              "duration": 2.4,
+              "maneuver": {
+                "type": "turn",
+                "modifier": "right"
+              }
+            },
+            {
+              "name": "Tal",
+              "distance": 0,
+              "duration": 0,
+              "maneuver": {
+                "type": "arrive",
+                "modifier": "left"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

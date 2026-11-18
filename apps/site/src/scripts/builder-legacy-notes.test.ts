@@ -51,9 +51,8 @@ describe("the notes on a 0.2 config", () => {
     ["afterRoute", legacyOptionWords("afterRoute")],
     ['type: "directions"', legacyTypeWords("directions")],
     ["stopover", legacyFieldWords("stopover")],
-  ])("says of %s that MapLibre has no routing", (_name, words) => {
-    expect(words).toContain("MapLibre has no routing");
-    expect(words).toContain("on Google");
+  ])("says of %s how it routes on Google and on MapLibre", (_name, words) => {
+    expect(words).toContain("on MapLibre, give the element your own routing as its computeRoute");
   });
 
   it.each(

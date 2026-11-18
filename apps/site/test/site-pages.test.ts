@@ -209,7 +209,6 @@ describe("the consent placeholder", () => {
     const placeholders = await loadMapsButtons(page).count();
     const href = `${PRIVACY_PAGE.route}#${MAP_PROVIDERS_SECTION}`;
     expect(placeholders).toBeGreaterThan(0);
-    // Route's placeholder is hidden while route shows its note, on MapLibre: count the ones shown.
     expect(await page.locator(`a[href="${href}"]`).filter({ visible: true }).count()).toBe(
       placeholders,
     );

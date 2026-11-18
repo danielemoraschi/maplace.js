@@ -2,6 +2,7 @@ import "./stylesheet";
 import { Map as MapLibreMap } from "maplibre-gl";
 import { elementFilling } from "../../adapter-kit/map-element";
 import type { ConformanceSubject } from "../../testing/conformance/subject";
+import { straightRoutes } from "../../testing/straight-routes";
 import { assembleMapLibreAdapter } from "../assemble";
 import type { MapLibreAdapterOptions } from "../options";
 import { probedMapState } from "./probe";
@@ -16,10 +17,10 @@ export function maplibreParts(options = TEST_OPTIONS) {
   return { state, adapter: assembleMapLibreAdapter(options, state), probe };
 }
 
-/** MapLibre on a map it creates, for the conformance suite. */
+/** MapLibre on a map it creates, for the conformance suite, routing in straight lines. */
 export const MAPLIBRE_SUBJECT: ConformanceSubject = {
   name: "maplibre",
-  create: () => maplibreParts(),
+  create: () => maplibreParts({ ...TEST_OPTIONS, computeRoute: straightRoutes }),
 };
 
 /** The maps pages made for the tests, removed after each (maplace never removes a page's map). */

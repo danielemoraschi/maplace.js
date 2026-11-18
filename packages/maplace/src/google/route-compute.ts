@@ -1,11 +1,12 @@
 /// <reference types="google.maps" preserve="true" />
 import type { Journey } from "../adapter-kit/journey";
+import { routeFailed } from "../adapter-kit/route-result";
 import type { RouteResult } from "../route";
 import { loadRoutesLibrary } from "./libraries";
-import { routeFailed, routeRequest, routeResultOf } from "./route-conversions";
+import { routeRequest, routeResultOf } from "./route-conversions";
 
 /** Google's route, which draws the line, and what the store is told. */
-export interface ComputedRoute {
+export interface ComputedGoogleRoute {
   readonly google: google.maps.routes.Route;
   readonly result: RouteResult;
 }
@@ -15,7 +16,7 @@ export interface ComputedRoute {
  * Google's own error as its cause: a Routes API the key may not use, a journey with no route
  * (stops at sea), a Maps JS too old for Routes.
  */
-export async function computeRoute(journey: Journey): Promise<ComputedRoute> {
+export async function computeRoute(journey: Journey): Promise<ComputedGoogleRoute> {
   const Route = await routeClass();
   const answer = await Route.computeRoutes(routeRequest(journey)).catch((cause: unknown) => {
     throw routeFailed("Google couldn't compute the route", cause);

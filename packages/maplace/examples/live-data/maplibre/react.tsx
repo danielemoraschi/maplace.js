@@ -10,7 +10,7 @@ const GROUPS = { a: "Markers", b: "More markers", d: "Area", e: "Circle" };
 
 const NO_LOCATIONS: readonly Location[] = [];
 
-/** A data set: on MapLibre, which has no routing, there is no route's set (c). */
+/** A data set: on MapLibre, with no route stored for its places, there is no route's set (c). */
 async function fetchGroup(letter: string): Promise<Location[]> {
   const response = await fetch(`/examples/data/live-data-${letter}.json`);
   return response.json();

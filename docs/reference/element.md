@@ -126,6 +126,7 @@ The map opens on the location a [`url-state`](#url-state) address names, if not 
 | `locations` | The locations, as an array; once set, it wins over those written inside the element |
 | `route` | The [route](store.md#routes), or `undefined` |
 | `sanitize` | The store's `sanitize` option, so locations given as JSON or through `locations` can use `html`. Set it before the map opens; set later, it is misuse |
+| `computeRoute` | Your own routing, for a map on MapLibre, which has none ([routes on MapLibre](maplibre.md#routes)); read when the map opens, so set it before; Google ignores it. On MapLibre, not a function is misuse |
 | `maplace` | The underlying [store](store.md), for anything the attributes don't cover |
 | `loadState` | `error` while a misuse stands, else the store's: `idle`, `loading`, `ready` or `error` |
 | `release` | `release()` starts loading at once an element held with `hold` or waiting with `loading="lazy"` |
@@ -310,9 +311,9 @@ Svelte takes the tags as they are:
 ```
 
 - **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. A switch, such as `cluster` or `hold`, takes `false` as `"false"`, which is how both frameworks write it, and that is off (`hold` only as the map would open: `release()` opens a held map); other attributes are written or left out, never given `false`. Svelte 5 writes a bare attribute as `"true"`, which `list` takes as the built-in list. A location's `listed` and `editable` take `false` as `"false"`, their off value.
-- **`locations`** is a property, as are `route` and `sanitize`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
+- **`locations`** is a property, as are `route`, `sanitize` and `computeRoute`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
 - **Events** are listened to by their [names](#events): `@maplace-selectionchange` in Vue, `onmaplace-selectionchange` in Svelte 5 and `on:maplace-selectionchange` in Svelte 4, the event typed with its `detail`; a listener for another event, such as a page's own, types its parameter itself.
 - **Popups and icons** in Vue come through `locations`, not a `<maplace-location>`'s `<template>` child: Vue renders a template's children into the element, not its content, so the child arrives empty.
 - **Anything more** goes through the element itself, taken with `ref` in Vue or `bind:this` in Svelte: its [properties and methods](#properties-and-methods), such as its `maplace` store.
 
-The types of `@maplacejs/maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those three properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.
+The types of `@maplacejs/maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those four properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.

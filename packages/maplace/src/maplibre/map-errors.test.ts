@@ -48,9 +48,25 @@ describe("routeMapErrors", () => {
   const routed = () => {
     const { map, fire } = fakeMap();
     const styleFailed = vi.fn();
-    routeMapErrors(map, { styleFailed, sourceFailed: vi.fn() });
-    return { fire, styleFailed };
+    const sourceFailed = vi.fn();
+    routeMapErrors(map, { styleFailed, sourceFailed });
+    return { fire, styleFailed, sourceFailed };
   };
+
+  it("names what didn't draw when one of maplace's sources fails: the locations, or the route", () => {
+    const { fire, sourceFailed } = routed();
+    const error = new Error("bad feature");
+    fire({ error, sourceId: "maplace-shapes" });
+    fire({ error, sourceId: "maplace-route" });
+    expect(sourceFailed.mock.calls.map(([failure]) => failure.message)).toEqual([
+      "apply: MapLibre failed to draw the locations",
+      "setRoute: MapLibre failed to draw the route",
+    ]);
+    expect(sourceFailed.mock.calls[1]?.[0]).toMatchObject({
+      code: "provider-load-failed",
+      cause: error,
+    });
+  });
 
   it("takes MapLibre's worker message before the style loaded for no style failure, and logs it", () => {
     const logged = vi.spyOn(console, "error").mockImplementation(() => {});

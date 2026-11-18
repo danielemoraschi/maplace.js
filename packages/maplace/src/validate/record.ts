@@ -11,15 +11,18 @@ export type Assert<T> = (value: unknown, field: Field) => asserts value is T;
 export interface RecordSpec<T, Unchecked extends keyof T> {
   readonly checks: Readonly<Record<Exclude<keyof T, Unchecked>, Check>>;
   readonly unchecked?: readonly Unchecked[];
-  /** Said about any other key, e.g. "is not a style field". */
-  readonly unknown: string;
+  /**
+   * Said about any other key, e.g. "is not a style field"; undefined lets other keys through, for
+   * an object the page relays rather than writes (a routing service's answer).
+   */
+  readonly unknown: string | undefined;
   /** Said about specific other keys instead, e.g. 0.2 names. */
   readonly remarks?: Readonly<Record<string, string>>;
   /** What a non-object is told it must be. Default "an object". */
   readonly expected?: string;
 }
 
-/** Builds the check once: unknown keys first, then each field in the order given. */
+/** Builds the check once: unknown keys first (unless let through), then each field in order. */
 export function recordOf<T, Unchecked extends keyof T = never>(
   spec: RecordSpec<T, Unchecked>,
 ): Assert<T> {
@@ -28,8 +31,11 @@ export function recordOf<T, Unchecked extends keyof T = never>(
   const remarks = new Map(Object.entries(spec.remarks ?? {}));
   return (value, field) => {
     checkObject(value, field, spec.expected);
-    for (const key of Object.keys(value)) {
-      if (!keys.has(key)) reject(child(field, key), remarks.get(key) ?? spec.unknown);
+    const { unknown } = spec;
+    if (unknown !== undefined) {
+      for (const key of Object.keys(value)) {
+        if (!keys.has(key)) reject(child(field, key), remarks.get(key) ?? unknown);
+      }
     }
     for (const [key, check] of checks) check(value[key], child(field, key));
   };

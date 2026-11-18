@@ -42,7 +42,7 @@ vi.mock("@maplacejs/maplace", async (importOriginal) => {
 
 /** What only a Google page has, by example, left out when its MapLibre twin is held to it. */
 const GOOGLE_ONLY_PARTS: Readonly<Record<string, string>> = {
-  // MapLibre has no routing: live-data's page there has no button for the route's data set.
+  // No route is stored for live-data's places on MapLibre: its page there has no route button.
   "live-data": 'button[value="c"]',
 };
 

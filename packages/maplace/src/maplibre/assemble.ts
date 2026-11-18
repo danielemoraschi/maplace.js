@@ -18,11 +18,13 @@ import { PLACERS } from "./placers";
 import { locationAt } from "./pointer-targets";
 import { createPopup } from "./popup";
 import { createPresenting } from "./presenting";
+import { createMapLibreRouting } from "./routing";
 import { viewportReports } from "./viewport-reports";
 
 /**
  * What the adapter draws beyond the contract's core. A capability is declared only once the
- * adapter draws it: circles, clustering, editing and heatmaps; routes never, MapLibre has no routing.
+ * adapter draws it: circles, clustering, editing and heatmaps; routes only through the page's own
+ * routing (`computeRoute`), MapLibre having none.
  */
 const CAPABILITIES: readonly Capability[] = [
   "circle",
@@ -49,6 +51,8 @@ export function assembleMapLibreAdapter(
   const camera = createCamera(state, drawing);
   const controls = createControls();
   const pointedAt = (event: MapMouseEvent) => locationAt(state, event.point);
+  const routing =
+    options.computeRoute && createMapLibreRouting(state, drawing, options.computeRoute);
   const parts = [
     // The globe first: setting the projection loads every source again, and the first view is
     // fitted on the projection the map opens in.
@@ -60,6 +64,7 @@ export function assembleMapLibreAdapter(
     layerHover(pointedAt, drawing.hover),
     viewportReports,
     camera.part,
+    ...(routing ? [routing.part] : []),
     popup.part,
     controls.part,
     originDot.part,
@@ -71,12 +76,12 @@ export function assembleMapLibreAdapter(
     parts,
     reportFatal: failures.reportFatal,
   });
-  const followers = [camera, popup];
+  const followers = [camera, popup, ...(routing ? [routing] : [])];
   const afterDrawing = () => {
     for (const follower of followers) follower.sync();
   };
   return {
-    capabilities: new Set(CAPABILITIES),
+    capabilities: new Set<Capability>(routing ? [...CAPABILITIES, "route"] : CAPABILITIES),
     pageMapElement: options.map?.getContainer(),
     apply: (diff) => drawing.apply(diff).then(afterDrawing).then(drawing.rendered),
     present(next) {
@@ -85,8 +90,10 @@ export function assembleMapLibreAdapter(
       originDot.sync();
     },
     setView: camera.setView,
-    // Routes aren't a capability: the store never asks for one, and clears none.
-    setRoute() {},
+    // Without the page's routing, routes aren't a capability: the store never asks for one.
+    setRoute(route) {
+      routing?.setRoute(route);
+    },
     mountControl: controls.mountControl,
     mount: failures.mounting(lifecycle.mount),
     destroy() {

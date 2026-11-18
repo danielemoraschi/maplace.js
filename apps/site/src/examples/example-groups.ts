@@ -8,8 +8,6 @@ export interface ExampleSection {
   readonly drawsOwnList?: true;
   /** Its map framed its own way: the site draws no border around it. */
   readonly drawsOwnFrame?: true;
-  /** Why it runs on Google only, said in its frame while MapLibre is chosen. */
-  readonly googleOnlyBecause?: string;
 }
 
 /** A group of the home page's examples: its own page, and a link in the examples' bar. */
@@ -34,7 +32,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     label: "Basics",
     headingLead: "A JavaScript library for markers",
     intro:
-      "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and, on Google, routes, and the list or menu that goes with them, in sync with the map. One script tag, with a Maps key on Google and none on MapLibre; npm and React too.",
+      "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and routes, and the list or menu that goes with them, in sync with the map. One script tag, with a Maps key on Google and none on MapLibre; npm and React too.",
     summary: "Places on a map: one pin, your own markers, popups, and a click to add one.",
     description:
       "A JavaScript library for Google Maps and MapLibre: a list of locations becomes a map with markers, popups and a click to add one, in a few lines.",
@@ -161,11 +159,11 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
     label: "Data & routes",
     headingLead: "Live data, clusters and routes",
     intro:
-      "Locations fetched as JSON and swapped in live, markers grouped into clusters that show a count, the world's countries shaded by a value, a month of earthquakes as a heatmap, a map that loads only when the visitor presses a button, a link that opens the map on a place, and on Google a driving route through your stops.",
+      "Locations fetched as JSON and swapped in live, markers grouped into clusters that show a count, the world's countries shaded by a value, a month of earthquakes as a heatmap, a map that loads only when the visitor presses a button, a link that opens the map on a place, and a driving route through your stops.",
     summary:
       "Data fetched and swapped in live, thousands of points clustered, countries shaded by a value, a heatmap of earthquakes, a drive through your places, a map loaded on a press, a link to a place.",
     description:
-      "Live data, clustering, a choropleth, a heatmap, a map loaded on demand, a link to a place and, on Google, a driving route: on Google Maps or MapLibre.",
+      "Live data, clustering, a choropleth, a heatmap, a map loaded on demand, a link to a place and a driving route: on Google Maps or MapLibre.",
     sections: [
       {
         name: "live-data",
@@ -194,7 +192,6 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         name: "route",
         title: "Driving route",
         summary: "A drive through your own places, passing through one, with directions by leg.",
-        googleOnlyBecause: "MapLibre has no routing.",
       },
       {
         name: "load-on-demand",

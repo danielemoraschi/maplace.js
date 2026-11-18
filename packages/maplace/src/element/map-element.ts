@@ -1,4 +1,5 @@
 import type { LoadState, Location, Maplace, Route } from "../index";
+import type { RouteComputer } from "../route-request";
 import { afterParsing } from "./after-parsing";
 import { booleanOrRaw } from "./attribute-values";
 import { type CameraKeeper, createCameraKeeper } from "./camera-keeper";
@@ -58,6 +59,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   #session: MapSession | undefined;
   #shownState: LoadState = "idle";
   #released = false;
+  #computeRoute: RouteComputer | undefined;
   /** Held when it last opened: only `release()` or connecting again lets a held map go. */
   #heldAtOpen = false;
 
@@ -90,6 +92,15 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
 
   set sanitize(sanitize: Sanitize | undefined) {
     this.#feed.giveSanitize(sanitize);
+  }
+
+  /** The page's own routing, which a provider without routing of its own reads when the map opens. */
+  get computeRoute(): RouteComputer | undefined {
+    return this.#computeRoute;
+  }
+
+  set computeRoute(computeRoute: RouteComputer | undefined) {
+    this.#computeRoute = computeRoute;
   }
 
   get route(): Route | undefined {

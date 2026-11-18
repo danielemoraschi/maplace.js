@@ -1,6 +1,6 @@
 import type { ErrorEvent, Map as MapLibreMap } from "maplibre-gl";
 import { MaplaceError } from "../errors";
-import { isOwnSource } from "./layers";
+import { isOwnSource, ROUTE_SOURCE } from "./layers";
 
 /** Where the map's errors go: the ones maplace answers for; the rest are logged. */
 interface ErrorRoutes {
@@ -34,8 +34,11 @@ export function routeMapErrors(map: MapLibreMap, routes: ErrorRoutes): () => voi
   const listener = ({ error, sourceId }: MapErrorEvent) => {
     // MapLibre still calls a listener taken off by one before it, for the same error.
     if (!routing) return;
-    if (sourceId !== undefined && isOwnSource(sourceId)) routes.sourceFailed(drawFailure(error));
-    else if (sourceId === undefined && map.getStyle() === undefined && !isWorkerFailure(error)) {
+    if (sourceId !== undefined && isOwnSource(sourceId)) {
+      routes.sourceFailed(
+        drawFailure(error, sourceId === ROUTE_SOURCE ? ROUTE_NOT_DRAWN : LOCATIONS_NOT_DRAWN),
+      );
+    } else if (sourceId === undefined && map.getStyle() === undefined && !isWorkerFailure(error)) {
       routes.styleFailed(styleErrorOf(error));
     } else if (!othersListen(map, listener)) console.error(error);
   };
@@ -59,9 +62,11 @@ function othersListen(map: MapLibreMap, own: (event: MapErrorEvent) => void): bo
   return listened;
 }
 
-/** maplace's locations failed to draw: what the store asked for didn't reach the map. */
-export function drawFailure(cause: unknown): MaplaceError {
-  const message = "apply: MapLibre failed to draw the locations";
+const LOCATIONS_NOT_DRAWN = "apply: MapLibre failed to draw the locations";
+const ROUTE_NOT_DRAWN = "setRoute: MapLibre failed to draw the route";
+
+/** What the store asked for didn't reach the map: its locations, or its route. */
+export function drawFailure(cause: unknown, message = LOCATIONS_NOT_DRAWN): MaplaceError {
   return new MaplaceError("provider-load-failed", message, { cause });
 }
 

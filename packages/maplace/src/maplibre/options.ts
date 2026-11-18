@@ -1,10 +1,12 @@
 import type { Map as MapLibreMap, MapOptions, StyleSpecification } from "maplibre-gl";
 import { CONTROL_POSITIONS, type ControlPosition } from "../adapter";
+import type { RouteComputer } from "../route-request";
 import { child, type Field, mustBe, reject, root } from "../validate/fail";
 import { GOOGLE_NAMES_ON_MAPLIBRE } from "../validate/google-map-option-names";
 import { type Assert, recordOf } from "../validate/record";
 import { refusedKeysCheck, ZERO_TWO_MAP_OPTIONS } from "../validate/refused-keys";
 import {
+  checkFunction,
   checkNonBlankString,
   checkNonEmptyString,
   isElement,
@@ -38,6 +40,13 @@ export interface MapLibreAdapterOptions {
    * Refused with the page's own `map`, which keeps its own projection.
    */
   readonly globe?: true | MapLibreGlobe | undefined;
+  /**
+   * The page's own routing: MapLibre has none, so with this the map draws the store's route
+   * (`setRoute`) through what it answers, and without it a route is `unsupported-capability`.
+   * Asked once per new journey, with each stop where it is drawn; its answer is checked, and a
+   * rejection or a wrong answer fails the route (`route-failed`). With the page's own `map` too.
+   */
+  readonly computeRoute?: RouteComputer | undefined;
 }
 
 /** The globe's toggle: its corner (default top-left) and its words (default "Globe"). */
@@ -103,6 +112,7 @@ const checkOptionFields: Assert<MapLibreAdapterOptions> = recordOf<MapLibreAdapt
     map: optional(checkPageMap),
     mapOptions: optional(checkCreatedMapOptions),
     globe: optional((value, field) => value === true || checkGlobeOptions(value, field)),
+    computeRoute: optional(checkFunction),
   },
   unknown: "is not a MapLibre adapter option",
   remarks: {

@@ -23,15 +23,6 @@ describe("liveVersions", () => {
     ]);
   });
 
-  it("runs route on Google only", () => {
-    expect(versionsOf("route")).toEqual([
-      "google html",
-      "google script",
-      "google vanilla",
-      "google react",
-    ]);
-  });
-
   it("runs Google's page as the site does: its map held, with the site's key", () => {
     const [page] = onGoogle({ apiKey: "site-key" });
     expect(page?.markup).toContain('<maplace-map hold provider="google" api-key="site-key"');

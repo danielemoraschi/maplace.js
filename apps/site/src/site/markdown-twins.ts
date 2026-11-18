@@ -83,13 +83,13 @@ function exampleGroupMarkdown(group: ExampleGroup, guides: readonly StoredMarkdo
   return markdownPage(groupHeading(group), group.intro, [group.summary, ...sections].join("\n\n"));
 }
 
-/** A section: its summary, why it runs on Google only if it does, its guide if it has one, its code. */
+/** A section: its summary, its guide if it has one, its code. */
 function sectionMarkdown(
-  { name, title, summary, googleOnlyBecause }: ExampleSection,
+  { name, title, summary }: ExampleSection,
   guides: readonly StoredMarkdown[],
 ): string {
   const guide = guides.find(({ id }) => id === name) && requiredBody(guides, name, "exampleGuides");
-  return [`## ${title}`, summary, googleOnlyBecause, guide, codeMarkdown(name)]
+  return [`## ${title}`, summary, guide, codeMarkdown(name)]
     .filter((part) => part !== undefined)
     .join("\n\n");
 }

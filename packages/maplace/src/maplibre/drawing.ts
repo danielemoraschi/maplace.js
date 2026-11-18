@@ -10,7 +10,7 @@ import {
   flushAll,
   resendReplaced,
 } from "./feature-set";
-import { addLayers, PIN_SOURCE, removeLayers, SHAPE_SOURCE } from "./layers";
+import { addLayers, PIN_SOURCE, ROUTE_SOURCE, removeLayers, SHAPE_SOURCE } from "./layers";
 import { drawFailure } from "./map-errors";
 import type { MapLibreState } from "./map-state";
 import { untilRendered } from "./map-waits";
@@ -98,6 +98,7 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
     const features: FeatureSets = {
       pins: createFeatureSet(map, PIN_SOURCE),
       shapes: createFeatureSet(map, SHAPE_SOURCE),
+      route: createFeatureSet(map, ROUTE_SOURCE),
     };
     state.features = features;
     site = createPlacingSite(mounted, state, features);

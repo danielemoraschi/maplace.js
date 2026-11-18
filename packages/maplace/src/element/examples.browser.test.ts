@@ -1,12 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { behaviourOf } from "../testing/examples/example-behaviours";
 import { parse } from "../testing/examples/example-dom";
-import {
-  EXAMPLE_PAGES,
-  type ExamplePage,
-  isDrawnOn,
-  onProvider,
-} from "../testing/examples/example-files";
+import { EXAMPLE_PAGES, type ExamplePage, onProvider } from "../testing/examples/example-files";
 import { cdnScriptFor, cdnScriptOf, openPage } from "../testing/examples/example-page";
 import {
   adapterInside,
@@ -61,12 +56,10 @@ describe.each(EXAMPLE_PAGES.filter(onProvider("maplibre")))(
   },
 );
 
-it("has a MapLibre page only for an example drawn on MapLibre: never route, never one without a Google twin", () => {
-  const googleNames = EXAMPLE_PAGES.filter(onProvider("google")).map(({ name }) => name);
-  for (const { name } of EXAMPLE_PAGES.filter(onProvider("maplibre"))) {
-    expect(googleNames, name).toContain(name);
-    expect(isDrawnOn(name, "maplibre"), name).toBe(true);
-  }
+it("has a MapLibre page for every example with a Google one, and none without", () => {
+  const namesOn = (provider: "google" | "maplibre") =>
+    EXAMPLE_PAGES.filter(onProvider(provider)).map(({ name }) => name);
+  expect(namesOn("maplibre")).toEqual(namesOn("google"));
 });
 
 /** The CDN script a page needs: its `<maplace-map>` asks to cluster with `cluster`. */

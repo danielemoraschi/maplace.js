@@ -71,7 +71,9 @@ type MapAttribute =
   | NamedMapAttribute;
 
 /** The properties a template sets on the map; both frameworks set a defined element's own. */
-type MapProperties = Partial<Pick<MaplaceMapElement, "locations" | "route" | "sanitize">>;
+type MapProperties = Partial<
+  Pick<MaplaceMapElement, "locations" | "route" | "sanitize" | "computeRoute">
+>;
 
 type MapTemplate = Attributes<MapAttribute> &
   Attributes<SwitchAttribute, AttributeValue | false> &

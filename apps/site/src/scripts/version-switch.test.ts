@@ -17,8 +17,8 @@ const pageToggle = () =>
       `<label><input type="radio" name="provider" value="${provider}"${index === 0 ? " checked" : ""} /> ${provider}</label>`,
   ).join("")}</fieldset>`;
 
-/** A section as the site renders it, on `providers`: a Google-only one with its note's button. */
-function section(name: string, providers: readonly string[] = PROVIDERS): string {
+/** A section as the site renders it, on both providers. */
+function section(name: string): string {
   const radios = VERSIONS.map(
     (value, index) =>
       `<label><input type="radio" name="${name}-version" value="${value}"${index === 0 ? " checked" : ""} /> ${value}</label>`,
@@ -29,9 +29,6 @@ function section(name: string, providers: readonly string[] = PROVIDERS): string
   };
   const files = (provider: string, index: number) =>
     `<div data-provider-files="${provider}"${index === 0 ? "" : " hidden"}></div>`;
-  const button = providers.includes("maplibre")
-    ? ""
-    : `<div class="no-version-note"><button type="button" data-show-on="google">Show it on Google</button></div>`;
   // As the site's sections are: the version switch, the example's own input, then the frame.
   const tab = (id: string, index: number) =>
     `<button type="button" role="tab" id="${name}-${id}-tab" aria-controls="${name}-${id}" aria-selected="${index === 0}">${id}</button>`;
@@ -39,9 +36,9 @@ function section(name: string, providers: readonly string[] = PROVIDERS): string
     <div role="tablist">${["map", "html", "react"].map(tab).join("")}</div>
     <fieldset data-site-switch>${radios}</fieldset>
     <label><input type="checkbox" data-own-input /> North only</label>
-    <div class="map-frame">${providers.flatMap((provider) => VERSIONS.map((kind) => version(kind, provider))).join("")}${button}</div>
-    <div role="tabpanel">${providers.map(files).join("")}</div>
-    <div role="tabpanel">${providers.map(files).join("")}</div>
+    <div class="map-frame">${PROVIDERS.flatMap((provider) => VERSIONS.map((kind) => version(kind, provider))).join("")}</div>
+    <div role="tabpanel">${PROVIDERS.map(files).join("")}</div>
+    <div role="tabpanel">${PROVIDERS.map(files).join("")}</div>
   </section>`;
 }
 
@@ -61,18 +58,7 @@ const chooseVersion = (name: string, value: string) =>
 const chooseProvider = (value: string) =>
   document.querySelector<HTMLInputElement>(`[name="provider"][value="${value}"]`)?.click();
 
-const tabsDisabled = (name: string) =>
-  [...document.querySelectorAll<HTMLButtonElement>(`#${name} [role="tab"]`)].map(
-    ({ disabled }) => disabled,
-  );
-
-const showOnGoogle = (name: string) =>
-  document.querySelector<HTMLButtonElement>(`#${name} [data-show-on]`)?.click();
-
 const storage = () => sessionStorage;
-
-const noVersion = (name: string) =>
-  document.querySelector(`#${name} .map-frame`)?.hasAttribute("data-no-version");
 
 /** What adds a root's sections to those the page's toggle switches. */
 let followToggle: (root: ParentNode) => void;
@@ -84,8 +70,7 @@ function startSwitches(): void {
 }
 
 function startPage(kept?: Provider): void {
-  document.body.innerHTML =
-    pageToggle() + section("simple") + section("big") + section("route", ["google"]);
+  document.body.innerHTML = pageToggle() + section("simple") + section("big") + section("route");
   if (kept) keepProvider(storage, kept);
   startSwitches();
 }
@@ -105,11 +90,11 @@ beforeEach(() => {
 });
 
 describe("startProviderToggle", () => {
-  it("shows MapLibre's HTML version at first, and route no version", () => {
+  it("shows MapLibre's HTML version at first", () => {
     expect([shown("simple"), shown("big"), shown("route")]).toEqual([
       ["maplibre html"],
       ["maplibre html"],
-      [],
+      ["maplibre html"],
     ]);
   });
 
@@ -140,62 +125,6 @@ describe("startProviderToggle", () => {
   it("shows the provider's files in every code panel", () => {
     chooseProvider("google");
     expect(filesShown("simple")).toEqual(["google", "google"]);
-  });
-
-  it("shows a Google-only section no version on MapLibre, its frame marked, with its Google files", () => {
-    chooseVersion("route", "vanilla");
-    expect(shown("route")).toEqual([]);
-    expect(noVersion("route")).toBe(true);
-    expect(filesShown("route")).toEqual(["google", "google"]);
-  });
-
-  it("grays a Google-only section's version radios and code tabs out on MapLibre, its Map tab left", () => {
-    chooseProvider("google");
-    chooseProvider("maplibre");
-    const fieldset = document.querySelector<HTMLFieldSetElement>("#route [data-site-switch]");
-    expect(fieldset?.disabled).toBe(true);
-    expect(tabsDisabled("route")).toEqual([false, true, true]);
-    expect(tabsDisabled("simple")).toEqual([false, false, false]);
-  });
-
-  it("brings a Google-only section's version radios and code tabs back on Google", () => {
-    showOnGoogle("route");
-    expect(document.querySelector<HTMLFieldSetElement>("#route [data-site-switch]")?.disabled).toBe(
-      false,
-    );
-    expect(tabsDisabled("route")).toEqual([false, false, false]);
-  });
-
-  it("goes back to the Map tab when a code tab it shows is grayed out", () => {
-    chooseProvider("google");
-    const html = document.getElementById("route-html-tab") as HTMLButtonElement;
-    html.setAttribute("aria-selected", "true");
-    const clicked = vi.fn();
-    document.getElementById("route-map-tab")?.addEventListener("click", clicked);
-    chooseProvider("maplibre");
-    expect(clicked).toHaveBeenCalledOnce();
-  });
-
-  it("shows a Google-only section on Google from its button, the others left on MapLibre", () => {
-    showOnGoogle("route");
-    expect([shown("route"), shown("simple")]).toEqual([["google html"], ["maplibre html"]]);
-    expect(noVersion("route")).toBe(false);
-    expect(sessionStorage.getItem(PROVIDER_CHOICE_KEY)).toBeNull();
-  });
-
-  it("moves focus to the section's version switch, its button hidden with the note", () => {
-    showOnGoogle("route");
-    expect(document.activeElement).toBe(
-      document.querySelector('[name="route-version"][value="html"]'),
-    );
-  });
-
-  it("brings back the note when the page's toggle goes to Google and back to MapLibre", () => {
-    showOnGoogle("route");
-    chooseProvider("google");
-    chooseProvider("maplibre");
-    expect(shown("route")).toEqual([]);
-    expect(noVersion("route")).toBe(true);
   });
 
   it("opens on a provider the visitor chose before it ran, and keeps it", () => {

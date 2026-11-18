@@ -4,17 +4,14 @@ import { FIRST_VERSION, VERSION_LABELS } from "../examples/example-versions.ts";
 interface Props {
   /** Its example's folder in `packages/maplace/examples/`. */
   name: string;
-  /** Grayed out: the section has no version on the provider it opens on (route on MapLibre). */
-  disabled?: boolean;
 }
 
-const { name, disabled = false } = Astro.props;
+const { name } = Astro.props;
 ---
 
 <fieldset
   data-site-switch
-  disabled={disabled}
-  class="m-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm disabled:opacity-60 [&:disabled_label]:cursor-not-allowed"
+  class="m-0 mb-2 flex flex-wrap items-baseline gap-x-3.5 gap-y-1 border-0 p-0 text-sm"
 >
   <legend class="float-left p-0 text-muted max-[640px]:w-full">Run the map from</legend>
   {

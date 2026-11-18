@@ -1,7 +1,14 @@
 // Compile-time checks of @maplacejs/maplace/maplibre's options: each @ts-expect-error must stay
 // an error.
 
-import type { Location, Maplace } from "@maplacejs/maplace";
+import type {
+  Location,
+  Maplace,
+  RouteAnswer,
+  RouteComputer,
+  RouteRequest,
+  RouteResult,
+} from "@maplacejs/maplace";
 import {
   createMapLibreAdapter,
   createMapLibreMap,
@@ -56,6 +63,23 @@ createMapLibreAdapter({ mapOptions: { center: [0, 0] } });
 createMapLibreAdapter({ mapOptions: { style: "https://tiles.example/style.json" } });
 // @ts-expect-error a style is a URL or a style object
 createMapLibreAdapter({ mapStyle: 42 });
+
+// The page's own routing: given each stop where it is, it answers the legs and path.
+const straightOn: RouteComputer = async ({ stops, travelMode, avoid, signal }) => {
+  expectTypeOf(travelMode).toEqualTypeOf<"driving" | "walking" | "bicycling" | "transit">();
+  expectTypeOf(avoid).toEqualTypeOf<RouteRequest["avoid"]>();
+  expectTypeOf(signal).toEqualTypeOf<AbortSignal>();
+  return { legs: [], path: stops.map(({ lat, lng }) => ({ lat, lng })) };
+};
+createMapLibreAdapter({ computeRoute: straightOn });
+createMapLibreMap("#map", { computeRoute: straightOn });
+declare const relayed: RouteResult;
+// A whole result fits an answer: its totals are read from the legs.
+export const answer: RouteAnswer = relayed;
+// @ts-expect-error the answer comes as a promise, as a routing service's does
+createMapLibreAdapter({ computeRoute: () => ({ legs: [], path: [] }) });
+// @ts-expect-error an answer has its legs and path
+createMapLibreAdapter({ computeRoute: async () => ({ legs: [] }) });
 
 declare const mapLibreSide: HTMLElement;
 createMapLibreMap(mapLibreSide, { myLocation: true });

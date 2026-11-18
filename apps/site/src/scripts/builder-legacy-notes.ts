@@ -3,7 +3,10 @@ import {
   OLD_OPTIONS,
 } from "../../../../packages/maplace/src/validate/migration.ts";
 
-const NO_ROUTING = "MapLibre has no routing";
+const ROUTING_ON_MAPLIBRE = "on MapLibre, give the element your own routing as its computeRoute";
+
+/** A routing hint that holds on both providers, MapLibre's routing said after it. */
+const routing = (hint: string) => `${hint} (${ROUTING_ON_MAPLIBRE})`;
 const LIST_POSITION = "use list-position: a corner of the map, or outside, beside it";
 
 const listenFor = (event: string) => `listen for the element's maplace-${event} event`;
@@ -29,12 +32,8 @@ const OPTIONS_ON_THE_ELEMENT: Readonly<Record<string, string>> = {
   styles: option(
     "on Google, use map-id with Cloud styling, and color-scheme; on MapLibre, map-style",
   ),
-  directions_options: option(
-    `on Google, set travelMode and avoid in the element's route property; ${NO_ROUTING}`,
-  ),
-  directions_panel: option(
-    `on Google, render each leg's steps from the maplace-routechange event; ${NO_ROUTING}`,
-  ),
+  directions_options: option(routing("set travelMode and avoid in the element's route property")),
+  directions_panel: option(routing("render each leg's steps from the maplace-routechange event")),
 };
 
 /** 0.2's callbacks, under the events the element fires for them (MIGRATION's Events table). */
@@ -54,7 +53,7 @@ const CALLBACKS: Readonly<Record<string, string>> = {
   afterCreateMarker: callback(
     "leave it out: style markers with CSS on data-selected and data-hovered",
   ),
-  afterRoute: callback(`on Google, listen for maplace-routechange; ${NO_ROUTING}`),
+  afterRoute: callback(routing("listen for maplace-routechange")),
   circleRadiusChanged: callback(listenFor("locationchange")),
   circleCenterChanged: callback(listenFor("locationchange")),
   dragEnd: callback(listenFor("locationchange")),
@@ -69,9 +68,7 @@ const OPTION_WORDS: Readonly<Record<string, string>> = {
 };
 
 const FIELDS_ON_THE_ELEMENT: Readonly<Record<string, string>> = {
-  stopover: field(
-    `on Google, list the stop's id under via in the element's route property; ${NO_ROUTING}`,
-  ),
+  stopover: field(routing("list the stop's id under via in the element's route property")),
   infoWindowMaxWidth: field(
     "the element has no setting for it: size the popup's content with CSS on .maplace-popup",
   ),
@@ -93,7 +90,7 @@ export function legacyOptionWords(name: string): string {
 /** What the page says of a config's `type` that draws nothing of its own. */
 export function legacyTypeWords(type: unknown): string {
   return type === "directions"
-    ? option(`on Google, a script sets the element's route property; ${NO_ROUTING}`)
+    ? option(routing("a script sets the element's route property"))
     : option("set type per location");
 }
 
