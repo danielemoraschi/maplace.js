@@ -1,4 +1,4 @@
-import { PROVIDER_LABELS, type Provider } from "../examples/example-providers.ts";
+import { providerLabel } from "../examples/example-providers.ts";
 import {
   EXAMPLE_GROUPS,
   type ExampleGroup,
@@ -122,10 +122,4 @@ function versionMarkdown({ label, provider, folder, files }: ExampleCode): strin
 /** An example's file at `path` under `packages/maplace/examples/`: its path, then its fence. */
 function fencedFile(path: string, lang: string, code: string): string {
   return `\`${EXAMPLES_IN_REPO}${path}\`\n\n\`\`\`${lang}\n${code.trimEnd()}\n\`\`\``;
-}
-
-function providerLabel(provider: Provider): string {
-  const label = PROVIDER_LABELS.find((each) => each.provider === provider)?.label;
-  if (label === undefined) throw new Error(`the provider ${provider} has no label`);
-  return label;
 }

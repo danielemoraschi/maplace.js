@@ -14,10 +14,11 @@ const { lead, links } = Astro.props;
   links.length > 0 && (
     <p class="mt-1 mb-0 text-sm text-muted">
       {lead}{" "}
-      {links.map(({ file, url }, index) => (
+      {links.map(({ file, url, onlyOn }, index) => (
         <>
           {index > 0 && ", "}
           <a href={url} target="_blank" rel="noopener">{file}</a>
+          {onlyOn && ` (used by ${onlyOn})`}
         </>
       ))}
     </p>

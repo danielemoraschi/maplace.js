@@ -31,3 +31,10 @@ export function isProvider(value: string): value is Provider {
 export function exampleFolder(name: string, provider: Provider): string {
   return provider === "google" ? name : `${name}/maplibre`;
 }
+
+/** A provider's name as the site writes it: "MapLibre", "Google". */
+export function providerLabel(provider: Provider): string {
+  const label = PROVIDER_LABELS.find((each) => each.provider === provider)?.label;
+  if (label === undefined) throw new Error(`the provider ${provider} has no label`);
+  return label;
+}

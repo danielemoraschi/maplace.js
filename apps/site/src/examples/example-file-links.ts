@@ -1,5 +1,6 @@
 import type { StylesheetPlace } from "../../../../packages/maplace/src/testing/examples/linked-stylesheets.ts";
 import { type ExampleData, exampleData } from "./example-data.ts";
+import { type Provider, providerLabel } from "./example-providers.ts";
 
 /**
  * A data file's site path in an example's code, `/examples/data/points-4k.json`, or one with a
@@ -15,6 +16,36 @@ const ANY_NAME_PART = String.raw`[\w-]+`;
 export interface ExampleFileLink {
   readonly file: string;
   readonly url: string;
+  /** The provider whose versions alone use it, when the example runs on others too. */
+  readonly onlyOn?: string;
+}
+
+/** An example's code on one provider, as the files it fetches are read from it. */
+interface ProviderCode {
+  readonly provider: Provider;
+  readonly files: readonly { readonly code: string }[];
+}
+
+/**
+ * The data files an example's code fetches, each linked to the site's copy, naming the provider
+ * whose versions alone fetch it when the example runs on more than one.
+ */
+export function fetchedDataLinks(codes: readonly ProviderCode[]): ExampleFileLink[] {
+  const providers = [...new Set(codes.map(({ provider }) => provider))];
+  const fetchedOn = providers.map((provider) => {
+    const own = codes.filter((code) => code.provider === provider);
+    return { provider, names: new Set(dataFetchedBy(sourcesOf(own)).map(({ name }) => name)) };
+  });
+  return dataFetchedBy(sourcesOf(codes)).map(({ name }) => {
+    const [only, ...others] = fetchedOn.filter(({ names }) => names.has(name));
+    const alone = providers.length > 1 && only !== undefined && others.length === 0;
+    return alone ? { ...dataLink(name), onlyOn: providerLabel(only.provider) } : dataLink(name);
+  });
+}
+
+/** The sources of `codes`, every file's. */
+function sourcesOf(codes: readonly ProviderCode[]): string[] {
+  return codes.flatMap(({ files }) => files.map(({ code }) => code));
 }
 
 /** The data files `code`, an example's sources, fetches: a template part matches any name part. */
@@ -25,12 +56,10 @@ export function dataFetchedBy(code: readonly string[]): ExampleData[] {
   return exampleData().filter(({ name }) => fetched.some((pattern) => pattern.test(name)));
 }
 
-/** Each of `data` linked to the site's copy, where the examples fetch it. */
-export function exampleDataLinks(data: readonly ExampleData[]): ExampleFileLink[] {
-  return data.map(({ name }) => {
-    const file = `${name}.json`;
-    return { file, url: exampleFileHref(`data/${file}`) };
-  });
+/** A data file linked to the site's copy, where the examples fetch it. */
+function dataLink(name: string): ExampleFileLink {
+  const file = `${name}.json`;
+  return { file, url: exampleFileHref(`data/${file}`) };
 }
 
 /** Each of `stylesheets` linked to the site's copy. */

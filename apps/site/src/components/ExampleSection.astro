@@ -1,6 +1,6 @@
 ---
 import { getEntry, render } from "astro:content";
-import { dataFetchedBy, exampleDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
+import { fetchedDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
 import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import type { ExampleSection } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
@@ -16,8 +16,7 @@ interface Props extends ExampleSection {
 const { number, name, title, summary, drawsOwnList, drawsOwnFrame } = Astro.props;
 const codeTabs = codeTabsOf(name);
 const codes = codeTabs.flatMap(({ codes }) => codes);
-const fetched = dataFetchedBy(codes.flatMap(({ files }) => files).map(({ code }) => code));
-const dataLinks = exampleDataLinks(fetched);
+const dataLinks = fetchedDataLinks(codes);
 const styleLinks = stylesheetLinks(exampleStylesheets(codes));
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;

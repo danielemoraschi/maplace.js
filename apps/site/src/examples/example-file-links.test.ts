@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   dataFetchedBy,
-  exampleDataLinks,
   exampleFileHref,
+  fetchedDataLinks,
   stylesheetLinks,
 } from "./example-file-links.ts";
 
@@ -30,12 +30,31 @@ describe("dataFetchedBy", () => {
   });
 });
 
-describe("exampleDataLinks", () => {
-  it("links each data file to the site's copy, where the examples fetch it", () => {
-    const [points] = dataFetchedBy(["/examples/data/points-4k.json"]);
-    expect(exampleDataLinks(points ? [points] : [])).toEqual([
-      { file: "points-4k.json", url: "/examples/data/points-4k.json" },
+describe("fetchedDataLinks", () => {
+  const fetching = (provider: "google" | "maplibre", path: string) => ({
+    provider,
+    files: [{ code: `fetch("${path}")` }],
+  });
+
+  it("names the provider whose versions alone fetch a file", () => {
+    const codes = [
+      fetching("google", "/examples/data/countries.json"),
+      fetching("maplibre", "/examples/data/route-milan-munich.json"),
+      fetching("maplibre", "/examples/data/countries.json"),
+    ];
+    expect(fetchedDataLinks(codes)).toEqual([
+      { file: "countries.json", url: "/examples/data/countries.json" },
+      {
+        file: "route-milan-munich.json",
+        url: "/examples/data/route-milan-munich.json",
+        onlyOn: "MapLibre",
+      },
     ]);
+  });
+
+  it("names no provider for an example on one provider only", () => {
+    const codes = [fetching("maplibre", "/examples/data/countries.json")];
+    expect(fetchedDataLinks(codes)[0]).not.toHaveProperty("onlyOn");
   });
 });
 
