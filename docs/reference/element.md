@@ -206,7 +206,8 @@ With React, or a store of your own, read and write the address around `select`, 
 | `weight` | A marker's weight on a [heatmap](store.md#heatmaps), as a number |
 | `listed` | `"false"` keeps it out of the list; on the map still |
 | `editable` | Lets the user drag or reshape it |
-| `shape-style`, `selected-style`, `hovered-style` | A shape's `style`, `selectedStyle` and `hoveredStyle`, as JSON (not `style`: that is HTML's inline CSS) |
+| `active` | Marks a shape active: drawn in the hovered look while neither hovered nor selected |
+| `shape-style`, `selected-style`, `hovered-style`, `active-style` | A shape's `style`, `selectedStyle`, `hoveredStyle` and `activeStyle`, as JSON (not `style`: that is HTML's inline CSS) |
 
 Each attribute sets the [location field](locations.md) of the same meaning. Booleans are as HTML writes them: present, empty or `"true"` is true, `"false"` false, anything else misuse naming the attribute.
 

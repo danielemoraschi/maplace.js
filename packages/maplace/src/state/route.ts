@@ -1,4 +1,4 @@
-import { sameRoute } from "../diff/same";
+import { keepIfSame, sameRoute } from "../diff/same";
 import { locationById } from "../location-index";
 import { innerStops, type Route, sameComputation } from "../route";
 import type { Snapshot } from "../store";
@@ -21,7 +21,7 @@ export function setRoute<Data>(snapshot: Snapshot<Data>, route: Route | undefine
   checkVia(route);
   const current = snapshot.route;
   if (current !== undefined && sameRoute(current, route)) return NO_CHANGE;
-  const replaced = patchOnly<Data>({ route: frozenCopy(route) });
+  const replaced = patchOnly<Data>({ route: frozenCopy(route, current) });
   const recompute = current === undefined || !sameComputation(current, route);
   return recompute ? andThen(snapshot, replaced, clearResult) : replaced;
 }
@@ -84,8 +84,16 @@ function clearResult<Data>(snapshot: Snapshot<Data>): Change<Data> {
   return { patch: { routeResult: undefined }, events };
 }
 
-function frozenCopy(route: Route): Route {
-  const style = route.style && Object.freeze({ ...route.style });
+/**
+ * A frozen copy of `route`, keeping `current`'s style objects while their fields are the same, so
+ * a new progress alone leaves the looks an adapter compares by reference as they were.
+ */
+function frozenCopy(route: Route, current?: Route): Route {
+  const style = keepIfSame(current?.style, route.style && Object.freeze({ ...route.style }));
+  const travelledStyle = keepIfSame(
+    current?.travelledStyle,
+    route.travelledStyle && Object.freeze({ ...route.travelledStyle }),
+  );
   const via = route.via && Object.freeze([...route.via]);
   const avoid = route.avoid && Object.freeze([...route.avoid]);
   return Object.freeze({
@@ -94,6 +102,7 @@ function frozenCopy(route: Route): Route {
     ...(via && { via }),
     ...(avoid && { avoid }),
     ...(style && { style }),
+    ...(travelledStyle && { travelledStyle }),
   });
 }
 

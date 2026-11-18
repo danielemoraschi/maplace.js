@@ -63,6 +63,31 @@ describe("setRoute", () => {
     );
   });
 
+  it("freezes the travelled part's style, and keeps the result when only the progress changes", () => {
+    const travelledStyle = { stroke: "grey" };
+    const change = setRoute(routed(), {
+      stops: ["a", "b"],
+      travelMode: "walking",
+      progress: 0.5,
+      travelledStyle,
+    });
+    expect(change.patch).not.toHaveProperty("routeResult");
+    expect(change.patch.route?.travelledStyle).not.toBe(travelledStyle);
+    expect(Object.isFrozen(change.patch.route?.travelledStyle)).toBe(true);
+    const same = routed({ route: { stops: ["a", "b"], progress: 0.5, travelledStyle } });
+    expect(
+      setRoute(same, { stops: ["a", "b"], progress: 0.5, travelledStyle: { stroke: "grey" } }),
+    ).toBe(NO_CHANGE);
+    const moved = setRoute(same, {
+      stops: ["a", "b"],
+      progress: 0.6,
+      travelledStyle: { stroke: "grey" },
+    });
+    expect(moved.patch.route?.progress).toBe(0.6);
+    // The same fields keep the frozen style an adapter compares by reference.
+    expect(moved.patch.route?.travelledStyle).toBe(same.route?.travelledStyle);
+  });
+
   it("keeps the result when only the style changes", () => {
     const change = setRoute(routed(), {
       stops: ["a", "b"],

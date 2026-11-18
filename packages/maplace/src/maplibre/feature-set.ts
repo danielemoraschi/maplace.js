@@ -4,13 +4,19 @@ import type {
   GeoJSONSourceDiff,
   Map as MapLibreMap,
 } from "maplibre-gl";
-import type { ShapeStyle } from "../style";
+import type { DrawnStyle } from "../style";
 
 /**
- * What a location's feature carries: its id (the source's `promoteId`), where it stacks, and for
- * a shape its style in its state and where its outline stacks (`strokeRank`).
+ * What a location's feature carries: its key, its location's id, where it stacks, and for a shape
+ * its style in its state and where its outline stacks (`strokeRank`).
  */
-export interface LocationProperties extends ShapeStyle {
+export interface LocationProperties extends DrawnStyle {
+  /**
+   * The feature's key in its source, unique there (the sources' `promoteId`): a pin's location id,
+   * a shape's or a split line's part's (`shapeKeys`), the route's part's.
+   */
+  readonly key: string;
+  /** The location drawn, which a pointer finds; the route's own name for its line. */
   readonly id: string;
   readonly rank: number;
   readonly strokeRank?: number;
@@ -18,19 +24,21 @@ export interface LocationProperties extends ShapeStyle {
   readonly heat?: number;
   /** A heat marker drawn as a pin too, in front: selected or hovered. */
   readonly front?: boolean;
+  /** A split line's own feature, see-through, kept for the pointer: its parts draw it. */
+  readonly parted?: boolean;
 }
 
 export type LocationFeature = GeoJSON.Feature<GeoJSON.Geometry, LocationProperties>;
 
 /** The features of one of maplace's GeoJSON sources, sent to MapLibre in batches. */
 export interface FeatureSet {
-  /** Shows `feature`, in place of the one with its id. */
+  /** Shows `feature`, in place of the one with its key. */
   put(feature: LocationFeature): void;
   /** New properties for a feature shown, its geometry as it is: MapLibre isn't sent it again. */
   restyle(properties: LocationProperties): void;
-  remove(id: string): void;
-  /** The feature shown for `id`, as MapLibre was given it or is about to be. */
-  featureOf(id: string): LocationFeature | undefined;
+  remove(key: string): void;
+  /** The feature shown for `key`, as MapLibre was given it or is about to be. */
+  featureOf(key: string): LocationFeature | undefined;
   /**
    * Sends what changed since the last flush, as one diff; resolves once MapLibre has it. None
    * when nothing changed, or the source is gone with a restyle (it takes every feature again
@@ -78,21 +86,24 @@ export function createFeatureSet(map: MapLibreMap, sourceId: string): FeatureSet
     return diff;
   }
 
+  /** Shows `feature`, unless it is what is shown already. */
+  function put(feature: LocationFeature): void {
+    const { key } = feature.properties;
+    if (sameFeature(shown.get(key), feature)) return;
+    shown.set(key, feature);
+    changed.add(key);
+  }
+
   return {
-    put(feature) {
-      shown.set(feature.properties.id, feature);
-      changed.add(feature.properties.id);
-    },
+    put,
     restyle(properties) {
-      const feature = shown.get(properties.id);
-      if (feature === undefined) return;
-      shown.set(properties.id, { ...feature, properties });
-      changed.add(properties.id);
+      const feature = shown.get(properties.key);
+      if (feature !== undefined) put({ ...feature, properties });
     },
-    remove(id) {
-      if (shown.delete(id)) changed.add(id);
+    remove(key) {
+      if (shown.delete(key)) changed.add(key);
     },
-    featureOf: (id) => shown.get(id),
+    featureOf: (key) => shown.get(key),
     flush() {
       if (changed.size === 0) return undefined;
       const diff = takeChanges();
@@ -113,20 +124,27 @@ export function createFeatureSet(map: MapLibreMap, sourceId: string): FeatureSet
 }
 
 /**
- * A feature MapLibre has going from `before` to `after`: its geometry when it is another, and its
- * properties, a style field left out dropped. An update, which MapLibre applies in order with the
- * others; not `removeAllProperties`, which its worker applies alone, dropping what the diff adds.
+ * A feature MapLibre has going from `before` to `after`: its geometry when it is another, and the
+ * properties that changed, a style field left out dropped. An update, which MapLibre applies in
+ * order with the others; not `removeAllProperties`, which its worker applies alone, dropping what
+ * the diff adds.
  */
 function featureDiff(before: LocationFeature, after: LocationFeature): GeoJSONFeatureDiff {
-  const removeProperties = Object.keys(before.properties).filter(
-    (key) => !(key in after.properties),
-  );
-  const addOrUpdateProperties = Object.entries(after.properties).map(([key, value]) => ({
-    key,
-    value,
-  }));
-  const diff = { id: after.properties.id, removeProperties, addOrUpdateProperties };
+  const was = before.properties as unknown as Readonly<Record<string, unknown>>;
+  const removeProperties = Object.keys(was).filter((key) => !(key in after.properties));
+  const addOrUpdateProperties = Object.entries(after.properties)
+    .filter(([key, value]) => was[key] !== value)
+    .map(([key, value]) => ({ key, value }));
+  const diff = { id: after.properties.key, removeProperties, addOrUpdateProperties };
   return after.geometry === before.geometry ? diff : { ...diff, newGeometry: after.geometry };
+}
+
+/** Whether `next` is what `shown` already shows: the same geometry, and the same properties. */
+function sameFeature(shown: LocationFeature | undefined, next: LocationFeature): boolean {
+  if (shown?.geometry !== next.geometry) return false;
+  const was = shown.properties as unknown as Readonly<Record<string, unknown>>;
+  const now = Object.entries(next.properties);
+  return now.length === Object.keys(was).length && now.every(([key, value]) => was[key] === value);
 }
 
 /** The features maplace sends MapLibre, by source. */

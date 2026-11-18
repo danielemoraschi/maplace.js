@@ -1,13 +1,12 @@
 import type { LatLng } from "../geometry";
 import { arcSpan, wrapLongitude } from "../longitude-arc";
+import { latOf, yOf } from "../mercator";
 import type { Bounds } from "../viewport";
 
 /** The world is this many pixels wide at zoom 0, the contract's zoom scale. */
 export const TILE_SIZE = 256;
 /** The closest zoom `fitBox` gives: what a box with no size (one location) asks for. */
 export const MAX_ZOOM = 21;
-/** Web Mercator stops here; providers clamp latitudes to it. */
-const MAX_LATITUDE = 85.051_128_78;
 
 /** A map's size in CSS pixels. */
 export interface MapSize {
@@ -53,19 +52,6 @@ export function fitBox(box: Bounds, { size, padding }: Fit): Camera {
     center: { lat: latOf((top + bottom) / 2), lng: wrapLongitude(box.west + span / 2) },
     zoom: clampedZoom(Math.floor(Math.min(across, down))),
   };
-}
-
-/** Where `lat` is on the Mercator plane, 0 at its north edge and 1 at its south. */
-export function yOf(lat: number): number {
-  const clamped = Math.max(-MAX_LATITUDE, Math.min(MAX_LATITUDE, lat));
-  const sin = Math.sin((clamped * Math.PI) / 180);
-  return 0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI);
-}
-
-/** The latitude at `y` on the Mercator plane, `yOf` undone. */
-export function latOf(y: number): number {
-  const clamped = Math.max(0, Math.min(1, y));
-  return (Math.atan(Math.sinh(Math.PI * (1 - 2 * clamped))) * 180) / Math.PI;
 }
 
 // A zero-size box asks for an infinite zoom; padding wider than the map, for a negative one; a

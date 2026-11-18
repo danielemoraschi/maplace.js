@@ -20,11 +20,11 @@ const feature = (geometry: GeoJSON.Geometry, properties: Partial<LocationPropert
   ({
     type: "Feature",
     geometry,
-    properties: { id: "a", rank: 1, ...properties },
+    properties: { key: "a", id: "a", rank: 1, ...properties },
   }) as LocationFeature;
 
 describe("createFeatureSet", () => {
-  it("adds a feature first sent, and sends an update, geometry and properties, after", () => {
+  it("adds a feature first sent, and sends an update after: its geometry and the properties changed", () => {
     const { map, diffs } = mapWithSource();
     const set = createFeatureSet(map, "s");
     const first = feature(point(0));
@@ -39,11 +39,7 @@ describe("createFeatureSet", () => {
         id: "a",
         newGeometry: moved.geometry,
         removeProperties: [],
-        addOrUpdateProperties: [
-          { key: "id", value: "a" },
-          { key: "rank", value: 1 },
-          { key: "stroke", value: "#ff0000" },
-        ],
+        addOrUpdateProperties: [{ key: "stroke", value: "#ff0000" }],
       },
     ]);
   });
@@ -55,7 +51,7 @@ describe("createFeatureSet", () => {
     void set.flush();
     const reshaped = feature(point(2));
     set.put(reshaped);
-    set.restyle({ id: "a", rank: 1, stroke: "#ff0000" });
+    set.restyle({ key: "a", id: "a", rank: 1, stroke: "#ff0000" });
     void set.flush();
     const [update] = diffs[1]?.update ?? [];
     expect(update?.newGeometry).toBe(reshaped.geometry);

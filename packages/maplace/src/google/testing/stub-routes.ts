@@ -4,7 +4,11 @@ import { stubMapsJs } from "./stub-libraries";
 import { StubPolyline } from "./stub-shapes";
 
 /** The look Google gives a route's polylines before the adapter's options. */
-export const STUB_ROUTE_LOOK: google.maps.PolylineOptions = { strokeColor: "#4285f4" };
+export const STUB_ROUTE_LOOK: google.maps.PolylineOptions = {
+  strokeColor: "#4285f4",
+  strokeOpacity: 0.9,
+  strokeWeight: 6,
+};
 
 /** One turn-by-turn step as Google gives it: its duration is without traffic. */
 export interface StubStep {
@@ -36,10 +40,10 @@ type PolylineOptionsOf = (
   details: google.maps.routes.RoutePolylineDetails,
 ) => google.maps.PolylineOptions;
 
-/** A route Google computed, of one leg with no path, and one polyline per `createPolylines`. */
+/** A route Google computed, of one leg along `path` (none by default), and one polyline per `createPolylines`. */
 export class StubRoute {
   readonly legs: readonly StubLeg[];
-  readonly path = [];
+  readonly path: readonly google.maps.LatLngLiteral[];
   readonly createPolylines = vi.fn(
     ({ polylineOptions }: { polylineOptions: PolylineOptionsOf }) => {
       const polyline = new StubPolyline();
@@ -50,8 +54,9 @@ export class StubRoute {
     },
   );
 
-  constructor(leg: StubLeg = ONE_KM_LEG) {
+  constructor(leg: StubLeg = ONE_KM_LEG, path: readonly google.maps.LatLngLiteral[] = []) {
     this.legs = [leg];
+    this.path = path;
   }
 }
 

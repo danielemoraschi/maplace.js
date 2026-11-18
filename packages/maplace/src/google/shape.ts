@@ -2,13 +2,13 @@
 
 import { editReportsFor } from "../adapter-kit/edit-reports";
 import type { Look } from "../adapter-kit/presentation-changes";
-import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
 import { shapeStackRank } from "../adapter-kit/stacking";
 import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
-import { sameState } from "../location-state";
 import { cutOnBlur, type GiveBack, takeEditingAway } from "./blur-cuts";
 import { liftedOutline } from "./lifted-outline";
+import { googleLineParts } from "./line-parts";
+import { sameShownStyle, shownStyleValues } from "./own-stroke";
 import type { GoogleShape, PlacedShape, PlacingSite } from "./placed-location";
 import { showGeometry } from "./shape-geometry";
 import {
@@ -20,7 +20,6 @@ import {
   type ShapeType,
 } from "./shape-kinds";
 import { reportShapeInput } from "./shape-reports";
-import { styleValues } from "./shape-style";
 
 type ShapePlacer = (drawable: Drawable, site: PlacingSite) => PlacedShape;
 
@@ -46,14 +45,18 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
     let drawn = drawable;
     let look = site.lookOf(id);
     const { shape, geometry } = newShape(kind, { drawable, site, look, order });
-    const outline = liftedOutline(kind, site.mounted, shape);
-    const lift = () => outline.draw(drawn, look);
+    const outline = liftedOutline(kind, site.mounted);
+    const parts = googleLineParts(site.mounted);
+    const lift = () => {
+      outline.draw(drawn, look);
+      parts.draw(drawn, look, shapeStackRank(drawn.geometry, order));
+    };
     lift();
     const stopCutting = cutOnBlur(site.mounted, () => cutHandleDrag(shape, () => drawn.editable));
 
     return {
       shape,
-      outlineCopy: outline.copy,
+      seenStroke: () => outline.copy() ?? parts.shown(),
       drawable: () => drawn,
       popupPlace: () => ({ position: anchorOf(drawn.geometry) }),
       update(next) {
@@ -61,16 +64,16 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
           geometry.show(next.geometry);
           shape.setValues({ zIndex: shapeStackRank(next.geometry, order) });
         }
-        if (!sameStyles(next, drawn)) {
-          shape.setValues(styleValues(styleInState(next, look.state)));
+        if (!sameShownStyle([drawn, look], [next, look])) {
+          shape.setValues(shownStyleValues(next, look));
         }
         if (next.editable !== drawn.editable) shape.setValues({ editable: next.editable });
         drawn = next;
         lift();
       },
       present(next: Look) {
-        if (!sameState(look.state, next.state)) {
-          shape.setValues(styleValues(styleInState(drawn, next.state)));
+        if (!sameShownStyle([drawn, look], [drawn, next])) {
+          shape.setValues(shownStyleValues(drawn, next));
         }
         if (next.visible !== look.visible) shape.setValues({ visible: next.visible });
         if (!next.visible) site.hover.gone(id);
@@ -80,6 +83,7 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
       remove() {
         stopCutting();
         outline.remove();
+        parts.remove();
         geometry.stop();
         shape.setMap(null);
         site.hover.gone(id);
@@ -109,7 +113,7 @@ interface Placing {
 function newShape(kind: ShapeKind, { drawable, site, look, order }: Placing) {
   const shape = kind.create(site.mounted.libraries.maps);
   shape.setValues({
-    ...styleValues(styleInState(drawable, look.state)),
+    ...shownStyleValues(drawable, look),
     zIndex: shapeStackRank(drawable.geometry, order),
     clickable: true,
     editable: drawable.editable,

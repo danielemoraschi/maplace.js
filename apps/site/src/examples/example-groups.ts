@@ -135,7 +135,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "flights",
         title: "Flights",
-        summary: "Great circles from one city to eight; pick a flight in the list.",
+        summary:
+          "Great circles from one city to eight, the scheduled ones dashed; slide the flight to New York along its way.",
       },
       {
         name: "trade-lanes",
@@ -191,7 +192,8 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
       {
         name: "route",
         title: "Driving route",
-        summary: "A drive through your own places, passing through one, with directions by leg.",
+        summary:
+          "A drive through your own places, with directions by leg: Google computes it live; on MapLibre it's one stored route, as your own routing service would answer.",
       },
       {
         name: "load-on-demand",

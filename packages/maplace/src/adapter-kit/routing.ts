@@ -11,10 +11,13 @@ export interface ComputedRoute {
   readonly result: RouteResult;
 }
 
+/** How a route's line is drawn: its style, and how much is travelled, in its travelled style. */
+export type RouteLook = Pick<Route, "style" | "progress" | "travelledStyle">;
+
 /** A route's line on the map. */
 export interface RouteLine {
-  /** Draws the same route anew in `style`. */
-  restyle(style: Route["style"]): void;
+  /** Draws the same route anew in `look`. */
+  restyle(look: RouteLook): void;
   remove(): void;
 }
 
@@ -22,8 +25,8 @@ export interface RouteLine {
 export interface RoutingProvider<Computed extends ComputedRoute> {
   /** One computation; `signal` aborts once its answer would be dropped. */
   compute(journey: Journey, signal: AbortSignal): Promise<Computed>;
-  /** The line for `computed` in `style`; undefined when the map has closed. */
-  drawLine(computed: Computed, style: Route["style"]): RouteLine | undefined;
+  /** The line for `computed` in `look`; undefined when the map has closed. */
+  drawLine(computed: Computed, look: RouteLook): RouteLine | undefined;
   /** What failed when a failure isn't maplace's own, e.g. "Google couldn't draw the route". */
   readonly failure: string;
 }
@@ -49,9 +52,10 @@ export interface Routing {
  * a new journey (stops, `via`, travel mode, `avoid`, or where a stop is), at most once per task,
  * and only once every diff applied so far is drawn: never for a half-drawn map. The store doesn't
  * send the route again when a stop moves; a stop moves only when the store writes it, which after
- * a drag is once, on release. A new style alone draws the line again without computing. An answer
- * for a journey since replaced, cleared or closed is dropped, its failure too, and its signal
- * aborted. Each result and failure names the route it was asked for.
+ * a drag is once, on release. A new look alone (style, progress, travelled style) draws the line
+ * again without computing. An answer for a journey since replaced, cleared or closed is dropped,
+ * its failure too, and its signal aborted. Each result and failure names the route it was asked
+ * for.
  */
 export function createRouting<Computed extends ComputedRoute>(
   state: RoutingState,
@@ -62,7 +66,7 @@ export function createRouting<Computed extends ComputedRoute>(
   let asked: Journey | undefined;
   let asking: AbortController | undefined;
   let line: RouteLine | undefined;
-  let drawnStyle: Route["style"];
+  let drawnLook: RouteLook | undefined;
   let computing: Promise<void> = Promise.resolve();
   let scheduled: Promise<void> | undefined;
 
@@ -78,9 +82,9 @@ export function createRouting<Computed extends ComputedRoute>(
     const journey = journeyNow(route);
     if (journey === undefined) return computing;
     if (!sameJourney(asked, journey)) computing = ask(journey, route);
-    else if (route.style !== drawnStyle) {
-      drawnStyle = route.style;
-      line?.restyle(drawnStyle);
+    else if (drawnLook === undefined || !sameRouteLook(route, drawnLook)) {
+      drawnLook = route;
+      line?.restyle(drawnLook);
     }
     return computing;
   }
@@ -108,11 +112,11 @@ export function createRouting<Computed extends ComputedRoute>(
       });
   }
 
-  /** Draws the line in the style set now, and reports the result for the route asked. */
+  /** Draws the line in the look set now, and reports the result for the route asked. */
   function showResult(computed: Computed, forRoute: Route): void {
     removeLine();
-    drawnStyle = route?.style;
-    line = provider.drawLine(computed, drawnStyle);
+    drawnLook = route ?? forRoute;
+    line = provider.drawLine(computed, drawnLook);
     if (line !== undefined) state.mounted?.live()?.reportRouteChange(forRoute, computed.result);
   }
 
@@ -166,4 +170,9 @@ export function createRouting<Computed extends ComputedRoute>(
     },
     sync,
   };
+}
+
+/** Whether two looks draw alike: the same progress, and the same style objects (the store freezes a copy of each). */
+function sameRouteLook(a: RouteLook, b: RouteLook): boolean {
+  return a.style === b.style && a.progress === b.progress && a.travelledStyle === b.travelledStyle;
 }

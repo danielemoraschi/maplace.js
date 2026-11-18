@@ -12,6 +12,7 @@ describe("the @maplacejs/maplace entry", () => {
       "distanceTo",
       "listedLocations",
       "locationsFromGeoJSON",
+      "pointAlong",
     ]);
   });
 });

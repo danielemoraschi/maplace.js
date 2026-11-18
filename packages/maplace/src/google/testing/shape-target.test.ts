@@ -17,7 +17,7 @@ function probedStyle(state: { selected: boolean; hovered: boolean }) {
   const { site } = stubSite();
   const placed = SHAPE_PLACERS.polygon(polygonDrawable("p", { style: { fill: "red" } }), site);
   placed.present({ state, visible: true });
-  return shapeTarget(placed.shape, placed.outlineCopy).read().style;
+  return shapeTarget(placed.shape, placed.seenStroke).read().style;
 }
 
 describe("shapeTarget", () => {

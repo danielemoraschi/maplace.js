@@ -11,12 +11,16 @@
   #flights-vanilla-map { flex: 1 1 auto; min-width: 0; }
   #flights-vanilla-list { display: contents; }
   #flights-vanilla-list .maplace-list-view { flex: 0 1 16rem; }
+  #flights-vanilla-flown { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
   /* On a phone the list goes under the map, as the element's does. */
   @media (width < 40rem) {
     #flights-vanilla-map-and-list { flex-direction: column; }
     #flights-vanilla-list .maplace-list-view { flex: none; max-height: 40%; }
   }
 </style>
+<label id="flights-vanilla-flown">London → New York, flown
+  <input id="flights-vanilla-flown-input" type="range" min="0" max="1" step="0.01" value="0.4">
+</label>
 <div id="flights-vanilla-map-and-list">
   <div id="flights-vanilla-map"></div>
   <div id="flights-vanilla-list"></div>

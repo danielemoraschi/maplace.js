@@ -9,6 +9,7 @@ import { editingChecks } from "./editing";
 import { capabilitiesOf, unmountAll } from "./harness";
 import { heatmapChecks } from "./heatmap";
 import { lifecycleChecks } from "./lifecycle";
+import { lineLookChecks } from "./line-looks";
 import { originChecks } from "./origin";
 import { popupChecks } from "./popups";
 import { presentationChecks } from "./presentation";
@@ -45,6 +46,7 @@ const GROUPS: Readonly<Record<ConformanceGroup, CheckGroup>> = {
   declarations: declarationChecks,
   lifecycle: lifecycleChecks,
   drawing: drawingChecks,
+  "line-looks": lineLookChecks,
   presentation: presentationChecks,
   popups: popupChecks,
   camera: cameraChecks,

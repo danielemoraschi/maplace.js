@@ -1,13 +1,16 @@
+import { drawableParts } from "../adapter-kit/line-parts";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { sameGeometry } from "../adapter-kit/same-geometry";
-import { sameStyles, styleInState } from "../adapter-kit/shape-looks";
+import { sameLooks, styleInState } from "../adapter-kit/shape-looks";
 import { frontRank, shapeStackRank } from "../adapter-kit/stacking";
 import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
 import type { Geometry } from "../geometry";
 import { sameState } from "../location-state";
 import { editShape, type ShapeEditing } from "./edit-session";
-import { shapeFeature, shapeProperties } from "./location-features";
+import { SHAPE_DEFAULTS } from "./line-paint";
+import { PART_LIFT, putParts, removeParts } from "./line-parts";
+import { shapeFeature, shapeKeys, shapeProperties } from "./location-features";
 import type { PlacedShape, PlacingSite } from "./placed-location";
 
 /**
@@ -34,11 +37,18 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
   function show({ reshaped }: { readonly reshaped: boolean }): void {
     const { state } = look;
     const strokeRank = frontRank(state) ?? rank;
-    const drawing = { style: styleInState(drawn, state), rank, strokeRank };
-    if (!look.visible) shapes.remove(drawn.id);
-    else if (reshaped || shapes.featureOf(drawn.id) === undefined) {
+    const style = styleInState(drawn, state);
+    const parts = look.visible
+      ? drawableParts(drawn, style, SHAPE_DEFAULTS.strokeOpacity)
+      : undefined;
+    const drawing = { style, rank, strokeRank, parted: parts !== undefined };
+    const keys = shapeKeys(drawn.id);
+    if (!look.visible) shapes.remove(keys.own);
+    else if (reshaped || shapes.featureOf(keys.own) === undefined) {
       shapes.put(shapeFeature(drawn, drawing));
     } else shapes.restyle(shapeProperties(drawn, drawing));
+    if (parts === undefined) removeParts(shapes, keys);
+    else putParts(shapes, keys, parts, { id: drawn.id, rank, strokeRank: strokeRank + PART_LIFT });
   }
 
   /** Handles while it is editable and shown, moved when the store `reshaped` it. */
@@ -81,7 +91,7 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
     editHandles: () => editing?.handles() ?? [],
     update(next) {
       const reshaped = isReshape(next.geometry);
-      const restyled = !sameStyles(drawn, next);
+      const restyled = !sameLooks(drawn, next);
       stored = next.geometry;
       drawn = reshaped ? next : { ...next, geometry: drawn.geometry };
       if (reshaped) rank = shapeStackRank(next.geometry, order);
@@ -97,7 +107,9 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
     },
     remove() {
       editing?.stop();
-      shapes.remove(drawn.id);
+      const keys = shapeKeys(drawn.id);
+      shapes.remove(keys.own);
+      removeParts(shapes, keys);
       site.hover.gone(drawn.id);
     },
   };

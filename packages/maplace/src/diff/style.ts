@@ -1,18 +1,13 @@
+import { definedFields } from "../defined-fields";
 import type { StyleField } from "../drawable";
 import { isMarkerLocation, type Location } from "../location";
 import type { MaplaceOptions } from "../options";
-import type { LineStyle, ShapeStyle } from "../style";
+import { type DrawnStyle, LINE_STYLE_KEYS, type LineStyle, type ShapeStyle } from "../style";
 
 /** The store's default for each of a drawable's styles. */
 export type DrawStyles = { readonly [Field in StyleField]: MaplaceOptions[Field] };
 
-const LINE_STYLE_FIELDS: ReadonlySet<string> = new Set(
-  Object.keys({
-    stroke: true,
-    strokeOpacity: true,
-    strokeWidth: true,
-  } satisfies Record<keyof LineStyle, true>),
-);
+const LINE_STYLE_FIELDS: ReadonlySet<string> = new Set(LINE_STYLE_KEYS);
 
 /**
  * One of the location's styles over its default, without `undefined` fields: line fields only
@@ -22,7 +17,7 @@ export function styleOf(
   location: Location,
   field: StyleField,
   defaultStyle: ShapeStyle | undefined,
-): ShapeStyle | undefined {
+): DrawnStyle | undefined {
   if (isMarkerLocation(location)) return undefined;
   const ownStyle = location[field];
   if (ownStyle === undefined && defaultStyle === undefined) return undefined;
@@ -30,14 +25,10 @@ export function styleOf(
   return nonEmpty(location.type === "polyline" ? lineFields(style) : style);
 }
 
-function definedFields(style: ShapeStyle | undefined): ShapeStyle {
-  return Object.fromEntries(Object.entries(style ?? {}).filter(([, value]) => value !== undefined));
-}
-
-function lineFields(style: ShapeStyle): LineStyle {
+function lineFields(style: DrawnStyle): LineStyle {
   return Object.fromEntries(Object.entries(style).filter(([key]) => LINE_STYLE_FIELDS.has(key)));
 }
 
-function nonEmpty(style: ShapeStyle): ShapeStyle | undefined {
+function nonEmpty(style: DrawnStyle): DrawnStyle | undefined {
   return Object.keys(style).length === 0 ? undefined : style;
 }

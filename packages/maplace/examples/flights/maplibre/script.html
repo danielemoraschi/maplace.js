@@ -6,21 +6,28 @@
   #flights-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
   #flights-maplibre-script-list { display: contents; }
   #flights-maplibre-script-list .maplace-list-view { flex: 0 1 16rem; }
+  #flights-maplibre-script-flown { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
   /* On a phone the list goes under the map, as the element's does. */
   @media (width < 40rem) {
     #flights-maplibre-script-map-and-list { flex-direction: column; }
     #flights-maplibre-script-list .maplace-list-view { flex: none; max-height: 40%; }
   }
 </style>
+<label id="flights-maplibre-script-flown">London → New York, flown
+  <input id="flights-maplibre-script-flown-input" type="range" min="0" max="1" step="0.01" value="0.4">
+</label>
 <div id="flights-maplibre-script-map-and-list">
   <div id="flights-maplibre-script-map"></div>
   <div id="flights-maplibre-script-list"></div>
 </div>
 <script type="module">
-  // London's flights out, each along its great circle, the shortest way on the earth.
+  // London's flights out, each along its great circle, the shortest way on the earth, the ones
+  // still scheduled dashed. The flight to New York is in the air: drawn active, travelled as far as
+  // the slider says, with its plane there.
   const london = { lat: 51.5074, lng: -0.1278 };
+  const newYork = { id: "new-york", name: "New York", lat: 40.7128, lng: -74.006 };
   const cities = [
-    { id: "new-york", name: "New York", lat: 40.7128, lng: -74.006 },
+    newYork,
     { id: "sao-paulo", name: "São Paulo", lat: -23.5505, lng: -46.6333 },
     { id: "cape-town", name: "Cape Town", lat: -33.9249, lng: 18.4241 },
     { id: "dubai", name: "Dubai", lat: 25.2048, lng: 55.2708 },
@@ -29,23 +36,45 @@
     { id: "tokyo", name: "Tokyo", lat: 35.6895, lng: 139.6917 },
     { id: "sydney", name: "Sydney", lat: -33.8688, lng: 151.2093 },
   ];
-  const flights = [
-    // The cities on the map only; the list holds the flights.
-    { id: "london", ...london, title: "London", listed: false },
-    ...cities.map(({ id, name, lat, lng }) => ({ id, lat, lng, title: name, listed: false })),
-    ...cities.map(({ id, name, lat, lng }) => ({
+  const scheduled = new Set(["cape-town", "sydney"]);
+  /** A plane, nose up, as an image. */
+  const plane =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath fill='%231d4ed8' stroke='white' d='M12 2l1.5 7 8.5 4v2l-8.5-2.5-.5 5.5 2.5 2v1.5l-3.5-1-3.5 1V20l2.5-2-.5-5.5L2 15v-2l8.5-4z'/%3E%3C/svg%3E";
+
+  function flightTo({ id, name, lat, lng }) {
+    return {
       id: `london-${id}`,
       type: "polyline",
       title: `London → ${name}`,
       path: [london, { lat, lng }],
       geodesic: true,
-      style: { stroke: "#2563eb" },
-    })),
+      style: { stroke: "#2563eb", strokeDash: scheduled.has(id) ? "dashed" : "solid" },
+    };
+  }
+
+  // Made once, so a move of the slider changes only the flight in the air and its plane.
+  const places = [
+    // The cities and the plane on the map only; the list holds the flights.
+    { id: "london", ...london, title: "London", listed: false },
+    ...cities.map(({ id, name, lat, lng }) => ({ id, lat, lng, title: name, listed: false })),
   ];
-  Maplace.createMapLibreMap("#flights-maplibre-script-map", {
-    locations: flights,
+  const toNewYork = flightTo(newYork);
+  const otherFlights = cities.slice(1).map(flightTo);
+
+  /** The map's locations, the flight to New York `flown` (0 to 1) of the way there. */
+  function flightsWith(flown) {
+    const inTheAir = { ...toNewYork, active: true, progress: flown };
+    const at = Maplace.pointAlong(inTheAir, flown);
+    const planeThere = { id: "plane", ...at, title: "The plane to New York", icon: plane, listed: false };
+    return [...places, inTheAir, ...otherFlights, planeThere];
+  }
+
+  const flown = document.getElementById("flights-maplibre-script-flown-input");
+  const maplace = Maplace.createMapLibreMap("#flights-maplibre-script-map", {
+    locations: flightsWith(flown.valueAsNumber),
     // The earth as a globe, with a toggle on the map to flatten it.
     globe: true,
     list: { container: "#flights-maplibre-script-list", heading: "Flights from London" },
   });
+  flown.addEventListener("input", () => maplace.setLocations(flightsWith(flown.valueAsNumber)));
 </script>

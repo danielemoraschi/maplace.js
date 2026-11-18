@@ -1,6 +1,6 @@
 import type { MapSize } from "../adapter-kit/web-mercator";
 import type { Geometry, LatLng } from "../geometry";
-import type { ShapeStyle } from "../style";
+import type { DrawnStyle } from "../style";
 
 /** The size conformance maps are drawn at. */
 export const MAP_SIZE: MapSize = { width: 512, height: 512 };
@@ -16,7 +16,7 @@ export interface LocationOnMap {
    * The style a shape is drawn with, in maplace's names, its state's look included (`{}`: the
    * provider's defaults); undefined for a marker.
    */
-  readonly style: ShapeStyle | undefined;
+  readonly style: DrawnStyle | undefined;
 }
 
 /** The popup a map shows, and the element its content sits in. */

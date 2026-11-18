@@ -11,6 +11,8 @@ export interface NumberRange {
 }
 
 export const NON_NEGATIVE: NumberRange = { min: 0 };
+/** A share of a whole: an opacity, how far along a line. */
+export const FRACTION: NumberRange = { min: 0, max: 1 };
 export const POSITIVE: NumberRange = { above: 0 };
 
 export function checkNumber(

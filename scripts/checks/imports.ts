@@ -15,7 +15,7 @@ interface LayerRule {
 /** The data types, and pure helpers on them that every layer may share. */
 const DATA_MODULES = [
   "geometry style location location-state location-index longitude-arc drawn-path great-circle",
-  "anchor sphere group-path view-box options route route-request viewport popup drawable errors",
+  "along anchor sphere mercator defined-fields group-path view-box options route route-request viewport popup drawable errors",
   "events",
   "adopted-styles unstyled map-failure-words",
 ].flatMap((line) => line.split(" "));
@@ -98,9 +98,10 @@ const LAYERS = {
   // A GeoJSON FeatureCollection as locations (C13): checked with the store's checks, so its
   // misuse reads the same.
   geojson: { files: /^geojson$/, imports: ["data", "validation"] },
+  "point-along": { files: /^point-along$/, imports: ["data", "validation"] },
   entry: {
     files: /^index$/,
-    imports: ["data", "contract", "store", "view", "maplace", "geojson"],
+    imports: ["data", "contract", "store", "view", "maplace", "geojson", "point-along"],
   },
   // The element makes stores and list views through the core's entry, as a page does; it reads
   // the data rules, and the adapter contract, store and list view for their types and constants;

@@ -84,6 +84,15 @@ export function inputLabelled(root: Element, text: string): HTMLInputElement {
   return input;
 }
 
+/**
+ * Moves a slider to `value` as a user's drag reaches it, a React-controlled one too: through the
+ * input's own value setter, which React's tracking doesn't see, then an input event.
+ */
+export function slideTo(input: HTMLInputElement, value: string): void {
+  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(input, value);
+  input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+}
+
 /** Clicks the button inside `root` whose text is `text`. */
 export function clickButton(root: Element, text: string): void {
   byText(root, "button", text).click();

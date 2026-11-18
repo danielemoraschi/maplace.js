@@ -26,7 +26,7 @@ import {
   MAPLIBRE_PROVIDER_ATTRIBUTES,
 } from "./element-attributes.ts";
 import { installOf } from "./install-loader.ts";
-import { LOCATION_FIELDS, SHAPE_STYLE_FIELDS, STORE_NAMES } from "./reference-names.ts";
+import { LOCATION_FIELDS, STORE_NAMES, STYLE_FIELDS } from "./reference-names.ts";
 import {
   GOOGLE_MAP_OPTIONS,
   MAP_ELEMENT_PROPERTIES,
@@ -94,9 +94,9 @@ describe("the skill's lists", () => {
     expectAllNamed(API_LISTS.capabilities);
   });
 
-  it("lists every location field and shape style", () => {
+  it("lists every location field and style field", () => {
     for (const fields of Object.values(LOCATION_FIELDS)) expectListed(fields);
-    expectListed(SHAPE_STYLE_FIELDS);
+    expectListed(STYLE_FIELDS);
   });
 
   it("lists every attribute and property of the elements", () => {

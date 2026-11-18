@@ -47,6 +47,11 @@ export interface MaplaceOptions<Data = unknown> {
    * overrides it.
    */
   readonly hoveredStyle?: ShapeStyle | undefined;
+  /**
+   * Drawn over `style` while a shape is active (its `active`), neither hovered nor selected; a
+   * location's `activeStyle` overrides it.
+   */
+  readonly activeStyle?: ShapeStyle | undefined;
   /** Cluster markers; needs the `cluster` capability. */
   readonly cluster?: boolean | undefined;
   /** Draws markers, by group, as a heatmap when zoomed out; not with `cluster`. */

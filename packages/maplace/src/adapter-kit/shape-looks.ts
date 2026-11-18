@@ -1,6 +1,6 @@
 import { type Drawable, STYLE_FIELDS, type StyleField } from "../drawable";
 import type { LocationState } from "../location";
-import type { LineStyle, ShapeStyle } from "../style";
+import type { DrawnStyle, LineStyle, ShapeStyle } from "../style";
 
 /** How a selected polyline is drawn where its style leaves a field unset: heavier, opaque. */
 export const SELECTED_LINE_LOOK: LineStyle = Object.freeze({ strokeWidth: 5, strokeOpacity: 1 });
@@ -17,13 +17,14 @@ export const HOVERED_LOOK: ShapeStyle = Object.freeze({ ...HOVERED_LINE_LOOK, fi
 /**
  * The style a shape is drawn with in a state: the state's look, then its own style, then its
  * own style for that state (each the location's over the store's default, with no undefined
- * field: `Drawable`). Selected wins over hovered, its style too; a polyline's look has line
- * fields only. At rest, and for a marker, the drawable's own style as it is.
+ * field: `Drawable`). Selected wins over hovered, its style too, and hovered over active, which
+ * has the hovered look; a polyline's look has line fields only. At rest, and for a marker, the
+ * drawable's own style as it is.
  */
 export function styleInState(
-  drawable: Pick<Drawable, "geometry" | StyleField>,
+  drawable: Pick<Drawable, "geometry" | StyleField | "active">,
   state: LocationState,
-): ShapeStyle | undefined {
+): DrawnStyle | undefined {
   const { geometry, style } = drawable;
   if (geometry.type === "marker") return style;
   const line = geometry.type === "polyline";
@@ -33,10 +34,29 @@ export function styleInState(
   if (state.hovered) {
     return { ...(line ? HOVERED_LINE_LOOK : HOVERED_LOOK), ...style, ...drawable.hoveredStyle };
   }
+  if (drawable.active) {
+    return { ...(line ? HOVERED_LINE_LOOK : HOVERED_LOOK), ...style, ...drawable.activeStyle };
+  }
   return style;
 }
 
 /** Whether two drawables of one shape have the same styles: same references, so same look. */
 export function sameStyles(a: Pick<Drawable, StyleField>, b: Pick<Drawable, StyleField>): boolean {
   return STYLE_FIELDS.every((field) => a[field] === b[field]);
+}
+
+/**
+ * Whether two drawables of one shape are drawn alike: the same styles, both active or not, and a
+ * line the same progress and travelled style (same references, as `Drawable` keeps them).
+ */
+export function sameLooks(
+  a: Pick<Drawable, StyleField | "active" | "progress" | "travelledStyle">,
+  b: Pick<Drawable, StyleField | "active" | "progress" | "travelledStyle">,
+): boolean {
+  return (
+    sameStyles(a, b) &&
+    a.active === b.active &&
+    a.progress === b.progress &&
+    a.travelledStyle === b.travelledStyle
+  );
 }

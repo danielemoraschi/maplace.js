@@ -1,16 +1,16 @@
 import type { Geometry } from "./geometry";
 import type { LocationState } from "./location";
-import type { ShapeStyle } from "./style";
+import type { DrawnStyle, LineStyle } from "./style";
 
-/** A drawable's styles: at rest, and over it while selected or hovered. */
-export const STYLE_FIELDS = ["style", "selectedStyle", "hoveredStyle"] as const;
+/** A drawable's styles: at rest, and over it while selected, hovered or active. */
+export const STYLE_FIELDS = ["style", "selectedStyle", "hoveredStyle", "activeStyle"] as const;
 
 export type StyleField = (typeof STYLE_FIELDS)[number];
 
 /**
  * A location as an adapter draws it, resolved by the store: default styles applied, user
  * callbacks bound. Each field keeps its reference while its inputs are shallowly unchanged (same
- * scalars, same `path`, `center`, `style`, `selectedStyle`, `hoveredStyle`, `icon` and `content`
+ * scalars, same `path`, `center`, each style, `icon` and `content`
  * references; a drawn line's path is kept while its `path`, `curve` and `geodesic` are, unless
  * two lines share one `path` drawn differently), so adapters compare fields with `===` and redo
  * only what changed.
@@ -22,14 +22,22 @@ export interface Drawable {
   readonly title: string | undefined;
   /**
    * The location's style over the default, with no field set to undefined; line fields only for
-   * polylines, none for markers.
+   * polylines (their dash too), none for markers.
    */
-  readonly style: ShapeStyle | undefined;
+  readonly style: DrawnStyle | undefined;
   /** Drawn over `style` while selected: the location's over the store's, resolved as `style`. */
-  readonly selectedStyle: ShapeStyle | undefined;
+  readonly selectedStyle: DrawnStyle | undefined;
   /** Drawn over `style` while hovered and not selected, resolved as `selectedStyle`. */
-  readonly hoveredStyle: ShapeStyle | undefined;
+  readonly hoveredStyle: DrawnStyle | undefined;
+  /** Drawn over `style` while active, neither hovered nor selected, resolved as `selectedStyle`. */
+  readonly activeStyle?: DrawnStyle | undefined;
+  /** A shape the page marks active (`active`): drawn in the hovered look, the weakest state. */
+  readonly active?: boolean | undefined;
   readonly editable: boolean;
+  /** A polyline's `progress`: drawn travelled to there, in its travelled look. */
+  readonly progress?: number | undefined;
+  /** A polyline's `travelledStyle`, laid over its travelled look; kept as `style` is. */
+  readonly travelledStyle?: LineStyle | undefined;
   /** A heat marker's weight (its `weight`, or 1); undefined for any other location. */
   readonly heatWeight?: number | undefined;
   /**

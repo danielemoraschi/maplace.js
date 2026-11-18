@@ -76,6 +76,42 @@ accept({ id: "m", type: "multipolygon", polygons: [{ path: ring }], editable: tr
 // @ts-expect-error each polygon is rings, without its own style
 accept({ id: "m", type: "multipolygon", polygons: [{ path: ring, style: {} }] });
 
+// A line runs solid, dashed or dotted; a closed shape's outline is solid.
+const line = [
+  { lat: 0, lng: 0 },
+  { lat: 1, lng: 1 },
+];
+accept({ id: "l", type: "polyline", path: line, style: { strokeDash: "dotted" } });
+// @ts-expect-error a dash it doesn't draw
+accept({ id: "l", type: "polyline", path: line, style: { strokeDash: "dash-dot" } });
+accept({
+  id: "c",
+  type: "circle",
+  center: { lat: 0, lng: 0 },
+  radius: 1,
+  // @ts-expect-error a circle's outline has no dash
+  style: { strokeDash: "dashed" },
+});
+
+// A line shows how much is travelled; any shape can be the page's active one.
+accept({
+  id: "l",
+  type: "polyline",
+  path: line,
+  progress: 0.5,
+  travelledStyle: { stroke: "grey" },
+});
+accept({
+  id: "c",
+  type: "circle",
+  center: { lat: 0, lng: 0 },
+  radius: 1,
+  active: true,
+  activeStyle: { fill: "red" },
+});
+// @ts-expect-error a polygon has no progress
+accept({ id: "p", type: "polygon", path: ring, progress: 0.5 });
+
 // Absence is undefined, so mapping optional fields across compiles.
 declare const legacyTitle: string | undefined;
 accept({ id: "a", lat: 1, lng: 2, title: legacyTitle });

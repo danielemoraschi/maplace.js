@@ -184,16 +184,16 @@ export interface MaplaceMapElement extends HTMLElement {
 
 /**
  * `<maplace-location location-id="…" lat lng title type group tags search-text radius icon zoom
- * weight listed editable shape-style selected-style hovered-style>`: `lat`/`lng` are a marker's
- * position or a circle's centre, `group` a name or, starting with `[`, a path as JSON
- * (`group='["Europe","Italy"]'`), `tags` its tags split on spaces, `search-text` what a search box
- * also looks in, `icon` a marker's image URL, `zoom` the zoom selecting it shows it at, `weight` a
- * marker's weight on a heatmap (1 when absent), `listed="false"` keeps it out of the list (on the
- * map still),
- * `editable` lets the user drag or reshape it (both true when present with no value, or `"true"`),
- * and the three style attributes a shape's `style`, `selectedStyle` and `hoveredStyle` as JSON; a
- * `<template>` child is trusted popup content, and a `<template data-icon>` child the marker, in
- * place of `icon`.
+ * weight listed editable active shape-style selected-style hovered-style active-style>`:
+ * `lat`/`lng` are a marker's position or a circle's centre, `group` a name or, starting with `[`,
+ * a path as JSON (`group='["Europe","Italy"]'`), `tags` its tags split on spaces, `search-text`
+ * what a search box also looks in, `icon` a marker's image URL, `zoom` the zoom selecting it shows
+ * it at, `weight` a marker's weight on a heatmap (1 when absent), `listed="false"` keeps it out of
+ * the list (on the map still), `editable` lets the user drag or reshape it and `active` marks a
+ * shape active (each true when present with no value, or `"true"`), and the four style attributes
+ * a shape's `style`, `selectedStyle`, `hoveredStyle` and `activeStyle` as JSON; a `<template>`
+ * child is trusted popup content, and a `<template data-icon>` child the marker, in place of
+ * `icon`.
  */
 export interface MaplaceLocationElement extends HTMLElement {
   readonly location: Location;

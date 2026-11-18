@@ -19,7 +19,9 @@ describe("checkRoute", () => {
       via: ["b"],
       travelMode: "walking",
       avoid: ["tolls", "ferries"],
-      style: { stroke: "blue" },
+      style: { stroke: "blue", strokeDash: "dotted" },
+      progress: 0.25,
+      travelledStyle: { strokeOpacity: 0.2 },
     };
     expect(() => checkRoute(route, field)).not.toThrow();
   });
@@ -67,6 +69,12 @@ describe("checkRoute", () => {
   it("rejects an unknown travel mode", () => {
     expect(() => checkRoute({ stops: [], travelMode: "flying" }, field)).toThrow(
       /route\.travelMode must be one of "driving", "walking", "bicycling", "transit"/,
+    );
+  });
+
+  it("rejects a progress outside 0 to 1", () => {
+    expect(() => checkRoute({ stops: [], progress: 2 }, field)).toThrow(
+      fails("setRoute: route.progress must be a number from 0 to 1, got 2", "route.progress"),
     );
   });
 });

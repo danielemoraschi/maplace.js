@@ -64,6 +64,8 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `style` | [`ShapeStyle`](#styles) | How it is drawn, over the store's `style` | `shape-style` (JSON) |
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
+| `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
+| `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
 
 ## Polylines
 
@@ -72,9 +74,13 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `path` | `{ lat, lng }[]` | Its points, at least 2 | |
 | `curve` | `number` | How far each segment bows from a straight line, for the look, -1 to 1: at 1, its middle sits half its length (in degrees) to the left going from the first point to the last; to the right when negative. Default 0, straight; not with `geodesic` or `editable` | |
 | `geodesic` | `boolean` | Draws each segment along its great circle, the shortest way on the earth: a flight's path, a point a degree of arc. Default false; not with `curve` or `editable` | |
+| `progress` | `number` | How much of the line is travelled, 0 to 1 along it as drawn: that part is drawn in the travelled look, the rest as the line, and a click or hover on either is the line's. Unset, the line is drawn whole; not with `editable` | |
+| `travelledStyle` | `LineStyle` | The travelled part's style, over its look: the line's own in its state, at 40% of its opacity | |
 | `style` | `LineStyle` | How it is drawn: a stroke, no fill | `shape-style` (JSON) |
 | `selectedStyle` | `LineStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
 | `hoveredStyle` | `LineStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
+| `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
+| `activeStyle` | `LineStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
 
 A polyline or a polygon is one location with a `path`; in HTML, give it in the map's inline JSON script ([the element's data](element.md#data)).
 
@@ -90,17 +96,20 @@ const lane = { id: "rotterdam-new-york", type: "polyline", curve: -0.2,
   path: [{ lat: 51.9244, lng: 4.4777 }, { lat: 40.7128, lng: -74.006 }] };
 ```
 
-London's flights, each on its great circle:
+London's flights, each on its great circle, two dashed as scheduled and one in the air, travelled as far as a slider says:
 
 <!-- example: packages/maplace/examples/flights/vanilla.ts -->
 ```ts
-import type { LatLng, Location } from "@maplacejs/maplace";
+import { type LatLng, type Location, type PolylineLocation, pointAlong } from "@maplacejs/maplace";
 import { createGoogleMap } from "@maplacejs/maplace/google";
 
-// London's flights out, each along its great circle, the shortest way on the earth.
+// London's flights out, each along its great circle, the shortest way on the earth, the ones
+// still scheduled dashed. The flight to New York is in the air: drawn active, travelled as far as
+// the slider says, with its plane there.
 const london: LatLng = { lat: 51.5074, lng: -0.1278 };
+const newYork = { id: "new-york", name: "New York", lat: 40.7128, lng: -74.006 };
 const cities = [
-  { id: "new-york", name: "New York", lat: 40.7128, lng: -74.006 },
+  newYork,
   { id: "sao-paulo", name: "São Paulo", lat: -23.5505, lng: -46.6333 },
   { id: "cape-town", name: "Cape Town", lat: -33.9249, lng: 18.4241 },
   { id: "dubai", name: "Dubai", lat: 25.2048, lng: 55.2708 },
@@ -109,25 +118,51 @@ const cities = [
   { id: "tokyo", name: "Tokyo", lat: 35.6895, lng: 139.6917 },
   { id: "sydney", name: "Sydney", lat: -33.8688, lng: 151.2093 },
 ];
-const flights: Location[] = [
-  // The cities on the map only; the list holds the flights.
+const scheduled = new Set(["cape-town", "sydney"]);
+/** A plane, nose up, as an image. */
+const plane =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath fill='%231d4ed8' stroke='white' d='M12 2l1.5 7 8.5 4v2l-8.5-2.5-.5 5.5 2.5 2v1.5l-3.5-1-3.5 1V20l2.5-2-.5-5.5L2 15v-2l8.5-4z'/%3E%3C/svg%3E";
+
+function flightTo({ id, name, lat, lng }: typeof newYork): PolylineLocation {
+  return {
+    id: `london-${id}`,
+    type: "polyline",
+    title: `London → ${name}`,
+    path: [london, { lat, lng }],
+    geodesic: true,
+    style: { stroke: "#2563eb", strokeDash: scheduled.has(id) ? "dashed" : "solid" },
+  };
+}
+
+// Made once, so a move of the slider changes only the flight in the air and its plane.
+const places: Location[] = [
+  // The cities and the plane on the map only; the list holds the flights.
   { id: "london", ...london, title: "London", listed: false },
   ...cities.map(({ id, name, lat, lng }) => ({ id, lat, lng, title: name, listed: false })),
-  ...cities.map(
-    ({ id, name, lat, lng }): Location => ({
-      id: `london-${id}`,
-      type: "polyline",
-      title: `London → ${name}`,
-      path: [london, { lat, lng }],
-      geodesic: true,
-      style: { stroke: "#2563eb" },
-    }),
-  ),
 ];
-createGoogleMap("#flights-vanilla-map", {
-  locations: flights,
+const toNewYork = flightTo(newYork);
+const otherFlights = cities.slice(1).map(flightTo);
+
+/** The map's locations, the flight to New York `flown` (0 to 1) of the way there. */
+function flightsWith(flown: number): Location[] {
+  const inTheAir: PolylineLocation = { ...toNewYork, active: true, progress: flown };
+  const at = pointAlong(inTheAir, flown);
+  const planeThere = {
+    id: "plane",
+    ...at,
+    title: "The plane to New York",
+    icon: plane,
+    listed: false,
+  };
+  return [...places, inTheAir, ...otherFlights, planeThere];
+}
+
+const flown = document.getElementById("flights-vanilla-flown-input") as HTMLInputElement;
+const maplace = createGoogleMap("#flights-vanilla-map", {
+  locations: flightsWith(flown.valueAsNumber),
   list: { container: "#flights-vanilla-list", heading: "Flights from London" },
 });
+flown.addEventListener("input", () => maplace.setLocations(flightsWith(flown.valueAsNumber)));
 ```
 
 ## Polygons
@@ -139,6 +174,8 @@ createGoogleMap("#flights-vanilla-map", {
 | `style` | [`ShapeStyle`](#styles) | How it is drawn, over the store's `style` | `shape-style` (JSON) |
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
+| `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
+| `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
 
 ## Multipolygons
 
@@ -150,20 +187,27 @@ Several polygons that are one location, such as a country with its islands: draw
 | `style` | [`ShapeStyle`](#styles) | How it is drawn, over the store's `style` | `shape-style` (JSON) |
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while selected | `selected-style` (JSON) |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
+| `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
+| `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
 
 ## Styles
 
-A style says how a shape or a route line is drawn. Colours are CSS colours and widths are pixels. A `LineStyle` (polylines, routes) has the three stroke fields; a `ShapeStyle` (circles, polygons) adds the fill.
+A style says how a shape or a route line is drawn. Colours are CSS colours and widths are pixels. A `LineStyle` (polylines, routes) has the stroke fields and the dash; a `ShapeStyle` (circles, polygons) has the stroke fields, its outline always solid, and the fill.
 
 | Field | Type | What |
 |---|---|---|
 | `stroke` | `string` | The line's colour |
 | `strokeOpacity` | `number` | The line's opacity, 0 to 1 |
 | `strokeWidth` | `number` | The line's width |
+| `strokeDash` | `"solid" \| "dashed" \| "dotted"` | How the line runs: unbroken (the default), in dashes 2 widths long with gaps as long, or in dots a width across every 2 widths; on a polyline or a route only, not in the store's default styles |
 | `fill` | `string` | The fill's colour; not on a polyline |
 | `fillOpacity` | `number` | The fill's opacity, 0 to 1; not on a polyline |
 
-A shape in a state is drawn as Maplace.js's own look for that state, then its `style`, then its state style (`selectedStyle` or `hoveredStyle`), each the location's over the store's ([store options](store.md#options)). Selected wins over hovered. The state style comes last, so a store-wide `selectedStyle` shows on every shape whatever its own colours.
+A shape in a state is drawn as Maplace.js's own look for that state, then its `style`, then its state style (`selectedStyle`, `hoveredStyle` or `activeStyle`), each the location's over the store's ([store options](store.md#options)). Selected wins over hovered, and hovered over active, which a shape is while its `active` is true and has the hovered look. The state style comes last, so a store-wide `selectedStyle` shows on every shape whatever its own colours.
+
+## A point along a line
+
+`pointAlong(line, fraction)` gives the point `fraction` (0 to 1) of the way along a polyline location as it is drawn (bowed by `curve` or along great circles when it is `geodesic`), or along a route result's `path`: for a marker of your own that moves along a line. Halfway is where the line's popup points. A fraction outside 0 to 1, or anything but a polyline location or a route result, is `invalid-input`. A line's path is measured once, as the store draws it once: give a new array when its points change, as with any location.
 
 ## Content
 

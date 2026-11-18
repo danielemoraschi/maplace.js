@@ -68,11 +68,12 @@ describe("createPopupLinks", () => {
       { lat: 0, lng: 4 },
     ];
     expect(hrefAt({ type: "polygon", path })).toBe(open("1.000000,2.000000"));
+    // Along the equator, where halfway as drawn (straight in Web Mercator) is halfway in degrees.
     const line = [
       { lat: 0, lng: 0 },
-      { lat: 2, lng: 0 },
+      { lat: 0, lng: 2 },
     ];
-    expect(hrefAt({ type: "polyline", path: line })).toBe(open("1.000000,0.000000"));
+    expect(hrefAt({ type: "polyline", path: line })).toBe(open("0.000000,1.000000"));
   });
 
   it("writes a tiny coordinate without an exponent", () => {

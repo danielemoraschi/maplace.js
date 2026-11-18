@@ -46,6 +46,7 @@ export const PAGE_MAP_SUBJECT: ConformanceSubject = {
     subject: GOOGLE_SUBJECT,
     groups: [
       "drawing",
+      "line-looks",
       "presentation",
       "popups",
       "reports",

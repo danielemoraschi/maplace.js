@@ -5,7 +5,7 @@ import { validateLocations } from "./locations";
 import { OLD_OPTIONS } from "./migration";
 import { checkPopupOptions } from "./popup";
 import { type Assert, recordOf } from "./record";
-import { checkShapeStyle, shapeStyleChecks } from "./style";
+import { checkDefaultStyle, shapeStyleChecks } from "./style";
 import {
   arrayOf,
   type Check,
@@ -43,7 +43,7 @@ const checkOptionFields: Assert<MaplaceOptions> = recordOf<MaplaceOptions, "loca
     selectedId: optional(checkNonEmptyString),
     sanitize: optional(checkFunction),
     popup: optional(checkPopupOptions),
-    ...shapeStyleChecks(checkShapeStyle),
+    ...shapeStyleChecks(checkDefaultStyle),
     cluster: optional(checkBoolean),
     heatmap: optional(checkHeatmap),
     view: optional(checkView),

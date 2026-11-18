@@ -21,6 +21,10 @@ export interface Route {
    */
   readonly avoid?: readonly ("tolls" | "highways" | "ferries")[] | undefined;
   readonly style?: LineStyle | undefined;
+  /** How much of the route is travelled, 0 to 1 along its path, as a polyline's `progress`. */
+  readonly progress?: number | undefined;
+  /** The travelled part's style, over its look: the route's own at 40% of its opacity. */
+  readonly travelledStyle?: LineStyle | undefined;
 }
 
 /** One thing a route can keep off: an item of `Route.avoid`. */

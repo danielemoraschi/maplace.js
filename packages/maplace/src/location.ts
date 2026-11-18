@@ -92,6 +92,14 @@ interface StyledShape<Style extends LineStyle> {
   readonly selectedStyle?: Style | undefined;
   /** Drawn over `style` while hovered and not selected; over the store's `hoveredStyle`. */
   readonly hoveredStyle?: Style | undefined;
+  /**
+   * Marks the shape as the page's current one (the flight shown, the stretch walked): drawn in
+   * the hovered look while neither hovered nor selected, which draw over it. Not lifted above
+   * other shapes. Default false.
+   */
+  readonly active?: boolean | undefined;
+  /** Drawn over `style` while active, neither hovered nor selected; over the store's `activeStyle`. */
+  readonly activeStyle?: Style | undefined;
 }
 
 export interface CircleLocation<Data = unknown>
@@ -114,6 +122,17 @@ export interface PolylineLocation<Data = unknown>
    * sampled a point a degree of arc. Default false; not with `curve` or `editable`.
    */
   readonly geodesic?: boolean | undefined;
+  /**
+   * How much of the line is travelled, 0 to 1 along it as drawn: that part is drawn in the
+   * travelled look, the rest as the line. Unset, the whole line is drawn as it is; not with
+   * `editable`.
+   */
+  readonly progress?: number | undefined;
+  /**
+   * The travelled part's style, over its look: the line's own in its state, at 40% of its
+   * opacity.
+   */
+  readonly travelledStyle?: LineStyle | undefined;
 }
 
 export interface PolygonLocation<Data = unknown>

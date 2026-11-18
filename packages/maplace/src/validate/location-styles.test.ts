@@ -39,4 +39,36 @@ describe("validateLocation: styles", () => {
       /selectedStyle is a circle\/polyline\/polygon\/multipolygon field, not a marker field/,
     );
   });
+
+  it("runs a polyline's line solid, dashed or dotted, in each state", () => {
+    for (const strokeDash of ["solid", "dashed", "dotted"]) {
+      expect(check({ ...line, style: { strokeDash }, hoveredStyle: { strokeDash } })).not.toThrow();
+    }
+  });
+
+  it("refuses a dash it doesn't draw", () => {
+    expect(check({ ...line, style: { strokeDash: "dash-dot" } })).toThrow(
+      /style\.strokeDash must be one of "solid", "dashed", "dotted", got "dash-dot"/,
+    );
+  });
+
+  it("refuses a dash on a circle's or polygon's outline", () => {
+    expect(check({ ...circle, selectedStyle: { strokeDash: "dashed" } })).toThrow(
+      /selectedStyle\.strokeDash is a line's: a circle's or polygon's outline is solid/,
+    );
+  });
+
+  it("marks a shape active with a boolean, its active style a style of its type", () => {
+    expect(check({ ...circle, active: true, activeStyle: { fill: "red" } })).not.toThrow();
+    expect(check({ ...line, active: "yes" })).toThrow(/active must be a boolean, got "yes"/);
+    expect(check({ ...line, activeStyle: { fill: "red" } })).toThrow(
+      /activeStyle\.fill is not a line style field; a line has no fill/,
+    );
+  });
+
+  it("tells a marker that active is a shape's", () => {
+    expect(check({ id: "m", lat: 1, lng: 2, active: true })).toThrow(
+      /active is a circle\/polyline\/polygon\/multipolygon field, not a marker field/,
+    );
+  });
 });

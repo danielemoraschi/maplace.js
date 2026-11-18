@@ -119,6 +119,7 @@ export const REACT_PROPS = {
     style: true,
     selectedStyle: true,
     hoveredStyle: true,
+    activeStyle: true,
     cluster: true,
     heatmap: true,
     view: true,

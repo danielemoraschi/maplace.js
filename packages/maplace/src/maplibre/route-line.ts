@@ -1,35 +1,43 @@
-import type { RouteLine } from "../adapter-kit/routing";
+import { lineParts } from "../adapter-kit/line-parts";
+import type { RouteLine, RouteLook } from "../adapter-kit/routing";
 import { ROUTE_LINE_RANK } from "../adapter-kit/stacking";
 import type { LatLng } from "../geometry";
-import type { LineStyle } from "../style";
 import type { FeatureSet } from "./feature-set";
-import { definedFields, lineGeometryOf } from "./location-features";
+import { ROUTE_DEFAULTS } from "./line-paint";
+import { putParts, removeParts } from "./line-parts";
 
-/** The route's one feature in the route source. */
+/** The route's own name for its line, which its features carry as their id. */
 const ROUTE_ID = "route";
 
-/** The route through `path` in the route source, in its style, the route layer's for the rest. */
+/** The route's features' keys in the route source: its line or the part ahead, and the part travelled. */
+const KEYS = { ahead: ROUTE_ID, travelled: "route-travelled" } as const;
+
+const PROPERTIES = { id: ROUTE_ID, rank: ROUTE_LINE_RANK } as const;
+
+/**
+ * The route through `path` in the route source, in its look, the route layer's for the rest:
+ * whole, or while a progress is set, its travelled part faded from the route's opacity and the
+ * part ahead as the route.
+ */
 export function drawRouteLine(
   path: readonly LatLng[],
-  style: LineStyle | undefined,
+  look: RouteLook,
   routes: FeatureSet,
 ): RouteLine {
-  const geometry = lineGeometryOf(path);
-
-  function put(next: LineStyle | undefined): void {
-    routes.put({
-      type: "Feature",
-      geometry,
-      properties: { id: ROUTE_ID, rank: ROUTE_LINE_RANK, ...definedFields(next) },
-    });
+  function show({ style, progress, travelledStyle }: RouteLook): void {
+    const parts =
+      progress === undefined
+        ? { ahead: { path, style }, travelled: undefined }
+        : lineParts(path, { style, progress, travelledStyle }, ROUTE_DEFAULTS.strokeOpacity);
+    putParts(routes, KEYS, parts, PROPERTIES);
     void routes.flush();
   }
 
-  put(style);
+  show(look);
   return {
-    restyle: put,
+    restyle: show,
     remove() {
-      routes.remove(ROUTE_ID);
+      removeParts(routes, KEYS);
       void routes.flush();
     },
   };

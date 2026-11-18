@@ -59,7 +59,7 @@ import {
 } from "./element-attributes.ts";
 import { exportedNames } from "./entry-exports.ts";
 import type { ReferenceTable } from "./reference-check.ts";
-import { LOCATION_FIELDS, SHAPE_STYLE_FIELDS, STORE_NAMES } from "./reference-names.ts";
+import { LOCATION_FIELDS, STORE_NAMES, STYLE_FIELDS } from "./reference-names.ts";
 import {
   GOOGLE_MAP_OPTIONS,
   GOOGLE_OPTIONS,
@@ -123,7 +123,7 @@ export function referenceTables(): ReferenceTable[] {
       ["## Polylines", LOCATION_FIELDS.polyline, "PolylineLocation"],
       ["## Polygons", LOCATION_FIELDS.polygon, "PolygonLocation"],
       ["## Multipolygons", LOCATION_FIELDS.multipolygon, "MultiPolygonLocation"],
-      ["## Styles", SHAPE_STYLE_FIELDS, "ShapeStyle"],
+      ["## Styles", STYLE_FIELDS, "ShapeStyle and LineStyle"],
     ]),
     ...tablesOn("store.md", [
       ["## Options", STORE_NAMES.options, "MaplaceOptions"],

@@ -7,6 +7,7 @@ const CONTEXT: DrawContext = {
   style: { stroke: "blue" },
   selectedStyle: { strokeWidth: 6, stroke: "red" },
   hoveredStyle: { strokeWidth: 5 },
+  activeStyle: undefined,
   report: () => {},
 };
 const path = [
@@ -151,5 +152,29 @@ describe("toDrawable", () => {
     expect(next).not.toBe(previous.drawable);
     expect(next.editable).toBe(true);
     expect(next.geometry).toBe(previous.drawable.geometry);
+  });
+
+  it("passes on a polyline's progress and the travelled part's style, kept while unchanged", () => {
+    const line: Location = {
+      id: "l",
+      type: "polyline",
+      path,
+      progress: 0.3,
+      travelledStyle: { stroke: "grey" },
+    };
+    const first = drawn(line);
+    expect(first.drawable).toMatchObject({ progress: 0.3, travelledStyle: { stroke: "grey" } });
+    const again = toDrawable({ ...line, travelledStyle: { stroke: "grey" } }, first, CONTEXT);
+    expect(again).toBe(first.drawable);
+  });
+
+  it("copies a travelled style, so one changed in place on a new location object is seen", () => {
+    const travelledStyle = { stroke: "grey" };
+    const line: Location = { id: "l", type: "polyline", path, progress: 0.3, travelledStyle };
+    const first = drawn(line);
+    expect(first.drawable.travelledStyle).not.toBe(travelledStyle);
+    travelledStyle.stroke = "black";
+    const again = toDrawable({ ...line }, first, CONTEXT);
+    expect(again.travelledStyle).toEqual({ stroke: "black" });
   });
 });

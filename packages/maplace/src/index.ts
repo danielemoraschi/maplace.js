@@ -46,6 +46,7 @@ export type {
 export type { FilterRequest, LocationFilter } from "./location-state";
 export { createMaplace } from "./maplace/create";
 export type { HeatmapOptions, MaplaceOptions } from "./options";
+export { pointAlong } from "./point-along";
 export type { PopupOptions, ResolvedPopupOptions } from "./popup";
 export type { Route, RouteLeg, RouteResult, RouteStep, TravelMode } from "./route";
 export type {
@@ -55,7 +56,7 @@ export type {
   RouteRequestStop,
 } from "./route-request";
 export type { LoadState, Maplace, Snapshot } from "./store";
-export type { LineStyle, ShapeStyle } from "./style";
+export type { LineStyle, ShapeStyle, StrokeDash } from "./style";
 export type {
   Bounds,
   FitOptions,

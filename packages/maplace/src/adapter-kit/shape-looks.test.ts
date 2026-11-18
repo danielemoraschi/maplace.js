@@ -3,6 +3,7 @@ import type { Drawable, StyleField } from "../drawable";
 import type { Geometry } from "../geometry";
 import type { ShapeStyle } from "../style";
 import {
+  HOVERED_LINE_LOOK,
   HOVERED_LOOK,
   SELECTED_LINE_LOOK,
   SELECTED_LOOK,
@@ -23,14 +24,15 @@ const SELECTED = { selected: true, hovered: false };
 const HOVERED = { selected: false, hovered: true };
 const BOTH = { selected: true, hovered: true };
 
-type Shape = Pick<Drawable, "geometry" | StyleField>;
+type Shape = Pick<Drawable, "geometry" | StyleField | "active">;
 
-function shape(geometry: Geometry, styles: Partial<Pick<Drawable, StyleField>> = {}): Shape {
+function shape(geometry: Geometry, styles: Partial<Omit<Shape, "geometry">> = {}): Shape {
   return {
     geometry,
     style: undefined,
     selectedStyle: undefined,
     hoveredStyle: undefined,
+    activeStyle: undefined,
     ...styles,
   };
 }
@@ -97,5 +99,24 @@ describe("sameStyles", () => {
   it("is false when only the hovered style differs", () => {
     const hovered = shape(circle, { style, hoveredStyle: { fill: "red" } });
     expect(sameStyles(shape(circle, { style }), hovered)).toBe(false);
+  });
+});
+
+describe("styleInState: an active shape", () => {
+  it("draws an active shape at rest in the hovered look, its active style over its style", () => {
+    const style = { stroke: "#0000ff", strokeWidth: 2 };
+    const activeStyle = { stroke: "#ff0000" };
+    expect(styleInState(shape(line, { active: true, style, activeStyle }), REST)).toEqual({
+      ...HOVERED_LINE_LOOK,
+      ...style,
+      ...activeStyle,
+    });
+    expect(styleInState(shape(circle, { active: true }), REST)).toEqual(HOVERED_LOOK);
+  });
+
+  it("is the weakest state: hovered and selected draw over it", () => {
+    const active = shape(circle, { active: true, activeStyle: { fill: "#ff0000" } });
+    expect(styleInState(active, SELECTED)).toEqual(SELECTED_LOOK);
+    expect(styleInState(active, HOVERED)).toEqual(HOVERED_LOOK);
   });
 });

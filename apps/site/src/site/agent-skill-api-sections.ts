@@ -6,7 +6,7 @@ import {
   exampleSnippet,
   pageUrl,
 } from "./agent-skill-sources.ts";
-import { LOCATION_FIELDS, SHAPE_STYLE_FIELDS, STORE_NAMES } from "./reference-names.ts";
+import { LOCATION_FIELDS, STORE_NAMES, STROKE_DASHES, STYLE_FIELDS } from "./reference-names.ts";
 import { GOOGLE_MAP_OPTIONS, MAPLIBRE_MAP_OPTIONS } from "./reference-names-bindings.ts";
 import { docRoute } from "./repo-docs.ts";
 
@@ -21,7 +21,7 @@ ${exampleSnippet("polygon", "vanilla.ts")}
 - A polyline adds ${codeList(LOCATION_FIELDS.polyline)}.
 - A polygon adds ${codeList(LOCATION_FIELDS.polygon)}.
 - A multipolygon (several polygons, one location, not editable) adds ${codeList(LOCATION_FIELDS.multipolygon)}, each polygon a \`path\` and optional \`holes\`.
-- A shape's style has ${codeList(SHAPE_STYLE_FIELDS)}.`;
+- A style has ${codeList(STYLE_FIELDS)}: \`strokeDash\` (${codeList(STROKE_DASHES.map((dash) => JSON.stringify(dash)))}) on a polyline's or the route's only, \`fill\` and \`fillOpacity\` on a circle's or polygon's only.`;
 }
 
 function options(): string {

@@ -12,6 +12,7 @@ const draw = {
   style: undefined,
   selectedStyle: undefined,
   hoveredStyle: undefined,
+  activeStyle: undefined,
   report: () => {},
 };
 

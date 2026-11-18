@@ -1,5 +1,5 @@
 import type { FilterSpecification, LayerSpecification, Map as MapLibreMap } from "maplibre-gl";
-import { linePaint, ROUTE_DEFAULTS, styled } from "./line-paint";
+import { linePaint, outlinePaint, ROUTE_DEFAULTS, styled } from "./line-paint";
 import { addPinImage, PIN_IMAGE } from "./pin-image";
 import { whenStyleLoaded } from "./style-load";
 
@@ -50,8 +50,6 @@ const STROKE_RANK = ["get", "strokeRank"] as const;
 const POLYGONS = ["in", ["geometry-type"], ["literal", ["Polygon", "MultiPolygon"]]] as const;
 const LINES = ["==", ["geometry-type"], "LineString"] as const;
 
-const LINE_PAINT = linePaint();
-
 /** The layers, back first, as they are added on top of the page's style. */
 const LAYERS: readonly LayerSpecification[] = [
   {
@@ -75,7 +73,7 @@ const LAYERS: readonly LayerSpecification[] = [
     source: SHAPE_SOURCE,
     filter: POLYGONS as never,
     layout: { "line-sort-key": STROKE_RANK as never, "line-join": "round" },
-    paint: LINE_PAINT,
+    paint: outlinePaint(),
   },
   {
     id: LINE_LAYER,
@@ -83,7 +81,7 @@ const LAYERS: readonly LayerSpecification[] = [
     source: SHAPE_SOURCE,
     filter: LINES as never,
     layout: { "line-sort-key": STROKE_RANK as never, "line-join": "round", "line-cap": "round" },
-    paint: LINE_PAINT,
+    paint: linePaint(),
   },
   {
     id: PIN_LAYER,
@@ -112,7 +110,7 @@ export function addLayers(map: MapLibreMap): void {
   addPinImage(map);
   for (const source of OWN_SOURCES) {
     if (map.getSource(source) === undefined) {
-      map.addSource(source, { type: "geojson", data: EMPTY, promoteId: "id" });
+      map.addSource(source, { type: "geojson", data: EMPTY, promoteId: "key" });
     }
   }
   for (const layer of LAYERS) if (map.getLayer(layer.id) === undefined) map.addLayer(layer);

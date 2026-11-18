@@ -16,9 +16,9 @@ export function createMapLibreRouting(
 ): Routing {
   return createRouting<ComputedRoute>(state, drawing, {
     compute: pageCompute(computeRoute),
-    drawLine({ result }, style) {
+    drawLine({ result }, look) {
       const routes = state.features?.route;
-      return routes && drawRouteLine(result.path, style, routes);
+      return routes && drawRouteLine(result.path, look, routes);
     },
     failure: "the route couldn't be drawn",
   });

@@ -1,7 +1,8 @@
 /// <reference types="google.maps" />
 import type { CircleGeometry, Geometry, LatLng } from "../../geometry";
-import type { ShapeStyle } from "../../style";
+import type { DrawnStyle, ShapeStyle } from "../../style";
 import type { GoogleShape } from "../placed-location";
+import { dashedStyleOf } from "./dashed-style";
 import { polygonsByContainment } from "./polygons-by-containment";
 import { type ProbeTarget, probedPoint } from "./probe-target";
 
@@ -12,11 +13,13 @@ type Path = google.maps.MVCArray<google.maps.LatLng>;
  * itself, never the adapter's conversions, so it can't share their mistakes; an edit changes one
  * handle at a time, as Google's handles do, each firing its one event. A multipolygon of one
  * polygon reads as a polygon: Google's rings alone can't tell them apart. Its style is what a user
- * sees: the stroke of the copy drawn over it while one is (`outlineCopy`), else its own.
+ * sees: the stroke of what draws it over the shape while something does (`seenStroke`: a lifted
+ * outline's copy, a split line's part ahead, else its part travelled,
+ * in that part's look: at progress 1, faded), else its own.
  */
 export function shapeTarget(
   shape: GoogleShape,
-  outlineCopy: () => GoogleShape | undefined = () => undefined,
+  seenStroke: () => GoogleShape | undefined = () => undefined,
 ): ProbeTarget {
   const onMap = () => shape.getMap() != null;
   const shown = () => onMap() && shape.getVisible() !== false;
@@ -30,7 +33,7 @@ export function shapeTarget(
       title: undefined,
       visible: shown(),
       icon: undefined,
-      style: seenStyleOf(shape, outlineCopy()),
+      style: seenStyleOf(shape, seenStroke()),
     }),
     stack: () => shape.get("zIndex") ?? 0,
     click: () => trigger("click"),
@@ -51,17 +54,21 @@ const GOOGLE_OPTION_OF: Readonly<Record<keyof ShapeStyle, string>> = {
   fillOpacity: "fillOpacity",
 };
 
-/** Google's options back in maplace's names: only those set, so `{}` is Google's defaults. */
-function styleOf(shape: GoogleShape): ShapeStyle {
-  return Object.fromEntries(
+/**
+ * Google's options back in maplace's names: only those set, so `{}` is Google's defaults; a
+ * dashed or dotted line's dash and opacity from its icons.
+ */
+function styleOf(shape: GoogleShape): DrawnStyle {
+  const options: DrawnStyle = Object.fromEntries(
     Object.entries(GOOGLE_OPTION_OF)
       .map(([name, option]) => [name, shape.get(option)])
       .filter(([, value]) => value !== undefined),
   );
+  return { ...options, ...dashedStyleOf(shape) };
 }
 
 /** The shape's fill, and the stroke of its outline's copy while one is drawn over it. */
-function seenStyleOf(shape: GoogleShape, copy: GoogleShape | undefined): ShapeStyle {
+function seenStyleOf(shape: GoogleShape, copy: GoogleShape | undefined): DrawnStyle {
   if (copy === undefined) return styleOf(shape);
   const isStroke = ([name]: [string, unknown]) => name.startsWith("stroke");
   return Object.fromEntries([

@@ -9,6 +9,7 @@ const CONTEXT: DrawContext = {
   style: undefined,
   selectedStyle: undefined,
   hoveredStyle: undefined,
+  activeStyle: undefined,
   report: () => {},
 };
 

@@ -73,4 +73,13 @@ describe("styleOf: state styles", () => {
     const line: Location = { id: "l", type: "polyline", path, hoveredStyle: { strokeWidth: 4 } };
     expect(styleOf(line, "hoveredStyle", DEFAULT)).toEqual({ stroke: "blue", strokeWidth: 4 });
   });
+
+  it("keeps a polyline's dash", () => {
+    const line: Location = { id: "l", type: "polyline", path, style: { strokeDash: "dashed" } };
+    expect(styleOf(line, "style", DEFAULT)).toEqual({
+      stroke: "blue",
+      strokeWidth: 2,
+      strokeDash: "dashed",
+    });
+  });
 });

@@ -28,6 +28,7 @@ createGoogleMap("#simple-vanilla-map", {
 | `style` | `ShapeStyle` | The default [style](locations.md#styles) of circles, polylines, polygons and multipolygons; a location's `style` overrides it |
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while a shape is hovered and not selected |
+| `activeStyle` | `ShapeStyle` | Drawn over `style` while a shape is active (its `active`), neither hovered nor selected |
 | `cluster` | `boolean` | Clusters markers; needs the `cluster` capability; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `heatmap` | [`HeatmapOptions`](#heatmaps) | Draws markers, by group, as a heatmap when zoomed out (1.2); needs the `heatmap` capability; not with `cluster` |
 | `view` | `View` | The first view (see below) |
@@ -143,6 +144,8 @@ A route is one path through your own locations, in order; it needs the `route` c
 | `travelMode` | `"driving" \| "walking" \| "bicycling" \| "transit"` | Driving when left out |
 | `avoid` | `("tolls" \| "highways" \| "ferries")[]` | What the route keeps off where it reasonably can, in any order; on Google, driving routes only ([routes](google.md#routes)) |
 | `style` | `LineStyle` | How the route's line is drawn |
+| `progress` | `number` | How much of the route is travelled, 0 to 1 along its path, as a polyline's: a new progress draws the line again without computing it. On Google, Maplace.js then draws the route itself in Google's route look, in one colour for a transit route |
+| `travelledStyle` | `LineStyle` | The travelled part's style, over its look: the route's own at 40% of its opacity |
 
 The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`, `to`, its distance and duration, and its turn-by-turn `steps`), the total `distanceMeters` and `durationSeconds`, and the `path`. A route is computed only when its stops, `via`, their positions, the travel mode or `avoid` change, since each computation may be billed (the same things avoided in another order are no change); a change of `style` alone redraws the line. On Google: [routes](google.md#routes).
 
@@ -245,7 +248,7 @@ Every adapter puts a node of yours on its map with `mountControl(node, position)
 
 - **`create`** returns a new adapter on each call, synchronously. The suite also calls it with a detached element, as the checks register, to read the adapter's capabilities, and never mounts that one: load your provider in `mount`, not here. A subject drawing on a page's own map makes that map only when `container.isConnected`.
 - **`probe`** is a `MapProbe`, the only per-provider code the suite needs. It reads your provider's map (`location`, `locationIds`, `stackOrder`, `shownPopup`, `originDot`) and acts as a user would (`click`, `clickMap`, `pointerOver`, `pointerOut`, `drag`, `closePopup`). `settle()` resolves once the map has finished what it started and reported it. `frontFirst` is `stackOrder`'s rule: markers above shapes, each front first.
-- **`groups`** joins the suite part by part: `declarations`, `lifecycle`, `drawing`, `presentation`, `popups`, `camera`, `container`, `reports`, `editing`, `route`, `cluster`, `controls` and `origin`. A group left out shows as skipped, and a capability your adapter doesn't declare skips its checks.
+- **`groups`** joins the suite part by part: `declarations`, `lifecycle`, `drawing`, `line-looks`, `presentation`, `popups`, `camera`, `container`, `reports`, `editing`, `route`, `cluster`, `heatmap`, `controls` and `origin`. A group left out shows as skipped, and a capability your adapter doesn't declare skips its checks. `line-looks` (1.2) checks a line's dashes (`strokeDash`), a line split at its `progress`, and an `active` shape in the hovered look: the drawable your adapter gets carries `activeStyle`, `active`, `progress` and `travelledStyle`, and a style's `strokeDash`, which a probe's `LocationOnMap.style` reads back.
 - **`provedOn`** is for a second subject of one adapter, such as one on a page's own map: the `groups` its `subject` already proves, which then show as skipped.
 
 The maps are drawn at 512×512, and zoom means what it does on the web: a world 256 px wide at zoom 0. A check compares what your map draws with `SELECTED_LOOK` and `SELECTED_LINE_LOOK` for a selected shape and `HOVERED_LOOK` for one pointed at, and looks for `ORIGIN_DOT_CLASS` on the origin's dot. A real map may need a longer `testTimeout`: Maplace.js's own use 60 seconds.

@@ -1,3 +1,4 @@
+import { definedFields } from "../defined-fields";
 import type { StyleField } from "../drawable";
 import type { Location } from "../index";
 import { child, mustBe } from "../validate/fail";
@@ -13,6 +14,7 @@ const STYLE_ATTRIBUTES = {
   style: "shape-style",
   selectedStyle: "selected-style",
   hoveredStyle: "hovered-style",
+  activeStyle: "active-style",
 } as const satisfies Record<StyleField, string>;
 
 /** The attributes a `<maplace-location>` reads; a change of any of them re-reads it. */
@@ -31,6 +33,7 @@ export const LOCATION_ATTRIBUTES = [
   "weight",
   "listed",
   "editable",
+  "active",
   ...Object.values(STYLE_ATTRIBUTES),
 ] as const;
 
@@ -53,7 +56,7 @@ export function locationFromAttributes(
     type === "circle"
       ? { type, center: position, radius: numberOrRaw(element, "radius") }
       : { type, ...position };
-  return withoutUndefined({
+  return definedFields({
     id: element.getAttribute("location-id") ?? undefined,
     title: element.getAttribute("title") ?? undefined,
     group: groupFrom(element),
@@ -63,6 +66,7 @@ export function locationFromAttributes(
     weight: numberOrRaw(element, "weight"),
     listed: booleanOrRaw(element, "listed"),
     editable: booleanOrRaw(element, "editable"),
+    active: booleanOrRaw(element, "active"),
     content,
     icon: icon ?? element.getAttribute("icon") ?? undefined,
     ...geometry,
@@ -101,8 +105,4 @@ function stylesFromAttributes(element: Element): Record<string, unknown> {
       jsonOrRaw(element.getAttribute(name)),
     ]),
   );
-}
-
-function withoutUndefined(fields: Record<string, unknown>): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== undefined));
 }

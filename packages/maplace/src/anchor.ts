@@ -1,8 +1,9 @@
+import { pointAtFraction } from "./along";
 import { drawnPath } from "./drawn-path";
 import type { Geometry, LatLng, MultiPolygonGeometry, PolygonRings } from "./geometry";
 import type { Location } from "./location";
 import { arcSpan, narrowestArc, wrapLongitude } from "./longitude-arc";
-import { RADIANS_PER_DEGREE, ringArea } from "./sphere";
+import { ringArea } from "./sphere";
 
 type Path = readonly LatLng[];
 
@@ -24,7 +25,7 @@ export function anchorOf(where: Geometry | Location): LatLng {
     case "multipolygon":
       return centreOfBounds(largestPolygon(where).path);
     case "polyline":
-      return halfwayAlong(drawnPath(where));
+      return pointAtFraction(drawnPath(where), 0.5);
   }
 }
 
@@ -60,38 +61,4 @@ function centreOfBounds(path: Path): LatLng {
   }
   const arc = narrowestArc(longitudes);
   return { lat: (south + north) / 2, lng: wrapLongitude(arc.west + arcSpan(arc) / 2) };
-}
-
-/**
- * Lengths in degrees, longitude scaled by the cosine of the latitude and taken the short way
- * across ±180: close enough for where a popup points, with no map projection needed.
- */
-function halfwayAlong(path: Path): LatLng {
-  const segments = path.slice(1).map((to, index) => segment(path[index] as LatLng, to));
-  let remaining = segments.reduce((total, { length }) => total + length, 0) / 2;
-  for (const { from, step, length } of segments) {
-    if (remaining <= length && length > 0) return pointAlong(from, step, remaining / length);
-    remaining -= length;
-  }
-  return path[0] ?? { lat: 0, lng: 0 };
-}
-
-interface Segment {
-  readonly from: LatLng;
-  /** The change from its start to its end, longitude the short way. */
-  readonly step: LatLng;
-  readonly length: number;
-}
-
-function segment(from: LatLng, to: LatLng): Segment {
-  const step = { lat: to.lat - from.lat, lng: wrapLongitude(to.lng - from.lng) };
-  const scale = Math.cos(((from.lat + to.lat) / 2) * RADIANS_PER_DEGREE);
-  return { from, step, length: Math.hypot(step.lat, step.lng * scale) };
-}
-
-function pointAlong(from: LatLng, step: LatLng, fraction: number): LatLng {
-  return {
-    lat: from.lat + step.lat * fraction,
-    lng: wrapLongitude(from.lng + step.lng * fraction),
-  };
 }

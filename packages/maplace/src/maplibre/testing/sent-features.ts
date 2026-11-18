@@ -7,7 +7,7 @@ import type {
 import type { LocationFeature, LocationProperties } from "../feature-set";
 import { isOwnSource } from "../layers";
 
-/** One of maplace's sources as MapLibre was sent it: each feature by its id. */
+/** One of maplace's sources as MapLibre was sent it: each feature by its key. */
 type SentSource = Map<string, LocationFeature>;
 
 /**
@@ -17,8 +17,8 @@ type SentSource = Map<string, LocationFeature>;
  * restyle replaced shows.
  */
 export interface SentFeatures {
-  /** The feature MapLibre was sent for `id`, in the source `sourceId` on the map now. */
-  featureOf(sourceId: string, id: string): LocationFeature | undefined;
+  /** The feature MapLibre was sent for `key`, in the source `sourceId` on the map now. */
+  featureOf(sourceId: string, key: string): LocationFeature | undefined;
   /** Gives the map its own `getSource` back: a source looked up from now on isn't recorded. */
   stop(): void;
 }
@@ -36,9 +36,9 @@ export function recordSentFeatures(map: MapLibreMap): SentFeatures {
   };
   map.getSource = recordingGetSource as MapLibreMap["getSource"];
   return {
-    featureOf(sourceId, id) {
+    featureOf(sourceId, key) {
       const source = getSource<GeoJSONSource>(sourceId);
-      return source && sent.get(source)?.get(id);
+      return source && sent.get(source)?.get(key);
     },
     stop() {
       if (map.getSource === recordingGetSource) Reflect.deleteProperty(map, "getSource");
@@ -53,7 +53,7 @@ function record(source: GeoJSONSource): SentSource {
   const updateData = source.updateData.bind(source);
   source.setData = (data) => {
     features.clear();
-    for (const [id, feature] of featuresIn(data)) features.set(id, feature);
+    for (const [key, feature] of featuresIn(data)) features.set(key, feature);
     return setData(data);
   };
   source.updateData = (diff) => {
@@ -67,7 +67,7 @@ function featuresIn(data: GeoJSON.GeoJSON | string): SentSource {
   const features: SentSource = new Map();
   if (typeof data === "string" || data.type !== "FeatureCollection") return features;
   for (const feature of data.features as LocationFeature[]) {
-    features.set(feature.properties.id, feature);
+    features.set(feature.properties.key, feature);
   }
   return features;
 }
@@ -77,7 +77,7 @@ function applyDiff(features: SentSource, diff: GeoJSONSourceDiff): void {
   if (diff.removeAll) features.clear();
   else for (const id of diff.remove ?? []) features.delete(String(id));
   for (const feature of (diff.add ?? []) as LocationFeature[]) {
-    features.set(feature.properties.id, feature);
+    features.set(feature.properties.key, feature);
   }
   for (const change of diff.update ?? []) {
     const before = features.get(String(change.id));

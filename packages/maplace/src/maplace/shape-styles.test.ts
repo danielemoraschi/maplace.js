@@ -9,10 +9,12 @@ async function storeWithStyles() {
     locations: [
       { id: "own", type: "circle", center, radius: 5, selectedStyle: { fill: "#ff0000" } },
       { id: "plain", type: "circle", center, radius: 5 },
+      { id: "active", type: "circle", center, radius: 5, active: true },
     ],
     style: { stroke: "#0000ff" },
     selectedStyle: { stroke: "#00ff00", fill: "#ffff00" },
     hoveredStyle: { strokeWidth: 3 },
+    activeStyle: { fill: "#00ffff" },
   });
   const styleOf = (id: string) => adapter.probe().location(id)?.style;
   return { maplace, styleOf };
@@ -34,5 +36,10 @@ describe("the store's shape styles reach the map", () => {
     const { maplace, styleOf } = await storeWithStyles();
     maplace.hover("plain");
     expect(styleOf("plain")).toEqual({ ...HOVERED_LOOK, stroke: "#0000ff", strokeWidth: 3 });
+  });
+
+  it("draws an active shape in the hovered look, the store's active style over it", async () => {
+    const { styleOf } = await storeWithStyles();
+    expect(styleOf("active")).toEqual({ ...HOVERED_LOOK, stroke: "#0000ff", fill: "#00ffff" });
   });
 });

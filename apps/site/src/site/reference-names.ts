@@ -1,5 +1,6 @@
 import type {
   CircleLocation,
+  LineStyle,
   ListViewOptions,
   Location,
   Maplace,
@@ -12,6 +13,7 @@ import type {
   Route,
   ShapeStyle,
   Snapshot,
+  StrokeDash,
 } from "@maplacejs/maplace";
 
 /** Each name of `Name` once: the compiler fails on a missing or an extra key. */
@@ -53,14 +55,20 @@ export const LOCATION_FIELDS = {
     style: true,
     selectedStyle: true,
     hoveredStyle: true,
+    active: true,
+    activeStyle: true,
   }),
   polyline: everyName<Exclude<keyof PolylineLocation, CommonField>>({
     path: true,
     curve: true,
     geodesic: true,
+    progress: true,
+    travelledStyle: true,
     style: true,
     selectedStyle: true,
     hoveredStyle: true,
+    active: true,
+    activeStyle: true,
   }),
   polygon: everyName<Exclude<keyof PolygonLocation, CommonField>>({
     path: true,
@@ -68,19 +76,28 @@ export const LOCATION_FIELDS = {
     style: true,
     selectedStyle: true,
     hoveredStyle: true,
+    active: true,
+    activeStyle: true,
   }),
   multipolygon: everyName<Exclude<keyof MultiPolygonLocation, CommonField>>({
     polygons: true,
     style: true,
     selectedStyle: true,
     hoveredStyle: true,
+    active: true,
+    activeStyle: true,
   }),
 } as const;
 
-export const SHAPE_STYLE_FIELDS = everyName<keyof ShapeStyle>({
+/** How a line's stroke can run. */
+export const STROKE_DASHES = everyName<StrokeDash>({ solid: true, dashed: true, dotted: true });
+
+/** A style's fields: a line's (`LineStyle`, with its dash) and a closed shape's (`ShapeStyle`). */
+export const STYLE_FIELDS = everyName<keyof ShapeStyle | keyof LineStyle>({
   stroke: true,
   strokeOpacity: true,
   strokeWidth: true,
+  strokeDash: true,
   fill: true,
   fillOpacity: true,
 });
@@ -95,6 +112,7 @@ export const STORE_NAMES = {
     style: true,
     selectedStyle: true,
     hoveredStyle: true,
+    activeStyle: true,
     cluster: true,
     heatmap: true,
     view: true,
@@ -145,6 +163,8 @@ export const STORE_NAMES = {
     travelMode: true,
     avoid: true,
     style: true,
+    progress: true,
+    travelledStyle: true,
   }),
   listViewOptions: everyName<keyof ListViewOptions>({
     as: true,

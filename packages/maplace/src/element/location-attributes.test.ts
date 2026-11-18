@@ -129,11 +129,15 @@ describe("locationFromAttributes: shape styles", () => {
       "shape-style": '{"stroke":"#0000ff"}',
       "selected-style": '{"fill":"#ff0000"}',
       "hovered-style": '{"strokeWidth":3}',
+      "active-style": '{"fill":"#00ff00"}',
+      active: "",
     });
     expect(locationFromAttributes(styled)).toMatchObject({
       style: { stroke: "#0000ff" },
       selectedStyle: { fill: "#ff0000" },
       hoveredStyle: { strokeWidth: 3 },
+      activeStyle: { fill: "#00ff00" },
+      active: true,
     });
   });
 

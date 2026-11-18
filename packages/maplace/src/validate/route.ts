@@ -1,7 +1,15 @@
 import type { Avoidance, Route, TravelMode } from "../route";
 import { type Assert, recordOf } from "./record";
 import { checkLineStyle } from "./style";
-import { arrayOf, checkNonEmptyString, members, oneOf, optional } from "./values";
+import {
+  arrayOf,
+  checkNonEmptyString,
+  FRACTION,
+  members,
+  numberIn,
+  oneOf,
+  optional,
+} from "./values";
 
 const TRAVEL_MODES = members<TravelMode>({
   driving: true,
@@ -22,6 +30,8 @@ export const checkRoute: Assert<Route> = recordOf<Route>({
     travelMode: optional(oneOf(TRAVEL_MODES)),
     avoid: optional(arrayOf("an array of things to avoid", oneOf(AVOIDANCES))),
     style: optional(checkLineStyle),
+    progress: optional(numberIn(FRACTION)),
+    travelledStyle: optional(checkLineStyle),
   },
   unknown: "is not a route field",
 });

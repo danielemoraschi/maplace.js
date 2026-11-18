@@ -8,6 +8,7 @@ export type ConformanceGroup =
   | "declarations"
   | "lifecycle"
   | "drawing"
+  | "line-looks"
   | "presentation"
   | "popups"
   | "camera"

@@ -110,5 +110,6 @@ A direct child of `<maplace-map>` marked `data-maplace-idle` replaces the load p
 ## States
 
 - An entry carries `data-selected` and `data-hovered` while in that state, as does a DOM marker ([icons](locations.md#icons)).
+- A shape is drawn in Maplace.js's look for its state, selected over hovered over active (its `active`, the hovered look), its own state style over that ([styles](locations.md#styles)); a line's dash (`strokeDash`) holds in every state, and a line's `progress` fades the part travelled to 40% of its opacity unless `travelledStyle` says otherwise.
 - A panel on a Google map carries `data-color-scheme`, the map's scheme: `light`, `dark` or `follow-system`.
 - `<maplace-map>` shows its load state as `:state(idle)`, `:state(loading)`, `:state(ready)` and `:state(error)` ([load states](element.md#load-states)).

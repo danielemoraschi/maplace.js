@@ -91,4 +91,20 @@ describe("the route on the page's own map", () => {
     expect(map.getSource(ROUTE_SOURCE)).toBeUndefined();
     expect(map.getLayer(ROUTE_LAYER)).toBeUndefined();
   });
+
+  it("draws the route in two parts while a progress is set, asking the page's routing nothing", async () => {
+    const computeRoute = vi.fn(straightRoutes);
+    const { adapter, probe, state } = await routedMap(computeRoute);
+    adapter.setRoute({ stops: ["a", "b"], progress: 0.5 });
+    await probe.settle();
+    const travelled = state.features?.route.featureOf("route-travelled");
+    expect(travelled?.properties.strokeOpacity).toBeCloseTo(0.34);
+    const ahead =
+      (routeFeature(state)?.geometry as GeoJSON.LineString | undefined)?.coordinates ?? [];
+    expect(ahead[0]?.[0]).toBeCloseTo(MIDWAY.lng);
+    adapter.setRoute({ stops: ["a", "b"] });
+    await probe.settle();
+    expect(state.features?.route.featureOf("route-travelled")).toBeUndefined();
+    expect(computeRoute).toHaveBeenCalledOnce();
+  });
 });

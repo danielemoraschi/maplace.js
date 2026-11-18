@@ -25,11 +25,47 @@ export function styled<T extends string | number>(
   return ["coalesce", ["get", field], fallback] as never;
 }
 
-/** How a line is painted from its feature's style fields, `defaults` for those it leaves unset. */
+/**
+ * A line's dashes from its `strokeDash`, in line widths, as Google draws them: with the lines'
+ * round caps, a dash 2 widths long and a gap of 2, or a dot a width across every 2 widths.
+ */
+const LINE_DASH = [
+  "match",
+  ["get", "strokeDash"],
+  "dashed",
+  ["literal", [1, 3]],
+  "dotted",
+  ["literal", [0, 2]],
+  // A dash with no gap: an empty array draws nothing once the dashes come from the features.
+  ["literal", [1, 0]],
+] as never;
+
+/**
+ * How an area's outline is painted from its feature's style fields, the defaults for the rest:
+ * never dashed nor split, so no data-driven dashes on outlines as many as a country's coasts.
+ */
+export function outlinePaint() {
+  return {
+    "line-color": styled<string>("stroke"),
+    "line-opacity": styled<number>("strokeOpacity"),
+    "line-width": styled<number>("strokeWidth"),
+  };
+}
+
+/**
+ * How a line is painted from its feature's style fields, dashes too, `defaults` for those it
+ * leaves unset; see-through while its parts draw it (`parted`).
+ */
 export function linePaint(defaults: LineDefaults = SHAPE_DEFAULTS) {
   return {
     "line-color": styled<string>("stroke", defaults.stroke),
-    "line-opacity": styled<number>("strokeOpacity", defaults.strokeOpacity),
+    "line-opacity": [
+      "case",
+      ["==", ["get", "parted"], true],
+      0,
+      styled<number>("strokeOpacity", defaults.strokeOpacity),
+    ] as never,
     "line-width": styled<number>("strokeWidth", defaults.strokeWidth),
+    "line-dasharray": LINE_DASH,
   };
 }

@@ -30,8 +30,12 @@ export type GoogleShape = google.maps.Circle | google.maps.Polyline | google.map
 
 export interface PlacedShape extends Placed {
   readonly shape: GoogleShape;
-  /** The copy drawing its outline over the other shapes, while one is (`lifted-outline.ts`). */
-  outlineCopy(): GoogleShape | undefined;
+  /**
+   * What draws its stroke as a user sees it, while not the shape itself: the copy of its outline
+   * over the other shapes (`lifted-outline.ts`), or a split line's part ahead, else its part
+   * travelled (`line-parts.ts`).
+   */
+  seenStroke(): GoogleShape | undefined;
 }
 
 /** One location on the Google map. */

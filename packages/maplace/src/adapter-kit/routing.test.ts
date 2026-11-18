@@ -8,6 +8,7 @@ import type { Journey } from "./journey";
 import {
   type ComputedRoute,
   createRouting,
+  type RouteLook,
   type RoutingProvider,
   type RoutingState,
 } from "./routing";
@@ -23,8 +24,7 @@ const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 function routingOnHooks() {
   const host = createRecordingHost();
   const asks: { journey: Journey; signal: AbortSignal; settle: Deferred<ComputedRoute> }[] = [];
-  const lines: { style: Route["style"]; restyle: ReturnType<typeof vi.fn>; removed: boolean }[] =
-    [];
+  const lines: { look: RouteLook; restyle: ReturnType<typeof vi.fn>; removed: boolean }[] = [];
   let drawn = true;
   let closeMap = () => {};
   const placed = new Map(
@@ -41,8 +41,8 @@ function routingOnHooks() {
       asks.push({ journey, signal, settle });
       return settle.promise;
     },
-    drawLine(_computed, style) {
-      const line = { style, restyle: vi.fn(), removed: false };
+    drawLine(_computed, look) {
+      const line = { look, restyle: vi.fn(), removed: false };
       lines.push(line);
       return {
         restyle: line.restyle,
@@ -188,9 +188,25 @@ describe("the shared route", () => {
     routing.setRoute({ ...AB, style });
     await tick();
     expect(asks).toHaveLength(1);
-    expect(lines[0]?.restyle).toHaveBeenCalledWith(style);
+    expect(lines[0]?.restyle).toHaveBeenCalledWith(expect.objectContaining({ style }));
     routing.sync();
     await tick();
     expect(lines[0]?.restyle).toHaveBeenCalledOnce();
+  });
+
+  it("draws the line again for a new progress or travelled style, computing nothing", async () => {
+    const { routing, asks, lines, answer, open } = routingOnHooks();
+    open();
+    routing.setRoute({ ...AB, progress: 0.2 });
+    await tick();
+    await answer();
+    expect(lines[0]?.look).toMatchObject({ progress: 0.2 });
+    const travelledStyle = { stroke: "grey" };
+    routing.setRoute({ ...AB, progress: 0.5, travelledStyle });
+    await tick();
+    expect(asks).toHaveLength(1);
+    expect(lines[0]?.restyle).toHaveBeenCalledWith(
+      expect.objectContaining({ progress: 0.5, travelledStyle }),
+    );
   });
 });

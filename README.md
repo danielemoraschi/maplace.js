@@ -69,7 +69,7 @@ On either:
 
 A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
 
-A circle's styles (colours, opacities, stroke width) are JSON objects in `shape-style`, `selected-style` and `hovered-style`: `<maplace-location type="circle" … selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>`.
+A circle's styles (colours, opacities, stroke width) are JSON objects in `shape-style`, `selected-style`, `hovered-style` and `active-style`: `<maplace-location type="circle" … selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>`.
 
 Locations can also come from an inline `<script type="application/json">` child or the element's `locations` property. The element never fetches: load your data and assign it.
 
@@ -198,7 +198,7 @@ createMapLibreMap("#simple-maplibre-vanilla-map", {
 });
 ```
 
-Circles, polylines, polygons and multipolygons take a `style`, a `selectedStyle` and a `hoveredStyle` (and the store the same three, as defaults); Maplace.js's own selected and hovered look fills what they leave unset.
+Circles, polylines, polygons and multipolygons take a `style`, a `selectedStyle`, a `hoveredStyle` and an `activeStyle` (and the store the same four, as defaults); Maplace.js's own selected and hovered look fills what they leave unset, and a shape marked `active` has the hovered look. A line's style can dash it (`strokeDash`), and a line or the route can show how much is travelled (`progress`, `travelledStyle`), with `pointAlong` placing your own marker on it.
 
 For the element from npm, `import "@maplacejs/maplace/element/google"` defines `<maplace-map>` and `<maplace-location>` with the Google provider, and `import "@maplacejs/maplace/element/maplibre"` with the MapLibre provider (on the page's maplibre-gl and its stylesheet).
 

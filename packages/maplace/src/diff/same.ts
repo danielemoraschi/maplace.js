@@ -36,9 +36,14 @@ export function sameFilter(a: LocationFilter | undefined, b: LocationFilter | un
   );
 }
 
-/** The same route: the same computation and the same style. */
+/** The same route: the same computation, drawn the same way. */
 export function sameRoute(a: Route, b: Route): boolean {
-  return sameComputation(a, b) && sameOptional(a.style, b.style, sameFields);
+  return (
+    sameComputation(a, b) &&
+    a.progress === b.progress &&
+    sameOptional(a.style, b.style, sameFields) &&
+    sameOptional(a.travelledStyle, b.travelledStyle, sameFields)
+  );
 }
 
 /** `previous` when `next` has the same fields, so unchanged values keep their reference. */

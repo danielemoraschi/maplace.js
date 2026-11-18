@@ -26,12 +26,13 @@ The store, the list view, the GeoJSON helper, the adapter contract and the types
 | `ListViewOptions`, `ListView`, `ListEntry` | types | [List view options](store.md#list-view-options) |
 | `listedLocations` | function | [Listed locations](store.md#listed-locations) |
 | `locationsFromGeoJSON` | function | [From GeoJSON](locations.md#from-geojson) |
+| `pointAlong` | function | [A point along a line](locations.md#a-point-along-a-line) |
 | `GeoJSONFeatureCollection`, `GeoJSONFeature` | types | [From GeoJSON](locations.md#from-geojson) |
 | `Location`, `MarkerLocation`, `CircleLocation`, `PolylineLocation`, `PolygonLocation`, `MultiPolygonLocation` | types | [Locations](locations.md) |
 | `LatLng`, `Geometry`, `MarkerGeometry`, `CircleGeometry`, `PolylineGeometry`, `PolygonGeometry`, `MultiPolygonGeometry`, `PolygonRings` | types | [Locations](locations.md#markers); a geometry is what a drag or edit changes |
 | `Content` | type | [Content](locations.md#content) |
 | `Icon`, `LocationState` | types | [Icons](locations.md#icons) |
-| `LineStyle`, `ShapeStyle` | types | [Styles](locations.md#styles) |
+| `LineStyle`, `ShapeStyle`, `StrokeDash` | types | [Styles](locations.md#styles) |
 | `MaplaceError`, `MaplaceErrorDetails` | class, type | [Errors](#errors) |
 | `ErrorCode`, `MisuseCode`, `RuntimeCode` | types | [Misuse codes](#misuse-codes), [runtime failures](#runtime-failures) |
 | `Capability` | type | [Capabilities](#capabilities) |

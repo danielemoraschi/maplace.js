@@ -13,12 +13,13 @@ describe("pinFeature", () => {
   it("puts a marker at its point, longitude first, with its id and rank", () => {
     const feature = pinFeature(markerDrawable("a", { lat: 10, lng: 20 }), { rank: 7, front: true });
     expect(feature.geometry).toEqual({ type: "Point", coordinates: [20, 10] });
-    expect(feature.properties).toEqual({ id: "a", rank: 7 });
+    expect(feature.properties).toEqual({ key: "a", id: "a", rank: 7 });
   });
 
   it("gives a heat marker its weight, and front while it is drawn in front", () => {
     const quake = markerDrawable("q", undefined, { heatWeight: 3 });
     expect(pinFeature(quake, { rank: 1, front: false }).properties).toEqual({
+      key: "q",
       id: "q",
       rank: 1,
       heat: 3,
@@ -115,13 +116,14 @@ describe("shapeFeature", () => {
   it("carries a circle's style fields, as a polygon's", () => {
     const style = { fill: "#00ff00", fillOpacity: 0.5 };
     const { properties } = shapeFeature(circleDrawable("c"), { style, rank: 2, strokeRank: 2 });
-    expect(properties).toEqual({ id: "c", rank: 2, strokeRank: 2, ...style });
+    expect(properties).toEqual({ key: "lc", id: "c", rank: 2, strokeRank: 2, ...style });
   });
 
   it("carries the style fields set, and only those, for the layers' paint", () => {
     const style = { stroke: "#ff0000", strokeWidth: 2, fill: undefined };
     const { properties } = shapeFeature(polygonDrawable("p"), { style, rank: 3, strokeRank: 3 });
     expect(properties).toEqual({
+      key: "lp",
       id: "p",
       rank: 3,
       strokeRank: 3,

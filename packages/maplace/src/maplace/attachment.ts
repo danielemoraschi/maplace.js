@@ -49,6 +49,7 @@ export function createAttacher<Data>({
     style: options?.style,
     selectedStyle: options?.selectedStyle,
     hoveredStyle: options?.hoveredStyle,
+    activeStyle: options?.activeStyle,
     heatmap: options?.heatmap,
   };
   const popup = resolvePopup(options);

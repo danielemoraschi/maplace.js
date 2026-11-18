@@ -1,13 +1,13 @@
 import { samePoint } from "../../adapter-kit/same-geometry";
 import { anchorOf } from "../../anchor";
 import type { CircleGeometry, Geometry, LatLng, PolygonRings } from "../../geometry";
-import type { ShapeStyle } from "../../style";
+import type { DrawnStyle } from "../../style";
 import { pointAtBearing } from "../circle-sphere";
 import { wrappedLongitude } from "../conversions";
 import { type HandleRole, ringsOf, sameRole } from "../edit-geometry";
 import type { LocationFeature } from "../feature-set";
 import { SHAPE_SOURCE } from "../layers";
-import { STYLE_KEYS } from "../location-features";
+import { featureStyleFields, shapeKeys } from "../location-features";
 import type { PlacedShape } from "../placed-location";
 import { clickCanvas, leaveCanvas, moveOverCanvas } from "./pointer";
 import type { ProbeTarget, TargetSite } from "./probe-target";
@@ -23,7 +23,7 @@ export function shapeTarget(
   { map, sent, stillPlaced }: TargetSite,
 ): ProbeTarget {
   const sourceOnMap = () => map.getSource(SHAPE_SOURCE) !== undefined;
-  const feature = () => sent.featureOf(SHAPE_SOURCE, placed.drawable().id);
+  const feature = () => sent.featureOf(SHAPE_SOURCE, shapeKeys(placed.drawable().id).own);
   const shown = () => feature() !== undefined;
   const point = () => ({ at: pointOn(placed.drawable().geometry) });
   return {
@@ -129,10 +129,8 @@ function middleOf(path: readonly LatLng[]): LatLng {
 }
 
 /** The style fields the feature carries: only those set, so `{}` is the layers' defaults. */
-function styleOf({ properties }: LocationFeature): ShapeStyle {
-  return Object.fromEntries(
-    STYLE_KEYS.flatMap((key) => (properties[key] === undefined ? [] : [[key, properties[key]]])),
-  );
+function styleOf({ properties }: LocationFeature): DrawnStyle {
+  return featureStyleFields(properties);
 }
 
 /**

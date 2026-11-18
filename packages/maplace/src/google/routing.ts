@@ -16,9 +16,9 @@ export function createGoogleRouting(
 ): Routing {
   return createRouting<ComputedGoogleRoute>(state, drawing, {
     compute: computeRoute,
-    drawLine({ google }, style) {
+    drawLine(computed, look) {
       const mounted = state.mounted;
-      return mounted && drawRouteLine(google, style, mounted.map);
+      return mounted && drawRouteLine(computed, look, mounted);
     },
     failure: "Google couldn't draw the route",
   });

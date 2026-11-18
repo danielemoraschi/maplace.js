@@ -115,6 +115,12 @@ describe("validateOptions", () => {
     );
   });
 
+  it("keeps dashes out of the default styles, which areas are drawn with too", () => {
+    expect(() => validateOptions({ style: { strokeDash: "dashed" } })).toThrow(
+      /options\.style\.strokeDash goes on a line's own style or the route's: the store's default styles also draw areas/,
+    );
+  });
+
   it("checks the locations with the given sanitizer", () => {
     const html = [{ id: "h", lat: 1, lng: 2, html: "<b>x</b>" }];
     expect(() => validateOptions({ locations: html })).toThrow(

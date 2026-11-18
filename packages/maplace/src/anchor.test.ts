@@ -26,7 +26,11 @@ describe("anchorOf", () => {
       { lat: 0, lng: 0 },
       { lat: 2, lng: 0 },
     ];
-    expect(anchorOf({ id: "l", type: "polyline", path: ends })).toEqual({ lat: 1, lng: 0 });
+    // Halfway along the line as drawn, straight in Web Mercator: a hair north of 1°.
+    expect(anchorOf({ id: "l", type: "polyline", path: ends })).toEqual({
+      lat: expect.closeTo(1, 3),
+      lng: 0,
+    });
   });
 
   it("anchors a marker at its point, and a circle at its centre", () => {

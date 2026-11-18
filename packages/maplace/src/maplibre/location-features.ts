@@ -1,13 +1,12 @@
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng, MarkerGeometry, PolygonRings } from "../geometry";
-import type { ShapeStyle } from "../style";
+import { DRAWN_STYLE_KEYS, type DrawnStyle } from "../style";
 import { circleRing } from "./circle-sphere";
 import { nearestLongitude } from "./conversions";
 import type { LocationFeature, LocationProperties } from "./feature-set";
-import { SHAPE_DEFAULTS } from "./line-paint";
 
 /** The style fields a shape's feature carries, read by the shape layers' paint. */
-export const STYLE_KEYS = Object.keys(SHAPE_DEFAULTS) as (keyof typeof SHAPE_DEFAULTS)[];
+export const STYLE_KEYS = DRAWN_STYLE_KEYS;
 
 /** How a default marker is drawn: where it stacks, and whether it is in front. */
 export interface PinDrawing {
@@ -25,6 +24,7 @@ export function pinFeature(drawable: Drawable, { rank, front }: PinDrawing): Loc
     type: "Feature",
     geometry: { type: "Point", coordinates: [lng, lat] },
     properties: {
+      key: drawable.id,
       id: drawable.id,
       rank,
       ...(drawable.heatWeight === undefined ? {} : { heat: drawable.heatWeight, front }),
@@ -38,9 +38,11 @@ export function pinFeature(drawable: Drawable, { rank, front }: PinDrawing): Loc
  * (`frontRank`), else its rank.
  */
 export interface ShapeDrawing {
-  readonly style: ShapeStyle | undefined;
+  readonly style: DrawnStyle | undefined;
   readonly rank: number;
   readonly strokeRank: number;
+  /** A line split at its progress: its parts draw it (`line-parts.ts`), and it is see-through. */
+  readonly parted?: boolean;
 }
 
 /** A shape's feature (a circle, polyline, polygon or multipolygon): its geometry, drawn so. */
@@ -55,9 +57,24 @@ export function shapeFeature(drawable: Drawable, drawing: ShapeDrawing): Locatio
 /** What a shape's feature carries besides its geometry: what changes with its state. */
 export function shapeProperties(
   { id }: Drawable,
-  { style, rank, strokeRank }: ShapeDrawing,
+  { style, rank, strokeRank, parted }: ShapeDrawing,
 ): LocationProperties {
-  return { id, rank, strokeRank, ...definedFields(style) };
+  const properties = {
+    key: shapeKeys(id).own,
+    id,
+    rank,
+    strokeRank,
+    ...featureStyleFields(style),
+  };
+  return parted ? { ...properties, parted } : properties;
+}
+
+/**
+ * A shape's features' keys in the shape source: its own, and a split line's parts', each its id
+ * after a letter of its own, so no location's id can be another feature's key.
+ */
+export function shapeKeys(id: string) {
+  return { own: `l${id}`, travelled: `t${id}`, ahead: `a${id}` } as const;
 }
 
 function shapeGeometryOf(geometry: Geometry): GeoJSON.Geometry {
@@ -75,9 +92,17 @@ function shapeGeometryOf(geometry: Geometry): GeoJSON.Geometry {
   }
 }
 
+/** Each path's line, made once: a line drawn again in a new style keeps its geometry, unsent. */
+const lineOfPath = new WeakMap<readonly LatLng[], GeoJSON.LineString>();
+
 /** A line through `path`, run on across ±180 as Google draws it. */
 export function lineGeometryOf(path: readonly LatLng[]): GeoJSON.LineString {
-  return { type: "LineString", coordinates: continuousFrom(startOf(path), path) };
+  let line = lineOfPath.get(path);
+  if (line === undefined) {
+    line = { type: "LineString", coordinates: continuousFrom(startOf(path), path) };
+    lineOfPath.set(path, line);
+  }
+  return line;
 }
 
 /** A polygon's rings as GeoJSON's, each run on from its outline's first point across ±180. */
@@ -108,8 +133,8 @@ function closedRing(ring: GeoJSON.Position[]): GeoJSON.Position[] {
   return first === undefined ? ring : [...ring, first];
 }
 
-/** The style fields `style` sets, for a feature's properties: the layers' defaults for the rest. */
-export function definedFields(style: ShapeStyle | undefined): ShapeStyle {
+/** The style fields `style` sets, of those a feature carries (`STYLE_KEYS`): the layers' defaults for the rest. */
+export function featureStyleFields(style: DrawnStyle | undefined): DrawnStyle {
   if (style === undefined) return {};
   return Object.fromEntries(
     STYLE_KEYS.flatMap((key) => (style[key] === undefined ? [] : [[key, style[key]]])),
