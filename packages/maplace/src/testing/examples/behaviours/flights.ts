@@ -35,6 +35,7 @@ export const flights: ExampleBehaviour = async ({ store, adapter, root }) => {
     active: true,
     progress: 0.4,
   });
+  await expect.poll(plane).toBeDefined();
   const before = plane();
   expect(planeDrawn()).toMatchObject({ lat: before.lat, lng: before.lng });
   slideTo(inputLabelled(root, "London → New York, flown"), "0.8");

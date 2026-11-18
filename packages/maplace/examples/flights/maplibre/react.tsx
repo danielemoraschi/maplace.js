@@ -32,7 +32,7 @@ function flightTo({ id, name, lat, lng }: typeof newYork): PolylineLocation {
     title: `London → ${name}`,
     path: [london, { lat, lng }],
     geodesic: true,
-    style: { stroke: "#2563eb", strokeDash: scheduled.has(id) ? "dashed" : "solid" },
+    style: scheduled.has(id) ? { stroke: "#2563eb", strokeDash: "dashed" } : { stroke: "#2563eb" },
   };
 }
 
