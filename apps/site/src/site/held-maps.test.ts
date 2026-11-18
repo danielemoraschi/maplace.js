@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { previewMapsMarkup } from "./builder-maps.ts";
+import { heldMapsMarkup } from "./held-maps.ts";
 
 const markupOn = (provider: string, settings = {}) =>
-  previewMapsMarkup(settings).find((map) => map.provider === provider)?.markup;
+  heldMapsMarkup(settings).find((map) => map.provider === provider)?.markup;
 
-describe("previewMapsMarkup", () => {
+describe("heldMapsMarkup", () => {
   it("holds a map per provider, each naming it", () => {
     expect(markupOn("maplibre")).toBe('<maplace-map hold provider="maplibre"></maplace-map>');
     expect(markupOn("google")).toBe('<maplace-map hold provider="google"></maplace-map>');

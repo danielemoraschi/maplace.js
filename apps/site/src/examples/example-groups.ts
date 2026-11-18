@@ -225,6 +225,12 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
         drawsOwnFrame: true,
       },
       {
+        name: "team",
+        title: "A team around the world",
+        summary:
+          "Faces for markers, list entries of your own with each person's local time, filtered by team.",
+      },
+      {
         name: "styled",
         title: "Map styles",
         summary:

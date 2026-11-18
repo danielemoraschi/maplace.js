@@ -1,8 +1,10 @@
 ---
 import { SITE_MAPS_MAP_ID } from "astro:env/client";
 import { SITE_MAPS_KEY } from "astro:env/server";
-import { type LiveVersionMarkup, liveVersions, shownFirst } from "../examples/live-versions.ts";
+import { liveVersions, shownFirst } from "../examples/live-versions.ts";
+import { keyMissing } from "../examples/site-map-settings.ts";
 import ConsentPlaceholder from "./ConsentPlaceholder.astro";
+import VersionNotes from "./VersionNotes.astro";
 
 interface Props {
   /** Its example's folder in `packages/maplace/examples/`. */
@@ -16,9 +18,6 @@ interface Props {
 const { name, drawsOwnList, drawsOwnFrame } = Astro.props;
 const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
 const versions = liveVersions(name, settings);
-/** Whether `version` runs on Google, which the site has no key for. */
-const keyMissing = ({ provider }: LiveVersionMarkup) =>
-  provider === "google" && settings.apiKey === undefined;
 ---
 
 <div
@@ -32,23 +31,14 @@ const keyMissing = ({ provider }: LiveVersionMarkup) =>
         class="version min-h-map"
         data-live-version={version.kind}
         data-provider={version.provider}
-        data-maps-key-missing={keyMissing(version) ? "" : undefined}
+        data-maps-key-missing={keyMissing(version.provider, settings) ? "" : undefined}
         data-example={name}
         data-live-page={version.kind === "html" ? "" : undefined}
         hidden={!shownFirst(version)}
       >
         <Fragment set:html={version.markup} />
       </div>
-      <div data-version-notes>
-        {version.callsSave && (
-          <p class="m-0 border-t-2 border-ink bg-paper px-3 py-2 text-sm" data-saved hidden />
-        )}
-        <p class="map-note loading">Loading the map…</p>
-        <p class="map-note failed">
-          <span data-map-failure>The map couldn't load.</span>{" "}
-          <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
-        </p>
-      </div>
+      <VersionNotes callsSave={version.callsSave} />
     ))
   }
   <ConsentPlaceholder />

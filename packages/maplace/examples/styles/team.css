@@ -1,0 +1,63 @@
+/* The team example's look, which every version links: page, script, vanilla and React, on either
+   map. */
+/* Each team's colour, which its people's avatars take: white initials read on each at 5.4:1 or
+   more. */
+[data-team="Design"] {
+  --team: #7b2cbf;
+}
+[data-team="Engineering"] {
+  --team: #1d4ed8;
+}
+[data-team="Growth"] {
+  --team: #b42318;
+}
+[data-team="Support"] {
+  --team: #047857;
+}
+/* A face: the person's initials on their team's colour, the marker on the map and the lead of
+   their entry in the list. */
+.team-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--team, #111);
+  color: #fff;
+  font:
+    700 0.75rem / 1 system-ui,
+    sans-serif;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+/* A marker pointed at, or picked: ringed, the picked one in red. The marks are on the avatar, or on
+   the node around it when the map wraps it. */
+.team-avatar[data-hovered],
+[data-hovered] > .team-avatar {
+  outline: 2px solid #111;
+}
+.team-avatar[data-selected],
+[data-selected] > .team-avatar {
+  outline: 3px solid #e4322b;
+}
+/* A person in the list: their face, then their name, role and city, and the time where they are. */
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.team-member-text {
+  display: grid;
+  gap: 0.125rem;
+}
+.team-member-name {
+  font-weight: 600;
+}
+.team-member-detail,
+.team-member-time {
+  font-size: 0.875em;
+}
+.team-member-detail {
+  color: #55554f;
+}

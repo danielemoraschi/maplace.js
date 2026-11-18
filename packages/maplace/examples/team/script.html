@@ -1,0 +1,104 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key; each person's face on the map, and the list with the time where each one is. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- This example's look lives in the examples' styles/team.css, which every version links. -->
+<link rel="stylesheet" href="../styles/team.css">
+<style>
+  #team-script-map-and-list { display: flex; height: 24rem; }
+  #team-script-map { flex: 1 1 auto; min-width: 0; }
+  #team-script-list { display: contents; }
+  #team-script-list .maplace-list { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #team-script-map-and-list { flex-direction: column; height: 36rem; }
+    #team-script-list .maplace-list { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="team-script-map-and-list">
+  <div id="team-script-map"></div>
+  <div id="team-script-list"></div>
+</div>
+<script type="module">
+  // Each person, in their team's group: their role, city, clock and initials in their data.
+  const team = await fetch("/examples/data/team.json").then((response) => response.json());
+  const viewerZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // How long until the next minute begins, and a little past it, so the clock reads the new one.
+  const untilNextMinute = () => 60_050 - (Date.now() % 60_000);
+
+  // The time on a zone's clock: "17:30".
+  const localTimeOf = (timeZone, now) =>
+    new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(now);
+  // How far a zone's clock is ahead of UTC, in minutes: Kolkata's 330 ("GMT" alone is 0).
+  const minutesFromUtc = (timeZone, now) => {
+    const name = new Intl.DateTimeFormat("en-GB", { timeZone, timeZoneName: "longOffset" })
+      .formatToParts(now).find(({ type }) => type === "timeZoneName")?.value ?? "";
+    const [, sign = "+", hours = "0", minutes = "0"] = /GMT([+\-−])(\d\d):(\d\d)/.exec(name) ?? [];
+    return (sign === "+" ? 1 : -1) * (Number(hours) * 60 + Number(minutes));
+  };
+  // "+5h30", "−8h" or "same time": how far a zone's clock is ahead of yours, or behind.
+  const offsetFromYou = (timeZone, now) => {
+    const minutes = minutesFromUtc(timeZone, now) - minutesFromUtc(viewerZone, now);
+    if (minutes === 0) return "same time";
+    const sign = minutes > 0 ? "+" : "−";
+    const hours = Math.floor(Math.abs(minutes) / 60);
+    const rest = Math.abs(minutes) % 60;
+    return `${sign}${hours}h${rest ? String(rest).padStart(2, "0") : ""}`;
+  };
+  const writeLocalTime = (time) => {
+    const now = new Date();
+    time.textContent = `${localTimeOf(time.dataset.timeZone, now)} · ${offsetFromYou(time.dataset.timeZone, now)}`;
+  };
+  // A span showing the time on a zone's clock beside how far it is from yours.
+  const localTime = (timeZone) => {
+    const time = document.createElement("span");
+    time.className = "team-member-time";
+    time.dataset.timeZone = timeZone;
+    writeLocalTime(time);
+    return time;
+  };
+  const span = (className, ...children) => {
+    const element = document.createElement("span");
+    element.className = className;
+    element.append(...children);
+    return element;
+  };
+
+  // A face: the person's initials on their team's colour, the marker and the entry's lead.
+  const avatar = ({ group, data }) => {
+    const face = span("team-avatar", data.initials);
+    face.dataset.team = group;
+    return face;
+  };
+  // A person's entry in the list, the page's own: their face, name, role and city, and the time
+  // where they are.
+  const memberItem = ({ location }) => {
+    const face = avatar(location);
+    face.setAttribute("aria-hidden", "true");
+    return span("team-member", face, span("team-member-text",
+      span("team-member-name", location.title),
+      span("team-member-detail", `${location.data.role} · ${location.data.city}`),
+      localTime(location.data.timeZone)));
+  };
+
+  Maplace.createGoogleMap("#team-script-map", {
+    apiKey: "YOUR_KEY",
+    locations: team.map((person) => ({ ...person, icon: avatar })),
+    list: {
+      container: "#team-script-list",
+      heading: "The team",
+      render: memberItem,
+      groupCounts: true,
+      groupFilter: true,
+      search: true,
+      searchLabel: "Find someone",
+    },
+  });
+
+  // Every time shown turns as each minute begins.
+  const list = document.getElementById("team-script-list");
+  const showLocalTimes = () => {
+    for (const time of list.querySelectorAll(".team-member-time")) writeLocalTime(time);
+    setTimeout(showLocalTimes, untilNextMinute());
+  };
+  setTimeout(showLocalTimes, untilNextMinute());
+</script>

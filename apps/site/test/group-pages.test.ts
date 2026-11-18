@@ -132,8 +132,9 @@ describe("the examples' pages, as built (W38)", () => {
       ["popups", "/examples/styles/popups.css", "popups.css"],
       ["choropleth", "/examples/styles/choropleth.css", "choropleth.css"],
       ["whats-on", "/examples/styles/whats-on.css", "whats-on.css"],
+      ["team", "/examples/styles/team.css", "team.css"],
     ]);
-    for (const file of ["popups.css", "choropleth.css", "whats-on.css"]) {
+    for (const file of ["popups.css", "choropleth.css", "whats-on.css", "team.css"]) {
       const served = await fetch(new URL(`/examples/styles/${file}`, site.url));
       expect(served.headers.get("content-type"), file).toMatch(/^text\/css/);
       expect(await served.text(), file).toBe(exampleFile("styles", file));

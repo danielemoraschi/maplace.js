@@ -1,0 +1,30 @@
+---
+import { SITE_MAPS_MAP_ID } from "astro:env/client";
+import { SITE_MAPS_KEY } from "astro:env/server";
+import { FIRST_PROVIDER } from "../examples/example-providers.ts";
+import { keyMissing } from "../examples/site-map-settings.ts";
+import { heldMapsMarkup } from "../site/held-maps.ts";
+import ConsentPlaceholder from "./ConsentPlaceholder.astro";
+import VersionNotes from "./VersionNotes.astro";
+
+const settings = { apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID };
+const maps = heldMapsMarkup(settings);
+---
+
+<div class="map-frame relative">
+  {
+    maps.map(({ provider, markup }) => (
+      <div
+        class="version min-h-map"
+        data-live-version="html"
+        data-provider={provider}
+        data-maps-key-missing={keyMissing(provider, settings) ? "" : undefined}
+        hidden={provider !== FIRST_PROVIDER}
+      >
+        <Fragment set:html={markup} />
+      </div>
+      <VersionNotes />
+    ))
+  }
+  <ConsentPlaceholder />
+</div>

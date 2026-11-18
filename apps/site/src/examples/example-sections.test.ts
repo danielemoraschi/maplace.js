@@ -69,7 +69,7 @@ describe("EXAMPLE_GROUPS", () => {
           "link-to-place",
         ],
       ],
-      ["styling", "Styling", ["whats-on", "styled", "css-markers", "brand", "unstyled"]],
+      ["styling", "Styling", ["whats-on", "team", "styled", "css-markers", "brand", "unstyled"]],
     ]);
   });
 
@@ -135,9 +135,9 @@ describe("EXAMPLE_GROUPS", () => {
     expect(findGroupOfSection("main")).toBeUndefined();
   });
 
-  it("numbers the sections 1 to 30 across the groups, in order, Basics on the home page", () => {
+  it("numbers the sections 1 to 31 across the groups, in order, Basics on the home page", () => {
     const numbers = EXAMPLE_GROUPS.flatMap(({ sections }) => sections.map(sectionNumber));
-    expect(numbers).toEqual(Array.from({ length: 30 }, (_, index) => index + 1));
+    expect(numbers).toEqual(Array.from({ length: 31 }, (_, index) => index + 1));
     expect(HOME_GROUP.id).toBe("basics");
   });
 });

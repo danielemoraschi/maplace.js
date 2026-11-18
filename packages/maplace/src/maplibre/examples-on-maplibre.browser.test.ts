@@ -61,7 +61,7 @@ const NO_BACKGROUND = "rgba(0, 0, 0, 0)";
 /**
  * What a version does on real MapLibre beyond opening, where only a real map shows it: styled's
  * select loads OpenFreeMap's dark style; css-markers' pins, brand's cluster badges and whats-on's
- * pins and panel take their looks from the page's CSS; flights opens on the globe.
+ * pins and panel take their looks from the page's CSS; flights and team open on the globe.
  */
 const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = {
   styled: expectDarkStyleOnChoosing,
@@ -69,6 +69,7 @@ const ON_MAPLIBRE: Readonly<Record<string, RealCheck>> = {
   brand: expectBadgeInBrandColours,
   "whats-on": expectCategoryLook,
   flights: expectOnTheGlobe,
+  team: expectOnTheGlobe,
   route: expectRouteFromStoredAnswer,
 };
 

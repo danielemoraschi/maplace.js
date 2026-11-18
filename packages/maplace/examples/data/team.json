@@ -1,0 +1,282 @@
+[
+  {
+    "id": "ana-maria-ruiz",
+    "title": "Ana María Ruiz",
+    "lat": 19.4326,
+    "lng": -99.1332,
+    "group": "Design",
+    "searchText": "Mexico City Product designer",
+    "data": {
+      "role": "Product designer",
+      "city": "Mexico City",
+      "timeZone": "America/Mexico_City",
+      "initials": "AR"
+    }
+  },
+  {
+    "id": "kofi-mensah",
+    "title": "Kofi Mensah",
+    "lat": 5.6037,
+    "lng": -0.187,
+    "group": "Engineering",
+    "searchText": "Accra Backend engineer",
+    "data": {
+      "role": "Backend engineer",
+      "city": "Accra",
+      "timeZone": "Africa/Accra",
+      "initials": "KM"
+    }
+  },
+  {
+    "id": "priya-raman",
+    "title": "Priya Raman",
+    "lat": 12.9716,
+    "lng": 77.5946,
+    "group": "Engineering",
+    "searchText": "Bengaluru Frontend engineer",
+    "data": {
+      "role": "Frontend engineer",
+      "city": "Bengaluru",
+      "timeZone": "Asia/Kolkata",
+      "initials": "PR"
+    }
+  },
+  {
+    "id": "sven-lindqvist",
+    "title": "Sven Lindqvist",
+    "lat": 59.3293,
+    "lng": 18.0686,
+    "group": "Engineering",
+    "searchText": "Stockholm Engineering lead",
+    "data": {
+      "role": "Engineering lead",
+      "city": "Stockholm",
+      "timeZone": "Europe/Stockholm",
+      "initials": "SL"
+    }
+  },
+  {
+    "id": "hana-sato",
+    "title": "Hana Sato",
+    "lat": 34.6937,
+    "lng": 135.5023,
+    "group": "Support",
+    "searchText": "Osaka Support lead",
+    "data": {
+      "role": "Support lead",
+      "city": "Osaka",
+      "timeZone": "Asia/Tokyo",
+      "initials": "HS"
+    }
+  },
+  {
+    "id": "lucas-ferreira",
+    "title": "Lucas Ferreira",
+    "lat": -23.5505,
+    "lng": -46.6333,
+    "group": "Support",
+    "searchText": "São Paulo Support engineer",
+    "data": {
+      "role": "Support engineer",
+      "city": "São Paulo",
+      "timeZone": "America/Sao_Paulo",
+      "initials": "LF"
+    }
+  },
+  {
+    "id": "amara-okafor",
+    "title": "Amara Okafor",
+    "lat": 6.5244,
+    "lng": 3.3792,
+    "group": "Design",
+    "searchText": "Lagos Interaction designer",
+    "data": {
+      "role": "Interaction designer",
+      "city": "Lagos",
+      "timeZone": "Africa/Lagos",
+      "initials": "AO"
+    }
+  },
+  {
+    "id": "tom-gallagher",
+    "title": "Tom Gallagher",
+    "lat": 53.3498,
+    "lng": -6.2603,
+    "group": "Growth",
+    "searchText": "Dublin Account manager",
+    "data": {
+      "role": "Account manager",
+      "city": "Dublin",
+      "timeZone": "Europe/Dublin",
+      "initials": "TG"
+    }
+  },
+  {
+    "id": "mei-lin",
+    "title": "Mei Lin",
+    "lat": 25.033,
+    "lng": 121.5654,
+    "group": "Engineering",
+    "searchText": "Taipei Data engineer",
+    "data": {
+      "role": "Data engineer",
+      "city": "Taipei",
+      "timeZone": "Asia/Taipei",
+      "initials": "ML"
+    }
+  },
+  {
+    "id": "rajesh-thapa",
+    "title": "Rajesh Thapa",
+    "lat": 27.7172,
+    "lng": 85.324,
+    "group": "Engineering",
+    "searchText": "Kathmandu QA engineer",
+    "data": {
+      "role": "QA engineer",
+      "city": "Kathmandu",
+      "timeZone": "Asia/Kathmandu",
+      "initials": "RT"
+    }
+  },
+  {
+    "id": "chloe-martin",
+    "title": "Chloé Martin",
+    "lat": 45.764,
+    "lng": 4.8357,
+    "group": "Design",
+    "searchText": "Lyon Product manager",
+    "data": {
+      "role": "Product manager",
+      "city": "Lyon",
+      "timeZone": "Europe/Paris",
+      "initials": "CM"
+    }
+  },
+  {
+    "id": "jack-wilson",
+    "title": "Jack Wilson",
+    "lat": -37.8136,
+    "lng": 144.9631,
+    "group": "Growth",
+    "searchText": "Melbourne Growth lead",
+    "data": {
+      "role": "Growth lead",
+      "city": "Melbourne",
+      "timeZone": "Australia/Melbourne",
+      "initials": "JW"
+    }
+  },
+  {
+    "id": "aroha-ngata",
+    "title": "Aroha Ngata",
+    "lat": -41.2865,
+    "lng": 174.7762,
+    "group": "Support",
+    "searchText": "Wellington Support engineer",
+    "data": {
+      "role": "Support engineer",
+      "city": "Wellington",
+      "timeZone": "Pacific/Auckland",
+      "initials": "AN"
+    }
+  },
+  {
+    "id": "daniel-cohen",
+    "title": "Daniel Cohen",
+    "lat": 32.0853,
+    "lng": 34.7818,
+    "group": "Engineering",
+    "searchText": "Tel Aviv Platform engineer",
+    "data": {
+      "role": "Platform engineer",
+      "city": "Tel Aviv",
+      "timeZone": "Asia/Jerusalem",
+      "initials": "DC"
+    }
+  },
+  {
+    "id": "sofia-rossi",
+    "title": "Sofia Rossi",
+    "lat": 45.4642,
+    "lng": 9.19,
+    "group": "Design",
+    "searchText": "Milan Content designer",
+    "data": {
+      "role": "Content designer",
+      "city": "Milan",
+      "timeZone": "Europe/Rome",
+      "initials": "SR"
+    }
+  },
+  {
+    "id": "marcus-johnson",
+    "title": "Marcus Johnson",
+    "lat": 33.749,
+    "lng": -84.388,
+    "group": "Growth",
+    "searchText": "Atlanta Partnerships",
+    "data": {
+      "role": "Partnerships",
+      "city": "Atlanta",
+      "timeZone": "America/New_York",
+      "initials": "MJ"
+    }
+  },
+  {
+    "id": "emily-tremblay",
+    "title": "Emily Tremblay",
+    "lat": 45.5017,
+    "lng": -73.5673,
+    "group": "Support",
+    "searchText": "Montréal Support engineer",
+    "data": {
+      "role": "Support engineer",
+      "city": "Montréal",
+      "timeZone": "America/Toronto",
+      "initials": "ET"
+    }
+  },
+  {
+    "id": "diego-alvarez",
+    "title": "Diego Alvarez",
+    "lat": -34.6037,
+    "lng": -58.3816,
+    "group": "Engineering",
+    "searchText": "Buenos Aires Mobile engineer",
+    "data": {
+      "role": "Mobile engineer",
+      "city": "Buenos Aires",
+      "timeZone": "America/Argentina/Buenos_Aires",
+      "initials": "DA"
+    }
+  },
+  {
+    "id": "leah-park",
+    "title": "Leah Park",
+    "lat": 47.6062,
+    "lng": -122.3321,
+    "group": "Design",
+    "searchText": "Seattle User researcher",
+    "data": {
+      "role": "User researcher",
+      "city": "Seattle",
+      "timeZone": "America/Los_Angeles",
+      "initials": "LP"
+    }
+  },
+  {
+    "id": "yusuf-demir",
+    "title": "Yusuf Demir",
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "group": "Growth",
+    "searchText": "Istanbul Growth marketer",
+    "data": {
+      "role": "Growth marketer",
+      "city": "Istanbul",
+      "timeZone": "Europe/Istanbul",
+      "initials": "YD"
+    }
+  }
+]

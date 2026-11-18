@@ -17,6 +17,7 @@ describe("exampleData", () => {
       "offices",
       "points-4k",
       "route-milan-munich",
+      "team",
       "volcanoes",
     ]);
   });
@@ -44,9 +45,11 @@ describe("servedExampleFiles", () => {
       "data/photos/st-marks.webp",
       "data/points-4k.json",
       "data/route-milan-munich.json",
+      "data/team.json",
       "data/volcanoes.json",
       "styles/choropleth.css",
       "styles/popups.css",
+      "styles/team.css",
       "styles/whats-on.css",
     ]);
   });

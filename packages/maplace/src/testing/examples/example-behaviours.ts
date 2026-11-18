@@ -23,6 +23,7 @@ import { search } from "./behaviours/search";
 import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
 import { tags } from "./behaviours/tags";
+import { team } from "./behaviours/team";
 import { thisArea } from "./behaviours/this-area";
 import { tradeLanes } from "./behaviours/trade-lanes";
 import { unstyled } from "./behaviours/unstyled";
@@ -58,6 +59,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   "custom-list": customList,
   "css-markers": cssMarkers,
   brand,
+  team,
   "whats-on": whatsOn,
   unstyled,
 };

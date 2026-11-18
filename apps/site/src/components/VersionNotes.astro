@@ -1,0 +1,17 @@
+---
+interface Props {
+  /** Whether the version saves to the page: then a note says it saved. */
+  readonly callsSave?: boolean;
+}
+
+const { callsSave = false } = Astro.props;
+---
+
+<div data-version-notes>
+  {callsSave && <p class="m-0 border-t-2 border-ink bg-paper px-3 py-2 text-sm" data-saved hidden />}
+  <p class="map-note loading">Loading the map…</p>
+  <p class="map-note failed">
+    <span data-map-failure>The map couldn't load.</span>{" "}
+    <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
+  </p>
+</div>

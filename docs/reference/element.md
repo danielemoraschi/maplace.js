@@ -213,7 +213,7 @@ Each attribute sets the [location field](locations.md) of the same meaning. Bool
 
 ## Templates
 
-A `<template>` child of `<maplace-location>` is the popup's content, and a `<template data-icon>` child the marker, in place of `icon` (one element, or a span around the rest), cloned for each state. Templates are the page's own markup and trusted, so they skip `sanitize`; `html` set through `locations` still needs it.
+A `<template>` child of `<maplace-location>` is the popup's content, and a `<template data-icon>` child the marker, in place of `icon` (one element, or a span around the rest), cloned for each state: the location's `icon` is then a function building it, which a list view of yours can call too. Templates are the page's own markup and trusted, so they skip `sanitize`; `html` set through `locations` still needs it.
 
 ## Data
 

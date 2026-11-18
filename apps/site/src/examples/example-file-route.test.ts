@@ -18,6 +18,7 @@ describe("exampleFilePaths", () => {
     expect(exampleFilePaths("css").map(({ params }) => params)).toEqual([
       { folder: "styles", name: "choropleth" },
       { folder: "styles", name: "popups" },
+      { folder: "styles", name: "team" },
       { folder: "styles", name: "whats-on" },
     ]);
     expect(exampleFilePaths("webp").map(({ params }) => params)).toEqual([

@@ -1,17 +1,12 @@
 ---
 import { getEntry } from "astro:content";
-import { SITE_MAPS_MAP_ID } from "astro:env/client";
-import { SITE_MAPS_KEY } from "astro:env/server";
-import ConsentPlaceholder from "../components/ConsentPlaceholder.astro";
+import HeldMaps from "../components/HeldMaps.astro";
 import ProviderSwitch from "../components/ProviderSwitch.astro";
-import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import Base from "../layouts/Base.astro";
-import { previewMapsMarkup } from "../site/builder-maps.ts";
 import { BUILDER_PAGE, PRIVACY_PAGE } from "../site/footer-pages.ts";
 
 const install = await getEntry("install", "element");
 if (install === undefined) throw new Error("the install collection has no element entry");
-const previews = previewMapsMarkup({ apiKey: SITE_MAPS_KEY, mapId: SITE_MAPS_MAP_ID });
 const SAMPLE = `title,lat,lng
 Rome,41.9028,12.4964
 Milan,45.4642,9.19
@@ -55,29 +50,7 @@ const NUMBER = "text-accent";
           <ProviderSwitch legend="Preview and write the snippet for" />
         </div>
         <div data-version-switch="builder" data-builder-preview>
-          <div class="map-frame relative">
-            {
-              previews.map(({ provider, markup }) => (
-                <div
-                  class="version min-h-map"
-                  data-live-version="html"
-                  data-provider={provider}
-                  data-maps-key-missing={provider === "google" && SITE_MAPS_KEY === undefined ? "" : undefined}
-                  hidden={provider !== FIRST_PROVIDER}
-                >
-                  <Fragment set:html={markup} />
-                </div>
-                <div data-version-notes>
-                  <p class="map-note loading">Loading the map…</p>
-                  <p class="map-note failed">
-                    <span data-map-failure>The map couldn't load.</span>{" "}
-                    <button type="button" class="button-plain mt-1" data-map-reload>Reload the page</button>
-                  </p>
-                </div>
-              ))
-            }
-            <ConsentPlaceholder />
-          </div>
+          <HeldMaps />
         </div>
         <p data-builder-preview-note hidden class="mt-2 mb-0 text-sm text-muted">
           The preview fetches no icons and shows popups as plain text.
