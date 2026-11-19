@@ -60,8 +60,7 @@ describeWithMaps("Google drags the browser ends", () => {
     expect(dragReportsOf(host, "a")).toEqual(reportedOfA);
     expect((await expectMarkerAt(state, "a", endedAt)).gmpDraggable).toBe(true);
 
-    // On the same map, sparing a billed load, and last: touch emulation stays away from every
-    // mouse drag.
+    // On the same map, sparing a billed load.
     const markerT = await drawnMarker(state, "t");
     const start = await steadyPoint(() => markerT);
     const finger = await holdTouchAt(start);

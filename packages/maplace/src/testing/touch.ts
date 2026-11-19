@@ -19,8 +19,9 @@ export interface Finger {
 
 /**
  * Touches the screen at `point` (in the test frame's viewport) and holds the finger there: real
- * touch input through the DevTools protocol. After the test a finger still down is cancelled, and
- * touch emulation turned off.
+ * touch input through the DevTools protocol. After the test a finger still down is cancelled. No
+ * touch emulation: switched off again, it leaves Linux's headless Chromium without `(hover:hover)`
+ * for every file the page runs next (T34).
  */
 export async function holdTouchAt(point: ViewportPoint): Promise<Finger> {
   const session = cdp();
@@ -33,11 +34,7 @@ export async function holdTouchAt(point: ViewportPoint): Promise<Finger> {
     await session.send("Input.dispatchTouchEvent", { type, touchPoints: [] });
     await nextFrame();
   };
-  await session.send("Emulation.setTouchEmulationEnabled", { enabled: true });
-  onTestFinished(async () => {
-    await endAs("touchCancel");
-    await session.send("Emulation.setTouchEmulationEnabled", { enabled: false });
-  });
+  onTestFinished(() => endAs("touchCancel"));
   await send("touchStart", point);
   down = true;
   return {

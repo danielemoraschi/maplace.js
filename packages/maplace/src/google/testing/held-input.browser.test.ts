@@ -70,4 +70,11 @@ describe("held touch", () => {
     await finger.cancel();
     expect(heard).toEqual(["touchstart", "touchend"]);
   });
+
+  it("touches without making the page a touch screen", async () => {
+    const canHover = () => matchMedia("(hover:hover)").matches;
+    const couldHover = canHover();
+    await holdTouchAt(recordingElement().centre);
+    expect(canHover()).toBe(couldHover);
+  });
 });
