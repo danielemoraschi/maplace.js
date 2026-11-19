@@ -7,8 +7,9 @@ import { drawnMarker, idle } from "./testing/map-waits";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
+/** "a" is named for userEvent, which finds it by role and name: Google's own buttons are buttons. */
 const QUAKES = [
-  markerDrawable("a", TOWNS.bologna, { heatWeight: 4 }),
+  markerDrawable("a", TOWNS.bologna, { heatWeight: 4, title: "Bologna" }),
   markerDrawable("b", TOWNS.modena, { heatWeight: 2 }),
 ];
 
