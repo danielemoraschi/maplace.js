@@ -37,7 +37,7 @@ describe("the group filter in a MapLibre panel", () => {
     const filter = await filteredListOnMap();
     const opener = filter.querySelector("button") as HTMLButtonElement;
     await userEvent.hover(opener);
-    expect(getComputedStyle(opener).backgroundImage).toContain("linear-gradient");
+    await expect.poll(() => getComputedStyle(opener).backgroundImage).toContain("linear-gradient");
   });
 
   it("opens its boxes", async () => {
