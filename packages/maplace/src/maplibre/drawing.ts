@@ -2,6 +2,7 @@ import type { LocationDiff } from "../adapter";
 import { inChunks } from "../adapter-kit/chunks";
 import { createDiffQueue, type DiffQueue } from "../adapter-kit/diff-queue";
 import type { HoverReports } from "../adapter-kit/hover-reports";
+import { pinPaletteOf } from "../adapter-kit/pin-palette";
 import type { Drawable } from "../drawable";
 import {
   anyReplaced,
@@ -89,9 +90,10 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
 
   function open(mounted: MountedMapLibre): void {
     const { map } = mounted;
+    const pinPalette = pinPaletteOf(map.getContainer());
     /** maplace's layers, and a heatmap's with them: when the map opens, and after a restyle. */
     const addAllLayers = () => {
-      addLayers(map);
+      addLayers(map, pinPalette.resting);
       mounted.heat?.add(map);
     };
     addAllLayers();
@@ -101,7 +103,7 @@ export function createDrawing(state: MapLibreState, placers: Placers): Drawing {
       route: createFeatureSet(map, ROUTE_SOURCE),
     };
     state.features = features;
-    site = createPlacingSite(mounted, state, features);
+    site = createPlacingSite(mounted, state, features, pinPalette);
     // A page restyling its own map takes maplace's sources off with its old style, or puts back
     // copies kept from it (`transformStyle`): once the new style is in (`styledata`, for a style
     // loaded anew or applied as a diff), the layers go back on and the sources get every feature.

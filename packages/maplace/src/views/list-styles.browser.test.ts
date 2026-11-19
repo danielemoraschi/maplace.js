@@ -24,6 +24,14 @@ describe("the list's default styles", () => {
     expect(style.cursor).toBe("pointer");
   });
 
+  it("round each option and the search box at 0.5rem", async () => {
+    const { list } = await listed({ locations }, { search: true, searchLabel: "Find" });
+    const search = list.element.querySelector(".maplace-search");
+    expect(search).not.toBeNull();
+    expect(getComputedStyle(optionTitled(list.element, "Alpha")).borderRadius).toBe("8px");
+    expect(getComputedStyle(search as Element).borderRadius).toBe("8px");
+  });
+
   it.each(["black", "white"])("show the selection on a page whose text is %s", async (color) => {
     document.body.style.color = color;
     const { maplace, list } = await listed({ locations });

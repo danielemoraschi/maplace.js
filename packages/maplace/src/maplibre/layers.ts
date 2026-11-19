@@ -1,4 +1,5 @@
 import type { FilterSpecification, LayerSpecification, Map as MapLibreMap } from "maplibre-gl";
+import type { PinColours } from "../adapter-kit/pin-palette";
 import { linePaint, outlinePaint, ROUTE_DEFAULTS, styled } from "./line-paint";
 import { addPinImage, PIN_IMAGE } from "./pin-image";
 import { whenStyleLoaded } from "./style-load";
@@ -102,12 +103,13 @@ const LAYERS: readonly LayerSpecification[] = [
 const EMPTY: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
 
 /**
- * Adds what maplace draws on: its pin image, sources and layers, on top of the page's style.
+ * Adds what maplace draws on: its pin image in `pinColours`, sources and layers, on top of the
+ * page's style.
  * Again after a restyle took them off: what is already there stays, as a page keeping maplace's
  * layers through its restyle (`transformStyle`) has them.
  */
-export function addLayers(map: MapLibreMap): void {
-  addPinImage(map);
+export function addLayers(map: MapLibreMap, pinColours: PinColours): void {
+  addPinImage(map, pinColours);
   for (const source of OWN_SOURCES) {
     if (map.getSource(source) === undefined) {
       map.addSource(source, { type: "geojson", data: EMPTY, promoteId: "key" });

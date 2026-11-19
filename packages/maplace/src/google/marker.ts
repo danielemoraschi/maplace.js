@@ -13,9 +13,10 @@ import type { PlacedMarker, PlacingSite } from "./placed-location";
 
 /**
  * One advanced marker: clickable and focusable, titled for screen readers, dragged by the user
- * when `editable`, showing the page's icon or Google's default pin, its `zIndex` the stacking
- * rank (Google advises one on all markers or none). Each change redoes only what it touches. Where
- * it goes, on the map or into a cluster, is the map's marker layer's to say, from its look.
+ * when `editable`, showing the page's icon, else maplace's pin (while selected, or in the page's
+ * pin colours) or Google's default pin, its `zIndex` the stacking rank (Google advises one on all
+ * markers or none). Each change redoes only what it touches. Where it goes, on the map or into a
+ * cluster, is the map's marker layer's to say, from its look.
  */
 export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker {
   const order = site.nextOrder();
@@ -27,16 +28,24 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     mounted: site.mounted,
     isEditable: () => drawn.editable,
   });
-  /** Google's default pin, drawn over a heat marker's dot while it is in front. */
+  const { pins } = site;
+  /** This marker's pin, made the first time it shows one and painted for each state after. */
   let pin: HTMLElement | undefined;
-  const pinOf = () => {
-    pin ??= new site.mounted.libraries.marker.PinElement();
+  const paintedPin = (state: LocationState) => {
+    pin = pins.paint(state, pin);
     return pin;
   };
   const show = (shown: Drawable, state: LocationState) => {
     const { heat } = site.mounted;
-    if (shown.heatWeight === undefined || heat === undefined) showIcon(marker, shown, state);
-    else heat.showMarker(marker, shown.heatWeight, isInFront(state) ? pinOf() : undefined);
+    if (shown.heatWeight === undefined || heat === undefined) {
+      // A page's icon first: maplace's pin is painted only for a marker showing none.
+      showIcon(
+        marker,
+        shown.renderIcon?.(state) ?? (pins.showsPin(state) ? paintedPin(state) : undefined),
+      );
+    } else {
+      heat.showMarker(marker, shown.heatWeight, isInFront(state) ? paintedPin(state) : undefined);
+    }
   };
   show(drawable, look.state);
   const { markers } = site.mounted;
@@ -109,12 +118,11 @@ function titleOf(drawable: Drawable): string {
 }
 
 /**
- * The page's icon for this state, as the marker's only child; with none, Google draws its
- * default pin. Children, not `content`, which Maps JS deprecates. An icon already there stays,
- * so a CSS transition on its `data-selected` runs.
+ * The icon for this state, the page's or maplace's pin, as the marker's only child; with none,
+ * Google draws its default pin. Children, not `content`, which Maps JS deprecates. An icon already
+ * there stays, so a CSS transition on its `data-selected` runs.
  */
-function showIcon(marker: HTMLElement, drawable: Drawable, state: LocationState): void {
-  const icon = drawable.renderIcon?.(state);
+function showIcon(marker: HTMLElement, icon: Node | undefined): void {
   if (icon === undefined) marker.replaceChildren();
   else if (!isOnlyChild(marker, icon)) marker.replaceChildren(icon);
 }

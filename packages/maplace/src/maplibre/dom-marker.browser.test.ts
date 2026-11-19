@@ -2,11 +2,12 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
+import { SELECTED_PIN_GLYPH } from "../adapter-kit/pin-palette";
 import type { LatLng } from "../geometry";
 import { markerDrawable, ORIGIN, presented, updating } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import type { MapLibreState } from "./map-state";
-import { PIN_SIZE } from "./pin-image";
+import { PIN_SIZE, pinImageUrl } from "./pin-image";
 import { withEditableMarker } from "./testing/editable-marker";
 import { wait } from "./testing/map-settle";
 import { markerTarget } from "./testing/marker-target";
@@ -45,6 +46,17 @@ describe("dragging MapLibre's markers", () => {
     expect(marker?.isDraggable()).toBe(true);
     expect(icon?.localName).toBe("img");
     expect(state.features?.pins.featureOf("a")).toBeUndefined();
+  });
+
+  it("darkens a draggable pin's dot while it is selected, keeping the node", async () => {
+    const { adapter, state } = await withEditableMarker();
+    const resting = elementsOf(state, "a").icon as HTMLImageElement;
+    const url = (glyph?: string) =>
+      pinImageUrl(document, { background: undefined, border: undefined, glyph });
+    expect(resting.getAttribute("src")).toBe(url());
+    adapter.present(presented({ selectedId: "a" }));
+    expect(elementsOf(state, "a").icon).toBe(resting);
+    expect(resting.getAttribute("src")).toBe(url(SELECTED_PIN_GLYPH));
   });
 
   it("puts an inline image icon's bottom on its point, with no line of text under it", async () => {
