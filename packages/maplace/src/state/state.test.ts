@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Location } from "../location";
 import { patchOnly } from "./change";
-import { createInternalState, createState } from "./state";
+import { createInternalState } from "./state";
 
 const at = { lat: 0, lng: 0 };
 const locations: Location[] = [
@@ -9,9 +9,9 @@ const locations: Location[] = [
   { id: "b", ...at, group: "S" },
 ];
 
-describe("createState", () => {
+describe("the store", () => {
   it("returns the same snapshot until something changes", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const first = state.getSnapshot();
     expect(state.getSnapshot()).toBe(first);
     state.select("a");
@@ -20,7 +20,7 @@ describe("createState", () => {
   });
 
   it("notifies subscribers once per change, and not for calls that change nothing", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const onChange = vi.fn();
     state.subscribe(onChange);
     state.setFilter(["N", "S"]);
@@ -31,7 +31,7 @@ describe("createState", () => {
   });
 
   it("notifies subscribers, then emits events, with the new snapshot already in place", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const order: string[] = [];
     state.subscribe(() => order.push(`notified:${state.getSnapshot().selectedId}`));
     state.on("selectionChange", ({ id }) =>
@@ -42,7 +42,7 @@ describe("createState", () => {
   });
 
   it("emits the events of a cascade: a filter hiding the selection deselects", () => {
-    const state = createState({ locations, selectedId: "b" });
+    const state = createInternalState({ locations, selectedId: "b" }).store;
     const onSelectionChange = vi.fn();
     state.on("selectionChange", onSelectionChange);
     state.setFilter(["N"]);
@@ -51,7 +51,7 @@ describe("createState", () => {
   });
 
   it("lets a listener call the store, which commits before returning", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const seen: (string | undefined)[] = [];
     state.on("selectionChange", ({ id }) => {
       seen.push(id);
@@ -63,7 +63,7 @@ describe("createState", () => {
   });
 
   it("delivers a nested call's notification and events after the outer call's, in order", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const order: string[] = [];
     state.subscribe(() => order.push(`notified:${state.getSnapshot().selectedId}`));
     state.on("selectionChange", ({ id }) => {
@@ -75,7 +75,7 @@ describe("createState", () => {
   });
 
   it("keeps the view the store holds frozen, coordinates included", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     state.setView({ lat: 1, lng: 1 }, 3);
     const view = state.getSnapshot().view;
     expect(Object.isFrozen(view)).toBe(true);
@@ -83,7 +83,7 @@ describe("createState", () => {
   });
 
   it("changes nothing and notifies no one when a call throws", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const onChange = vi.fn();
     state.subscribe(onChange);
     const before = state.getSnapshot();
@@ -94,16 +94,16 @@ describe("createState", () => {
 
   it("checks html against its own sanitize option", () => {
     const html: Location = { id: "h", ...at, html: "<b>x</b>" };
-    expect(() => createState().setLocations([html])).toThrow(
+    expect(() => createInternalState().store.setLocations([html])).toThrow(
       expect.objectContaining({ code: "missing-sanitizer" }),
     );
-    const state = createState({ sanitize: (text) => text });
+    const state = createInternalState({ sanitize: (text) => text }).store;
     state.setLocations([html]);
     expect(state.getSnapshot().locations).toEqual([html]);
   });
 
   it("wires every view and route method", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     state.fitBounds({ south: 0, west: 0, north: 1, east: 1 });
     expect(state.getSnapshot().view.kind).toBe("fit-bounds");
     state.setView({ lat: 1, lng: 1 }, 3);
@@ -117,14 +117,14 @@ describe("createState", () => {
   });
 
   it("keeps instances apart", () => {
-    const first = createState({ locations });
-    const second = createState({ locations });
+    const first = createInternalState({ locations }).store;
+    const second = createInternalState({ locations }).store;
     first.select("a");
     expect(second.getSnapshot().selectedId).toBeUndefined();
   });
 
   it("rejects a subscriber that is not a function", () => {
-    expect(() => createState().subscribe("log" as never)).toThrow(
+    expect(() => createInternalState().store.subscribe("log" as never)).toThrow(
       /^subscribe: onChange must be a function, got "log"$/,
     );
   });
@@ -132,7 +132,7 @@ describe("createState", () => {
 
 describe("after destroy", () => {
   it("throws `destroyed` from every call that changes state or adds a listener", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     state.destroy();
     const calls: [string, () => unknown][] = [
       ["setLocations", () => state.setLocations([])],
@@ -156,7 +156,7 @@ describe("after destroy", () => {
   });
 
   it("keeps getSnapshot, a second destroy and unsubscribe functions safe", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const unsubscribe = state.subscribe(() => {});
     const off = state.on("selectionChange", () => {});
     const last = state.getSnapshot();
@@ -170,7 +170,7 @@ describe("after destroy", () => {
   });
 
   it("drops every listener and stops watching their signals", () => {
-    const state = createState({ locations });
+    const state = createInternalState({ locations }).store;
     const signal = new AbortController().signal;
     const remove = vi.spyOn(signal, "removeEventListener");
     state.on("selectionChange", () => {}, { signal });

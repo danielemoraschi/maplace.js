@@ -1,7 +1,13 @@
 import type { Location } from "../location";
+import type { FilteredLocations } from "../location-state";
 import type { ListActions } from "../views/actions";
 import { createListbox } from "../views/listbox";
-import { type ListRules, type ListStructure, listStructureOf } from "../views/model";
+import {
+  type ListRules,
+  type ListStructure,
+  listedEntries,
+  structureOf as structureOfListed,
+} from "../views/model";
 
 /** A `ListActions` that only records, for variant tests that need no store. */
 export function recordingActions(): ListActions & { readonly calls: string[] } {
@@ -33,7 +39,12 @@ export function keydown(target: Element, key: string, init?: KeyboardEventInit):
 
 /** The structure a list shows for these locations, all shown. */
 export function structureOf(locations: readonly Location[], rules?: ListRules): ListStructure {
-  return listStructureOf({ locations, filter: undefined }, rules ?? { groupHeadings: undefined });
+  return listedStructure({ locations, filter: undefined }, rules ?? { groupHeadings: undefined });
+}
+
+/** The structure of what `filtered` lists: its listed entries, by group when headings are on. */
+export function listedStructure(filtered: FilteredLocations, rules: ListRules): ListStructure {
+  return structureOfListed(listedEntries(filtered), filtered.locations, rules);
 }
 
 /** The options in a list element, fit-all included, in document order. */

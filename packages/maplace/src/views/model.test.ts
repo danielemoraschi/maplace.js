@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
-import { flatSections, type ListRules, labelOf, listedEntries, listStructureOf } from "./model";
+import { listedStructure } from "../testing/lists";
+import { flatSections, type ListRules, labelOf, listedEntries } from "./model";
 
 const north: Location = { id: "n", lat: 0, lng: 0, title: "North", group: "N" };
 const south: Location = { id: "s", lat: 0, lng: 0, title: "  ", group: "S" };
@@ -9,7 +10,7 @@ const hidden: Location = { id: "h", lat: 0, lng: 0, group: "N", visible: false }
 const locations = [north, south, loose, hidden];
 
 function sections(rules: ListRules, groups?: string[], list = locations) {
-  return listStructureOf({ locations: list, filter: groups && { groups } }, rules).sections.map(
+  return listedStructure({ locations: list, filter: groups && { groups } }, rules).sections.map(
     (section) => ({
       heading: section.heading,
       ids: section.locations.map((location) => location.id),
@@ -17,7 +18,7 @@ function sections(rules: ListRules, groups?: string[], list = locations) {
   );
 }
 
-describe("listStructureOf", () => {
+describe("the listed structure", () => {
   it("lists shown locations by group, ungrouped first, in first-appearance order", () => {
     expect(sections({ groupHeadings: undefined })).toEqual([
       { heading: undefined, ids: ["l"] },
@@ -45,7 +46,7 @@ describe("listStructureOf", () => {
   });
 });
 
-describe("listStructureOf: locations not listed", () => {
+describe("the listed structure: locations not listed", () => {
   const unlisted: Location = { id: "u", lat: 0, lng: 0, group: "U", listed: false };
 
   it("leaves them out, and their groups' headings, with headings on or off", () => {
@@ -61,9 +62,9 @@ describe("listStructureOf: locations not listed", () => {
   });
 });
 
-describe("listStructureOf: counts", () => {
+describe("the listed structure: counts", () => {
   const labels = (list: readonly Location[], groupCounts?: boolean, groups?: string[]) =>
-    listStructureOf(
+    listedStructure(
       { locations: list, filter: groups && { groups } },
       { groupHeadings: undefined, groupCounts },
     ).sections.map((section) => section.label);
@@ -90,7 +91,7 @@ describe("listStructureOf: counts", () => {
   });
 });
 
-describe("listStructureOf: subgroups", () => {
+describe("the listed structure: subgroups", () => {
   const office = (id: string, ...group: string[]): Location => ({ id, lat: 0, lng: 0, group });
   const offices = [
     office("milan", "Europe", "Italy"),
@@ -101,7 +102,7 @@ describe("listStructureOf: subgroups", () => {
     office("north-milan", "Italy", "North"),
     office("north-lyon", "France", "North"),
   ];
-  const structure = listStructureOf(
+  const structure = listedStructure(
     { locations: offices, filter: undefined },
     { groupHeadings: undefined, groupCounts: true },
   );
@@ -130,7 +131,7 @@ describe("listStructureOf: subgroups", () => {
       "Italy › North (1)",
       "France › North (1)",
     ]);
-    const uncounted = listStructureOf(
+    const uncounted = listedStructure(
       { locations: offices, filter: undefined },
       { groupHeadings: undefined },
     );
@@ -146,10 +147,9 @@ describe("labelOf", () => {
 });
 
 describe("listedEntries", () => {
-  it("lists what listStructureOf lists, in data order, narrowed to what it keeps", () => {
+  it("lists the shown locations the filter keeps, in data order, narrowed to what it keeps", () => {
     const filtered = { locations, filter: { groups: ["N", "S"] } };
-    const structure = listStructureOf(filtered, { groupHeadings: false });
-    expect(listedEntries(filtered)).toEqual(structure.sections[0]?.locations);
+    expect(listedEntries(filtered).map(({ id }) => id)).toEqual(["n", "s"]);
     const kept = (location: Location) => location.id !== "s";
     expect(listedEntries(filtered, kept).map(({ id }) => id)).toEqual(["n"]);
   });

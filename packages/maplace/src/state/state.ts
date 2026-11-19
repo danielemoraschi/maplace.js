@@ -28,13 +28,9 @@ export interface InternalState<Data = unknown> {
 }
 
 /**
- * The headless store alone, without a map. Each call validates, computes a change, then commits it: a new frozen
- * snapshot, one notification to subscribers, then the change's events.
+ * The store without a map, and the commits and hooks `createMaplace` builds on. Each of the store's methods validates,
+ * computes a change, then commits it: a new frozen snapshot, one notification to subscribers, then the change's events.
  */
-export function createState<Data = unknown>(options?: MaplaceOptions<Data>): MaplaceState<Data> {
-  return createInternalState(options).store;
-}
-
 export function createInternalState<Data = unknown>(
   options?: MaplaceOptions<Data>,
 ): InternalState<Data> {

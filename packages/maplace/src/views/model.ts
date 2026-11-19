@@ -54,14 +54,6 @@ export interface ListRules {
 /** Whether a listed location is kept: in the map's view, for a list with `scope`. */
 export type ListedTest = (location: Location) => boolean;
 
-/** The listed locations, by group when headings are on, else in data order. */
-export function listStructureOf<Data>(
-  filtered: FilteredLocations,
-  rules: ListRules,
-): ListStructure<Data> {
-  return structureOf(listedEntries<Data>(filtered), filtered.locations, rules);
-}
-
 /** `entries`, already listed, by group when headings are on for `locations`, else in order. */
 export function structureOf<Data>(
   entries: readonly Location<Data>[],
