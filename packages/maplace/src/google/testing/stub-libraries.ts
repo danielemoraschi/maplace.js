@@ -96,8 +96,12 @@ export class StubMarker extends HTMLElement {
 
 customElements.define("stub-advanced-marker", StubMarker);
 
-/** Google's default pin, an element of its own, as a marker shows it over a heat dot. */
+/** Google's pin, an element of its own, its colours set on it after it is made, as maplace does. */
 export class StubPinElement extends HTMLElement {
+  background: string | null = null;
+  borderColor: string | null = null;
+  glyphColor: string | null = null;
+
   constructor() {
     super();
     this.className = "stub-pin";

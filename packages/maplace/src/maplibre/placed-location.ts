@@ -1,5 +1,6 @@
 import type { Marker } from "maplibre-gl";
 import type { HoverReports } from "../adapter-kit/hover-reports";
+import type { PinPalette } from "../adapter-kit/pin-palette";
 import type { Look } from "../adapter-kit/presentation-changes";
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng } from "../geometry";
@@ -55,6 +56,8 @@ export interface PlacingSite {
   readonly hover: HoverReports;
   /** The selected and hovered pins, drawn again in front of the rest. */
   readonly frontPins: FrontPins;
+  /** The default pins' colours, read from the page once the map opened. */
+  readonly pinPalette: PinPalette;
   /** The next location's place in the order added. */
   nextOrder(): number;
 }

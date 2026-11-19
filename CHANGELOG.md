@@ -2,6 +2,10 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-19 Changed the selected default pin: its dot is darker (`#980400`), on Google and MapLibre.
+- 2026-11-19 Added `--maplace-pin-background`, `--maplace-pin-border`, `--maplace-pin-glyph` and `--maplace-pin-selected-glyph`, which colour the default pins.
+- 2026-11-19 Changed the list's rounded corners to 0.5rem.
+
 ## 1.2.0 (2026-11-19)
 
 - 2026-11-18 Added dashed and dotted lines: `strokeDash` (`"solid"`, `"dashed"`, `"dotted"`) in a polyline's style and the route's, scaled by the line's width and kept in every state, on Google and MapLibre.

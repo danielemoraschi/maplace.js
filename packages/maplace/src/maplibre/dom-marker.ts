@@ -6,7 +6,6 @@ import { lngLatOf } from "./conversions";
 import { endDragsTheMapMisses } from "./drag-release";
 import { selectLocation } from "./map-clicks";
 import { reportMarkerDrags } from "./marker-drags";
-import { PIN_SIZE, pinImageUrl } from "./pin-image";
 import type { PlacingSite } from "./placed-location";
 
 /**
@@ -177,16 +176,4 @@ function showDragCursor(element: HTMLElement, draggable: boolean): void {
 function setTitle(element: HTMLElement, title: string | undefined): void {
   if (title === undefined) element.removeAttribute("aria-label");
   else element.setAttribute("aria-label", title);
-}
-
-/**
- * The default pin as an image, sized as the layer draws it, its tip at the bottom middle.
- */
-export function createPinIcon(document: Document): HTMLElement {
-  const image = document.createElement("img");
-  image.src = pinImageUrl(document);
-  image.alt = "";
-  image.width = PIN_SIZE.width;
-  image.height = PIN_SIZE.height;
-  return image;
 }

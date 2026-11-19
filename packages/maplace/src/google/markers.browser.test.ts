@@ -1,6 +1,7 @@
 import { afterEach, expect, it, onTestFinished } from "vitest";
 import { commands, userEvent } from "vitest/browser";
-import { adding, markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
+import { SELECTED_PIN_GLYPH } from "../adapter-kit/pin-palette";
+import { adding, markerDrawable, ORIGIN, presented } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
 import { frames } from "./frames";
@@ -47,6 +48,23 @@ describeWithMaps("Google markers under real input", () => {
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     await userEvent.unhover(marker);
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
+  });
+
+  it("draws a selected default marker as a pin with the darker dot, and Google's own pin again once deselected", async () => {
+    const { adapter, state } = await mountedGoogle();
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, NAMED)));
+    const marker = await drawnMarker(state, "a");
+    const restingHeight = marker.getBoundingClientRect().height;
+    expect(restingHeight).toBeGreaterThan(0);
+    adapter.present(presented({ selectedId: "a" }));
+    const pin = marker.firstElementChild as google.maps.marker.PinElement;
+    expect(pin).toBeInstanceOf(google.maps.marker.PinElement);
+    // Only the dot is maplace's: Maps JS reads the unset fill back as its own red.
+    expect(pin.glyphColor).toBe(SELECTED_PIN_GLYPH);
+    adapter.present(presented({}));
+    expect(marker.childElementCount).toBe(0);
+    // Google draws its own pin again: the marker keeps its size, not an empty box.
+    await expect.poll(() => marker.getBoundingClientRect().height).toBe(restingHeight);
   });
 
   it("reports the pointer onto a marker and off it", async () => {

@@ -1,4 +1,5 @@
 import { createHoverReports } from "../adapter-kit/hover-reports";
+import type { PinPalette } from "../adapter-kit/pin-palette";
 import { lookIn } from "../adapter-kit/presentation-changes";
 import { createOrderCounter } from "../adapter-kit/stacking";
 import type { FeatureSets } from "./feature-set";
@@ -15,13 +16,15 @@ export function createPlacingSite(
   mounted: MountedMapLibre,
   state: MapLibreState,
   features: FeatureSets,
+  pinPalette: PinPalette,
 ): PlacingSite {
   return {
     mounted,
     features,
+    pinPalette,
     lookOf: (id) => lookIn(state.presented, id),
     hover: createHoverReports(mounted.live),
-    frontPins: createFrontPins(mounted),
+    frontPins: createFrontPins(mounted, pinPalette),
     nextOrder: createOrderCounter(),
   };
 }

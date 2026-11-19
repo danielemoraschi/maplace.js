@@ -10,6 +10,7 @@ Maplace.js adds its styles to the page itself (adopted stylesheets, so no `<link
 - **The list:** its entries look like buttons, with the selected and hovered ones tinted from the text's own colour. Group headings are small and uppercase, and a heading stays in view while the entries scroll.
 - **Popups:** dark text on the provider's white bubble, the content and its heading alike: on Google, inset the same on every side, as far as Google's start or the room its scrollbars keep, whichever is larger, the heading in line with the content; on MapLibre, the heading on a line of its own, clear of the close button; its links in a row at the end, each 1.5rem tall.
 - **The dot where distances are measured from:** 18px, blue with a white border and a soft shadow. It takes no pointer input, inside `data-maplace-unstyled` too, so a click reaches the map.
+- **Default pins:** Google's red pin on either provider, the selected one with a darker dot (`#980400`). The `--maplace-pin-*` properties change their colours ([Pin colours](#pin-colours)).
 - **Clusters:** a round badge with the count, blue with white text. `--maplace-cluster-background` and `--maplace-cluster-color`, set on the map or anything above it, change its colours.
 - **On a Google map:** what goes on the map (a list, a select, your own controls) sits in a panel like Google's own controls, in the map's colour scheme (light on your own map).
 - **On a MapLibre map:** what goes on the map sits in a panel like MapLibre's own controls, light, as they are. `.maplace-control { color-scheme: dark }` gives a dark panel on either map. The panel is one of MapLibre's controls, so MapLibre's own rules for them reach inside it too, such as a button's hover tint ([MapLibre adapter](maplibre.md#on-map-controls)).
@@ -50,6 +51,27 @@ For the rest of its look, style the class: its default rule weighs nothing, so y
 
 The badge stands with its bottom middle on the cluster's point, whatever its size. Its accessible name, "Cluster of N locations", is on the marker around it, so a badge drawn differently still reads the same.
 
+## Pin colours
+
+A marker with no `icon` is a pin: Google's red pin on either provider, its dot darker while it is selected. Four custom properties set its colours, on the map or anything above it:
+
+| Property | What |
+|---|---|
+| `--maplace-pin-background` | The pin's fill |
+| `--maplace-pin-border` | Its outline |
+| `--maplace-pin-glyph` | The dot in its head |
+| `--maplace-pin-selected-glyph` | The dot while the pin is selected; `#980400` unless set |
+
+```css
+maplace-map {
+  --maplace-pin-background: #0b6e4f;
+  --maplace-pin-border: #063d2c;
+  --maplace-pin-glyph: #063d2c;
+}
+```
+
+A selected pin keeps the pin's fill and outline, and only its dot changes. The colours are read when the map opens, so set them before; a value that isn't a colour is left out, and that part keeps the provider's own; `currentColor` is the map's text colour. A pin is drawn, not styled, so CSS reaches it only through these properties: for any other look, give the location an `icon` of your own ([icons](locations.md#icons)).
+
 ## Turning them off
 
 | Attribute | What |
@@ -62,7 +84,7 @@ The badge stands with its bottom middle on the cluster's point, whatever its siz
 
 Put it on `<html>` for the whole page, on `<maplace-map>` for one map, on the element a vanilla map is drawn in, or, with React, on an element around `<MaplaceMap>` and its `<LocationList>` (`<MaplaceMap>` passes no attributes to its own element). A list in a container of its own (`createGoogleMap`'s or `createMapLibreMap`'s `list: { container }`) needs the marker there, or above both. A map's popups and on-map panels are drawn inside the map, so a marker on the map or above it reaches them; one on a list placed on the map leaves the panel around that list styled.
 
-What Maplace.js's own markup needs stays: a `<maplace-location>` stays hidden (its children are popup content), `<maplace-map>` stays a block, and its map fills it. An on-map panel whose list is hidden stays hidden too.
+Pin colours stay as the `--maplace-pin-*` properties set them: a pin is drawn, not styled. What Maplace.js's own markup needs stays: a `<maplace-location>` stays hidden (its children are popup content), `<maplace-map>` stays a block, and its map fills it. An on-map panel whose list is hidden stays hidden too.
 
 Without the defaults, the page sizes the map (it has no height of its own) and lays out a list beside it. Popup text takes the page's colour on Google's and MapLibre's bubbles, which stay white: on a dark page, give `.maplace-popup` and `.maplace-popup-heading` a dark colour.
 

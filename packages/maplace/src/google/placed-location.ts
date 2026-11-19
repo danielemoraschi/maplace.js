@@ -5,6 +5,7 @@ import type { Look } from "../adapter-kit/presentation-changes";
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng } from "../geometry";
 import type { MountedMap } from "./mounted-map";
+import type { SitePins } from "./site-pins";
 
 /** Where a location's popup points: at a marker, which it follows, or at a point. */
 export type PopupPlace =
@@ -46,6 +47,8 @@ export interface PlacingSite {
   readonly mounted: MountedMap;
   lookOf(id: string): Look;
   readonly hover: HoverReports;
+  /** The default pins, in the colours the page set when the map opened. */
+  readonly pins: SitePins;
   /** The next marker's place in the order added. */
   nextOrder(): number;
 }

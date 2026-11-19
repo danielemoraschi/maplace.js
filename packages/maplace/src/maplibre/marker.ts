@@ -1,3 +1,4 @@
+import { pinColoursIn } from "../adapter-kit/pin-palette";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { isInFront, stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
@@ -5,10 +6,10 @@ import type { MarkerGeometry } from "../geometry";
 import type { LocationState } from "../location";
 import { sameState } from "../location-state";
 import type { ClusterMember } from "./clustering";
-import { createDomMarker, createPinIcon, type DomMarker } from "./dom-marker";
+import { createDomMarker, type DomMarker } from "./dom-marker";
 import type { LocationProperties } from "./feature-set";
 import { pinFeature } from "./location-features";
-import { PIN_SIZE } from "./pin-image";
+import { createPinIcon, PIN_SIZE, paintPin } from "./pin-image";
 import type { PlacedMarker, PlacingSite } from "./placed-location";
 
 /**
@@ -28,7 +29,8 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   const { id } = drawable;
   let drawn = drawable;
   let look = site.lookOf(id);
-  let pinIcon: HTMLElement | undefined;
+  /** The pin a draggable marker shows in the DOM, made the first time it does. */
+  let ownPin: HTMLImageElement | undefined;
   let icon = iconFor(drawable, look.state);
   let dom: DomMarker | undefined;
   let folded = false;
@@ -47,8 +49,11 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     if (shown.heatWeight !== undefined) return undefined;
     const pageIcon = shown.renderIcon?.(state);
     if (pageIcon !== undefined || !shown.editable) return pageIcon;
-    pinIcon ??= createPinIcon(site.mounted.map.getContainer().ownerDocument);
-    return pinIcon;
+    // One pin in the state's colours: the same node, so a drag in progress keeps hold of it.
+    const colours = pinColoursIn(site.pinPalette, state);
+    ownPin ??= createPinIcon(site.mounted.map.getContainer().ownerDocument, colours);
+    paintPin(ownPin, colours);
+    return ownPin;
   }
 
   /**
@@ -57,7 +62,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
    */
   function changesIcon(next: Drawable): boolean {
     if (next.renderIcon !== drawn.renderIcon) return true;
-    const showsPageIcon = icon !== undefined && icon !== pinIcon;
+    const showsPageIcon = icon !== undefined && icon !== ownPin;
     return next.editable !== drawn.editable && !showsPageIcon;
   }
 
@@ -98,7 +103,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     const sent = pins.featureOf(id);
     if (moved || sent === undefined) pins.put(feature);
     else if (!sameHeat(sent.properties, feature.properties)) pins.restyle(feature.properties);
-    if (isInFront(look.state)) frontPins.show(id, pointOf(drawn), rank());
+    if (isInFront(look.state)) frontPins.show(id, pointOf(drawn), rank(), look.state);
     else frontPins.hide(id);
   }
 

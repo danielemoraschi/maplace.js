@@ -1,8 +1,10 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
+import { SELECTED_PIN_GLYPH } from "../adapter-kit/pin-palette";
 import { markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
 import { createGoogleHeat } from "./heat-overlay";
 import { placeMarker } from "./marker";
+import { StubPinElement } from "./testing/stub-libraries";
 import { stubSite } from "./testing/stub-site";
 
 const SELECTED = { state: { selected: true, hovered: false }, visible: true };
@@ -55,6 +57,13 @@ describe("a heat marker on Google", () => {
       markerDrawable("q", ORIGIN, { heatWeight: 2, renderIcon: () => document.createElement("b") }),
     );
     expect(dotAlone(placed.marker)).toBe(true);
+  });
+
+  it("shows the pin over its dot with the darker dot while selected", () => {
+    const { placed } = heatMarker();
+    placed.present(SELECTED);
+    const pin = placed.marker.querySelector(".stub-pin");
+    expect(pin instanceof StubPinElement && pin.glyphColor).toBe(SELECTED_PIN_GLYPH);
   });
 
   it("shows Google's default pin once it leaves the heat group", () => {
