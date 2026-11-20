@@ -1,9 +1,11 @@
 import {
   EXAMPLE_GROUPS,
   EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
   groupDescription,
   groupPath,
 } from "../examples/example-sections.ts";
+import { EXAMPLES_DESCRIPTION } from "../examples/examples-page.ts";
 import { HOME_DESCRIPTION, HOME_ROUTE } from "../examples/home-page.ts";
 import { type AgentLink, LLMS_TXT_ROUTE, skillInstallCommand } from "./agent-links.ts";
 import { FOOTER_PAGES } from "./footer-pages.ts";
@@ -23,6 +25,7 @@ interface ListedPage {
 /** What `llms.txt` says of each page, by its route. */
 const LISTED_PAGES: ReadonlyMap<string, ListedPage> = new Map([
   [HOME_ROUTE, { name: SITE_NAME, description: HOME_DESCRIPTION }] as const,
+  [EXAMPLES_PAGE_ROUTE, { name: "Examples", description: EXAMPLES_DESCRIPTION }] as const,
   ...EXAMPLE_GROUPS.map(
     (group) =>
       [groupPath(group), { name: group.label, description: groupDescription(group) }] as const,

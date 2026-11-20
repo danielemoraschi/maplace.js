@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXAMPLES_ROUTES } from "../examples/example-sections.ts";
+import { EXAMPLES_PAGE_ROUTE, EXAMPLES_ROUTES } from "../examples/example-sections.ts";
 import { BUILDER_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { navCurrent, SITE_NAV_LINKS, type SiteNavLink } from "./site-nav.ts";
@@ -24,12 +24,13 @@ describe("navCurrent", () => {
     expect(marked(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
   });
 
-  it("marks Examples on every hub and example's page, and not on the home page its link goes to", () => {
+  it("links Examples to the examples page, and marks it there, on every hub and example's page, and not on the home page", () => {
+    expect(link("Examples").href).toBe(EXAMPLES_PAGE_ROUTE);
     expect(EXAMPLES_ROUTES).toContain("/examples/markers/");
     expect(EXAMPLES_ROUTES).toContain("/examples/markers/simple/");
+    expect(EXAMPLES_ROUTES[0]).toBe(EXAMPLES_PAGE_ROUTE);
     for (const route of EXAMPLES_ROUTES)
       expect(marked(route), route).toEqual([["Examples", "true"]]);
-    expect(link("Examples").href).toBe("/#examples");
     expect(marked("/")).toEqual([]);
   });
 

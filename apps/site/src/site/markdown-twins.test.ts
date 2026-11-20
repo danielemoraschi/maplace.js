@@ -11,6 +11,7 @@ import {
   pageHeading,
 } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
+import { EXAMPLES_HEADING, EXAMPLES_INTRO } from "../examples/examples-page.ts";
 import { HOME_HEADING, HOME_INTRO } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
 import { STYLESHEETS_HEADING } from "./example-markdown.ts";
@@ -87,12 +88,29 @@ describe("markdownTwins", () => {
 
   it("writes the home page's twin as its index: each hub, then its examples", () => {
     const { markdown } = twinAt("/");
-    expect(markdown.startsWith(`# ${HOME_HEADING}\n\n${HOME_INTRO}\n\n## Examples\n`)).toBe(true);
+    expect(
+      markdown.startsWith(
+        `# ${HOME_HEADING}\n\n${HOME_INTRO}\n\n## Examples\n\n${EXAMPLES_INTRO}\n\n### `,
+      ),
+    ).toBe(true);
     expect(markdown).toContain("\n### [Markers and popups](/examples/markers/)\n");
     expect(markdown).toContain(
       "\n- [01 One marker](/examples/markers/simple/): One place on a map.\n",
     );
     expect(markdown).toContain("\n- [31 Default styles off](/examples/styling/unstyled/): ");
+  });
+
+  it("writes the examples page's twin as its heading, intro, then each category as ## with its examples", () => {
+    const { markdown } = twinAt("/examples/");
+    expect(
+      markdown.startsWith(
+        `# ${EXAMPLES_HEADING}\n\n${EXAMPLES_INTRO}\n\n## [Markers and popups](/examples/markers/)\n`,
+      ),
+    ).toBe(true);
+    expect(markdown).not.toContain("\n### ");
+    expect(markdown).toContain(
+      "\n- [01 One marker](/examples/markers/simple/): One place on a map.\n",
+    );
   });
 
   it("writes a hub's twin under two headings, its examples and its reference, as its page", () => {

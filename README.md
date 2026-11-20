@@ -5,7 +5,7 @@
 
 <p align="center"><b>Your locations on a map, with a list in sync.</b><br>On Google Maps or MapLibre: one script tag, npm or React.</p>
 
-<p align="center"><a href="https://maplacejs.com">Website</a> · <a href="https://maplacejs.com/getting-started/">Documentation</a> · <a href="https://maplacejs.com/#examples">Examples</a> · <a href="https://maplacejs.com/builder/">Snippet builder</a> · <a href="https://maplacejs.com/migrating/">Migrating from 0.2</a></p>
+<p align="center"><a href="https://maplacejs.com">Website</a> · <a href="https://maplacejs.com/getting-started/">Documentation</a> · <a href="https://maplacejs.com/examples/">Examples</a> · <a href="https://maplacejs.com/builder/">Snippet builder</a> · <a href="https://maplacejs.com/migrating/">Migrating from 0.2</a></p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@maplacejs/maplace"><img alt="npm version" src="https://img.shields.io/npm/v/@maplacejs/maplace"></a>

@@ -1,8 +1,10 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { EXAMPLES_PAGE_ROUTE } from "../src/examples/example-sections.ts";
+import { EXAMPLES_HEADING } from "../src/examples/examples-page.ts";
 import { docRoute, REPOSITORY_URL } from "../src/site/repo-docs.ts";
-import { ASKED, opened, siteBuiltBeforeTests } from "./site-session.ts";
-import { DESKTOP, drawnOnTop, PHONE } from "./visitor.ts";
+import { opened, siteBuiltBeforeTests } from "./site-session.ts";
+import { boxOf, DESKTOP, drawnOnTop, PHONE } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -62,18 +64,16 @@ describe("the site's header", () => {
     await context.close();
   }, 30_000);
 
-  it("takes Examples to the home page's index of examples, right under it", async () => {
+  it("takes Examples to the examples page, its heading in view and the link marked there", async () => {
     for (const viewport of [DESKTOP, PHONE]) {
       const { page, context } = await opened(site, docRoute("setup"), viewport);
       await siteNav(page).getByRole("link", { name: "Examples" }).click();
-      await page.waitForURL("**/#examples");
-      const index = page.locator("section#examples");
-      await expect
-        .poll(async () => {
-          const box = await index.boundingBox();
-          return Math.abs((box?.y ?? 0) - (await headerBottom(page)));
-        }, ASKED)
-        .toBeLessThanOrEqual(8);
+      await page.waitForURL(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
+      const heading = page.getByRole("heading", { level: 1, name: EXAMPLES_HEADING });
+      expect(await heading.isVisible()).toBe(true);
+      expect((await boxOf(heading)).y).toBeGreaterThanOrEqual(await headerBottom(page));
+      const examples = siteNav(page).getByRole("link", { name: "Examples" });
+      expect(await examples.getAttribute("aria-current")).toBe("true");
       await context.close();
     }
   }, 60_000);

@@ -3,6 +3,7 @@ import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
 import {
   EXAMPLE_GROUPS,
   EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
   type ExampleGroup,
   type ExamplePageEntry,
   groupPath,
@@ -26,6 +27,9 @@ const GROUPS_ORDER = [
   "apps/site/src/examples/example-sections.ts",
 ];
 
+/** What an index of every example says (`ExampleCategories.astro`): every category's texts. */
+const INDEX_TEXT = [GROUPS_DIR, ...GROUPS_ORDER];
+
 /**
  * What the home page says: the hero its own texts and quick-start's files raw, the install box the
  * README's snippets, and the index every feature's texts.
@@ -36,9 +40,11 @@ const HOME_PAGE_TEXT = [
   "apps/site/src/components/InstallBox.astro",
   "README.md",
   `${PACKAGE_DIR}/examples/quick-start`,
-  GROUPS_DIR,
-  ...GROUPS_ORDER,
+  ...INDEX_TEXT,
 ];
+
+/** What the examples page says: its own texts, and its index's. */
+const EXAMPLES_PAGE_TEXT = ["apps/site/src/examples/examples-page.ts", ...INDEX_TEXT];
 
 /** What a category's hub says: its texts, its examples' titles, and the reference docs its tables are cut from. */
 function hubText(group: ExampleGroup): string[] {
@@ -60,6 +66,7 @@ function examplePageText({ group, section }: ExamplePageEntry): string[] {
 /** The files each route shows the words of: a change to the site's layout dates no page. */
 const SOURCES_BY_ROUTE: ReadonlyMap<string, readonly string[]> = new Map([
   [HOME_ROUTE, HOME_PAGE_TEXT],
+  [EXAMPLES_PAGE_ROUTE, EXAMPLES_PAGE_TEXT],
   ...EXAMPLE_GROUPS.map((group): [string, readonly string[]] => [groupPath(group), hubText(group)]),
   ...EXAMPLE_PAGE_ENTRIES.map((entry): [string, readonly string[]] => [
     entry.path,

@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, EXAMPLE_PAGE_ENTRIES, groupPath } from "../examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
+  groupPath,
+} from "../examples/example-sections.ts";
 import { HOME_ROUTE } from "../examples/home-page.ts";
 import { exampleGuides } from "./example-guides-loader.ts";
+import { examplesPageIndexMarkdown, homeIndexMarkdown } from "./example-index-markdown.ts";
 import { groupReferenceMarkdown } from "./group-references-loader.ts";
-import { homeIndexMarkdown } from "./home-index-markdown.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { repoDocMarkdown, siteMarkdownOf } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
@@ -98,7 +103,7 @@ describe("the site's doc pages", () => {
     blobBase: "https://github.com/o/r/blob/abc123/",
   };
 
-  it("link only to pages and headings the site has, as do the guides, the reference tables and the home page's index", () => {
+  it("link only to pages and headings the site has, as do the guides, the reference tables, the home page's index and the examples page", () => {
     const pages = REPO_DOCS.map((doc) => ({
       route: docRoute(doc.id),
       markdown: repoDocMarkdown(doc, settings),
@@ -120,6 +125,7 @@ describe("the site's doc pages", () => {
       markdown: groupReferenceMarkdown(group, settings),
     }));
     const home = { route: HOME_ROUTE, markdown: homeIndexMarkdown() };
-    expect(brokenSiteLinks([...pages, ...examples, ...hubs, home])).toEqual([]);
+    const examplesPage = { route: EXAMPLES_PAGE_ROUTE, markdown: examplesPageIndexMarkdown() };
+    expect(brokenSiteLinks([...pages, ...examples, ...hubs, home, examplesPage])).toEqual([]);
   });
 });

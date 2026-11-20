@@ -37,7 +37,7 @@ export interface ExampleGroup {
   readonly headingLead: string;
   /** The paragraph under its page's H1: what its examples show, in a sentence. */
   readonly intro: string;
-  /** What the home page's index says of it. */
+  /** What the index of examples says of it, on the home page and the examples page (`ExampleCategories.astro`). */
   readonly summary: string;
   /** Its page's description, for search and sharing: 80 to 160 characters, unlike the summary it shows. */
   readonly description: string;

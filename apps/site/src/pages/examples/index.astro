@@ -1,0 +1,17 @@
+---
+import ExampleCategories from "../../components/ExampleCategories.astro";
+import MarkdownLink from "../../components/MarkdownLink.astro";
+import { EXAMPLES_PAGE_ROUTE } from "../../examples/example-sections.ts";
+import { EXAMPLES_DESCRIPTION, EXAMPLES_HEADING, EXAMPLES_INTRO } from "../../examples/examples-page.ts";
+import Base from "../../layouts/Base.astro";
+---
+
+{/* Every example by category, each with its picture (W72): the home page's index, as a page. */}
+<Base heading={EXAMPLES_HEADING} description={EXAMPLES_DESCRIPTION}>
+  <div class="pt-10 pb-4">
+    <h1 class="mt-0 mb-2 text-title">{EXAMPLES_HEADING}</h1>
+    <p class="mt-0 mb-2 max-w-text text-lg text-muted">{EXAMPLES_INTRO}</p>
+    <p class="mt-0 mb-10 text-sm"><MarkdownLink route={EXAMPLES_PAGE_ROUTE} /></p>
+    <ExampleCategories headingDepth={2} />
+  </div>
+</Base>

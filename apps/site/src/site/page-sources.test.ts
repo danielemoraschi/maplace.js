@@ -49,6 +49,15 @@ describe("pageSources", () => {
       expect(pageSources(groupPath(group)).join(), group.id).not.toContain(`${PACKAGE_DIR}/`);
   });
 
+  it("dates the examples page from its texts and every category's", () => {
+    expect(pageSources("/examples/")).toEqual([
+      "apps/site/src/examples/examples-page.ts",
+      "apps/site/src/examples/groups",
+      "apps/site/src/examples/example-groups.ts",
+      "apps/site/src/examples/example-sections.ts",
+    ]);
+  });
+
   it("dates the home page from its hero, its install box and the index's texts", () => {
     expect(pageSources("/")).toEqual(
       expect.arrayContaining([

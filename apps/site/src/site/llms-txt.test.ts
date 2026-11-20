@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { captures, section } from "../../../../scripts/docs/markdown.ts";
 import { EXAMPLE_PAGE_ENTRIES } from "../examples/example-sections.ts";
+import { EXAMPLES_DESCRIPTION } from "../examples/examples-page.ts";
 import { HOME_DESCRIPTION } from "../examples/home-page.ts";
 import { AGENT_LINKS } from "./agent-links.ts";
 import { PRIVACY_PAGE } from "./footer-pages.ts";
@@ -48,6 +49,12 @@ describe("llmsTxt", () => {
     expect(TEXT).toContain(`(https://maplacejs.com/setup/index.md): ${setup?.description}\n`);
     expect(TEXT).toContain(`(https://maplacejs.com/privacy/): ${PRIVACY_PAGE.description}\n`);
     expect(TEXT).toContain(`(https://maplacejs.com/index.md): ${HOME_DESCRIPTION}\n`);
+  });
+
+  it("lists the examples page by its description", () => {
+    expect(TEXT).toContain(
+      `\n- [Examples](https://maplacejs.com/examples/index.md): ${EXAMPLES_DESCRIPTION}\n`,
+    );
   });
 
   it("lists every example's page by its title and description", () => {

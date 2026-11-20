@@ -7,6 +7,9 @@ export {
   type ReferenceCut,
 } from "./example-groups.ts";
 
+/** The examples page: every example by category, each linking its page (W72), the hubs under it. */
+export const EXAMPLES_PAGE_ROUTE = "/examples/";
+
 /** The lines that follow a page's heading lead in its H1. */
 export const HEADING_TAIL = ["on Google Maps", "and MapLibre"] as const;
 
@@ -39,11 +42,14 @@ export function examplePagesOf(group: ExampleGroup): ExamplePageEntry[] {
   return EXAMPLE_PAGE_ENTRIES.filter((entry) => entry.group === group);
 }
 
-/** Each group's hub, followed by its examples' pages, in the numbering's order. */
-export const EXAMPLES_ROUTES: readonly string[] = EXAMPLE_GROUPS.flatMap((group) => [
-  groupPath(group),
-  ...examplePagesOf(group).map(({ path }) => path),
-]);
+/** The examples page, then each group's hub followed by its examples' pages, in the numbering's order. */
+export const EXAMPLES_ROUTES: readonly string[] = [
+  EXAMPLES_PAGE_ROUTE,
+  ...EXAMPLE_GROUPS.flatMap((group) => [
+    groupPath(group),
+    ...examplePagesOf(group).map(({ path }) => path),
+  ]),
+];
 
 /** An examples' page's H1 on one line: its lead, then `HEADING_TAIL`. */
 export function pageHeading(lead: string): string {
@@ -52,7 +58,7 @@ export function pageHeading(lead: string): string {
 
 /** The path of `group`'s hub. */
 export function groupPath(group: ExampleGroup): string {
-  return `/examples/${group.id}/`;
+  return `${EXAMPLES_PAGE_ROUTE}${group.id}/`;
 }
 
 /** The H1 of `group`'s page, on one line. */

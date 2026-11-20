@@ -15,6 +15,7 @@ import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import {
   EXAMPLE_GROUPS,
   EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
   groupPath,
 } from "../src/examples/example-sections.ts";
 import { HOME_ROUTE } from "../src/examples/home-page.ts";
@@ -50,6 +51,7 @@ const NOT_FOUND_PAGE = "/404.html";
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
   HOME_ROUTE,
+  EXAMPLES_PAGE_ROUTE,
   ...EXAMPLE_GROUPS.map(groupPath),
   PRIVACY_PAGE.route,
   AGENTS_PAGE.route,
@@ -173,7 +175,7 @@ describe("the not-found page", () => {
     expect(await page.getByRole("heading", { level: 1 }).textContent()).toBe("Page not found");
     expect(
       await article(page).getByRole("link", { name: "the examples" }).getAttribute("href"),
-    ).toBe("/");
+    ).toBe(EXAMPLES_PAGE_ROUTE);
     await context.close();
   }, 30_000);
 });

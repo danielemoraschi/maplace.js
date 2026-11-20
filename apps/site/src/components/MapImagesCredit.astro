@@ -1,8 +1,14 @@
 ---
+interface Props {
+  /** Its place on the page: margins, set by where it is shown. */
+  class?: string;
+}
+
+const { class: placed } = Astro.props;
 ---
 
-{/* The map data the examples' pictures show, credited once on a page of them (W65). */}
-<p class="mt-8 mb-0 text-sm text-muted">
+{/* The map data the examples' pictures show, credited once on a page of them (W65): its place and room the page's. */}
+<p class:list={["m-0 text-sm text-muted", placed]}>
   Map images:{" "}
   <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>,{" "}
   <a href="https://openmaptiles.org/">© OpenMapTiles</a>,{" "}

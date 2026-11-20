@@ -1,5 +1,6 @@
 ---
 import ProsePage from "../components/ProsePage.astro";
+import { EXAMPLES_PAGE_ROUTE } from "../examples/example-sections.ts";
 ---
 
 <ProsePage
@@ -9,5 +10,5 @@ import ProsePage from "../components/ProsePage.astro";
   <Fragment slot="lede">
     There is no page at this address: it may have moved, or the link has a typo.
   </Fragment>
-  <p>Start from <a href="/">the examples</a>, or pick a reference page from the menu above.</p>
+  <p>Start from <a href={EXAMPLES_PAGE_ROUTE}>the examples</a>, or pick a reference page from the menu above.</p>
 </ProsePage>

@@ -1,17 +1,23 @@
 import {
   EXAMPLE_GROUPS,
   EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
   type ExampleGroup,
   type ExamplePageEntry,
   groupHeading,
   groupPath,
   pageHeading,
 } from "../examples/example-sections.ts";
+import { EXAMPLES_HEADING, EXAMPLES_INTRO } from "../examples/examples-page.ts";
 import { HOME_HEADING, HOME_INTRO, HOME_ROUTE } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
+import {
+  exampleListMarkdown,
+  examplesPageIndexMarkdown,
+  homeIndexMarkdown,
+} from "./example-index-markdown.ts";
 import { exampleMarkdown } from "./example-markdown.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
-import { exampleListMarkdown, homeIndexMarkdown } from "./home-index-markdown.ts";
 import { markdownAddress } from "./markdown-routes.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
@@ -48,6 +54,10 @@ export function markdownTwins({
 }: StoredPages): MarkdownTwin[] {
   return [
     twin(HOME_ROUTE, markdownPage(HOME_HEADING, HOME_INTRO, homeIndexMarkdown())),
+    twin(
+      EXAMPLES_PAGE_ROUTE,
+      markdownPage(EXAMPLES_HEADING, EXAMPLES_INTRO, examplesPageIndexMarkdown()),
+    ),
     ...EXAMPLE_GROUPS.map((group) => twin(groupPath(group), hubMarkdown(group, references))),
     ...EXAMPLE_PAGE_ENTRIES.map((entry) => twin(entry.path, examplePageMarkdown(entry, guides))),
     twin(

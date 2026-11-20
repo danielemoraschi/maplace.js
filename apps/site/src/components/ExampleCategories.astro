@@ -1,0 +1,33 @@
+---
+import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import type { CategoryHeadingDepth } from "../site/example-index-markdown.ts";
+import ExampleList from "./ExampleList.astro";
+import MapImagesCredit from "./MapImagesCredit.astro";
+
+interface Props {
+  /** The categories' heading level: 3 under the home index's h2, 2 right under a page's H1. */
+  headingDepth: CategoryHeadingDepth;
+}
+
+const { headingDepth } = Astro.props;
+const Heading = `h${headingDepth}` as const;
+
+/** A category's row: its name and summary beside its examples, one above the other on a phone. */
+const ROW = "grid grid-cols-[14rem_minmax(0,1fr)] gap-x-8 gap-y-3 border-t border-ink py-8 max-[48rem]:grid-cols-1";
+---
+
+{/* Every example by category, each linking its page, each category its hub (D31), each example's picture beside it (W65), the pictures' map data credited right above them. */}
+<MapImagesCredit class="mb-3" />
+{
+  EXAMPLE_GROUPS.map((group) => (
+    <div class={ROW}>
+      <div>
+        <Heading class="m-0 text-xl">
+          <a href={groupPath(group)}>{group.label}</a>
+        </Heading>
+        <p class="mt-1 mb-0 text-muted">{group.summary}</p>
+      </div>
+      <ExampleList group={group} />
+    </div>
+  ))
+}
