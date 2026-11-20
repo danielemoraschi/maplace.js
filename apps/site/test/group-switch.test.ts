@@ -2,7 +2,13 @@ import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_GROUPS, type ExampleGroup, groupTitle } from "../src/examples/example-sections.ts";
 import { mapLibreDrawn } from "./drawn-on-maplibre.ts";
-import { chooseProvider, chooseVersion, groupLink, sectionPage } from "./home-sections.ts";
+import {
+  chooseProvider,
+  chooseVersion,
+  groupLink,
+  providerTogglesIn,
+  sectionPage,
+} from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { ASKED, opened } from "./site-session.ts";
 import { DESKTOP, duplicateIds, footerToggle, loadMapsButtons } from "./visitor.ts";
@@ -125,7 +131,7 @@ describe("switching the examples' group in place (W38)", () => {
     await context.close();
   }, 30_000);
 
-  it("runs a fetched group's version switch and the page's provider toggle", async () => {
+  it("runs a fetched group's version tabs and the provider toggles", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     await switchTo(page, "Lists", "lists");
     await chooseVersion(page, "menu", "React");
@@ -141,6 +147,16 @@ describe("switching the examples' group in place (W38)", () => {
     expect(await shown()).toEqual(["maplibre react"]);
     await chooseProvider(page, "Google");
     expect(await shown()).toEqual(["google react"]);
+    await context.close();
+  }, 30_000);
+
+  it("shows a fetched group's toggles on the provider chosen before it came", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    await chooseProvider(page, "Google");
+    await switchTo(page, "Lists", "lists");
+    const menu = page.locator("section#menu");
+    const google = providerTogglesIn(menu).getByRole("radio", { name: "Google", exact: true });
+    expect(await google.isChecked()).toBe(true);
     await context.close();
   }, 30_000);
 

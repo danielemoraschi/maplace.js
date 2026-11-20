@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fadeIn } from "./fade-in.ts";
-import { startTabs } from "./tabs.ts";
+import { startTabs, TAB_SELECTED } from "./tabs.ts";
 
 vi.mock("./fade-in.ts");
 
-const NAMES = ["map", "html", "vanilla"];
+const NAMES = ["html", "script", "react"];
 
 function tabsPage() {
   document.body.innerHTML = `<div role="tablist">${NAMES.map(
@@ -30,35 +30,36 @@ describe("startTabs", () => {
   });
 
   it("shows a tab's panel when clicked, hides the others, and moves the Tab stop to it", () => {
-    tab("html").click();
-    expect(selected()).toEqual(["html"]);
-    expect(shown()).toEqual(["html"]);
+    tab("script").click();
+    expect(selected()).toEqual(["script"]);
+    expect(shown()).toEqual(["script"]);
     expect(NAMES.map((name) => tab(name).tabIndex)).toEqual([-1, 0, -1]);
   });
 
   it("moves with the arrow keys, wrapping, and to the ends with Home and End", () => {
-    tab("map").focus();
+    tab("html").focus();
     press("ArrowLeft");
-    expect([document.activeElement, selected()]).toEqual([tab("vanilla"), ["vanilla"]]);
+    expect([document.activeElement, selected()]).toEqual([tab("react"), ["react"]]);
     press("ArrowRight");
-    expect(selected()).toEqual(["map"]);
+    expect(selected()).toEqual(["html"]);
     press("End");
-    expect(shown()).toEqual(["vanilla"]);
+    expect(shown()).toEqual(["react"]);
     press("Home");
-    expect(shown()).toEqual(["map"]);
+    expect(shown()).toEqual(["html"]);
   });
 
-  it("skips a disabled tab with the arrow keys", () => {
-    tab("html").disabled = true;
-    tab("map").focus();
+  it("announces each selection, by click and by arrow key, from the chosen tab", () => {
+    const announced: string[] = [];
+    const list = document.querySelector('[role="tablist"]') as HTMLElement;
+    list.addEventListener(TAB_SELECTED, (event) => announced.push((event.target as Element).id));
+    tab("script").click();
+    tab("script").focus();
     press("ArrowRight");
-    expect(selected()).toEqual(["vanilla"]);
-    press("ArrowLeft");
-    expect(selected()).toEqual(["map"]);
+    expect(announced).toEqual(["script-tab", "react-tab"]);
   });
 
   it("reveals the panel it shows, fading it in", () => {
-    tab("html").click();
-    expect(vi.mocked(fadeIn).mock.calls).toEqual([[document.getElementById("html")]]);
+    tab("script").click();
+    expect(vi.mocked(fadeIn).mock.calls).toEqual([[document.getElementById("script")]]);
   });
 });

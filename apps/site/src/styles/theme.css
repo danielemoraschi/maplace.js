@@ -33,9 +33,9 @@
   --spacing-header-height: 4.0625rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
   --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
-  /* The examples' bar (`ExampleGroupBar.astro`) from 48rem; below, its two rows' (`base.css`). */
+  /* The examples' bar (`ExampleGroupBar.astro`) from 48rem; below, its smaller row's (`base.css`). */
   --spacing-group-bar: 3.6875rem;
-  /* The examples' provider toggle (`ProviderSwitch.astro`). */
+  /* The provider toggle (`ProviderSwitch.astro`), beside each example's tabs and over the builder's preview. */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;
   /* An example's map: the height its hosts give it. */

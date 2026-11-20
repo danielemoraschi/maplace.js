@@ -1,25 +1,34 @@
 import type { Locator, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_GROUPS } from "../src/examples/example-sections.ts";
-import { groupNav, providerToggle } from "./home-sections.ts";
+import { groupNav } from "./home-sections.ts";
 import { siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { opened } from "./site-session.ts";
 import { boxOf, DESKTOP, drawnOnTop, PHONE } from "./visitor.ts";
 
 const site = siteOnMapLibreBeforeTests();
 
-/** Just above 48rem, where the bar is one row at its narrowest (`ExampleGroupBar.astro`). */
-const ONE_ROW_NARROWEST = { width: 800, height: 900 };
+/** Just above 48rem, the narrowest the bar draws its links at full size (`ExampleGroupBar.astro`). */
+const FULL_SIZE_NARROWEST = { width: 800, height: 900 };
 /** Just above 52rem, the narrowest width the bar draws its links' counts at. */
 const COUNTS_NARROWEST = { width: 840, height: 900 };
-const VIEWPORTS = [DESKTOP, ONE_ROW_NARROWEST, PHONE];
+const VIEWPORTS = [DESKTOP, FULL_SIZE_NARROWEST, PHONE];
 /** Narrower phones than `PHONE`, down to the narrowest screen a page is laid out for. */
 const NARROW_PHONES = [
   { width: 360, height: 800 },
   { width: 320, height: 640 },
 ];
+/** A larger phone, between 24rem and 48rem, where the links are drawn smaller but not smallest. */
+const LARGE_PHONE = { width: 412, height: 915 };
 /** Where the bar's content must fit: every width it is laid out at, the counts' narrowest too. */
-const FIT_VIEWPORTS = [DESKTOP, COUNTS_NARROWEST, ONE_ROW_NARROWEST, PHONE, ...NARROW_PHONES];
+const FIT_VIEWPORTS = [
+  DESKTOP,
+  COUNTS_NARROWEST,
+  FULL_SIZE_NARROWEST,
+  LARGE_PHONE,
+  PHONE,
+  ...NARROW_PHONES,
+];
 
 /** The home page at `viewport`, scrolled to its top. */
 const home = (viewport: typeof DESKTOP) => opened(site, "/", viewport);
@@ -39,6 +48,14 @@ const contentFits = (container: Locator) =>
     });
   });
 
+/** The room between the bar's top and its links': the bar is no taller than its one row needs. */
+const roomAboveLinks = (page: Page) =>
+  groupBar(page).evaluate(async (bar) => {
+    await document.fonts.ready;
+    const nav = bar.querySelector("nav");
+    return (nav?.getBoundingClientRect().top ?? 0) - bar.getBoundingClientRect().top;
+  });
+
 /** How wide the page is laid out: no wider than the screen, or it scrolls sideways. */
 const pageWidth = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth);
 
@@ -51,16 +68,10 @@ const linksOverflow = (nav: Locator) =>
 
 const scrollTo = (page: Page, name: string) =>
   page.locator(`section#${name}`).evaluate((section) => section.scrollIntoView());
-describe("the examples' bar and its provider toggle (W38)", () => {
-  it("has one provider toggle on the page, in the bar, MapLibre first and chosen", async () => {
+describe("the examples' bar (W38)", () => {
+  it("holds no provider toggle: each section has its own (W64)", async () => {
     const { page, context } = await home(DESKTOP);
-    expect(await providerToggle(page).count()).toBe(1);
-    expect(await groupBar(page).locator("[data-provider-choice]").count()).toBe(1);
-    expect(await providerToggle(page).locator("label").allTextContents()).toEqual([
-      "MapLibre",
-      "Google",
-    ]);
-    expect(await providerToggle(page).getByRole("radio").first().isChecked()).toBe(true);
+    expect(await groupBar(page).locator("[data-provider-choice]").count()).toBe(0);
     await context.close();
   }, 30_000);
 
@@ -75,9 +86,10 @@ describe("the examples' bar and its provider toggle (W38)", () => {
   }, 30_000);
 
   for (const viewport of FIT_VIEWPORTS) {
-    it(`fits its content in its height, every link in the nav, the page no wider than the screen, at ${viewport.width} px`, async () => {
+    it(`fits its content in its height, with no empty band above, every link in the nav, the page no wider than the screen, at ${viewport.width} px`, async () => {
       const { page, context } = await home(viewport);
       expect(await contentFits(groupBar(page))).toBe(true);
+      expect(await roomAboveLinks(page)).toBeLessThanOrEqual(13);
       const nav = groupNav(page);
       expect(await linksOverflow(nav)).toBeLessThanOrEqual(0);
       expect(await pageWidth(page)).toBeLessThanOrEqual(viewport.width);
@@ -97,8 +109,8 @@ describe("the examples' bar and its provider toggle (W38)", () => {
       await page
         .locator("section#live-data .map-frame")
         .evaluate((frame) => scrollBy(0, frame.getBoundingClientRect().top - 40));
-      const toggle = providerToggle(page);
-      const under = await toggle.evaluate((element) => {
+      const nav = groupNav(page);
+      const under = await nav.evaluate((element) => {
         const { left, top, width, height } = element.getBoundingClientRect();
         const bar = element.closest<HTMLElement>("[data-group-bar]");
         if (bar === null) return false;
@@ -108,7 +120,7 @@ describe("the examples' bar and its provider toggle (W38)", () => {
         return Boolean(below?.closest(".map-frame"));
       });
       expect(under).toBe(true);
-      expect(await drawnOnTop(toggle)).toBe(true);
+      expect(await drawnOnTop(nav)).toBe(true);
       await context.close();
     }, 30_000);
 

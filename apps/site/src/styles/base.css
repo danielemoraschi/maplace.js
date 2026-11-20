@@ -11,10 +11,10 @@
     scroll-padding-top: calc(var(--spacing-header) + var(--spacing-group-bar));
   }
 
-  /* The bar's two rows below 48rem, the toggle's then the links' (`ExampleGroupBar.astro`). */
+  /* Below 48rem, the bar's one row of smaller links, 9 to 12px under its top (`ExampleGroupBar.astro`). */
   @media (width < 48rem) {
     :root {
-      --spacing-group-bar: 5.8125rem;
+      --spacing-group-bar: 3rem;
     }
   }
 

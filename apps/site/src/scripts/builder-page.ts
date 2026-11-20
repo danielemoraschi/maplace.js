@@ -5,7 +5,7 @@ import { type Conversion, convertPasted } from "./builder-convert.ts";
 import { previewLocationsOf } from "./builder-popups.ts";
 import { type Note, PasteRefused } from "./builder-report.ts";
 import { writeSnippet } from "./builder-snippet.ts";
-import { chosenProvider } from "./version-switch.ts";
+import { chosenProvider, PROVIDER_TOGGLE } from "./version-switch.ts";
 
 /**
  * Pixels around the preview's locations: clears a pin's height above a point, and the attribution
@@ -54,7 +54,7 @@ const elementsOf = (page: Document) => ({
 export function startBuilder(page: Document): void {
   const elements = elementsOf(page);
   const { paste, status, code, copy, copied } = elements;
-  const toggle = required(page, "[data-provider-choice]");
+  const toggle = required(page, PROVIDER_TOGGLE);
   const maps = [...page.querySelectorAll<PreviewMap>("[data-builder-preview] maplace-map")];
   const pinOf = (provider: Provider) =>
     required(page, `[data-pinned-script="${provider}"]`).textContent ?? "";

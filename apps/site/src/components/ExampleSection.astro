@@ -7,7 +7,7 @@ import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
-import VersionSwitch from "./VersionSwitch.astro";
+import ProviderSwitch from "./ProviderSwitch.astro";
 
 interface Props extends ExampleSection {
   number: number;
@@ -20,10 +20,6 @@ const dataLinks = fetchedDataLinks(codes);
 const styleLinks = stylesheetLinks(exampleStylesheets(codes));
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;
-const tabs = [
-  { tab: "map", label: "Map" },
-  ...codeTabs.map(({ kind, label }) => ({ tab: kind, label })),
-];
 // `example-` keeps the site's ids apart from the pages' own (`route-map`).
 const panel = (tab: string) => `example-${name}-${tab}`;
 ---
@@ -42,34 +38,38 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   </div>
   <ExampleFileLinks lead="Fetches" links={dataLinks} />
   <ExampleFileLinks lead="Styled by" links={styleLinks} />
-  <div
-    class="mt-4 mb-3 flex flex-wrap"
-    role="tablist"
-    aria-label={`${title}: the map and its code`}
-  >
-    {
-      tabs.map(({ tab, label }, index) => (
-        <button
-          type="button"
-          role="tab"
-          class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper disabled:cursor-not-allowed disabled:text-muted disabled:opacity-60"
-          id={`${panel(tab)}-tab`}
-          aria-controls={panel(tab)}
-          aria-selected={index === 0 ? "true" : "false"}
-          tabindex={index === 0 ? 0 : -1}
-        >
-          {label}
-        </button>
-      ))
-    }
+  {/* One control: a tab runs the map from its version and shows that version's code under it. */}
+  <div class="mt-4 mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div class="flex flex-wrap" role="tablist" aria-label={`Run ${title} from`}>
+      {
+        codeTabs.map(({ kind, label }, index) => (
+          <button
+            type="button"
+            role="tab"
+            class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper"
+            id={`${panel(kind)}-tab`}
+            aria-controls={panel(kind)}
+            aria-selected={index === 0 ? "true" : "false"}
+            tabindex={index === 0 ? 0 : -1}
+            data-version={kind}
+          >
+            {label}
+          </button>
+        ))
+      }
+    </div>
+    <ProviderSwitch name={`${name}-provider`} class="ms-auto" />
   </div>
-  <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <VersionSwitch name={name} />
-    <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
-  </div>
+  <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
   {
-    codeTabs.map(({ kind, codes }) => (
-      <div role="tabpanel" id={panel(kind)} aria-labelledby={`${panel(kind)}-tab`} hidden>
+    codeTabs.map(({ kind, codes }, index) => (
+      <div
+        role="tabpanel"
+        class="mt-4"
+        id={panel(kind)}
+        aria-labelledby={`${panel(kind)}-tab`}
+        hidden={index !== 0}
+      >
         {codes.map((code) => (
           <div
             data-provider-files={code.provider}

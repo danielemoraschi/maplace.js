@@ -145,17 +145,18 @@ describe("the home page's code tabs", () => {
     await context.close();
   }, 30_000);
 
-  it("fades in the panel a tab shows, the one left hidden at once, unless asked for less motion", async () => {
+  it("fades in the code a tab shows and its map, the ones left hidden at once, unless asked for less motion", async () => {
     const { page, context } = await site.visitor();
     const animated = await recordAnimations(page);
     await page.goto(site.url);
-    await chooseTab(page, "simple", "HTML");
-    expect(await animated()).toEqual(["example-simple-html"]);
-    expect(await page.locator("#example-simple-map").isHidden()).toBe(true);
+    const section = await chooseTab(page, "simple", "React");
+    // The code panel, then the React version in the frame, which has no id.
+    expect(await animated()).toEqual(["example-simple-react", ""]);
+    expect(await section.locator(".map-frame").isVisible()).toBe(true);
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await chooseTab(page, "simple", "React");
-    expect(await page.locator("#example-simple-react").isVisible()).toBe(true);
-    expect(await animated()).toEqual(["example-simple-html"]);
+    await chooseTab(page, "simple", "Script");
+    expect(await page.locator("#example-simple-script").isVisible()).toBe(true);
+    expect(await animated()).toEqual(["example-simple-react", ""]);
     await context.close();
   }, 30_000);
 });

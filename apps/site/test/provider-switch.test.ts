@@ -6,6 +6,7 @@ import {
   chooseTab,
   chooseVersion,
   providerToggle,
+  providerTogglesIn,
   providerVersionIn,
   sectionOf,
   visitSection,
@@ -79,6 +80,31 @@ describe("the examples' provider toggle, on a section", () => {
     const other = await context.newPage();
     await other.goto(site.url);
     expect(await radio(other, "MapLibre").isChecked()).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("has one toggle on each section, MapLibre first and chosen", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const sections = page.locator("section.example");
+    expect(await providerTogglesIn(sections).count()).toBe(await sections.count());
+    expect(await providerToggle(page).locator("label").allTextContents()).toEqual([
+      "MapLibre",
+      "Google",
+    ]);
+    expect(await providerToggle(page).getByRole("radio").first().isChecked()).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("moves every section's toggle with the one clicked", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const google = providerTogglesIn(page).getByRole("radio", { name: "Google", exact: true });
+    await google.nth(1).scrollIntoViewIfNeeded();
+    await google.nth(1).check();
+    const checked = await google.evaluateAll((all) =>
+      all.map((radio) => (radio as HTMLInputElement).checked),
+    );
+    expect(checked.length).toBeGreaterThan(1);
+    expect(checked.every(Boolean)).toBe(true);
     await context.close();
   }, 30_000);
 

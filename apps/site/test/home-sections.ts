@@ -7,10 +7,10 @@ import { SHOWN_NOTES } from "../src/scripts/version-notes.ts";
 import type { SiteSession } from "./site-session.ts";
 import type { Visitor } from "./visitor.ts";
 
-/** A version as the section's switch offers it. */
+/** A version as the section's tabs offer it. */
 export type VersionChoice = (typeof VERSION_LABELS)[number];
 
-/** The switch's choice for a version of `kind`. */
+/** The tab for a version of `kind`. */
 export function versionChoice(kind: VersionKind): VersionChoice {
   const choice = VERSION_LABELS.find((label) => label.kind === kind);
   if (choice === undefined) throw new Error(`no version of kind ${kind}`);
@@ -52,24 +52,22 @@ export async function visitSection(
 /** The notes of the version `section` shows: each version has its own (`version-notes.ts`). */
 export const shownNotes = (section: Locator) => section.locator(SHOWN_NOTES);
 
-/** Runs `example`'s section's map from `version` (its label): the switch above its frame. */
-export function chooseVersion(page: Page, example: string, version: string): Promise<void> {
-  return checkRadio(page, example, version);
-}
+/** Runs `example`'s section's map from a version, by its label: its tab, which shows its code too. */
+export const chooseVersion = (page: Page, example: string, version: string) =>
+  chooseTab(page, example, version);
 
-/** Runs every example on `provider` (its label): the page's one toggle. */
+/** Runs every example on `provider` (its label), through the first section's toggle. */
 export function chooseProvider(page: Page, provider: string): Promise<void> {
   return providerToggle(page).getByRole("radio", { name: provider, exact: true }).check();
 }
 
-/** The page's toggle choosing the examples' provider. */
-export const providerToggle = (page: Page) =>
-  page.getByRole("group", { name: "Run the examples on" });
+/** The provider toggles under `scope`, a page or a section: each one moves every example. */
+export const providerTogglesIn = (scope: Page | Locator) =>
+  scope.getByRole("group", { name: "Run the examples on" });
 
-async function checkRadio(page: Page, example: string, label: string): Promise<void> {
-  const section = await sectionOf(page, example);
-  await section.getByRole("radio", { name: label, exact: true }).check();
-}
+/** The first shown section's provider toggle. */
+export const providerToggle = (page: Page) =>
+  providerTogglesIn(page).filter({ visible: true }).first();
 
 /** `kind`'s version on `provider` of the example in `section`. */
 export function providerVersionIn(
@@ -97,10 +95,10 @@ export function leaveOnlySection(page: Page, name: string): Promise<void> {
   }, name);
 }
 
-/** Chooses `example`'s tab `name` (Map, HTML, Script, Bundler, React), and gives back its section. */
+/** Chooses `example`'s tab `name` (HTML, Script, Bundler, React), and gives back its section. */
 export async function chooseTab(page: Page, example: string, name: string): Promise<Locator> {
   const section = await sectionOf(page, example);
-  await section.getByRole("tab", { name }).click();
+  await section.getByRole("tab", { name, exact: true }).click();
   return section;
 }
 

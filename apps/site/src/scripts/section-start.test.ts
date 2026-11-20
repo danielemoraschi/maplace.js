@@ -5,22 +5,23 @@ import { sectionStarter } from "./section-start.ts";
 
 vi.mock("./fade-in.ts");
 
-/** A group's panel: a section with its map, a version, a Map/code tab pair and a reload button. */
+/** A group's panel: a section with its version tabs, its map, a version, its code and a reload button. */
 function panel(name: string): HTMLElement {
   const root = document.createElement("div");
   root.innerHTML = `
     <section data-version-switch="${name}">
       <div role="tablist">
-        <button role="tab" id="${name}-map-tab" aria-controls="${name}-map" aria-selected="true">Map</button>
-        <button role="tab" id="${name}-code-tab" aria-controls="${name}-code" aria-selected="false" tabindex="-1">Code</button>
+        <button role="tab" id="${name}-html-tab" aria-controls="${name}-html-code" aria-selected="true" data-version="html">HTML</button>
+        <button role="tab" id="${name}-react-tab" aria-controls="${name}-react" aria-selected="false" tabindex="-1" data-version="react">React</button>
       </div>
-      <div role="tabpanel" id="${name}-map">
+      <div class="map-frame">
         <maplace-map hold id="${name}-page-map"></maplace-map>
         <div data-live-version="vanilla" id="${name}-vanilla"></div>
         <div data-live-version="html" id="${name}-html"></div>
         <button data-map-reload>Reload the page</button>
       </div>
-      <div role="tabpanel" id="${name}-code" hidden></div>
+      <div role="tabpanel" id="${name}-html-code"></div>
+      <div role="tabpanel" id="${name}-react" hidden></div>
     </section>`;
   document.body.append(root);
   return root;
@@ -66,12 +67,12 @@ describe("sectionStarter", () => {
     expect(released).toEqual(["menu-page-map", "menu-vanilla"]);
   });
 
-  it("wires a root's tabs, reload buttons and version switches", () => {
+  it("wires a root's tabs and reload buttons, and has the provider toggles follow it", () => {
     const { followed, reload, startSections } = setup();
     const root = panel("menu");
     startSections(root);
-    document.getElementById("menu-code-tab")?.click();
-    expect(document.getElementById("menu-code")?.hidden).toBe(false);
+    document.getElementById("menu-react-tab")?.click();
+    expect(document.getElementById("menu-react")?.hidden).toBe(false);
     root.querySelector<HTMLButtonElement>("[data-map-reload]")?.click();
     expect(reload).toHaveBeenCalledOnce();
     expect(followed).toEqual([root]);
