@@ -12,16 +12,18 @@ import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { LLMS_TXT_ROUTE } from "../site/agent-links.ts";
 import { AGENT_SKILLS_INDEX_PATH } from "../site/agent-skill-paths.ts";
-import { SITE_NAME } from "../site/head-meta-tags.ts";
+import { type SharingImage, SITE_NAME } from "../site/head-meta-tags.ts";
 import { markdownAddressAt } from "../site/markdown-routes.ts";
 
 interface Props {
   /** The page's heading: its title is that, then the site's name. */
   heading: string;
   description: string;
+  /** The page's own sharing image, for `SearchMetadata`. */
+  sharingImage?: SharingImage | undefined;
 }
 
-const { heading, description } = Astro.props;
+const { heading, description, sharingImage } = Astro.props;
 const title = `${heading} · ${SITE_NAME}`;
 const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
@@ -36,7 +38,7 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
     {ownMarkdown && <link rel="alternate" type="text/markdown" href={ownMarkdown} />}
     <link rel="describedby" href={LLMS_TXT_ROUTE} />
     <link rel="describedby" href={AGENT_SKILLS_INDEX_PATH} type="application/json" />
-    <SearchMetadata title={title} description={description} />
+    <SearchMetadata title={title} description={description} sharingImage={sharingImage} />
     <link rel="icon" href={faviconUrl} type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {/* Before the first paint, so a returning visitor's placeholders never show. */}

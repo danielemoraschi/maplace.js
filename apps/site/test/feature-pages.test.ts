@@ -21,14 +21,37 @@ import { DESKTOP, footerToggle, openExamplesPage, placeholder } from "./visitor.
 const site = siteBuiltBeforeTests();
 
 describe("a hub and its neighbours (W63)", () => {
-  it("lists its examples, each linking its page, and draws no map", async () => {
+  it("lists its examples, each linking its page with its thumbnail, credits the map images once, and draws no map", async () => {
     const { page, context } = await opened(site, "/examples/markers/", DESKTOP);
-    const hrefs = await page
-      .getByRole("region", { name: "Examples" })
-      .getByRole("link")
-      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+    const examples = page.getByRole("region", { name: "Examples" });
+    const links = await examples.locator("li a").evaluateAll((all) =>
+      all.map((link) => {
+        const images = link.querySelectorAll("img");
+        const image = images[0];
+        return {
+          href: link.getAttribute("href"),
+          images: images.length,
+          alt: image?.getAttribute("alt"),
+          loading: image?.getAttribute("loading"),
+          sized: Boolean(image?.getAttribute("width") && image.getAttribute("height")),
+          webp: /&f=webp| \S+\.webp /.test(` ${image?.getAttribute("srcset") ?? ""} `),
+        };
+      }),
+    );
     const markers = EXAMPLE_GROUPS[0];
-    expect(hrefs).toEqual((markers ? examplePagesOf(markers) : []).map(({ path }) => path));
+    expect(links.map(({ href }) => href)).toEqual(
+      (markers ? examplePagesOf(markers) : []).map(({ path }) => path),
+    );
+    for (const { href, ...thumbnail } of links) {
+      expect(thumbnail, href ?? "").toEqual({
+        images: 1,
+        alt: "",
+        loading: "lazy",
+        sized: true,
+        webp: true,
+      });
+    }
+    expect(await examples.getByText("Map images:").count()).toBe(1);
     expect(await page.locator("maplace-map, section.example").count()).toBe(0);
     await context.close();
   }, 30_000);

@@ -1,4 +1,5 @@
 ---
+import { sharingImageOf } from "../examples/example-images.ts";
 import { type ExamplePageEntry, pageHeading } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
 import { examplesMenu } from "../site/examples-menu.ts";
@@ -18,7 +19,11 @@ const { section } = entry;
 ---
 
 {/* An example's page (D31): its map, its four versions' code, its guide. */}
-<Base heading={pageHeading(section.title)} description={section.description}>
+<Base
+  heading={pageHeading(section.title)}
+  description={section.description}
+  sharingImage={sharingImageOf(section)}
+>
   <PageColumns navLabel="Examples" links={examplesMenu()} current={entry.path} fold="wide">
     <article class="min-w-0">
       <ExampleSection entry={entry} />

@@ -1,4 +1,6 @@
 ---
+import { Image } from "astro:assets";
+import { thumbnailOf } from "../examples/example-images.ts";
 import { type ExampleGroup, examplePagesOf } from "../examples/example-sections.ts";
 
 interface Props {
@@ -8,17 +10,31 @@ interface Props {
 const { group } = Astro.props;
 ---
 
-{/* A category's examples, each its number and title linking its page, then its summary. */}
-<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-x-6 gap-y-4 p-0">
+{/* A category's examples, each its picture, number and title linking its page, then its summary (W65). */}
+<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-x-6 gap-y-8 p-0">
   {
-    examplePagesOf(group).map(({ section, path, number }) => (
-      <li>
-        <a href={path} class="font-semibold">
-          <span class="text-accent">{number}</span>{" "}
-          {section.title}
-        </a>
-        <p class="mt-1 mb-0 text-sm text-muted">{section.summary}</p>
-      </li>
-    ))
+    examplePagesOf(group).map(({ section, path, number }) => {
+      const thumbnail = thumbnailOf(section);
+      return (
+        <li>
+          <a href={path} class="font-semibold">
+            {thumbnail && (
+              <Image
+                src={thumbnail}
+                alt=""
+                widths={[320, 640]}
+                sizes="(min-width: 40rem) 20rem, 100vw"
+                format="webp"
+                loading="lazy"
+                class="mb-3 block aspect-[8/5] h-auto w-full rounded-lg bg-wash object-cover"
+              />
+            )}
+            <span class="text-accent">{number}</span>{" "}
+            {section.title}
+          </a>
+          <p class="mt-1 mb-0 text-sm text-muted">{section.summary}</p>
+        </li>
+      );
+    })
   }
 </ul>

@@ -10,6 +10,7 @@ import Base from "../layouts/Base.astro";
 import { examplesMenu } from "../site/examples-menu.ts";
 import type { NavLink } from "../site/nav-link.ts";
 import ExampleList from "./ExampleList.astro";
+import MapImagesCredit from "./MapImagesCredit.astro";
 import MarkdownLink from "./MarkdownLink.astro";
 import NeighbourLinks from "./NeighbourLinks.astro";
 import PageColumns from "./PageColumns.astro";
@@ -40,6 +41,7 @@ const { Content: References } = await render(reference);
       >
         <h2 id="examples-title" class="mt-0 mb-6 text-3xl">Examples</h2>
         <ExampleList group={group} />
+        <MapImagesCredit />
       </section>
       <section
         id="reference"

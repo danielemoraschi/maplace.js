@@ -29,6 +29,9 @@ export default defineConfig({
         // Run in a child process, through server-components.ts, where coverage can't follow.
         "scripts/checks/rsc-app/**",
         "scripts/checks/server-components-build.ts",
+        // The example pictures' capture (W65): run by hand, in a browser, on OpenFreeMap's live tiles.
+        "scripts/example-shots/scene.ts",
+        "scripts/example-shots/plans.ts",
         // The site's pages, content config and page script arrange what its tested modules do.
         "apps/site/src/**/*.astro",
         "apps/site/src/content.config.ts",

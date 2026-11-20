@@ -3,8 +3,10 @@ import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { packageManifest } from "../../../scripts/build/package.ts";
 import { pngSize } from "../../../scripts/build/png-size.ts";
+import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
 import { PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { lastChangeOf } from "../src/site/git-dates.ts";
+import { OG_IMAGE } from "../src/site/head-meta-tags.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "../src/site/markdown-routes.ts";
 import { strayRequests } from "../src/site/offsite-requests.ts";
 import { pageSources } from "../src/site/page-sources.ts";
@@ -105,8 +107,9 @@ describe("the site's search metadata", () => {
       expect(metas["twitter:title"], route).toBe(title);
       expect(metas["og:description"], route).toBe(description);
       expect(metas["twitter:description"], route).toBe(description);
-      expect(metas["og:image"], route).toMatch(/^https:\/\/maplacejs\.com\/.+\.png$/);
+      expect(metas["og:image"], route).toMatch(/^https:\/\/maplacejs\.com\/.+\.(png|jpg)$/);
       expect(metas["twitter:image"], route).toBe(metas["og:image"]);
+      expect(metas["twitter:image:alt"], route).toBe(metas["og:image:alt"]);
       expect(metas.author, route).toBe(SITE_MAINTAINER);
     }
   });
@@ -117,6 +120,25 @@ describe("the site's search metadata", () => {
     expect(response.headers.get("content-type")).toBe("image/png");
     const png = Buffer.from(await response.arrayBuffer());
     expect(pngSize(png)).toEqual({ width: 1200, height: 630 });
+  });
+
+  it("gives each example page its own sharing image, a JPEG, and every other page the site's", async () => {
+    const examplePages = new Set(EXAMPLE_PAGE_ENTRIES.map(({ path }) => path));
+    for (const route of SITE_ROUTES.filter((route) => !examplePages.has(route))) {
+      const { metas } = headOf(route);
+      expect(metas["og:image"], route).toBe(headOf("/").metas["og:image"]);
+      expect(metas["og:image:alt"], route).toBe(OG_IMAGE.alt);
+    }
+    // Their sizes and alts are `example-images.test.ts`'s to hold: here, that each page names its own.
+    const images = EXAMPLE_PAGE_ENTRIES.map(({ path, section }) => {
+      const { metas } = headOf(path);
+      const { pathname } = new URL(metas["og:image"] ?? "");
+      expect(pathname, path).toMatch(new RegExp(`/${section.name}\\.[\\w-]+\\.jpg$`));
+      expect(metas["og:image:alt"], path).toContain(section.title);
+      return pathname;
+    });
+    const response = await fetch(new URL(images[0] ?? "", site.url));
+    expect(response.headers.get("content-type")).toBe("image/jpeg");
   });
 
   it("writes JSON-LD that parses and names what the page shows", () => {

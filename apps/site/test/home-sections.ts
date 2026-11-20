@@ -68,13 +68,17 @@ export const providerTogglesIn = (scope: Page | Locator) =>
 export const providerToggle = (page: Page) =>
   providerTogglesIn(page).filter({ visible: true }).first();
 
+/** What marks `kind`'s version on `provider` of an example on its page, as a CSS selector. */
+export const versionSelector = (provider: Provider, kind: VersionKind) =>
+  `[data-live-version="${kind}"][data-provider="${provider}"]`;
+
 /** `kind`'s version on `provider` of the example in `section`. */
 export function providerVersionIn(
   section: Locator,
   provider: Provider,
   kind: VersionKind,
 ): Locator {
-  return section.locator(`[data-live-version="${kind}"][data-provider="${provider}"]`);
+  return section.locator(versionSelector(provider, kind));
 }
 
 /** The `loadState` of the page map in `version`, which says when its map is ready. */

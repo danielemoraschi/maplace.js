@@ -10,7 +10,7 @@ export function homeIndexMarkdown(): string {
   return ["## Examples", ...EXAMPLE_GROUPS.map(groupIndexMarkdown)].join("\n\n");
 }
 
-/** `group`'s examples as `ExampleList.astro` lists them: number and title linking the page, summary. */
+/** `group`'s examples in `ExampleList.astro`'s words: number and title linking the page, summary. */
 export function exampleListMarkdown(group: ExampleGroup): string {
   return examplePagesOf(group)
     .map(

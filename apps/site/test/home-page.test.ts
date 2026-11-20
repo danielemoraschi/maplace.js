@@ -102,7 +102,7 @@ describe("the home page's hero and index (W63)", () => {
     await context.close();
   }, 30_000);
 
-  it("lists every category linking its hub, then each of its examples linking its page, and draws no map", async () => {
+  it("lists every category linking its hub, then each of its examples linking its page with its thumbnail, credits the map images once, and draws no map", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const index = page.locator("section#examples");
     const pages = await index
@@ -113,6 +113,8 @@ describe("the home page's hero and index (W63)", () => {
       .locator("li a")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(examples).toEqual(EXAMPLE_PAGE_ENTRIES.map(({ path }) => path));
+    expect(await index.locator('li a img[alt=""]').count()).toBe(EXAMPLE_PAGE_ENTRIES.length);
+    expect(await index.getByText("Map images:").count()).toBe(1);
     expect(await page.locator("maplace-map, section.example").count()).toBe(0);
     await context.close();
   }, 30_000);
