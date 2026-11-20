@@ -12,14 +12,14 @@ const setShown: Show = (element, shown) => {
   element.hidden = !shown;
 };
 
-/** A provider toggle: one on each example section, or the builder's. */
+/** A provider toggle: one on an example's page, or the builder's. */
 export const PROVIDER_TOGGLE = "[data-provider-choice]";
 
 /** A section whose shown version and provider follow its tabs and the toggles. */
 const SECTION = "[data-version-switch]";
 
 /**
- * Starts the page's provider toggles (`[data-provider-choice]`, one on each section, or the
+ * Starts the page's provider toggles (`[data-provider-choice]`, one on an example's page, or the
  * builder's), their choice kept in `storage` for the visit, and returns what adds the
  * `[data-version-switch]` sections under a root to those they switch, the page's own or a root
  * added later. Each section shows the version its selected tab

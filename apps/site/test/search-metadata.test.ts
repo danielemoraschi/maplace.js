@@ -12,6 +12,7 @@ import { PRIVACY_CHANGED_ON } from "../src/site/privacy-changed-on.ts";
 import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import { SITE_MAINTAINER } from "../src/site/site-owner.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
+import { linkFor, linkRules } from "./header-rules.ts";
 import { PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 
 /** A node of a page's JSON-LD graph. */
@@ -169,13 +170,11 @@ describe("the site's search metadata", () => {
   });
 
   it("gives each page's Markdown the page as its canonical, in a header", () => {
-    const headers = readFileSync(join(site.dir, "_headers"), "utf8");
-    const rules = [...headers.matchAll(/^(\S+)\n {2}Link: <([^>]+)>; rel="canonical"$/gm)].map(
-      ([, address, canonical]) => [address, canonical],
-    );
-    expect(rules).toEqual(
-      MARKDOWN_ROUTES.map((route) => [markdownAddress(route), `${PUBLIC_SITE}${route}`]),
-    );
+    const links = linkRules(readFileSync(join(site.dir, "_headers"), "utf8"));
+    for (const route of MARKDOWN_ROUTES) {
+      const canonical = linkFor(links, markdownAddress(route), "canonical");
+      expect(canonical, route).toBe(`${PUBLIC_SITE}${route}`);
+    }
   });
 
   it("lists exactly the site's routes, each dated as its page says", async () => {

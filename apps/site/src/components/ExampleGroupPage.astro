@@ -1,54 +1,46 @@
 ---
 import { getEntry, render } from "astro:content";
 import {
-  EXAMPLE_GROUPS,
   type ExampleGroup,
   groupDescription,
   groupHeading,
   groupPath,
-  neighbourGroups,
-  sectionLabel,
 } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
-import ExampleSection from "./ExampleSection.astro";
+import { examplesMenu } from "../site/examples-menu.ts";
+import type { NavLink } from "../site/nav-link.ts";
+import ExampleList from "./ExampleList.astro";
 import MarkdownLink from "./MarkdownLink.astro";
+import NeighbourLinks from "./NeighbourLinks.astro";
 import PageColumns from "./PageColumns.astro";
 
 interface Props {
   group: ExampleGroup;
+  previous: NavLink | undefined;
+  next: NavLink | undefined;
 }
 
-const { group } = Astro.props;
+const { group, previous, next } = Astro.props;
 const reference = await getEntry("groupReferences", group.id);
 if (reference === undefined) throw new Error(`the groupReferences collection has no ${group.id}`);
 const { Content: References } = await render(reference);
-const links = EXAMPLE_GROUPS.map((each) => ({ href: groupPath(each), label: each.label }));
-const onThisPage = [
-  ...group.sections.map(({ name, title }) => ({ slug: name, text: title })),
-  { slug: "reference", text: "Reference" },
-];
-const { previous, next } = neighbourGroups(group);
-const NEIGHBOUR = "flex flex-col gap-1 no-underline";
 ---
 
-{/* A feature's page (D31): its examples, then the reference tables cut from the docs. */}
+{/* A category's hub (D31): its examples, each its own page, then the reference tables cut from the docs. */}
 <Base heading={groupHeading(group)} description={groupDescription(group)}>
-  <PageColumns
-    navLabel="Examples"
-    links={links}
-    current={groupPath(group)}
-    onThisPage={onThisPage}
-    fold="wide"
-  >
+  <PageColumns navLabel="Examples" links={examplesMenu()} current={groupPath(group)} fold="wide">
     <article class="min-w-0">
       <h1 class="mt-0 mb-2 text-title">{groupHeading(group)}</h1>
       <p class="mt-0 mb-2 max-w-text text-lg text-muted">{group.intro}</p>
       <p class="mt-0 mb-0 text-sm"><MarkdownLink route={groupPath(group)} /></p>
-      {
-        group.sections.map((section) => (
-          <ExampleSection numberLabel={sectionLabel(section)} {...section} />
-        ))
-      }
+      <section
+        id="examples"
+        aria-labelledby="examples-title"
+        class="mt-12 border-t-3 border-ink pt-4"
+      >
+        <h2 id="examples-title" class="mt-0 mb-6 text-3xl">Examples</h2>
+        <ExampleList group={group} />
+      </section>
       <section
         id="reference"
         aria-labelledby="reference-title"
@@ -57,27 +49,7 @@ const NEIGHBOUR = "flex flex-col gap-1 no-underline";
         <h2 id="reference-title" class="mt-0">Reference</h2>
         <References />
       </section>
-      <nav
-        aria-label="Previous and next"
-        class="mt-12 flex flex-wrap justify-between gap-4 border-t border-ink pt-4"
-      >
-        {
-          previous && (
-            <a href={groupPath(previous)} rel="prev" class={NEIGHBOUR}>
-              <span class="text-sm text-muted">Previous</span>
-              <span class="font-display text-xl font-bold">{previous.label}</span>
-            </a>
-          )
-        }
-        {
-          next && (
-            <a href={groupPath(next)} rel="next" class:list={[NEIGHBOUR, "ms-auto text-end"]}>
-              <span class="text-sm text-muted">Next</span>
-              <span class="font-display text-xl font-bold">{next.label}</span>
-            </a>
-          )
-        }
-      </nav>
+      <NeighbourLinks previous={previous} next={next} />
     </article>
   </PageColumns>
 </Base>

@@ -1,18 +1,14 @@
 ---
-import {
-  EXAMPLE_GROUPS,
-  groupPath,
-  sectionHref,
-  sectionLabel,
-} from "../examples/example-sections.ts";
+import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
 import { HOME_ROUTE } from "../examples/home-page.ts";
+import ExampleList from "./ExampleList.astro";
 import MarkdownLink from "./MarkdownLink.astro";
 
-/** A feature's row: its name and summary beside its examples, one above the other on a phone. */
+/** A category's row: its name and summary beside its examples, one above the other on a phone. */
 const ROW = "grid grid-cols-[14rem_minmax(0,1fr)] gap-x-8 gap-y-3 border-t border-ink py-8 max-[48rem]:grid-cols-1";
 ---
 
-{/* Every example by feature, each linking its section on its feature's page (D31): the prototype's index, thumbnails to come (W65). */}
+{/* Every example by category, each linking its page, each category its hub (D31): the prototype's index, thumbnails to come (W65). */}
 <section id="examples" aria-labelledby="examples-title" class="mt-12 border-t-3 border-ink pt-4">
   <h2 id="examples-title" class="m-0 text-3xl">Examples</h2>
   <p class="mt-1 mb-0 text-sm"><MarkdownLink route={HOME_ROUTE} /></p>
@@ -25,17 +21,7 @@ const ROW = "grid grid-cols-[14rem_minmax(0,1fr)] gap-x-8 gap-y-3 border-t borde
           </h3>
           <p class="mt-1 mb-0 text-muted">{group.summary}</p>
         </div>
-        <ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-x-6 gap-y-4 p-0">
-          {group.sections.map((section) => (
-            <li>
-              <a href={sectionHref(group, section)} class="font-semibold">
-                <span class="text-accent">{sectionLabel(section)}</span>{" "}
-                {section.title}
-              </a>
-              <p class="mt-1 mb-0 text-sm text-muted">{section.summary}</p>
-            </li>
-          ))}
-        </ul>
+        <ExampleList group={group} />
       </div>
     ))
   }

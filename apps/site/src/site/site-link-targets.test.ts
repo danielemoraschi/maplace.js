@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import { EXAMPLE_GROUPS, EXAMPLE_PAGE_ENTRIES, groupPath } from "../examples/example-sections.ts";
 import { HOME_ROUTE } from "../examples/home-page.ts";
 import { exampleGuides } from "./example-guides-loader.ts";
 import { groupReferenceMarkdown } from "./group-references-loader.ts";
@@ -98,27 +98,28 @@ describe("the site's doc pages", () => {
     blobBase: "https://github.com/o/r/blob/abc123/",
   };
 
-  it("link only to pages, headings and example sections the site has, as do the guides, the reference tables and the home page's index", () => {
+  it("link only to pages and headings the site has, as do the guides, the reference tables and the home page's index", () => {
     const pages = REPO_DOCS.map((doc) => ({
       route: docRoute(doc.id),
       markdown: repoDocMarkdown(doc, settings),
     }));
-    // Each feature's page as the site writes it: each section, its id standing as a heading's, then
-    // its guide, then the reference tables cut from the docs.
+    // Each example's page as the site writes it: its section's id standing as a heading's, then its
+    // guide; each hub, its reference tables cut from the docs.
     const guides = new Map(
       exampleGuides().map(({ name, markdown, file }) => [
         name,
         siteMarkdownOf(markdown, file, settings.blobBase),
       ]),
     );
-    const groups = EXAMPLE_GROUPS.map((group) => ({
+    const examples = EXAMPLE_PAGE_ENTRIES.map(({ path, section }) => ({
+      route: path,
+      markdown: `# ${section.name}\n\n${guides.get(section.name) ?? ""}`,
+    }));
+    const hubs = EXAMPLE_GROUPS.map((group) => ({
       route: groupPath(group),
-      markdown: group.sections
-        .map(({ name }) => `# ${name}\n\n${guides.get(name) ?? ""}`)
-        .concat(groupReferenceMarkdown(group, settings))
-        .join("\n\n"),
+      markdown: groupReferenceMarkdown(group, settings),
     }));
     const home = { route: HOME_ROUTE, markdown: homeIndexMarkdown() };
-    expect(brokenSiteLinks([...pages, ...groups, home])).toEqual([]);
+    expect(brokenSiteLinks([...pages, ...examples, ...hubs, home])).toEqual([]);
   });
 });

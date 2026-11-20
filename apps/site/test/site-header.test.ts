@@ -78,7 +78,7 @@ describe("the site's header", () => {
     }
   }, 60_000);
 
-  it("marks Documentation on a doc page, Examples on a feature's page, and nothing elsewhere", async () => {
+  it("marks Documentation on a doc page, Examples on a hub and an example's page, and nothing elsewhere", async () => {
     const shown = async (route: string) => {
       const { page, context } = await opened(site, route, DESKTOP);
       const marked = await siteNav(page)
@@ -92,6 +92,7 @@ describe("the site's header", () => {
     expect(await shown(docRoute("store"))).toEqual([["Documentation", "true"]]);
     expect(await shown(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
     expect(await shown("/examples/markers/")).toEqual([["Examples", "true"]]);
+    expect(await shown("/examples/markers/popups/")).toEqual([["Examples", "true"]]);
     expect(await shown("/")).toEqual([]);
   }, 60_000);
 
@@ -99,7 +100,7 @@ describe("the site's header", () => {
     for (const viewport of [DESKTOP, PHONE]) {
       for (const route of [
         "/#examples",
-        "/examples/markers/#markers",
+        "/examples/markers/#reference",
         `${docRoute("element")}#url-state`,
       ]) {
         const { page, context } = await opened(site, route, viewport);
@@ -171,7 +172,7 @@ describe("the site's header", () => {
   }, 30_000);
 
   it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
-    const { page, context } = await opened(site, "/examples/styling/", DESKTOP);
+    const { page, context } = await opened(site, "/examples/styling/whats-on/", DESKTOP);
     await page.mouse.wheel(0, 2500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
     expect((await header(page).boundingBox())?.y).toBe(0);
@@ -215,11 +216,10 @@ describe("the site's header", () => {
     await context.close();
   }, 30_000);
 
-  it("lands an anchor's target below it, an old one on the home page sent on to its page first", async () => {
+  it("lands an anchor's target below it", async () => {
     for (const viewport of [DESKTOP, PHONE]) {
-      const { page, context } = await opened(site, "/#markers", viewport);
-      await page.waitForURL("**/examples/markers/#markers");
-      const heading = await page.locator("#markers-title").boundingBox();
+      const { page, context } = await opened(site, "/examples/markers/#reference", viewport);
+      const heading = await page.locator("#reference-title").boundingBox();
       expect(heading?.y).toBeGreaterThanOrEqual(await headerBottom(page));
       await context.close();
     }

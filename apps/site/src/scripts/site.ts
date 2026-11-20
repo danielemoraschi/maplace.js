@@ -11,6 +11,7 @@ import { byProvider, providerOf } from "./by-provider.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
+import { showCurrentInPinnedNav } from "./menu-in-view.ts";
 import { followNavFocus } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { provideSave } from "./page-save.ts";
@@ -24,7 +25,7 @@ import { versionStarter } from "./version-start.ts";
 import { startProviderToggle } from "./version-switch.ts";
 
 // An old link to an example on a page that no longer holds it goes to the one that does (W63).
-followSectionAnchor(location);
+followSectionAnchor(location, document);
 
 // Every map on the site is held (`<maplace-map hold>`): nothing from Google Maps or OpenFreeMap
 // loads until the visitor consents, then each map as it comes into view. A provider's element
@@ -94,3 +95,5 @@ startConsent({
   openMaps: latch.turnOn,
   reload: reloadPage,
 });
+// Read once the sections have changed the page, sharing the layout its first frame needs.
+showCurrentInPinnedNav(document);

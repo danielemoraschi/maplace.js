@@ -22,12 +22,14 @@ describe("markdownAddress", () => {
     expect(markdownAddress("/")).toBe("/index.md");
     expect(markdownAddress("/setup/")).toBe("/setup/index.md");
     expect(markdownAddress("/examples/lists/")).toBe("/examples/lists/index.md");
+    expect(markdownAddress("/examples/lists/menu/")).toBe("/examples/lists/menu/index.md");
   });
 });
 
 describe("markdownAddressAt", () => {
-  it("gives a path with Markdown its address", () => {
+  it("gives a path with Markdown its address, an example's page among them", () => {
     expect(markdownAddressAt("/setup/")).toBe("/setup/index.md");
+    expect(markdownAddressAt("/examples/lists/menu/")).toBe("/examples/lists/menu/index.md");
   });
 
   it("gives a path without Markdown none", () => {

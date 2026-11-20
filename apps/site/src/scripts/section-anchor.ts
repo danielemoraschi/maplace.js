@@ -1,23 +1,54 @@
-import { findGroupAtPath, findGroupOfSection, groupPath } from "../examples/example-sections.ts";
+import {
+  EXAMPLE_PAGE_ENTRIES,
+  type ExamplePageEntry,
+  findGroupAtPath,
+} from "../examples/example-sections.ts";
 import { HOME_ROUTE } from "../examples/home-page.ts";
 
 /**
- * The page an old link to an example now goes to, when the page it names no longer holds it: an
- * example on the home page (`/#route`, before W63) or on an examples' page that gave it to another
- * (`/examples/lists/#search`), redirected there when the old page is gone (`_redirects`). Only the
- * home page's and the examples' pages' links: another page's own anchor, a heading sharing an
- * example's name (`/locations/#markers`), stays. The hash is compared raw: a stray `%` names no
- * example.
+ * Where an old link to an example now goes: an example's anchor on the home page (`/#route`, before
+ * W63) or on a hub (`/examples/lists/#search`, the hubs once holding the examples; an old hub's
+ * address is redirected to its successor by `_redirects`) goes to the example's own page. A bare
+ * example name leaves no hash there; an anchor inside an example (its map, as link-to-place's
+ * shared links write it: `#link-to-place-maplibre-map`) is kept. Only the home page's and the
+ * hubs' links, and only an anchor the page doesn't hold (`holds`): a hub's own heading
+ * (`#markers-from-the-locations-reference`), or another page's sharing an example's name
+ * (`/locations/#markers`), stays. The hash is compared raw: a stray `%` names no example.
  */
-export function pageForAnchor(hash: string, path: string): string | undefined {
+export function pageForAnchor(
+  hash: string,
+  path: string,
+  holds: (id: string) => boolean,
+): string | undefined {
   if (path !== HOME_ROUTE && findGroupAtPath(path) === undefined) return undefined;
-  const group = findGroupOfSection(hash.slice(1));
-  if (group === undefined || groupPath(group) === path) return undefined;
-  return groupPath(group);
+  const anchor = hash.slice(1);
+  if (holds(anchor)) return undefined;
+  const entry = exampleOfAnchor(anchor);
+  if (entry === undefined) return undefined;
+  return anchor === entry.section.name ? entry.path : `${entry.path}#${anchor}`;
 }
 
-/** Sends the page to where its old example link now goes, if it does, its query and hash kept. */
-export function followSectionAnchor(location: Location): void {
-  const page = pageForAnchor(location.hash, location.pathname);
-  if (page !== undefined) location.replace(`${page}${location.search}${location.hash}`);
+/** Sends `document`'s page to where its old example link now goes, if it does, its query kept. */
+export function followSectionAnchor(location: Location, document: Document): void {
+  const address = pageForAnchor(location.hash, location.pathname, (id) =>
+    Boolean(document.getElementById(id)),
+  );
+  if (address === undefined) return;
+  const url = new URL(address, location.href);
+  url.search = location.search;
+  location.replace(url.href);
+}
+
+/** The example `anchor` names, or whose name and a `-` begin it: the longest such name. */
+function exampleOfAnchor(anchor: string): ExamplePageEntry | undefined {
+  const named = (name: string) => anchor === name || anchor.startsWith(`${name}-`);
+  return EXAMPLE_PAGE_ENTRIES.filter(({ section }) => named(section.name)).reduce<
+    ExamplePageEntry | undefined
+  >(
+    (longest, entry) =>
+      longest === undefined || entry.section.name.length > longest.section.name.length
+        ? entry
+        : longest,
+    undefined,
+  );
 }

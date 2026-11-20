@@ -2,7 +2,7 @@ import type { Browser, BrowserContext, ConsoleMessage, Locator, Page } from "pla
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 import { TEST_STYLE } from "../../../packages/maplace/src/maplibre/testing/test-style.ts";
 import { OPENFREEMAP_STYLES } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
-import { EXAMPLE_GROUPS, type ExampleGroup, groupPath } from "../src/examples/example-sections.ts";
+import { EXAMPLE_PAGE_ENTRIES, type ExamplePageEntry } from "../src/examples/example-sections.ts";
 import { HELD_BY_EXAMPLE_ATTRIBUTE } from "../src/examples/page-scripts.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 
@@ -193,11 +193,11 @@ export const firstMap = (page: Page) =>
 /** The footer's switch that turns the maps on, or off, on every page. */
 export const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
 
-/** The first feature's page: the site's first page with maps, the home page having none (W63). */
-export const FIRST_EXAMPLES_PAGE = groupPath(EXAMPLE_GROUPS[0] as ExampleGroup);
+/** The first example's page: the site's first page with maps, the home page and the hubs having none (W63). */
+export const FIRST_EXAMPLES_PAGE = (EXAMPLE_PAGE_ENTRIES[0] as ExamplePageEntry).path;
 
 /**
- * Opens the examples' page at `route` of the site at `siteUrl`, the first feature's unless given,
+ * Opens the example's page at `route` of the site at `siteUrl`, the first example's unless given,
  * and scrolls to its first map.
  */
 export async function openExamplesPage(
@@ -245,7 +245,7 @@ export async function boxOf(locator: Locator): Promise<Box> {
   return box;
 }
 
-/** Consents to the maps from the first placeholder of the first examples' page of the site at `siteUrl`. */
+/** Consents to the maps from the first placeholder of the first example's page of the site at `siteUrl`. */
 export async function grantConsent(page: Page, siteUrl: string): Promise<void> {
   await openExamplesPage(page, siteUrl);
   await placeholder(page).click();

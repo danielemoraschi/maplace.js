@@ -1,7 +1,7 @@
 import type { MaplaceMapElement } from "@maplacejs/maplace/element";
 import type { Locator, Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
-import { findGroupOfSection, groupPath } from "../src/examples/example-sections.ts";
+import { findExamplePage } from "../src/examples/example-sections.ts";
 import { VERSION_LABELS, type VersionKind } from "../src/examples/example-versions.ts";
 import { SHOWN_NOTES } from "../src/scripts/version-notes.ts";
 import type { SiteSession } from "./site-session.ts";
@@ -27,25 +27,24 @@ export function versionsInTurn(index: number): [VersionChoice, ...VersionChoice[
   return order as [VersionChoice, ...VersionChoice[]];
 }
 
-/** The route of the feature's page holding `name`'s section (D31). */
+/** The route of `name`'s example's page (D31). */
 export function sectionPage(name: string): string {
-  const group = findGroupOfSection(name);
-  if (group === undefined) throw new Error(`no example group holds ${name}`);
-  return groupPath(group);
+  const entry = findExamplePage(name);
+  if (entry === undefined) throw new Error(`no example is named ${name}`);
+  return entry.path;
 }
 
 /**
- * A fresh visitor on the examples' page of `site` holding `name`'s section, with only that section
- * left, scrolled to it; `addressTail`, what follows the page's path, is its anchor unless given.
+ * A fresh visitor on `name`'s example's page of `site`, scrolled to its section; `addressTail` is
+ * what follows the page's path, a query or an anchor.
  */
 export async function visitSection(
   site: SiteSession,
   name: string,
-  addressTail = `#${name}`,
+  addressTail = "",
 ): Promise<Visitor & { readonly section: Locator }> {
   const visit = await site.visitor();
   await visit.page.goto(new URL(`${sectionPage(name)}${addressTail}`, site.url).href);
-  await leaveOnlySection(visit.page, name);
   return { ...visit, section: await sectionOf(visit.page, name) };
 }
 
@@ -56,16 +55,16 @@ export const shownNotes = (section: Locator) => section.locator(SHOWN_NOTES);
 export const chooseVersion = (page: Page, example: string, version: string) =>
   chooseTab(page, example, version);
 
-/** Runs every example on `provider` (its label), through the first section's toggle. */
+/** Runs the page's example on `provider` (its label), through its toggle. */
 export function chooseProvider(page: Page, provider: string): Promise<void> {
   return providerToggle(page).getByRole("radio", { name: provider, exact: true }).check();
 }
 
-/** The provider toggles under `scope`, a page or a section: each one moves every example. */
+/** The provider toggles under `scope`, a page or a section. */
 export const providerTogglesIn = (scope: Page | Locator) =>
   scope.getByRole("group", { name: "Run the examples on" });
 
-/** The first shown section's provider toggle. */
+/** The page's shown provider toggle. */
 export const providerToggle = (page: Page) =>
   providerTogglesIn(page).filter({ visible: true }).first();
 
@@ -83,18 +82,6 @@ export function pageMapState(version: Locator): Promise<string | undefined> {
   return version.locator("maplace-map").evaluate((map) => (map as MaplaceMapElement).loadState);
 }
 
-/**
- * Takes every other example's section off the page: consent releases each map that comes near
- * the screen, and a neighbour's (about 190px away) would load too, unchecked.
- */
-export function leaveOnlySection(page: Page, name: string): Promise<void> {
-  return page.evaluate((own) => {
-    for (const section of document.querySelectorAll("section:has(.map-frame)")) {
-      if (section.id !== own) section.remove();
-    }
-  }, name);
-}
-
 /** Chooses `example`'s tab `name` (HTML, Script, Bundler, React), and gives back its section. */
 export async function chooseTab(page: Page, example: string, name: string): Promise<Locator> {
   const section = await sectionOf(page, example);
@@ -102,12 +89,12 @@ export async function chooseTab(page: Page, example: string, name: string): Prom
   return section;
 }
 
-/** `example`'s section on its examples' page, scrolled into view. */
+/** `example`'s section on its page, scrolled into view. */
 export async function sectionOf(page: Page, example: string): Promise<Locator> {
   const section = page.locator(`section#${example}`);
   await section.scrollIntoViewIfNeeded();
   return section;
 }
 
-/** A feature's page's list of the features' pages (`PageColumns.astro`). */
+/** An examples page's menu of every category and example (`PageColumns.astro`). */
 export const examplesNav = (page: Page) => page.getByRole("navigation", { name: "Examples" });

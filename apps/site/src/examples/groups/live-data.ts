@@ -19,16 +19,22 @@ export const liveData: ExampleGroup = {
       title: "Live data from JSON",
       summary:
         "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
+      description:
+        "Load map locations from JSON on Google Maps and MapLibre: data sets fetched and swapped in live, markers, an area and a circle.",
     },
     {
       name: "load-on-demand",
       title: "Load on demand",
       summary: "A panel in the map's place: nothing draws until the visitor presses its button.",
+      description:
+        "Load a map on demand on Google Maps and MapLibre: a panel stands in the map's place, and nothing loads until the visitor presses its button.",
     },
     {
       name: "link-to-place",
       title: "Link to a place",
       summary: "A link to the place picked, shown under the map, that opens the map on it.",
+      description:
+        "Link to a place on a map, on Google Maps and MapLibre: the place picked goes in the address, and the link opens the map on it.",
     },
   ],
 };

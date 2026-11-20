@@ -83,10 +83,9 @@ describe("the examples' provider toggle, on a section", () => {
     await context.close();
   }, 30_000);
 
-  it("has one toggle on each section, MapLibre first and chosen", async () => {
+  it("has one toggle on an example's page, MapLibre first and chosen", async () => {
     const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
-    const sections = page.locator("section.example");
-    expect(await providerTogglesIn(sections).count()).toBe(await sections.count());
+    expect(await providerTogglesIn(page).count()).toBe(1);
     expect(await providerToggle(page).locator("label").allTextContents()).toEqual([
       "MapLibre",
       "Google",
@@ -95,16 +94,15 @@ describe("the examples' provider toggle, on a section", () => {
     await context.close();
   }, 30_000);
 
-  it("moves every section's toggle with the one clicked", async () => {
+  it("carries the provider chosen to the next example's page in the tab", async () => {
     const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
-    const google = providerTogglesIn(page).getByRole("radio", { name: "Google", exact: true });
-    await google.nth(1).scrollIntoViewIfNeeded();
-    await google.nth(1).check();
-    const checked = await google.evaluateAll((all) =>
-      all.map((radio) => (radio as HTMLInputElement).checked),
-    );
-    expect(checked.length).toBeGreaterThan(1);
-    expect(checked.every(Boolean)).toBe(true);
+    await chooseProvider(page, "Google");
+    await page.getByRole("navigation", { name: "Previous and next" }).getByRole("link").click();
+    await page.waitForURL(new URL("/examples/markers/markers/", site.url).href);
+    const google = providerToggle(page).getByRole("radio", { name: "Google", exact: true });
+    expect(await google.isChecked()).toBe(true);
+    const section = await sectionOf(page, "markers");
+    expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
     await context.close();
   }, 30_000);
 

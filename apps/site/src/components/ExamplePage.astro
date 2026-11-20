@@ -1,0 +1,28 @@
+---
+import { type ExamplePageEntry, pageHeading } from "../examples/example-sections.ts";
+import Base from "../layouts/Base.astro";
+import { examplesMenu } from "../site/examples-menu.ts";
+import type { NavLink } from "../site/nav-link.ts";
+import ExampleSection from "./ExampleSection.astro";
+import NeighbourLinks from "./NeighbourLinks.astro";
+import PageColumns from "./PageColumns.astro";
+
+interface Props {
+  entry: ExamplePageEntry;
+  previous: NavLink | undefined;
+  next: NavLink | undefined;
+}
+
+const { entry, previous, next } = Astro.props;
+const { section } = entry;
+---
+
+{/* An example's page (D31): its map, its four versions' code, its guide. */}
+<Base heading={pageHeading(section.title)} description={section.description}>
+  <PageColumns navLabel="Examples" links={examplesMenu()} current={entry.path} fold="wide">
+    <article class="min-w-0">
+      <ExampleSection entry={entry} />
+      <NeighbourLinks previous={previous} next={next} />
+    </article>
+  </PageColumns>
+</Base>

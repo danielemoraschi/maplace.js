@@ -1,0 +1,33 @@
+---
+import type { NavLink } from "../site/nav-link.ts";
+
+interface Props {
+  previous: NavLink | undefined;
+  next: NavLink | undefined;
+}
+
+const { previous, next } = Astro.props;
+const NEIGHBOUR = "flex flex-col gap-1 no-underline";
+---
+
+<nav
+  aria-label="Previous and next"
+  class="mt-12 flex flex-wrap justify-between gap-4 border-t border-ink pt-4"
+>
+  {
+    previous && (
+      <a href={previous.href} rel="prev" class={NEIGHBOUR}>
+        <span class="text-sm text-muted">Previous</span>
+        <span class="font-display text-xl font-bold">{previous.label}</span>
+      </a>
+    )
+  }
+  {
+    next && (
+      <a href={next.href} rel="next" class:list={[NEIGHBOUR, "ms-auto text-end"]}>
+        <span class="text-sm text-muted">Next</span>
+        <span class="font-display text-xl font-bold">{next.label}</span>
+      </a>
+    )
+  }
+</nav>

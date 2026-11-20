@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import { EXAMPLES_ROUTES } from "../examples/example-sections.ts";
 import { BUILDER_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { navCurrent, SITE_NAV_LINKS, type SiteNavLink } from "./site-nav.ts";
@@ -24,9 +24,11 @@ describe("navCurrent", () => {
     expect(marked(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
   });
 
-  it("marks Examples on every feature's page, and not on the home page its link goes to", () => {
-    for (const group of EXAMPLE_GROUPS)
-      expect(marked(groupPath(group))).toEqual([["Examples", "true"]]);
+  it("marks Examples on every hub and example's page, and not on the home page its link goes to", () => {
+    expect(EXAMPLES_ROUTES).toContain("/examples/markers/");
+    expect(EXAMPLES_ROUTES).toContain("/examples/markers/simple/");
+    for (const route of EXAMPLES_ROUTES)
+      expect(marked(route), route).toEqual([["Examples", "true"]]);
     expect(link("Examples").href).toBe("/#examples");
     expect(marked("/")).toEqual([]);
   });

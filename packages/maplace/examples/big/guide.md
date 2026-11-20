@@ -1,6 +1,6 @@
 # Marker clustering
 
-4,000 points fetched by the page: those near each other are drawn as one badge counting them, so the map stays fast and readable.
+A large set of points, fetched by the page: those near each other are drawn as one badge counting them, so the map stays fast and readable.
 
 - **Try it**: zoom in on a badge, and it splits into smaller badges, then single pins.
 - **HTML**: `cluster` on `<maplace-map>`, on a CDN script that bundles clustering: `maplace-element-cluster.iife.js` on Google, while MapLibre's script always does ([Map attributes](../../../../docs/reference/element.md#map-attributes)). The element never fetches: a script assigns `locations`.

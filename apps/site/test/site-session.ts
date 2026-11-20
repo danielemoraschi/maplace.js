@@ -1,5 +1,5 @@
 import { setTimeout as pause } from "node:timers/promises";
-import { type Browser, chromium } from "playwright";
+import { type Browser, chromium, type Page } from "playwright";
 import { afterAll, beforeAll } from "vitest";
 import { type BuiltSite, buildAndServeSite, SITE_WAIT_MS } from "./built-site.ts";
 import { type Visitor, type VisitorOptions, visitor } from "./visitor.ts";
@@ -29,6 +29,29 @@ export async function settled<Value>(
   }
   throw new Error(`${what} kept changing for ${timeout} ms, last ${String(last)}`);
 }
+
+/**
+ * What `look` finds on each page at `routes` of the site at `siteUrl`, `page` going to one after
+ * another: each as soon as its document is in, or once it has loaded (`waitUntil: "load"`) for a
+ * look at what the page asks the network for.
+ */
+export async function visitEach<Found>(
+  page: Page,
+  siteUrl: string,
+  routes: readonly string[],
+  look: (route: string) => Promise<Found>,
+  waitUntil: "domcontentloaded" | "load" = "domcontentloaded",
+): Promise<Found[]> {
+  const found: Found[] = [];
+  for (const route of routes) {
+    await page.goto(new URL(route, siteUrl).href, { waitUntil });
+    found.push(await look(route));
+  }
+  return found;
+}
+
+/** How long a test visiting `pages` pages one after another may take, on a busy machine. */
+export const visitingPages = (pages: number) => 10_000 + pages * 3_000;
 
 /** How long a released map may take to ask for Maps JS, on a busy machine. */
 export const ASKED = { timeout: 10_000 };

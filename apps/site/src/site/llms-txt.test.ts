@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { captures, section } from "../../../../scripts/docs/markdown.ts";
+import { EXAMPLE_PAGE_ENTRIES } from "../examples/example-sections.ts";
 import { HOME_DESCRIPTION } from "../examples/home-page.ts";
 import { AGENT_LINKS } from "./agent-links.ts";
 import { PRIVACY_PAGE } from "./footer-pages.ts";
 import { llmsTxt } from "./llms-txt.ts";
-import { markdownAddressAt } from "./markdown-routes.ts";
+import { markdownAddress, markdownAddressAt } from "./markdown-routes.ts";
 import { REPO_DOCS } from "./repo-docs.ts";
 import { SITE_ROUTES } from "./site-routes.ts";
 
@@ -47,6 +48,13 @@ describe("llmsTxt", () => {
     expect(TEXT).toContain(`(https://maplacejs.com/setup/index.md): ${setup?.description}\n`);
     expect(TEXT).toContain(`(https://maplacejs.com/privacy/): ${PRIVACY_PAGE.description}\n`);
     expect(TEXT).toContain(`(https://maplacejs.com/index.md): ${HOME_DESCRIPTION}\n`);
+  });
+
+  it("lists every example's page by its title and description", () => {
+    for (const { path, section } of EXAMPLE_PAGE_ENTRIES) {
+      const address = new URL(markdownAddress(path), SITE).href;
+      expect(TEXT).toContain(`\n- [${section.title}](${address}): ${section.description}\n`);
+    }
   });
 
   it("lists the agent links under Agents, but itself", () => {

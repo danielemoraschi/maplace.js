@@ -1,13 +1,18 @@
 ---
 import ExampleGroupPage from "../../components/ExampleGroupPage.astro";
-import { EXAMPLE_GROUPS, type ExampleGroup } from "../../examples/example-sections.ts";
+import { EXAMPLE_GROUPS } from "../../examples/example-sections.ts";
+import { hubLink } from "../../site/examples-menu.ts";
+import { withNeighbours } from "../../site/neighbour-links.ts";
 
-/** Every feature's page. */
+/** Every category's hub, with the hubs before and after it. */
 export function getStaticPaths() {
-  return EXAMPLE_GROUPS.map((group) => ({ params: { group: group.id }, props: { group } }));
+  return withNeighbours(EXAMPLE_GROUPS, hubLink).map(({ item, previous, next }) => ({
+    params: { group: item.id },
+    props: { group: item, previous, next },
+  }));
 }
 
-const { group } = Astro.props as { group: ExampleGroup };
+const { group, previous, next } = Astro.props;
 ---
 
-<ExampleGroupPage group={group} />
+<ExampleGroupPage group={group} previous={previous} next={next} />

@@ -1,0 +1,24 @@
+---
+import { type ExampleGroup, examplePagesOf } from "../examples/example-sections.ts";
+
+interface Props {
+  group: ExampleGroup;
+}
+
+const { group } = Astro.props;
+---
+
+{/* A category's examples, each its number and title linking its page, then its summary. */}
+<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-x-6 gap-y-4 p-0">
+  {
+    examplePagesOf(group).map(({ section, path, number }) => (
+      <li>
+        <a href={path} class="font-semibold">
+          <span class="text-accent">{number}</span>{" "}
+          {section.title}
+        </a>
+        <p class="mt-1 mb-0 text-sm text-muted">{section.summary}</p>
+      </li>
+    ))
+  }
+</ul>

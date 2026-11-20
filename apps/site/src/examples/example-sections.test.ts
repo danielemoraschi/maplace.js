@@ -2,14 +2,13 @@ import { describe, expect, it } from "vitest";
 import { FIRST_PROVIDER } from "./example-providers.ts";
 import {
   EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
   EXAMPLE_SECTIONS,
+  findExamplePage,
   findGroupAtPath,
-  findGroupOfSection,
   groupDescription,
   groupHeading,
   groupPath,
-  neighbourGroups,
-  sectionLabel,
 } from "./example-sections.ts";
 import { exampleNames, exampleProviders } from "./example-sources.ts";
 import { HOME_INTRO } from "./home-page.ts";
@@ -35,7 +34,7 @@ describe("EXAMPLE_SECTIONS", () => {
     expect(saving.map(({ name }) => name)).toEqual(["polygon"]);
   });
 
-  it("shows each section first on the page's first provider", () => {
+  it("shows each example first on the page's first provider", () => {
     for (const { name } of EXAMPLE_SECTIONS) {
       expect(exampleProviders(name)[0], name).toBe(FIRST_PROVIDER);
     }
@@ -50,58 +49,71 @@ describe("EXAMPLE_GROUPS", () => {
       sections.map(({ name }) => name),
     ]);
     expect(groups).toEqual([
-      ["markers", "Markers and popups", ["simple", "markers", "popups", "click-to-add"]],
+      [
+        "markers",
+        "Markers and popups",
+        ["simple", "markers", "css-markers", "popups", "click-to-add"],
+      ],
       ["lists", "Lists and menus", ["menu", "custom-list", "tabs"]],
       ["search", "Search and filters", ["tags", "offices", "search", "nearest", "this-area"]],
       ["circles-polygons", "Circles and polygons", ["circles", "polygon", "mixed", "choropleth"]],
       ["lines-routes", "Lines and routes", ["polyline", "flights", "trade-lanes", "route"]],
       ["clusters-heatmaps", "Clusters and heatmaps", ["big", "earthquakes"]],
       ["live-data", "Live data and loading", ["live-data", "load-on-demand", "link-to-place"]],
-      ["styling", "Styling", ["whats-on", "team", "styled", "css-markers", "brand", "unstyled"]],
+      ["styling", "Styling", ["whats-on", "team", "styled", "brand", "unstyled"]],
     ]);
   });
 
-  it("holds every example once, numbered in its groups' order, at least two on each page", () => {
+  it("holds every example once, numbered in its groups' order, at least two on each hub", () => {
     expect(EXAMPLE_GROUPS.flatMap(({ sections }) => sections)).toEqual(EXAMPLE_SECTIONS);
     expect(new Set(EXAMPLE_SECTIONS.map(({ name }) => name)).size).toBe(EXAMPLE_SECTIONS.length);
     for (const group of EXAMPLE_GROUPS)
       expect(group.sections.length, group.id).toBeGreaterThanOrEqual(2);
   });
 
-  it("puts every group's page under /examples/, none where the examples' files are served", () => {
+  it("puts every hub under /examples/, none where the examples' files are served", () => {
     for (const group of EXAMPLE_GROUPS) expect(groupPath(group)).toBe(`/examples/${group.id}/`);
     const ids = EXAMPLE_GROUPS.map(({ id }) => id);
     expect(ids).not.toContain("data");
     expect(ids).not.toContain("styles");
   });
 
-  it("describes each group's page by its own description, 80 to 160 characters", () => {
-    for (const group of EXAMPLE_GROUPS) {
-      expect(groupDescription(group)).toBe(group.description);
-      expect(group.description.length, group.id).toBeGreaterThanOrEqual(80);
-      expect(group.description.length, group.id).toBeLessThanOrEqual(160);
+  it("describes each hub and each example's page by its own description, 80 to 160 characters", () => {
+    for (const group of EXAMPLE_GROUPS) expect(groupDescription(group)).toBe(group.description);
+    const described = [...EXAMPLE_GROUPS, ...EXAMPLE_SECTIONS];
+    for (const { description } of described) {
+      expect(description.length, description).toBeGreaterThanOrEqual(80);
+      expect(description.length, description).toBeLessThanOrEqual(160);
+    }
+    expect(new Set(described.map(({ description }) => description)).size).toBe(described.length);
+  });
+
+  it("puts every example's page under its hub, in the numbering's order", () => {
+    expect(EXAMPLE_PAGE_ENTRIES.map(({ section }) => section)).toEqual(EXAMPLE_SECTIONS);
+    for (const { group, section, path } of EXAMPLE_PAGE_ENTRIES) {
+      expect(path).toBe(`/examples/${group.id}/${section.name}/`);
     }
   });
 
-  it("heads each group's page with the feature in task words", () => {
+  it("heads each hub with the feature in task words", () => {
     expect(EXAMPLE_GROUPS.map(groupHeading)).toEqual([
-      "Markers and popups on Google Maps and MapLibre",
+      "Custom markers and popups on Google Maps and MapLibre",
       "Lists and menus on Google Maps and MapLibre",
       "Search and filters on Google Maps and MapLibre",
       "Circles and polygons on Google Maps and MapLibre",
       "Lines and routes on Google Maps and MapLibre",
       "Marker clustering and heatmaps on Google Maps and MapLibre",
       "Live data and loading on Google Maps and MapLibre",
-      "Map styles and custom markers on Google Maps and MapLibre",
+      "Map styles and customizations on Google Maps and MapLibre",
     ]);
   });
 
-  it("introduces each group's page by its own paragraph, apart from the home page's", () => {
+  it("introduces each hub by its own paragraph, apart from the home page's", () => {
     const intros = EXAMPLE_GROUPS.map(({ intro }) => intro);
     expect(new Set([...intros, HOME_INTRO]).size).toBe(EXAMPLE_GROUPS.length + 1);
   });
 
-  it("titles each section once", () => {
+  it("titles each example once", () => {
     const titles = EXAMPLE_SECTIONS.map(({ title }) => title);
     expect(new Set(titles).size).toBe(titles.length);
   });
@@ -113,29 +125,20 @@ describe("EXAMPLE_GROUPS", () => {
     }
   });
 
-  it("gives each page its previous and next, none before the first or after the last", () => {
-    const [first, second] = EXAMPLE_GROUPS;
-    const last = EXAMPLE_GROUPS.at(-1);
-    expect(first && neighbourGroups(first)).toEqual({ previous: undefined, next: second });
-    expect(second && neighbourGroups(second)).toEqual({ previous: first, next: EXAMPLE_GROUPS[2] });
-    expect(last && neighbourGroups(last).next).toBeUndefined();
-  });
-
   it("finds each group at its path, and none at a path no group has", () => {
     for (const group of EXAMPLE_GROUPS) expect(findGroupAtPath(groupPath(group))).toBe(group);
     for (const path of ["/", "/examples/lists", "/index.html", "/store/"])
       expect(findGroupAtPath(path), path).toBeUndefined();
   });
 
-  it("finds the group holding each section, and none for a name no section has", () => {
-    for (const group of EXAMPLE_GROUPS) {
-      for (const { name } of group.sections) expect(findGroupOfSection(name)).toBe(group);
-    }
-    expect(findGroupOfSection("main")).toBeUndefined();
+  it("finds each example's page by its name, and none for a name no example has", () => {
+    for (const entry of EXAMPLE_PAGE_ENTRIES)
+      expect(findExamplePage(entry.section.name)).toBe(entry);
+    expect(findExamplePage("main")).toBeUndefined();
   });
 
   it("numbers the sections 1 to 31 across the groups, in order", () => {
-    const labels = EXAMPLE_GROUPS.flatMap(({ sections }) => sections.map(sectionLabel));
+    const labels = EXAMPLE_PAGE_ENTRIES.map(({ number }) => number);
     expect(labels).toEqual(
       Array.from({ length: 31 }, (_, index) => String(index + 1).padStart(2, "0")),
     );

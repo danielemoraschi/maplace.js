@@ -76,12 +76,12 @@ describe("siteMarkdownOf", () => {
     expect(siteMarkdownOf(markdown, FILE, settings.blobBase)).toBe("[views](/element/#list-views)");
   });
 
-  it("sends a link to another example's guide to that example's section, on its feature's page", () => {
+  it("sends a link to another example's guide to that example's page", () => {
     expect(siteMarkdownOf("[pins](../css-markers/guide.md)", FILE, settings.blobBase)).toBe(
-      "[pins](/examples/styling/#css-markers)",
+      "[pins](/examples/markers/css-markers/)",
     );
     expect(siteMarkdownOf("[markers](../markers/guide.md)", FILE, settings.blobBase)).toBe(
-      "[markers](/examples/markers/#markers)",
+      "[markers](/examples/markers/markers/)",
     );
   });
 

@@ -2,7 +2,11 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, groupPath, sectionHref } from "../src/examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  groupPath,
+} from "../src/examples/example-sections.ts";
 import { HOME_HEADING, HOME_INTRO } from "../src/examples/home-page.ts";
 import { STAR_COUNT_PATH } from "../src/site/star-count-api.ts";
 import { ASKED, opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
@@ -98,7 +102,7 @@ describe("the home page's hero and index (W63)", () => {
     await context.close();
   }, 30_000);
 
-  it("lists every feature's page, then each of its examples linking its section, and draws no map", async () => {
+  it("lists every category linking its hub, then each of its examples linking its page, and draws no map", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const index = page.locator("section#examples");
     const pages = await index
@@ -108,11 +112,7 @@ describe("the home page's hero and index (W63)", () => {
     const examples = await index
       .locator("li a")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-    expect(examples).toEqual(
-      EXAMPLE_GROUPS.flatMap((group) =>
-        group.sections.map((section) => sectionHref(group, section)),
-      ),
-    );
+    expect(examples).toEqual(EXAMPLE_PAGE_ENTRIES.map(({ path }) => path));
     expect(await page.locator("maplace-map, section.example").count()).toBe(0);
     await context.close();
   }, 30_000);

@@ -1,4 +1,9 @@
-import { EXAMPLE_GROUPS, groupDescription, groupPath } from "../examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  groupDescription,
+  groupPath,
+} from "../examples/example-sections.ts";
 import { HOME_DESCRIPTION, HOME_ROUTE } from "../examples/home-page.ts";
 import { type AgentLink, LLMS_TXT_ROUTE, skillInstallCommand } from "./agent-links.ts";
 import { FOOTER_PAGES } from "./footer-pages.ts";
@@ -21,6 +26,10 @@ const LISTED_PAGES: ReadonlyMap<string, ListedPage> = new Map([
   ...EXAMPLE_GROUPS.map(
     (group) =>
       [groupPath(group), { name: group.label, description: groupDescription(group) }] as const,
+  ),
+  ...EXAMPLE_PAGE_ENTRIES.map(
+    ({ path, section }) =>
+      [path, { name: section.title, description: section.description }] as const,
   ),
   ...FOOTER_PAGES.map(
     ({ route, label, description }) => [route, { name: label, description }] as const,

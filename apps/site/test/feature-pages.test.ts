@@ -1,74 +1,35 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  examplePagesOf,
+  groupPath,
+} from "../src/examples/example-sections.ts";
 import {
   chooseProvider,
   chooseTab,
   chooseVersion,
-  examplesNav,
   sectionPage,
   shownNotes,
   visitSection,
 } from "./home-sections.ts";
 import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, opened, siteBuiltBeforeTests } from "./site-session.ts";
-import { DESKTOP, footerToggle, openExamplesPage, PHONE, placeholder } from "./visitor.ts";
+import { DESKTOP, footerToggle, openExamplesPage, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
-const LABELS = EXAMPLE_GROUPS.map(({ label }) => label);
-/** The narrowest screen the side column is drawn on, beside the examples: 64rem. */
-const COLUMN_NARROWEST = { width: 1024, height: 800 };
-/** Just below it, where the column folds into a disclosure above the examples. */
-const FOLDED = { width: 1023, height: 800 };
-
-describe("a feature's page's list of the features' pages (W63)", () => {
-  it("lists every feature's page in order, marking the page shown", async () => {
-    const { page, context } = await opened(site, "/examples/search/", DESKTOP);
-    expect(await examplesNav(page).getByRole("link").allTextContents()).toEqual(LABELS);
-    const marked = examplesNav(page).locator('[aria-current="page"]');
-    expect(await marked.allTextContents()).toEqual(["Search and filters"]);
-    await context.close();
-  }, 30_000);
-
-  it("shows one Examples nav at each width, folded below 64rem and opened by keyboard", async () => {
-    const { page, context } = await opened(site, "/examples/search/", DESKTOP);
-    for (const viewport of [COLUMN_NARROWEST, PHONE, FOLDED]) {
-      await page.setViewportSize(viewport);
-      expect(await examplesNav(page).count(), `${viewport.width}`).toBe(1);
-    }
-    const links = examplesNav(page).getByRole("link");
-    expect(await links.count()).toBe(0);
-    await examplesNav(page).locator("summary").focus();
-    await page.keyboard.press("Enter");
-    expect(await links.allTextContents()).toEqual(LABELS);
-    await context.close();
-  }, 60_000);
-
-  it("draws the column at 64rem, and leaves a section's map its width beside its list there", async () => {
-    const { page, context } = await opened(site, "/examples/search/#tags", COLUMN_NARROWEST);
-    expect(await examplesNav(page).getByRole("link").allTextContents()).toEqual(LABELS);
-    expect(await examplesNav(page).locator("summary").isVisible()).toBe(false);
-    const frame = await page.locator("section#tags .map-frame").boundingBox();
-    // The list beside the map takes 17rem of the frame (`default-styles.ts`, `frame.css`): 42rem
-    // leaves the map 400px.
-    expect(frame?.width).toBeGreaterThanOrEqual(672);
-    await context.close();
-  }, 30_000);
-});
-
-describe("a feature's page's reference and neighbours (W63)", () => {
-  it("lists its examples, then its reference, on this page", async () => {
+describe("a hub and its neighbours (W63)", () => {
+  it("lists its examples, each linking its page, and draws no map", async () => {
     const { page, context } = await opened(site, "/examples/markers/", DESKTOP);
     const hrefs = await page
-      .getByRole("navigation", { name: "On this page" })
+      .getByRole("region", { name: "Examples" })
       .getByRole("link")
       .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     const markers = EXAMPLE_GROUPS[0];
-    expect(hrefs).toEqual([
-      ...(markers?.sections ?? []).map(({ name }) => `#${name}`),
-      "#reference",
-    ]);
+    expect(hrefs).toEqual((markers ? examplePagesOf(markers) : []).map(({ path }) => path));
+    expect(await page.locator("maplace-map, section.example").count()).toBe(0);
     await context.close();
   }, 30_000);
 
@@ -86,45 +47,61 @@ describe("a feature's page's reference and neighbours (W63)", () => {
     await context.close();
   }, 30_000);
 
-  it("links the previous and next features' pages, none before the first or after the last", async () => {
-    const neighbours = async (route: string) => {
-      const { page, context } = await opened(site, route, DESKTOP);
-      const links = await page
-        .getByRole("navigation", { name: "Previous and next" })
-        .getByRole("link")
-        .evaluateAll((all) =>
-          all.map((link) => [link.getAttribute("rel"), link.getAttribute("href")]),
-        );
-      await context.close();
-      return links;
-    };
+  /** The page's previous and next links: each its rel and href. */
+  const neighbours = async (route: string) => {
+    const { page, context } = await opened(site, route, DESKTOP);
+    const links = await page
+      .getByRole("navigation", { name: "Previous and next" })
+      .getByRole("link")
+      .evaluateAll((all) =>
+        all.map((link) => [link.getAttribute("rel"), link.getAttribute("href")]),
+      );
+    await context.close();
+    return links;
+  };
+
+  it("links a hub to the hubs before and after it", async () => {
     const paths = EXAMPLE_GROUPS.map(groupPath);
-    expect(await neighbours(paths[0] as string)).toEqual([["next", paths[1]]]);
     expect(await neighbours(paths[1] as string)).toEqual([
       ["prev", paths[0]],
       ["next", paths[2]],
     ]);
-    expect(await neighbours(paths.at(-1) as string)).toEqual([["prev", paths.at(-2)]]);
-  }, 60_000);
+  }, 30_000);
+
+  it("links an example's page to the examples before and after it, across categories", async () => {
+    const paths = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
+    // The last of Markers and popups, before Lists and menus' first example.
+    const last = paths.indexOf("/examples/lists/menu/") - 1;
+    expect(await neighbours(paths[last] as string)).toEqual([
+      ["prev", paths[last - 1]],
+      ["next", paths[last + 1]],
+    ]);
+  }, 30_000);
 });
 
 describe("an old link to an example (W63)", () => {
-  it("lands on its section from the home page, or from a page that gave it to another", async () => {
+  it("lands on its example's page from the home page, or from any hub", async () => {
     for (const [from, to] of [
-      ["/#route", "/examples/lines-routes/#route"],
-      ["/examples/lists/#search", "/examples/search/#search"],
+      ["/#route", "/examples/lines-routes/route/"],
+      ["/examples/lists/#search", "/examples/search/search/"],
+      ["/examples/circles-polygons/#flights", "/examples/lines-routes/flights/"],
     ]) {
       const { page, context } = await opened(site, from as string, DESKTOP);
-      const landing = new URL(to as string, site.url);
-      await page.waitForURL(landing.href);
-      const sectionTop = () =>
-        page
-          .locator(`section${landing.hash}`)
-          .evaluate((section) => section.getBoundingClientRect().top);
-      await expect.poll(sectionTop, ASKED).toBeGreaterThanOrEqual(0);
-      expect(await sectionTop(), from).toBeLessThan(DESKTOP.height / 2);
+      await page.waitForURL(new URL(to as string, site.url).href);
+      expect(await page.evaluate(() => scrollY), from).toBe(0);
       await context.close();
     }
+  }, 30_000);
+
+  it("keeps a shared link-to-place address's query and map anchor on the way", async () => {
+    const from = "/examples/live-data/?place-maplibre=milan#link-to-place-maplibre-map";
+    const { page, context } = await opened(site, from, DESKTOP);
+    await page.waitForURL("**/examples/live-data/link-to-place/**");
+    const landed = new URL(page.url());
+    expect(landed.pathname).toBe("/examples/live-data/link-to-place/");
+    expect(landed.search).toBe("?place-maplibre=milan");
+    expect(landed.hash).toBe("#link-to-place-maplibre-map");
+    await context.close();
   }, 30_000);
 
   it("leaves another page's anchor sharing an example's name where it is", async () => {

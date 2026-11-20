@@ -4,13 +4,7 @@ import type { VersionKind } from "../src/examples/example-versions.ts";
 import { mapLibreDrawn, mapLibreVersionIn } from "./drawn-on-maplibre.ts";
 import { expectNoteAlone, expectNotedInTurn, simpleInTurn } from "./failure-note-checks.ts";
 import { sectionFrom, simpleFromScript } from "./failure-openings.ts";
-import {
-  chooseProvider,
-  chooseVersion,
-  leaveOnlySection,
-  providerVersionIn,
-  shownNotes,
-} from "./home-sections.ts";
+import { chooseProvider, chooseVersion, providerVersionIn, shownNotes } from "./home-sections.ts";
 import { ON_MAPLIBRE } from "./maplibre-session.ts";
 import { MAPLIBRE_GL_CHUNKS, VANILLA_CHUNK } from "./site-chunks.ts";
 import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
@@ -30,9 +24,8 @@ describe("a map's failure note", () => {
   it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
     const { page, context, mapsJsRequests } = await site.visitor();
     await openExamplesPage(page, site.url);
-    // Only simple's section left, its Bundler version chosen before consent: its page map never
-    // asks for Maps JS, so only the version's bootstrap does.
-    await leaveOnlySection(page, "simple");
+    // simple's Bundler version chosen before consent: its page map never asks for Maps JS, so only
+    // the version's bootstrap does.
     await chooseProvider(page, "Google");
     await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
@@ -82,7 +75,6 @@ describe("a map's failure note", () => {
       return route.abort();
     });
     await openExamplesPage(page, site.url);
-    await leaveOnlySection(page, "simple");
     await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
     const section = page.locator("section#simple");

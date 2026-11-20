@@ -33,6 +33,8 @@
   --spacing-header-height: 4.0625rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
   --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
+  /* What the footer covers at the bottom of the screen from 64rem, where it sticks on one line (`SiteFooter.astro`) and the examples' column is drawn. */
+  --spacing-footer: 3.5rem;
   /* The provider toggle (`ProviderSwitch.astro`), beside each example's tabs and over the builder's preview. */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;

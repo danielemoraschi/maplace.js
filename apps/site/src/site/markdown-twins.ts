@@ -1,21 +1,17 @@
-import { providerLabel } from "../examples/example-providers.ts";
 import {
   EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
   type ExampleGroup,
-  type ExampleSection,
+  type ExamplePageEntry,
   groupHeading,
   groupPath,
+  pageHeading,
 } from "../examples/example-sections.ts";
-import {
-  codeTabsOf,
-  EXAMPLES_IN_REPO,
-  type ExampleCode,
-  exampleStylesheets,
-} from "../examples/example-sources.ts";
 import { HOME_HEADING, HOME_INTRO, HOME_ROUTE } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
+import { exampleMarkdown } from "./example-markdown.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
-import { homeIndexMarkdown } from "./home-index-markdown.ts";
+import { exampleListMarkdown, homeIndexMarkdown } from "./home-index-markdown.ts";
 import { markdownAddress } from "./markdown-routes.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
@@ -30,7 +26,7 @@ export interface StoredPages {
   readonly docs: readonly StoredMarkdown[];
   readonly changelog: readonly StoredMarkdown[];
   readonly guides: readonly StoredMarkdown[];
-  /** Each feature's reference tables, by its group's id (`group-references-loader.ts`). */
+  /** Each category's reference tables, by its group's id (`group-references-loader.ts`). */
   readonly references: readonly StoredMarkdown[];
 }
 
@@ -52,9 +48,8 @@ export function markdownTwins({
 }: StoredPages): MarkdownTwin[] {
   return [
     twin(HOME_ROUTE, markdownPage(HOME_HEADING, HOME_INTRO, homeIndexMarkdown())),
-    ...EXAMPLE_GROUPS.map((group) =>
-      twin(groupPath(group), exampleGroupMarkdown(group, guides, references)),
-    ),
+    ...EXAMPLE_GROUPS.map((group) => twin(groupPath(group), hubMarkdown(group, references))),
+    ...EXAMPLE_PAGE_ENTRIES.map((entry) => twin(entry.path, examplePageMarkdown(entry, guides))),
     twin(
       CHANGELOG_PAGE.route,
       markdownPage(
@@ -90,54 +85,25 @@ function requiredBody(entries: readonly StoredMarkdown[], id: string, collection
   return body;
 }
 
-/** A feature's page: its heading and intro, its sections, then its reference tables. */
-function exampleGroupMarkdown(
-  group: ExampleGroup,
+/** An example's page: its heading and summary, its guide, then its code. */
+function examplePageMarkdown(
+  { section }: ExamplePageEntry,
   guides: readonly StoredMarkdown[],
-  references: readonly StoredMarkdown[],
 ): string {
-  const sections = group.sections.map((section) => sectionMarkdown(section, guides));
+  const body = exampleMarkdown(section.name, guideOf(guides, section.name));
+  return markdownPage(pageHeading(section.title), section.summary, body);
+}
+
+/** The example `name`'s guide, if it has one; one stored without Markdown throws. */
+function guideOf(guides: readonly StoredMarkdown[], name: string): string | undefined {
+  return guides.some(({ id }) => id === name)
+    ? requiredBody(guides, name, "exampleGuides")
+    : undefined;
+}
+
+/** A category's hub: its heading and intro, its examples, then its reference tables. */
+function hubMarkdown(group: ExampleGroup, references: readonly StoredMarkdown[]): string {
+  const examples = `## Examples\n\n${exampleListMarkdown(group)}`;
   const reference = `## Reference\n\n${requiredBody(references, group.id, "groupReferences").trim()}`;
-  return markdownPage(groupHeading(group), group.intro, [...sections, reference].join("\n\n"));
-}
-
-/** A section: its summary, its guide if it has one, its code. */
-function sectionMarkdown(
-  { name, title, summary }: ExampleSection,
-  guides: readonly StoredMarkdown[],
-): string {
-  const guide = guides.find(({ id }) => id === name) && requiredBody(guides, name, "exampleGuides");
-  return [`## ${title}`, summary, guide, codeMarkdown(name)]
-    .filter((part) => part !== undefined)
-    .join("\n\n");
-}
-
-/**
- * Every file of every version of the example `name`, on each provider it runs on, then the
- * stylesheets they link, once each.
- */
-function codeMarkdown(name: string): string {
-  const codes = codeTabsOf(name).flatMap(({ codes }) => codes);
-  return [...codes.map(versionMarkdown), ...stylesheetsMarkdown(codes)].join("\n\n");
-}
-
-/** The stylesheets `codes` link, under a heading of their own, as every version's: none if none. */
-function stylesheetsMarkdown(codes: readonly ExampleCode[]): string[] {
-  const fenced = exampleStylesheets(codes).map(({ folder, file, code }) =>
-    fencedFile(`${folder}/${file}`, "css", code),
-  );
-  return fenced.length === 0 ? [] : [STYLESHEETS_HEADING, ...fenced];
-}
-
-/** Over an example's stylesheets in its twin, apart from any one version's files. */
-export const STYLESHEETS_HEADING = "### The stylesheet every version links";
-
-function versionMarkdown({ label, provider, folder, files }: ExampleCode): string {
-  const fenced = files.map(({ file, lang, code }) => fencedFile(`${folder}/${file}`, lang, code));
-  return [`### ${label} on ${providerLabel(provider)}`, ...fenced].join("\n\n");
-}
-
-/** An example's file at `path` under `packages/maplace/examples/`: its path, then its fence. */
-function fencedFile(path: string, lang: string, code: string): string {
-  return `\`${EXAMPLES_IN_REPO}${path}\`\n\n\`\`\`${lang}\n${code.trimEnd()}\n\`\`\``;
+  return markdownPage(groupHeading(group), group.intro, `${examples}\n\n${reference}`);
 }

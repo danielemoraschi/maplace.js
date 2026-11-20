@@ -1,6 +1,12 @@
 import { PACKAGE_DIR } from "../../../../scripts/build/package.ts";
 import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
-import { EXAMPLE_GROUPS, type ExampleGroup, groupPath } from "../examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  type ExampleGroup,
+  type ExamplePageEntry,
+  groupPath,
+} from "../examples/example-sections.ts";
 import { HOME_ROUTE } from "../examples/home-page.ts";
 import { AGENTS_PAGE, BUILDER_PAGE, CHANGELOG_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { docRoute, REPO_DOCS, repoDoc } from "./repo-docs.ts";
@@ -14,7 +20,7 @@ export const PRIVACY_SOURCES: readonly string[] = [
 /** Where each feature's texts and reference cuts are (`example-groups.ts`). */
 const GROUPS_DIR = "apps/site/src/examples/groups";
 
-/** What every examples' page draws from them: the features' order, which numbers the examples, and the H1's tail. */
+/** What every examples page draws from them: the categories' order, which numbers the examples, and the H1's tail. */
 const GROUPS_ORDER = [
   "apps/site/src/examples/example-groups.ts",
   "apps/site/src/examples/example-sections.ts",
@@ -34,28 +40,30 @@ const HOME_PAGE_TEXT = [
   ...GROUPS_ORDER,
 ];
 
-/**
- * What a feature's page says: its texts, its examples, the shared data and stylesheets they draw,
- * and the reference docs its tables are cut from.
- */
-function groupPageText(group: ExampleGroup): string[] {
+/** What a category's hub says: its texts, its examples' titles, and the reference docs its tables are cut from. */
+function hubText(group: ExampleGroup): string[] {
   const docs = new Set(group.references.map(({ doc }) => repoDoc(doc).file));
+  return [`${GROUPS_DIR}/${group.id}.ts`, ...GROUPS_ORDER, ...docs];
+}
+
+/** What an example's page says: its texts, its example, and the shared data and stylesheets it draws. */
+function examplePageText({ group, section }: ExamplePageEntry): string[] {
   return [
     `${GROUPS_DIR}/${group.id}.ts`,
     ...GROUPS_ORDER,
-    ...group.sections.map(({ name }) => `${PACKAGE_DIR}/examples/${name}`),
+    `${PACKAGE_DIR}/examples/${section.name}`,
     `${PACKAGE_DIR}/examples/data`,
     `${PACKAGE_DIR}/examples/styles`,
-    ...docs,
   ];
 }
 
 /** The files each route shows the words of: a change to the site's layout dates no page. */
 const SOURCES_BY_ROUTE: ReadonlyMap<string, readonly string[]> = new Map([
   [HOME_ROUTE, HOME_PAGE_TEXT],
-  ...EXAMPLE_GROUPS.map((group): [string, readonly string[]] => [
-    groupPath(group),
-    groupPageText(group),
+  ...EXAMPLE_GROUPS.map((group): [string, readonly string[]] => [groupPath(group), hubText(group)]),
+  ...EXAMPLE_PAGE_ENTRIES.map((entry): [string, readonly string[]] => [
+    entry.path,
+    examplePageText(entry),
   ]),
   ...REPO_DOCS.map(({ id, file }): [string, readonly string[]] => [docRoute(id), [file]]),
   [BUILDER_PAGE.route, ["apps/site/src/pages/builder.astro"]],

@@ -12,7 +12,11 @@ import {
   untilNextHeading,
 } from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
-import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  groupPath,
+} from "../src/examples/example-sections.ts";
 import { HOME_ROUTE } from "../src/examples/home-page.ts";
 import {
   AGENTS_PAGE,
@@ -28,7 +32,7 @@ import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.ts";
 import { gluedText } from "./glued-text.ts";
 import { sectionPage } from "./home-sections.ts";
-import { SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
+import { SETTLE_MS, siteBuiltBeforeTests, visitEach, visitingPages } from "./site-session.ts";
 import {
   FIRST_EXAMPLES_PAGE,
   grantConsent,
@@ -37,8 +41,8 @@ import {
   type Visitor,
 } from "./visitor.ts";
 
-/** The features' examples' pages (D31). */
-const EXAMPLE_PAGES = EXAMPLE_GROUPS.map(groupPath);
+/** Every example's page (D31). */
+const EXAMPLE_PAGES = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
 
 /** What Cloudflare serves, with a 404, at an address the site has no page for (`wrangler.jsonc`). */
 const NOT_FOUND_PAGE = "/404.html";
@@ -46,6 +50,7 @@ const NOT_FOUND_PAGE = "/404.html";
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
   HOME_ROUTE,
+  ...EXAMPLE_GROUPS.map(groupPath),
   PRIVACY_PAGE.route,
   AGENTS_PAGE.route,
   NOT_FOUND_PAGE,
@@ -174,21 +179,25 @@ describe("the not-found page", () => {
 });
 
 describe("the footer", () => {
-  it("links the footer's pages from every page, marking the one shown", async () => {
-    for (const route of SITE_ROUTES) {
-      const { page, context } = await openPage(route);
-      const expected = FOOTER_PAGES.map(({ route: href, label }) => ({
-        label,
-        href,
-        current: href === route ? "page" : null,
-      }));
-      expect(await footerLinks(page), route).toEqual(expect.arrayContaining(expected));
-      expect(await page.getByRole("contentinfo").textContent(), route).toMatch(
-        new RegExp(`Apache-2\\.0 licence © 2026(–\\d{4})? ${SITE_MAINTAINER}`),
-      );
+  it(
+    "links the footer's pages from every page, marking the one shown",
+    async () => {
+      const { page, context } = await site.visitor();
+      await visitEach(page, site.url, SITE_ROUTES, async (route) => {
+        const expected = FOOTER_PAGES.map(({ route: href, label }) => ({
+          label,
+          href,
+          current: href === route ? "page" : null,
+        }));
+        expect(await footerLinks(page), route).toEqual(expect.arrayContaining(expected));
+        expect(await page.getByRole("contentinfo").textContent(), route).toMatch(
+          new RegExp(`Apache-2\\.0 licence © 2026(–\\d{4})? ${SITE_MAINTAINER}`),
+        );
+      });
       await context.close();
-    }
-  }, 60_000);
+    },
+    visitingPages(SITE_ROUTES.length),
+  );
 
   it("reaches each page it links", async () => {
     for (const { route, label } of FOOTER_PAGES) {
@@ -202,13 +211,20 @@ describe("the footer", () => {
 });
 
 describe("the site's copy", () => {
-  it("keeps a space between text and the link or code after it, on every page", async () => {
-    for (const route of [...EXAMPLE_PAGES, ...PAGES_WITHOUT_MAPS, BUILDER_PAGE.route]) {
-      const { page, context } = await openPage(route);
-      expect({ route, glued: await gluedText(page) }).toEqual({ route, glued: [] });
+  const everyPage = [...EXAMPLE_PAGES, ...PAGES_WITHOUT_MAPS, BUILDER_PAGE.route];
+  it(
+    "keeps a space between text and the link or code after it, on every page",
+    async () => {
+      const { page, context } = await site.visitor();
+      const glued = await visitEach(page, site.url, everyPage, async (route) => ({
+        route,
+        glued: await gluedText(page),
+      }));
+      expect(glued.filter(({ glued }) => glued.length > 0)).toEqual([]);
       await context.close();
-    }
-  }, 60_000);
+    },
+    visitingPages(everyPage.length),
+  );
 });
 
 describe("the consent placeholder", () => {

@@ -1,9 +1,5 @@
 ---
-/** A link of a page's side column: one of the pages it lists. */
-export interface NavLink {
-  readonly href: string;
-  readonly label: string;
-}
+import type { NavLink } from "../site/nav-link.ts";
 
 interface Props {
   links: readonly NavLink[];
@@ -12,19 +8,38 @@ interface Props {
 }
 
 const { links, current } = Astro.props;
+const marked = (href: string) => (href === current ? "page" : undefined);
+/** A list of sections, each a bold link over its pages, stands without a rule or indent. */
+const sectioned = links.some(({ children }) => children !== undefined);
+/** The page shown's link, marked by its `aria-current`: set once on the list for all its links. */
+const CURRENT =
+  "[&_[aria-current=page]]:font-semibold [&_[aria-current=page]]:underline [&_[aria-current=page]]:decoration-accent [&_[aria-current=page]]:decoration-2 [&_[aria-current=page]]:underline-offset-3";
 ---
 
-<ul class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
+<ul
+  class:list={[
+    "m-0 list-none text-sm leading-[2]",
+    sectioned ? "p-0" : "border-l-3 border-ink pl-4",
+    CURRENT,
+  ]}
+>
   {
-    links.map(({ href, label }) => (
+    links.map(({ href, label, children }) => (
       <li>
-        <a
-          href={href}
-          aria-current={href === current ? "page" : undefined}
-          class="no-underline aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-3"
-        >
+        <a href={href} aria-current={marked(href)} class:list={["no-underline", children && "font-semibold"]}>
           {label}
         </a>
+        {children && (
+          <ul class="m-0 mb-2 list-none p-0 leading-[1.75]">
+            {children.map((child) => (
+              <li>
+                <a href={child.href} aria-current={marked(child.href)} class="no-underline">
+                  {child.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </li>
     ))
   }
