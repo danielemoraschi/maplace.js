@@ -1,0 +1,14 @@
+---
+import type { ShownFile } from "../examples/bootstrap-fold.ts";
+import FoldedHost from "./FoldedHost.astro";
+import SourceCode from "./SourceCode.astro";
+
+interface Props {
+  /** One of a version's files, as a reader reads it: its host page folded where it has one. */
+  shown: ShownFile;
+}
+
+const { code, lang, host } = Astro.props.shown;
+---
+
+{host === undefined ? <SourceCode code={code} lang={lang} /> : <FoldedHost parts={host} lang={lang} />}

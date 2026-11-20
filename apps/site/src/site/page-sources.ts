@@ -31,15 +31,15 @@ const GROUPS_ORDER = [
 const INDEX_TEXT = [GROUPS_DIR, ...GROUPS_ORDER];
 
 /**
- * What the home page says: the hero its own texts and quick-start's files raw, the install box the
- * README's snippets, and the index every feature's texts.
+ * What the home page says (W66): its own words and the hero's, the Simple example its four ways
+ * show, the npm and skills commands its pills copy, and the index every feature's texts.
  */
 const HOME_PAGE_TEXT = [
   "apps/site/src/examples/home-page.ts",
   "apps/site/src/components/Hero.astro",
-  "apps/site/src/components/InstallBox.astro",
-  "README.md",
-  `${PACKAGE_DIR}/examples/quick-start`,
+  `${PACKAGE_DIR}/examples/simple`,
+  "apps/site/src/site/install-loader.ts",
+  "apps/site/src/site/agent-links.ts",
   ...INDEX_TEXT,
 ];
 

@@ -11,7 +11,7 @@ export interface SiteNavLink {
 
 export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
   {
-    label: "Documentation",
+    label: "Docs",
     href: docRoute("getting-started"),
     sectionPaths: REPO_DOCS.map(({ id }) => docRoute(id)),
   },

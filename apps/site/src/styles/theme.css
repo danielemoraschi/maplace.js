@@ -26,7 +26,7 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.75rem;
   --text-title: clamp(2.25rem, 5vw, 3.25rem);
-  --text-hero: clamp(2.125rem, 9vw, 4.5rem);
+  --text-hero: clamp(2.25rem, 5vw, 3.75rem);
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
   /* The header's own height (`SiteHeader.astro`). */
@@ -42,4 +42,14 @@
   --spacing-map: 24rem;
   --container-measure: 72rem;
   --container-text: 48rem;
+
+  /* A card of the home page's table settling onto it (W66): its one motion. */
+  --animate-land: land 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes land {
+    from {
+      transform: translateZ(260px);
+      opacity: 0;
+    }
+  }
 }

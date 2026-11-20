@@ -7,8 +7,7 @@ describe("installOf", () => {
   const pin = { version: "1.2.3", integrityOf: (file: string) => `sha384-of-${file}` };
 
   it("offers the README's pinned scripts, Google's then MapLibre's, filled in", () => {
-    const { version, providers } = installOf(pin);
-    expect(version).toBe("1.2.3");
+    const { providers } = installOf(pin);
     expect(providers.map(({ provider }) => provider)).toEqual(["google", "maplibre"]);
     const [google, maplibre] = providers.map(({ cdnSnippet }) => cdnSnippet);
     expect(google).toContain(`/${PACKAGE_NAME}@1.2.3/dist/maplace-element.iife.js"`);

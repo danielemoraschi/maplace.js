@@ -7,10 +7,9 @@ afterEach(() => document.body.replaceChildren());
 /** Where something sits across the screen. */
 const span = (left: number, right: number) => ({ left, right }) as DOMRect;
 
-/** A nav from 100 to 300 with a 30 px end fade, its links where `spans` says, in `parent`. */
+/** A nav from 100 to 300, its links where `spans` says, in `parent`. */
 function navIn(parent: HTMLElement, spans: readonly [number, number][]) {
   const nav = document.createElement("nav");
-  nav.style.paddingInlineEnd = "30px";
   nav.getBoundingClientRect = () => span(100, 300);
   nav.scrollBy = vi.fn();
   const links = spans.map(([left, right]) => {
@@ -24,11 +23,11 @@ function navIn(parent: HTMLElement, spans: readonly [number, number][]) {
   return { nav, links };
 }
 
-/** Links before the nav's start, inside it, under its fade and past its end. */
+/** Links before the nav's start, inside it, at its very end and past its end. */
 const SPANS: readonly [number, number][] = [
   [40, 90],
   [120, 180],
-  [240, 290],
+  [240, 300],
   [320, 380],
 ];
 
@@ -47,11 +46,11 @@ describe("another nav, as a reference page's contents", () => {
 });
 
 describe("followNavFocus", () => {
-  it("brings a link taking focus clear of the nav's end fade", () => {
+  it("leaves a link that ends at the nav's end where it is", () => {
     const { nav, links } = headerNav();
     followNavFocus(document);
     focusOn(links[2] as Element);
-    expect(nav.scrollBy).toHaveBeenCalledWith({ left: 20 });
+    expect(nav.scrollBy).not.toHaveBeenCalled();
   });
 
   it("brings a link taking focus back clear of the nav's start", () => {
@@ -68,7 +67,7 @@ describe("followNavFocus", () => {
     for (const link of links) link.scrollIntoView = scrollLink;
     followNavFocus(document);
     focusOn(links[3] as Element);
-    expect(nav.scrollBy).toHaveBeenCalledWith({ left: 110 });
+    expect(nav.scrollBy).toHaveBeenCalledWith({ left: 80 });
     expect(scrollLink).not.toHaveBeenCalled();
     expect(scrollPage).not.toHaveBeenCalled();
     scrollPage.mockRestore();

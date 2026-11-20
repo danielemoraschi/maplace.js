@@ -14,14 +14,6 @@ const SCRIPT_RAN_MS = 300;
 const header = (page: Page) => page.getByRole("banner");
 const siteNav = (page: Page) => page.getByRole("navigation", { name: "Site" });
 
-/** Where the nav's links show in full: up to its end fade, as wide as its end padding. */
-async function navClearEnd(page: Page): Promise<number> {
-  return siteNav(page).evaluate((nav) => {
-    const { right } = nav.getBoundingClientRect();
-    return right - Number.parseFloat(getComputedStyle(nav).paddingInlineEnd);
-  });
-}
-
 /** Where the header ends, from the top of the screen. */
 async function headerBottom(page: Page): Promise<number> {
   const box = await header(page).boundingBox();
@@ -29,12 +21,16 @@ async function headerBottom(page: Page): Promise<number> {
 }
 
 describe("the site's header", () => {
-  it("links Documentation and Examples, the repository from the footer", async () => {
+  it("links Docs and Examples, and the repository from 48rem, the footer's on every screen", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
-    const labels = await siteNav(page).getByRole("link").allTextContents();
-    expect(labels).toEqual(["Documentation", "Examples"]);
+    const labels = await siteNav(page).getByRole("link").allInnerTexts();
+    expect(labels).toEqual(["Docs", "Examples", "GitHub"]);
+    const repository = siteNav(page).getByRole("link", { name: "GitHub" });
+    expect(await repository.getAttribute("href")).toBe(REPOSITORY_URL);
+    expect(await repository.isVisible()).toBe(true);
+    await page.setViewportSize(PHONE);
+    expect(await repository.isVisible()).toBe(false);
     const toRepo = `a[href="${REPOSITORY_URL}"]`;
-    expect(await header(page).locator(toRepo).count()).toBe(0);
     expect(await page.getByRole("contentinfo").locator(toRepo).count()).toBe(1);
     await context.close();
   }, 30_000);
@@ -78,7 +74,7 @@ describe("the site's header", () => {
     }
   }, 60_000);
 
-  it("marks Documentation on a doc page, Examples on a hub and an example's page, and nothing elsewhere", async () => {
+  it("marks Docs on a doc page, Examples on a hub and an example's page, and nothing elsewhere", async () => {
     const shown = async (route: string) => {
       const { page, context } = await opened(site, route, DESKTOP);
       const marked = await siteNav(page)
@@ -89,8 +85,8 @@ describe("the site's header", () => {
       await context.close();
       return marked;
     };
-    expect(await shown(docRoute("store"))).toEqual([["Documentation", "true"]]);
-    expect(await shown(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
+    expect(await shown(docRoute("store"))).toEqual([["Docs", "true"]]);
+    expect(await shown(docRoute("getting-started"))).toEqual([["Docs", "true"]]);
     expect(await shown("/examples/markers/")).toEqual([["Examples", "true"]]);
     expect(await shown("/examples/markers/popups/")).toEqual([["Examples", "true"]]);
     expect(await shown("/")).toEqual([]);
@@ -115,40 +111,31 @@ describe("the site's header", () => {
     }
   }, 120_000);
 
-  it("opens a phone's home page with its first link whole", async () => {
-    const { page, context } = await opened(site, "/", PHONE);
+  it("fits every link whole beside the name, with nothing to scroll, at 320 and 375, and scrolls the nav alone narrower", async () => {
+    const { page, context } = await opened(site, "/", { width: 320, height: 700 });
     await page.evaluate(() => document.fonts.ready);
-    const [nav, first] = [
-      await siteNav(page).boundingBox(),
-      await siteNav(page).getByRole("link").first().boundingBox(),
-    ];
-    expect((first?.x ?? 0) + 1).toBeGreaterThanOrEqual(nav?.x ?? 0);
-    expect((first?.x ?? 0) + (first?.width ?? 0)).toBeLessThanOrEqual(
-      (await navClearEnd(page)) + 1,
-    );
-    await context.close();
-  }, 30_000);
-
-  it("fits the nav beside the name at the first width with no fade", async () => {
-    const { page, context } = await opened(site, "/", { width: 448, height: 800 });
-    await page.evaluate(() => document.fonts.ready);
-    const nav = await siteNav(page).evaluate((element) => ({
-      scroll: element.scrollWidth,
-      client: element.clientWidth,
-      paddingInlineEnd: getComputedStyle(element).paddingInlineEnd,
-    }));
-    expect(nav.paddingInlineEnd).toBe("0px");
-    expect(nav.scroll).toBeLessThanOrEqual(nav.client);
-    await context.close();
-  }, 30_000);
-
-  it("runs the last link to the wrap's edge, with no fade, at 1024", async () => {
-    const { page, context } = await opened(site, "/", { width: 1024, height: 800 });
-    const nav = await siteNav(page).evaluate((element) => {
-      const { paddingInlineEnd, maskImage } = getComputedStyle(element);
-      return { paddingInlineEnd, maskImage };
+    const fit = () =>
+      siteNav(page).evaluate((nav) => {
+        const tops = [...nav.querySelectorAll("a")]
+          .map((link) => link.getBoundingClientRect())
+          .filter(({ width }) => width > 0)
+          .map(({ top }) => top);
+        return {
+          navScrolls: nav.scrollWidth > nav.clientWidth,
+          pageScrolls: document.documentElement.scrollWidth > innerWidth,
+          rows: new Set(tops).size,
+        };
+      });
+    for (const width of [320, 375]) {
+      await page.setViewportSize({ width, height: 700 });
+      expect(await fit(), `${width}`).toEqual({ navScrolls: false, pageScrolls: false, rows: 1 });
+    }
+    await page.setViewportSize({ width: 256, height: 700 });
+    const narrow = await fit();
+    expect({ navScrolls: narrow.navScrolls, pageScrolls: narrow.pageScrolls }, "256").toEqual({
+      navScrolls: true,
+      pageScrolls: false,
     });
-    expect(nav).toEqual({ paddingInlineEnd: "0px", maskImage: "none" });
     await context.close();
   }, 30_000);
 
@@ -177,42 +164,6 @@ describe("the site's header", () => {
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
     expect((await header(page).boundingBox())?.y).toBe(0);
     expect(await drawnOnTop(header(page))).toBe(true);
-    await context.close();
-  }, 30_000);
-
-  it("keeps to one line on a phone, its links reached by scrolling the nav", async () => {
-    const { page, context } = await opened(site, "/", PHONE);
-    const links = siteNav(page).getByRole("link");
-    const tops = await links.evaluateAll((all) =>
-      all.map((link) => link.getBoundingClientRect().top),
-    );
-    expect(new Set(tops).size).toBe(1);
-    await links.last().scrollIntoViewIfNeeded();
-    const [nav, last] = [await siteNav(page).boundingBox(), await links.last().boundingBox()];
-    expect(last && nav && last.x + last.width <= nav.x + nav.width + 1).toBe(true);
-    await context.close();
-  }, 30_000);
-
-  it("brings a link tabbed to on a phone clear of the nav's end fade", async () => {
-    const { page, context } = await opened(site, "/", PHONE);
-    const clearEnd = await navClearEnd(page);
-    for (const link of await siteNav(page).getByRole("link").all()) {
-      await link.focus();
-      const box = await link.boundingBox();
-      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(clearEnd + 1);
-    }
-    await context.close();
-  }, 30_000);
-
-  it("brings a link tabbed back to on a phone clear of the nav's start", async () => {
-    const { page, context } = await opened(site, "/", PHONE);
-    const links = await siteNav(page).getByRole("link").all();
-    await links.at(-1)?.focus();
-    for (const link of [...links].reverse()) {
-      await link.focus();
-      const [nav, box] = [await siteNav(page).boundingBox(), await link.boundingBox()];
-      expect((box?.x ?? 0) + 1).toBeGreaterThanOrEqual(nav?.x ?? 0);
-    }
     await context.close();
   }, 30_000);
 

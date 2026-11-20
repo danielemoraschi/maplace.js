@@ -21,9 +21,14 @@ interface Props {
   description: string;
   /** The page's own sharing image, for `SearchMetadata`. */
   sharingImage?: SharingImage | undefined;
+  /**
+   * How wide its content runs: within the site's measure, ending a space above the footer, or edge
+   * to edge, each part holding its own measure and its own end (the home page's grounds, W66).
+   */
+  width?: "measure" | "full";
 }
 
-const { heading, description, sharingImage } = Astro.props;
+const { heading, description, sharingImage, width = "measure" } = Astro.props;
 const title = `${heading} · ${SITE_NAME}`;
 const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
@@ -52,7 +57,7 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
   <body class="flex min-h-dvh flex-col">
     <SiteHeader />
     {/* Its own stacking context: a map's z-indexes (Google's run to millions) stay under the header. */}
-    <main class="wrap isolate grow"><slot /></main>
+    <main class:list={["isolate grow", { "wrap pb-16": width === "measure" }]}><slot /></main>
     <SiteFooter />
     <script>
       import "../scripts/site.ts";

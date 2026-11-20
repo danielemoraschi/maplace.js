@@ -8,10 +8,12 @@ import {
   EXAMPLES_PAGE_ROUTE,
   groupPath,
 } from "../src/examples/example-sections.ts";
-import { HOME_HEADING, HOME_INTRO } from "../src/examples/home-page.ts";
 import { STAR_COUNT_PATH } from "../src/site/star-count-api.ts";
 import { ASKED, opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
+
+/** The band's ground, as a computed colour. */
+const NIGHT = "rgb(18, 26, 34)";
 
 const site = siteBuiltBeforeTests();
 
@@ -41,65 +43,37 @@ describe("the home page's star button", () => {
   }, 30_000);
 });
 
-describe("the home page's headings and install box", () => {
-  it("offers each provider's npm command and pinned script", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    expect(await page.locator("#npm-install-google").textContent()).toBe(
-      "npm install @maplacejs/maplace",
-    );
-    expect(await page.locator("#npm-install-maplibre").textContent()).toBe(
-      "npm install @maplacejs/maplace maplibre-gl",
-    );
-    for (const provider of ["google", "maplibre"]) {
-      expect(await page.locator(`#pinned-script-${provider}`).textContent()).toContain(
-        "integrity=",
-      );
-    }
-    await context.close();
-  }, 30_000);
+describe("the home page's night band (W66)", () => {
+  /** A category row's ground and text, as the page draws them. */
+  const rowColours = (page: Page) =>
+    page
+      .getByRole("link", { name: "Markers and popups" })
+      .first()
+      .evaluate((link) => {
+        let ground = link as Element | null;
+        while (ground && getComputedStyle(ground).backgroundColor === "rgba(0, 0, 0, 0)")
+          ground = ground.parentElement;
+        return [ground && getComputedStyle(ground).backgroundColor, getComputedStyle(link).color];
+      });
 
-  const npmCommand = (page: Page) => page.locator("#npm-install-google");
-  const installSummary = (page: Page) => page.locator("summary").filter({ hasText: "Install" });
-
-  it("is folded on every screen, and opens from its heading by keyboard", async () => {
+  it("draws the index on the night ground on the home page, and on the paper on the examples page", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
-    expect(await npmCommand(page).isVisible(), "desktop").toBe(false);
+    expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
+    await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
+    expect(await rowColours(page)).toEqual(["rgb(250, 250, 247)", "rgb(17, 17, 17)"]);
+    await context.close();
+  }, 30_000);
+
+  it("sets the providers side by side, one above the other on a phone", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const names = page.getByRole("heading", { level: 3, name: /^(MapLibre|Google Maps)$/ });
+    const sideBySide = async () => {
+      const [first, second] = [await boxOf(names.first()), await boxOf(names.last())];
+      return first.y === second.y && second.x > first.x;
+    };
+    expect(await sideBySide()).toBe(true);
     await page.setViewportSize(PHONE);
-    expect(await npmCommand(page).isVisible(), "phone").toBe(false);
-    await installSummary(page).focus();
-    await page.keyboard.press("Enter");
-    expect(await npmCommand(page).isVisible()).toBe(true);
-    await context.close();
-  }, 30_000);
-
-  it("ends with the version and its hash, and nothing else", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    const note = page.getByText("checked by the browser against its hash");
-    expect(await note.textContent()).toMatch(
-      /^Maplace\.js \S+, checked by the browser against its hash\.$/,
-    );
-    expect(await note.locator("a").count()).toBe(0);
-    await context.close();
-  }, 30_000);
-});
-
-describe("the home page's hero (W63)", () => {
-  it("heads the page with the library, its words clear of the drawing beside it", async () => {
-    const { page, context } = await opened(site, "/", { width: 1120, height: 800 });
-    await page.evaluate(() => document.fonts.ready);
-    const heading = page.locator("h1");
-    // biome-ignore lint/performance/useDomNodeTextContent: Playwright's, and the text as rendered: the H1's <br>s are its spaces.
-    expect((await heading.innerText()).replace(/\s+/g, " ")).toBe(`${HOME_HEADING}.`);
-    expect(await page.locator("h1 + p").textContent()).toBe(HOME_INTRO);
-    const drawing = await boxOf(page.locator("svg:has(+ h1)"));
-    const textRight = await heading.evaluate((h1) => {
-      const range = document.createRange();
-      range.selectNodeContents(h1);
-      return Math.max(...[...range.getClientRects()].map((rect) => rect.right));
-    });
-    expect(drawing.x - textRight).toBeGreaterThan(0);
+    expect(await sideBySide()).toBe(false);
     await context.close();
   }, 30_000);
 });

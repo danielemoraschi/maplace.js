@@ -14,14 +14,14 @@ const marked = (path: string) =>
   });
 
 describe("navCurrent", () => {
-  it("marks Documentation as a section on a reference page", () => {
-    expect(marked(docRoute("store"))).toEqual([["Documentation", "true"]]);
-    expect(marked(docRoute("migrating"))).toEqual([["Documentation", "true"]]);
+  it("marks Docs as a section on a reference page", () => {
+    expect(marked(docRoute("store"))).toEqual([["Docs", "true"]]);
+    expect(marked(docRoute("migrating"))).toEqual([["Docs", "true"]]);
   });
 
-  it("marks Documentation as a section on the page it links", () => {
-    expect(link("Documentation").href).toBe(docRoute("getting-started"));
-    expect(marked(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
+  it("marks Docs as a section on the page it links", () => {
+    expect(link("Docs").href).toBe(docRoute("getting-started"));
+    expect(marked(docRoute("getting-started"))).toEqual([["Docs", "true"]]);
   });
 
   it("links Examples to the examples page, and marks it there, on every hub and example's page, and not on the home page", () => {

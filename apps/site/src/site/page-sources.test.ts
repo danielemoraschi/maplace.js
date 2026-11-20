@@ -58,15 +58,19 @@ describe("pageSources", () => {
     ]);
   });
 
-  it("dates the home page from its hero, its install box and the index's texts", () => {
-    expect(pageSources("/")).toEqual(
+  it("dates the home page from its words, the Simple example, the install and skills commands, and the index's texts", () => {
+    const sources = pageSources("/");
+    expect(sources).toEqual(
       expect.arrayContaining([
         "apps/site/src/examples/home-page.ts",
         "apps/site/src/components/Hero.astro",
-        "README.md",
+        "packages/maplace/examples/simple",
+        "apps/site/src/site/install-loader.ts",
+        "apps/site/src/site/agent-links.ts",
         "apps/site/src/examples/groups",
       ]),
     );
+    expect(sources).not.toContain("README.md");
   });
 
   it("dates the changelog's page from the changelog", () => {

@@ -1,13 +1,18 @@
 ---
 import ExampleIndex from "../components/ExampleIndex.astro";
 import Hero from "../components/Hero.astro";
-import InstallBox from "../components/InstallBox.astro";
+import MapProviders from "../components/MapProviders.astro";
 import { HOME_DESCRIPTION, HOME_HEADING } from "../examples/home-page.ts";
 import Base from "../layouts/Base.astro";
 ---
 
-<Base heading={HOME_HEADING} description={HOME_DESCRIPTION}>
+{/* Edge to edge (W66): the hero on map water, then the index and the providers on the night band. */}
+<Base heading={HOME_HEADING} description={HOME_DESCRIPTION} width="full">
   <Hero />
-  <InstallBox />
-  <ExampleIndex />
+  <div class="band-dark pb-16">
+    <div class="wrap pt-4">
+      <ExampleIndex />
+      <MapProviders />
+    </div>
+  </div>
 </Base>

@@ -1,19 +1,23 @@
 ---
 import faviconUrl from "../assets/favicon.svg?no-inline";
+import { REPOSITORY_URL } from "../site/repo-docs.ts";
 import { navCurrent, SITE_NAV_LINKS } from "../site/site-nav.ts";
+import { GITHUB_MARK_PATH } from "../site/star-button-markup.ts";
 
 const here = Astro.url.pathname;
-// One row whatever the width: it scrolls sideways where it doesn't fit beside the name, its end
-// faded (`--nav-fade` wide) as the cue, padded as wide, so the last link comes clear of the fade.
+// One row at every width, short enough to fit beside the name on a 320px phone (W67); narrower
+// still (a phone's text zoomed), it scrolls on its own rather than the page. The repository's link
+// joins it from 48rem, the footer having one on every screen. Padded, with as much margin taken
+// back, as wide as a link's focus ring, which the scrolling box would otherwise clip.
 const NAV =
-  "ms-auto flex min-w-0 gap-x-5 overflow-x-auto pb-1 text-md font-medium whitespace-nowrap [scrollbar-width:none] [--nav-fade:2rem] max-[28rem]:pe-(--nav-fade) max-[28rem]:[mask-image:linear-gradient(to_right,black_calc(100%-var(--nav-fade)),transparent)]";
+  "ms-auto -my-1.5 -me-1.5 flex min-w-0 items-baseline gap-x-5 overflow-x-auto p-1.5 text-md font-medium whitespace-nowrap [scrollbar-width:none] max-[24rem]:gap-x-4";
 const NAV_LINK =
   "border-b-3 border-transparent no-underline aria-[current]:border-accent";
 ---
 
 <header class="sticky top-0 z-10 h-(--spacing-header-height) border-b-3 border-ink bg-[rgb(255_255_255/0.5)] backdrop-blur-[20px]">
-  <div class="wrap flex items-baseline gap-x-6 pt-4.5 pb-3.25">
-    <a class="shrink-0 font-display text-2xl leading-none font-extrabold tracking-[-0.03em] no-underline" href="/">
+  <div class="wrap flex items-baseline gap-x-6 pt-4.5 pb-3.25 max-[24rem]:gap-x-4">
+    <a class="shrink-0 font-display text-2xl leading-none font-extrabold tracking-[-0.03em] no-underline max-[24rem]:text-xl" href="/">
       <img src={faviconUrl} width="24" height="24" alt="" class="me-2 inline-block align-[-0.2em]" />Maplace.js
     </a>
     <nav aria-label="Site" class={NAV}>
@@ -24,6 +28,12 @@ const NAV_LINK =
           </a>
         ))
       }
+      <a href={REPOSITORY_URL} class="hidden self-center no-underline min-[48rem]:inline-flex">
+        <svg viewBox="0 0 16 16" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d={GITHUB_MARK_PATH} />
+        </svg>
+        <span class="sr-only">GitHub</span>
+      </a>
     </nav>
   </div>
 </header>

@@ -1,0 +1,52 @@
+---
+import { filesAsShown } from "../examples/bootstrap-fold.ts";
+import { codeTabsOf } from "../examples/example-sources.ts";
+import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
+import { WAYS_IN_NOTES } from "../examples/home-page.ts";
+import ExampleFile from "./ExampleFile.astro";
+import ProviderPart from "./ProviderPart.astro";
+import ProviderSwitch from "./ProviderSwitch.astro";
+import VersionTabs from "./VersionTabs.astro";
+
+/** The example the hero shows in each of its ways: one place on a map. */
+const SHOWN = "simple";
+const codeTabs = codeTabsOf(SHOWN);
+// Never the example's own ids (`simple-…`), which an old `/#simple` link follows to its page.
+const PANEL_PREFIX = "ways-in";
+---
+
+{/*
+  The four ways in (W66): the Simple example's code by way of using Maplace.js and by provider,
+  with no map, and no caption (the example's page names each file). Inside the hero's
+  `data-version-switch`, so `tabs.ts` and `version-switch.ts` drive it as they drive an example's
+  page, and the provider chosen holds for the visit.
+*/}
+<div class="mt-10">
+  <div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <VersionTabs codeTabs={codeTabs} label="Ways to use Maplace.js" panelPrefix={PANEL_PREFIX} />
+    <ProviderSwitch name={`${PANEL_PREFIX}-provider`} legend="Show the code for" class="ms-auto" />
+  </div>
+  {
+    codeTabs.map(({ kind, codes }, index) => (
+      <div
+        role="tabpanel"
+        id={versionPanelId(PANEL_PREFIX, kind)}
+        aria-labelledby={versionTabId(PANEL_PREFIX, kind)}
+        hidden={index !== 0}
+        class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] border-2 border-ink bg-paper max-[54rem]:grid-cols-1"
+      >
+        <div class="p-5">
+          <p class="m-0 font-display text-xl leading-tight font-extrabold tracking-[-0.025em]">{WAYS_IN_NOTES[kind].title}</p>
+          <p class="mt-2 mb-0 text-muted">{WAYS_IN_NOTES[kind].text}</p>
+        </div>
+        <div class="min-w-0 border-s-2 border-ink p-4 max-[54rem]:border-s-0 max-[54rem]:border-t-2">
+          {codes.map((code) => (
+            <ProviderPart provider={code.provider} class="grid gap-4">
+              {filesAsShown(code).map((shown) => <ExampleFile shown={shown} />)}
+            </ProviderPart>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</div>

@@ -1,18 +1,20 @@
 ---
 import { getEntry, render } from "astro:content";
 import { fetchedDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
-import { FIRST_PROVIDER } from "../examples/example-providers.ts";
 import {
   type ExamplePageEntry,
   groupPath,
   pageHeading,
 } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
+import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
 import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
 import MarkdownLink from "./MarkdownLink.astro";
+import ProviderPart from "./ProviderPart.astro";
 import ProviderSwitch from "./ProviderSwitch.astro";
+import VersionTabs from "./VersionTabs.astro";
 
 interface Props {
   entry: ExamplePageEntry;
@@ -27,7 +29,7 @@ const styleLinks = stylesheetLinks(exampleStylesheets(codes));
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;
 // `example-` keeps the site's ids apart from the pages' own (`route-map`).
-const panel = (tab: string) => `example-${name}-${tab}`;
+const panelPrefix = `example-${name}`;
 ---
 
 {/* An example's page's body: its heading, then its map run from a version, that version's code, its guide. */}
@@ -44,24 +46,7 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   <ExampleFileLinks lead="Styled by" links={styleLinks} />
   {/* One control: a tab runs the map from its version and shows that version's code under it. */}
   <div class="mt-4 mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-    <div class="flex flex-wrap" role="tablist" aria-label={`Run ${title} from`}>
-      {
-        codeTabs.map(({ kind, label }, index) => (
-          <button
-            type="button"
-            role="tab"
-            class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper"
-            id={`${panel(kind)}-tab`}
-            aria-controls={panel(kind)}
-            aria-selected={index === 0 ? "true" : "false"}
-            tabindex={index === 0 ? 0 : -1}
-            data-version={kind}
-          >
-            {label}
-          </button>
-        ))
-      }
-    </div>
+    <VersionTabs codeTabs={codeTabs} label={`Run ${title} from`} panelPrefix={panelPrefix} />
     <ProviderSwitch name={`${name}-provider`} class="ms-auto" />
   </div>
   <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
@@ -70,17 +55,14 @@ const panel = (tab: string) => `example-${name}-${tab}`;
       <div
         role="tabpanel"
         class="mt-4"
-        id={panel(kind)}
-        aria-labelledby={`${panel(kind)}-tab`}
+        id={versionPanelId(panelPrefix, kind)}
+        aria-labelledby={versionTabId(panelPrefix, kind)}
         hidden={index !== 0}
       >
         {codes.map((code) => (
-          <div
-            data-provider-files={code.provider}
-            hidden={code.provider !== FIRST_PROVIDER}
-          >
+          <ProviderPart provider={code.provider}>
             <ExampleFiles version={code} />
-          </div>
+          </ProviderPart>
         ))}
       </div>
     ))

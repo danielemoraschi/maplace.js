@@ -47,7 +47,7 @@ describe("a site build at a published version", () => {
     expect(page(".well-known/agent-skills/maplace/SKILL.md")).toContain(
       releasedIntegrity(CDN_SCRIPTS.cluster),
     );
-    expect(page("index.html")).toContain(releasedIntegrity(CDN_SCRIPTS.plain));
+    expect(page("builder/index.html")).toContain(releasedIntegrity(CDN_SCRIPTS.plain));
   });
 
   it("a site build fails, naming npm, while npm can't be reached", {

@@ -10,8 +10,8 @@ import type { Provider } from "../examples/example-providers.ts";
 import { cdnPin } from "./cdn-pin.ts";
 
 /**
- * How the install box installs Maplace.js for each provider, in the order shown: the npm command,
- * MapLibre's adding its peer, and the CDN script it pins.
+ * How Maplace.js is installed for each provider, in the order shown: its name, the npm command
+ * (MapLibre's adding its peer) and the CDN script it pins.
  */
 const PROVIDER_INSTALLS = [
   {
@@ -38,16 +38,14 @@ export type ProviderInstall = Omit<(typeof PROVIDER_INSTALLS)[number], "file"> &
   readonly cdnSnippet: string;
 };
 
-/** What the install box offers: the version, and each provider's install. */
+/** The `install` collection's entry: each provider's install (the home page, the builder, the agent skill). */
 export interface Install {
-  readonly version: string;
   readonly providers: readonly ProviderInstall[];
 }
 
 export function installOf(pin: Pin): Install {
   const readme = withPinnedScripts(readRootFile("README.md"), pin);
   return {
-    version: pin.version,
     providers: PROVIDER_INSTALLS.map(({ file, ...shown }) => ({
       ...shown,
       cdnSnippet: pinnedSnippetOf(readme, file),

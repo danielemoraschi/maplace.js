@@ -56,17 +56,17 @@ export const chooseVersion = (page: Page, example: string, version: string) =>
   chooseTab(page, example, version);
 
 /** Runs the page's example on `provider` (its label), through its toggle. */
-export function chooseProvider(page: Page, provider: string): Promise<void> {
-  return providerToggle(page).getByRole("radio", { name: provider, exact: true }).check();
+export function chooseProvider(page: Page, provider: string, legend?: string): Promise<void> {
+  return providerToggle(page, legend).getByRole("radio", { name: provider, exact: true }).check();
 }
 
-/** The provider toggles under `scope`, a page or a section. */
-export const providerTogglesIn = (scope: Page | Locator) =>
-  scope.getByRole("group", { name: "Run the examples on" });
+/** The provider toggles under `scope`, a page or a section, by their legend (`ProviderSwitch.astro`). */
+export const providerTogglesIn = (scope: Page | Locator, legend = "Run the examples on") =>
+  scope.getByRole("group", { name: legend });
 
 /** The page's shown provider toggle. */
-export const providerToggle = (page: Page) =>
-  providerTogglesIn(page).filter({ visible: true }).first();
+export const providerToggle = (page: Page, legend?: string) =>
+  providerTogglesIn(page, legend).filter({ visible: true }).first();
 
 /** What marks `kind`'s version on `provider` of an example on its page, as a CSS selector. */
 export const versionSelector = (provider: Provider, kind: VersionKind) =>

@@ -8,6 +8,7 @@ import type { LiveVersion } from "../examples/example-versions.ts";
 import { runPageScripts } from "../examples/page-scripts.ts";
 import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
+import { startCopyButtons } from "./copy-buttons.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
@@ -89,6 +90,7 @@ provideSave(globalThis, document);
 followNavFocus(document);
 startSections(document);
 void showStarCount(document);
+startCopyButtons(document);
 startConsent({
   document,
   store: createConsentStore(() => localStorage),

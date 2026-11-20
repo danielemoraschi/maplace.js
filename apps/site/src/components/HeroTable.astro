@@ -1,0 +1,53 @@
+---
+import { Image } from "astro:assets";
+import { HERO_TABLE, type HiddenBelow, heroCards } from "../examples/hero-table.ts";
+
+/**
+ * A card that would run under the copy at a width steps out there, its picture never fetched: its
+ * literal class, as Tailwind reads `.astro` files only. Its cell is its own, so no other card moves.
+ */
+const HIDDEN_BELOW: Readonly<Record<HiddenBelow, string>> = {
+  "80rem": "min-[64rem]:max-[80rem]:hidden",
+  "112.5rem": "min-[64rem]:max-[112.5rem]:hidden",
+  "120rem": "min-[64rem]:max-[120rem]:hidden",
+};
+
+/** The first card lands this long after the page opens, and each next one this long after it. */
+const FIRST_LANDING_MS = 150;
+const LANDING_STEP_MS = 45;
+---
+
+{/*
+  The hero's table (W66): the examples' thumbnails as a flat grid laid on a tilted table, beside
+  the copy from 64rem, at a set height from the hero's top so a longer code panel never moves it,
+  under the copy below; its tilt and its turn as the page scrolls away are `table-turn`'s. A
+  picture, not a way in: the index below links every example, so it is hidden from screen readers
+  and takes no pointer.
+*/}
+<div
+  aria-hidden="true"
+  class="pointer-events-none absolute top-0 h-[59rem] -right-[20%] left-[max(20%,calc((100%-var(--container-measure))/2+6.5rem))] z-0 perspective-[2400px] max-[64rem]:relative max-[64rem]:inset-auto max-[64rem]:h-96 max-[64rem]:overflow-hidden"
+>
+  <div
+    class="table-turn absolute top-1/2 left-1/2 grid w-[max(84rem,80vw)] grid-cols-4 gap-5 transform-3d [--table-x:-40%] max-[64rem]:w-[46rem] max-[64rem]:gap-3 max-[64rem]:[--table-x:-46%]"
+  >
+    {
+      heroCards(HERO_TABLE).map(({ name, thumbnail, row, column, hiddenBelow }, index) => (
+        <div
+          data-hero-card={name}
+          class:list={["animate-land motion-reduce:animate-none", hiddenBelow && HIDDEN_BELOW[hiddenBelow]]}
+          style={`grid-area: ${row} / ${column}; animation-delay: ${FIRST_LANDING_MS + index * LANDING_STEP_MS}ms`}
+        >
+          <Image
+            src={thumbnail}
+            alt=""
+            width={320}
+            format="webp"
+            loading="lazy"
+            class="block aspect-[8/5] h-auto w-full rounded-lg border border-ink/15 bg-paper object-cover"
+          />
+        </div>
+      ))
+    }
+  </div>
+</div>

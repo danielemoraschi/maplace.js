@@ -1,4 +1,4 @@
-/* The site's own looks, shared: `wrap` by its header, footer and main; `button-plain` by a
+/* The site's own looks, shared: `wrap` by its header, footer and a page's content; `button-plain` by a
  * failure note's reload button and, in `frame.css`, an example's own buttons. */
 @utility wrap {
   /* Full width up to the measure, in a flex column too, where auto margins would shrink it. */
@@ -13,4 +13,57 @@
   background: var(--color-paper);
   padding: 0.25rem 0.75rem;
   font-size: var(--text-sm);
+}
+
+/*
+ * The home page's two grounds (W66), its own: each redefines the tokens the utilities read, so
+ * whatever it holds keeps its utilities and takes its colours. `hero-water`: the hero, slate on
+ * map water (`#cfe3ea`); `band-dark`: the band below it, the map at night.
+ */
+@utility hero-water {
+  --color-paper: #f2f5f3;
+  --color-ink: #1b2430;
+  --color-muted: #566270;
+  --color-wash: #e3eae7;
+  --color-accent: #cf2b24;
+  background: #cfe3ea;
+  color: var(--color-ink);
+}
+
+@utility band-dark {
+  --color-paper: #18222c;
+  --color-ink: #e6ecf0;
+  --color-muted: #9aa8b4;
+  --color-wash: #1e2a35;
+  --color-accent: #ff5a4f;
+  --color-on-accent: #121a22;
+  background: #121a22;
+  color: var(--color-ink);
+}
+
+/*
+ * The home page's table (W66): tilted, shifted by `--table-x`, and turning a little as the page
+ * scrolls away where it lies beside the copy, driven by the scroll, so a browser without scroll
+ * timelines leaves it still.
+ */
+@utility table-turn {
+  transform: translate(var(--table-x), -50%) rotateX(56deg) rotateZ(-38deg);
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+    @supports (animation-timeline: scroll()) {
+      /* Longhands only: the build's minifier would fold a timeline into the shorthand, which
+         browsers refuse whole. */
+      animation-name: table-turn;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0 70vh;
+    }
+  }
+}
+
+@keyframes table-turn {
+  to {
+    transform: translate(var(--table-x), -58%) rotateX(56deg) rotateZ(-34deg) scale(1.06);
+  }
 }

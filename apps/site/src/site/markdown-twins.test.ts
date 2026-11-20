@@ -98,6 +98,10 @@ describe("markdownTwins", () => {
       "\n- [01 One marker](/examples/markers/simple/): One place on a map.\n",
     );
     expect(markdown).toContain("\n- [31 Default styles off](/examples/styling/unstyled/): ");
+    expect(markdown.indexOf("\n## Two map providers, one API.\n")).toBeGreaterThan(
+      markdown.indexOf("/examples/styling/unstyled/"),
+    );
+    expect(markdown).toContain("\n### MapLibre\n\n- No key: ");
   });
 
   it("writes the examples page's twin as its heading, intro, then each category as ## with its examples", () => {

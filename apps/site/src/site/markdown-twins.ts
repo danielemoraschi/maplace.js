@@ -11,13 +11,10 @@ import {
 import { EXAMPLES_HEADING, EXAMPLES_INTRO } from "../examples/examples-page.ts";
 import { HOME_HEADING, HOME_INTRO, HOME_ROUTE } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
-import {
-  exampleListMarkdown,
-  examplesPageIndexMarkdown,
-  homeIndexMarkdown,
-} from "./example-index-markdown.ts";
+import { exampleListMarkdown, examplesPageIndexMarkdown } from "./example-index-markdown.ts";
 import { exampleMarkdown } from "./example-markdown.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
+import { homeMarkdown } from "./home-markdown.ts";
 import { markdownAddress } from "./markdown-routes.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
@@ -53,7 +50,7 @@ export function markdownTwins({
   references,
 }: StoredPages): MarkdownTwin[] {
   return [
-    twin(HOME_ROUTE, markdownPage(HOME_HEADING, HOME_INTRO, homeIndexMarkdown())),
+    twin(HOME_ROUTE, markdownPage(HOME_HEADING, HOME_INTRO, homeMarkdown())),
     twin(
       EXAMPLES_PAGE_ROUTE,
       markdownPage(EXAMPLES_HEADING, EXAMPLES_INTRO, examplesPageIndexMarkdown()),

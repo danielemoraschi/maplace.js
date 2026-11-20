@@ -14,15 +14,15 @@ import { exampleNames, exampleProviders } from "./example-sources.ts";
 import { HOME_INTRO } from "./home-page.ts";
 import { liveVersions } from "./live-versions.ts";
 
-/** The hero's snippet, not a section. */
-const HERO_EXAMPLE = "quick-start";
+/** The README's first snippet, not a section on the site. */
+const README_EXAMPLE = "quick-start";
 
 describe("EXAMPLE_SECTIONS", () => {
   it("is every example with a page, so none is left off the site", () => {
     const sections = EXAMPLE_SECTIONS.map(({ name }) => name).sort();
     expect(sections).toEqual(
       exampleNames()
-        .filter((name) => name !== HERO_EXAMPLE)
+        .filter((name) => name !== README_EXAMPLE)
         .sort(),
     );
   });

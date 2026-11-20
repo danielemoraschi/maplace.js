@@ -1,0 +1,35 @@
+---
+import type { CodeTab } from "../examples/example-sources.ts";
+import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
+
+interface Props {
+  /** The tabs, in order: the first is selected as the page loads. */
+  codeTabs: readonly Pick<CodeTab, "kind" | "label">[];
+  /** What the tabs choose, to a screen reader. */
+  label: string;
+  /** Its panels' prefix (`versionPanelId`). */
+  panelPrefix: string;
+}
+
+const { codeTabs, label, panelPrefix } = Astro.props;
+---
+
+{/* A version per tab (`tabs.ts`): an example's page runs the map from it, the home page shows its code (W66). */}
+<div class="flex flex-wrap" role="tablist" aria-label={label}>
+  {
+    codeTabs.map(({ kind, label: tabLabel }, index) => (
+      <button
+        type="button"
+        role="tab"
+        class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper"
+        id={versionTabId(panelPrefix, kind)}
+        aria-controls={versionPanelId(panelPrefix, kind)}
+        aria-selected={index === 0 ? "true" : "false"}
+        tabindex={index === 0 ? 0 : -1}
+        data-version={kind}
+      >
+        {tabLabel}
+      </button>
+    ))
+  }
+</div>

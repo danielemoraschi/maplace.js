@@ -1,38 +1,54 @@
 ---
-import quickStartMapLibre from "../../../../packages/maplace/examples/quick-start/maplibre/page.html?raw";
-import quickStart from "../../../../packages/maplace/examples/quick-start/page.html?raw";
+import { getEntry } from "astro:content";
 import { HEADING_TAIL } from "../examples/example-sections.ts";
 import { HOME_HEADING_LEAD, HOME_INTRO } from "../examples/home-page.ts";
-import { REPOSITORY_URL } from "../site/repo-docs.ts";
+import { skillInstallCommand } from "../site/agent-links.ts";
+import { configuredSite } from "../site/configured-site.ts";
+import { docRoute, REPOSITORY_URL } from "../site/repo-docs.ts";
 import { starButtonShadow } from "../site/star-button-markup.ts";
-import SourceCode from "./SourceCode.astro";
+import CopyCommand from "./CopyCommand.astro";
+import HeroTable from "./HeroTable.astro";
+import ProviderPart from "./ProviderPart.astro";
+import WaysIn from "./WaysIn.astro";
+
+const install = await getEntry("install", "element");
+if (install === undefined) throw new Error("the install collection has no element entry");
 ---
 
-<div class="flow-root pt-10 pb-4">
-  <svg
-    class="float-right ml-4 w-[min(42vw,20rem)] fill-none stroke-accent stroke-12 max-[70rem]:hidden"
-    viewBox="0 0 320 180"
-    aria-hidden="true"
-  >
-    <path d="M0 48 H170 L214 92 H320" />
-    <path class="stroke-ink" d="M90 180 V126 L134 82 H320" />
-    <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
-  </svg>
-  <h1 class="m-0 text-hero leading-[0.95]">
-    {HOME_HEADING_LEAD}{HEADING_TAIL.map((line) => <><br />{line}</>)}.
-  </h1>
-  <p class="mt-4 mb-4 text-lg">{HOME_INTRO}</p>
-  <p class="mt-0 mb-6 h-7">
-    <span data-star-button
-      ><template shadowrootmode="open" set:html={starButtonShadow(REPOSITORY_URL)} /><a
-        href={REPOSITORY_URL}>GitHub</a
-      ></span
-    >
-  </p>
-  <div class="overflow-x-auto">
-    <p class="mt-0 mb-1 text-sm font-medium">Google Maps</p>
-    <SourceCode code={quickStart} lang="html" />
-    <p class="mt-4 mb-1 text-sm font-medium">MapLibre, no key</p>
-    <SourceCode code={quickStartMapLibre} lang="html" />
+{/*
+  The home page's hero (W66), on map water and run up under the header: the library, how to start,
+  its four ways in, and its examples on a tilted table beside them (under them below 64rem). Its copy
+  is a version switch with no map (`version-switch.ts`): the npm command follows the provider
+  chosen for the code.
+*/}
+<div class="hero-water relative isolate -mt-(--spacing-header-height) overflow-clip border-b-3 border-ink pt-(--spacing-header-height)">
+  <div class="wrap relative z-10 pt-12 pb-12" data-version-switch="ways-in">
+    <div class="max-w-[42rem]">
+      <h1 class="m-0 text-hero leading-[1.02]">
+        {HOME_HEADING_LEAD}{HEADING_TAIL.map((line) => <><br />{line}</>)}.
+      </h1>
+      <p class="mt-5 mb-0 max-w-[38rem] text-lg text-muted">{HOME_INTRO}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href={docRoute("getting-started")}
+          class="bg-accent px-5 py-2 font-semibold text-on-accent no-underline hover:text-on-accent hover:brightness-90"
+        >Get started</a>
+        {install.data.providers.map(({ provider, npmCommand }) => (
+          <ProviderPart provider={provider} class="max-w-full">
+            <CopyCommand command={npmCommand} />
+          </ProviderPart>
+        ))}
+        <span data-star-button class="h-7"
+          ><template shadowrootmode="open" set:html={starButtonShadow(REPOSITORY_URL)} /><a
+            href={REPOSITORY_URL}>GitHub</a
+          ></span
+        >
+      </div>
+      <div class="mt-3 flex">
+        <CopyCommand command={skillInstallCommand(configuredSite(Astro.site))} />
+      </div>
+    </div>
+    <WaysIn />
   </div>
+  <HeroTable />
 </div>

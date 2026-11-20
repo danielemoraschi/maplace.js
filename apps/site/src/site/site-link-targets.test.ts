@@ -7,8 +7,9 @@ import {
 } from "../examples/example-sections.ts";
 import { HOME_ROUTE } from "../examples/home-page.ts";
 import { exampleGuides } from "./example-guides-loader.ts";
-import { examplesPageIndexMarkdown, homeIndexMarkdown } from "./example-index-markdown.ts";
+import { examplesPageIndexMarkdown } from "./example-index-markdown.ts";
 import { groupReferenceMarkdown } from "./group-references-loader.ts";
+import { homeMarkdown } from "./home-markdown.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { repoDocMarkdown, siteMarkdownOf } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
@@ -124,7 +125,10 @@ describe("the site's doc pages", () => {
       route: groupPath(group),
       markdown: groupReferenceMarkdown(group, settings),
     }));
-    const home = { route: HOME_ROUTE, markdown: homeIndexMarkdown() };
+    const home = {
+      route: HOME_ROUTE,
+      markdown: homeMarkdown(),
+    };
     const examplesPage = { route: EXAMPLES_PAGE_ROUTE, markdown: examplesPageIndexMarkdown() };
     expect(brokenSiteLinks([...pages, ...examples, ...hubs, home, examplesPage])).toEqual([]);
   });

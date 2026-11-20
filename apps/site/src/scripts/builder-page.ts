@@ -5,6 +5,7 @@ import { type Conversion, convertPasted } from "./builder-convert.ts";
 import { previewLocationsOf } from "./builder-popups.ts";
 import { type Note, PasteRefused } from "./builder-report.ts";
 import { writeSnippet } from "./builder-snippet.ts";
+import { copyText } from "./copy-text.ts";
 import { chosenProvider, PROVIDER_TOGGLE } from "./version-switch.ts";
 
 /**
@@ -112,22 +113,12 @@ export function startBuilder(page: Document): void {
       render();
     }
     if (copy.disabled) return;
-    void copyText(code.textContent ?? "").then((words) => {
-      copied.textContent = words;
+    void copyText(code.textContent ?? "").then((done) => {
+      copied.textContent = done ? "Copied" : "Select the code to copy it";
     });
   });
   render();
   showViewWhenDefined(maps, () => conversion);
-}
-
-/** Copies `text`, and what to tell the reader; a page off HTTPS has no clipboard at all. */
-async function copyText(text: string): Promise<string> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return "Copied";
-  } catch {
-    return "Select the code to copy it";
-  }
 }
 
 function showStatus(status: HTMLElement, words: string, refused: boolean): void {
