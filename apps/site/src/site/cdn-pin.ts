@@ -14,13 +14,28 @@ import {
 
 let pinOfThisBuild: Promise<Pin> | undefined;
 
-/** The manifest's version and its scripts' integrity (`pinOfVersion`). Once per site build. */
+/**
+ * The manifest's version and its scripts' integrity, once per site build: on the dev server the
+ * repo's own scripts, built in memory, as it runs the repo's library and asks npm nothing; in a
+ * build, what npm published (`pinOfVersion`), which is what the CDN serves.
+ */
 export function cdnPin(): Promise<Pin> {
-  pinOfThisBuild ??= pinOfVersion(packageManifest().version, fetch).catch((error) => {
-    pinOfThisBuild = undefined; // the next loader run in `site:dev` tries again
+  pinOfThisBuild ??= pinOfThisSite().catch((error) => {
+    pinOfThisBuild = undefined; // the next loader run tries again
     throw error;
   });
   return pinOfThisBuild;
+}
+
+/**
+ * The dev server's pin, the repo's own scripts, or a build's, npm's: read once, by `cdnPin`. The
+ * dev server is told by Astro's mode, `development` under `astro dev`: not by `DEV`, which a build
+ * run from the tests (`NODE_ENV=test`) has too.
+ */
+function pinOfThisSite(): Promise<Pin> {
+  const { version } = packageManifest();
+  const onDevServer = import.meta.env.MODE === "development";
+  return onDevServer ? pinOfBuiltScripts(version) : pinOfVersion(version, fetch);
 }
 
 /**
