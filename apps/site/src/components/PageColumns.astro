@@ -1,0 +1,75 @@
+---
+import NavList, { type NavLink } from "./NavList.astro";
+
+/** A heading of the page, as "On this page" links it. */
+interface PageHeading {
+  readonly slug: string;
+  readonly text: string;
+}
+
+interface Props {
+  /** The pages' list's name: its nav's label and its heading. */
+  navLabel: string;
+  links: readonly NavLink[];
+  /** The href of the page shown. */
+  current: string;
+  onThisPage: readonly PageHeading[];
+  /**
+   * Where the column folds into a disclosure above the content: below 800px for a doc's text, below
+   * 64rem for the examples, so a section's list keeps a map beside it (the library's breakpoint
+   * reads the screen, not the column).
+   */
+  fold: "narrow" | "wide";
+}
+
+const { navLabel, links, current, onThisPage, fold } = Astro.props;
+const COLUMN_HEADING = "mt-0 mb-2 text-sm font-semibold";
+const FOLDS = {
+  narrow: {
+    grid: "max-[800px]:grid-cols-[minmax(0,1fr)]",
+    column: "max-[800px]:hidden",
+    folded: "max-[800px]:block",
+  },
+  wide: {
+    grid: "max-[64rem]:grid-cols-[minmax(0,1fr)]",
+    column: "max-[64rem]:hidden",
+    folded: "max-[64rem]:block",
+  },
+} as const;
+const folds = FOLDS[fold];
+---
+
+<div class:list={["grid grid-cols-[13rem_minmax(0,1fr)] gap-10 pt-8", folds.grid]}>
+  {/* The pages' list scrolls away with the page; only the contents stay, so the two need no inner scroll. */}
+  <div class:list={["flex flex-col gap-y-8", folds.column]}>
+    <nav aria-label={navLabel}>
+      <p aria-hidden="true" class={COLUMN_HEADING}>{navLabel}</p>
+      <NavList links={links} current={current} />
+    </nav>
+    <nav aria-label="On this page" class="flex-1">
+      <div class="sticky top-[calc(var(--spacing-header)+1.5rem)]">
+        <p aria-hidden="true" class={COLUMN_HEADING}>On this page</p>
+        <ol class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
+          {
+            onThisPage.map(({ slug, text }) => (
+              <li>
+                <a href={`#${slug}`} class="no-underline">
+                  {text}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </nav>
+  </div>
+  <nav aria-label={navLabel} class:list={["hidden", folds.folded]}>
+    <details class="border-b border-ink pb-2">
+      <summary class="cursor-pointer text-sm font-semibold">{navLabel}</summary>
+      <div class="mt-2">
+        <NavList links={links} current={current} />
+      </div>
+    </details>
+  </nav>
+  <slot />
+</div>

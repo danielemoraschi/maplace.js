@@ -120,6 +120,13 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   },
 ];
 
+/** The repo document `id`, which must be one the site renders. */
+export function repoDoc(id: string): RepoDoc {
+  const doc = REPO_DOCS.find((each) => each.id === id);
+  if (doc === undefined) throw new Error(`${id} isn't in REPO_DOCS`);
+  return doc;
+}
+
 /** The site's page for the repo document `id`. */
 export function docRoute(id: string): string {
   return `/${id}/`;

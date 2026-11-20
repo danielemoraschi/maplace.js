@@ -13,6 +13,7 @@ import {
 } from "../../../scripts/docs/changelog-lines.ts";
 import { repositoryPageFor } from "../../../scripts/release/repository.ts";
 import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
+import { HOME_ROUTE } from "../src/examples/home-page.ts";
 import {
   AGENTS_PAGE,
   BUILDER_PAGE,
@@ -28,9 +29,15 @@ import { MAP_PROVIDERS, MAP_PROVIDERS_SECTION } from "../src/site/third-parties.
 import { gluedText } from "./glued-text.ts";
 import { sectionPage } from "./home-sections.ts";
 import { SETTLE_MS, siteBuiltBeforeTests } from "./site-session.ts";
-import { grantConsent, loadMapsButtons, placeholder, type Visitor } from "./visitor.ts";
+import {
+  FIRST_EXAMPLES_PAGE,
+  grantConsent,
+  loadMapsButtons,
+  placeholder,
+  type Visitor,
+} from "./visitor.ts";
 
-/** The examples' pages, the home page first (W38). */
+/** The features' examples' pages (D31). */
 const EXAMPLE_PAGES = EXAMPLE_GROUPS.map(groupPath);
 
 /** What Cloudflare serves, with a 404, at an address the site has no page for (`wrangler.jsonc`). */
@@ -38,6 +45,7 @@ const NOT_FOUND_PAGE = "/404.html";
 
 /** The site's pages that show no map. */
 const PAGES_WITHOUT_MAPS = [
+  HOME_ROUTE,
   PRIVACY_PAGE.route,
   AGENTS_PAGE.route,
   NOT_FOUND_PAGE,
@@ -205,7 +213,7 @@ describe("the site's copy", () => {
 
 describe("the consent placeholder", () => {
   it("links each map's placeholder to the privacy page's section on the maps, naming every provider", async () => {
-    const { page, context } = await openPage("/");
+    const { page, context } = await openPage(FIRST_EXAMPLES_PAGE);
     const placeholders = await loadMapsButtons(page).count();
     const href = `${PRIVACY_PAGE.route}#${MAP_PROVIDERS_SECTION}`;
     expect(placeholders).toBeGreaterThan(0);
@@ -222,9 +230,11 @@ describe("the consent placeholder", () => {
 describe("what the site sends where", () => {
   /**
    * Opens every page without maps at once in `visit`'s context, as long as a map would take: each
-   * page's `<html data-maps>`, `on` once the visitor has consented.
+   * page's `<html data-maps>`, `on` once the visitor has consented, and its consent placeholders.
    */
-  async function visitPagesWithoutMaps({ context }: Visitor): Promise<(string | null)[]> {
+  async function visitPagesWithoutMaps({
+    context,
+  }: Visitor): Promise<{ maps: string | null; placeholders: number }[]> {
     const pages = await Promise.all(
       PAGES_WITHOUT_MAPS.map(async (route) => {
         const page = await context.newPage();
@@ -233,17 +243,21 @@ describe("what the site sends where", () => {
       }),
     );
     await pause(SETTLE_MS);
-    const maps = await Promise.all(
-      pages.map((page) => page.locator("html").getAttribute("data-maps")),
+    const seen = await Promise.all(
+      pages.map(async (page) => ({
+        maps: await page.locator("html").getAttribute("data-maps"),
+        placeholders: await loadMapsButtons(page).count(),
+      })),
     );
     await Promise.all(pages.map((page) => page.close()));
-    return maps;
+    return seen;
   }
 
-  /** The same `<html data-maps>` on every page without maps. */
-  const onEveryPage = (setting: string) => PAGES_WITHOUT_MAPS.map(() => setting);
+  /** The same `<html data-maps>` on every page without maps, and no placeholder on any. */
+  const onEveryPage = (setting: string) =>
+    PAGES_WITHOUT_MAPS.map(() => ({ maps: setting, placeholders: 0 }));
 
-  it("a page without maps asks nothing off the site, before consent or after", async () => {
+  it("a page without maps, the home page among them, asks nothing off the site and shows no placeholder, before consent or after", async () => {
     const visit = await site.visitor();
     expect(await visitPagesWithoutMaps(visit)).toEqual(onEveryPage("off"));
     expect(visit.offsite()).toEqual([]);

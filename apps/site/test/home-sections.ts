@@ -27,7 +27,7 @@ export function versionsInTurn(index: number): [VersionChoice, ...VersionChoice[
   return order as [VersionChoice, ...VersionChoice[]];
 }
 
-/** The route of the examples' page holding `name`'s section (W38). */
+/** The route of the feature's page holding `name`'s section (D31). */
 export function sectionPage(name: string): string {
   const group = findGroupOfSection(name);
   if (group === undefined) throw new Error(`no example group holds ${name}`);
@@ -109,9 +109,5 @@ export async function sectionOf(page: Page, example: string): Promise<Locator> {
   return section;
 }
 
-/** The examples' bar's nav of group links (`ExampleGroupBar.astro`). */
-export const groupNav = (page: Page) => page.getByRole("navigation", { name: "Examples" });
-
-/** The examples' bar's link to the group labelled `label`. */
-export const groupLink = (page: Page, label: string) =>
-  groupNav(page).getByRole("link", { name: new RegExp(`^${label},`) });
+/** A feature's page's list of the features' pages (`PageColumns.astro`). */
+export const examplesNav = (page: Page) => page.getByRole("navigation", { name: "Examples" });

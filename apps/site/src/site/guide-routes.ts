@@ -1,5 +1,5 @@
 import { exampleGuideFile } from "../../../../scripts/docs/example-guides.ts";
-import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import { EXAMPLE_GROUPS, sectionHref } from "../examples/example-sections.ts";
 
 /**
  * Each example's section on the site, on its group's page, by its guide's path in the repo: a
@@ -7,6 +7,6 @@ import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
  */
 export const GUIDE_ROUTES: Readonly<Record<string, string>> = Object.fromEntries(
   EXAMPLE_GROUPS.flatMap((group) =>
-    group.sections.map(({ name }) => [exampleGuideFile(name), `${groupPath(group)}#${name}`]),
+    group.sections.map((section) => [exampleGuideFile(section.name), sectionHref(group, section)]),
   ),
 );

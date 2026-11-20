@@ -18,6 +18,7 @@ import {
   leaveOnlySection,
   pageMapState,
   sectionOf,
+  sectionPage,
   shownNotes,
   type VersionChoice,
   versionsInTurn,
@@ -129,7 +130,7 @@ describeWithKey("the site's examples on Google Maps", (key) => {
   it("says Google refused the site's key for each live version", async () => {
     const seenAt = "https://key-refused.invalid";
     const { page, context } = await site.visitor({ seenAt });
-    await page.goto(new URL("/#simple", seenAt).href);
+    await page.goto(new URL(`${sectionPage("simple")}#simple`, seenAt).href);
     await leaveOnlySection(page, "simple");
     await chooseProvider(page, "Google");
     // The Script version first, before consent: the page map, hidden, never loads.

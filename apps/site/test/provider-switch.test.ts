@@ -13,7 +13,7 @@ import {
 } from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { ASKED, opened, SETTLE_MS } from "./site-session.ts";
-import { type Box, boxOf, DESKTOP, loadMapsButtons } from "./visitor.ts";
+import { type Box, boxOf, DESKTOP, FIRST_EXAMPLES_PAGE, loadMapsButtons } from "./visitor.ts";
 
 const site = siteOnMapLibreBeforeTests();
 
@@ -68,7 +68,7 @@ describe("the examples' provider toggle, on a section", () => {
   }, 30_000);
 
   it("keeps Google for the tab's visit: after a reload, not in a tab of its own", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     await chooseProvider(page, "Google");
     await page.reload();
     const radio = (on: Page, name: string) =>
@@ -78,13 +78,13 @@ describe("the examples' provider toggle, on a section", () => {
     expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
     // Same browser, same site data, a tab of its own: kept in the tab's session only.
     const other = await context.newPage();
-    await other.goto(site.url);
+    await other.goto(new URL(FIRST_EXAMPLES_PAGE, site.url).href);
     expect(await radio(other, "MapLibre").isChecked()).toBe(true);
     await context.close();
   }, 30_000);
 
   it("has one toggle on each section, MapLibre first and chosen", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     const sections = page.locator("section.example");
     expect(await providerTogglesIn(sections).count()).toBe(await sections.count());
     expect(await providerToggle(page).locator("label").allTextContents()).toEqual([
@@ -96,7 +96,7 @@ describe("the examples' provider toggle, on a section", () => {
   }, 30_000);
 
   it("moves every section's toggle with the one clicked", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     const google = providerTogglesIn(page).getByRole("radio", { name: "Google", exact: true });
     await google.nth(1).scrollIntoViewIfNeeded();
     await google.nth(1).check();
@@ -109,7 +109,7 @@ describe("the examples' provider toggle, on a section", () => {
   }, 30_000);
 
   it("keeps the dark ground under the chosen provider on a right-to-left page", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     await page.evaluate(() => {
       document.documentElement.dir = "rtl";
     });

@@ -78,7 +78,7 @@ function startPage(kept?: Provider): void {
   startSwitches();
 }
 
-/** A group's panel added after start, holding `name`'s section, as `group-switch.ts` adds one. */
+/** A root added after start, holding `name`'s section. */
 function addPanel(name: string): HTMLElement {
   const panel = document.createElement("div");
   panel.innerHTML = section(name);

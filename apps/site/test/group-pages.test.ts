@@ -9,13 +9,12 @@ import {
   EXAMPLE_SECTIONS,
   groupHeading,
   groupPath,
-  HOME_GROUP,
 } from "../src/examples/example-sections.ts";
 import { exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
-import { chooseProvider, groupLink } from "./home-sections.ts";
+import { chooseProvider } from "./home-sections.ts";
 import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { boxOf, duplicateIds, grantConsent, type VisitorOptions } from "./visitor.ts";
+import { duplicateIds, grantConsent } from "./visitor.ts";
 
 /** One page map per example (D23) on each of its providers, across the examples' pages. */
 const PAGE_MAP_COUNT = EXAMPLE_SECTIONS.flatMap(({ name }) => exampleProviders(name)).length;
@@ -34,11 +33,8 @@ const EXAMPLES = "../../../packages/maplace/examples/";
 const site = siteBuiltBeforeTests();
 
 /** What `look` finds on each examples' page, in the groups' order, one page after another. */
-async function onEveryGroupPage<Found>(
-  look: (page: Page) => Promise<Found>,
-  visiting: VisitorOptions = {},
-): Promise<Found[]> {
-  const { page, context } = await site.visitor(visiting);
+async function onEveryGroupPage<Found>(look: (page: Page) => Promise<Found>): Promise<Found[]> {
+  const { page, context } = await site.visitor();
   const found: Found[] = [];
   for (const group of EXAMPLE_GROUPS) {
     await page.goto(new URL(groupPath(group), site.url).href, { waitUntil: "domcontentloaded" });
@@ -50,6 +46,11 @@ async function onEveryGroupPage<Found>(
 
 /** What a page's markup says, as built: nothing laid out or run. */
 const builtFacts = async (page: Page) => ({
+  // The page's H1, and the paragraph under it.
+  heading: {
+    words: await page.locator("h1").textContent(),
+    intro: await page.locator("h1 + p").textContent(),
+  },
   headings: await page.locator("section.example").evaluateAll((sections) =>
     sections.map((section) => {
       const heading = section.querySelector("h2");
@@ -97,7 +98,13 @@ describe("the examples' pages, as built (W38)", () => {
     pages = await onEveryGroupPage(builtFacts);
   }, 60_000);
 
-  it("number the sections 01–24 across the pages, each its group's", () => {
+  it("head each feature's page with its heading in task words, its intro under it (W63)", () => {
+    expect(pages.map(({ heading }) => heading)).toEqual(
+      EXAMPLE_GROUPS.map((group) => ({ words: groupHeading(group), intro: group.intro })),
+    );
+  });
+
+  it("number the sections 01–31 across the pages, each its feature's", () => {
     let number = 0;
     const expected = EXAMPLE_GROUPS.map(({ sections }) =>
       sections.map(({ name, title }) => {
@@ -184,11 +191,10 @@ describe("the examples' pages, shown (W38)", () => {
     const { page, offsite, mapProviders, mapsJsRequests, context } = visit;
     await grantConsent(page, site.url);
     const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
-    /** Every group in turn, switched to in place from the bar, scrolled past its shown maps. */
+    /** Every feature's page in turn, scrolled past its shown maps. */
     const scrollPastEveryGroupsMaps = async () => {
       for (const group of EXAMPLE_GROUPS) {
-        await groupLink(page, group.label).click();
-        await page.waitForURL(new URL(groupPath(group), site.url).href);
+        await page.goto(new URL(groupPath(group), site.url).href);
         for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
       }
       await pause(SETTLE_MS);
@@ -197,7 +203,6 @@ describe("the examples' pages, shown (W38)", () => {
     await scrollPastEveryGroupsMaps();
     await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
     expect(mapProviders().filter((url) => thirdPartyOf(url) === GOOGLE_MAPS)).toEqual([]);
-    expect(new URL(page.url()).pathname, "the last group shown").not.toBe(groupPath(HOME_GROUP));
     await chooseProvider(page, "Google");
     await scrollPastEveryGroupsMaps();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
@@ -205,34 +210,4 @@ describe("the examples' pages, shown (W38)", () => {
     expect(offsite().filter((url) => !goesToMapProvider(url))).toEqual([]);
     await context.close();
   }, 120_000);
-});
-
-describe("the examples' pages' hero (W62)", () => {
-  /**
-   * The H1's words, the paragraph under it, and how far the H1 stays left of the hero's drawing
-   * from 70rem, where the drawing shows; once fonts are in.
-   */
-  const heroFit = async (page: Page) => {
-    await page.evaluate(() => document.fonts.ready);
-    const heading = page.locator("h1");
-    // biome-ignore lint/performance/useDomNodeTextContent: Playwright's, and the text as rendered: the H1's <br>s are its spaces.
-    const words = (await heading.innerText()).replace(/\s+/g, " ");
-    const intro = await page.locator("[data-hero-intro]").textContent();
-    const drawing = await boxOf(page.locator("svg:has(+ h1)"));
-    const textRight = await heading.evaluate((h1) => {
-      const range = document.createRange();
-      range.selectNodeContents(h1);
-      return Math.max(...[...range.getClientRects()].map((rect) => rect.right));
-    });
-    return { words, intro, clearance: drawing.x - textRight };
-  };
-
-  it("heads and introduces each group's page as its own, the lead clear of the drawing beside it", async () => {
-    const fits = await onEveryGroupPage(heroFit, { viewport: { width: 1120, height: 800 } });
-    for (const [index, group] of EXAMPLE_GROUPS.entries()) {
-      expect(fits[index]?.words, group.id).toBe(`${groupHeading(group)}.`);
-      expect(fits[index]?.intro, group.id).toBe(group.intro);
-      expect(fits[index]?.clearance, group.id).toBeGreaterThan(0);
-    }
-  }, 60_000);
 });

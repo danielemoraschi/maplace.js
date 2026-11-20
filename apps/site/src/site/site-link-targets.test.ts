@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import { HOME_ROUTE } from "../examples/home-page.ts";
 import { exampleGuides } from "./example-guides-loader.ts";
+import { groupReferenceMarkdown } from "./group-references-loader.ts";
+import { homeIndexMarkdown } from "./home-index-markdown.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 import { repoDocMarkdown, siteMarkdownOf } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
@@ -95,13 +98,13 @@ describe("the site's doc pages", () => {
     blobBase: "https://github.com/o/r/blob/abc123/",
   };
 
-  it("link only to pages, headings and example sections the site has, and so do the example guides", () => {
+  it("link only to pages, headings and example sections the site has, as do the guides, the reference tables and the home page's index", () => {
     const pages = REPO_DOCS.map((doc) => ({
       route: docRoute(doc.id),
       markdown: repoDocMarkdown(doc, settings),
     }));
-    // Each group's page as the site writes it: each section, its id standing as a heading's, then
-    // its guide.
+    // Each feature's page as the site writes it: each section, its id standing as a heading's, then
+    // its guide, then the reference tables cut from the docs.
     const guides = new Map(
       exampleGuides().map(({ name, markdown, file }) => [
         name,
@@ -112,8 +115,10 @@ describe("the site's doc pages", () => {
       route: groupPath(group),
       markdown: group.sections
         .map(({ name }) => `# ${name}\n\n${guides.get(name) ?? ""}`)
+        .concat(groupReferenceMarkdown(group, settings))
         .join("\n\n"),
     }));
-    expect(brokenSiteLinks([...pages, ...groups])).toEqual([]);
+    const home = { route: HOME_ROUTE, markdown: homeIndexMarkdown() };
+    expect(brokenSiteLinks([...pages, ...groups, home])).toEqual([]);
   });
 });

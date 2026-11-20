@@ -12,14 +12,17 @@ import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { LLMS_TXT_ROUTE } from "../site/agent-links.ts";
 import { AGENT_SKILLS_INDEX_PATH } from "../site/agent-skill-paths.ts";
+import { SITE_NAME } from "../site/head-meta-tags.ts";
 import { markdownAddressAt } from "../site/markdown-routes.ts";
 
 interface Props {
-  title: string;
+  /** The page's heading: its title is that, then the site's name. */
+  heading: string;
   description: string;
 }
 
-const { title, description } = Astro.props;
+const { heading, description } = Astro.props;
+const title = `${heading} · ${SITE_NAME}`;
 const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
 

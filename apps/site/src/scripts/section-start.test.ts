@@ -5,7 +5,7 @@ import { sectionStarter } from "./section-start.ts";
 
 vi.mock("./fade-in.ts");
 
-/** A group's panel: a section with its version tabs, its map, a version, its code and a reload button. */
+/** A root of sections: one with its version tabs, its map, a version, its code and a reload button. */
 function panel(name: string): HTMLElement {
   const root = document.createElement("div");
   root.innerHTML = `

@@ -35,6 +35,24 @@ describe("pageSources", () => {
     }
   });
 
+  it("dates a group's page from its texts and the reference docs its tables are cut from", () => {
+    const sources = pageSources("/examples/markers/");
+    expect(sources).toContain("apps/site/src/examples/groups/markers.ts");
+    expect(sources).toContain("docs/reference/locations.md");
+    expect(sources).toContain("docs/reference/store.md");
+  });
+
+  it("dates the home page from its hero, its install box and the index's texts", () => {
+    expect(pageSources("/")).toEqual(
+      expect.arrayContaining([
+        "apps/site/src/examples/home-page.ts",
+        "apps/site/src/components/Hero.astro",
+        "README.md",
+        "apps/site/src/examples/groups",
+      ]),
+    );
+  });
+
   it("dates a group's page from the examples' shared data and stylesheets", () => {
     for (const group of EXAMPLE_GROUPS) {
       const sources = pageSources(groupPath(group));

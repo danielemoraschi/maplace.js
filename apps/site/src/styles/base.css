@@ -6,18 +6,6 @@
     scroll-padding-top: var(--spacing-header);
   }
 
-  /* On an examples' page, below the examples' bar held under the header too. */
-  :root:has([data-group-bar]) {
-    scroll-padding-top: calc(var(--spacing-header) + var(--spacing-group-bar));
-  }
-
-  /* Below 48rem, the bar's one row of smaller links, 9 to 12px under its top (`ExampleGroupBar.astro`). */
-  @media (width < 48rem) {
-    :root {
-      --spacing-group-bar: 3rem;
-    }
-  }
-
   *,
   *::before,
   *::after {

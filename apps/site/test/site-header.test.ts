@@ -62,15 +62,15 @@ describe("the site's header", () => {
     await context.close();
   }, 30_000);
 
-  it("takes Examples to the group bar, held right under it", async () => {
+  it("takes Examples to the home page's index of examples, right under it", async () => {
     for (const viewport of [DESKTOP, PHONE]) {
       const { page, context } = await opened(site, docRoute("setup"), viewport);
       await siteNav(page).getByRole("link", { name: "Examples" }).click();
       await page.waitForURL("**/#examples");
-      const bar = page.locator("[data-group-bar]");
+      const index = page.locator("section#examples");
       await expect
         .poll(async () => {
-          const box = await bar.boundingBox();
+          const box = await index.boundingBox();
           return Math.abs((box?.y ?? 0) - (await headerBottom(page)));
         }, ASKED)
         .toBeLessThanOrEqual(8);
@@ -78,7 +78,7 @@ describe("the site's header", () => {
     }
   }, 60_000);
 
-  it("marks Documentation on a doc page, and nothing elsewhere", async () => {
+  it("marks Documentation on a doc page, Examples on a feature's page, and nothing elsewhere", async () => {
     const shown = async (route: string) => {
       const { page, context } = await opened(site, route, DESKTOP);
       const marked = await siteNav(page)
@@ -91,12 +91,17 @@ describe("the site's header", () => {
     };
     expect(await shown(docRoute("store"))).toEqual([["Documentation", "true"]]);
     expect(await shown(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
+    expect(await shown("/examples/markers/")).toEqual([["Examples", "true"]]);
     expect(await shown("/")).toEqual([]);
   }, 60_000);
 
   it("leaves the page where an anchor put it", async () => {
     for (const viewport of [DESKTOP, PHONE]) {
-      for (const route of ["/#examples", "/#markers", `${docRoute("element")}#url-state`]) {
+      for (const route of [
+        "/#examples",
+        "/examples/markers/#markers",
+        `${docRoute("element")}#url-state`,
+      ]) {
         const { page, context } = await opened(site, route, viewport);
         const before = await page.evaluate(() => scrollY);
         expect(before, route).toBeGreaterThan(0);
@@ -146,8 +151,27 @@ describe("the site's header", () => {
     await context.close();
   }, 30_000);
 
+  it("keeps its content within its height on a phone, on the web fonts and on the fallback", async () => {
+    for (const fonts of ["web", "fallback"]) {
+      const { page, context } = await site.visitor({ viewport: PHONE });
+      if (fonts === "fallback") await page.route(/\.woff2$/, (route) => route.abort());
+      await page.goto(site.url);
+      const fits = await header(page).evaluate(async (element) => {
+        await document.fonts.ready;
+        const { top, bottom } = element.getBoundingClientRect();
+        return [...element.querySelectorAll("*")].every((child) => {
+          const box = child.getBoundingClientRect();
+          const drawn = box.height > 1 || box.width > 1;
+          return !drawn || (box.top >= top - 0.5 && box.bottom <= bottom + 0.5);
+        });
+      });
+      expect(fits, fonts).toBe(true);
+      await context.close();
+    }
+  }, 30_000);
+
   it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
-    const { page, context } = await opened(site, "/examples/data-routes/", DESKTOP);
+    const { page, context } = await opened(site, "/examples/styling/", DESKTOP);
     await page.mouse.wheel(0, 2500);
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
     expect((await header(page).boundingBox())?.y).toBe(0);
@@ -191,9 +215,10 @@ describe("the site's header", () => {
     await context.close();
   }, 30_000);
 
-  it("lands an anchor's target below it", async () => {
+  it("lands an anchor's target below it, an old one on the home page sent on to its page first", async () => {
     for (const viewport of [DESKTOP, PHONE]) {
       const { page, context } = await opened(site, "/#markers", viewport);
+      await page.waitForURL("**/examples/markers/#markers");
       const heading = await page.locator("#markers-title").boundingBox();
       expect(heading?.y).toBeGreaterThanOrEqual(await headerBottom(page));
       await context.close();

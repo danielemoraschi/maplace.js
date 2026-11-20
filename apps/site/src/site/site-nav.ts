@@ -1,3 +1,4 @@
+import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
 /** A link of the header's nav. */
@@ -14,8 +15,8 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     href: docRoute("getting-started"),
     sectionPaths: REPO_DOCS.map(({ id }) => docRoute(id)),
   },
-  // Never marked: the group bar shows which group is shown, and a group switch leaves this header.
-  { label: "Examples", href: "/#examples" },
+  // The home page's index of every example; marked on each feature's page.
+  { label: "Examples", href: "/#examples", sectionPaths: EXAMPLE_GROUPS.map(groupPath) },
 ];
 
 /** `link`'s `aria-current` on the page at `path`: set on the pages it stands for. */

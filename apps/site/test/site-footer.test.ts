@@ -4,7 +4,7 @@ import { FOOTER_PAGES } from "../src/site/footer-pages.ts";
 import { opened, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, footerToggle, PHONE } from "./visitor.ts";
 
-const LONG_PAGE = "/examples/data-routes/";
+const LONG_PAGE = "/examples/styling/";
 const SHORT_PAGE = "/404.html";
 
 const site = siteBuiltBeforeTests();

@@ -20,6 +20,7 @@ import {
   leaveOnlySection,
   pageMapState,
   sectionOf,
+  sectionPage,
   shownNotes,
   type VersionChoice,
   versionsInTurn,
@@ -252,7 +253,7 @@ describe("a MapLibre version's start", () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
       await route.fallback();
     });
-    await page.goto(new URL("/#simple", site.url).href);
+    await page.goto(new URL(`${sectionPage("simple")}#simple`, site.url).href);
     await leaveOnlySection(page, "simple");
     await chooseProvider(page, "MapLibre");
     await chooseVersion(page, "simple", "Bundler");

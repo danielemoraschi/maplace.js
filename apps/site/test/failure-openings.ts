@@ -8,7 +8,7 @@ import {
   sectionPage,
 } from "./home-sections.ts";
 import type { SiteSession } from "./site-session.ts";
-import { footerToggle, openHome, type VisitorOptions } from "./visitor.ts";
+import { footerToggle, openExamplesPage, type VisitorOptions } from "./visitor.ts";
 
 /** A section opened on its own, a provider and a version chosen, before consenting. */
 export interface Opening {
@@ -32,7 +32,7 @@ export async function sectionFrom(site: SiteSession, options: VisitorOptions, op
   const { example, provider, version, beforeConsent } = opening;
   const visit = await site.visitor(options);
   const { page } = visit;
-  await openHome(page, site.url, sectionPage(example));
+  await openExamplesPage(page, site.url, sectionPage(example));
   await leaveOnlySection(page, example);
   if (provider === "google") await chooseProvider(page, "Google");
   await chooseVersion(page, example, version);

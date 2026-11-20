@@ -1,9 +1,11 @@
 import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import { HOME_ROUTE } from "../examples/home-page.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
 /** The pages with Markdown behind them: a new page has none until it is listed here. */
 export const MARKDOWN_ROUTES: readonly string[] = [
+  HOME_ROUTE,
   ...EXAMPLE_GROUPS.map(groupPath),
   CHANGELOG_PAGE.route,
   ...REPO_DOCS.map(({ id }) => docRoute(id)),

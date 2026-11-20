@@ -10,10 +10,11 @@ import MapFrame from "./MapFrame.astro";
 import ProviderSwitch from "./ProviderSwitch.astro";
 
 interface Props extends ExampleSection {
-  number: number;
+  /** Its number as the site shows it, `01` (`sectionLabel`). */
+  numberLabel: string;
 }
 
-const { number, name, title, summary, drawsOwnList, drawsOwnFrame } = Astro.props;
+const { numberLabel, name, title, summary, drawsOwnList, drawsOwnFrame } = Astro.props;
 const codeTabs = codeTabsOf(name);
 const codes = codeTabs.flatMap(({ codes }) => codes);
 const dataLinks = fetchedDataLinks(codes);
@@ -30,9 +31,9 @@ const panel = (tab: string) => `example-${name}-${tab}`;
   aria-labelledby={`${name}-title`}
   data-version-switch={name}
 >
-  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1" data-heading-row>
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
     <h2 class="m-0 text-3xl" id={`${name}-title`}>
-      <span class="text-accent">{String(number).padStart(2, "0")}</span>{" "}{title}
+      <span class="text-accent">{numberLabel}</span>{" "}{title}
     </h2>
     <p class="m-0 text-muted">{summary}</p>
   </div>

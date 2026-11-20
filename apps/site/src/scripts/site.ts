@@ -9,8 +9,6 @@ import { runPageScripts } from "../examples/page-scripts.ts";
 import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
-import { fetchGroupPanel } from "./group-panels.ts";
-import { startGroupSwitch } from "./group-switch.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
 import { followNavFocus } from "./nav-in-view.ts";
@@ -25,7 +23,7 @@ import { showStarCount } from "./star-count.ts";
 import { versionStarter } from "./version-start.ts";
 import { startProviderToggle } from "./version-switch.ts";
 
-// An old home page link to an example on another group's page goes there (W38).
+// An old link to an example on a page that no longer holds it goes to the one that does (W63).
 followSectionAnchor(location);
 
 // Every map on the site is held (`<maplace-map hold>`): nothing from Google Maps or OpenFreeMap
@@ -89,7 +87,6 @@ const startSections = sectionStarter({
 provideSave(globalThis, document);
 followNavFocus(document);
 startSections(document);
-startGroupSwitch({ document, startSections, fetchPanel: fetchGroupPanel, leave: location });
 void showStarCount(document);
 startConsent({
   document,

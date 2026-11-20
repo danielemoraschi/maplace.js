@@ -2,18 +2,11 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { EXAMPLE_GROUPS, groupPath, sectionHref } from "../src/examples/example-sections.ts";
+import { HOME_HEADING, HOME_INTRO } from "../src/examples/home-page.ts";
 import { STAR_COUNT_PATH } from "../src/site/star-count-api.ts";
-import {
-  chooseProvider,
-  chooseTab,
-  chooseVersion,
-  sectionPage,
-  shownNotes,
-  visitSection,
-} from "./home-sections.ts";
-import { recordAnimations } from "./recorded-animations.ts";
 import { ASKED, opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { DESKTOP, footerToggle, openHome, PHONE, placeholder } from "./visitor.ts";
+import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -87,76 +80,40 @@ describe("the home page's headings and install box", () => {
   }, 30_000);
 });
 
-describe("Data & routes' examples", () => {
-  it("runs a page's scripts as its map opens: route's stops, big's points", async () => {
-    const { page, context, fetched } = await site.visitor();
-    await openHome(page, site.url, sectionPage("route"));
-    await placeholder(page).click();
-    await chooseProvider(page, "Google");
-    await page.locator("#route-map").scrollIntoViewIfNeeded();
-    await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () => (document.getElementById("route-map") as { route?: unknown } | null)?.route,
-          ),
-        ASKED,
-      )
-      .toMatchObject({ stops: ["milan", "zurich", "paris", "munich"], via: ["zurich"] });
-    await page.locator("#big-map").scrollIntoViewIfNeeded();
-    await expect.poll(() => fetched("/examples/data/points-4k.json"), ASKED).toBe(true);
+describe("the home page's hero and index (W63)", () => {
+  it("heads the page with the library, its words clear of the drawing beside it", async () => {
+    const { page, context } = await opened(site, "/", { width: 1120, height: 800 });
+    await page.evaluate(() => document.fonts.ready);
+    const heading = page.locator("h1");
+    // biome-ignore lint/performance/useDomNodeTextContent: Playwright's, and the text as rendered: the H1's <br>s are its spaces.
+    expect((await heading.innerText()).replace(/\s+/g, " ")).toBe(`${HOME_HEADING}.`);
+    expect(await page.locator("h1 + p").textContent()).toBe(HOME_INTRO);
+    const drawing = await boxOf(page.locator("svg:has(+ h1)"));
+    const textRight = await heading.evaluate((h1) => {
+      const range = document.createRange();
+      range.selectNodeContents(h1);
+      return Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+    });
+    expect(drawing.x - textRight).toBeGreaterThan(0);
     await context.close();
   }, 30_000);
 
-  it("runs the chosen version once consented, its map in a box", async () => {
-    const { page, context, fetched } = await site.visitor({ google: "stubbed" });
-    await openHome(page, site.url, sectionPage("route"));
-    // Chosen before consent, so big's page map, hidden, is never released: only its React
-    // version can fetch the points.
-    await chooseProvider(page, "Google");
-    await chooseVersion(page, "route", "Bundler");
-    await chooseVersion(page, "big", "React");
-    await footerToggle(page).click();
-    await page.locator("#route-vanilla-map").scrollIntoViewIfNeeded();
-    await expect
-      .poll(() => page.locator('#route-vanilla-list [role="listbox"]').count(), ASKED)
-      .toBe(1);
-    const box = await page.locator("#route-vanilla-map").boundingBox();
-    expect(box?.height).toBeGreaterThan(0);
-    await page.locator("#big-react-root").scrollIntoViewIfNeeded();
-    await expect.poll(() => fetched("/examples/data/points-4k.json"), ASKED).toBe(true);
-    const reactMap = await page.locator("#big-react-root .map").boundingBox();
-    expect(reactMap?.height).toBeGreaterThan(0);
-    await context.close();
-  }, 30_000);
-});
-
-describe("the home page's code tabs", () => {
-  it("shows a host's Google loader as one closed line, opened on a click", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url);
-    await chooseProvider(page, "Google");
-    const section = await chooseTab(page, "simple", "Bundler");
-    const loader = section.getByRole("group").filter({ hasText: "Google's bootstrap loader" });
-    expect(await loader.getAttribute("open")).toBeNull();
-    expect(await loader.getByText("importLibrary").isVisible()).toBe(false);
-    await loader.getByText("Google's bootstrap loader").click();
-    expect(await loader.getByText("importLibrary").isVisible()).toBe(true);
-    await context.close();
-  }, 30_000);
-
-  it("fades in the code a tab shows and its map, the ones left hidden at once, unless asked for less motion", async () => {
-    const { page, context } = await site.visitor();
-    const animated = await recordAnimations(page);
-    await page.goto(site.url);
-    const section = await chooseTab(page, "simple", "React");
-    // The code panel, then the React version in the frame, which has no id.
-    expect(await animated()).toEqual(["example-simple-react", ""]);
-    expect(await section.locator(".map-frame").isVisible()).toBe(true);
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await chooseTab(page, "simple", "Script");
-    expect(await page.locator("#example-simple-script").isVisible()).toBe(true);
-    expect(await animated()).toEqual(["example-simple-react", ""]);
+  it("lists every feature's page, then each of its examples linking its section, and draws no map", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const index = page.locator("section#examples");
+    const pages = await index
+      .locator("h3 a")
+      .evaluateAll((links) => links.map((link) => [link.textContent, link.getAttribute("href")]));
+    expect(pages).toEqual(EXAMPLE_GROUPS.map((group) => [group.label, groupPath(group)]));
+    const examples = await index
+      .locator("li a")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+    expect(examples).toEqual(
+      EXAMPLE_GROUPS.flatMap((group) =>
+        group.sections.map((section) => sectionHref(group, section)),
+      ),
+    );
+    expect(await page.locator("maplace-map, section.example").count()).toBe(0);
     await context.close();
   }, 30_000);
 });
@@ -171,30 +128,4 @@ describe("the site's map ID", () => {
     );
     expect(texts.some((text) => text.includes(SITE_MAP_ID))).toBe(true);
   });
-});
-
-describe("polygon's saved note", () => {
-  /** Calls the `save` polygon's versions call with an edit, as one would. */
-  const save = (page: Page, title: string) =>
-    page.evaluate((saved) => {
-      const pageGlobals = globalThis as unknown as { save(location: object): void };
-      pageGlobals.save({ id: "park", title: saved, path: [1, 2, 3] });
-    }, title);
-
-  it("says what the shown version saved, each version keeping its own", async () => {
-    const { page, context, section } = await visitSection(site, "polygon");
-    await chooseVersion(page, "polygon", "Bundler");
-    const saved = shownNotes(section).locator("[data-saved]");
-    await save(page, "Park");
-    expect(await saved.textContent()).toBe("Saved: Park, 3 points.");
-    expect(await saved.isVisible()).toBe(true);
-    await chooseVersion(page, "polygon", "Script");
-    expect(await saved.isVisible(), "the Script version saved nothing").toBe(false);
-    const bundlerSave = section.getByText("Saved: Park, 3 points.");
-    expect(await bundlerSave.isVisible(), "the hidden Bundler version's save").toBe(false);
-    await chooseVersion(page, "polygon", "Bundler");
-    expect(await saved.textContent()).toBe("Saved: Park, 3 points.");
-    expect(await saved.isVisible()).toBe(true);
-    await context.close();
-  }, 30_000);
 });

@@ -24,8 +24,11 @@ describe("navCurrent", () => {
     expect(marked(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
   });
 
-  it("marks Examples on no group's page: the group bar does", () => {
-    for (const group of EXAMPLE_GROUPS) expect(marked(groupPath(group))).toEqual([]);
+  it("marks Examples on every feature's page, and not on the home page its link goes to", () => {
+    for (const group of EXAMPLE_GROUPS)
+      expect(marked(groupPath(group))).toEqual([["Examples", "true"]]);
+    expect(link("Examples").href).toBe("/#examples");
+    expect(marked("/")).toEqual([]);
   });
 
   it("marks nothing on the builder's page, which the footer links", () => {

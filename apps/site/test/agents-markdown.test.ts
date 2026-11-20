@@ -14,7 +14,6 @@ import {
 } from "../src/site/markdown-routes.ts";
 import { REPO_DOCS } from "../src/site/repo-docs.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
-import { groupLink } from "./home-sections.ts";
 import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 import { DESKTOP } from "./visitor.ts";
 
@@ -83,7 +82,7 @@ describe("a page's Markdown", () => {
     expect(markdown.match(/<time /g)).toHaveLength(listLines(readRootFile(CHANGELOG_FILE)).length);
   });
 
-  it("has a group's guides and code", async () => {
+  it("has a feature's guides and code", async () => {
     const markdown = await (await served("/examples/lists/index.md")).text();
     expect(markdown).toContain("## Your own list");
     expect(markdown).toContain("defineListView");
@@ -168,9 +167,9 @@ describe("a page's head and its link", () => {
     expect(html).not.toContain('rel="alternate"');
   });
 
-  it("carries the group's Markdown link on switching group in place", async () => {
+  it("carries a feature's Markdown link on its page, reached from the home page's index", async () => {
     const { page, context } = await open("/");
-    await groupLink(page, "Lists").click();
+    await page.locator("section#examples h3 a", { hasText: "Lists and menus" }).click();
     await page.waitForURL(new URL("/examples/lists/", site.url).href);
     const shown = page.locator('main a[type="text/markdown"]:visible');
     await shown.first().waitFor();

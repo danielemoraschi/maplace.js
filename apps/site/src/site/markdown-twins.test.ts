@@ -9,6 +9,7 @@ import {
   groupPath,
 } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
+import { HOME_HEADING, HOME_INTRO } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "./markdown-routes.ts";
@@ -24,6 +25,7 @@ const STORED: StoredPages = {
   docs: REPO_DOCS.map(({ id }) => ({ id, body: `The body of ${id}.\n` })),
   changelog: [{ id: CHANGELOG_ENTRY, body: "## Unreleased\n" }],
   guides: [{ id: "custom-list", body: "The custom list's guide." }],
+  references: EXAMPLE_GROUPS.map(({ id }) => ({ id, body: `The tables of ${id}.\n` })),
 };
 
 const TWINS = markdownTwins(STORED);
@@ -74,20 +76,41 @@ describe("markdownTwins", () => {
     );
   });
 
-  it("heads and introduces a group's twin as its page, then its summary", () => {
+  it("heads and introduces a group's twin as its page, then its first section", () => {
     for (const group of EXAMPLE_GROUPS) {
       const { markdown } = twinAt(groupPath(group));
-      const opening = `# ${groupHeading(group)}\n\n${group.intro}\n\n${group.summary}\n`;
+      const opening = `# ${groupHeading(group)}\n\n${group.intro}\n\n## ${group.sections[0]?.title}\n`;
       expect(markdown.startsWith(opening), group.id).toBe(true);
     }
+  });
+
+  it("ends a group's twin with its reference tables, as its page does", () => {
+    for (const group of EXAMPLE_GROUPS) {
+      const { markdown } = twinAt(groupPath(group));
+      expect(markdown.endsWith(`\n## Reference\n\nThe tables of ${group.id}.\n`), group.id).toBe(
+        true,
+      );
+    }
+  });
+
+  it("writes the home page's twin as its index: each feature's page, then its examples", () => {
+    const { markdown } = twinAt("/");
+    expect(markdown.startsWith(`# ${HOME_HEADING}\n\n${HOME_INTRO}\n\n## Examples\n`)).toBe(true);
+    expect(markdown).toContain("\n### [Markers and popups](/examples/markers/)\n");
+    expect(markdown).toContain(
+      "\n- [01 One marker](/examples/markers/#simple): One place on a map.\n",
+    );
+    expect(markdown).toContain("\n- [31 Default styles off](/examples/styling/#unstyled): ");
   });
 
   it("writes a group's sections in order, each with its summary", () => {
     const lists = EXAMPLE_GROUPS.find(({ id }) => id === "lists");
     const { markdown } = twinAt("/examples/lists/");
-    expect(markdown).toContain(`\n\n${lists?.summary}\n\n`);
     const headings = markdown.split("\n").filter((line) => line.startsWith("## "));
-    expect(headings).toEqual(lists?.sections.map(({ title }) => `## ${title}`));
+    expect(headings).toEqual([
+      ...(lists?.sections ?? []).map(({ title }) => `## ${title}`),
+      "## Reference",
+    ]);
     for (const section of lists?.sections ?? []) {
       expect(sectionOf(markdown, section.title).trimStart().startsWith(section.summary)).toBe(true);
     }
@@ -136,6 +159,12 @@ describe("markdownTwins", () => {
   it("refuses a guide stored without its Markdown", () => {
     expect(() => markdownTwins({ ...STORED, guides: [{ id: "custom-list" }] })).toThrow(
       "the exampleGuides collection has no Markdown for custom-list",
+    );
+  });
+
+  it("refuses a feature stored without its reference tables, naming it", () => {
+    expect(() => markdownTwins({ ...STORED, references: [] })).toThrow(
+      "the groupReferences collection has no Markdown for markers",
     );
   });
 

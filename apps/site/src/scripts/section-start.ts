@@ -20,10 +20,10 @@ export interface SectionStarting {
 }
 
 /**
- * Returns what starts the example sections under a root, the page itself at load or a group's
- * panel added later (`group-switch.ts`): its version tabs, its versions and toggles on the page's
- * provider, its failure notes and reload buttons, then its maps and versions, held until consent
- * and released as each comes into view. A root is started once.
+ * Returns what starts the example sections under a root, the page itself at load: its version
+ * tabs, its versions and toggles on the page's provider, its failure notes and reload buttons,
+ * then its maps and versions, held until consent and released as each comes into view. A root is
+ * started once.
  */
 export function sectionStarter({
   whenVisible,

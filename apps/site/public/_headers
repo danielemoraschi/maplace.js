@@ -5,12 +5,20 @@
 # Each page with Markdown behind it names it, for agents that read headers (W41).
 /
   Link: </index.md>; rel="alternate"; type="text/markdown"
+/examples/markers/
+  Link: </examples/markers/index.md>; rel="alternate"; type="text/markdown"
 /examples/lists/
   Link: </examples/lists/index.md>; rel="alternate"; type="text/markdown"
-/examples/shapes/
-  Link: </examples/shapes/index.md>; rel="alternate"; type="text/markdown"
-/examples/data-routes/
-  Link: </examples/data-routes/index.md>; rel="alternate"; type="text/markdown"
+/examples/search/
+  Link: </examples/search/index.md>; rel="alternate"; type="text/markdown"
+/examples/circles-polygons/
+  Link: </examples/circles-polygons/index.md>; rel="alternate"; type="text/markdown"
+/examples/lines-routes/
+  Link: </examples/lines-routes/index.md>; rel="alternate"; type="text/markdown"
+/examples/clusters-heatmaps/
+  Link: </examples/clusters-heatmaps/index.md>; rel="alternate"; type="text/markdown"
+/examples/live-data/
+  Link: </examples/live-data/index.md>; rel="alternate"; type="text/markdown"
 /examples/styling/
   Link: </examples/styling/index.md>; rel="alternate"; type="text/markdown"
 /changelog/
@@ -47,12 +55,20 @@
 # Each page's Markdown names the page as the one to index, so search lists the page alone.
 /index.md
   Link: <https://maplacejs.com/>; rel="canonical"
+/examples/markers/index.md
+  Link: <https://maplacejs.com/examples/markers/>; rel="canonical"
 /examples/lists/index.md
   Link: <https://maplacejs.com/examples/lists/>; rel="canonical"
-/examples/shapes/index.md
-  Link: <https://maplacejs.com/examples/shapes/>; rel="canonical"
-/examples/data-routes/index.md
-  Link: <https://maplacejs.com/examples/data-routes/>; rel="canonical"
+/examples/search/index.md
+  Link: <https://maplacejs.com/examples/search/>; rel="canonical"
+/examples/circles-polygons/index.md
+  Link: <https://maplacejs.com/examples/circles-polygons/>; rel="canonical"
+/examples/lines-routes/index.md
+  Link: <https://maplacejs.com/examples/lines-routes/>; rel="canonical"
+/examples/clusters-heatmaps/index.md
+  Link: <https://maplacejs.com/examples/clusters-heatmaps/>; rel="canonical"
+/examples/live-data/index.md
+  Link: <https://maplacejs.com/examples/live-data/>; rel="canonical"
 /examples/styling/index.md
   Link: <https://maplacejs.com/examples/styling/>; rel="canonical"
 /changelog/index.md

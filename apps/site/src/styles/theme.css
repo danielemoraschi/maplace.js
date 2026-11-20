@@ -29,12 +29,10 @@
   --text-hero: clamp(2.125rem, 9vw, 4.5rem);
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
-  /* The header's own height (`SiteHeader.astro`), where the examples' bar is held under it. */
+  /* The header's own height (`SiteHeader.astro`). */
   --spacing-header-height: 4.0625rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
   --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
-  /* The examples' bar (`ExampleGroupBar.astro`) from 48rem; below, its smaller row's (`base.css`). */
-  --spacing-group-bar: 3.6875rem;
   /* The provider toggle (`ProviderSwitch.astro`), beside each example's tabs and over the builder's preview. */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;

@@ -21,8 +21,8 @@ const SECTION = "[data-version-switch]";
 /**
  * Starts the page's provider toggles (`[data-provider-choice]`, one on each section, or the
  * builder's), their choice kept in `storage` for the visit, and returns what adds the
- * `[data-version-switch]` sections under a root to those they switch: the page's own, then each
- * group's panel added later (`group-switch.ts`). Each section shows the version its selected tab
+ * `[data-version-switch]` sections under a root to those they switch, the page's own or a root
+ * added later. Each section shows the version its selected tab
  * names (`data-version`), on the provider the toggles chose:
  * - in its frame, that `[data-live-version]`, faded in, the others hidden at once, each with its
  *   own notes, shown and hidden with it (`frame.css`);

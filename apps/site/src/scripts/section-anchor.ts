@@ -1,15 +1,18 @@
-import { findGroupOfSection, groupPath, HOME_GROUP } from "../examples/example-sections.ts";
+import { findGroupAtPath, findGroupOfSection, groupPath } from "../examples/example-sections.ts";
+import { HOME_ROUTE } from "../examples/home-page.ts";
 
 /**
- * The page an old link to an example on the home page (`/#route`) now goes to: the page of the
- * group holding it (W38). Only the home page's links, as every example was there; another page's own
- * anchor, a heading sharing an example's name (`/locations/#markers`), stays. The hash is
- * compared raw: a stray `%` names no example.
+ * The page an old link to an example now goes to, when the page it names no longer holds it: an
+ * example on the home page (`/#route`, before W63) or on an examples' page that gave it to another
+ * (`/examples/lists/#search`), redirected there when the old page is gone (`_redirects`). Only the
+ * home page's and the examples' pages' links: another page's own anchor, a heading sharing an
+ * example's name (`/locations/#markers`), stays. The hash is compared raw: a stray `%` names no
+ * example.
  */
 export function pageForAnchor(hash: string, path: string): string | undefined {
-  if (path !== groupPath(HOME_GROUP)) return undefined;
+  if (path !== HOME_ROUTE && findGroupAtPath(path) === undefined) return undefined;
   const group = findGroupOfSection(hash.slice(1));
-  if (group === undefined || group.id === HOME_GROUP.id) return undefined;
+  if (group === undefined || groupPath(group) === path) return undefined;
   return groupPath(group);
 }
 

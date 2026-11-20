@@ -72,7 +72,7 @@ function withoutClosingHashes(text: string): string {
 }
 
 /** `target`, a link on the page at `route`, as a rooted link: `#markers` → `/locations/#markers`. */
-function rooted(target: string, route: string): string {
+export function rooted(target: string, route: string): string {
   return target.startsWith("#") ? `${route}${target}` : target;
 }
 

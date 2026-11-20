@@ -12,8 +12,10 @@ import {
   type ExampleCode,
   exampleStylesheets,
 } from "../examples/example-sources.ts";
+import { HOME_HEADING, HOME_INTRO, HOME_ROUTE } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
+import { homeIndexMarkdown } from "./home-index-markdown.ts";
 import { markdownAddress } from "./markdown-routes.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 
@@ -28,6 +30,8 @@ export interface StoredPages {
   readonly docs: readonly StoredMarkdown[];
   readonly changelog: readonly StoredMarkdown[];
   readonly guides: readonly StoredMarkdown[];
+  /** Each feature's reference tables, by its group's id (`group-references-loader.ts`). */
+  readonly references: readonly StoredMarkdown[];
 }
 
 /** A page's Markdown, and where it is served. */
@@ -40,9 +44,17 @@ export interface MarkdownTwin {
 const SNIPPET_MARKER = /<!-- example: [^\n]*-->\n/g;
 
 /** The twin of every page with Markdown behind it (`MARKDOWN_ROUTES`). */
-export function markdownTwins({ docs, changelog, guides }: StoredPages): MarkdownTwin[] {
+export function markdownTwins({
+  docs,
+  changelog,
+  guides,
+  references,
+}: StoredPages): MarkdownTwin[] {
   return [
-    ...EXAMPLE_GROUPS.map((group) => twin(groupPath(group), exampleGroupMarkdown(group, guides))),
+    twin(HOME_ROUTE, markdownPage(HOME_HEADING, HOME_INTRO, homeIndexMarkdown())),
+    ...EXAMPLE_GROUPS.map((group) =>
+      twin(groupPath(group), exampleGroupMarkdown(group, guides, references)),
+    ),
     twin(
       CHANGELOG_PAGE.route,
       markdownPage(
@@ -78,9 +90,15 @@ function requiredBody(entries: readonly StoredMarkdown[], id: string, collection
   return body;
 }
 
-function exampleGroupMarkdown(group: ExampleGroup, guides: readonly StoredMarkdown[]): string {
+/** A feature's page: its heading and intro, its sections, then its reference tables. */
+function exampleGroupMarkdown(
+  group: ExampleGroup,
+  guides: readonly StoredMarkdown[],
+  references: readonly StoredMarkdown[],
+): string {
   const sections = group.sections.map((section) => sectionMarkdown(section, guides));
-  return markdownPage(groupHeading(group), group.intro, [group.summary, ...sections].join("\n\n"));
+  const reference = `## Reference\n\n${requiredBody(references, group.id, "groupReferences").trim()}`;
+  return markdownPage(groupHeading(group), group.intro, [...sections, reference].join("\n\n"));
 }
 
 /** A section: its summary, its guide if it has one, its code. */

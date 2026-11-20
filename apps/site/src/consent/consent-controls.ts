@@ -35,7 +35,7 @@ export function startConsent({ document, store, openMaps, reload }: ConsentContr
     }
   }
 
-  // On the document, so a placeholder in a group's panel added later grants too.
+  // On the document: one listener for every placeholder, wherever it is.
   document.addEventListener("click", ({ target }) => {
     if (!(target instanceof Element)) return;
     if (target.closest("[data-maps-grant]")) grant();

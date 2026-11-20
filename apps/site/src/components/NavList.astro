@@ -1,21 +1,26 @@
 ---
-import { docRoute, REPO_DOCS } from "../site/repo-docs.ts";
+/** A link of a page's side column: one of the pages it lists. */
+export interface NavLink {
+  readonly href: string;
+  readonly label: string;
+}
 
 interface Props {
-  /** The id of the doc shown. */
+  links: readonly NavLink[];
+  /** The href of the page shown, marked. */
   current: string;
 }
 
-const { current } = Astro.props;
+const { links, current } = Astro.props;
 ---
 
 <ul class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
   {
-    REPO_DOCS.map(({ id, label }) => (
+    links.map(({ href, label }) => (
       <li>
         <a
-          href={docRoute(id)}
-          aria-current={id === current ? "page" : undefined}
+          href={href}
+          aria-current={href === current ? "page" : undefined}
           class="no-underline aria-[current=page]:font-semibold aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-3"
         >
           {label}

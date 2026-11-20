@@ -1,16 +1,11 @@
 ---
 import quickStartMapLibre from "../../../../packages/maplace/examples/quick-start/maplibre/page.html?raw";
 import quickStart from "../../../../packages/maplace/examples/quick-start/page.html?raw";
-import { type ExampleGroup, HEADING_TAIL } from "../examples/example-sections.ts";
+import { HEADING_TAIL } from "../examples/example-sections.ts";
+import { HOME_HEADING_LEAD, HOME_INTRO } from "../examples/home-page.ts";
 import { REPOSITORY_URL } from "../site/repo-docs.ts";
 import { starButtonShadow } from "../site/star-button-markup.ts";
 import SourceCode from "./SourceCode.astro";
-
-interface Props {
-  group: ExampleGroup;
-}
-
-const { group } = Astro.props;
 ---
 
 <div class="flow-root pt-10 pb-4">
@@ -24,9 +19,9 @@ const { group } = Astro.props;
     <circle class="fill-paper stroke-ink stroke-5" cx="170" cy="48" r="11" />
   </svg>
   <h1 class="m-0 text-hero leading-[0.95]">
-    <span data-hero-lead>{group.headingLead}</span>{HEADING_TAIL.map((line) => <><br />{line}</>)}.
+    {HOME_HEADING_LEAD}{HEADING_TAIL.map((line) => <><br />{line}</>)}.
   </h1>
-  <p class="mt-4 mb-4 text-lg" data-hero-intro>{group.intro}</p>
+  <p class="mt-4 mb-4 text-lg">{HOME_INTRO}</p>
   <p class="mt-0 mb-6 h-7">
     <span data-star-button
       ><template shadowrootmode="open" set:html={starButtonShadow(REPOSITORY_URL)} /><a

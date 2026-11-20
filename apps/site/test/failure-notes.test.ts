@@ -14,7 +14,7 @@ import {
 import { ON_MAPLIBRE } from "./maplibre-session.ts";
 import { MAPLIBRE_GL_CHUNKS, VANILLA_CHUNK } from "./site-chunks.ts";
 import { ASKED, siteBuiltBeforeTests } from "./site-session.ts";
-import { addedByBootstrap, footerToggle, openHome, placeholder } from "./visitor.ts";
+import { addedByBootstrap, footerToggle, openExamplesPage, placeholder } from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -29,7 +29,7 @@ const reloadButton = (page: Page) =>
 describe("a map's failure note", () => {
   it("says when its own bootstrap's Maps JS didn't load for a version", async () => {
     const { page, context, mapsJsRequests } = await site.visitor();
-    await openHome(page, site.url);
+    await openExamplesPage(page, site.url);
     // Only simple's section left, its Bundler version chosen before consent: its page map never
     // asks for Maps JS, so only the version's bootstrap does.
     await leaveOnlySection(page, "simple");
@@ -49,7 +49,7 @@ describe("a map's failure note", () => {
 
   it("says when Maps JS didn't load for a version, the page's tag having failed first", async () => {
     const { page, context, mapsJsRequests } = await site.visitor();
-    await openHome(page, site.url);
+    await openExamplesPage(page, site.url);
     await chooseProvider(page, "Google");
     await placeholder(page).click();
     await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
@@ -81,7 +81,7 @@ describe("a map's failure note", () => {
       refused = true;
       return route.abort();
     });
-    await openHome(page, site.url);
+    await openExamplesPage(page, site.url);
     await leaveOnlySection(page, "simple");
     await chooseVersion(page, "simple", "Bundler");
     await footerToggle(page).click();
