@@ -13,11 +13,8 @@ const { version } = Astro.props;
 
 {
   filesAsShown(version).map((shown) => (
-    <figure class="m-0 mb-4">
+    <div class="mb-4">
       <ExampleFile shown={shown} />
-      <figcaption class="mt-2 text-xs text-muted">
-        examples/{version.folder}/{shown.file}, the file the tests run
-      </figcaption>
-    </figure>
+    </div>
   ))
 }

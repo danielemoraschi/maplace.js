@@ -42,8 +42,6 @@ const panelPrefix = `example-${name}`;
   <h1 class="mt-0 mb-2 text-title" id={`${name}-title`}>{pageHeading(title)}</h1>
   <p class="mt-0 mb-2 max-w-text text-lg text-muted">{summary}</p>
   <p class="mt-0 mb-0 text-sm"><MarkdownLink route={path} /></p>
-  <ExampleFileLinks lead="Fetches" links={dataLinks} />
-  <ExampleFileLinks lead="Styled by" links={styleLinks} />
   {/* One control: a tab runs the map from its version and shows that version's code under it. */}
   {/* Spaced apart on one row; on a phone, the switch wraps under the tabs at the start. */}
   <div class="mt-10 mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
@@ -51,6 +49,13 @@ const panelPrefix = `example-${name}`;
     <ProviderSwitch name={`${name}-provider`} look="pill" />
   </div>
   <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
+  {/* What the map loads beside its code: its data and its stylesheet, each linked. */}
+  <ExampleFileLinks
+    parts={[
+      { lead: "Fetches", links: dataLinks },
+      { lead: "Styled by", links: styleLinks },
+    ]}
+  />
   {
     codeTabs.map(({ kind, codes }, index) => (
       <div

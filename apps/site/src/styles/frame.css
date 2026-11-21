@@ -47,6 +47,14 @@
   }
 }
 /*
+ * While the maps are off, the stand-in over each map (`ConsentPlaceholder.astro`) is all that
+ * shows: what it covers, the map's frame or an example's own, would edge its rounded corners. Unseen,
+ * not hidden: the page under it still runs as before.
+ */
+[data-maps="off"] .version {
+  opacity: 0;
+}
+/*
  * An example's map, code and own buttons rounded, as the home page's panels are (W66); the
  * builder's, which set none of these, stay square.
  */

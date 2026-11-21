@@ -58,6 +58,21 @@ describe("the corners of an example's map and code (W66)", () => {
     await context.close();
   }, 30_000);
 
+  it("shows only the stand-in while the maps are off, not the frame under its corners", async () => {
+    const { page, context, section } = await visitSection(site, "whats-on");
+    const version = section.locator(".version").first();
+    const opacity = () => version.evaluate((node) => getComputedStyle(node).opacity);
+    await page.evaluate(() => {
+      document.documentElement.dataset.maps = "off";
+    });
+    expect(await opacity()).toBe("0");
+    await page.evaluate(() => {
+      document.documentElement.dataset.maps = "on";
+    });
+    expect(await opacity()).toBe("1");
+    await context.close();
+  }, 30_000);
+
   it("keeps the snippet builder's preview map and buttons square", async () => {
     const { page, context } = await opened(site, "/builder/", DESKTOP);
     expect(await framedCornersIn(page.locator("main"))).toEqual(["0px", "0px"]);

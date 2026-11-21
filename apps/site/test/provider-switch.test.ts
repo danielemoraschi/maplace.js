@@ -36,8 +36,9 @@ describe("the examples' provider toggle, on a section", () => {
     const section = await chooseTab(page, "simple", "Bundler");
     const shown = (text: string) =>
       section.getByRole("tabpanel").getByText(text).filter({ visible: true }).count();
-    expect(await shown("examples/simple/maplibre/vanilla.ts")).toBe(1);
-    expect(await shown("examples/simple/vanilla.ts")).toBe(0);
+    // Each provider's module, told apart by the entry it imports.
+    expect(await shown('"@maplacejs/maplace/maplibre"')).toBe(1);
+    expect(await shown('"@maplacejs/maplace/google"')).toBe(0);
     expect(await shown("Google's bootstrap loader")).toBe(0);
     await context.close();
   }, 30_000);
