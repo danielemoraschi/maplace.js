@@ -2,6 +2,8 @@
 
 Maplace.js comes with a few default styles. They make a map usable as soon as it is on a page, and the page can change any of them or turn them all off. What Maplace.js draws carries the classes below, for the page's own styles.
 
+The Styling examples show it on a map: [a restyled venue map](../../packages/maplace/examples/whats-on/guide.md), [faces as markers](../../packages/maplace/examples/team/guide.md), [map styles](../../packages/maplace/examples/styled/guide.md), [brand colours](../../packages/maplace/examples/brand/guide.md) and [the default styles off](../../packages/maplace/examples/unstyled/guide.md).
+
 ## Default styles
 
 Maplace.js adds its styles to the page itself (adopted stylesheets, so no `<link>` and nothing for a content security policy to allow), and only for what the page uses:
