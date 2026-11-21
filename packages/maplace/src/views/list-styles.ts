@@ -36,9 +36,9 @@ const SWITCH_LINE = `1px solid ${LINE}`;
 /**
  * The listbox as a column of buttons, on a light page or a dark one: its colours are mixed from
  * the text's own (`currentColor`). Every selector is in `:where()`, so any rule of the page wins;
- * the native `<select>` keeps the browser's look. A heading, the search box and its status, the
- * area switch (a segmented control: two joined buttons, the pressed one filled like a selected
- * entry), the group filter (a button that opens its boxes, rows like the entries, a group's
+ * the native `<select>` keeps the browser's look, set in level with a heading above it. A heading,
+ * the search box and its status, the area switch (a segmented control: two joined buttons, the
+ * pressed one filled like a selected entry), the group filter (a button that opens its boxes, rows like the entries, a group's
  * subgroups indented under it, scrolling within its own height, ticked in the text's colour) and the empty-area status (room only while it says something,
  * wrapping within the list's width rather than widening it) stay in view over entries that scroll;
  * a subgroup's heading and entries are indented under its parent's; a `display` is set
@@ -53,6 +53,7 @@ ${outsideUnstyled(`.${LISTBOX_CLASS}`)}{padding:.25rem;overflow:auto}
 ${outsideUnstyled(`.${LIST_CLASS}:not([hidden])`)}{display:flex;flex-direction:column}
 ${outsideUnstyled(`.${LIST_CLASS}>.${LISTBOX_CLASS}`)}{min-height:0}
 ${outsideUnstyled(`.${LIST_HEADING_CLASS}`)}{flex:none;padding:.5rem .75rem .25rem;font-weight:600}
+${outsideUnstyled(`.${LIST_HEADING_CLASS}+select`)}{margin:0 .75rem .5rem;max-width:calc(100% - 1.5rem)}
 ${outsideUnstyled(`${SWITCH}:not([hidden])`)}{display:flex;flex-wrap:wrap;flex:none;margin:.25rem;border:${SWITCH_LINE};border-radius:.375rem;overflow:hidden}
 ${outsideUnstyled(SWITCH_BUTTON)}{flex:1 1 0;white-space:nowrap;padding:.375rem .5rem;border:0;box-shadow:-1px 0 0 ${LINE},0 -1px 0 ${LINE};background:none;color:inherit;font:inherit;font-weight:600;cursor:pointer}
 @media (hover:hover){${outsideUnstyled(`${SWITCH_BUTTON}:hover`)}{background:linear-gradient(${tint(8)},${tint(8)})}}
