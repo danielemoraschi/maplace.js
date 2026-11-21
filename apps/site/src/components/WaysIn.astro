@@ -1,8 +1,8 @@
 ---
-import { filesAsShown } from "../examples/bootstrap-fold.ts";
 import { codeTabsOf } from "../examples/example-sources.ts";
-import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
-import { WAYS_IN_NOTES } from "../examples/home-page.ts";
+import { isModuleVersion, versionPanelId, versionTabId } from "../examples/example-versions.ts";
+import { WAYS_IN_GOOGLE_LOADER, WAYS_IN_NOTES } from "../examples/home-page.ts";
+import { waysInFiles } from "../examples/ways-in-files.ts";
 import ExampleFile from "./ExampleFile.astro";
 import ProviderPart from "./ProviderPart.astro";
 import ProviderSwitch from "./ProviderSwitch.astro";
@@ -17,14 +17,15 @@ const PANEL_PREFIX = "ways-in";
 
 {/*
   The four ways in (W66): the Simple example's code by way of using Maplace.js and by provider,
-  with no map, and no caption (the example's page names each file). Inside the hero's
-  `data-version-switch`, so `tabs.ts` and `version-switch.ts` drive it as they drive an example's
-  page, and the provider chosen holds for the visit.
+  with no map, no caption, and only the part a reader writes (`ways-in-files.ts`; the example's
+  page shows and names every file). Inside the hero's `data-version-switch`, so `tabs.ts` and
+  `version-switch.ts` drive it as they drive an example's page, and the provider chosen holds for
+  the visit.
 */}
-<div class="mt-10">
-  <div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-    <VersionTabs codeTabs={codeTabs} label="Ways to use Maplace.js" panelPrefix={PANEL_PREFIX} />
-    <ProviderSwitch name={`${PANEL_PREFIX}-provider`} legend="Show the code for" class="ms-auto" />
+<div class="mt-12">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <VersionTabs codeTabs={codeTabs} label="Ways to use Maplace.js" panelPrefix={PANEL_PREFIX} look="pill" />
+    <ProviderSwitch name={`${PANEL_PREFIX}-provider`} legend="Show the code for" look="pill" />
   </div>
   {
     codeTabs.map(({ kind, codes }, index) => (
@@ -33,16 +34,22 @@ const PANEL_PREFIX = "ways-in";
         id={versionPanelId(PANEL_PREFIX, kind)}
         aria-labelledby={versionTabId(PANEL_PREFIX, kind)}
         hidden={index !== 0}
-        class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] border-2 border-ink bg-paper max-[54rem]:grid-cols-1"
+        class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] rounded-[22px] border border-ink/15 bg-paper shadow-[0_1px_2px_rgb(27_36_48/0.08),0_18px_40px_-16px_rgb(27_36_48/0.32)] max-[54rem]:grid-cols-1"
       >
-        <div class="p-5">
-          <p class="m-0 font-display text-xl leading-tight font-extrabold tracking-[-0.025em]">{WAYS_IN_NOTES[kind].title}</p>
-          <p class="mt-2 mb-0 text-muted">{WAYS_IN_NOTES[kind].text}</p>
+        <div class="grid content-start gap-3 p-6">
+          <p class="headline m-0 text-lede leading-tight">{WAYS_IN_NOTES[kind].title}</p>
+          <p class="m-0 text-muted">{WAYS_IN_NOTES[kind].text}</p>
+          {isModuleVersion(kind) && (
+            <ProviderPart provider="google">
+              <p class="m-0 text-muted">{WAYS_IN_GOOGLE_LOADER}</p>
+            </ProviderPart>
+          )}
         </div>
-        <div class="min-w-0 border-s-2 border-ink p-4 max-[54rem]:border-s-0 max-[54rem]:border-t-2">
+        {/* Rounded at the panel's corners itself, the panel clipping nothing, so the code's focus ring shows whole. */}
+        <div class="min-w-0 rounded-e-[21px] bg-code-paper max-[54rem]:rounded-none max-[54rem]:rounded-b-[21px] [&_pre]:m-0 [&_pre]:rounded-e-[21px] [&_pre]:px-5 [&_pre]:py-4 max-[54rem]:[&_pre]:rounded-none max-[54rem]:[&_pre]:rounded-b-[21px]">
           {codes.map((code) => (
-            <ProviderPart provider={code.provider} class="grid gap-4">
-              {filesAsShown(code).map((shown) => <ExampleFile shown={shown} />)}
+            <ProviderPart provider={code.provider}>
+              {waysInFiles(code).map((shown) => <ExampleFile shown={shown} />)}
             </ProviderPart>
           ))}
         </div>

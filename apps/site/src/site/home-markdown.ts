@@ -1,6 +1,7 @@
 import {
   PROVIDER_POINTS,
   PROVIDERS_CONSENT_HREF,
+  PROVIDERS_CONSENT_LEAD,
   PROVIDERS_CONSENT_LINK,
   PROVIDERS_HEADING,
   PROVIDERS_PRIVACY,
@@ -18,6 +19,6 @@ function providersMarkdown(): string {
     const list = points.map(({ text }) => `- ${text}`).join("\n");
     return `### ${name}\n\n${list}`;
   });
-  const privacy = `${PROVIDERS_PRIVACY} [${PROVIDERS_CONSENT_LINK}](${PROVIDERS_CONSENT_HREF}).`;
+  const privacy = `${PROVIDERS_PRIVACY} ${PROVIDERS_CONSENT_LEAD} [${PROVIDERS_CONSENT_LINK}](${PROVIDERS_CONSENT_HREF}).`;
   return [`## ${PROVIDERS_HEADING}`, ...providers, privacy].join("\n\n");
 }

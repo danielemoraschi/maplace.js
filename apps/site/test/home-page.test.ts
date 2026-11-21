@@ -8,40 +8,16 @@ import {
   EXAMPLES_PAGE_ROUTE,
   groupPath,
 } from "../src/examples/example-sections.ts";
-import { STAR_COUNT_PATH } from "../src/site/star-count-api.ts";
-import { ASKED, opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
+import { WAYS_IN_GOOGLE_LOADER } from "../src/examples/home-page.ts";
+import { docRoute } from "../src/site/repo-docs.ts";
+import { chooseProvider } from "./home-sections.ts";
+import { opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
 
 /** The band's ground, as a computed colour. */
 const NIGHT = "rgb(18, 26, 34)";
 
 const site = siteBuiltBeforeTests();
-
-describe("the home page's star button", () => {
-  /** The star button's own shadow root, drawn by the page (W44). */
-  const starButton = (page: Page) => page.locator("[data-star-button]");
-
-  it("is drawn by the site, its count asked of the site itself and nothing of GitHub", async () => {
-    const { page, context, fetched, offsite } = await site.visitor();
-    await page.goto(site.url);
-    await expect(starButton(page).locator(".btn span").textContent()).resolves.toBe("GitHub");
-    // The fallback link, for a browser that can't attach the shadow root, stays out of sight.
-    expect(await starButton(page).locator(":scope > a").isVisible()).toBe(false);
-    await expect.poll(() => fetched(STAR_COUNT_PATH), ASKED).toBe(true);
-    expect(offsite()).toEqual([]);
-    await context.close();
-  }, 30_000);
-
-  it("shows the site's star count beside the button", async () => {
-    const { page, context } = await site.visitor();
-    await page.route(`**${STAR_COUNT_PATH}`, (route) => route.fulfill({ json: { stars: 1234 } }));
-    await page.goto(site.url);
-    await expect
-      .poll(() => starButton(page).locator(".social-count").textContent(), ASKED)
-      .toBe("1,234");
-    await context.close();
-  }, 30_000);
-});
 
 describe("the home page's night band (W66)", () => {
   /** A category row's ground and text, as the page draws them. */
@@ -61,6 +37,20 @@ describe("the home page's night band (W66)", () => {
     expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
     await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
     expect(await rowColours(page)).toEqual(["rgb(250, 250, 247)", "rgb(17, 17, 17)"]);
+    await context.close();
+  }, 30_000);
+
+  it("ends the home page on a night footer, and every other page on its own paper, a divider above it", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const ground = () =>
+      page.getByRole("contentinfo").evaluate((footer) => {
+        const { backgroundColor, borderTopWidth } = getComputedStyle(footer);
+        return { backgroundColor, borderTopWidth };
+      });
+    expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
+    await page.goto(new URL(docRoute("getting-started"), site.url).href);
+    // No ground of its own: the page's paper shows through.
+    expect(await ground()).toEqual({ backgroundColor: "rgba(0, 0, 0, 0)", borderTopWidth: "1px" });
     await context.close();
   }, 30_000);
 
@@ -121,4 +111,52 @@ describe("the site's map ID", () => {
     );
     expect(texts.some((text) => text.includes(SITE_MAP_ID))).toBe(true);
   });
+});
+
+describe("the home page's controls (W66)", () => {
+  it("tells a module's Google reader the page loads Google's loader first, and no one else", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const note = page.getByText(WAYS_IN_GOOGLE_LOADER);
+    const shownAt = async (tab: string, provider: "MapLibre" | "Google") => {
+      await page.getByRole("tab", { name: tab }).click();
+      await chooseProvider(page, provider, "Show the code for");
+      return note.filter({ visible: true }).count();
+    };
+    expect(await shownAt("Bundler", "MapLibre")).toBe(0);
+    expect(await shownAt("Bundler", "Google")).toBe(1);
+    expect(await shownAt("React", "Google")).toBe(1);
+    expect(await shownAt("HTML", "Google")).toBe(0);
+    expect(await shownAt("Script", "Google")).toBe(0);
+    await context.close();
+  }, 30_000);
+
+  it("draws the focus ring of every copy button, switch segment and code block whole", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const clipped = await page.evaluate(() => {
+      // The ring as base.css draws it: 3px, 2px out.
+      const ring = 5;
+      const controls = [
+        ...document.querySelectorAll("[data-copy]"),
+        ...document.querySelectorAll("[data-provider-choice] label"),
+        // The shown code, a scroller a keyboard reaches (`<Code>`'s tabindex).
+        ...document.querySelectorAll('[role="tabpanel"] pre[tabindex]'),
+      ].filter((control) => control.checkVisibility());
+      return controls.filter((control) => {
+        const box = control.getBoundingClientRect();
+        for (let up = control.parentElement; up; up = up.parentElement) {
+          if (getComputedStyle(up).overflow === "visible") continue;
+          const room = up.getBoundingClientRect();
+          return (
+            box.left - ring < room.left ||
+            box.right + ring > room.right ||
+            box.top - ring < room.top ||
+            box.bottom + ring > room.bottom
+          );
+        }
+        return false;
+      }).length;
+    });
+    expect(clipped).toBe(0);
+    await context.close();
+  }, 30_000);
 });

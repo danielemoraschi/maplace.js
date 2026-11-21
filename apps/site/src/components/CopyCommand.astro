@@ -7,14 +7,14 @@ interface Props {
 const { command } = Astro.props;
 ---
 
-{/* One command to copy (W66): its words, wrapping where a phone is too narrow for them, a button copying them that marks what came of it, and a status saying it (`copy-buttons.ts`). */}
-<div class="flex max-w-full items-stretch border-2 border-ink bg-paper font-code text-sm">
-  <code class="min-w-0 bg-transparent px-3 py-2 [overflow-wrap:anywhere]"
+{/* One command to copy (W66), a pill as the prototype has it: its words, wrapping where a phone is too narrow for them, a button copying them that marks what came of it, and a status saying it (`copy-buttons.ts`). */}
+<div class="flex max-w-full items-stretch rounded-full border border-ink/15 bg-paper font-code text-sm max-[26rem]:rounded-2xl max-[26rem]:text-xs">
+  <code class="min-w-0 bg-transparent py-[0.85rem] ps-5 pe-1.5 [overflow-wrap:anywhere]"
     ><span aria-hidden="true" class="text-muted">$ </span>{command}</code
   >
   <button
     type="button"
-    class="group grid place-items-center border-0 border-s-2 border-ink bg-transparent px-2.5 hover:bg-wash"
+    class="group grid place-items-center border-0 bg-transparent ps-2 pe-4 text-muted hover:text-ink data-[copied=done]:text-accent"
     data-copy={command}
     aria-label={`Copy ${command}`}
   >

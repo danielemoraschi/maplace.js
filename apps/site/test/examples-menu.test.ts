@@ -70,11 +70,11 @@ describe("the examples pages' menu (W63)", () => {
       const fits = await examplesNav(page).evaluate((nav) => ({
         scrolls: nav.scrollHeight > nav.clientHeight,
         bottom: nav.getBoundingClientRect().bottom,
-        footer: document.querySelector("footer")?.getBoundingClientRect().top ?? 0,
+        screen: innerHeight,
       }));
       expect(fits.scrolls).toBe(true);
-      // Clear of the footer, which sticks to the screen's bottom there, on one line.
-      expect(fits.bottom).toBeLessThanOrEqual(fits.footer);
+      // Its end on the screen, the rest reached by scrolling the list.
+      expect(fits.bottom).toBeLessThanOrEqual(fits.screen);
       await context.close();
     },
     30_000,

@@ -1,0 +1,36 @@
+// What the home page's tests read of its hero's table (W66), run in the page.
+
+/**
+ * The table's cards more than about 30px under any of the copy's text, the prototype's rule, by
+ * name: sampled along the middle of each line it draws short of its last 30px, the cards made to
+ * take the pointer while it looks (they take none, and a hit test skips them).
+ */
+export function cardsUnderCopy(): string[] {
+  const allowed = 30;
+  const copy = document.querySelector('[data-version-switch="ways-in"] > div');
+  const texts = [
+    ...(copy?.querySelectorAll("h1, p, code, a") ?? []),
+    // The four ways' tabs, the table beside them.
+    ...document.querySelectorAll('[aria-label="Ways to use Maplace.js"] [role="tab"]'),
+  ];
+  const lines = texts.flatMap((text) => {
+    const range = document.createRange();
+    range.selectNodeContents(text);
+    return [...range.getClientRects()];
+  });
+  const points = lines.flatMap((line) =>
+    Array.from(
+      { length: Math.max(0, Math.floor((line.width - allowed) / 16)) + 1 },
+      (_, step) => [line.left + step * 16, line.top + line.height / 2] as const,
+    ),
+  );
+  const hittable = document.createElement("style");
+  hittable.textContent = "[data-hero-card] { pointer-events: auto }";
+  document.head.append(hittable);
+  const cards = points
+    .flatMap(([x, y]) => document.elementsFromPoint(x, y))
+    .map((hit) => hit.closest<HTMLElement>("[data-hero-card]")?.dataset.heroCard)
+    .filter((name) => name !== undefined);
+  hittable.remove();
+  return [...new Set(cards)];
+}

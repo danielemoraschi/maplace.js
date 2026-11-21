@@ -1,11 +1,9 @@
 ---
 import { getEntry } from "astro:content";
-import { HEADING_TAIL } from "../examples/example-sections.ts";
-import { HOME_HEADING_LEAD, HOME_INTRO } from "../examples/home-page.ts";
+import { HOME_HEADING, HOME_INTRO } from "../examples/home-page.ts";
 import { skillInstallCommand } from "../site/agent-links.ts";
 import { configuredSite } from "../site/configured-site.ts";
-import { docRoute, REPOSITORY_URL } from "../site/repo-docs.ts";
-import { starButtonShadow } from "../site/star-button-markup.ts";
+import { docRoute } from "../site/repo-docs.ts";
 import CopyCommand from "./CopyCommand.astro";
 import HeroTable from "./HeroTable.astro";
 import ProviderPart from "./ProviderPart.astro";
@@ -17,32 +15,25 @@ if (install === undefined) throw new Error("the install collection has no elemen
 
 {/*
   The home page's hero (W66), on map water and run up under the header: the library, how to start,
-  its four ways in, and its examples on a tilted table beside them (under them below 64rem). Its copy
+  its four ways in, and its examples on a tilted table beside them (none on a phone). Its copy
   is a version switch with no map (`version-switch.ts`): the npm command follows the provider
   chosen for the code.
 */}
-<div class="hero-water relative isolate -mt-(--spacing-header-height) overflow-clip border-b-3 border-ink pt-(--spacing-header-height)">
+<div class="hero-water relative isolate -mt-(--spacing-header-height) overflow-clip border-b border-ink/15 pt-(--spacing-header-height)">
   <div class="wrap relative z-10 pt-12 pb-12" data-version-switch="ways-in">
     <div class="max-w-[42rem]">
-      <h1 class="m-0 text-hero leading-[1.02]">
-        {HOME_HEADING_LEAD}{HEADING_TAIL.map((line) => <><br />{line}</>)}.
-      </h1>
-      <p class="mt-5 mb-0 max-w-[38rem] text-lg text-muted">{HOME_INTRO}</p>
+      <h1 class="headline m-0 text-hero leading-[1.02] [text-wrap:balance]">{HOME_HEADING}.</h1>
+      <p class="mt-5 mb-0 max-w-[38rem] text-lede leading-[1.45] text-muted">{HOME_INTRO}</p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <a
           href={docRoute("getting-started")}
-          class="bg-accent px-5 py-2 font-semibold text-on-accent no-underline hover:text-on-accent hover:brightness-90"
+          class="rounded-full bg-accent px-[1.4rem] py-[0.8rem] leading-none font-semibold text-on-accent no-underline hover:text-on-accent hover:brightness-90"
         >Get started</a>
         {install.data.providers.map(({ provider, npmCommand }) => (
           <ProviderPart provider={provider} class="max-w-full">
             <CopyCommand command={npmCommand} />
           </ProviderPart>
         ))}
-        <span data-star-button class="h-7"
-          ><template shadowrootmode="open" set:html={starButtonShadow(REPOSITORY_URL)} /><a
-            href={REPOSITORY_URL}>GitHub</a
-          ></span
-        >
       </div>
       <div class="mt-3 flex">
         <CopyCommand command={skillInstallCommand(configuredSite(Astro.site))} />

@@ -4,6 +4,8 @@ import { docRoute, REPO_DOCS } from "./repo-docs.ts";
 /** A link of the header's nav. */
 export interface SiteNavLink {
   readonly label: string;
+  /** What it says below 48rem, where the label wouldn't fit beside the name on a phone (W67). */
+  readonly shortLabel?: string;
   readonly href: string;
   /** The pages it stands for as a whole, on which it is marked. */
   readonly sectionPaths?: readonly string[];
@@ -11,7 +13,8 @@ export interface SiteNavLink {
 
 export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
   {
-    label: "Docs",
+    label: "Documentation",
+    shortLabel: "Docs",
     href: docRoute("getting-started"),
     sectionPaths: REPO_DOCS.map(({ id }) => docRoute(id)),
   },

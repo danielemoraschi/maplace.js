@@ -21,7 +21,6 @@ import { importAsModule, scriptVersionStart } from "./script-version.ts";
 import { followSectionAnchor } from "./section-anchor.ts";
 import { sectionStarter } from "./section-start.ts";
 import { installMaplace } from "./site-maplace.ts";
-import { showStarCount } from "./star-count.ts";
 import { versionStarter } from "./version-start.ts";
 import { startProviderToggle } from "./version-switch.ts";
 
@@ -89,7 +88,6 @@ const startSections = sectionStarter({
 provideSave(globalThis, document);
 followNavFocus(document);
 startSections(document);
-void showStarCount(document);
 startCopyButtons(document);
 startConsent({
   document,

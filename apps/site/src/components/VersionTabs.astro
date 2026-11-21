@@ -9,19 +9,31 @@ interface Props {
   label: string;
   /** Its panels' prefix (`versionPanelId`). */
   panelPrefix: string;
+  /** The site's square tabs (an example's page), or the home page's segmented pills (W66). */
+  look?: "square" | "pill";
 }
 
-const { codeTabs, label, panelPrefix } = Astro.props;
+const { codeTabs, label, panelPrefix, look = "square" } = Astro.props;
+const LOOKS = {
+  square: {
+    list: "flex flex-wrap",
+    tab: "border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper",
+  },
+  pill: {
+    list: "flex flex-wrap gap-0.5 rounded-full border border-ink/15 bg-paper p-1",
+    tab: "rounded-full border-0 bg-transparent px-[1.15rem] py-2.5 text-base leading-none font-semibold text-muted aria-selected:bg-ink aria-selected:text-paper max-[26rem]:px-3 max-[26rem]:text-sm",
+  },
+} as const;
 ---
 
 {/* A version per tab (`tabs.ts`): an example's page runs the map from it, the home page shows its code (W66). */}
-<div class="flex flex-wrap" role="tablist" aria-label={label}>
+<div class={LOOKS[look].list} role="tablist" aria-label={label}>
   {
     codeTabs.map(({ kind, label: tabLabel }, index) => (
       <button
         type="button"
         role="tab"
-        class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper"
+        class={LOOKS[look].tab}
         id={versionTabId(panelPrefix, kind)}
         aria-controls={versionPanelId(panelPrefix, kind)}
         aria-selected={index === 0 ? "true" : "false"}

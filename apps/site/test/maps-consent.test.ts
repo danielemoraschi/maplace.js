@@ -11,6 +11,7 @@ import {
   visitingPages,
 } from "./site-session.ts";
 import {
+  consentFromFooter,
   FIRST_EXAMPLES_PAGE,
   firstMap,
   footerToggle,
@@ -125,7 +126,7 @@ describe("the site's consent to its maps", () => {
   it("turns the maps on from the footer as from a placeholder", async () => {
     const { page, context, mapProviders } = await site.visitor();
     await openExamplesPage(page, site.url);
-    await footerToggle(page).click();
+    await consentFromFooter(page);
     await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
     await context.close();
   }, 30_000);

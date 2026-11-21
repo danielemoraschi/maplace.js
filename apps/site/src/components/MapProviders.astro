@@ -3,6 +3,7 @@ import {
   type PointMark,
   PROVIDER_POINTS,
   PROVIDERS_CONSENT_HREF,
+  PROVIDERS_CONSENT_LEAD,
   PROVIDERS_CONSENT_LINK,
   PROVIDERS_HEADING,
   PROVIDERS_PRIVACY,
@@ -19,13 +20,13 @@ const MARKS: Readonly<Record<PointMark, string>> = {
 ---
 
 {/* The two providers side by side (W66), and why a map can wait: on the home page's night band. */}
-<section aria-labelledby="providers-title" class="border-t border-ink/20 py-14">
-  <h2 id="providers-title" class="m-0 text-3xl">{PROVIDERS_HEADING}</h2>
-  <div class="mt-8 grid grid-cols-2 border-2 border-ink max-[48rem]:grid-cols-1">
+<section aria-labelledby="providers-title" class="border-t border-ink/15 py-8">
+  <h2 id="providers-title" class="headline m-0 text-section leading-[1.06]">{PROVIDERS_HEADING}</h2>
+  <div class="mt-10 grid grid-cols-2 rounded-[22px] border border-ink/15 bg-paper max-[48rem]:grid-cols-1">
     {
       PROVIDER_POINTS.map(({ name, points }, index) => (
-        <div class:list={["p-6", index > 0 && "border-s-2 border-ink max-[48rem]:border-s-0 max-[48rem]:border-t-2"]}>
-          <h3 class="m-0 text-xl">{name}</h3>
+        <div class:list={["p-[clamp(1.5rem,4vw,2.5rem)]", index > 0 && "border-s border-ink/15 max-[48rem]:border-s-0 max-[48rem]:border-t"]}>
+          <h3 class="m-0 text-lede">{name}</h3>
           <ul class="mt-4 mb-0 grid list-none gap-2.5 p-0">
             {points.map(({ mark, text }) => (
               <li class="flex gap-3">
@@ -40,7 +41,7 @@ const MARKS: Readonly<Record<PointMark, string>> = {
       ))
     }
   </div>
-  <p class="mt-6 mb-0 max-w-text text-muted">
-    {PROVIDERS_PRIVACY} <a href={PROVIDERS_CONSENT_HREF}>{PROVIDERS_CONSENT_LINK}</a>.
+  <p class="mt-6 mb-0 text-muted">
+    {PROVIDERS_PRIVACY} {PROVIDERS_CONSENT_LEAD} <a href={PROVIDERS_CONSENT_HREF}>{PROVIDERS_CONSENT_LINK}</a>.
   </p>
 </section>

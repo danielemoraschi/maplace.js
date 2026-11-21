@@ -11,13 +11,13 @@ const { group } = Astro.props;
 ---
 
 {/* A category's examples, each its picture, number and title linking its page, then its summary (W65). */}
-<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-x-6 gap-y-8 p-0">
+<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-x-5 gap-y-6 p-0">
   {
     examplePagesOf(group).map(({ section, path, number }) => {
       const thumbnail = thumbnailOf(section);
       return (
         <li>
-          <a href={path} class="font-semibold">
+          <a href={path} class="group grid gap-2 no-underline">
             {thumbnail && (
               <Image
                 src={thumbnail}
@@ -26,13 +26,15 @@ const { group } = Astro.props;
                 sizes="(min-width: 40rem) 20rem, 100vw"
                 format="webp"
                 loading="lazy"
-                class="mb-3 block aspect-[8/5] h-auto w-full rounded-lg bg-wash object-cover"
+                class="block aspect-[8/5] h-auto w-full rounded-[14px] border border-ink/15 bg-wash object-cover transition-colors group-hover:border-ink"
               />
             )}
-            <span class="text-accent">{number}</span>{" "}
-            {section.title}
+            <span class="flex gap-[0.45rem] text-[1.0625rem] leading-tight font-semibold group-hover:underline">
+              <span class="font-normal text-muted tabular-nums">{number}</span>
+              {section.title}
+            </span>
           </a>
-          <p class="mt-1 mb-0 text-sm text-muted">{section.summary}</p>
+          <p class="mt-1.5 mb-0 text-md leading-snug text-muted">{section.summary}</p>
         </li>
       );
     })

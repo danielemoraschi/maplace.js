@@ -5,9 +5,6 @@ import type { VersionKind } from "./example-versions.ts";
 /** The home page: the library, then every example by feature (`ExampleIndex.astro`). */
 export const HOME_ROUTE = "/";
 
-/** The home page's H1's first line, before `HEADING_TAIL`. */
-export const HOME_HEADING_LEAD = "A JavaScript library for markers";
-
 /** The hero's paragraph under the home page's H1. */
 export const HOME_INTRO =
   "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and routes, and the list or menu that goes with them, in sync with the map. One script tag, with a Maps key on Google and none on MapLibre; npm and React too.";
@@ -17,7 +14,7 @@ export const HOME_DESCRIPTION =
   "A JavaScript library for Google Maps and MapLibre: a list of locations becomes a map with markers, popups and a click to add one, in a few lines.";
 
 /** The home page's H1, on one line. */
-export const HOME_HEADING = pageHeading(HOME_HEADING_LEAD);
+export const HOME_HEADING = pageHeading("A JavaScript library for markers");
 
 /** What each of the hero's four ways in is (W66), beside its code: by the example's version. */
 export const WAYS_IN_NOTES: Readonly<Record<VersionKind, { title: string; text: string }>> = {
@@ -38,6 +35,10 @@ export const WAYS_IN_NOTES: Readonly<Record<VersionKind, { title: string; text: 
     text: "A provider holding your places, and a map component with the adapter you pick.",
   },
 };
+
+/** Under a module's note, on Google only: what its page does first, its host page not shown. */
+export const WAYS_IN_GOOGLE_LOADER =
+  "On Google, your page loads Google's Maps loader with your key first.";
 
 /** What a provider's point is about, drawn as its mark beside it. */
 export type PointMark = "key" | "shapes" | "package" | "route" | "layers";
@@ -76,6 +77,9 @@ export const PROVIDERS_PRIVACY =
   "Both providers see the visitor's IP address, so a map can wait for the visitor's consent.";
 
 export const PROVIDERS_CONSENT_LINK = "Holding a map until consent";
+
+/** What leads to `PROVIDERS_CONSENT_LINK`, after `PROVIDERS_PRIVACY`. */
+export const PROVIDERS_CONSENT_LEAD = "See:";
 
 /** Where `PROVIDERS_CONSENT_LINK` goes: the setup reference's consent section. */
 export const PROVIDERS_CONSENT_HREF = `${docRoute("setup")}#consent`;

@@ -10,9 +10,6 @@ export {
 /** The examples page: every example by category, each linking its page (W72), the hubs under it. */
 export const EXAMPLES_PAGE_ROUTE = "/examples/";
 
-/** The lines that follow a page's heading lead in its H1. */
-export const HEADING_TAIL = ["on Google Maps", "and MapLibre"] as const;
-
 /** An example's page: the example, the group whose hub it sits under, its path and its number. */
 export interface ExamplePageEntry {
   readonly group: ExampleGroup;
@@ -51,9 +48,9 @@ export const EXAMPLES_ROUTES: readonly string[] = [
   ]),
 ];
 
-/** An examples' page's H1 on one line: its lead, then `HEADING_TAIL`. */
+/** A page's H1: its lead, then the two providers it runs on. */
 export function pageHeading(lead: string): string {
-  return [lead, ...HEADING_TAIL].join(" ");
+  return `${lead} on Google Maps and MapLibre`;
 }
 
 /** The path of `group`'s hub. */

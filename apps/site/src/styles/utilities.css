@@ -49,7 +49,7 @@
 @utility table-turn {
   transform: translate(var(--table-x), -50%) rotateX(56deg) rotateZ(-38deg);
 
-  @media (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 901px) {
     @supports (animation-timeline: scroll()) {
       /* Longhands only: the build's minifier would fold a timeline into the shorthand, which
          browsers refuse whole. */
@@ -66,4 +66,16 @@
   to {
     transform: translate(var(--table-x), -58%) rotateX(56deg) rotateZ(-34deg) scale(1.06);
   }
+}
+
+/*
+ * The home page's headlines (W66), as the prototype set them: Bricolage's variable cut, narrowed
+ * on its width axis, so they read as set type. Its font loads with the home page only
+ * (`pages/index.astro`).
+ */
+@utility headline {
+  font-family: "Bricolage Grotesque Variable", var(--font-display);
+  font-weight: 750;
+  font-stretch: 86%;
+  letter-spacing: -0.035em;
 }

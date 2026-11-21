@@ -21,15 +21,17 @@ async function headerBottom(page: Page): Promise<number> {
 }
 
 describe("the site's header", () => {
-  it("links Docs and Examples, and the repository from 48rem, the footer's on every screen", async () => {
+  it("links Documentation and Examples (Docs on a phone), and the repository from 48rem, the footer's on every screen", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const labels = await siteNav(page).getByRole("link").allInnerTexts();
-    expect(labels).toEqual(["Docs", "Examples", "GitHub"]);
+    expect(labels).toEqual(["Documentation", "Examples", "GitHub"]);
     const repository = siteNav(page).getByRole("link", { name: "GitHub" });
     expect(await repository.getAttribute("href")).toBe(REPOSITORY_URL);
     expect(await repository.isVisible()).toBe(true);
     await page.setViewportSize(PHONE);
     expect(await repository.isVisible()).toBe(false);
+    // biome-ignore lint/performance/useDomNodeTextContent: the label as shown, the hidden one left out.
+    expect(await siteNav(page).getByRole("link").first().innerText()).toBe("Docs");
     const toRepo = `a[href="${REPOSITORY_URL}"]`;
     expect(await page.getByRole("contentinfo").locator(toRepo).count()).toBe(1);
     await context.close();
@@ -42,7 +44,7 @@ describe("the site's header", () => {
     expect(await icon.getAttribute("alt")).toBe("");
     expect(await icon.getAttribute("src")).toMatch(/favicon\.[\w-]+\.svg$/);
     const [iconBox, nameBox] = [await icon.boundingBox(), await name.boundingBox()];
-    expect(iconBox?.width).toBe(24);
+    expect(iconBox?.width).toBe(22);
     expect(iconBox?.x).toBe(nameBox?.x);
     const baselineOf = (element: Element) => {
       const marker = document.createElement("span");
@@ -74,19 +76,23 @@ describe("the site's header", () => {
     }
   }, 60_000);
 
-  it("marks Docs on a doc page, Examples on a hub and an example's page, and nothing elsewhere", async () => {
+  it("marks Documentation on a doc page, Examples on a hub and an example's page, and nothing elsewhere", async () => {
     const shown = async (route: string) => {
       const { page, context } = await opened(site, route, DESKTOP);
       const marked = await siteNav(page)
         .locator("[aria-current]")
         .evaluateAll((links) =>
-          links.map((link) => [link.textContent?.trim(), link.getAttribute("aria-current")]),
+          links.map((link) => [
+            // biome-ignore lint/performance/useDomNodeTextContent: the label as shown, the hidden one left out.
+            (link as HTMLElement).innerText.trim(),
+            link.getAttribute("aria-current"),
+          ]),
         );
       await context.close();
       return marked;
     };
-    expect(await shown(docRoute("store"))).toEqual([["Docs", "true"]]);
-    expect(await shown(docRoute("getting-started"))).toEqual([["Docs", "true"]]);
+    expect(await shown(docRoute("store"))).toEqual([["Documentation", "true"]]);
+    expect(await shown(docRoute("getting-started"))).toEqual([["Documentation", "true"]]);
     expect(await shown("/examples/markers/")).toEqual([["Examples", "true"]]);
     expect(await shown("/examples/markers/popups/")).toEqual([["Examples", "true"]]);
     expect(await shown("/")).toEqual([]);

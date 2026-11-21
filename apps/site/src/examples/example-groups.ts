@@ -33,7 +33,7 @@ export interface ExampleGroup {
   /** Its page's last path segment, `/examples/<id>/`. */
   readonly id: string;
   readonly label: string;
-  /** Its page's H1, before `HEADING_TAIL`: the feature, in the words a search uses. */
+  /** Its page's H1, before the providers (`pageHeading`): the feature, in the words a search uses. */
   readonly headingLead: string;
   /** The paragraph under its page's H1: what its examples show, in a sentence. */
   readonly intro: string;

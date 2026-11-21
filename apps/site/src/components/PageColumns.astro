@@ -43,10 +43,10 @@ const pinsList = onThisPage === undefined;
 /** The column's last block, held under the header as the page scrolls. */
 const STICKY = "sticky top-[calc(var(--spacing-header)+1.5rem)]";
 /**
- * The examples' list, pinned alone: taller than the screen, it scrolls within itself between the
- * header and the footer, on one line where this column is drawn (from 64rem).
+ * The examples' list, pinned alone: taller than the screen, it scrolls within itself under the
+ * header, where this column is drawn (from 64rem).
  */
-const PINNED = `${STICKY} max-h-[calc(100dvh-var(--spacing-header)-var(--spacing-footer)-3rem)] overflow-y-auto`;
+const PINNED = `${STICKY} max-h-[calc(100dvh-var(--spacing-header)-3rem)] overflow-y-auto`;
 ---
 
 <div class:list={["grid grid-cols-[13rem_minmax(0,1fr)] gap-10 pt-8", folds.grid]}>

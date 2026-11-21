@@ -2,7 +2,7 @@ import type { Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
 import { chooseProvider, chooseVersion, sectionOf, sectionPage } from "./home-sections.ts";
 import type { SiteSession } from "./site-session.ts";
-import { footerToggle, openExamplesPage, type VisitorOptions } from "./visitor.ts";
+import { consentFromFooter, openExamplesPage, type VisitorOptions } from "./visitor.ts";
 
 /** An example's page opened, a provider and a version chosen, before consenting. */
 export interface Opening {
@@ -30,6 +30,6 @@ export async function sectionFrom(site: SiteSession, options: VisitorOptions, op
   if (provider === "google") await chooseProvider(page, "Google");
   await chooseVersion(page, example, version);
   await beforeConsent?.(page);
-  await footerToggle(page).click();
+  await consentFromFooter(page);
   return { ...visit, section: await sectionOf(page, example) };
 }

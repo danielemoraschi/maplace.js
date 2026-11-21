@@ -21,26 +21,28 @@
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
   --text-md: 0.9375rem;
+  --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.75rem;
   --text-title: clamp(2.25rem, 5vw, 3.25rem);
   --text-hero: clamp(2.25rem, 5vw, 3.75rem);
+  /* The home page's (W66): a section's headline, and the paragraph that opens a part of it. */
+  --text-section: clamp(1.75rem, 3.4vw, 3rem);
+  --text-lede: 1.3125rem;
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
   /* The header's own height (`SiteHeader.astro`). */
-  --spacing-header-height: 4.0625rem;
+  --spacing-header-height: 4rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
   --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
-  /* What the footer covers at the bottom of the screen from 64rem, where it sticks on one line (`SiteFooter.astro`) and the examples' column is drawn. */
-  --spacing-footer: 3.5rem;
   /* The provider toggle (`ProviderSwitch.astro`), beside each example's tabs and over the builder's preview. */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;
   /* An example's map: the height its hosts give it. */
   --spacing-map: 24rem;
-  --container-measure: 72rem;
+  --container-measure: 76rem;
   --container-text: 48rem;
 
   /* A card of the home page's table settling onto it (W66): its one motion. */

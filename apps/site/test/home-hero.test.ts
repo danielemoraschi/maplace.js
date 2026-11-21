@@ -1,10 +1,17 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { exampleFile } from "../src/examples/example-sources.ts";
-import { HERO_TABLE, heroCards, hiddenBelowWidths } from "../src/examples/hero-table.ts";
+import {
+  HERO_TABLE,
+  heroCards,
+  hiddenBelowWidths,
+  TABLE_FROM,
+} from "../src/examples/hero-table.ts";
 import { HOME_HEADING, HOME_INTRO, WAYS_IN_NOTES } from "../src/examples/home-page.ts";
+import { componentOf } from "../src/examples/ways-in-files.ts";
 import { skillInstallCommand } from "../src/site/agent-links.ts";
 import { docRoute } from "../src/site/repo-docs.ts";
+import { cardsUnderCopy } from "./hero-table-probe.ts";
 import { chooseProvider } from "./home-sections.ts";
 import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
@@ -29,43 +36,6 @@ const showCodeFor = (page: Page, provider: "MapLibre" | "Google") =>
 /** The hero's table of examples. */
 const heroTable = (page: Page) => page.locator('[aria-hidden="true"]:has([data-hero-card])');
 
-/**
- * The table's cards under any of the copy's text, by name: sampled along each line it draws, the
- * cards made to take the pointer while it looks (they take none, and a hit test skips them).
- */
-function cardsUnderCopy(): string[] {
-  const copy = document.querySelector('[data-version-switch="ways-in"] > div');
-  const texts = [
-    ...(copy?.querySelectorAll("h1, p, code, a, [data-star-button]") ?? []),
-    // The four ways' tabs, transparent over the table; their panels are opaque.
-    ...document.querySelectorAll('[aria-label="Ways to use Maplace.js"] [role="tab"]'),
-  ];
-  const lines = texts.flatMap((text) => {
-    const range = document.createRange();
-    range.selectNodeContents(text);
-    const rects = [...range.getClientRects()];
-    // The star button draws in its shadow root: its own box, where its text has none.
-    return rects.length > 0 ? rects : [text.getBoundingClientRect()];
-  });
-  const points = lines.flatMap((line) =>
-    Array.from(
-      { length: Math.floor(line.width / 16) + 1 },
-      (_, step) => line.left + step * 16,
-    ).flatMap((x) =>
-      [line.top + 2, line.top + line.height / 2, line.bottom - 2].map((y) => [x, y] as const),
-    ),
-  );
-  const hittable = document.createElement("style");
-  hittable.textContent = "[data-hero-card] { pointer-events: auto }";
-  document.head.append(hittable);
-  const cards = points
-    .flatMap(([x, y]) => document.elementsFromPoint(x, y))
-    .map((hit) => hit.closest<HTMLElement>("[data-hero-card]")?.dataset.heroCard)
-    .filter((name) => name !== undefined);
-  hittable.remove();
-  return [...new Set(cards)];
-}
-
 describe("the home page's hero (W66)", () => {
   it("heads the page with the library on map water, run up under the header, and gets started on Getting started", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
@@ -80,6 +50,19 @@ describe("the home page's hero (W66)", () => {
       return hero && getComputedStyle(hero.closest(".hero-water") ?? hero).backgroundColor;
     });
     expect(underHeader).toBe(WATER);
+    const headlineFonts = await page.evaluate(async () => {
+      await document.fonts.ready;
+      const preloaded = document.querySelector<HTMLLinkElement>(
+        'link[rel="preload"][as="font"]',
+      )?.href;
+      const fetched = performance
+        .getEntriesByType("resource")
+        .map(({ name }) => name)
+        .filter((name) => name.includes("wdth"));
+      return { preloaded, fetched };
+    });
+    // The headline's font, asked for with the page and fetched once: the stylesheet's own.
+    expect(headlineFonts.fetched).toEqual([headlineFonts.preloaded]);
     const started = page.getByRole("link", { name: "Get started" });
     expect(await started.getAttribute("href")).toBe(docRoute("getting-started"));
     await context.close();
@@ -123,7 +106,7 @@ describe("the home page's hero (W66)", () => {
       WAYS_IN_NOTES.react.title,
     );
     await showCodeFor(page, "Google");
-    expect(await shown()).toContain(codeOf("simple", "react.tsx"));
+    expect(await shown()).toEqual([componentOf(codeOf("simple", "react.tsx"), "react.tsx")]);
     await page.goto(new URL("/examples/markers/simple/", site.url).href);
     expect(await page.locator('input[value="google"]').first().isChecked()).toBe(true);
     await context.close();
@@ -153,9 +136,14 @@ describe("the home page's hero (W66)", () => {
   it("keeps the copy clear of the cards, with nothing to scroll sideways, at every width the table lies beside it", async () => {
     // Either side of where the table moves beside the copy and of each width a card steps out
     // below (`hero-table.ts`), and the common screens between.
-    const edges = [1024, ...hiddenBelowWidths(HERO_TABLE)].flatMap((width) => [width - 1, width]);
-    const widths = [...edges, 1100, 1152, 1200, 1240, 1340, 1440, 1600, 1800].sort((a, b) => a - b);
-    const { page, context } = await opened(site, "/", { width: widths[0] ?? 1023, height: 900 });
+    const edges = [TABLE_FROM, ...hiddenBelowWidths(HERO_TABLE)].flatMap((width) => [
+      width - 1,
+      width,
+    ]);
+    const widths = [...new Set([...edges, 1152, 1200, 1240, 1340, 1440, 1600, 1800])].sort(
+      (a, b) => a - b,
+    );
+    const { page, context } = await opened(site, "/", { width: TABLE_FROM, height: 900 });
     // The table at rest: not landing, not turned by a scroll.
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.evaluate(() => document.fonts.ready);
@@ -204,11 +192,19 @@ describe("the home page's hero (W66)", () => {
     await context.close();
   }, 30_000);
 
-  it("puts the table under the four ways on a phone, with nothing to scroll sideways", async () => {
+  it("leaves the table off a phone, fetching none of its pictures, with nothing to scroll sideways", async () => {
     const { page, context } = await opened(site, "/", PHONE);
-    const ways = await boxOf(page.getByRole("tablist", { name: "Ways to use Maplace.js" }));
-    const table = await boxOf(heroTable(page));
-    expect(table.y).toBeGreaterThan(ways.y);
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+    expect(await heroTable(page).isVisible()).toBe(false);
+    // Its pictures are 320 wide; a phone's index asks for its 640-wide ones, so any of the
+    // table's sources fetched would be the table's own.
+    const tableSources = await heroTable(page)
+      .locator("img")
+      .evaluateAll((images) => (images as HTMLImageElement[]).map(({ src }) => src));
+    const fetchedSources = await page.evaluate(() =>
+      performance.getEntriesByType("resource").map(({ name }) => name),
+    );
+    expect(tableSources.filter((source) => fetchedSources.includes(source))).toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(PHONE.width);
     const commandsCut = await page.locator("[data-copy]").evaluateAll(
       (buttons) =>
@@ -218,6 +214,14 @@ describe("the home page's hero (W66)", () => {
           .filter((code) => code && code.scrollWidth > code.clientWidth).length,
     );
     expect(commandsCut).toBe(0);
+    for (const width of [375, 320]) {
+      await page.setViewportSize({ width, height: PHONE.height });
+      const rows = await page
+        .getByRole("tablist", { name: "Ways to use Maplace.js" })
+        .getByRole("tab")
+        .evaluateAll((tabs) => new Set(tabs.map((tab) => tab.getBoundingClientRect().top)).size);
+      expect(rows, `the four ways' tabs on one row at ${width}`).toBe(1);
+    }
     await context.close();
   }, 30_000);
 });

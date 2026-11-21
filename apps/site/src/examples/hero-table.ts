@@ -4,12 +4,15 @@ import type { ImageMetadata } from "astro";
 import { thumbnailOf } from "./example-images.ts";
 import { findExamplePage } from "./example-sections.ts";
 
+/** The narrowest screen the table shows on, beside the copy: on a phone it is left off. */
+export const TABLE_FROM = 901;
+
 /**
- * From 64rem, where the table lies beside the copy, the width below which a card would run under
- * the copy and so is left off: measured on the copy's text from 1024 to 1920 px wide, with a
- * margin, as where the lede wraps moves it.
+ * From where the table lies beside the copy (`TABLE_FROM`), the widths in px below which a card
+ * would run more than about 30px under the copy and so is left off: the prototype's, but for its
+ * second row's third cell and circles', which this page's longer copy pushes to 1100 and 1160.
  */
-export type HiddenBelow = "80rem" | "112.5rem" | "120rem";
+export type HiddenBelow = 1100 | 1160 | 1260;
 
 /** A card on the table: its example, its cell (from 1, four columns), and where it steps out. */
 export interface HeroCard {
@@ -19,16 +22,23 @@ export interface HeroCard {
   readonly hiddenBelow?: HiddenBelow;
 }
 
+/**
+ * The prototype's table, its cells and their widths, with the cards the user placed (2026-11-21):
+ * choropleth, route, the heatmap, the custom popup, flights and the team around the world among
+ * them, search, markers and link to a place at its foot; polygon, with no cell left, off it.
+ */
 export const HERO_TABLE: readonly HeroCard[] = [
-  { name: "link-to-place", row: 1, column: 4 },
-  { name: "search", row: 2, column: 3, hiddenBelow: "80rem" },
-  { name: "whats-on", row: 2, column: 4 },
-  { name: "circles", row: 3, column: 2, hiddenBelow: "120rem" },
+  { name: "whats-on", row: 1, column: 3, hiddenBelow: 1260 },
+  { name: "choropleth", row: 1, column: 4 },
+  { name: "route", row: 2, column: 3, hiddenBelow: 1100 },
+  { name: "earthquakes", row: 2, column: 4 },
+  { name: "circles", row: 3, column: 2, hiddenBelow: 1160 },
   { name: "brand", row: 3, column: 3 },
   { name: "tags", row: 3, column: 4 },
-  { name: "markers", row: 4, column: 2, hiddenBelow: "112.5rem" },
-  { name: "route", row: 4, column: 3 },
-  { name: "polygon", row: 4, column: 4 },
+  { name: "trade-lanes", row: 4, column: 1 },
+  { name: "flights", row: 4, column: 2 },
+  { name: "popups", row: 4, column: 3 },
+  { name: "team", row: 4, column: 4 },
   { name: "css-markers", row: 5, column: 1 },
   { name: "menu", row: 5, column: 2 },
   { name: "mixed", row: 5, column: 3 },
@@ -37,10 +47,10 @@ export const HERO_TABLE: readonly HeroCard[] = [
   { name: "polyline", row: 6, column: 2 },
   { name: "this-area", row: 6, column: 3 },
   { name: "tabs", row: 6, column: 4 },
-  { name: "popups", row: 7, column: 1 },
   { name: "big", row: 7, column: 2 },
-  { name: "flights", row: 7, column: 3 },
-  { name: "trade-lanes", row: 7, column: 4 },
+  { name: "search", row: 7, column: 3 },
+  { name: "markers", row: 7, column: 4 },
+  { name: "link-to-place", row: 7, column: 1 },
 ];
 
 /** A card with the picture it shows: its example's thumbnail. */
@@ -49,23 +59,23 @@ export interface PlacedCard extends HeroCard {
 }
 
 /**
- * `table`'s cards, each with its example's thumbnail; throws, naming the card, for one lacking an
- * example or a thumbnail, or lying on another's cell.
+ * `table`'s cards in reading order, each with its example's thumbnail; throws, naming the card,
+ * for one lacking an example or a thumbnail, or lying on another's cell.
  */
 export function heroCards(table: readonly HeroCard[]): readonly PlacedCard[] {
   refuseSharedCells(table);
-  return table.map(placedCard);
+  return [...table].sort(inReadingOrder).map(placedCard);
 }
-
-/** The pixels in a rem, as the site sets none of its own. */
-const PX_PER_REM = 16;
 
 /** The widths, in px, below which some card steps out (`HiddenBelow`), smallest first. */
 export function hiddenBelowWidths(table: readonly HeroCard[]): readonly number[] {
-  const rems = table.flatMap(({ hiddenBelow }) =>
-    hiddenBelow ? [Number.parseFloat(hiddenBelow)] : [],
-  );
-  return [...new Set(rems)].sort((a, b) => a - b).map((rem) => rem * PX_PER_REM);
+  const widths = table.flatMap(({ hiddenBelow }) => (hiddenBelow ? [hiddenBelow] : []));
+  return [...new Set(widths)].sort((a, b) => a - b);
+}
+
+/** Row by row, left to right: the order the cards land in, whatever the table's order. */
+function inReadingOrder(a: HeroCard, b: HeroCard): number {
+  return a.row - b.row || a.column - b.column;
 }
 
 function refuseSharedCells(table: readonly HeroCard[]): void {

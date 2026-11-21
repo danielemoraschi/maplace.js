@@ -193,6 +193,16 @@ export const firstMap = (page: Page) =>
 /** The footer's switch that turns the maps on, or off, on every page. */
 export const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
 
+/**
+ * Turns the maps on from the footer's toggle, as a visitor does, then back to where the page was:
+ * the footer ends the page, and a map loads only once in view.
+ */
+export async function consentFromFooter(page: Page): Promise<void> {
+  const at = await page.evaluate(() => scrollY);
+  await footerToggle(page).click();
+  await page.evaluate((top) => scrollTo(0, top), at);
+}
+
 /** The first example's page: the site's first page with maps, the home page and the hubs having none (W63). */
 export const FIRST_EXAMPLES_PAGE = (EXAMPLE_PAGE_ENTRIES[0] as ExamplePageEntry).path;
 
