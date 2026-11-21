@@ -28,7 +28,10 @@ const METRES_PER_DEGREE = 111_319.49;
 /** On the polygon fixture's ring, outside its hole. */
 const IN_RING = { lat: 0.75, lng: 0.75 };
 
-/** Google drawing `drawables` around the origin, with a user's mouse on the map. */
+/**
+ * Google drawing `drawables` around the origin, with a user's mouse on the map: an editable one
+ * selected, as a user picks a shape before dragging its handles.
+ */
 async function drawnOnMap(...drawables: Drawable[]) {
   const mounted = await mountedGoogle({
     ...TEST_OPTIONS,
@@ -36,6 +39,8 @@ async function drawnOnMap(...drawables: Drawable[]) {
   });
   const map = mounted.state.mounted?.map as google.maps.Map;
   await mounted.adapter.apply(adding(...drawables));
+  const editable = drawables.find((drawable) => drawable.editable);
+  mounted.adapter.present(presented({ selectedId: editable?.id }));
   await cameraAt(map, { center: ORIGIN, zoom: ZOOM });
   return { ...mounted, input: await inputOn(map) };
 }

@@ -92,6 +92,20 @@ describe("a shape's editing session", () => {
     expect(host.reportsOf("reportLocationChange")).toEqual([["s", { ...CIRCLE, radius: 0.001 }]]);
   });
 
+  it("holds a main-button press on a handle until the pointer moves after it, then tells the site", async () => {
+    const { session, markers, presses } = editingOnStub(POLYGON);
+    const element = markers()[0]?.element as HTMLElement;
+    element.dispatchEvent(new PointerEvent("pointerdown", { button: 2 }));
+    expect(session.isHeld()).toBe(false);
+    element.dispatchEvent(new PointerEvent("pointerdown", { button: 0 }));
+    expect(session.isHeld()).toBe(true);
+    window.dispatchEvent(new Event("pointerup"));
+    window.dispatchEvent(new Event("pointermove"));
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(session.isHeld()).toBe(false);
+    expect(presses).toEqual([16]);
+  });
+
   it("reports a handle dragged to −180 at −180, as a click there is", () => {
     const { session, host } = editingOnStub(CIRCLE);
     const to = { lat: 1, lng: -180 };

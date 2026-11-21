@@ -44,7 +44,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
 | `visible` | `boolean` | `false` keeps it in the data but not drawn, listed or selected. Default `true` | |
 | `listed` | `boolean` | `false` leaves it out of every list view; the map still draws it and it is selected there. Default `true` | `listed` |
-| `editable` | `boolean` | Lets the user drag a marker or reshape a shape; needs the `edit` capability; not with a polyline's `curve` or `geodesic`, nor on a multipolygon | `editable` |
+| `editable` | `boolean` | Lets the user drag a marker or reshape a shape, whose handles show while it is hovered or selected; needs the `edit` capability; not with a polyline's `curve` or `geodesic`, nor on a multipolygon | `editable` |
 | `data` | your type | Your own fields, handed back to content, icon and render functions | |
 
 ## Markers

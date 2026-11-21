@@ -14,11 +14,15 @@ import type { StubMap } from "./testing/stub-libraries";
 import type { StubPolygon } from "./testing/stub-shapes";
 import { stubSite } from "./testing/stub-site";
 
-/** `drawable` placed on an open stub map, closed after the test. */
+/** Picked, as a user does before dragging: a shape's handles show only then. */
+const SELECTED = { state: { selected: true, hovered: false }, visible: true };
+
+/** `drawable` placed on an open stub map and selected, closed after the test. */
 function placed(drawable: Drawable) {
   const opened = stubSite();
   onTestFinished(opened.close);
   const shape = SHAPE_PLACERS[drawable.geometry.type as ShapeType](drawable, opened.site);
+  shape.present(SELECTED);
   const map = opened.mounted.map as unknown as StubMap;
   return { placed: shape, stub: shape.shape as unknown as StubPolygon, host: opened.host, map };
 }
@@ -75,6 +79,17 @@ describe("a Google shape's drags cut short, by a blur or by taking it off", () =
     s.remove();
     blurWithPressHeld(map);
     expect(stub.get("editable")).toBe(true);
+  });
+
+  it("takes the handles off a shape left at rest once the pointer moves after the release", async () => {
+    const { placed: s, stub, map } = placed(polygonDrawable("s", { editable: true }));
+    blurWithPressHeld(map);
+    s.present({ ...SELECTED, state: { selected: false, hovered: false } });
+    letGo();
+    await frames(1);
+    window.dispatchEvent(new Event("pointermove"));
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(stub.get("editable")).toBe(false);
   });
 
   it("reports no edit Google fires on a shape taken off", () => {

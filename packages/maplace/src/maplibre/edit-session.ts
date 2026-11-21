@@ -1,4 +1,5 @@
 import { editReportsFor } from "../adapter-kit/edit-reports";
+import { handlePress } from "../adapter-kit/handle-press";
 import { sameGeometry, sameList } from "../adapter-kit/same-geometry";
 import type { Geometry } from "../geometry";
 import { editedBy, type HandlePlace, handlePlacesOf, sameRole } from "./edit-geometry";
@@ -20,6 +21,8 @@ export interface ShapeEditing {
   handles(): readonly EditHandle[];
   /** A drag is under way: a handle has moved and not been let go. */
   isDragging(): boolean;
+  /** A press on a handle is held, or over with the pointer not yet moved since, or a drag is. */
+  isHeld(): boolean;
   /** Takes every handle off, and a drag under way back to where it started. */
   stop(): void;
 }
@@ -28,6 +31,8 @@ export interface ShapeEditing {
 export interface EditSite extends EditedShape {
   /** Draws the shape as `geometry`: each step of a drag, and where the drop leaves it. */
   onEdit(geometry: Geometry): void;
+  /** A press on a handle is over, and the pointer has moved since: the shape decides again. */
+  pressOver(): void;
 }
 
 /**
@@ -37,7 +42,8 @@ export interface EditSite extends EditedShape {
  * change, and the store's copy of an edit, compared by value, moves no handle.
  */
 export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
-  const owner: HandleOwner = { ...site, drags: { moved, dropped } };
+  const press = handlePress(site.mounted.map.getContainer(), site.pressOver);
+  const owner: HandleOwner = { ...site, drags: { moved, dropped, pressed: press.start } };
   const reports = editReportsFor(site.id, site.mounted.live);
   let shown = geometry;
   let handles: EditHandle[] = [];
@@ -123,9 +129,11 @@ export function editShape(geometry: Geometry, site: EditSite): ShapeEditing {
     },
     handles: () => handles,
     isDragging: () => dragging,
+    isHeld: () => press.isHeld() || dragging,
     stop() {
       // A drag cut short (the shape hidden or no longer editable) never ended: it edits nothing.
       if (dragging) site.onEdit(shown);
+      press.stop();
       removeAll();
     },
   };

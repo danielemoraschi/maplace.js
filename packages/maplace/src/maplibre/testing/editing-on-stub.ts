@@ -51,14 +51,17 @@ export function editingOnStub(geometry: Geometry) {
     live: () => (closed.value ? undefined : host),
   } as unknown as MountedMapLibre;
   const drawn: Geometry[] = [];
+  /** Each press on a handle once over, as the handles shown then. */
+  const presses: number[] = [];
   const session = editShape(geometry, {
     mounted,
     id: "s",
     hover,
     onEdit: (edited) => drawn.push(edited),
+    pressOver: () => presses.push(session.handles().length),
   });
   const markers = () => session.handles().map(markerOf);
-  return { session, host, hover, drawn, closed, markers };
+  return { session, host, hover, drawn, closed, markers, presses };
 }
 
 export const markerOf = (handle: EditHandle) => handle.marker as unknown as RecordingMarker;

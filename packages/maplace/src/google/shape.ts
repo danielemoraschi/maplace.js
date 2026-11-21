@@ -2,6 +2,7 @@
 
 import { editReportsFor } from "../adapter-kit/edit-reports";
 import type { Look } from "../adapter-kit/presentation-changes";
+import { showsEditHandles } from "../adapter-kit/shape-looks";
 import { shapeStackRank } from "../adapter-kit/stacking";
 import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
@@ -11,6 +12,7 @@ import { googleLineParts } from "./line-parts";
 import { sameShownStyle, shownStyleValues } from "./own-stroke";
 import type { GoogleShape, PlacedShape, PlacingSite } from "./placed-location";
 import { showGeometry } from "./shape-geometry";
+import { type ShapeHandles, shapeHandles } from "./shape-handles";
 import {
   CIRCLE,
   MULTIPOLYGON,
@@ -33,8 +35,9 @@ export const SHAPE_PLACERS: Readonly<Record<ShapeType, ShapePlacer>> = {
 
 /**
  * One circle, polyline, polygon or multipolygon: clickable, styled in its state's look, reshaped
- * by the user when `editable`, its `zIndex` its rank among shapes by size (Google draws every
- * marker above every shape), its outline drawn again over the others while hovered or selected.
+ * by the user when `editable` (its handles shown while hovered or selected), its `zIndex` its rank
+ * among shapes by size (Google draws every marker above every shape), its outline drawn again over
+ * the others while hovered or selected.
  * Each change redoes only what it touches; an edit is reported once, when the user lets go.
  */
 function shapePlacer(kind: ShapeKind): ShapePlacer {
@@ -45,6 +48,11 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
     let drawn = drawable;
     let look = site.lookOf(id);
     const { shape, geometry } = newShape(kind, { drawable, site, look, order });
+    const handles = shapeHandles(
+      shape,
+      (held) => showsEditHandles(drawn, look, held),
+      site.mounted,
+    );
     const outline = liftedOutline(kind, site.mounted);
     const parts = googleLineParts(site.mounted);
     const lift = () => {
@@ -52,7 +60,7 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
       parts.draw(drawn, look, shapeStackRank(drawn.geometry, order));
     };
     lift();
-    const stopCutting = cutOnBlur(site.mounted, () => cutHandleDrag(shape, () => drawn.editable));
+    const stopCutting = cutOnBlur(site.mounted, () => cutHandleDrag(shape, handles));
 
     return {
       shape,
@@ -67,8 +75,8 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
         if (!sameShownStyle([drawn, look], [next, look])) {
           shape.setValues(shownStyleValues(next, look));
         }
-        if (next.editable !== drawn.editable) shape.setValues({ editable: next.editable });
         drawn = next;
+        handles.sync();
         lift();
       },
       present(next: Look) {
@@ -78,10 +86,12 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
         if (next.visible !== look.visible) shape.setValues({ visible: next.visible });
         if (!next.visible) site.hover.gone(id);
         look = next;
+        handles.sync();
         lift();
       },
       remove() {
         stopCutting();
+        handles.stop();
         outline.remove();
         parts.remove();
         geometry.stop();
@@ -97,8 +107,8 @@ function shapePlacer(kind: ShapeKind): ShapePlacer {
  * once let go, which may be anywhere or never, so it can't end where it was (the RFC's
  * `locationEdit`). Editing off drops it, reporting nothing, the shape as the store has it.
  */
-function cutHandleDrag(shape: GoogleShape, isEditable: () => boolean): GiveBack | undefined {
-  return takeEditingAway((on) => shape.setValues({ editable: on }), isEditable);
+function cutHandleDrag(shape: GoogleShape, handles: ShapeHandles): GiveBack | undefined {
+  return takeEditingAway((on) => shape.setValues({ editable: on }), handles.shown);
 }
 
 /** What a new shape shows, where, and how it starts: its look and its place in the order. */
@@ -116,7 +126,8 @@ function newShape(kind: ShapeKind, { drawable, site, look, order }: Placing) {
     ...shownStyleValues(drawable, look),
     zIndex: shapeStackRank(drawable.geometry, order),
     clickable: true,
-    editable: drawable.editable,
+    // Its handles come from `shapeHandles`, once it knows the shape's look.
+    editable: false,
     visible: look.visible,
   });
   const { id } = drawable;

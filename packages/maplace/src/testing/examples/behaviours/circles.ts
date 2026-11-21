@@ -45,9 +45,12 @@ const expectFitsAndStyles: ExampleBehaviour = async ({ store, adapter }) => {
 };
 
 /** Resizing the editable circle shows its radius. */
-const expectRadiusReadout: ExampleBehaviour = async ({ adapter, root }) => {
+const expectRadiusReadout: ExampleBehaviour = async ({ store, adapter, root }) => {
   const resizable = adapter.probe().location("resizable")?.geometry;
   if (resizable?.type !== "circle") throw new Error("no resizable circle");
+  // Picked first, as a user does: its handles show only while it is selected or hovered.
+  store.select("resizable");
+  await adapter.probe().settle();
   adapter.probe().drag("resizable", { ...resizable, radius: 20_000 });
   await expect.poll(() => textIn(root, "output")).toBe("Radius: 20.0 km");
 };

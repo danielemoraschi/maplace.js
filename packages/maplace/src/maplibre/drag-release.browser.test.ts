@@ -18,10 +18,14 @@ const BACK_OVER_THE_MAP: LatLng = { lat: -1, lng: -1 };
 /** Where a drag is held when the browser ends it. */
 const HELD_AT: LatLng = { lat: 0.5, lng: 1.5 };
 
-/** An editable polygon on a map at zoom 7 over the origin: its corner `CORNER` is a handle. */
+/**
+ * An editable polygon on a map at zoom 7 over the origin, selected as a user picks it before
+ * dragging: its corner `CORNER` is a handle.
+ */
 async function editingPolygon() {
   const mounted = await mountedMapLibre();
   await mounted.adapter.apply(adding({ ...polygonDrawable("p"), editable: true }));
+  mounted.adapter.present(presented({ selectedId: "p" }));
   mounted.adapter.setView({ kind: "center", center: ORIGIN, zoom: 7 });
   await mounted.probe.settle();
   return mounted;

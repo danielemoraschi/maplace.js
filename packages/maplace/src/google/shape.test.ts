@@ -75,8 +75,20 @@ describe("shape placers", () => {
     expect(setValues).not.toHaveBeenCalled();
     p.update({ ...first, style: { stroke: "blue" }, editable: true });
     expect(stub.get("strokeColor")).toBe("blue");
-    expect(stub.get("editable")).toBe(true);
     expect(setPaths).not.toHaveBeenCalled();
+  });
+
+  it("show an editable shape's handles only while it is hovered or selected, and shown", () => {
+    const { placed: p, stub } = placed(polygonDrawable("p", { editable: true }));
+    expect(stub.get("editable")).toBe(false);
+    p.present({ state: { selected: false, hovered: true }, visible: true });
+    expect(stub.get("editable")).toBe(true);
+    p.present({ state: { selected: true, hovered: false }, visible: true });
+    expect(stub.get("editable")).toBe(true);
+    p.present({ state: { selected: true, hovered: false }, visible: false });
+    expect(stub.get("editable")).toBe(false);
+    p.present({ state: { selected: false, hovered: false }, visible: true });
+    expect(stub.get("editable")).toBe(false);
   });
 
   it("report a user's edit once, as the location's new geometry, its one edit there too", () => {

@@ -29,7 +29,7 @@ export interface ErrorReporting {
  * whether its load succeeds or not: the errors it emits, and how its load ended (`"ready"`, or
  * what `whenReady` rejected with). The adapter is given back for what a page calls on it directly
  * (`mountControl`), and the Google map it draws on once open, created or the page's own. Built
- * as `createGoogleAdapter` builds it (no probe), with its state kept for the test to read.
+ * as `createGoogleAdapter` builds it (no probe), with its state kept for the test to read (`state`).
  */
 export function attachedToGoogle<Store extends Attachable & ErrorReporting>(
   maplace: Store,
@@ -52,7 +52,7 @@ export function attachedToGoogle<Store extends Attachable & ErrorReporting>(
     holder.remove();
   });
   const googleMap = () => state.mounted?.map;
-  return { maplace, container: holder, adapter, googleMap, errors, outcome };
+  return { maplace, container: holder, adapter, state, googleMap, errors, outcome };
 }
 
 /** `maplace` attached to Google as `attachedToGoogle` does, once its load is ready. */

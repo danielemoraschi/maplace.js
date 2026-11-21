@@ -171,7 +171,7 @@ A marker with an `icon` is a DOM marker, focusable and pressed by Enter or Space
 
 Circles are polygons of 128 points on the sphere, their radius in metres as on Google. Polylines, polygons and each of a multipolygon's polygons across ±180 are drawn the short way.
 
-An `editable` shape gets Google's handles: one on each point and one between each two, and a circle's centre and four radius handles. They work with the pointer only. A shape's `locationEdit` comes as the drag goes, and its `locationChange` on release.
+An `editable` shape gets Google's handles while it is hovered or selected, so markers on it stay clear at rest: one on each point and one between each two, and a circle's centre and four radius handles. They work with the pointer only. A shape's `locationEdit` comes as the drag goes, and its `locationChange` on release.
 
 ### The origin's dot
 

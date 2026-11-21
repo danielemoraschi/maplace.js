@@ -2,7 +2,7 @@
 import { expect } from "vitest";
 import type { Drawable } from "../../drawable";
 import type { Geometry, LatLng } from "../../geometry";
-import { adding, ORIGIN, reshaped, updating } from "../../testing/conformance/fixtures";
+import { adding, ORIGIN, presented, reshaped, updating } from "../../testing/conformance/fixtures";
 import type { RecordingHost } from "../../testing/conformance/recording-host";
 import type { ViewportPoint } from "../../testing/mouse-commands";
 import type { GoogleMapState } from "../map-state";
@@ -34,7 +34,10 @@ const CONTROL_CORNER: LatLng = { lat: 1, lng: -1 };
 /** The polygon fixture's corner a cut drag starts on. */
 export const CUT_CORNER: LatLng = { lat: 1, lng: 1 };
 
-/** Google drawing `drawables` around the origin at `zoom`, with the map they're on. */
+/**
+ * Google drawing `drawables` around the origin at `zoom`, with the map they're on: the first shape
+ * selected, as a user picks one before dragging its handles.
+ */
 export async function mountedAround(zoom: number, ...drawables: Drawable[]) {
   const mounted = await mountedGoogle({
     ...TEST_OPTIONS,
@@ -42,6 +45,8 @@ export async function mountedAround(zoom: number, ...drawables: Drawable[]) {
   });
   const map = mounted.state.mounted?.map as google.maps.Map;
   await mounted.adapter.apply(adding(...drawables));
+  const shape = drawables.find(({ geometry }) => geometry.type !== "marker");
+  mounted.adapter.present(presented({ selectedId: shape?.id }));
   await cameraAt(map, { center: ORIGIN, zoom });
   return { ...mounted, map };
 }

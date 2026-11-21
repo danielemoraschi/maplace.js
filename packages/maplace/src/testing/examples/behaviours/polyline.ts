@@ -29,6 +29,9 @@ export const polyline: ExampleBehaviour = async ({ store, adapter, root }) => {
   await expect
     .poll(() => probe.shownPopup()?.element.textContent)
     .toContain("The village on the cliff top.");
+  // Picked first, as a user does: its handles show only while it is selected or hovered.
+  store.select("trail");
+  await probe.settle();
   probe.drag("trail", EDITED);
   await expect
     .poll(() => store.getSnapshot().locations.find(({ id }) => id === "trail"))

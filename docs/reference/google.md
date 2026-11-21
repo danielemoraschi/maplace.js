@@ -155,7 +155,7 @@ Google refusing the key (an invalid key, a referrer the key doesn't allow, the A
 
 ## Clicks and edits
 
-A click on the map is reported 250 ms after it, unless a double-click comes first, so a double-click zoom neither fires `mapClick` nor clears the selection; a location clicked within those 250 ms drops the map's click. A marker reports its drag as it moves (`locationEdit`); Google says where a shape's handle went only when it is let go, so a shape's `locationEdit` comes once, with its `locationChange`. A window losing focus ends a marker's drag where it was, with its `locationChange`; a shape's handle drag is cut short instead, nothing reported and the shape left where the store has it, as Google gives no handle place until it is let go.
+A click on the map is reported 250 ms after it, unless a double-click comes first, so a double-click zoom neither fires `mapClick` nor clears the selection; a location clicked within those 250 ms drops the map's click. An `editable` shape shows its handles while it is hovered or selected, so markers on it stay clear at rest. A marker reports its drag as it moves (`locationEdit`); Google says where a shape's handle went only when it is let go, so a shape's `locationEdit` comes once, with its `locationChange`. A window losing focus ends a marker's drag where it was, with its `locationChange`; a shape's handle drag is cut short instead, nothing reported and the shape left where the store has it, as Google gives no handle place until it is let go.
 
 ## Popups
 

@@ -1,6 +1,8 @@
 import { type Drawable, STYLE_FIELDS, type StyleField } from "../drawable";
 import type { LocationState } from "../location";
 import type { DrawnStyle, LineStyle, ShapeStyle } from "../style";
+import type { Look } from "./presentation-changes";
+import { isInFront } from "./stacking";
 
 /** How a selected polyline is drawn where its style leaves a field unset: heavier, opaque. */
 export const SELECTED_LINE_LOOK: LineStyle = Object.freeze({ strokeWidth: 5, strokeOpacity: 1 });
@@ -59,4 +61,17 @@ export function sameLooks(
     a.progress === b.progress &&
     a.travelledStyle === b.travelledStyle
   );
+}
+
+/**
+ * Whether an editable shape shows its handles: while shown and in front (hovered or selected), so
+ * markers on a shape at rest stay clear, or while a press on them is `held`, as the hover may leave
+ * mid-drag. A press never keeps them on a shape made non-editable or hidden: that cuts it short.
+ */
+export function showsEditHandles(
+  drawable: Pick<Drawable, "editable">,
+  look: Look,
+  held: boolean,
+): boolean {
+  return drawable.editable && look.visible && (isInFront(look.state) || held);
 }
