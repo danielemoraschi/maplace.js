@@ -2,7 +2,7 @@
 import { pageHeading } from "./example-sections.ts";
 
 /** The examples page's H1, on one line. */
-export const EXAMPLES_HEADING = pageHeading("Map examples");
+export const EXAMPLES_HEADING = pageHeading("Live examples");
 
 /** What an index of every example says first: under the examples page's H1, and under the home page's Examples heading. */
 export const EXAMPLES_INTRO =

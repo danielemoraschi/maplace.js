@@ -7,7 +7,7 @@ export const HOME_ROUTE = "/";
 
 /** The hero's paragraph under the home page's H1. */
 export const HOME_INTRO =
-  "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and routes, and the list or menu that goes with them, in sync with the map. One script tag, with a Maps key on Google and none on MapLibre; npm and React too.";
+  "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and routes, and the list or menu that goes with them, in sync with the map.";
 
 /** The home page's description, for search and sharing. */
 export const HOME_DESCRIPTION =
