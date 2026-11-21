@@ -10,9 +10,9 @@ export const TABLE_FROM = 901;
 /**
  * From where the table lies beside the copy (`TABLE_FROM`), the widths in px below which a card
  * would run more than about 30px under the copy and so is left off: the prototype's, but for its
- * second row's third cell and circles', which this page's longer copy pushes to 1100 and 1160.
+ * second row's third cell and circles', which this page's copy pushes to 1100 and 1200.
  */
-export type HiddenBelow = 1100 | 1160 | 1260;
+export type HiddenBelow = 1100 | 1200 | 1260;
 
 /** A card on the table: its example, its cell (from 1, four columns), and where it steps out. */
 export interface HeroCard {
@@ -32,7 +32,7 @@ export const HERO_TABLE: readonly HeroCard[] = [
   { name: "choropleth", row: 1, column: 4 },
   { name: "route", row: 2, column: 3, hiddenBelow: 1100 },
   { name: "earthquakes", row: 2, column: 4 },
-  { name: "circles", row: 3, column: 2, hiddenBelow: 1160 },
+  { name: "circles", row: 3, column: 2, hiddenBelow: 1200 },
   { name: "brand", row: 3, column: 3 },
   { name: "tags", row: 3, column: 4 },
   { name: "trade-lanes", row: 4, column: 1 },

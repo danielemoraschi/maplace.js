@@ -36,7 +36,7 @@ describe("the home page's table of examples", () => {
   it("gives the widths cards step out below, in px, once each", () => {
     expect(
       hiddenBelowWidths([...HERO_TABLE, { name: "x", row: 9, column: 1, hiddenBelow: 1100 }]),
-    ).toEqual([1100, 1160, 1260]);
+    ).toEqual([1100, 1200, 1260]);
   });
 
   it("names a card whose example has no page", () => {
