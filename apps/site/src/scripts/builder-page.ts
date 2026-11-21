@@ -5,7 +5,7 @@ import { type Conversion, convertPasted } from "./builder-convert.ts";
 import { previewLocationsOf } from "./builder-popups.ts";
 import { type Note, PasteRefused } from "./builder-report.ts";
 import { writeSnippet } from "./builder-snippet.ts";
-import { copyText } from "./copy-text.ts";
+import { copyOrSelect, REFUSED_STATUS } from "./copy-text.ts";
 import { chosenProvider, PROVIDER_TOGGLE } from "./version-switch.ts";
 
 /**
@@ -113,8 +113,8 @@ export function startBuilder(page: Document): void {
       render();
     }
     if (copy.disabled) return;
-    void copyText(code.textContent ?? "").then((done) => {
-      copied.textContent = done ? "Copied" : "Select the code to copy it";
+    void copyOrSelect(code).then((done) => {
+      copied.textContent = done ? "Copied" : REFUSED_STATUS;
     });
   });
   render();

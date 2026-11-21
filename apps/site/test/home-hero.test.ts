@@ -91,6 +91,8 @@ describe("the home page's hero (W66)", () => {
     const waysBefore = await boxOf(ways);
     await pill.getByRole("button", { name: `Copy ${SKILLS}` }).click();
     await expect.poll(() => pill.getByRole("status").textContent()).toBe("Copied");
+    // Wider than `sr-only`'s 1px: a sighted reader sees it too.
+    expect((await boxOf(pill.getByRole("status"))).width).toBeGreaterThan(30);
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(SKILLS);
     expect(await boxOf(ways), "nothing below moves").toEqual(waysBefore);
     await context.close();

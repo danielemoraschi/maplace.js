@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { COPIED_SHOWN_MS, startCopyButtons } from "./copy-buttons.ts";
+import { REFUSED_STATUS } from "./copy-text.ts";
 
 const PILL =
-  '<div><code>npm install x</code><button type="button" data-copy="npm install x">Copy</button><span role="status"></span></div>';
+  '<div><code><span>$ </span><span data-command>npm install x</span></code><button type="button" data-copy>Copy</button><span role="status"></span></div>';
 
 const writeText = vi.fn<(text: string) => Promise<void>>();
 
@@ -33,14 +34,18 @@ describe("startCopyButtons", () => {
     expect(button().dataset.copied).toBe("done");
   });
 
-  it("says to select the command where the clipboard is refused, and keeps saying it", async () => {
+  it("selects the command where the clipboard is refused, and keeps saying how to copy it", async () => {
     writeText.mockRejectedValue(new Error("refused"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     startCopyButtons(document);
     await click();
-    expect(status()).toBe("Select the command to copy it");
+    expect(getSelection()?.toString()).toBe("npm install x");
+    expect(status()).toBe(REFUSED_STATUS);
     await vi.advanceTimersByTimeAsync(COPIED_SHOWN_MS * 2);
-    expect(status()).toBe("Select the command to copy it");
+    expect(status()).toBe(REFUSED_STATUS);
     expect(button().dataset.copied).toBe("refused");
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
   });
 
   it("clears Copied a while after the last click, however often it was clicked", async () => {

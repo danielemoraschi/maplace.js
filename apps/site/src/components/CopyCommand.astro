@@ -8,14 +8,14 @@ const { command } = Astro.props;
 ---
 
 {/* One command to copy (W66), a pill as the prototype has it: its words, wrapping where a phone is too narrow for them, a button copying them that marks what came of it, and a status saying it (`copy-buttons.ts`). */}
-<div class="flex max-w-full items-stretch rounded-full border border-ink/15 bg-paper font-code text-sm max-[26rem]:rounded-2xl max-[26rem]:text-xs">
+<div class="relative flex max-w-full items-stretch rounded-full border border-ink/15 bg-paper font-code text-sm max-[26rem]:rounded-2xl max-[26rem]:text-xs">
   <code class="min-w-0 bg-transparent py-[0.85rem] ps-5 pe-1.5 [overflow-wrap:anywhere]"
-    ><span aria-hidden="true" class="text-muted">$ </span>{command}</code
+    ><span aria-hidden="true" class="text-muted">$ </span><span data-command>{command}</span></code
   >
   <button
     type="button"
     class="group grid place-items-center border-0 bg-transparent ps-2 pe-4 text-muted hover:text-ink data-[copied=done]:text-accent"
-    data-copy={command}
+    data-copy
     aria-label={`Copy ${command}`}
   >
     <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="group-data-[copied]:hidden">
@@ -29,6 +29,9 @@ const { command } = Astro.props;
       <path d="M4 4l8 8M12 4l-8 8" />
     </svg>
   </button>
-  {/* Out of the flow, so a copy moves nothing on the page: the button's mark shows it, this says it. */}
-  <span role="status" class="sr-only"></span>
+  {/* A tag above the button, out of the flow so a copy moves nothing on the page; no size while empty. */}
+  <span
+    role="status"
+    class="pointer-events-none absolute end-2 bottom-full mb-1.5 rounded-md bg-ink px-2 py-1 font-body text-xs whitespace-nowrap text-paper empty:p-0"
+  ></span>
 </div>

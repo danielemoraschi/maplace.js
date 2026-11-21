@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PREVIEW_FIT_PADDING, startBuilder } from "./builder-page.ts";
+import { REFUSED_STATUS } from "./copy-text.ts";
 
 const FIXTURE = `
   <fieldset data-provider-choice>
@@ -145,23 +146,18 @@ describe("startBuilder", () => {
     expect(list.textContent).toContain("<img onerror=x>");
   });
 
-  it("says so when the clipboard refuses", async () => {
+  it.each([
+    ["refuses", { clipboard: { writeText: () => Promise.reject(new Error("no")) } }],
+    ["is missing, as on a page off HTTPS", {}],
+  ])("selects the snippet and says how to copy it when the clipboard %s", async (_, browser) => {
     vi.useRealTimers();
-    vi.stubGlobal("navigator", { clipboard: { writeText: () => Promise.reject(new Error("no")) } });
+    vi.stubGlobal("navigator", browser);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     copy().click();
-    await vi.waitFor(() =>
-      expect(get("[data-builder-copied]").textContent).toBe("Select the code to copy it"),
-    );
-    vi.unstubAllGlobals();
-  });
-
-  it("says so when there is no clipboard", async () => {
-    vi.useRealTimers();
-    vi.stubGlobal("navigator", {});
-    copy().click();
-    await vi.waitFor(() =>
-      expect(get("[data-builder-copied]").textContent).toBe("Select the code to copy it"),
-    );
+    await vi.waitFor(() => expect(get("[data-builder-copied]").textContent).toBe(REFUSED_STATUS));
+    expect(getSelection()?.toString()).toBe(codeText());
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
     vi.unstubAllGlobals();
   });
 
