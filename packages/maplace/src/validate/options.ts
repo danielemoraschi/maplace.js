@@ -13,6 +13,7 @@ import {
   checkFunction,
   checkNonBlankString,
   checkNonEmptyString,
+  checkRenderable,
   numberIn,
   optional,
 } from "./values";
@@ -44,6 +45,7 @@ const checkOptionFields: Assert<MaplaceOptions> = recordOf<MaplaceOptions, "loca
     sanitize: optional(checkFunction),
     popup: optional(checkPopupOptions),
     ...shapeStyleChecks(checkDefaultStyle),
+    markerIcon: optional(checkRenderable),
     cluster: optional(checkBoolean),
     heatmap: optional(checkHeatmap),
     view: optional(checkView),

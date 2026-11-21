@@ -44,7 +44,8 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   /**
    * What the marker shows in the DOM: the page's icon; else, while it can be dragged, the pin, as
    * only a DOM marker drags; else nothing, a pin in the pin layer. A heat marker shows nothing
-   * there, whatever icon the page draws for every marker (React's `markerIcon`): it is heat.
+   * there, whatever icon the page draws for every marker (a `markerIcon`, the store's or React's):
+   * it is heat.
    */
   function iconFor(shown: Drawable, state: LocationState): Node | undefined {
     if (shown.heatWeight !== undefined) return undefined;

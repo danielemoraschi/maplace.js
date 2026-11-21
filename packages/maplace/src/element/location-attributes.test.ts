@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import { locationFromAttributes } from "./location-attributes";
+import { iconTemplateOf } from "./location-templates";
 import { elementWith as element } from "./testing/dom";
 
 describe("locationFromAttributes", () => {
@@ -153,5 +154,16 @@ describe("locationFromAttributes: shape styles", () => {
       "center",
       "radius",
     ]);
+  });
+});
+
+describe("iconTemplateOf", () => {
+  it("reads only an element's own direct <template data-icon>, not one of a child's", () => {
+    const map = document.createElement("maplace-map");
+    map.innerHTML =
+      '<maplace-location location-id="a"><template data-icon><i>a</i></template></maplace-location>';
+    expect(iconTemplateOf(map)).toBeUndefined();
+    map.insertAdjacentHTML("beforeend", "<template data-icon><b>pin</b></template>");
+    expect(iconTemplateOf(map)?.().outerHTML).toBe("<b>pin</b>");
   });
 });

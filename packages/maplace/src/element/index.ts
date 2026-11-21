@@ -113,6 +113,8 @@ export { defineListView } from "./list-views";
  *   neither can change afterwards.
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
  *   of a selection; can't change afterwards.
+ * - A `<template data-icon>` child (the map's own, not a location's) is the icon of every marker
+ *   without its own, the store's `markerIcon`; read once, when the store is made.
  * - `my-location`: puts the "My location" button on the map, which asks for the visitor's position
  *   only when pressed; read when the map opens, as are `my-location-label` (its words),
  *   `my-location-unavailable-label` (what it says when no position comes) and

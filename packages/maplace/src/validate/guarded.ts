@@ -6,7 +6,10 @@ import { isNode } from "./values";
 /** Whose page code a renderer runs, and where its failure goes. */
 export interface Guard {
   readonly locationId: string;
-  /** The location field the code came from: `icon`, `content` or `html`. */
+  /**
+   * Where the code came from: a location's `icon`, `content` or `html`, or the store's
+   * `markerIcon`.
+   */
   readonly field: string;
   readonly report: (error: MaplaceError) => void;
 }

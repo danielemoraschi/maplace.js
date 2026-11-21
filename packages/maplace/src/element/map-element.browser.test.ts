@@ -47,6 +47,24 @@ describe("<maplace-map> on a provider", () => {
     expect(marker()?.outerHTML).toBe('<span data-selected="">★</span>');
   });
 
+  it("draws every marker without its own icon with the map's icon template, its own template winning", async () => {
+    const map = await mapFrom(
+      `<maplace-map><template data-icon><b>pin</b></template><maplace-location location-id="milan" lat="45.46" lng="9.19"></maplace-location><maplace-location location-id="rome" lat="41.9" lng="12.5"><template data-icon><span>★</span></template></maplace-location></maplace-map>`,
+    );
+    const adapter = lastAdapter();
+    await adapter.finishMount();
+    const marker = (id: string) => adapter.probe().location(id)?.icon as Element | undefined;
+    await expect.poll(() => marker("milan")?.outerHTML).toBe("<b>pin</b>");
+    expect(marker("rome")?.outerHTML).toBe("<span>★</span>");
+    // Read once, as the store's other options are: a template added later changes nothing.
+    const later = document.createElement("template");
+    later.setAttribute("data-icon", "");
+    later.innerHTML = "<i>late</i>";
+    map.prepend(later);
+    map.maplace.select("milan");
+    expect(marker("milan")?.outerHTML).toBe('<b data-selected="">pin</b>');
+  });
+
   it("reads an inline JSON script", async () => {
     const map = await mapFrom(
       '<maplace-map><script type="application/json">[{"id":"a","lat":1,"lng":2}]</script></maplace-map>',

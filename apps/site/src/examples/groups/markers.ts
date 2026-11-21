@@ -25,9 +25,10 @@ export const markers: ExampleGroup = {
     {
       name: "markers",
       title: "Custom marker icons",
-      summary: "Image icons, an icon of your own markup, and a place with its own zoom.",
+      summary:
+        "One pin for every marker, an image icon, an icon of your own markup, and a place with its own zoom.",
       description:
-        "Custom marker icons on Google Maps and MapLibre in JavaScript: image icons, an icon of your own HTML, and a place with its own zoom.",
+        "Custom marker icons on Google Maps and MapLibre in JavaScript: one pin for every marker, an image icon, an icon of your own HTML, and a place with its own zoom.",
     },
     {
       name: "css-markers",

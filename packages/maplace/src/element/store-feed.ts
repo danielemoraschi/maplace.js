@@ -8,6 +8,7 @@ import {
 import { elementMisuse } from "./element-error";
 import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
+import { iconTemplateOf } from "./location-templates";
 import { PendingSelection } from "./pending-selection";
 import type { StandingMisuse } from "./standing-misuse";
 import {
@@ -116,10 +117,11 @@ export class StoreFeed {
   }
 
   /**
-   * The store from `cluster`, the labels, the link switches, the view and `sanitize`, fixed for
-   * its life, then fed what waited for it. It is listened to only then: the state the store starts
-   * from is no event, as an <input value> is no change. A bad label, switch or view is said last,
-   * as a listener may read the store.
+   * The store from `cluster`, the labels, the link switches, the view, the map's icon template and
+   * `sanitize`, fixed for its life (a template added later changes nothing), then fed what waited
+   * for it. It is listened to only then: the state the store starts from is no event, as an
+   * <input value> is no change. A bad label, switch or view is said last, as a listener may read
+   * the store.
    */
   #create(): Maplace {
     this.#attributes = readStoreAttributes(this.#host);
@@ -133,14 +135,14 @@ export class StoreFeed {
 
   /** A store always exists: one `sanitize` the store refuses is left out, standing as misuse. */
   #createStore(): Maplace {
+    // The map's own <template data-icon>, built once: a Node the store copies for each marker.
+    const options = { ...this.#attributes, markerIcon: iconTemplateOf(this.#host)?.() };
     const sanitize = this.#sanitize;
-    if (sanitize === undefined) return createMaplace(this.#attributes);
-    const store = this.#misuse.attempt("sanitize", () =>
-      createMaplace({ ...this.#attributes, sanitize }),
-    );
+    if (sanitize === undefined) return createMaplace(options);
+    const store = this.#misuse.attempt("sanitize", () => createMaplace({ ...options, sanitize }));
     if (store !== undefined) return store;
     this.#sanitize = undefined;
-    return createMaplace(this.#attributes);
+    return createMaplace(options);
   }
 
   /**

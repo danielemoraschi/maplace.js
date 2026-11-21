@@ -227,9 +227,11 @@ A marker's `icon` is one of:
 - a DOM node;
 - a function of the location and its state (`{ selected, hovered }`) returning a node, run again only for markers whose state changed.
 
+A marker without an `icon` takes the store's [`markerIcon`](store.md#options), the same three kinds, for every marker of the map (a node copied for each), else maplace's default pin.
+
 For another size, give a sized `<img>`. For another anchor, move the node with CSS: `display: block; transform: translateY(50%)` puts its centre on the point. A popup still opens from the node's place before the move.
 
-A DOM marker carries `data-selected` and `data-hovered` while in that state, so `[data-selected]` in CSS styles it. An `icon` or `content` function that throws, or returns something other than a node, is an `invalid-input` error event naming the location and the field: the map stays ready and draws the default marker, or opens no popup ([RFC §3 Errors](../rfc-1.0.md#errors)).
+A DOM marker carries `data-selected` and `data-hovered` while in that state, so `[data-selected]` in CSS styles it. An `icon`, `markerIcon` or `content` function that throws, or returns something other than a node, is an `invalid-input` error event naming the location and the field: the map stays ready and draws the default marker, or opens no popup ([RFC §3 Errors](../rfc-1.0.md#errors)).
 
 ## From GeoJSON
 

@@ -23,6 +23,8 @@ const shops = [{ id: "s", lat: 1, lng: 2, data: { price: 3 } }];
 export const filters = (
   <>
     <MaplaceProvider locations={shops} filter={["North"]} />
+    {/* @ts-expect-error React's markerIcon is <MaplaceMap>'s; the store's isn't on the provider */}
+    <MaplaceProvider locations={shops} markerIcon="/pin.svg" />
     <MaplaceProvider locations={shops} filter={{ groups: ["North"], tags: ["parking"] }} />
     <MaplaceProvider locations={shops} filter={{ query: "rome" }} />
     {/* @ts-expect-error a filter's fields are groups and tags */}

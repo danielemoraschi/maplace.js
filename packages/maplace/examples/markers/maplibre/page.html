@@ -13,12 +13,16 @@
     font-size: 1.125rem;
     box-shadow: 0 1px 4px rgb(0 0 0 / 35%);
   }
+  #markers-maplibre-map .pin { display: block; width: 24px; height: 29px; }
+  #markers-maplibre-map .pin path { fill: #111; stroke: #fff; stroke-width: 2; }
+  #markers-maplibre-map .pin circle { fill: #fff; }
 </style>
-<!-- Three image icons, a DOM icon the page's CSS styles, and Edinburgh's own zoom when it is selected. -->
+<!-- The map's pin for every marker without its own (Edinburgh, Manchester), London's own image, Cardiff's own markup, and Edinburgh's own zoom when it is selected. -->
 <maplace-map id="markers-maplibre-map">
+  <template data-icon><svg class="pin" viewBox="3 1 18 22" aria-hidden="true"><!-- Lucide's map-pin: ISC License, © Lucide Contributors; portions © Cole Bemis (Feather, MIT); https://lucide.dev/license --><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></template>
   <maplace-location location-id="london" lat="51.5074" lng="-0.1278" title="London" icon="/examples/data/icons/a.svg"></maplace-location>
-  <maplace-location location-id="edinburgh" lat="55.9533" lng="-3.1883" title="Edinburgh" icon="/examples/data/icons/b.svg" zoom="8"></maplace-location>
-  <maplace-location location-id="manchester" lat="53.4808" lng="-2.2426" title="Manchester" icon="/examples/data/icons/c.svg"></maplace-location>
+  <maplace-location location-id="edinburgh" lat="55.9533" lng="-3.1883" title="Edinburgh" zoom="8"></maplace-location>
+  <maplace-location location-id="manchester" lat="53.4808" lng="-2.2426" title="Manchester"></maplace-location>
   <maplace-location location-id="cardiff" lat="51.4816" lng="-3.1791" title="Cardiff">
     <template data-icon><span class="star">★</span></template>
   </maplace-location>

@@ -29,6 +29,7 @@ createGoogleMap("#simple-vanilla-map", {
 | `selectedStyle` | `ShapeStyle` | Drawn over `style` while a shape is selected; a location's `selectedStyle` overrides it |
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while a shape is hovered and not selected |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while a shape is active (its `active`), neither hovered nor selected |
+| `markerIcon` | [`Icon`](locations.md#icons) | The icon of every marker without its own (1.3): an image URL, a node (copied for each marker) or a function of the location and its state; a location's `icon` overrides it. Not a heatmap's markers, drawn as heat. On MapLibre a marker with an icon is a DOM marker, not a dot in the pin layer, so a map of thousands is faster without one. React's is [`<MaplaceMap markerIcon>`](react.md#maplacemap), asked before a location's own |
 | `cluster` | `boolean` | Clusters markers; needs the `cluster` capability; badges styled as [cluster badges](styling.md#cluster-badges) |
 | `heatmap` | [`HeatmapOptions`](#heatmaps) | Draws markers, by group, as a heatmap when zoomed out (1.2); needs the `heatmap` capability; not with `cluster` |
 | `view` | `View` | The first view (see below) |
@@ -158,7 +159,7 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `groups` | `string[]` | The groups drawn as heat, one or more; every marker when left out |
 | `maxZoom` | `number` | The zoom the heat gives way to its dots at, 3 to 25; default 9 |
 
-Over the 2 zooms below `maxZoom` the heat fades into a dot per marker, sized and coloured by its weight against the heaviest; a click on a dot selects its location and opens its popup. The selected or hovered one is drawn as a pin over the heat at any zoom. A marker in the heat can't have an `icon` or be `editable` (`invalid-input`): it is drawn as heat and a dot, and a page's icon for every marker (React's `markerIcon`) doesn't apply to it. MapLibre draws the heat and the dots in its own layers, under every pin and shape; Google, on a canvas over the map, the dots as markers. The heat's code loads only for a map that asks for one.
+Over the 2 zooms below `maxZoom` the heat fades into a dot per marker, sized and coloured by its weight against the heaviest; a click on a dot selects its location and opens its popup. The selected or hovered one is drawn as a pin over the heat at any zoom. A marker in the heat can't have an `icon` or be `editable` (`invalid-input`): it is drawn as heat and a dot, and a page's icon for every marker (`markerIcon`, the store's or React's) doesn't apply to it. MapLibre draws the heat and the dots in its own layers, under every pin and shape; Google, on a canvas over the map, the dots as markers. The heat's code loads only for a map that asks for one.
 
 ## List view options
 

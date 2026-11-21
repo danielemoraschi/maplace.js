@@ -28,8 +28,14 @@ export type MaplaceControlledProps = Partial<Pick<Snapshot, "selectedId" | "rout
   readonly filter?: FilterRequest;
 };
 
-/** The options read once, when the store is made: changing them later changes nothing. */
-export type MountOptions<Data = unknown> = Omit<MaplaceOptions<Data>, "locations" | "selectedId">;
+/**
+ * The options read once, when the store is made: changing them later changes nothing. The store's
+ * `markerIcon` is left out: `<MaplaceMap markerIcon>` is React's, asked before a location's own.
+ */
+export type MountOptions<Data = unknown> = Omit<
+  MaplaceOptions<Data>,
+  "locations" | "selectedId" | "markerIcon"
+>;
 
 /**
  * Creates the store on mount. `locations` and the controlled props follow later renders; the

@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 import type { Location } from "../location";
 import { type DrawContext, type DrawnLocation, toDrawable } from "./drawable";
@@ -137,6 +138,26 @@ describe("toDrawable", () => {
     expect(
       toDrawable({ id: "a", lat: 9, lng: 2, icon: "/pin.svg" }, previous, CONTEXT).renderIcon,
     ).toBe(previous.drawable.renderIcon);
+  });
+
+  it("draws a new markerIcon function's marker for a new location object, kept bound to none", () => {
+    const context = { ...CONTEXT, markerIcon: () => document.createElement("span") };
+    const location = { id: "a", lat: 1, lng: 2 };
+    const previous = { location, drawable: toDrawable(location, undefined, context) };
+    const next = toDrawable({ ...location, data: { starred: true } }, previous, context);
+    expect(next.renderIcon).not.toBe(previous.drawable.renderIcon);
+  });
+
+  it.each([
+    ["a URL", "/pin.svg"],
+    ["a node", document.createElement("span")],
+  ])("keeps the markerIcon renderer while it is %s", (_, markerIcon) => {
+    const context = { ...CONTEXT, markerIcon };
+    const location = { id: "a", lat: 1, lng: 2 };
+    const previous = { location, drawable: toDrawable(location, undefined, context) };
+    expect(toDrawable({ ...location, lat: 9 }, previous, context).renderIcon).toBe(
+      previous.drawable.renderIcon,
+    );
   });
 
   it("returns the previous drawable when no field changed", () => {

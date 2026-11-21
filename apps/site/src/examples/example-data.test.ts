@@ -32,8 +32,6 @@ describe("servedExampleFiles", () => {
       "data/countries.json",
       "data/earthquakes.json",
       "data/icons/a.svg",
-      "data/icons/b.svg",
-      "data/icons/c.svg",
       "data/live-data-a.json",
       "data/live-data-b.json",
       "data/live-data-c.json",

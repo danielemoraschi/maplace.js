@@ -1,17 +1,19 @@
 import { expect } from "vitest";
 import type { ExampleBehaviour } from "./reading";
 
-/** Image icons for three cities, a DOM one for Cardiff, and Edinburgh shown at its own zoom. */
+/**
+ * The map's pin for Edinburgh and Manchester, London's own image, Cardiff's own markup, and
+ * Edinburgh shown at its own zoom.
+ */
 export const markers: ExampleBehaviour = async ({ store, adapter }) => {
   const probe = adapter.probe();
-  const srcOf = (id: string) =>
-    (probe.location(id)?.icon as Element | undefined)?.getAttribute("src");
-  expect(["london", "edinburgh", "manchester"].map(srcOf)).toEqual([
-    "/examples/data/icons/a.svg",
-    "/examples/data/icons/b.svg",
-    "/examples/data/icons/c.svg",
-  ]);
-  expect(probe.location("cardiff")?.icon?.textContent).toBe("★");
+  const iconOf = (id: string) => probe.location(id)?.icon as Element | undefined;
+  expect(iconOf("london")?.getAttribute("src")).toBe("/examples/data/icons/a.svg");
+  for (const id of ["edinburgh", "manchester"]) {
+    expect(iconOf(id)?.querySelector("path"), id).not.toBeNull();
+  }
+  expect(iconOf("edinburgh")).not.toBe(iconOf("manchester"));
+  expect(iconOf("cardiff")?.textContent).toBe("★");
   store.select("edinburgh");
   expect(adapter.callsOf("setView").at(-1)?.view).toEqual({
     kind: "location",

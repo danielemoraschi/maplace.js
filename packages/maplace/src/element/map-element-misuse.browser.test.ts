@@ -160,6 +160,17 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     expect(map.loadState).toBe("loading");
   });
 
+  it("counts a map icon template added later as no store-attribute change", async () => {
+    const map = await mapFrom(`<maplace-map selected-label="Scelto">${ROME}</maplace-map>`);
+    const icon = document.createElement("template");
+    icon.setAttribute("data-icon", "");
+    icon.innerHTML = "<b>pin</b>";
+    map.prepend(icon);
+    map.setAttribute("selected-label", "Altro");
+    map.setAttribute("selected-label", "Scelto");
+    expect(map.loadState).toBe("loading");
+  });
+
   it("a blank link label stands as misuse, naming it", async () => {
     const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
     const errors = errorsOn(map);
