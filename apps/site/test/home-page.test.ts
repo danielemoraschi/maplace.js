@@ -1,6 +1,6 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { Page } from "playwright";
+import type { Locator, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import {
   EXAMPLE_GROUPS,
@@ -16,37 +16,44 @@ import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
 
 /** The band's ground, as a computed colour. */
 const NIGHT = "rgb(18, 26, 34)";
+/** The hero's ground, map water. */
+const WATER = "rgb(207, 227, 234)";
 
 const site = siteBuiltBeforeTests();
 
 describe("the home page's night band (W66)", () => {
+  /** The ground `node` sits on: its first own or ancestor's background, as the page draws it. */
+  const groundOf = (node: Locator) =>
+    node.evaluate((start) => {
+      let ground: Element | null = start;
+      while (ground && getComputedStyle(ground).backgroundColor === "rgba(0, 0, 0, 0)")
+        ground = ground.parentElement;
+      return ground && getComputedStyle(ground).backgroundColor;
+    });
   /** A category row's ground and text, as the page draws them. */
-  const rowColours = (page: Page) =>
-    page
-      .getByRole("link", { name: "Markers and popups" })
-      .first()
-      .evaluate((link) => {
-        let ground = link as Element | null;
-        while (ground && getComputedStyle(ground).backgroundColor === "rgba(0, 0, 0, 0)")
-          ground = ground.parentElement;
-        return [ground && getComputedStyle(ground).backgroundColor, getComputedStyle(link).color];
-      });
+  const rowColours = async (page: Page) => {
+    const row = page.getByRole("link", { name: "Markers and popups" }).first();
+    return [await groundOf(row), await row.evaluate((link) => getComputedStyle(link).color)];
+  };
 
-  it("draws the index on the night ground on the home page, and on the paper on the examples page", async () => {
+  it("draws the index on the night ground on the home page and the examples page, under its title on map water there", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
     await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
-    expect(await rowColours(page)).toEqual(["rgb(250, 250, 247)", "rgb(17, 17, 17)"]);
+    expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
+    expect(await groundOf(page.locator("h1"))).toBe(WATER);
     await context.close();
   }, 30_000);
 
-  it("ends the home page on a night footer, and every other page on its own paper, a divider above it", async () => {
+  it("ends the home page and the examples page on a night footer, and every other page on its own paper, a divider above it", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const ground = () =>
       page.getByRole("contentinfo").evaluate((footer) => {
         const { backgroundColor, borderTopWidth } = getComputedStyle(footer);
         return { backgroundColor, borderTopWidth };
       });
+    expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
+    await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
     expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
     await page.goto(new URL(docRoute("getting-started"), site.url).href);
     // No ground of its own: the page's paper shows through.
