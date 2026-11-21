@@ -11,4 +11,4 @@ interface Props {
 const { code, lang, host } = Astro.props.shown;
 ---
 
-{host === undefined ? <SourceCode code={code} lang={lang} /> : <FoldedHost parts={host} lang={lang} />}
+{host === undefined ? <SourceCode code={code} lang={lang} /> : <FoldedHost code={code} parts={host} lang={lang} />}

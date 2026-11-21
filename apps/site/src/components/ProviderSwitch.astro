@@ -7,15 +7,13 @@ interface Props {
    * across the page. The toggles are kept in step by `version-switch.ts`.
    */
   name: string;
-  /** Where the page places it. */
-  class?: string;
   /** What the choice is for, to a screen reader. */
   legend?: string;
-  /** The site's square switch (an example's page), or the home page's pill (W66). */
+  /** The builder's square switch, or the pill of an example's page and the home page (W66). */
   look?: "square" | "pill";
 }
 
-const { name, class: placement, legend = "Run the examples on", look = "square" } = Astro.props;
+const { name, legend = "Run the examples on", look = "square" } = Astro.props;
 /** Each look's classes: the box, the chosen provider's ground (inset on the pill), a segment. */
 const LOOKS = {
   square: {
@@ -24,7 +22,7 @@ const LOOKS = {
     label: "px-3.5 py-1 text-center",
   },
   pill: {
-    box: "h-11 w-[15rem] rounded-full border border-ink/15 text-base font-semibold",
+    box: "h-11 w-[15rem] rounded-full border border-ink/15 text-base font-semibold max-[26rem]:w-[12.5rem] max-[26rem]:text-sm",
     ground: "inset-y-1 start-1 w-[calc(50%-0.25rem)] rounded-full",
     label: "grid place-items-center",
   },
@@ -36,7 +34,6 @@ const LOOKS = {
   class:list={[
     "group/provider relative m-0 grid shrink-0 grid-cols-2 bg-paper p-0",
     LOOKS[look].box,
-    placement,
   ]}
 >
   <legend class="sr-only">{legend}</legend>

@@ -106,17 +106,32 @@ describe("the examples' provider toggle, on a section", () => {
     await context.close();
   }, 30_000);
 
+  it("sets the switch under the tabs on a phone, at their start and of their height", async () => {
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, { width: 320, height: 700 });
+    const tabs = await boxOf(page.locator("main [role=tablist]").first());
+    const toggle = await boxOf(providerToggle(page));
+    expect(toggle.y).toBeGreaterThanOrEqual(tabs.y + tabs.height);
+    expect(toggle.x).toBeCloseTo(tabs.x, 0);
+    expect(toggle.height).toBeCloseTo(tabs.height, 0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+    await context.close();
+  }, 30_000);
+
   it("keeps the dark ground under the chosen provider on a right-to-left page", async () => {
     const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     await page.evaluate(() => {
       document.documentElement.dir = "rtl";
     });
     const toggle = providerToggle(page);
-    const groundAt = async () => (await boxOf(toggle.locator("span[aria-hidden]"))).x;
+    // The pill's ground is inset from the switch's edge: it lies within the chosen segment.
+    const groundWithin = async (name: string) => {
+      const ground = await boxOf(toggle.locator("span[aria-hidden]"));
+      const chosen = await boxOf(toggle.locator("label", { hasText: name }));
+      return ground.x >= chosen.x && ground.x + ground.width <= chosen.x + chosen.width;
+    };
     for (const name of ["Google", "MapLibre"]) {
       await chooseProvider(page, name);
-      const chosen = await boxOf(toggle.locator("label", { hasText: name }));
-      await expect.poll(groundAt).toBeCloseTo(chosen.x, 0);
+      await expect.poll(() => groundWithin(name)).toBe(true);
     }
     await context.close();
   }, 30_000);

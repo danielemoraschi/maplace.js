@@ -37,7 +37,23 @@
   :where(.maplace-google-map, .maplace-maplibre-map):where(
     :not([data-own-frame] *, [data-maplace-unstyled] *)
   ) {
+  overflow: hidden;
   border: 2px solid var(--color-ink);
+  border-radius: var(--map-corner, 0);
+  /* A map in fullscreen (Google's button) fills the screen: no frame. */
+  &:fullscreen {
+    border: 0;
+    border-radius: 0;
+  }
+}
+/*
+ * An example's map, code and own buttons rounded, as the home page's panels are (W66); the
+ * builder's, which set none of these, stay square.
+ */
+.example {
+  --map-corner: var(--radius-panel);
+  --code-corner: var(--radius-panel);
+  --button-corner: 12px;
 }
 /*
  * A list beside the map, in every version, as a white panel set apart from it, under the map on a
@@ -146,6 +162,7 @@
     )
   ) {
   @apply button-plain;
+  border-radius: var(--button-corner, 0);
 }
 
 /*

@@ -4,7 +4,7 @@ import { COPIED_SHOWN_MS, startCopyButtons } from "./copy-buttons.ts";
 import { REFUSED_STATUS } from "./copy-text.ts";
 
 const PILL =
-  '<div><code><span>$ </span><span data-command>npm install x</span></code><button type="button" data-copy>Copy</button><span role="status"></span></div>';
+  '<div><code><span>$ </span><span data-copy-source>npm install x</span></code><button type="button" data-copy>Copy</button><span role="status"></span></div>';
 
 const writeText = vi.fn<(text: string) => Promise<void>>();
 

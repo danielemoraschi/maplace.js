@@ -1,0 +1,17 @@
+---
+import CopyButton from "./CopyButton.astro";
+---
+
+{/*
+  The frame each code block goes into (`code-copy.ts`), its copy button at the top right and the
+  status beside it, cloned from here so its look stays in markup Tailwind reads.
+*/}
+<template id="code-copy">
+  <div class="relative" data-code-frame>
+    <CopyButton
+      label="Copy code"
+      class="absolute end-2 top-2 grid size-8 place-items-center rounded-md border-0 bg-code-paper text-code-ink/60 hover:text-code-ink data-[copied=done]:text-code-ink"
+      statusClass="end-11 top-2.5 bg-paper text-ink"
+    />
+  </div>
+</template>

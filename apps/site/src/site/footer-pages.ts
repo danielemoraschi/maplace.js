@@ -31,7 +31,7 @@ export const BUILDER_PAGE: SitePage = {
   route: "/builder/",
   label: "Snippet builder",
   description:
-    "Paste a CSV, JSON, GeoJSON or a Maplace.js 0.2 config and get a working <maplace-map> to copy, with a live preview. All of it stays in your browser.",
+    "Paste a CSV, JSON, GeoJSON (FeatureCollection only) or a Maplace.js 0.2 config and get a <maplace-map> to copy, with a live preview, all in your browser.",
 };
 
 /** The footer's links, in order. */

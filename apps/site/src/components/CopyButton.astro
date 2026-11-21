@@ -1,0 +1,37 @@
+---
+interface Props {
+  /** The button's name, to a screen reader. */
+  label: string;
+  /** The button's place and colours. */
+  class: string;
+  /** The status's place and colours: a tag out of the flow, so a copy moves nothing. */
+  statusClass: string;
+}
+
+const { label, class: look, statusClass } = Astro.props;
+---
+
+{/*
+  A copy button and its status (`copy-buttons.ts`): the button copies the `[data-copy-source]` beside
+  it and marks what came of it (copy, then done or refused); the status says so, no size while
+  empty.
+*/}
+<button type="button" class:list={["group", look]} data-copy aria-label={label}>
+  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="group-data-[copied]:hidden">
+    <rect x="5.5" y="5.5" width="8" height="8" />
+    <path d="M10.5 5.5v-3h-8v8h3" />
+  </svg>
+  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" class="hidden group-data-[copied=done]:block">
+    <path d="M3 8.5 6.5 12 13 4.5" />
+  </svg>
+  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" class="hidden group-data-[copied=refused]:block">
+    <path d="M4 4l8 8M12 4l-8 8" />
+  </svg>
+</button>
+<span
+  role="status"
+  class:list={[
+    "pointer-events-none absolute rounded-md px-2 py-1 font-body text-xs whitespace-nowrap empty:p-0",
+    statusClass,
+  ]}
+></span>

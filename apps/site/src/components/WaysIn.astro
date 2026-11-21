@@ -24,7 +24,7 @@ const PANEL_PREFIX = "ways-in";
 */}
 <div class="mt-12">
   <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-    <VersionTabs codeTabs={codeTabs} label="Ways to use Maplace.js" panelPrefix={PANEL_PREFIX} look="pill" />
+    <VersionTabs codeTabs={codeTabs} label="Ways to use Maplace.js" panelPrefix={PANEL_PREFIX} />
     <ProviderSwitch name={`${PANEL_PREFIX}-provider`} legend="Show the code for" look="pill" />
   </div>
   {
@@ -34,7 +34,7 @@ const PANEL_PREFIX = "ways-in";
         id={versionPanelId(PANEL_PREFIX, kind)}
         aria-labelledby={versionTabId(PANEL_PREFIX, kind)}
         hidden={index !== 0}
-        class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] rounded-[22px] border border-ink/15 bg-paper shadow-[0_1px_2px_rgb(27_36_48/0.08),0_18px_40px_-16px_rgb(27_36_48/0.32)] max-[54rem]:grid-cols-1"
+        class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] rounded-panel border border-ink/15 bg-paper shadow-[0_1px_2px_rgb(27_36_48/0.08),0_18px_40px_-16px_rgb(27_36_48/0.32)] max-[54rem]:grid-cols-1"
       >
         <div class="grid content-start gap-3 p-6">
           <p class="headline m-0 text-lede leading-tight">{WAYS_IN_NOTES[kind].title}</p>
@@ -46,7 +46,7 @@ const PANEL_PREFIX = "ways-in";
           )}
         </div>
         {/* Rounded at the panel's corners itself, the panel clipping nothing, so the code's focus ring shows whole. */}
-        <div class="min-w-0 rounded-e-[21px] bg-code-paper max-[54rem]:rounded-none max-[54rem]:rounded-b-[21px] [&_pre]:m-0 [&_pre]:rounded-e-[21px] [&_pre]:px-5 [&_pre]:py-4 max-[54rem]:[&_pre]:rounded-none max-[54rem]:[&_pre]:rounded-b-[21px]">
+        <div class="min-w-0 rounded-e-panel-inset bg-code-paper max-[54rem]:rounded-none max-[54rem]:rounded-b-panel-inset [&_pre]:m-0 [&_pre]:rounded-e-panel-inset [&_pre]:px-5 [&_pre]:py-4 max-[54rem]:[&_pre]:rounded-none max-[54rem]:[&_pre]:rounded-b-panel-inset">
           {codes.map((code) => (
             <ProviderPart provider={code.provider}>
               {waysInFiles(code).map((shown) => <ExampleFile shown={shown} />)}

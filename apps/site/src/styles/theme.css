@@ -11,6 +11,11 @@
   --color-code-paper: #111;
   --color-code-ink: #f2f2ec;
 
+  /* The corner of a panel: the home page's, an example's map and code (W66). */
+  --radius-panel: 22px;
+  /* Inside a panel's 1px border: what it holds at its edge, rounded to meet it. */
+  --radius-panel-inset: calc(var(--radius-panel) - 1px);
+
   --font-*: initial;
   --font-display: "Bricolage Grotesque", system-ui, sans-serif;
   --font-body: "Instrument Sans Variable", system-ui, sans-serif;
@@ -37,7 +42,7 @@
   --spacing-header-height: 4rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
   --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
-  /* The provider toggle (`ProviderSwitch.astro`), beside each example's tabs and over the builder's preview. */
+  /* The builder's square provider toggle (`ProviderSwitch.astro`), over its preview. */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;
   /* An example's map: the height its hosts give it. */

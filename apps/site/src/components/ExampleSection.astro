@@ -45,9 +45,10 @@ const panelPrefix = `example-${name}`;
   <ExampleFileLinks lead="Fetches" links={dataLinks} />
   <ExampleFileLinks lead="Styled by" links={styleLinks} />
   {/* One control: a tab runs the map from its version and shows that version's code under it. */}
-  <div class="mt-4 mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+  {/* Spaced apart on one row; on a phone, the switch wraps under the tabs at the start. */}
+  <div class="mt-10 mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
     <VersionTabs codeTabs={codeTabs} label={`Run ${title} from`} panelPrefix={panelPrefix} />
-    <ProviderSwitch name={`${name}-provider`} class="ms-auto" />
+    <ProviderSwitch name={`${name}-provider`} look="pill" />
   </div>
   <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
   {

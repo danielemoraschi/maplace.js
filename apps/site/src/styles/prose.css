@@ -1,14 +1,21 @@
 /* Text the site doesn't write, so no utility can reach it: Shiki's code, rendered Markdown. */
 @layer components {
+  /* Square but where a page rounds its code (`--code-corner`, an example's: `frame.css`). */
+  pre.astro-code,
+  .folded-host {
+    border-radius: var(--code-corner, 0);
+  }
+
   pre.astro-code {
     margin: 0;
     padding: 1rem 1.25rem;
     line-height: 1.6;
   }
 
-  /* A host's code around its folded loader reads as one block: `FoldedHost.astro` pads it. */
+  /* A host's code around its folded loader reads as one block: `FoldedHost.astro` pads and rounds it. */
   .folded-host pre.astro-code {
     padding-block: 0;
+    border-radius: 0;
   }
 
   :is(.prose-page, .doc-content) h2 {

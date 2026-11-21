@@ -8,6 +8,7 @@ import type { LiveVersion } from "../examples/example-versions.ts";
 import { runPageScripts } from "../examples/page-scripts.ts";
 import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
+import { addCodeCopyButtons } from "./code-copy.ts";
 import { startCopyButtons } from "./copy-buttons.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
@@ -88,6 +89,8 @@ const startSections = sectionStarter({
 provideSave(globalThis, document);
 followNavFocus(document);
 startSections(document);
+const codeCopy = document.querySelector<HTMLTemplateElement>("#code-copy");
+if (codeCopy) addCodeCopyButtons(document.querySelector("main") ?? document, codeCopy);
 startCopyButtons(document);
 startConsent({
   document,

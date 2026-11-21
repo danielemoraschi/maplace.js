@@ -22,7 +22,7 @@ const MARKS: Readonly<Record<PointMark, string>> = {
 {/* The two providers side by side (W66), and why a map can wait: on the home page's night band. */}
 <section aria-labelledby="providers-title" class="border-t border-ink/15 py-8">
   <h2 id="providers-title" class="headline m-0 text-section leading-[1.06]">{PROVIDERS_HEADING}</h2>
-  <div class="mt-10 grid grid-cols-2 rounded-[22px] border border-ink/15 bg-paper max-[48rem]:grid-cols-1">
+  <div class="mt-10 grid grid-cols-2 rounded-panel border border-ink/15 bg-paper max-[48rem]:grid-cols-1">
     {
       PROVIDER_POINTS.map(({ name, points }, index) => (
         <div class:list={["p-[clamp(1.5rem,4vw,2.5rem)]", index > 0 && "border-s border-ink/15 max-[48rem]:border-s-0 max-[48rem]:border-t"]}>
