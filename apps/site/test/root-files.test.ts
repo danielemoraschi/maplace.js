@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { ROOT } from "../../../scripts/build/package.ts";
 import { pngSize } from "../../../scripts/build/png-size.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "../src/site/markdown-routes.ts";
+import { docRoute } from "../src/site/repo-docs.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 
 /**
@@ -29,7 +30,7 @@ describe("_redirects", () => {
   /** Every page the site has, and its Markdown where it has any. */
   const pages = new Set([...SITE_ROUTES, ...MARKDOWN_ROUTES.map(markdownAddress)]);
 
-  it("redirects 0.2's script paths, the older touch-icon name, and the examples' pages before W63", () => {
+  it("redirects 0.2's script paths, the older touch-icon name, the examples' pages before W63 and /docs/", () => {
     const scripts = ["/dist/maplace.min.js", "/dist/maplace.js", "/src/maplace.js"];
     const movedPages = [
       ["/examples/shapes/", "/examples/circles-polygons/"],
@@ -42,6 +43,7 @@ describe("_redirects", () => {
         [from, to, "301"],
         [markdownAddress(from), markdownAddress(to), "301"],
       ]),
+      ...["/docs", "/docs/"].map((guess) => [guess, docRoute("getting-started"), "301"]),
     ]);
   });
 

@@ -11,3 +11,6 @@
 /examples/shapes/index.md /examples/circles-polygons/index.md 301
 /examples/data-routes/ /examples/live-data/ 301
 /examples/data-routes/index.md /examples/live-data/index.md 301
+# The address readers and crawlers guess for the docs (W68): the docs begin at Getting started.
+/docs /getting-started/ 301
+/docs/ /getting-started/ 301
