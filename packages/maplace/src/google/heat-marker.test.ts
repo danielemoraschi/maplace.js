@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { SELECTED_PIN_GLYPH } from "../adapter-kit/pin-palette";
+import { isPinIcon } from "../adapter-kit/pin-icon";
 import { markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
+import { pinIconOf } from "../testing/page-icon";
 import { createGoogleHeat } from "./heat-overlay";
 import { placeMarker } from "./marker";
-import { StubPinElement } from "./testing/stub-libraries";
+import { anchorTopOf } from "./testing/stub-libraries";
 import { stubSite } from "./testing/stub-site";
 
 const SELECTED = { state: { selected: true, hovered: false }, visible: true };
@@ -40,14 +41,13 @@ describe("a heat marker on Google", () => {
     );
   });
 
-  it("shows Google's pin over its dot while selected, so the heat hides neither", () => {
+  it("shows maplace's pin over its dot while selected, so the heat hides neither", () => {
     const { placed, dot } = heatMarker();
     placed.present(SELECTED);
     expect(dotAlone(placed.marker)).toBe(false);
-    expect(placed.marker.querySelector(".stub-pin")).not.toBeNull();
-    expect(dot()).not.toBeNull();
+    expect(isPinIcon(placed.marker.lastChild ?? undefined)).toBe(true);
+    expect(placed.marker.firstChild).toBe(dot());
     placed.present(AT_REST);
-    expect(placed.marker.querySelector(".stub-pin")).toBeNull();
     expect(dotAlone(placed.marker)).toBe(true);
   });
 
@@ -59,17 +59,28 @@ describe("a heat marker on Google", () => {
     expect(dotAlone(placed.marker)).toBe(true);
   });
 
-  it("shows the pin over its dot with the darker dot while selected", () => {
+  it("centres a heat marker on its point, its dot alone or under its pin", () => {
     const { placed } = heatMarker();
+    expect(anchorTopOf(placed.marker)).toBe("-50%");
     placed.present(SELECTED);
-    const pin = placed.marker.querySelector(".stub-pin");
-    expect(pin instanceof StubPinElement && pin.glyphColor).toBe(SELECTED_PIN_GLYPH);
+    expect(anchorTopOf(placed.marker)).toBe("-50%");
   });
 
-  it("shows Google's default pin once it leaves the heat group", () => {
+  it("shows maplace's pin, centred, once it leaves the heat group", () => {
     const { placed } = heatMarker();
     placed.update(markerDrawable("q", ORIGIN));
-    expect(placed.marker.childNodes).toHaveLength(0);
-    expect(dotAlone(placed.marker)).toBe(false);
+    expect(placed.marker.childNodes).toHaveLength(1);
+    expect(pinIconOf(placed.marker)).toBeDefined();
+    expect(anchorTopOf(placed.marker)).toBe("-50%");
+  });
+
+  it("puts a page's icon's bottom on the point once it leaves the heat group, and centres it again on rejoining", () => {
+    const { placed } = heatMarker();
+    const icon = document.createElement("b");
+    placed.update(markerDrawable("q", ORIGIN, { renderIcon: () => icon }));
+    expect(placed.marker.firstChild).toBe(icon);
+    expect(anchorTopOf(placed.marker)).toBeNull();
+    placed.update(markerDrawable("q", ORIGIN, { heatWeight: 2, renderIcon: () => icon }));
+    expect(anchorTopOf(placed.marker)).toBe("-50%");
   });
 });

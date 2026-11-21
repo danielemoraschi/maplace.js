@@ -2,9 +2,9 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-21 Changed the default pin to a red dot in a white ring, centred on its point, larger while hovered or selected (selected in a halo of its colour), on Google and MapLibre; on MapLibre, of two pins overlapping, the one whose dot is nearer takes the pointer, and a map fitted to its locations keeps them clear of the attribution while it is open.
 - 2026-11-21 Fixed a native select under a list heading: set in level with the heading, with room under it, no longer flush with the panel's edge.
-- 2026-11-19 Changed the selected default pin: its dot is darker (`#980400`), on Google and MapLibre.
-- 2026-11-19 Added `--maplace-pin-background`, `--maplace-pin-border`, `--maplace-pin-glyph` and `--maplace-pin-selected-glyph`, which colour the default pins.
+- 2026-11-19 Added `--maplace-pin-background` and `--maplace-pin-border`, which colour the default pins.
 - 2026-11-19 Changed the list's rounded corners to 0.5rem.
 
 ## 1.2.0 (2026-11-19)

@@ -1,15 +1,15 @@
 import { afterEach, expect, it, onTestFinished } from "vitest";
-import { SELECTED_PIN_GLYPH } from "../adapter-kit/pin-palette";
+import { pinImageUrl } from "../adapter-kit/pin-image";
+import { pinLooksOf } from "../adapter-kit/pin-looks";
 import { adding, markerDrawable, presented } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
-import { PIN_IMAGE, pinImageUrl } from "./pin-image";
+import { PIN_IMAGE } from "./layers";
 import { mountedMapLibre } from "./testing/mounted";
 
 afterEach(() => unmountAll());
 
-const UNSET = { background: undefined, border: undefined, glyph: undefined };
-const RESTING_URL = () => pinImageUrl(document, UNSET);
-const SELECTED_URL = () => pinImageUrl(document, { ...UNSET, glyph: SELECTED_PIN_GLYPH });
+const looks = () => pinLooksOf(document.body);
+const urlOf = (look: keyof ReturnType<typeof looks>) => pinImageUrl(document, looks()[look]);
 
 /** Two pins on a mounted map, and the images of the pins drawn in front. */
 async function twoPins() {
@@ -22,34 +22,34 @@ async function twoPins() {
   return { adapter, map, frontImages };
 }
 
-it("draws the selected pin in front with the darker dot", async () => {
+it("draws the selected pin in front, larger, in its halo", async () => {
   const { adapter, frontImages } = await twoPins();
   adapter.present(presented({ selectedId: "a" }));
-  expect(frontImages()).toEqual([SELECTED_URL()]);
+  expect(frontImages()).toEqual([urlOf("selected")]);
 });
 
-it("draws a hovered pin in front in the resting colours", async () => {
+it("draws a hovered pin in front, larger", async () => {
   const { adapter, frontImages } = await twoPins();
   adapter.present(presented({ hoveredId: "a" }));
-  expect(frontImages()).toEqual([RESTING_URL()]);
+  expect(frontImages()).toEqual([urlOf("hovered")]);
 });
 
-it("darkens a hovered front pin's dot when it's selected", async () => {
+it("draws a selected and hovered pin as selected", async () => {
   const { adapter, frontImages } = await twoPins();
   adapter.present(presented({ hoveredId: "a" }));
   adapter.present(presented({ hoveredId: "a", selectedId: "a" }));
-  expect(frontImages()).toEqual([SELECTED_URL()]);
+  expect(frontImages()).toEqual([urlOf("selected")]);
 });
 
-it("recolours a recycled front pin when it comes back selected", async () => {
+it("repaints a recycled front pin when it comes back selected", async () => {
   const { adapter, frontImages } = await twoPins();
   adapter.present(presented({ hoveredId: "a" }));
   adapter.present(presented({}));
   adapter.present(presented({ selectedId: "b" }));
-  expect(frontImages()).toEqual([SELECTED_URL()]);
+  expect(frontImages()).toEqual([urlOf("selected")]);
 });
 
-it("draws the page's pin colours, read from above the map, in the layer and in front", async () => {
+it("draws the page's colours, read from above the map, in the layer and in front", async () => {
   const root = document.documentElement;
   root.style.setProperty("--maplace-pin-background", "#0b6e4f");
   onTestFinished(() => {
@@ -57,10 +57,10 @@ it("draws the page's pin colours, read from above the map, in the layer and in f
   });
   const { adapter, map, frontImages } = await twoPins();
   adapter.present(presented({ selectedId: "a" }));
-  const selected = { ...UNSET, background: "#0b6e4f", glyph: SELECTED_PIN_GLYPH };
-  expect(frontImages()).toEqual([pinImageUrl(document, selected)]);
+  expect(frontImages()).toEqual([pinImageUrl(document, pinLooksOf(root).selected)]);
   const image = map.getImage(PIN_IMAGE)?.data;
-  // A point of the pin's body, above its dot, in the layer's image drawn at twice the CSS size.
-  const at = (8 * (image?.width ?? 0) + 27) * 4;
+  const width = image?.width ?? 0;
+  // The middle of the layer's image: the dot.
+  const at = ((width / 2) * width + width / 2) * 4;
   expect([...(image?.data.slice(at, at + 3) ?? [])]).toEqual([0x0b, 0x6e, 0x4f]);
 });

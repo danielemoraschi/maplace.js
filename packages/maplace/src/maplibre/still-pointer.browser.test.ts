@@ -2,7 +2,6 @@ import { type Map as MapLibreMap, MapMouseEvent } from "maplibre-gl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { presented, TOWNS } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
-import { PIN_SIZE } from "./pin-image";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
 import { clusteredTowns, ON_BOLOGNA, OVER_TOWNS } from "./testing/towns";
 import { pagePointOf } from "./testing/user-drags";
@@ -21,16 +20,15 @@ async function pinAlone() {
   return mounted;
 }
 
-/** Where pin `a`'s head is drawn in Bologna, as a mouse event's place on the page. */
-function bolognaPinHead(map: MapLibreMap): { clientX: number; clientY: number } {
+/** Where pin `a`'s dot is drawn in Bologna, as a mouse event's place on the page. */
+function bolognaPinDot(map: MapLibreMap): { clientX: number; clientY: number } {
   const { x, y } = pagePointOf(map, TOWNS.bologna);
-  const head = PIN_SIZE.height - PIN_SIZE.width / 2;
-  return { clientX: x, clientY: y - head };
+  return { clientX: x, clientY: y };
 }
 
-/** A user's press of the mouse, or its release, on pin `a`'s head in Bologna. */
+/** A user's press of the mouse, or its release, on pin `a`'s dot in Bologna. */
 function pressOnBologna(map: MapLibreMap, type: "mousedown" | "mouseup"): void {
-  const at = bolognaPinHead(map);
+  const at = bolognaPinDot(map);
   map.getCanvas().dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, ...at }));
 }
 
@@ -65,7 +63,7 @@ describe("MapLibre's hover under a pointer that hasn't moved", () => {
     const { adapter, probe, map, host } = await pinAlone();
     probe.pointerOver("a");
     pressOnBologna(map, "mousedown");
-    const missed = new MouseEvent("mouseup", bolognaPinHead(map));
+    const missed = new MouseEvent("mouseup", bolognaPinDot(map));
     map.fire(new MapMouseEvent("mouseup", map, missed));
     // The pin folds and unfolds: a release taken for a place on the map would hover it again.
     adapter.setView(OVER_TOWNS);

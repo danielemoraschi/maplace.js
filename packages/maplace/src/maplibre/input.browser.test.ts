@@ -27,8 +27,8 @@ async function pinsRendered(map: MapLibreMap, ...ids: string[]): Promise<void> {
   await vi.waitFor(() => expect(renderedIds(map, ["maplace-pins"])).toEqual(ids), RENDER_WAIT);
 }
 
-/** Over the pin of a marker at `ORIGIN`, above its tip. */
-const ON_PIN = { at: ORIGIN, up: 30 };
+/** Over the pin of a marker at `ORIGIN`, on its dot. */
+const ON_PIN = ORIGIN;
 
 /** A page's own map with marker "a" at `ORIGIN`, its pin rendered. */
 async function pageMapWithPin() {
@@ -106,8 +106,8 @@ describe("input on MapLibre", () => {
   it("leaves the cursor a page sets on its own map while the pointer is on no location", async () => {
     const { map } = await mountedOnPageMap();
     map.getCanvas().style.cursor = "crosshair";
-    moveOverCanvas(map, { at: AWAY });
-    moveOverCanvas(map, { at: AWAY });
+    moveOverCanvas(map, AWAY);
+    moveOverCanvas(map, AWAY);
     expect(map.getCanvas().style.cursor).toBe("crosshair");
   });
 
@@ -117,7 +117,7 @@ describe("input on MapLibre", () => {
     canvas.style.cursor = "crosshair";
     moveOverCanvas(map, ON_PIN);
     expect(canvas.style.cursor).toBe("pointer");
-    moveOverCanvas(map, { at: AWAY });
+    moveOverCanvas(map, AWAY);
     expect(canvas.style.cursor).toBe("crosshair");
     moveOverCanvas(map, ON_PIN);
     destroy();
@@ -129,7 +129,7 @@ describe("input on MapLibre", () => {
     const canvas = map.getCanvas();
     moveOverCanvas(map, ON_PIN);
     canvas.style.cursor = "wait";
-    moveOverCanvas(map, { at: AWAY });
+    moveOverCanvas(map, AWAY);
     expect(canvas.style.cursor).toBe("wait");
   });
 
@@ -145,7 +145,7 @@ describe("input on MapLibre", () => {
     await adapter.apply(adding(big, small));
     adapter.setView({ kind: "center", center: onBigEdge, zoom: 7 });
     await probe.settle();
-    clickCanvas(map, { at: { lat: 0.2, lng: 2 } });
+    clickCanvas(map, { lat: 0.2, lng: 2 });
     expect(host.reportsOf("reportSelectionChange")).toEqual([["small"]]);
   });
 

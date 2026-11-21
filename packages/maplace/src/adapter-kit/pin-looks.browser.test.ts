@@ -1,5 +1,5 @@
 import { afterEach, expect, it } from "vitest";
-import { pinPaletteOf } from "./pin-palette";
+import { PIN_BORDER, pinLooksOf } from "./pin-looks";
 
 afterEach(() => document.body.replaceChildren());
 
@@ -15,17 +15,15 @@ function mapInside(properties: Record<string, string>): HTMLElement {
 
 it("takes a colour set on an ancestor", () => {
   const map = mapInside({ "--maplace-pin-background": "#0b6e4f" });
-  expect(pinPaletteOf(map).resting.background).toBe("#0b6e4f");
+  expect(pinLooksOf(map).resting.background).toBe("#0b6e4f");
 });
 
-it("drops a value that isn't a colour, leaving the provider's own", () => {
-  const map = mapInside({ "--maplace-pin-glyph": "nope", "--maplace-pin-selected-glyph": "12px" });
-  const palette = pinPaletteOf(map);
-  expect(palette.resting.glyph).toBeUndefined();
-  expect(palette.selected.glyph).toBe("#980400");
+it("drops a value that isn't a colour, leaving the default", () => {
+  const map = mapInside({ "--maplace-pin-border": "12px" });
+  expect(pinLooksOf(map).resting.border).toBe(PIN_BORDER);
 });
 
 it("resolves currentColor to the map's text colour, as either provider then draws it", () => {
-  const map = mapInside({ "--maplace-pin-glyph": "currentColor", color: "rgb(1, 2, 3)" });
-  expect(pinPaletteOf(map).resting.glyph).toBe("rgb(1, 2, 3)");
+  const map = mapInside({ "--maplace-pin-border": "currentColor", color: "rgb(1, 2, 3)" });
+  expect(pinLooksOf(map).resting.border).toBe("rgb(1, 2, 3)");
 });

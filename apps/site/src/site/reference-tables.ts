@@ -2,6 +2,7 @@ import { API_LISTS } from "../../../../packages/maplace/src/__typetests__/api-li
 import { CLUSTER_CLASS } from "../../../../packages/maplace/src/adapter-kit/cluster-badge.ts";
 import { CONTROL_CLASS } from "../../../../packages/maplace/src/adapter-kit/control-styles.ts";
 import { ORIGIN_DOT_CLASS } from "../../../../packages/maplace/src/adapter-kit/origin-dot.ts";
+import { PIN_CLASS } from "../../../../packages/maplace/src/adapter-kit/pin-icon.ts";
 import {
   POPUP_CLASS,
   POPUP_HEADING_CLASS,
@@ -102,6 +103,7 @@ export const STYLING_CLASSES = [
   CLUSTER_CLASS,
   CONTROL_CLASS,
   GLOBE_CLASS,
+  PIN_CLASS,
   ORIGIN_DOT_CLASS,
   SKIP_MAP_CLASS,
   LOAD_PANEL_CLASS,

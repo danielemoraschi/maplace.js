@@ -1,5 +1,6 @@
 import type { Marker } from "maplibre-gl";
 import { reportElementHover } from "../adapter-kit/hover-reports";
+import { anchorFor, type IconAnchor } from "../adapter-kit/pin-icon";
 import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
 import { lngLatOf } from "./conversions";
@@ -14,6 +15,8 @@ import type { PlacingSite } from "./placed-location";
  */
 export interface DomMarker {
   readonly marker: Marker;
+  /** What of it meets its point, fixed once made: MapLibre's `Marker` keeps its anchor. */
+  readonly anchor: IconAnchor;
   /** Shows `icon` as the only child; an icon already there stays, so its CSS transition runs. */
   showIcon(icon: Node): void;
   /** Where the page has it. */
@@ -27,6 +30,8 @@ export interface DomMarker {
    * nothing.
    */
   setDraggable(draggable: boolean): void;
+  /** Whether a user is dragging it now. */
+  isDragged(): boolean;
   /** Takes it off the map for good, at once: a drag under way ends there, reporting nothing. */
   remove(): void;
 }
@@ -83,9 +88,9 @@ export interface DomMarkerLook {
 }
 
 /**
- * A DOM marker at the drawable's point, its bottom middle there as Google's pin's tip: a pressable
- * element named by its title, selecting the location when pressed, dragged while `draggable`,
- * reporting its input while the map is live.
+ * A DOM marker at the drawable's point, met there by what of its icon `anchorFor` says: a
+ * pressable element named by its title, selecting the location when pressed, dragged while
+ * `draggable`, reporting its input while the map is live.
  */
 export function createDomMarker(
   drawable: Drawable,
@@ -102,7 +107,8 @@ export function createDomMarker(
   element.style.display = "grid";
   element.append(icon);
   setTitle(element, drawable.title);
-  const marker = new maplibre.Marker({ element, anchor: "bottom", draggable });
+  const anchor = anchorFor(icon);
+  const marker = new maplibre.Marker({ element, anchor, draggable });
   marker.setLngLat(lngLatOf(at));
   showDragCursor(element, draggable);
   // The pointer over it, or keyboard focus shown on it, hovers it.
@@ -142,6 +148,7 @@ export function createDomMarker(
 
   return {
     marker,
+    anchor,
     showIcon(next) {
       if (element.firstChild !== next || element.childNodes.length !== 1)
         element.replaceChildren(next);
@@ -160,6 +167,7 @@ export function createDomMarker(
       showDragCursor(element, next);
       if (!next) cutDragShort();
     },
+    isDragged: () => drags.isUnderWay(),
     remove() {
       asked = false;
       shown = false;

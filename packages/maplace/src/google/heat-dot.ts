@@ -5,6 +5,7 @@ import {
   relativeHeat,
   trackHeaviestHeat,
 } from "../adapter-kit/heat-look";
+import { PIN_CLASS } from "../adapter-kit/pin-icon";
 import type { PlacedLocation } from "./placed-location";
 
 /** On the map's container while the heat hides the dots: below the fade's first zoom. */
@@ -15,18 +16,18 @@ export const DOTS_OPACITY = "--maplace-heat-dots";
 const DOT_CLASS = "maplace-heat-dot";
 
 /**
- * A heat marker's dot, centred on its point (an advanced marker's content stands on it), faded
- * with the heat's crossfade. Alone, it is the marker's content, its size the marker's, moved down
- * by its radius; under a pin, it is out of the marker's layout, so the pin keeps its tip there.
- * Below the fade, a marker showing its dot alone (not one in front, with its pin) is hidden: the
- * heat shows it.
+ * A heat marker's dot, centred on its point (the marker's middle is there), faded with the heat's
+ * crossfade. Alone, it is the marker's content, its size the marker's; under a pin, it is out of
+ * the marker's layout, centred on the pin, which is positioned and comes after it, so it paints
+ * over the dot. Below the fade, a marker showing its dot alone (not one in front, with its pin) is
+ * hidden: the heat shows it.
  */
 export const HEAT_DOT_STYLES =
   `[${UNDER_HEAT_ATTRIBUTE}] :has(> .${DOT_CLASS}:only-child){display:none!important}` +
-  `.${DOT_CLASS}{display:block;transform:translateY(50%);` +
-  `box-sizing:border-box;border-radius:50%;` +
+  `.${DOT_CLASS}{display:block;box-sizing:border-box;border-radius:50%;` +
   `border:${DOT_STROKE.width}px solid ${DOT_STROKE.color};opacity:var(${DOTS_OPACITY},1)}` +
-  `.${DOT_CLASS}:not(:only-child){position:absolute;left:50%;bottom:0;transform:translate(-50%,50%)}`;
+  `.${DOT_CLASS}:not(:only-child){position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}` +
+  `.${DOT_CLASS} + .${PIN_CLASS}{position:relative}`;
 
 /** A map's heat markers' dots, each weighed against the heaviest heat marker. */
 export interface HeatDots {
@@ -71,7 +72,7 @@ function showHeatMarker(marker: HTMLElement, relative: number, pin: HTMLElement 
   for (const child of marker.querySelectorAll(":scope > *")) {
     if (child !== dot && child !== pin) child.remove();
   }
-  if (pin !== undefined && pin.nextSibling !== dot) dot.before(pin);
+  if (pin !== undefined && pin.previousSibling !== dot) dot.after(pin);
 }
 
 /** A heat marker's dot sized and coloured again, for a new heaviest weight. */

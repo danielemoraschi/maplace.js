@@ -7,7 +7,6 @@ import { createListView } from "../list-view";
 import { createMaplace } from "../maplace/create";
 import { optionsIn } from "../testing/lists";
 import { panelOf } from "../testing/panel-of";
-import { PIN_SIZE } from "./pin-image";
 import { mapOfWidthIn } from "./testing/map-of-width";
 import { wait } from "./testing/map-settle";
 import { RENDER_WAIT, renderedIds } from "./testing/rendered";
@@ -28,9 +27,6 @@ const QUIET_MS = 1_000;
 
 /** Where `p0` is, as `places()` puts it. */
 const P0 = { lat: 40, lng: 5 };
-
-/** Where on a pin a user clicks: the middle of its head, above its tip. */
-const PIN_HEAD = PIN_SIZE.height - PIN_SIZE.width / 2;
 
 function boxesMeet(a: Box, b: Box): boolean {
   return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
@@ -135,12 +131,11 @@ describe("a MapLibre popup panned into view on a phone", () => {
       () => expect(renderedIds(phone.map, ["maplace-pins"])).toContain("p0"),
       RENDER_WAIT,
     );
-    const tip = pagePointOf(phone.map, P0);
-    const head = { x: tip.x, y: tip.y - PIN_HEAD };
-    expect(
-      boxesMeet({ left: head.x, right: head.x, top: head.y, bottom: head.y }, phone.panel()),
-    ).toBe(false);
-    await commands.multiClickMouse(head, 1);
+    const dot = pagePointOf(phone.map, P0);
+    expect(boxesMeet({ left: dot.x, right: dot.x, top: dot.y, bottom: dot.y }, phone.panel())).toBe(
+      false,
+    );
+    await commands.multiClickMouse(dot, 1);
     await expect.poll(() => phone.maplace.getSnapshot().selectedId).toBe("p0");
     await expectOverTheListOnceCentred(phone);
     await expectClearOfTheList(phone);

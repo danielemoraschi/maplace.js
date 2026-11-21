@@ -1,9 +1,12 @@
 import { afterEach, expect, it } from "vitest";
 import { userEvent } from "vitest/browser";
+import { isPinIcon } from "../adapter-kit/pin-icon";
 import { adding, markerDrawable, presented, TOWNS } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
+import { offPoint } from "../testing/off-point";
 import type { GoogleMapState } from "./map-state";
 import { drawnMarker, idle } from "./testing/map-waits";
+import { centreOf } from "./testing/page-input";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -71,6 +74,18 @@ describeWithMaps("a heatmap on real Google Maps", () => {
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"]]);
     await userEvent.unhover(marker);
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
+  });
+
+  it("keeps a selected heat marker's pin and dot on its point, the pin over the dot", async () => {
+    const { adapter, state } = await heatedAt(12);
+    const marker = await drawnMarker(state, "a");
+    adapter.present(presented({ selectedId: "a" }));
+    const point = centreOf(state.mounted?.map.getDiv() as HTMLElement);
+    const pin = () => [...marker.children].find((child) => isPinIcon(child));
+    await expect.poll(() => pin() !== undefined).toBe(true);
+    for (const part of [pin(), marker.querySelector(".maplace-heat-dot")]) {
+      expect(offPoint(part as Element, point)).toBeLessThanOrEqual(1);
+    }
   });
 
   it("reports a click on a dot as its location's", async () => {

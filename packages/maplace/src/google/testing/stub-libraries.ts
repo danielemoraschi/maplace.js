@@ -80,10 +80,17 @@ export class StubMap extends StubMVCObject {
   }
 }
 
+/** How far up a stub marker's content stands from its point: its `anchorTop`. */
+export function anchorTopOf(marker: HTMLElement): string | null {
+  return (marker as StubMarker).anchorTop;
+}
+
 /** An advanced marker: an element holding the properties the adapter sets. */
 export class StubMarker extends HTMLElement {
   position: google.maps.LatLngLiteral | null = null;
   zIndex: number | null = null;
+  /** How far up its content stands from its point; Google's default (its bottom) when null. */
+  anchorTop: string | null = null;
   gmpClickable = false;
   gmpDraggable = false;
   map: unknown = null;
@@ -95,19 +102,6 @@ export class StubMarker extends HTMLElement {
 }
 
 customElements.define("stub-advanced-marker", StubMarker);
-
-/** Google's pin, an element of its own, its colours set on it after it is made, as maplace does. */
-export class StubPinElement extends HTMLElement {
-  background: string | null = null;
-  borderColor: string | null = null;
-  glyphColor: string | null = null;
-
-  constructor() {
-    super();
-    this.className = "stub-pin";
-  }
-}
-customElements.define("stub-pin-element", StubPinElement);
 
 /** Google's `ControlPosition` values for the corners (Maps JS 3.66). */
 export const STUB_CONTROL_POSITIONS = {
@@ -133,7 +127,7 @@ export function stubLibraries(): GoogleLibraries {
       OverlayView: StubOverlayView,
       RenderingType: STUB_RENDERING_TYPES,
     },
-    marker: { AdvancedMarkerElement: StubMarker, PinElement: StubPinElement },
+    marker: { AdvancedMarkerElement: StubMarker },
   } as unknown as GoogleLibraries;
 }
 

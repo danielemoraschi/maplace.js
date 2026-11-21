@@ -1,13 +1,10 @@
 import type { LatLng } from "../../geometry";
 import type { LocationOnMap } from "../../testing/map-probe";
+import { pageIconOf } from "../../testing/page-icon";
 import { PIN_SOURCE } from "../layers";
-import { PIN_SIZE } from "../pin-image";
 import type { PlacedMarker } from "../placed-location";
 import { clickCanvas, leaveCanvas, moveOverCanvas } from "./pointer";
 import type { ProbeTarget, TargetSite } from "./probe-target";
-
-/** Where on a pin a user points: the middle of its head, above its tip. */
-const PIN_HEAD = PIN_SIZE.height - PIN_SIZE.width / 2;
 
 /** Above every pin in the canvas: what is in the DOM (an icon, a selected or hovered pin). */
 const IN_DOM = 2 ** 31;
@@ -32,15 +29,8 @@ export function markerTarget(
   };
   const element = () => dom()?.getElement();
   const shown = () => (element()?.isConnected ?? false) || pinPoint() !== undefined;
-  // A heat marker is a dot, aimed at its middle; in front, it is a pin as any other.
-  const isDot = () => {
-    const properties = pinFeature()?.properties;
-    return properties?.heat !== undefined && properties.front !== true;
-  };
-  const pin = () => ({
-    at: pinPoint() ?? (placed.drawable().geometry as LatLng),
-    up: isDot() ? 0 : PIN_HEAD,
-  });
+  // A pin and a heat marker's dot alike are aimed at their middle, on the point.
+  const pin = () => pinPoint() ?? (placed.drawable().geometry as LatLng);
   return {
     isMarker: true,
     onMap: () => (stillPlaced() && map.getSource(PIN_SOURCE) !== undefined) || shown(),
@@ -54,7 +44,7 @@ export function markerTarget(
           ? (element()?.getAttribute("aria-label") ?? undefined)
           : placed.drawable().title,
         visible: shown(),
-        icon: element()?.firstChild ?? undefined,
+        icon: pageIconOf(element()),
         style: undefined,
       };
     },

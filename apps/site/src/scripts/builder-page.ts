@@ -9,8 +9,8 @@ import { copyOrSelect, REFUSED_STATUS } from "./copy-text.ts";
 import { chosenProvider, PROVIDER_TOGGLE } from "./version-switch.ts";
 
 /**
- * Pixels around the preview's locations: clears a pin's height above a point, and the attribution
- * box, up to about 75 tall in the narrowest frame, below one. The default 40 leaves both on them.
+ * Pixels around the preview's locations: clears the attribution box, up to about 75 tall in the
+ * narrowest frame, below a point. The default 40 leaves it over the lowest pins.
  */
 export const PREVIEW_FIT_PADDING = 80;
 

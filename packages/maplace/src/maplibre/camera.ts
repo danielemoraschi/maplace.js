@@ -1,4 +1,6 @@
+import type { Map as MapLibreMap } from "maplibre-gl";
 import { createViewFollower, type ViewFollower } from "../adapter-kit/view-follower";
+import { attributionInset, watchAttribution } from "./attribution";
 import { moveTo } from "./camera-moves";
 import type { Drawing } from "./drawing";
 import { mapSizeOf } from "./map-size";
@@ -14,8 +16,8 @@ export interface Camera extends Pick<ViewFollower, "setView" | "sync"> {
 
 /**
  * Moves the MapLibre map to the store's views, as the view follower says when: once the map has
- * a size MapLibre has taken in, shown again after MapLibre resizes it or switches its projection
- * (a globe and a flat map fit the same view at other zooms).
+ * a size MapLibre has taken in, shown again after MapLibre resizes it, switches its projection (a
+ * globe and a flat map fit the same view at other zooms) or its attribution changes size.
  */
 export function createCamera(
   state: MapLibreState,
@@ -28,13 +30,15 @@ export function createCamera(
     const standing = createStandingView(map);
     map.on("resize", follower.resized);
     onProjectionSwitch(mounted, follower.resized);
+    const stopWatchingAttribution = watchAttribution(map, follower.resized);
     onDestroy(() => {
       follower.close();
       map.off("resize", follower.resized);
+      stopWatchingAttribution();
       standing.stop();
     });
     follower.open({
-      sizeOf: () => mapSizeOf(map),
+      sizeOf: () => sizeAboveAttribution(map),
       geometryOf: (id) => state.placed.get(id)?.drawable().geometry,
       move: (move) => moveTo(map, move),
       standing,
@@ -42,4 +46,10 @@ export function createCamera(
   }
 
   return { part: { open }, setView: follower.setView, sync: follower.sync };
+}
+
+/** The map's size above its open attribution, where a fit puts what it shows. */
+function sizeAboveAttribution(map: MapLibreMap) {
+  const size = mapSizeOf(map);
+  return size && { ...size, height: size.height - attributionInset(map) };
 }

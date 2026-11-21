@@ -9,7 +9,7 @@ import type { MapLibreState } from "./map-state";
 import { editingMarker, expectOneChangeEndingTheEdits } from "./testing/editable-marker";
 import { holdDrag, holdTouchDrag } from "./testing/held-drag";
 import { mountedMapLibre } from "./testing/mounted";
-import { type PagePoint, pagePointOf, pinHeadOf } from "./testing/user-drags";
+import { middleOf, type PagePoint, pagePointOf } from "./testing/user-drags";
 
 afterEach(unmountAll);
 
@@ -58,7 +58,7 @@ describe("a MapLibre drag let go outside the map", () => {
 
   it("ends an editable marker's drag let go outside the map there, reporting its change once", async () => {
     const { map, host, marker } = await editingMarker();
-    const from = pinHeadOf(marker.getElement().firstElementChild as Element);
+    const from = middleOf(marker.getElement().firstElementChild as Element);
     await commands.pressMouse([from, rightOfTheMap(map, from)]);
     expectOneChangeEndingTheEdits(host);
     const left = marker.getLngLat();

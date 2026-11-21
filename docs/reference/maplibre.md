@@ -165,7 +165,7 @@ Maplace.js speaks one zoom on every provider: Google's. MapLibre's tiles are 512
 
 ## Markers and shapes
 
-A marker with no icon is a pin like Google's, drawn in a layer of the map rather than the DOM, so thousands stay fast. The selected or hovered pin is drawn again in front, and is reached by keyboard through the list.
+A marker with no icon is a pin, a dot centred on its point, drawn in a layer of the map rather than the DOM, so thousands stay fast. The selected or hovered pin is drawn again in front, and is reached by keyboard through the list.
 
 A marker with an `icon` is a DOM marker, focusable and pressed by Enter or Space. An `editable` marker is a DOM marker showing the pin, dragged there.
 
@@ -324,7 +324,7 @@ function instructionOf({ type, modifier = "" }: OsrmStep["maneuver"], name: stri
 
 What goes on the map (`createMapLibreMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like MapLibre's own controls, `.maplace-control`, in MapLibre's corners with their margins. It is light, as MapLibre's controls are, and `.maplace-control { color-scheme: dark }` gives a dark one.
 
-Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. Classes and how to turn the defaults off: [Styling](styling.md).
+Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. While the attribution is open (a compact one until the first drag), a fit to the locations keeps them above it, fitted again as its credit arrives. Classes and how to turn the defaults off: [Styling](styling.md).
 
 ## Globe
 

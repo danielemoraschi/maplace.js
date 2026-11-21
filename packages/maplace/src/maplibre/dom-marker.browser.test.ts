@@ -2,18 +2,19 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { afterEach, describe, expect, it } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 import { DOUBLE_CLICK_WAIT_MS } from "../adapter-kit/click-gesture";
-import { SELECTED_PIN_GLYPH } from "../adapter-kit/pin-palette";
+import { pinImageUrl, pinLiftOf } from "../adapter-kit/pin-image";
+import { pinLooksOf } from "../adapter-kit/pin-looks";
 import type { LatLng } from "../geometry";
 import { markerDrawable, ORIGIN, presented, updating } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
+import { offPoint } from "../testing/off-point";
 import type { MapLibreState } from "./map-state";
-import { PIN_SIZE, pinImageUrl } from "./pin-image";
 import { withEditableMarker } from "./testing/editable-marker";
 import { wait } from "./testing/map-settle";
 import { markerTarget } from "./testing/marker-target";
 import { placedMarker } from "./testing/placed-markers";
 import { removePageMaps } from "./testing/subject";
-import { pagePointOf, pinHeadOf } from "./testing/user-drags";
+import { middleOf, pagePointOf } from "./testing/user-drags";
 
 afterEach(() => {
   unmountAll();
@@ -27,14 +28,15 @@ function elementsOf(state: MapLibreState, id: string) {
   return { marker, element, icon: element?.firstElementChild ?? undefined };
 }
 
-/** A user's drag of `id`'s pin, by its head, to where `to` is drawn: its tip lands there. */
+/** A user's drag of `id`'s pin, by its dot, to where `to` is drawn: its dot lands there. */
 async function dragPin(map: MapLibreMap, state: MapLibreState, id: string, to: LatLng) {
   const icon = elementsOf(state, id).icon as Element;
-  const head = pinHeadOf(icon);
-  const tipBelowHead = icon.getBoundingClientRect().bottom - head.y;
-  const target = pagePointOf(map, to);
-  await commands.pressMouse([head, { x: target.x, y: target.y - tipBelowHead }]);
+  await commands.pressMouse([middleOf(icon), pagePointOf(map, to)]);
 }
+
+/** How far `element`'s middle is from where `at` is drawn. */
+const offDrawnPoint = (map: MapLibreMap, element: Element, at: LatLng) =>
+  offPoint(element, pagePointOf(map, at));
 
 /** Where the editable marker `a` is dragged to. */
 const DRAGGED_TO: LatLng = { lat: 1, lng: 2 };
@@ -48,15 +50,14 @@ describe("dragging MapLibre's markers", () => {
     expect(state.features?.pins.featureOf("a")).toBeUndefined();
   });
 
-  it("darkens a draggable pin's dot while it is selected, keeping the node", async () => {
+  it("draws a draggable pin's selected look, keeping the node", async () => {
     const { adapter, state } = await withEditableMarker();
-    const resting = elementsOf(state, "a").icon as HTMLImageElement;
-    const url = (glyph?: string) =>
-      pinImageUrl(document, { background: undefined, border: undefined, glyph });
-    expect(resting.getAttribute("src")).toBe(url());
+    const looks = pinLooksOf(document.body);
+    const pin = elementsOf(state, "a").icon as HTMLImageElement;
+    expect(pin.getAttribute("src")).toBe(pinImageUrl(document, looks.resting));
     adapter.present(presented({ selectedId: "a" }));
-    expect(elementsOf(state, "a").icon).toBe(resting);
-    expect(resting.getAttribute("src")).toBe(url(SELECTED_PIN_GLYPH));
+    expect(elementsOf(state, "a").icon).toBe(pin);
+    expect(pin.getAttribute("src")).toBe(pinImageUrl(document, looks.selected));
   });
 
   it("puts an inline image icon's bottom on its point, with no line of text under it", async () => {
@@ -70,15 +71,58 @@ describe("dragging MapLibre's markers", () => {
     ).toBeLessThanOrEqual(1);
   });
 
-  it("puts the dragged pin's tip on its point, as the layer's pin", async () => {
-    const { state, map } = await withEditableMarker();
-    const { element, icon } = elementsOf(state, "a");
-    const box = (icon as Element).getBoundingClientRect();
-    const point = pagePointOf(map, ORIGIN);
-    expect(box.left + box.width / 2).toBeCloseTo(point.x, 0);
-    expect(Math.abs(box.bottom - point.y)).toBeLessThanOrEqual(1);
-    expect(placedMarker(state, "a").popupPlace()).toMatchObject({ marker: element });
-    expect(element?.offsetHeight).toBe(PIN_SIZE.height);
+  it("puts the dragged pin's dot on its point, at rest and while selected, its popup over it", async () => {
+    const { adapter, state, map } = await withEditableMarker();
+    const pin = elementsOf(state, "a").icon as Element;
+    expect(offDrawnPoint(map, pin, ORIGIN)).toBeLessThanOrEqual(1);
+    adapter.present(presented({ selectedId: "a" }));
+    expect(offDrawnPoint(map, pin, ORIGIN)).toBeLessThanOrEqual(1);
+    expect(placedMarker(state, "a").popupPlace()).toMatchObject({
+      at: ORIGIN,
+      lift: pinLiftOf(pinLooksOf(document.body)),
+    });
+  });
+
+  it("centres maplace's pin again when the page's icon builds nothing, and puts a later icon's bottom back on the point", async () => {
+    const icon = document.createElement("img");
+    icon.width = 20;
+    icon.height = 30;
+    const { adapter, state, map } = await withEditableMarker({
+      renderIcon: (shown) => (shown.selected ? icon : undefined),
+    });
+    const pin = elementsOf(state, "a").icon as Element;
+    expect(offDrawnPoint(map, pin, ORIGIN)).toBeLessThanOrEqual(1);
+    adapter.present(presented({ selectedId: "a" }));
+    expect(elementsOf(state, "a").icon).toBe(icon);
+    const bottom = icon.getBoundingClientRect().bottom;
+    expect(Math.abs(bottom - pagePointOf(map, ORIGIN).y)).toBeLessThanOrEqual(1);
+    adapter.present(presented({}));
+    expect(elementsOf(state, "a").icon).toBe(pin);
+    expect(offDrawnPoint(map, pin, ORIGIN)).toBeLessThanOrEqual(1);
+  });
+
+  it("keeps the keyboard's focus on a marker made again for an icon met at another anchor", async () => {
+    const icon = document.createElement("img");
+    const { adapter, state } = await withEditableMarker({
+      renderIcon: (shown) => (shown.selected ? icon : undefined),
+    });
+    const before = elementsOf(state, "a").element as HTMLElement;
+    before.focus();
+    adapter.present(presented({ selectedId: "a" }));
+    const after = elementsOf(state, "a").element;
+    expect(after).not.toBe(before);
+    expect(document.activeElement).toBe(after);
+  });
+
+  it("lets the pointer's hover go on a marker made again for an icon met at another anchor", async () => {
+    const icon = document.createElement("img");
+    const { adapter, state, host } = await withEditableMarker({
+      renderIcon: (shown) => (shown.selected ? icon : undefined),
+    });
+    await commands.moveMouse(middleOf(elementsOf(state, "a").element as Element));
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"]]);
+    adapter.present(presented({ selectedId: "a" }));
+    expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
   });
 
   it("keeps a page's icon node when only `editable` changes", async () => {
