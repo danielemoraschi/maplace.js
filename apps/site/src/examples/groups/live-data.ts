@@ -5,10 +5,10 @@ export const liveData: ExampleGroup = {
   label: "Live data and loading",
   headingLead: "Live data and loading",
   intro:
-    "Locations fetched as JSON and swapped in live, a map that loads only when the visitor presses a button, and a link that opens the map on the place picked.",
-  summary: "Data swapped in live, a map loaded on a press, and a link to a place.",
+    "Locations fetched as JSON and swapped in live, a GeoJSON file drawn as a layer, a map that loads only when the visitor presses a button, and a link that opens the map on the place picked.",
+  summary: "Data swapped in live, a GeoJSON layer, a map loaded on a press, and a link to a place.",
   description:
-    "Live JSON data, a map loaded on demand and a link that opens it on a place, on Google Maps or MapLibre in JavaScript, each with its code.",
+    "Live JSON data, a GeoJSON layer, a map loaded on demand and a link to a place, on Google Maps or MapLibre in JavaScript, each with its code.",
   references: [
     { doc: "element", heading: "## Properties and methods" },
     { doc: "element", heading: "## Load states" },
@@ -21,6 +21,14 @@ export const liveData: ExampleGroup = {
         "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
       description:
         "Load map locations from JSON on Google Maps and MapLibre: data sets fetched and swapped in live, markers, an area and a circle.",
+    },
+    {
+      name: "geojson",
+      title: "GeoJSON layer",
+      summary:
+        "A GeoJSON file as the map's layer: points as markers, a line, an area, each with a popup.",
+      description:
+        "Load a GeoJSON file onto Google Maps or MapLibre: its points become markers, its lines and polygons shapes, each feature listed with a popup.",
     },
     {
       name: "load-on-demand",

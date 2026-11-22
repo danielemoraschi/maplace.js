@@ -1,0 +1,8 @@
+# Audience dashboard
+
+A streaming service's viewers by region: each region is a card on the map with its top genre's letter, the genre and the viewers in the period chosen, an arc leaves the London studio for each one, and the list beside the map gives each region's share as a bar. The select above the map swaps the period, and the total under it adds every region up. The figures are made up, for the example, in `audience.json`.
+
+- **HTML**: the page's script gives the file to the element's `maplace`, with `setLocations`, and a list view of the page's own (`Maplace.defineListView` around `Maplace.createListView` with `render`, defined as the page is read) draws each entry ([List views](../../../../docs/reference/element.md#list-views)).
+- **Script** and **Bundler**: each card is the region's `icon`, a function of its `data` ([Icons](../../../../docs/reference/locations.md#icons)), each arc a polyline with a `curve` and `listed: false` ([Polylines](../../../../docs/reference/locations.md#polylines)), and `list.render` builds each entry ([List view options](../../../../docs/reference/store.md#list-view-options)). The select calls [`setLocations`](../../../../docs/reference/store.md#methods) with the period's figures; the ids stay, so the selection does too.
+- **React**: `markerIcon` on `<MaplaceMap>` draws the cards (`null` leaves the studio its own dot), the entry is `<LocationList>`'s children, the period is state the locations are worked out from, and the selection is held in state (`selectedId` and `onSelectionChange`) ([`<LocationList>`](../../../../docs/reference/react.md#locationlist)).
+- **Note**: a click on an arc selects it, so a `selectionChange` listener selects its region instead, as a click on the card does.

@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script and what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key; the layer from a GeoJSON file. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #geojson-script-map-and-list { display: flex; height: 24rem; }
+  #geojson-script-map { flex: 1 1 auto; min-width: 0; }
+  #geojson-script-list { display: contents; }
+  #geojson-script-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #geojson-script-map-and-list { flex-direction: column; height: 36rem; }
+    #geojson-script-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="geojson-script-map-and-list">
+  <div id="geojson-script-map"></div>
+  <div id="geojson-script-list"></div>
+</div>
+<script type="module">
+  const maplace = Maplace.createGoogleMap("#geojson-script-map", {
+    apiKey: "YOUR_KEY",
+    list: { container: "#geojson-script-list" },
+  });
+
+  // Each feature a location: a Point a marker, a LineString a line, a Polygon an area; its
+  // about property in the popup a click opens.
+  const response = await fetch("/examples/data/regents-park.json");
+  maplace.setLocations(
+    Maplace.locationsFromGeoJSON(await response.json()).map((feature) => ({
+      ...feature,
+      content: feature.data?.about,
+    })),
+  );
+</script>

@@ -1,0 +1,81 @@
+{
+  "studio": {
+    "title": "London studio",
+    "lat": 51.5074,
+    "lng": -0.1278
+  },
+  "regions": [
+    {
+      "id": "north-america",
+      "title": "North America",
+      "lat": 40,
+      "lng": -100,
+      "genre": "Action",
+      "viewers": {
+        "1M": 198420,
+        "3M": 601233,
+        "1Y": 2235545
+      }
+    },
+    {
+      "id": "south-america",
+      "title": "South America",
+      "lat": -15,
+      "lng": -60,
+      "genre": "Fantasy",
+      "viewers": {
+        "1M": 431210,
+        "3M": 1302877,
+        "1Y": 5235455
+      }
+    },
+    {
+      "id": "africa",
+      "title": "Africa",
+      "lat": 5,
+      "lng": 20,
+      "genre": "Documentary",
+      "viewers": {
+        "1M": 276904,
+        "3M": 842113,
+        "1Y": 3255344
+      }
+    },
+    {
+      "id": "northern-asia",
+      "title": "Northern Asia",
+      "lat": 62,
+      "lng": 95,
+      "genre": "Fantasy",
+      "viewers": {
+        "1M": 158233,
+        "3M": 477902,
+        "1Y": 1842310
+      }
+    },
+    {
+      "id": "east-asia",
+      "title": "East Asia",
+      "lat": 33,
+      "lng": 115,
+      "genre": "Comedy",
+      "viewers": {
+        "1M": 362871,
+        "3M": 1108530,
+        "1Y": 4235255
+      }
+    },
+    {
+      "id": "oceania",
+      "title": "Oceania",
+      "lat": -25,
+      "lng": 134,
+      "genre": "Action",
+      "viewers": {
+        "1M": 80112,
+        "3M": 251409,
+        "1Y": 986420
+      }
+    }
+  ]
+}

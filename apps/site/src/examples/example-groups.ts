@@ -1,5 +1,6 @@
 import { circlesPolygons } from "./groups/circles-polygons.ts";
 import { clustersHeatmaps } from "./groups/clusters-heatmaps.ts";
+import { dashboards } from "./groups/dashboards.ts";
 import { linesRoutes } from "./groups/lines-routes.ts";
 import { lists } from "./groups/lists.ts";
 import { liveData } from "./groups/live-data.ts";
@@ -54,6 +55,7 @@ export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   circlesPolygons,
   linesRoutes,
   clustersHeatmaps,
+  dashboards,
   liveData,
   styling,
 ];

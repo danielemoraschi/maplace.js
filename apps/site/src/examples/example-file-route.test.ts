@@ -14,8 +14,11 @@ describe("exampleFilePaths", () => {
       { folder: "data/icons", name: "a" },
     ]);
     expect(exampleFilePaths("css").map(({ params }) => params)).toEqual([
+      { folder: "styles", name: "audience" },
+      { folder: "styles", name: "bubbles" },
       { folder: "styles", name: "choropleth" },
       { folder: "styles", name: "popups" },
+      { folder: "styles", name: "share-by-country" },
       { folder: "styles", name: "team" },
       { folder: "styles", name: "whats-on" },
     ]);

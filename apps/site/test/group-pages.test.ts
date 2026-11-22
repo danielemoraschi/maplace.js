@@ -165,7 +165,8 @@ describe("the examples' pages, as built and before consent (W38)", () => {
   it("link the data an example fetches to the site's own copy, in a new tab", async () => {
     const links = pages.flatMap(({ dataLinks }) => dataLinks);
     expect(new Set(links.map(([, target]) => target))).toEqual(new Set(["_blank"]));
-    expect(links.map(([href]) => href).sort()).toEqual(
+    // countries.json twice: choropleth and share-by-country both fetch it.
+    expect([...new Set(links.map(([href]) => href))].sort()).toEqual(
       exampleData()
         .map(({ name }) => `/examples/data/${name}.json`)
         .sort(),
@@ -180,11 +181,22 @@ describe("the examples' pages, as built and before consent (W38)", () => {
   it("link the stylesheet an example's versions link to the site's copy, once, under its section", async () => {
     expect(pages.flatMap(({ stylesheetLinks }) => stylesheetLinks)).toEqual([
       ["popups", "/examples/styles/popups.css", "popups.css"],
+      ["audience", "/examples/styles/audience.css", "audience.css"],
+      ["share-by-country", "/examples/styles/share-by-country.css", "share-by-country.css"],
+      ["bubbles", "/examples/styles/bubbles.css", "bubbles.css"],
       ["choropleth", "/examples/styles/choropleth.css", "choropleth.css"],
       ["whats-on", "/examples/styles/whats-on.css", "whats-on.css"],
       ["team", "/examples/styles/team.css", "team.css"],
     ]);
-    for (const file of ["popups.css", "choropleth.css", "whats-on.css", "team.css"]) {
+    for (const file of [
+      "popups.css",
+      "audience.css",
+      "share-by-country.css",
+      "bubbles.css",
+      "choropleth.css",
+      "whats-on.css",
+      "team.css",
+    ]) {
       const served = await fetch(new URL(`/examples/styles/${file}`, site.url));
       expect(served.headers.get("content-type"), file).toMatch(/^text\/css/);
       expect(await served.text(), file).toBe(exampleFile("styles", file));

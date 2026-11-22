@@ -54,12 +54,17 @@ describe("EXAMPLE_GROUPS", () => {
         "Markers and popups",
         ["simple", "markers", "css-markers", "popups", "click-to-add"],
       ],
-      ["lists", "Lists and menus", ["menu", "custom-list", "tabs"]],
+      ["lists", "Lists and menus", ["side-list", "menu", "custom-list", "tabs"]],
       ["search", "Search and filters", ["tags", "offices", "search", "nearest", "this-area"]],
-      ["circles-polygons", "Circles and polygons", ["circles", "polygon", "mixed", "choropleth"]],
+      ["circles-polygons", "Circles and polygons", ["circles", "polygon", "mixed"]],
       ["lines-routes", "Lines and routes", ["polyline", "flights", "trade-lanes", "route"]],
       ["clusters-heatmaps", "Clusters and heatmaps", ["big", "earthquakes"]],
-      ["live-data", "Live data and loading", ["live-data", "load-on-demand", "link-to-place"]],
+      ["dashboards", "Data dashboards", ["audience", "share-by-country", "bubbles", "choropleth"]],
+      [
+        "live-data",
+        "Live data and loading",
+        ["live-data", "geojson", "load-on-demand", "link-to-place"],
+      ],
       ["styling", "Styling", ["whats-on", "team", "styled", "brand", "unstyled"]],
     ]);
   });
@@ -103,6 +108,7 @@ describe("EXAMPLE_GROUPS", () => {
       "Circles and polygons on Google Maps and MapLibre",
       "Lines and routes on Google Maps and MapLibre",
       "Marker clustering and heatmaps on Google Maps and MapLibre",
+      "Map dashboards and data visualization on Google Maps and MapLibre",
       "Live data and loading on Google Maps and MapLibre",
       "Map styles and customizations on Google Maps and MapLibre",
     ]);

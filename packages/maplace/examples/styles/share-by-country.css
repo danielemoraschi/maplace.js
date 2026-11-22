@@ -1,0 +1,70 @@
+/* The share-by-country example's look, which every version links: page, script, vanilla and
+   React, on either map. Each country's colour comes with its data, as --colour. */
+/* A country's share on the map: a ring in its colour around the figure, standing on its place. */
+.share-badge {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid var(--colour);
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  font:
+    700 0.875rem / 1 system-ui,
+    sans-serif;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+}
+.share-badge[data-hovered],
+[data-hovered] > .share-badge {
+  outline: 2px solid #111;
+}
+/* On a phone the badge is smaller, so neighbours stay apart. */
+@media (width < 40rem) {
+  .share-badge {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-width: 3px;
+    font-size: 0.6875rem;
+  }
+}
+/* A country in the list: its name on its colour, a row of ten dots, its share filled in, and the
+   share. */
+.share-entry {
+  display: grid;
+  gap: 0.375rem;
+}
+.share-name {
+  justify-self: start;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--colour);
+  color: #fff;
+  font-weight: 600;
+}
+.share-dots-row,
+.share-dots {
+  display: flex;
+  align-items: center;
+}
+.share-dots {
+  gap: 0.25rem;
+}
+.share-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: #d4d4d8;
+}
+.share-dot[data-filled] {
+  background: var(--colour);
+}
+.share-dots-row {
+  gap: 0.625rem;
+}
+.share-figure {
+  font-weight: 600;
+}

@@ -38,6 +38,22 @@ const framedCornersIn = (within: Locator) =>
       return corners;
     });
 
+/** The corner a version gives a button inside a list of maplace's, read on a probe put there. */
+const listButtonCornerIn = (within: Locator) =>
+  within
+    .locator(".version")
+    .first()
+    .evaluate((version) => {
+      const list = document.createElement("div");
+      list.className = "maplace-list-view";
+      const button = document.createElement("button");
+      list.append(button);
+      version.append(list);
+      const corner = getComputedStyle(button).borderRadius;
+      list.remove();
+      return corner;
+    });
+
 describe("the corners of an example's map and code (W66)", () => {
   it("rounds an example's map, its own buttons, its code block, and a folded Google host as one block", async () => {
     const { page, context, section } = await visitSection(site, "simple");
@@ -55,6 +71,12 @@ describe("the corners of an example's map and code (W66)", () => {
         pres.map((pre) => [getComputedStyle(pre).borderRadius, getComputedStyle(pre).paddingTop]),
       );
     expect(new Set(parts.map(String))).toEqual(new Set(["0px,0px"]));
+    await context.close();
+  }, 30_000);
+
+  it('leaves a list\'s own buttons ("All" and "This area") the look that shows which is pressed', async () => {
+    const { context, section } = await visitSection(site, "bubbles");
+    expect(await listButtonCornerIn(section)).not.toBe("12px");
     await context.close();
   }, 30_000);
 

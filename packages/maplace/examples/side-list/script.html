@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script and what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<style>
+  #side-list-script-map-and-list { display: flex; height: 24rem; }
+  #side-list-script-map { flex: 1 1 auto; min-width: 0; }
+  #side-list-script-list { display: contents; }
+  #side-list-script-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #side-list-script-map-and-list { flex-direction: column; height: 36rem; }
+    #side-list-script-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="side-list-script-map-and-list">
+  <div id="side-list-script-map"></div>
+  <div id="side-list-script-list"></div>
+</div>
+<script type="module">
+  Maplace.createGoogleMap("#side-list-script-map", {
+    apiKey: "YOUR_KEY",
+    locations: [
+      { id: "edinburgh", lat: 55.9533, lng: -3.1883, title: "Edinburgh", group: "North" },
+      { id: "glasgow", lat: 55.8642, lng: -4.2518, title: "Glasgow", group: "North" },
+      { id: "belfast", lat: 54.5973, lng: -5.9301, title: "Belfast", group: "North" },
+      { id: "london", lat: 51.5074, lng: -0.1278, title: "London", group: "South" },
+      { id: "bristol", lat: 51.4545, lng: -2.5879, title: "Bristol", group: "South" },
+      { id: "cardiff", lat: 51.4816, lng: -3.1791, title: "Cardiff", group: "South" },
+    ],
+    list: { container: "#side-list-script-list", heading: "Cities", fitAll: true, fitAllLabel: "All cities" },
+  });
+</script>

@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<style>
+  #geojson-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #geojson-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #geojson-maplibre-vanilla-list { display: contents; }
+  #geojson-maplibre-vanilla-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #geojson-maplibre-vanilla-map-and-list { flex-direction: column; height: 36rem; }
+    #geojson-maplibre-vanilla-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="geojson-maplibre-vanilla-map-and-list">
+  <div id="geojson-maplibre-vanilla-map"></div>
+  <div id="geojson-maplibre-vanilla-list"></div>
+</div>
+<script type="module" src="./vanilla.ts"></script>

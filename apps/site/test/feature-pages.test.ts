@@ -94,7 +94,7 @@ describe("a hub and its neighbours (W63)", () => {
   it("links an example's page to the examples before and after it, across categories", async () => {
     const paths = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
     // The last of Markers and popups, before Lists and menus' first example.
-    const last = paths.indexOf("/examples/lists/menu/") - 1;
+    const last = paths.indexOf("/examples/lists/side-list/") - 1;
     expect(await neighbours(paths[last] as string)).toEqual([
       ["prev", paths[last - 1]],
       ["next", paths[last + 1]],
@@ -108,6 +108,8 @@ describe("an old link to an example (W63)", () => {
       ["/#route", "/examples/lines-routes/route/"],
       ["/examples/lists/#search", "/examples/search/search/"],
       ["/examples/circles-polygons/#flights", "/examples/lines-routes/flights/"],
+      // Choropleth's address on the released site, through the data-routes redirect.
+      ["/examples/live-data/#choropleth", "/examples/dashboards/choropleth/"],
     ]) {
       const { page, context } = await opened(site, from as string, DESKTOP);
       await page.waitForURL(new URL(to as string, site.url).href);

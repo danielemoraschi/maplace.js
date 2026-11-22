@@ -5,14 +5,13 @@ export const circlesPolygons: ExampleGroup = {
   label: "Circles and polygons",
   headingLead: "Circles and polygons",
   intro:
-    "Circles and areas in your own colours, with popups: an area to edit, its edit written back to your data, shapes and a marker in one list, and the world's countries shaded by a value.",
-  summary: "Circles, an editable polygon, shapes with markers, and a choropleth.",
+    "Circles and areas in your own colours, with popups: an area to edit, its edit written back to your data, and shapes and a marker in one list.",
+  summary: "Circles, an editable polygon, and shapes with markers.",
   description:
-    "Circles, polygons and a choropleth on Google Maps or MapLibre in JavaScript: your own colours, popups, and areas edited and written back.",
+    "Circles and polygons on Google Maps or MapLibre in JavaScript: your own colours, popups, and areas edited and written back to your data.",
   references: [
     { doc: "locations", heading: "## Circles" },
     { doc: "locations", heading: "## Polygons" },
-    { doc: "locations", heading: "## Multipolygons" },
     { doc: "locations", heading: "## Styles" },
   ],
   sections: [
@@ -36,14 +35,6 @@ export const circlesPolygons: ExampleGroup = {
       summary: "A marker, a circle, an area and a line on one map and in one list.",
       description:
         "Markers, circles, polygons and polylines together on one Google Maps or MapLibre map, and in one synced list.",
-    },
-    {
-      name: "choropleth",
-      title: "Choropleth of the world",
-      summary:
-        "Every country filled by its GDP per person, its value on hover, with a legend on the map.",
-      description:
-        "A choropleth map of the world on Google Maps and MapLibre: every country filled by its GDP per person, its value on hover, with a legend.",
     },
   ],
 };

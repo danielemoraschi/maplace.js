@@ -1,0 +1,46 @@
+/* The bubble map's look, which every version links: page, script, vanilla and React, on either
+   map. */
+/* A city: a circle as wide as its population's square root, half see-through so the ones under it
+   show; centred on its place on the map. */
+.bubble {
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: rgb(234 88 12 / 0.55);
+  transform: translateY(50%);
+}
+.bubble[data-hovered],
+[data-hovered] > .bubble {
+  background: rgb(234 88 12 / 0.8);
+}
+.bubble[data-selected],
+[data-selected] > .bubble {
+  border: 2px solid #111;
+  background: rgb(234 88 12 / 0.9);
+}
+/* The legend under the map: each size's circle beside its figure. */
+.bubbles-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+}
+.bubbles-legend .bubble {
+  transform: none;
+}
+.bubbles-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+/* A city in the list: its name, then its population. */
+.bubbles-city {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.bubbles-population {
+  color: #55554f;
+  font-variant-numeric: tabular-nums;
+}

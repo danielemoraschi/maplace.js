@@ -1,6 +1,6 @@
 # Your own list
 
-Maplace.js's lists are views of its store, and yours can be any element you build: one that calls the store's `select` and `fitAll`, and redraws when the store changes. This one is a radio per place and one to fit them all; each version below shows a way to put it on the map.
+Maplace.js's lists are views of its store, and yours can be any element you build: one that calls the store's `select` and `fitAll`, and redraws when the store changes. This one is a radio per place and one to fit them all; each version below shows a way to put it on the map, and it can sit beside the map as any list can.
 
 - **HTML**: define it by name with [`defineListView(name, factory)`](../../../../docs/reference/element.md#list-views), `Maplace.defineListView` on the CDN script, and name it in `list`: `checks` here, `maplibre-checks` on the MapLibre page, since one document defines a name once. The factory gets the store and `listed()`, the locations Maplace.js's own lists would show, and returns `{ element, destroy }`; `list-position` places it as it does the built-in lists.
 - **Script**: the Bundler version's code on the CDN script's `Maplace`, with no build step: `Maplace.createMaplace`, `Maplace.listedLocations` and the adapter's `mountControl`, as below.

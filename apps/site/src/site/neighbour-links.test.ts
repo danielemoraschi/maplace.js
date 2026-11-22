@@ -19,10 +19,12 @@ describe("withNeighbours", () => {
   it("links an example's page to its neighbours across the categories", () => {
     const linked = withNeighbours(EXAMPLE_PAGE_ENTRIES, exampleLink);
     // Lists and menus' first example, after the last of Markers and popups.
-    const first = EXAMPLE_PAGE_ENTRIES.findIndex(({ path }) => path === "/examples/lists/menu/");
+    const first = EXAMPLE_PAGE_ENTRIES.findIndex(
+      ({ path }) => path === "/examples/lists/side-list/",
+    );
     expect(linked[first - 1]?.next).toEqual({
-      href: "/examples/lists/menu/",
-      label: "Select menu",
+      href: "/examples/lists/side-list/",
+      label: "List beside the map",
     });
   });
 });

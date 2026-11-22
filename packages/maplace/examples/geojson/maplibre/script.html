@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map and its list mount on, and the map made with Maplace; the layer from a GeoJSON file. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #geojson-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #geojson-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #geojson-maplibre-script-list { display: contents; }
+  #geojson-maplibre-script-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #geojson-maplibre-script-map-and-list { flex-direction: column; height: 36rem; }
+    #geojson-maplibre-script-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="geojson-maplibre-script-map-and-list">
+  <div id="geojson-maplibre-script-map"></div>
+  <div id="geojson-maplibre-script-list"></div>
+</div>
+<script type="module">
+  const maplace = Maplace.createMapLibreMap("#geojson-maplibre-script-map", {
+    list: { container: "#geojson-maplibre-script-list" },
+  });
+
+  // Each feature a location: a Point a marker, a LineString a line, a Polygon an area; its
+  // about property in the popup a click opens.
+  const response = await fetch("/examples/data/regents-park.json");
+  maplace.setLocations(
+    Maplace.locationsFromGeoJSON(await response.json()).map((feature) => ({
+      ...feature,
+      content: feature.data?.about,
+    })),
+  );
+</script>

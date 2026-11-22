@@ -65,6 +65,14 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
       }
     },
   },
+  // The list beside the map, one city selected in it and on the map.
+  {
+    name: "side-list",
+    stage: async (scene) => {
+      await scene.select("bristol", { pan: false });
+      await scene.view({ center: { lat: 53.7, lng: -3.2 }, zoom: 5.2 });
+    },
+  },
   {
     name: "menu",
     stage: (scene) => choose(scene, "London"),
@@ -116,6 +124,18 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
   },
   { name: "polygon", stage: (scene) => scene.select("park") },
   { name: "mixed", hidesList: true },
+  // The map alone for these three: their cards, badges and bubbles are the picture.
+  {
+    name: "audience",
+    hidesList: true,
+    stage: (scene) => scene.select("north-america", { pan: false }),
+  },
+  {
+    name: "share-by-country",
+    hidesList: true,
+    stage: (scene) => scene.select("BRA", { pan: false }),
+  },
+  { name: "bubbles", hidesList: true },
   {
     name: "choropleth",
     stage: async (scene) => {
@@ -163,6 +183,14 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
       await scene.example.getByRole("button", { name: "More markers" }).click();
       await scene.page.waitForTimeout(500);
       await scene.fit();
+    },
+  },
+  // The park's area, its avenue and its places, the zoo's card open.
+  {
+    name: "geojson",
+    stage: async (scene) => {
+      await scene.select("london-zoo", { pan: false });
+      await scene.view({ center: { lat: 51.5318, lng: -0.1555 }, zoom: 14.2 });
     },
   },
   // Its placeholder, words and button.
