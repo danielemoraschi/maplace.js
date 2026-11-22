@@ -4,6 +4,7 @@ import { defaultClientConditions } from "vite";
 import { exampleFailureNotes } from "./src/site/example-failure-notes.ts";
 import { exampleMapId } from "./src/site/example-map-id.ts";
 import { exampleModulesRun } from "./src/site/example-modules-run.ts";
+import { mapLibreStylesheetEmptied } from "./src/site/maplibre-stylesheet-plugin.ts";
 import { mapsSettingsCheck } from "./src/site/maps-settings-check.ts";
 import { PREBUNDLED_DEPS } from "./src/site/prebundled-deps.ts";
 
@@ -29,7 +30,13 @@ export default defineConfig({
   devToolbar: { enabled: false },
   // maplace resolved to its source, as the tests and the examples' type-check do.
   vite: {
-    plugins: [tailwindcss(), exampleModulesRun(), exampleMapId(), exampleFailureNotes()],
+    plugins: [
+      tailwindcss(),
+      exampleModulesRun(),
+      exampleMapId(),
+      exampleFailureNotes(),
+      mapLibreStylesheetEmptied(),
+    ],
     resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
     optimizeDeps: { include: [...PREBUNDLED_DEPS] },
   },

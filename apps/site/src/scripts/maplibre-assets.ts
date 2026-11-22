@@ -1,6 +1,5 @@
-// MapLibre's stylesheet, which the element's npm entry leaves to the page (its version modules
-// import their own).
-import "maplibre-gl/dist/maplibre-gl.css";
+// MapLibre's worker for the site's build. Its stylesheet comes with the components that draw maps
+// (`MapFrame.astro`, `HeldMaps.astro`; `maplibre-stylesheet-plugin.ts`).
 import { setWorkerUrl } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 

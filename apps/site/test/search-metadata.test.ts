@@ -15,6 +15,7 @@ import { REPOSITORY_URL } from "../src/site/repo-docs.ts";
 import { SITE_MAINTAINER } from "../src/site/site-owner.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { linkFor, linkRules } from "./header-rules.ts";
+import { mapLibreSheetCopies } from "./maplibre-stylesheet-copies.ts";
 import { PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 
 /** A node of a page's JSON-LD graph. */
@@ -209,5 +210,17 @@ describe("the site's search metadata", () => {
       nodeOf(route, "WebPage").dateModified,
     ]);
     expect(listed).toEqual(expected);
+  });
+});
+
+// Read from the same build: a test file of its own would build the site once more (W70).
+describe("MapLibre's stylesheet on the built site", () => {
+  it("is on every page that draws a map, once, and on no other: a page without one paints sooner", () => {
+    const { mapPages, misplaced } = mapLibreSheetCopies(site.dir);
+    expect(mapPages, "every example's page and the builder").toHaveLength(
+      EXAMPLE_PAGE_ENTRIES.length + 1,
+    );
+    expect(mapPages).toContain("builder/index.html");
+    expect(misplaced).toEqual([]);
   });
 });

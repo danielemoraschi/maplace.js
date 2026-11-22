@@ -18,9 +18,9 @@ const SITE_IMPORTS: ProviderImports = {
 /**
  * What loads each provider's element for a page map, built on `imports`; a version readies
  * maplibre-gl through its own imports (`example-failure-notes.ts`) and `mapLibreVersionReady`.
- * MapLibre's element loads beside its assets (its stylesheet and its worker), not after them: it
- * imports maplibre-gl only once a map opens, which waits for the element's load to resolve. The
- * assets load once, and pointing maplibre-gl at its worker again changes nothing.
+ * MapLibre's element loads beside its worker, not after it (its stylesheet is already on a map's
+ * page): it imports maplibre-gl only once a map opens, which waits for the element's load to
+ * resolve. The worker is set once, and pointing maplibre-gl at it again changes nothing.
  */
 export function elementLoaders(imports: ProviderImports): ElementLoaders {
   const readyMapLibre = async () => (await imports.mapLibreAssets()).useBuiltWorker();

@@ -14,10 +14,7 @@ interface NotedEntry {
   readonly builtWorkerFrom?: string;
 }
 
-/**
- * maplibre-gl's stylesheet and worker for the site's build. Imported whole, not just
- * `setWorkerUrl`: it is what brings a script version its stylesheet.
- */
+/** maplibre-gl's worker for the site's build; its stylesheet is the map pages' (W70). */
 const MAPLIBRE_ASSETS = fileURLToPath(new URL("../scripts/maplibre-assets.ts", import.meta.url));
 
 /** The provider entries the site notes failed loads of, as the examples import them. */
@@ -84,9 +81,9 @@ function notedFor(source: string, importer: string): string | undefined {
  * Says in a version's note when its map didn't load, as a page map's says: the examples' vanilla
  * and React versions, and the site's `Maplace` its script versions call, get a
  * `@maplacejs/maplace/google` and a `@maplacejs/maplace/maplibre` whose calls note a failed load
- * (`version-map-failures.ts`), the example files unchanged. MapLibre's also readies maplibre-gl
- * (its stylesheet, its worker) before the version's code runs, fetched beside the version's module
- * rather than after it.
+ * (`version-map-failures.ts`), the example files unchanged. MapLibre's also points maplibre-gl
+ * at its worker before the version's code runs, fetched beside the version's module rather than
+ * after it.
  */
 export function exampleFailureNotes(): Plugin {
   const entryOf = new Map(

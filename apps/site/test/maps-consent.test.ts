@@ -1,6 +1,7 @@
 import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
+import { contrastRatio } from "./contrast.ts";
 import { chooseProvider, chooseVersion, sectionPage } from "./home-sections.ts";
 import {
   ASKED,
@@ -89,6 +90,20 @@ describe("the site's consent to its maps", () => {
       await context.close();
     },
     visitingPages(EXAMPLE_PAGE_ENTRIES.length),
+  );
+
+  it.each([FIRST_EXAMPLES_PAGE, "/builder/"])(
+    "draws the Load maps button's text at 4.5:1 or more against its red, on %s",
+    async (route) => {
+      const { page, context } = await site.visitor();
+      await openExamplesPage(page, site.url, route);
+      const { color, backgroundColor } = await placeholder(page).evaluate((button) =>
+        getComputedStyle(button),
+      );
+      expect(contrastRatio(color, backgroundColor)).toBeGreaterThanOrEqual(4.5);
+      await context.close();
+    },
+    30_000,
   );
 
   it("remembers consent: the next visit loads the maps with no placeholder shown", async () => {

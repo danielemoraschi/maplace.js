@@ -25,7 +25,6 @@
   --color-ink: #1b2430;
   --color-muted: #566270;
   --color-wash: #e3eae7;
-  --color-accent: #cf2b24;
   background: #cfe3ea;
   color: var(--color-ink);
 }
