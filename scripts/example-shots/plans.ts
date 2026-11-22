@@ -138,10 +138,14 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
     // The globe close, past the picture's top and bottom, the plane over the Atlantic in view.
     stage: (scene) => scene.view({ center: { lat: 40, lng: -12 }, zoom: 2.55 }),
   },
+  // Shanghai to Los Angeles selected, its card open over the Pacific.
   {
     name: "trade-lanes",
     hidesList: true,
-    stage: (scene) => scene.hover("singapore-rotterdam"),
+    stage: async (scene) => {
+      await scene.select("shanghai-los-angeles", { pan: false });
+      await scene.view({ center: { lat: 36, lng: -178 }, zoom: 2.3 });
+    },
   },
   { name: "route", hidesList: true },
   // The clusters' badges, centred on the points (North America), with room around them.
