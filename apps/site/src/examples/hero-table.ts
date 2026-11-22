@@ -23,25 +23,24 @@ export interface HeroCard {
 }
 
 /**
- * The prototype's table, its cells and their widths, with the cards the user placed (2026-11-21):
- * choropleth, route, the heatmap, the custom popup, flights and the team around the world among
- * them, search, markers and link to a place at its foot; polygon, with no cell left, off it.
+ * The prototype's table, its cells and their widths, with the cards where the user placed them;
+ * polygon, tags and mixed, with no cell left, off it.
  */
 export const HERO_TABLE: readonly HeroCard[] = [
-  { name: "whats-on", row: 1, column: 3, hiddenBelow: 1260 },
+  { name: "share-by-country", row: 1, column: 3, hiddenBelow: 1260 },
   { name: "choropleth", row: 1, column: 4 },
   { name: "route", row: 2, column: 3, hiddenBelow: 1100 },
   { name: "earthquakes", row: 2, column: 4 },
   { name: "circles", row: 3, column: 2, hiddenBelow: 1200 },
-  { name: "brand", row: 3, column: 3 },
-  { name: "tags", row: 3, column: 4 },
+  { name: "audience", row: 3, column: 3 },
+  { name: "whats-on", row: 3, column: 4 },
   { name: "trade-lanes", row: 4, column: 1 },
   { name: "flights", row: 4, column: 2 },
   { name: "popups", row: 4, column: 3 },
   { name: "team", row: 4, column: 4 },
   { name: "css-markers", row: 5, column: 1 },
   { name: "menu", row: 5, column: 2 },
-  { name: "mixed", row: 5, column: 3 },
+  { name: "brand", row: 5, column: 3 },
   { name: "live-data", row: 5, column: 4 },
   { name: "styled", row: 6, column: 1 },
   { name: "polyline", row: 6, column: 2 },
