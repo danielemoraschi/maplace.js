@@ -34,3 +34,29 @@ export function cardsUnderCopy(): string[] {
   hittable.remove();
   return [...new Set(cards)];
 }
+
+/**
+ * The transform functions the table rests on and those of each frame of its turn, by name, as the
+ * page's stylesheets hold them, `@layer` blocks and all.
+ */
+export function tableTurnFunctions(): { resting: string[]; frames: string[][] } {
+  const withNested = (rule: CSSRule): CSSRule[] =>
+    rule instanceof CSSGroupingRule ? [rule, ...[...rule.cssRules].flatMap(withNested)] : [rule];
+  const rules = [...document.styleSheets].flatMap((sheet) =>
+    [...sheet.cssRules].flatMap(withNested),
+  );
+  const functionNames = (transform: string) => transform.match(/\w+(?=\()/g) ?? [];
+  const resting = rules.find(
+    (rule): rule is CSSStyleRule =>
+      rule instanceof CSSStyleRule && rule.selectorText === ".table-turn",
+  );
+  const turn = rules.find(
+    (rule): rule is CSSKeyframesRule =>
+      rule instanceof CSSKeyframesRule && rule.name === "table-turn",
+  );
+  const frames = [...(turn?.cssRules ?? [])] as CSSKeyframeRule[];
+  return {
+    resting: functionNames(resting?.style.transform ?? ""),
+    frames: frames.map((frame) => functionNames(frame.style.transform)),
+  };
+}

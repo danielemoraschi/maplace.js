@@ -11,7 +11,7 @@ import { HOME_HEADING, HOME_INTRO, WAYS_IN_NOTES } from "../src/examples/home-pa
 import { componentOf } from "../src/examples/ways-in-files.ts";
 import { skillInstallCommand } from "../src/site/agent-links.ts";
 import { docRoute } from "../src/site/repo-docs.ts";
-import { cardsUnderCopy } from "./hero-table-probe.ts";
+import { cardsUnderCopy, tableTurnFunctions } from "./hero-table-probe.ts";
 import { chooseProvider } from "./home-sections.ts";
 import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
@@ -162,13 +162,19 @@ describe("the home page's hero (W66)", () => {
     await context.close();
   }, 30_000);
 
-  it("keeps the table inside the hero as the page scrolls, turning it only for a visitor who doesn't ask for less motion", async () => {
+  it("keeps the table inside the hero as the page scrolls, turning it, through the functions it rests on, only for a visitor who doesn't ask for less motion", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const plane = page.locator("[data-hero-card]").first().locator("..");
     const transformAt = async (y: number) => {
       await page.evaluate((top) => window.scrollTo(0, top), y);
       return plane.evaluate((element) => getComputedStyle(element).transform);
     };
+    // Every frame of the turn lists the functions the table rests on: blended one by one, none
+    // as a matrix, whose split Safari can draw mirrored.
+    const { resting: restingFunctions, frames } = await page.evaluate(tableTurnFunctions);
+    expect(restingFunctions).not.toEqual([]);
+    expect(frames).not.toEqual([]);
+    for (const frame of frames) expect(frame).toEqual(restingFunctions);
     const resting = await transformAt(0);
     // A scroll timeline moves the table on the frames after the scroll.
     await expect.poll(() => transformAt(400)).not.toBe(resting);

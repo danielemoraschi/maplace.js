@@ -43,10 +43,12 @@
 /*
  * The home page's table (W66): tilted, shifted by `--table-x`, and turning a little as the page
  * scrolls away where it lies beside the copy, driven by the scroll, so a browser without scroll
- * timelines leaves it still.
+ * timelines leaves it still. Its resting transform lists the turn's functions, `scale(1)` too:
+ * where the two lists differ, Safari's compositor blends whole matrices and can draw the table
+ * mirrored, from underneath and over the copy.
  */
 @utility table-turn {
-  transform: translate(var(--table-x), -50%) rotateX(56deg) rotateZ(-38deg);
+  transform: translate(var(--table-x), -50%) rotateX(56deg) rotateZ(-38deg) scale(1);
 
   @media (prefers-reduced-motion: no-preference) and (min-width: 901px) {
     @supports (animation-timeline: scroll()) {
