@@ -10,24 +10,21 @@ export {
 /** The examples page: every example by category, each linking its page (W72), the hubs under it. */
 export const EXAMPLES_PAGE_ROUTE = "/examples/";
 
-/** An example's page: the example, the group whose hub it sits under, its path and its number. */
+/** An example's page: the example, the group whose hub it sits under, and its path. */
 export interface ExamplePageEntry {
   readonly group: ExampleGroup;
   readonly section: ExampleSection;
   readonly path: string;
-  /** Its number as the site shows it, `01` for the first, counted across the groups in order. */
-  readonly number: string;
 }
 
-/** Every example's page, in the numbering's order. */
+/** Every example's page, in its groups' order. */
 export const EXAMPLE_PAGE_ENTRIES: readonly ExamplePageEntry[] = EXAMPLE_GROUPS.flatMap((group) =>
-  group.sections.map((section) => ({ group, section })),
-).map(({ group, section }, index) => ({
-  group,
-  section,
-  path: `${groupPath(group)}${section.name}/`,
-  number: String(index + 1).padStart(2, "0"),
-}));
+  group.sections.map((section) => ({
+    group,
+    section,
+    path: `${groupPath(group)}${section.name}/`,
+  })),
+);
 
 /** Every example, in its groups' order. */
 export const EXAMPLE_SECTIONS: readonly ExampleSection[] = EXAMPLE_PAGE_ENTRIES.map(
@@ -39,7 +36,7 @@ export function examplePagesOf(group: ExampleGroup): ExamplePageEntry[] {
   return EXAMPLE_PAGE_ENTRIES.filter((entry) => entry.group === group);
 }
 
-/** The examples page, then each group's hub followed by its examples' pages, in the numbering's order. */
+/** The examples page, then each group's hub followed by its examples' pages, in their groups' order. */
 export const EXAMPLES_ROUTES: readonly string[] = [
   EXAMPLES_PAGE_ROUTE,
   ...EXAMPLE_GROUPS.flatMap((group) => [

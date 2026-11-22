@@ -24,12 +24,10 @@ function exampleCategoriesMarkdown(headingDepth: CategoryHeadingDepth): string {
   return EXAMPLE_GROUPS.map((group) => groupIndexMarkdown(group, headingDepth)).join("\n\n");
 }
 
-/** `group`'s examples in `ExampleList.astro`'s words: number and title linking the page, summary. */
+/** `group`'s examples in `ExampleList.astro`'s words: title linking the page, summary. */
 export function exampleListMarkdown(group: ExampleGroup): string {
   return examplePagesOf(group)
-    .map(
-      ({ section, path, number }) => `- [${number} ${section.title}](${path}): ${section.summary}`,
-    )
+    .map(({ section, path }) => `- [${section.title}](${path}): ${section.summary}`)
     .join("\n");
 }
 

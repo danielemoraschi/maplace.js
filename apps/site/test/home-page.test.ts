@@ -83,7 +83,7 @@ describe("the index of examples, on the home page and the examples page (W63, W7
   ];
 
   it.each(INDEXES)(
-    "heads the index on $route, then lists every category, a level under, linking its hub, then each of its examples linking its page with its thumbnail, credits the map images once, and draws no map",
+    "heads the index on $route, then lists every category, a level under, linking its hub, then each of its examples by its title alone, unnumbered, linking its page with its thumbnail, credits the map images once, and draws no map",
     async ({ route, within, indexHeading, categoryHeading }) => {
       const { page, context } = await opened(site, route, DESKTOP);
       const index = page.locator(within);
@@ -97,8 +97,15 @@ describe("the index of examples, on the home page and the examples page (W63, W7
       expect(pages).toEqual(EXAMPLE_GROUPS.map((group) => [group.label, groupPath(group)]));
       const examples = await index
         .locator("li a")
-        .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-      expect(examples).toEqual(EXAMPLE_PAGE_ENTRIES.map(({ path }) => path));
+        .evaluateAll((links) =>
+          links.map((link) => [
+            link.textContent?.replace(/\s+/g, " ").trim(),
+            link.getAttribute("href"),
+          ]),
+        );
+      expect(examples).toEqual(
+        EXAMPLE_PAGE_ENTRIES.map(({ section, path }) => [section.title, path]),
+      );
       expect(await index.locator('li a img[alt=""]').count()).toBe(EXAMPLE_PAGE_ENTRIES.length);
       expect(await index.getByText("Map images:").count()).toBe(1);
       expect(await page.locator("maplace-map, section.example").count()).toBe(0);

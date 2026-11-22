@@ -20,7 +20,7 @@ interface Props {
   entry: ExamplePageEntry;
 }
 
-const { group, section, path, number } = Astro.props.entry;
+const { group, section, path } = Astro.props.entry;
 const { name, title, summary, drawsOwnList, drawsOwnFrame } = section;
 const codeTabs = codeTabsOf(name);
 const codes = codeTabs.flatMap(({ codes }) => codes);
@@ -34,11 +34,7 @@ const panelPrefix = `example-${name}`;
 
 {/* An example's page's body: its heading, then its map run from a version, that version's code, its guide. */}
 <section class="example" id={name} aria-labelledby={`${name}-title`} data-version-switch={name}>
-  <p class="mt-0 mb-1 text-sm font-semibold">
-    <a href={groupPath(group)}>{group.label}</a>{" "}
-    <span aria-hidden="true" class="text-muted">·</span>{" "}
-    <span class="text-accent">{number}</span>
-  </p>
+  <p class="mt-0 mb-1 text-sm font-semibold"><a href={groupPath(group)}>{group.label}</a></p>
   <h1 class="mt-0 mb-2 text-title" id={`${name}-title`}>{pageHeading(title)}</h1>
   <p class="mt-0 mb-2 max-w-text text-lg text-muted">{summary}</p>
   <p class="mt-0 mb-0 text-sm"><MarkdownLink route={path} /></p>

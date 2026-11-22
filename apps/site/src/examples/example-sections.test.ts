@@ -64,7 +64,7 @@ describe("EXAMPLE_GROUPS", () => {
     ]);
   });
 
-  it("holds every example once, numbered in its groups' order, at least two on each hub", () => {
+  it("holds every example once, in its groups' order, at least two on each hub", () => {
     expect(EXAMPLE_GROUPS.flatMap(({ sections }) => sections)).toEqual(EXAMPLE_SECTIONS);
     expect(new Set(EXAMPLE_SECTIONS.map(({ name }) => name)).size).toBe(EXAMPLE_SECTIONS.length);
     for (const group of EXAMPLE_GROUPS)
@@ -88,7 +88,7 @@ describe("EXAMPLE_GROUPS", () => {
     expect(new Set(described.map(({ description }) => description)).size).toBe(described.length);
   });
 
-  it("puts every example's page under its hub, in the numbering's order", () => {
+  it("puts every example's page under its hub, in its groups' order", () => {
     expect(EXAMPLE_PAGE_ENTRIES.map(({ section }) => section)).toEqual(EXAMPLE_SECTIONS);
     for (const { group, section, path } of EXAMPLE_PAGE_ENTRIES) {
       expect(path).toBe(`/examples/${group.id}/${section.name}/`);
@@ -135,12 +135,5 @@ describe("EXAMPLE_GROUPS", () => {
     for (const entry of EXAMPLE_PAGE_ENTRIES)
       expect(findExamplePage(entry.section.name)).toBe(entry);
     expect(findExamplePage("main")).toBeUndefined();
-  });
-
-  it("numbers the sections 1 to 31 across the groups, in order", () => {
-    const labels = EXAMPLE_PAGE_ENTRIES.map(({ number }) => number);
-    expect(labels).toEqual(
-      Array.from({ length: 31 }, (_, index) => String(index + 1).padStart(2, "0")),
-    );
   });
 });

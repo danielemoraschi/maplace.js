@@ -21,7 +21,7 @@ export const PRIVACY_SOURCES: readonly string[] = [
 /** Where each feature's texts and reference cuts are (`example-groups.ts`). */
 const GROUPS_DIR = "apps/site/src/examples/groups";
 
-/** What every examples page draws from them: the categories' order, which numbers the examples, and the H1's tail. */
+/** What every examples page draws from them: the categories' order (previous and next, the menu) and the H1's tail. */
 const GROUPS_ORDER = [
   "apps/site/src/examples/example-groups.ts",
   "apps/site/src/examples/example-sections.ts",

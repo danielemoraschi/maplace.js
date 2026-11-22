@@ -41,7 +41,7 @@ const EXAMPLES = "../../../packages/maplace/examples/";
 
 const site = siteBuiltBeforeTests();
 
-/** Every example's page, in the numbering's order. */
+/** Every example's page, in its groups' order. */
 const EXAMPLE_PAGES = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
 
 /** What `look` finds on each page at `routes`, one page after another. */
@@ -126,12 +126,12 @@ describe("the examples' pages, as built and before consent (W38)", () => {
     visitingPages(EXAMPLE_PAGES.length * 2),
   );
 
-  it("head each example's page with its title in task words, its category and number above, its summary under (W63)", () => {
+  it("head each example's page with its title in task words, its category above, unnumbered, its summary under (W63)", () => {
     expect(pages.map(({ heading }) => heading)).toEqual(
-      EXAMPLE_PAGE_ENTRIES.map(({ group, section, number }) => ({
+      EXAMPLE_PAGE_ENTRIES.map(({ group, section }) => ({
         id: section.name,
         words: pageHeading(section.title),
-        above: `${group.label} · ${number}`,
+        above: group.label,
         under: section.summary,
         h1s: 1,
       })),

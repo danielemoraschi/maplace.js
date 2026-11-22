@@ -10,10 +10,10 @@ interface Props {
 const { group } = Astro.props;
 ---
 
-{/* A category's examples, each its picture, number and title linking its page, then its summary (W65). */}
+{/* A category's examples, each its picture and title linking its page, then its summary (W65). */}
 <ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-x-5 gap-y-6 p-0">
   {
-    examplePagesOf(group).map(({ section, path, number }) => {
+    examplePagesOf(group).map(({ section, path }) => {
       const thumbnail = thumbnailOf(section);
       return (
         <li>
@@ -29,8 +29,7 @@ const { group } = Astro.props;
                 class="block aspect-[8/5] h-auto w-full rounded-[14px] border border-ink/15 bg-wash object-cover transition-colors group-hover:border-ink"
               />
             )}
-            <span class="flex gap-[0.45rem] text-[1.0625rem] leading-tight font-semibold group-hover:underline">
-              <span class="font-normal text-muted tabular-nums">{number}</span>
+            <span class="text-[1.0625rem] leading-tight font-semibold group-hover:underline">
               {section.title}
             </span>
           </a>

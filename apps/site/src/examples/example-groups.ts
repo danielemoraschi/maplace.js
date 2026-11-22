@@ -46,7 +46,7 @@ export interface ExampleGroup {
   readonly sections: readonly ExampleSection[];
 }
 
-/** The examples by feature, each feature a hub; the examples numbered in this order (D31). */
+/** The examples by feature, the hubs in this order, each listing its examples in its own file's order (D31). */
 export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
   markers,
   lists,

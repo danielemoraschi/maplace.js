@@ -95,9 +95,9 @@ describe("markdownTwins", () => {
     ).toBe(true);
     expect(markdown).toContain("\n### [Markers and popups](/examples/markers/)\n");
     expect(markdown).toContain(
-      "\n- [01 One marker](/examples/markers/simple/): One place on a map.\n",
+      "\n- [One marker](/examples/markers/simple/): One place on a map.\n",
     );
-    expect(markdown).toContain("\n- [31 Default styles off](/examples/styling/unstyled/): ");
+    expect(markdown).toContain("\n- [Default styles off](/examples/styling/unstyled/): ");
     expect(markdown.indexOf("\n## Two map providers, one API.\n")).toBeGreaterThan(
       markdown.indexOf("/examples/styling/unstyled/"),
     );
@@ -113,7 +113,7 @@ describe("markdownTwins", () => {
     ).toBe(true);
     expect(markdown).not.toContain("\n### ");
     expect(markdown).toContain(
-      "\n- [01 One marker](/examples/markers/simple/): One place on a map.\n",
+      "\n- [One marker](/examples/markers/simple/): One place on a map.\n",
     );
   });
 
