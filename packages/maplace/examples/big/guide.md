@@ -2,7 +2,6 @@
 
 A large set of points, fetched by the page: those near each other are drawn as one badge counting them, so the map stays fast and readable.
 
-- **Try it**: zoom in on a badge, and it splits into smaller badges, then single pins.
 - **HTML**: `cluster` on `<maplace-map>`, on a CDN script that bundles clustering: `maplace-element-cluster.iife.js` on Google, while MapLibre's script always does ([Map attributes](../../../../docs/reference/element.md#map-attributes)). The element never fetches: a script assigns `locations`.
 - **Script** and **Bundler**: `cluster: true` in the map's options, then [`setLocations`](../../../../docs/reference/store.md#methods) with the points ([Options](../../../../docs/reference/store.md#options)). The Script version on Google is on the same cluster script; from npm, each provider loads its clustering only for a map that clusters ([on Google](../../../../docs/reference/google.md#clustering), [on MapLibre](../../../../docs/reference/maplibre.md#clustering)).
 - **React**: the `cluster` prop of `<MaplaceProvider>` ([`<MaplaceProvider>`](../../../../docs/reference/react.md#maplaceprovider)).
