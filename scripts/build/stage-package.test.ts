@@ -37,7 +37,7 @@ describe("the staged package", () => {
     const readme = readFileSync(join(packageDir, "README.md"), "utf8");
     const raw = `https://github.com/danielemoraschi/maplace.js/raw/v${manifest().version}/`;
     expect(readme).toContain(`src="${raw}apps/site/src/assets/favicon.svg"`);
-    expect(readme).toContain(`src="${raw}docs/media/maplibre-demo.gif"`);
+    expect(readme).toContain(`src="${raw}docs/media/examples.webp"`);
     // Any `<img>`, even across lines, as a relative one is broken on npm's page.
     expect(readme).not.toMatch(/<img\b(?![^>]*\bsrc="[a-z]+:)/);
   });

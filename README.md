@@ -14,7 +14,7 @@
   <a href="https://www.npmjs.com/package/@maplacejs/maplace"><img alt="TypeScript types included" src="https://img.shields.io/npm/types/@maplacejs/maplace"></a>
 </p>
 
-<p align="center"><img src="docs/media/maplibre-demo.gif" width="800" alt="A map of Italy on MapLibre beside a list of Rome, Milan and Venice. Picking Rome, then Milan, in the list pans the map to each and opens its popup; clicking Venice's marker on the map highlights it in the list."></p>
+<p align="center"><a href="https://maplacejs.com/examples/"><img src="docs/media/examples.webp" width="800" alt="See Maplace.js's examples: thumbnails of their maps, from dashboards to routes and popups, more fading out at the sides."></a><br><a href="https://maplacejs.com/examples/">See all examples</a></p>
 
 <p align="center"><sub><i>Maplace.js is a hobby project I maintain part-time, so support is best-effort.</i></sub></p>
 <!-- /readme-only -->
