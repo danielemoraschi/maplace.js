@@ -24,7 +24,7 @@ describe("sceneOf", () => {
   });
 
   it("gives every scene height whole CSS pixels and exact images at both sizes", () => {
-    for (const height of [420, 525, 630] satisfies SceneHeight[]) {
+    for (const height of [315, 420, 525, 630] satisfies SceneHeight[]) {
       for (const size of SHOT_SIZES) {
         const { viewport, deviceScaleFactor } = sceneOf(height, size);
         expect(Number.isInteger(viewport.width), `${height} ${size.folder}`).toBe(true);

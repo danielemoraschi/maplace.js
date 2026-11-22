@@ -1,6 +1,6 @@
 // What each example's thumbnail and sharing image show: the one thing that sets it apart (W65).
 import type { Scene } from "./scene.ts";
-import type { SceneHeight } from "./shot-sizes.ts";
+import { CLOSE_UP_SCENE_HEIGHT, type SceneHeight } from "./shot-sizes.ts";
 
 /** How one example is framed and staged for its pictures. */
 export interface ShotPlan {
@@ -10,7 +10,7 @@ export interface ShotPlan {
   readonly frame?: "example";
   /** The map's own list taken away before it opens, where the picture is the map's. */
   readonly hidesList?: true;
-  /** The scene's height, `DEFAULT_SCENE_HEIGHT` unless an example needs more room. */
+  /** The scene's height, `DEFAULT_SCENE_HEIGHT` unless an example needs more room or a close-up. */
   readonly height?: SceneHeight;
   /** What the scene is put through once its map is open: a selection, a view, a query. */
   readonly stage?: (scene: Scene) => Promise<void>;
@@ -25,11 +25,13 @@ async function choose(scene: Scene, label: string): Promise<void> {
 }
 
 export const SHOT_PLANS: readonly ShotPlan[] = [
-  { name: "simple" },
-  // Cardiff's image icon beside London's icon of the page's own markup.
+  // Its one pin.
+  { name: "simple", height: CLOSE_UP_SCENE_HEIGHT },
+  // The three kinds together: the map's pin on Edinburgh and Manchester, London's image and
+  // Cardiff's markup.
   {
     name: "markers",
-    stage: (scene) => scene.view({ center: { lat: 51.55, lng: -1.65 }, zoom: 7.7 }),
+    stage: (scene) => scene.view({ center: { lat: 53.9, lng: -2.4 }, zoom: 5.6 }),
   },
   // One museum in its selected look, its neighbours in theirs.
   {
@@ -42,10 +44,10 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
   // The Colosseum's card whole, its pin low in the picture so the card sits in the middle.
   {
     name: "popups",
-    height: 525,
+    height: CLOSE_UP_SCENE_HEIGHT,
     stage: async (scene) => {
       await scene.select("colosseum", { zoom: 14 });
-      await scene.view({ center: { lat: 41.8985, lng: 12.4922 }, zoom: 14 });
+      await scene.view({ center: { lat: 41.8972, lng: 12.4922 }, zoom: 14 });
     },
   },
   {
@@ -159,7 +161,8 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
       await scene.fit();
     },
   },
-  { name: "load-on-demand" },
+  // Its placeholder, words and button.
+  { name: "load-on-demand", height: CLOSE_UP_SCENE_HEIGHT },
   { name: "link-to-place", frame: "example", stage: (scene) => scene.select("rome") },
   {
     name: "whats-on",
@@ -198,5 +201,10 @@ export const SHOT_PLANS: readonly ShotPlan[] = [
       await scene.fit();
     },
   },
-  { name: "unstyled" },
+  // Its four bare pins, in the scene's top: its map is taller than the scene.
+  {
+    name: "unstyled",
+    height: CLOSE_UP_SCENE_HEIGHT,
+    stage: (scene) => scene.view({ center: { lat: 43, lng: 11.8 }, zoom: 5.5 }),
+  },
 ];

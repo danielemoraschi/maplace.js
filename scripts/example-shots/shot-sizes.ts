@@ -37,9 +37,12 @@ export const SHOT_SIZES: readonly ShotSize[] = [THUMBNAIL, SHARING];
  * A scene's height in CSS pixels: a multiple of 105, so its thumbnail's width (1.6 times it) and
  * its sharing image's (40/21 times it) are whole pixels, and so are both images.
  */
-export type SceneHeight = 420 | 525 | 630;
+export type SceneHeight = 315 | 420 | 525 | 630;
 
 export const DEFAULT_SCENE_HEIGHT: SceneHeight = 420;
+
+/** A shorter scene, drawn larger: for an example whose pins or words would be too small in the list. */
+export const CLOSE_UP_SCENE_HEIGHT: SceneHeight = 315;
 
 /**
  * The viewport and scale that draw a scene `height` tall as `size`: the same height for every
