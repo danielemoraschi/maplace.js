@@ -7,6 +7,7 @@
   box-sizing: border-box;
   border: 1px solid #fff;
   border-radius: 50%;
+  aspect-ratio: 1;
   background: rgb(234 88 12 / 0.55);
   transform: translateY(50%);
 }
