@@ -45,7 +45,7 @@ describe("the home page's night band (W66)", () => {
     await context.close();
   }, 30_000);
 
-  it("ends the home page and the examples page on a night footer, and every other page on its own paper, a divider above it", async () => {
+  it("ends every page on the night footer, a divider above it (W82)", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const ground = () =>
       page.getByRole("contentinfo").evaluate((footer) => {
@@ -56,8 +56,7 @@ describe("the home page's night band (W66)", () => {
     await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
     expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
     await page.goto(new URL(docRoute("getting-started"), site.url).href);
-    // No ground of its own: the page's paper shows through.
-    expect(await ground()).toEqual({ backgroundColor: "rgba(0, 0, 0, 0)", borderTopWidth: "1px" });
+    expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
     await context.close();
   }, 30_000);
 

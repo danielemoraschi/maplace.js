@@ -60,16 +60,18 @@ describe("the examples pages' menu (W63)", () => {
     "stays under the header as the page scrolls, scrolling within itself, at $width",
     async (viewport) => {
       const { page, context } = await opened(site, "/examples/search/tags/", viewport);
-      const top = () => examplesNav(page).evaluate((nav) => nav.getBoundingClientRect().top);
+      // The column the list is pinned in (`PinnedColumn.astro`), scrolling within itself.
+      const column = examplesNav(page).locator("xpath=ancestor::*[@data-pinned-column][1]");
+      const top = () => column.evaluate((pinned) => pinned.getBoundingClientRect().top);
       const before = await top();
       // Within the column: past its end, the column takes the list up with it, as sticky does.
       await page.mouse.wheel(0, 600);
       await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(500);
       // Stuck 1.5rem under the header, a pixel above where the page's flow first put it.
       expect(Math.abs((await top()) - before)).toBeLessThanOrEqual(1);
-      const fits = await examplesNav(page).evaluate((nav) => ({
-        scrolls: nav.scrollHeight > nav.clientHeight,
-        bottom: nav.getBoundingClientRect().bottom,
+      const fits = await column.evaluate((pinned) => ({
+        scrolls: pinned.scrollHeight > pinned.clientHeight,
+        bottom: pinned.getBoundingClientRect().bottom,
         screen: innerHeight,
       }));
       expect(fits.scrolls).toBe(true);

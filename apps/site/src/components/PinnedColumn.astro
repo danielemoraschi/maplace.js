@@ -1,0 +1,11 @@
+{/*
+  A side column held whole under the header as the page scrolls (the docs', the examples', the
+  changelog's), scrolling within itself when taller than the screen; `menu-in-view.ts` keeps the
+  page shown in its view.
+*/}
+<div
+  class="sticky top-[calc(var(--spacing-header)+1.5rem)] max-h-[calc(100dvh-var(--spacing-header)-3rem)] overflow-y-auto"
+  data-pinned-column
+>
+  <slot />
+</div>

@@ -25,7 +25,7 @@ const links = REPO_DOCS.map(({ id, label }) => ({ href: docRoute(id), label }));
     onThisPage={sections}
     fold="narrow"
   >
-    <article class="doc-content max-w-text">
+    <article class="doc-content">
       <h1 class="mt-0 mb-2 text-title">{doc.data.title}</h1>
       <p class="mt-0 mb-6 text-sm"><MarkdownLink route={docRoute(doc.id)} /></p>
       <Content />

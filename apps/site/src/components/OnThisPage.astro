@@ -1,0 +1,33 @@
+---
+import ColumnHeading from "./ColumnHeading.astro";
+
+/** A heading of the page, as the list links it. */
+interface PageHeading {
+  readonly slug: string;
+  readonly text: string;
+}
+
+interface Props {
+  /** The list's name: its nav's label and its heading ("On this page", or the changelog's "Versions"). */
+  label: string;
+  headings: readonly PageHeading[];
+}
+
+const { label, headings } = Astro.props;
+---
+
+{/* The page's headings beside it, in a column pinned whole (`PinnedColumn.astro`). */}
+<nav aria-label={label}>
+  <ColumnHeading>{label}</ColumnHeading>
+  <ol class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
+    {
+      headings.map(({ slug, text }) => (
+        <li>
+          <a href={`#${slug}`} class="no-underline">
+            {text}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>

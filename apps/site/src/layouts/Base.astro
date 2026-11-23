@@ -3,7 +3,6 @@ import "@fontsource/bricolage-grotesque/800.css";
 import "@fontsource-variable/instrument-sans";
 import "@fontsource-variable/jetbrains-mono";
 import "../styles/site.css";
-import type { ComponentProps } from "astro/types";
 // Imported, not in public/: the build names it by its content, so a new icon is a new URL and no
 // browser keeps showing the old one.
 import faviconUrl from "../assets/favicon.svg?no-inline";
@@ -28,11 +27,9 @@ interface Props {
    * to edge, each part holding its own measure and its own end (the home page's grounds, W66).
    */
   width?: "measure" | "full";
-  /** The footer's ground (`SiteFooter.astro`): the page's paper, or the home page's night. */
-  footerGround?: ComponentProps<typeof SiteFooter>["ground"];
 }
 
-const { heading, description, sharingImage, width = "measure", footerGround = "light" } = Astro.props;
+const { heading, description, sharingImage, width = "measure" } = Astro.props;
 const title = `${heading} · ${SITE_NAME}`;
 const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
@@ -63,7 +60,7 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
     <SiteHeader />
     {/* Its own stacking context: a map's z-indexes (Google's run to millions) stay under the header. */}
     <main class:list={["isolate grow", { "wrap pb-16": width === "measure" }]}><slot /></main>
-    <SiteFooter ground={footerGround} />
+    <SiteFooter />
     <CodeCopyTemplate />
     <script>
       import "../scripts/site.ts";

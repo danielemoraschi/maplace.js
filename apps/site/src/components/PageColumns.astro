@@ -1,12 +1,10 @@
 ---
+import type { ComponentProps } from "astro/types";
 import type { NavLink } from "../site/nav-link.ts";
+import ColumnHeading from "./ColumnHeading.astro";
 import NavList from "./NavList.astro";
-
-/** A heading of the page, as "On this page" links it. */
-interface PageHeading {
-  readonly slug: string;
-  readonly text: string;
-}
+import OnThisPage from "./OnThisPage.astro";
+import PinnedColumn from "./PinnedColumn.astro";
 
 interface Props {
   /** The pages' list's name: its nav's label, and its heading beside the page's contents. */
@@ -14,8 +12,8 @@ interface Props {
   links: readonly NavLink[];
   /** The href of the page shown. */
   current: string;
-  /** The page's headings, linked under the pages' list: none on the examples pages, whose list is pinned instead. */
-  onThisPage?: readonly PageHeading[];
+  /** The page's headings, linked under the pages' list, the column pinned whole: none on the examples pages. */
+  onThisPage?: ComponentProps<typeof OnThisPage>["headings"];
   /**
    * Where the column folds into a disclosure above the content: below 800px for a doc's text, below
    * 64rem for the examples, so a section's list keeps a map beside it (the library's breakpoint
@@ -25,7 +23,6 @@ interface Props {
 }
 
 const { navLabel, links, current, onThisPage, fold } = Astro.props;
-const COLUMN_HEADING = "mt-0 mb-2 text-sm font-semibold";
 const FOLDS = {
   narrow: {
     grid: "max-[800px]:grid-cols-[minmax(0,1fr)]",
@@ -39,46 +36,20 @@ const FOLDS = {
   },
 } as const;
 const folds = FOLDS[fold];
-const pinsList = onThisPage === undefined;
-/** The column's last block, held under the header as the page scrolls. */
-const STICKY = "sticky top-[calc(var(--spacing-header)+1.5rem)]";
-/**
- * The examples' list, pinned alone: taller than the screen, it scrolls within itself under the
- * header, where this column is drawn (from 64rem).
- */
-const PINNED = `${STICKY} max-h-[calc(100dvh-var(--spacing-header)-3rem)] overflow-y-auto`;
 ---
 
 <div class:list={["grid grid-cols-[13rem_minmax(0,1fr)] gap-10 pt-8", folds.grid]}>
-  {/* The column pins its last block: the page's contents where it has them, the pages' list scrolling away above them; otherwise the list. */}
-  <div class:list={["flex flex-col gap-y-8", folds.column]}>
-    <nav
-      aria-label={navLabel}
-      class:list={[pinsList && PINNED]}
-      data-pinned-nav={pinsList ? "" : undefined}
-    >
-      {/* Named only to tell it from the page's contents below it: alone, the list needs no heading. */}
-      {!pinsList && <p aria-hidden="true" class={COLUMN_HEADING}>{navLabel}</p>}
-      <NavList links={links} current={current} />
-    </nav>
-    {
-      onThisPage && (
-        <nav aria-label="On this page" class="flex-1">
-          <div class={STICKY}>
-            <p aria-hidden="true" class={COLUMN_HEADING}>On this page</p>
-            <ol class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
-              {onThisPage.map(({ slug, text }) => (
-                <li>
-                  <a href={`#${slug}`} class="no-underline">
-                    {text}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
+  <div class={folds.column}>
+    <PinnedColumn>
+      <div class="flex flex-col gap-y-8">
+        <nav aria-label={navLabel}>
+          {/* Named only to tell it from the page's contents below it: alone, the list needs no heading. */}
+          {onThisPage && <ColumnHeading>{navLabel}</ColumnHeading>}
+          <NavList links={links} current={current} />
         </nav>
-      )
-    }
+        {onThisPage && <OnThisPage label="On this page" headings={onThisPage} />}
+      </div>
+    </PinnedColumn>
   </div>
   <nav aria-label={navLabel} class:list={["hidden", folds.folded]}>
     <details class="border-b border-ink pb-2">

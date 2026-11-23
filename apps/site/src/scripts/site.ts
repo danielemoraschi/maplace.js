@@ -14,7 +14,7 @@ import { startCopyButtons } from "./copy-buttons.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
-import { showCurrentInPinnedNav } from "./menu-in-view.ts";
+import { showCurrentInPinnedColumn } from "./menu-in-view.ts";
 import { followNavFocus } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { provideSave } from "./page-save.ts";
@@ -104,4 +104,4 @@ startConsent({
   reload: reloadPage,
 });
 // Read once the sections have changed the page, sharing the layout its first frame needs.
-showCurrentInPinnedNav(document);
+showCurrentInPinnedColumn(document);
