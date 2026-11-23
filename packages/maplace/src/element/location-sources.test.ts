@@ -11,9 +11,15 @@ beforeAll(() => {
 });
 
 function hostWith(html: string): HTMLElement {
+  const host = unconnectedHostWith(html);
+  document.body.replaceChildren(host);
+  return host;
+}
+
+/** A host never in the page, as a script builds a map before it appends it. */
+function unconnectedHostWith(html: string): HTMLElement {
   const host = document.createElement("div");
   host.innerHTML = html;
-  document.body.replaceChildren(host);
   return host;
 }
 
@@ -80,6 +86,22 @@ describe("readLocationSource", () => {
     host.querySelector("maplace-location")?.setAttribute("class", "pinned");
     await nextTask();
     expect(readLocationSource(host)[0]).toBe(first);
+  });
+
+  it("reads a data-* change of a location never connected, after its location was read", async () => {
+    const host = unconnectedHostWith(ROME);
+    readLocationSource(host);
+    host.querySelector("maplace-location")?.setAttribute("data-city", "Rome");
+    await nextTask();
+    expect(readLocationSource(host)[0]?.data).toEqual({ city: "Rome" });
+  });
+
+  it("reads a template added to a location never connected, after its location was read", async () => {
+    const host = unconnectedHostWith(ROME);
+    readLocationSource(host);
+    host.querySelector("maplace-location")?.append(document.createElement("template"));
+    await nextTask();
+    expect(readLocationSource(host)[0]?.content).toBeTypeOf("function");
   });
 
   it("watches the tags attribute, so a change reaches the store", () => {

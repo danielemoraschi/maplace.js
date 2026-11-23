@@ -112,7 +112,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   get route(): Route | undefined {
-    return this.maplace.getSnapshot().route;
+    return this.#feed.created?.getSnapshot().route;
   }
 
   set route(route: Route | undefined) {

@@ -9,28 +9,31 @@ import { elementError, elementMisuse } from "./element-error";
 
 /**
  * The file a map's `src` names: fetched, the latest URL winning, and handed on as a `read` that
- * gives its locations, so whoever applies them reports what they hold. A load that fails is
- * reported and forgotten, so the next load of its URL fetches again; the URL in hand is not
- * fetched twice.
+ * gives its locations, so whoever applies them reports what they hold. The URL in hand is not
+ * fetched twice, one whose locations were refused included, until `forgetRefused` or `stop`; a load
+ * that fails is reported and forgotten, so the next load of its URL fetches again.
  */
 export class LocationFile {
-  readonly #onRead: (read: () => readonly Location[]) => void;
+  readonly #onRead: (read: () => readonly Location[]) => boolean;
   readonly #onFailure: (error: MaplaceError) => void;
   #url: string | undefined;
   /** The load in flight, if any: an answer to any other is dropped. */
   #loading: AbortController | undefined;
+  /** Whether the URL in hand gave locations that were refused. */
+  #refused = false;
 
+  /** `onRead` applies the locations and returns whether they were taken. */
   constructor(
-    onRead: (read: () => readonly Location[]) => void,
+    onRead: (read: () => readonly Location[]) => boolean,
     onFailure: (error: MaplaceError) => void,
   ) {
     this.#onRead = onRead;
     this.#onFailure = onFailure;
   }
 
-  /** The URL whose locations were handed on, until `stop`. */
+  /** The URL whose locations were taken, until `stop`. */
   get loadedUrl(): string | undefined {
-    return this.#loading === undefined ? this.#url : undefined;
+    return this.#loading === undefined && !this.#refused ? this.#url : undefined;
   }
 
   load(url: string): void {
@@ -46,6 +49,17 @@ export class LocationFile {
     this.#loading?.abort();
     this.#loading = undefined;
     this.#url = undefined;
+    this.#refused = false;
+  }
+
+  /** A file whose locations were refused is fetched again on the next load. */
+  forgetRefused(): void {
+    if (this.#refused) this.stop();
+  }
+
+  /** Drops the load in flight, if any, so the next load fetches it again; a file in hand stays. */
+  dropLoadInFlight(): void {
+    if (this.#loading !== undefined) this.stop();
   }
 
   async #fetch(url: string, loading: AbortController): Promise<void> {
@@ -69,7 +83,8 @@ export class LocationFile {
     // A page's own fetch may ignore the abort: only the load still in flight counts.
     if (loading !== this.#loading) return;
     this.#loading = undefined;
-    this.#onRead(() => locationsInFile(text, url));
+    const taken = this.#onRead(() => locationsInFile(text, url));
+    this.#refused = !taken;
   }
 }
 

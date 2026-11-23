@@ -11,7 +11,10 @@ afterEach(() => vi.unstubAllGlobals());
 const ROME = [ROME_LOCATION];
 const MILAN = [MILAN_LOCATION];
 
-/** A file loader recording each read's locations (or what it threw) and each failure. */
+/**
+ * A file loader recording each read's locations (or what it threw, the locations refused) and
+ * each failure.
+ */
 function recordedFile() {
   const read: unknown[] = [];
   const failures: MaplaceError[] = [];
@@ -19,8 +22,10 @@ function recordedFile() {
     (locations) => {
       try {
         read.push(locations());
+        return true;
       } catch (error) {
         read.push(error);
+        return false;
       }
     },
     (error) => failures.push(error),
@@ -99,6 +104,39 @@ describe("LocationFile", () => {
     ]);
     file.load("/rome.json");
     expect(asked).toHaveLength(2);
+  });
+
+  it("keeps a URL whose locations were refused until forgetRefused, a file taken staying", async () => {
+    const asked = stubFetch();
+    const { file } = recordedFile();
+    file.load("/rome.json");
+    asked[0]?.answer(Response.json(ROME));
+    await nextTask();
+    file.forgetRefused();
+    file.load("/rome.json");
+    expect([asked.length, file.loadedUrl]).toEqual([1, "/rome.json"]);
+    file.load("/bad.json");
+    asked[1]?.answer(Response.json({ not: "locations" }));
+    await nextTask();
+    file.load("/bad.json");
+    expect([asked.length, file.loadedUrl]).toEqual([2, undefined]);
+    file.forgetRefused();
+    file.load("/bad.json");
+    expect(asked).toHaveLength(3);
+  });
+
+  it("drops a load in flight on dropLoadInFlight, reporting nothing, a file in hand staying", async () => {
+    const asked = stubFetch();
+    const { file, read, failures } = recordedFile();
+    file.load("/gone.json");
+    file.dropLoadInFlight();
+    asked[0]?.answer(new Response("", { status: 404 }));
+    file.load("/rome.json");
+    asked[1]?.answer(Response.json(ROME));
+    await nextTask();
+    file.dropLoadInFlight();
+    file.load("/rome.json");
+    expect([read, failures, asked.length]).toEqual([[ROME], [], 2]);
   });
 
   it("reports a body that fails to read as locations-load-failed", async () => {

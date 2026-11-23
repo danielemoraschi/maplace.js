@@ -5,6 +5,13 @@ import { templatesOf } from "./location-templates";
 import { locationSourceChanged } from "./source-changes";
 import { MAPLACE_VERSION } from "./version";
 
+/** What a read location is watched for beside its observed attributes. */
+const UNOBSERVED_CHANGES: MutationObserverInit = {
+  childList: true,
+  attributes: true,
+  attributeOldValue: true,
+};
+
 /**
  * `<maplace-location>`: one location, from its attributes and optional `<template>` children (the
  * popup's, and the icon's marked `data-icon`), which are author markup and trusted. Its
@@ -17,7 +24,8 @@ export class MaplaceLocation extends HTMLElement implements MaplaceLocationEleme
 
   /**
    * One observer for every location, however many, for what `observedAttributes` can't name: a
-   * template added or removed, and a `data-*` attribute changed.
+   * template added or removed, and a `data-*` attribute changed. A location is watched from when
+   * it is first read, connected or not: only a read one can go stale.
    */
   static readonly #unobservedChanges = new MutationObserver((records) => {
     for (const record of records) {
@@ -29,16 +37,11 @@ export class MaplaceLocation extends HTMLElement implements MaplaceLocationEleme
   #read: Location | undefined;
 
   get location(): Location {
-    this.#read ??= locationFromAttributes(this, templatesOf(this));
+    if (this.#read === undefined) {
+      MaplaceLocation.#unobservedChanges.observe(this, UNOBSERVED_CHANGES);
+      this.#read = locationFromAttributes(this, templatesOf(this));
+    }
     return this.#read;
-  }
-
-  connectedCallback(): void {
-    MaplaceLocation.#unobservedChanges.observe(this, {
-      childList: true,
-      attributes: true,
-      attributeOldValue: true,
-    });
   }
 
   attributeChangedCallback(_name: string, previous: string | null, value: string | null): void {

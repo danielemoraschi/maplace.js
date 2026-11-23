@@ -2,31 +2,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { MaplaceMapElement } from "./index";
 import { MILAN_LOCATION, ROME_LOCATION } from "./testing/address";
 import { errorsOn, mapFrom, nextTask, ROME } from "./testing/fake-maps";
-import { PARK, stubFetch } from "./testing/fetch";
+import { loaded, PARK, serve } from "./testing/fetch";
 
 const ROME_FILE = [ROME_LOCATION];
 const MILAN_FILE = [MILAN_LOCATION];
 
-/**
- * `fetch` answering from `files` by path (404 for any other), at once, or held until the test
- * lets each go with `answer(path)`. Returns the paths asked for.
- */
-function serve(files: Record<string, unknown>, { held = false } = {}) {
-  const respond = (url: string) =>
-    url in files ? Response.json(files[url]) : new Response("", { status: 404 });
-  const requests = stubFetch(held ? undefined : respond);
-  return {
-    asked: () => requests.map(({ url }) => url),
-    answer: (url: string) => requests.find((request) => request.url === url)?.answer(respond(url)),
-  };
-}
-
 afterEach(() => vi.unstubAllGlobals());
-
-/** Long enough for a served file to be fetched, read and applied. */
-async function loaded(): Promise<void> {
-  for (let task = 0; task < 3; task++) await nextTask();
-}
 
 const ids = (map: MaplaceMapElement) => map.locations.map(({ id }) => id);
 
@@ -56,7 +37,7 @@ describe("<maplace-map src>", () => {
     const files = serve({ "/rome.json": ROME_FILE });
     const map = await mapFrom('<maplace-map hold src="/rome.json"></maplace-map>');
     await loaded();
-    expect([files.asked(), map.locations]).toEqual([[], []]);
+    expect([files.asked(), map.loadState]).toEqual([[], "idle"]);
     map.release();
     await loaded();
     expect(ids(map)).toEqual(["rome"]);
@@ -108,18 +89,6 @@ describe("<maplace-map src>", () => {
     map.locations = [...ROME_FILE, ...MILAN_FILE];
     await loaded();
     expect([errors, map.route?.stops]).toEqual([[], ["rome", "milan"]]);
-  });
-
-  it("tries a failed load again when src is set to the same URL", async () => {
-    const files = serve({});
-    const map = await mapFrom('<maplace-map src="/late.json"></maplace-map>');
-    await loaded();
-    expect(map.locations).toEqual([]);
-    vi.unstubAllGlobals();
-    serve({ "/late.json": ROME_FILE });
-    map.setAttribute("src", "/late.json");
-    await loaded();
-    expect([files.asked(), ids(map)]).toEqual([["/late.json"], ["rome"]]);
   });
 
   it("keeps a file loading through a move, fetching it once", async () => {
@@ -175,34 +144,6 @@ describe("<maplace-map src>", () => {
     expect(map.loadState).toBe("error");
   });
 
-  it("stands as misuse for a bad file through a reconnect, fetched once, until a good one loads", async () => {
-    const files = serve({ "/bad.json": { not: "locations" }, "/rome.json": ROME_FILE });
-    const map = await mapFrom('<maplace-map src="/bad.json"></maplace-map>');
-    await loaded();
-    expect(map.loadState).toBe("error");
-    map.remove();
-    await nextTask();
-    document.body.append(map);
-    await loaded();
-    expect([map.loadState, files.asked()]).toEqual(["error", ["/bad.json"]]);
-    map.setAttribute("src", "/rome.json");
-    await loaded();
-    expect([map.loadState, ids(map)]).toEqual(["loading", ["rome"]]);
-  });
-
-  it("reports a failed load as locations-load-failed, its locations and load state kept", async () => {
-    serve({ "/rome.json": ROME_FILE });
-    const map = await mapFrom('<maplace-map src="/rome.json"></maplace-map>');
-    await loaded();
-    const errors = errorsOn(map);
-    map.setAttribute("src", "/gone.json");
-    await loaded();
-    expect(errors.map(({ code, field }) => [code, field])).toEqual([
-      ["locations-load-failed", "src"],
-    ]);
-    expect([map.loadState, ids(map)]).toEqual(["loading", ["rome"]]);
-  });
-
   it("gives way to the locations property", async () => {
     const files = serve({ "/rome.json": ROME_FILE }, { held: true });
     const map = await mapFrom('<maplace-map src="/rome.json"></maplace-map>');
@@ -210,6 +151,16 @@ describe("<maplace-map src>", () => {
     files.answer("/rome.json");
     await loaded();
     expect(ids(map)).toEqual(["milan"]);
+  });
+
+  it("drops a load in flight once src is removed", async () => {
+    const files = serve({ "/rome.json": ROME_FILE }, { held: true });
+    const map = await mapFrom('<maplace-map src="/rome.json"></maplace-map>');
+    map.removeAttribute("src");
+    await nextTask();
+    files.answer("/rome.json");
+    await loaded();
+    expect(map.locations).toEqual([]);
   });
 
   it("reads the element's inside again once src is removed", async () => {

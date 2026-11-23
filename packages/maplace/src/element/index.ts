@@ -109,8 +109,10 @@ export { defineListView } from "./list-views";
  *   `hold`; a change loads the new file, a slower answer to an earlier one dropped. Blank, or with
  *   locations written inside the element, it is misuse. A load that fails is a `maplace-error`
  *   with the runtime code `locations-load-failed`, the element's only, its locations and
- *   `loadState` kept; a file that isn't JSON, or holds neither shape, is misuse until a good one
- *   loads. A route given before the file has loaded waits for its locations.
+ *   `loadState` kept, and fetched again when `src` is set again or the map connects again; a file
+ *   that isn't JSON, or holds neither shape, is misuse until a good one loads, fetched again when
+ *   `src` is set again. A route given before the file's locations are in waits for them, through a
+ *   failed or refused file, fetching nothing. A map removed mid-load drops the load.
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address naming
  *   another location wins); later changes go through `maplace`.
  * - `cluster`: cluster markers (a boolean, as `group-counts`; a CDN page needs the cluster build);
@@ -155,7 +157,7 @@ export { defineListView } from "./list-views";
  *   read when the map opens.
  *
  * The store is created when the element first connects, or, for a map with `hold` (1.3), on
- * `release()` (either way, sooner if `maplace`, `locations` or `route` is read first), from
+ * `release()` (either way, sooner if `maplace` or `locations` is read first), from
  * `cluster`, `heatmap`, `center` and `zoom`, `sanitize`, `markerIcon`, `selected-id` and the
  * locations, and lives as long as the element: disconnected, the map closes and the store goes
  * back to `idle`, keeping its locations, selection and listeners; connected again, a new map
@@ -171,6 +173,10 @@ export { defineListView } from "./list-views";
  */
 export interface MaplaceMapElement extends HTMLElement {
   locations: readonly Location[];
+  /**
+   * The route drawn, `undefined` until the store exists: reading it makes no store, as a framework
+   * may read a property before binding `undefined` to it.
+   */
   route: Route | undefined;
   /**
    * Makes `html` in the locations safe to render, as the store's `sanitize` option (a

@@ -16,7 +16,8 @@ import { StoreProperties } from "./store-properties";
  * The element's store and what feeds it: the `locations` and `route` properties, or the
  * locations written inside the element, or the file its `src` names (fetched once the map opens
  * past `hold`), and the selection the page's address names. Values given before the store exists
- * wait for it, as a route given while a file loads waits for its locations.
+ * wait for it, as a route given while a file loads waits for its locations, through a failed or
+ * refused one.
  */
 export class StoreFeed {
   readonly #host: HTMLElement;
@@ -39,7 +40,7 @@ export class StoreFeed {
     this.#onStoreChange = onStoreChange;
     this.#pendingSelection = new PendingSelection(() => this.#store, misuse);
     this.properties = new StoreProperties(misuse);
-    this.#src = new SrcSource(host, misuse, (read) => this.#apply(read, this.#misuse.attempt));
+    this.#src = new SrcSource(host, misuse, (read) => this.#applyFile(read));
   }
 
   /** The store, if created yet. */
@@ -57,17 +58,22 @@ export class StoreFeed {
     this.#locationsGiven = true;
     this.stopWatching();
     this.#src.stop();
-    if (this.#store === undefined) this.#pending.locations = locations;
-    else this.#apply(() => locations, this.#misuse.attempt);
+    if (this.#store === undefined) {
+      this.#pending.locations = locations;
+    } else {
+      this.#apply(() => locations, this.#misuse.attempt);
+      this.#giveWaitingRoute();
+    }
   }
 
   /**
-   * A route's stops are ids: one given before the file `src` names has loaded waits for its
-   * locations, `src` read as it stands (a change in the same task not yet heard).
+   * A route's stops are ids: one given before the locations of the file `src` names are in waits
+   * for them, through a file that failed or was refused, `src` checked as it stands (a change in
+   * the same task not yet heard), its file loaded only once the watch hears it.
    */
   giveRoute(route: Route | undefined): void {
     const store = this.#store;
-    this.#readSrc();
+    if (store !== undefined && this.#readsSrc()) this.#src.check();
     if (store === undefined || this.#src.awaiting) this.#pending.route = route;
     else this.#misuse.attempt("route", () => store.setRoute(route));
   }
@@ -88,7 +94,7 @@ export class StoreFeed {
    */
   watch(): void {
     if (this.#locationsGiven || this.#stopWatching !== undefined) return;
-    this.#stopWatching = watchLocationSource(this.#host, () => this.#readSource());
+    this.#stopWatching = watchLocationSource(this.#host, () => this.#sourceChanged());
     this.#readSource();
   }
 
@@ -102,7 +108,7 @@ export class StoreFeed {
     this.#src.allowLoads();
   }
 
-  /** The map closed: no file loads until it opens again. */
+  /** The map closed: a load in flight is dropped, and none starts until it opens again. */
   holdFileLoads(): void {
     this.#src.holdLoads();
   }
@@ -166,22 +172,27 @@ export class StoreFeed {
     store.subscribe(this.#onStoreChange);
   }
 
+  /** `src` or the element's inside changed: a file refused is fetched again. */
+  #sourceChanged(): void {
+    this.#src.forgetRefused();
+    this.#readSource();
+  }
+
   #readSource(): void {
     if (this.#locationsGiven) return;
     if (this.#host.hasAttribute("src")) {
-      this.#readSrc();
+      if (this.#store !== undefined) this.#src.read();
     } else {
       this.#src.stop();
       // Read again on their own: only a new misuse of them is reported.
       this.#apply(() => readLocationSource(this.#host), this.#misuse.retry);
+      this.#giveWaitingRoute();
     }
   }
 
-  /** Reads `src` once the store exists, unless the locations were given. */
-  #readSrc(): void {
-    if (this.#store !== undefined && !this.#locationsGiven && this.#host.hasAttribute("src")) {
-      this.#src.read();
-    }
+  /** Whether the locations come from `src`: none were given. */
+  #readsSrc(): boolean {
+    return !this.#locationsGiven && this.#host.hasAttribute("src");
   }
 
   /** The route given before the store or the file, if any: `undefined` given clears it. */
@@ -192,18 +203,26 @@ export class StoreFeed {
     this.giveRoute(route);
   }
 
+  /** A file's locations: a route waiting for them is given only once they are taken. */
+  #applyFile(read: () => readonly Location[]): boolean {
+    const taken = this.#apply(read, this.#misuse.attempt);
+    if (taken) this.#giveWaitingRoute();
+    return taken;
+  }
+
   /**
-   * Gives the store the locations `read` returns, run as `run` says, then the selection and any
-   * route waiting for them.
+   * Gives the store the locations `read` returns, run as `run` says, then the selection; returns
+   * whether the store took them.
    */
-  #apply(read: () => readonly Location[], run: StandingMisuse["attempt"]): void {
+  #apply(read: () => readonly Location[], run: StandingMisuse["attempt"]): boolean {
     const store = this.#store;
-    if (store === undefined) return;
-    const applied = run("data", () => {
-      store.setLocations(read());
-      return true;
-    });
+    if (store === undefined) return false;
+    const applied =
+      run("data", () => {
+        store.setLocations(read());
+        return true;
+      }) ?? false;
     if (applied) this.#pendingSelection.trySelect();
-    this.#giveWaitingRoute();
+    return applied;
   }
 }

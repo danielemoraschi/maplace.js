@@ -67,6 +67,16 @@ describe("<maplace-map> markerIcon", () => {
     expect(await drawnIcon("milan")).toBe("<b>milan</b>");
   });
 
+  it("is taken set after route was read on a held map, as Vue reads a property before binding undefined", async () => {
+    const map = await mapFrom(`<maplace-map hold>${MILAN}</maplace-map>`);
+    const errors = errorsOn(map);
+    expect(map.route).toBeUndefined();
+    map.markerIcon = namedIcon;
+    map.release();
+    expect(await drawnIcon("milan")).toBe("<b>milan</b>");
+    expect(errors).toEqual([]);
+  });
+
   it("is taken when set before the element was defined", async () => {
     const inert = document.implementation.createHTMLDocument();
     const map = inert.createElement("maplace-map") as HTMLElement & { markerIcon: unknown };
