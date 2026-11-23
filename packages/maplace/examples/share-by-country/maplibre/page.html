@@ -1,8 +1,9 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <!-- Six countries, each in its own colour with its share in a badge, and the list beside the
-     map as the legend: each country's name, a row of ten dots with its share filled in, and the
-     share, after an entry that shows them all; a click on a badge picks its country. -->
+     map as the legend: each country's name by a swatch of its colour, its share, and a row of ten
+     dots with the share filled in, after an entry that shows them all; a click on a badge picks
+     its country. -->
 <!-- This example's look lives in the examples' styles/share-by-country.css, which every version links. -->
 <link rel="stylesheet" href="../../styles/share-by-country.css">
 <style>
@@ -23,7 +24,7 @@
       element.append(...children);
       return element;
     };
-    // A country in the list: its name on its colour, ten dots with its share filled in, the share.
+    // A country in the list: its name with its colour's swatch and its share, then ten dots, the share filled in.
     const shareEntry = ({ location }) => {
       const { share, colour } = location.data;
       const dots = span("share-dots");
@@ -33,7 +34,7 @@
         dot.toggleAttribute("data-filled", tenth < share / 10);
         dots.append(dot);
       }
-      const entry = span("share-entry", span("share-name", location.title), span("share-dots-row", dots, span("share-figure", `${share}%`)));
+      const entry = span("share-entry", span("share-head", span("share-name", location.title), span("share-figure", `${share}%`)), dots);
       entry.style.setProperty("--colour", colour);
       return entry;
     };

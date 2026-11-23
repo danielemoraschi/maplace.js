@@ -25,7 +25,7 @@
     element.append(...children);
     return element;
   };
-  // A country in the list: its name on its colour, ten dots with its share filled in, the share.
+  // A country in the list: its name with its colour's swatch and its share, then ten dots, the share filled in.
   const shareEntry = ({ location }) => {
     const { share, colour } = location.data;
     const dots = span("share-dots");
@@ -35,7 +35,7 @@
       dot.toggleAttribute("data-filled", tenth < share / 10);
       dots.append(dot);
     }
-    const entry = span("share-entry", span("share-name", location.title), span("share-dots-row", dots, span("share-figure", `${share}%`)));
+    const entry = span("share-entry", span("share-head", span("share-name", location.title), span("share-figure", `${share}%`)), dots);
     entry.style.setProperty("--colour", colour);
     return entry;
   };

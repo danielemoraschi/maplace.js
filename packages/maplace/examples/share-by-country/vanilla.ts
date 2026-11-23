@@ -32,7 +32,7 @@ function badgeIcon({ data }: Location<CountryShare>): HTMLElement {
   return badge;
 }
 
-/** A country in the list: its name on its colour, ten dots with its share filled in, the share. */
+/** A country in the list: its name with its colour's swatch and its share, then ten dots, the share filled in. */
 function shareEntry({ location }: ListEntry<CountryShare>): Node {
   const { share = 0, colour = "" } = location.data ?? {};
   const dots = span("share-dots");
@@ -44,8 +44,8 @@ function shareEntry({ location }: ListEntry<CountryShare>): Node {
   }
   const entry = span(
     "share-entry",
-    span("share-name", location.title ?? ""),
-    span("share-dots-row", dots, span("share-figure", `${share}%`)),
+    span("share-head", span("share-name", location.title ?? ""), span("share-figure", `${share}%`)),
+    dots,
   );
   entry.style.setProperty("--colour", colour);
   return entry;

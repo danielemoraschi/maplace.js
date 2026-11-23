@@ -53,17 +53,20 @@ function regionCard({ data }: Location<RegionFigures>): HTMLElement {
   return card;
 }
 
-/** A region in the list: its name, genre, viewers and share, and a bar as long as the share. */
+/** A region in the list: its name and viewers, its genre and share, and the share as a bar on a track. */
 function regionEntry({ location }: ListEntry<RegionFigures>): Node {
   const { genre = "", viewers = 0, share = 0 } = location.data ?? {};
   const bar = span("audience-bar");
-  bar.setAttribute("aria-hidden", "true");
   bar.style.width = `${share}%`;
+  const track = span("audience-track", bar);
+  track.setAttribute("aria-hidden", "true");
   const entry = span(
     "audience-entry",
     span("audience-entry-title", location.title ?? ""),
-    span("audience-entry-detail", `${genre} · ${compact.format(viewers)} · ${share}%`),
-    bar,
+    span("audience-entry-viewers", compact.format(viewers)),
+    span("audience-entry-genre", genre),
+    span("audience-entry-share", `${share}%`),
+    track,
   );
   entry.dataset.genre = genre;
   return entry;

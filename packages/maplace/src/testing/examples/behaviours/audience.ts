@@ -22,13 +22,13 @@ export const audience: ExampleBehaviour = async ({ store, adapter, root }) => {
   expect(probe.location("north-america-arc")?.geometry.type).toBe("polyline");
   await expect.poll(() => textIn(root, "output")).toBe("17,790,329");
 
-  byText(root, '[role="option"]', "North AmericaAction · 2.2M · 13%").click();
+  byText(root, '[role="option"]', "North America2.2MAction13%").click();
   await expect.poll(() => store.getSnapshot().selectedId).toBe("north-america");
 
   chooseOption(root, "Period", "Last month");
   await expect.poll(() => textIn(root, "output")).toBe("1,507,750");
   await expect.poll(() => probe.location("north-america")?.icon?.textContent).toBe("AAction198.4K");
-  expect(selectedEntryIn(root)?.textContent).toBe("North AmericaAction · 198.4K · 13%");
+  expect(selectedEntryIn(root)?.textContent).toBe("North America198.4KAction13%");
   expect(store.getSnapshot().selectedId).toBe("north-america");
 
   probe.click("oceania-arc");

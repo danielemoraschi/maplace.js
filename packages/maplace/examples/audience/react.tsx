@@ -83,16 +83,18 @@ function markerIcon({ data }: Location<RegionFigures>) {
   );
 }
 
-/** A region in the list: its name, genre, viewers and share, and a bar as long as the share. */
+/** A region in the list: its name and viewers, its genre and share, and the share as a bar on a track. */
 const regionEntry = ({ location }: ListEntry<RegionFigures>) => {
   const { genre = "", viewers = 0, share = 0 } = location.data ?? {};
   return (
     <span className="audience-entry" data-genre={genre}>
       <span className="audience-entry-title">{location.title}</span>
-      <span className="audience-entry-detail">
-        {genre} · {compact.format(viewers)} · {share}%
+      <span className="audience-entry-viewers">{compact.format(viewers)}</span>
+      <span className="audience-entry-genre">{genre}</span>
+      <span className="audience-entry-share">{share}%</span>
+      <span className="audience-track" aria-hidden="true">
+        <span className="audience-bar" style={{ width: `${share}%` }} />
       </span>
-      <span className="audience-bar" aria-hidden="true" style={{ width: `${share}%` }} />
     </span>
   );
 };

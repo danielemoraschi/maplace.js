@@ -54,20 +54,20 @@ const badgeIcon = ({ data }: Location<CountryShare>) => (
   </span>
 );
 
-/** A country in the list: its name on its colour, ten dots with its share filled in, the share. */
+/** A country in the list: its name with its colour's swatch and its share, then ten dots, the share filled in. */
 const shareEntry = ({ location }: ListEntry<CountryShare>) => {
   const { share = 0, colour = "" } = location.data ?? {};
   return (
     <span className="share-entry" style={colourOf(colour)}>
-      <span className="share-name">{location.title}</span>
-      <span className="share-dots-row">
-        <span className="share-dots" aria-hidden="true">
-          {Array.from({ length: 10 }, (_, tenth) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: ten dots in a fixed row, by place.
-            <span key={tenth} className="share-dot" data-filled={tenth < share / 10 || undefined} />
-          ))}
-        </span>
+      <span className="share-head">
+        <span className="share-name">{location.title}</span>
         <span className="share-figure">{share}%</span>
+      </span>
+      <span className="share-dots" aria-hidden="true">
+        {Array.from({ length: 10 }, (_, tenth) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: ten dots in a fixed row, by place.
+          <span key={tenth} className="share-dot" data-filled={tenth < share / 10 || undefined} />
+        ))}
       </span>
     </span>
   );
