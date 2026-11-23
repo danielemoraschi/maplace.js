@@ -1,14 +1,11 @@
 ---
 import { getEntry, render } from "astro:content";
 import { fetchedDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
-import {
-  type ExamplePageEntry,
-  groupPath,
-  pageHeading,
-} from "../examples/example-sections.ts";
+import { type ExamplePageEntry, groupPath } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
 import { shownFirst } from "../examples/live-versions.ts";
+import { GUIDE_HEADING } from "../site/example-markdown.ts";
 import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
@@ -29,6 +26,8 @@ const dataLinks = fetchedDataLinks(codes);
 const styleLinks = stylesheetLinks(exampleStylesheets(codes));
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;
+// Its sections' headings, ruled as a hub's are.
+const SECTION_HEADING = "mb-6 border-t-3 border-ink pt-4 text-3xl";
 // `example-` keeps the site's ids apart from the pages' own (`route-map`).
 const panelPrefix = `example-${name}`;
 ---
@@ -36,12 +35,14 @@ const panelPrefix = `example-${name}`;
 {/* An example's page's body: its heading, then its map run from a version, that version's code, its guide. */}
 <section class="example" id={name} aria-labelledby={`${name}-title`} data-version-switch={name}>
   <p class="mt-0 mb-1 text-sm font-semibold"><a href={groupPath(group)}>{group.label}</a></p>
-  <h1 class="mt-0 mb-2 text-title" id={`${name}-title`}>{pageHeading(title)}</h1>
+  <h1 class="mt-0 mb-2 text-title" id={`${name}-title`}>{title}</h1>
   <p class="mt-0 mb-2 max-w-text text-lg text-muted">{summary}</p>
   <p class="mt-0 mb-0 text-sm"><MarkdownLink route={path} /></p>
+  {/* Over the tabs, as they run the map and show the code under it. */}
+  <h2 class={`mt-10 ${SECTION_HEADING}`} id={`${name}-map-code`}>Map and code</h2>
   {/* One control: a tab runs the map from its version and shows that version's code under it. */}
   {/* Spaced apart on one row; on a phone, the switch wraps under the tabs at the start. */}
-  <div class="mt-10 mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
     <VersionTabs codeTabs={codeTabs} label={`Run ${title} from`} panelPrefix={panelPrefix} />
     <ProviderSwitch name={`${name}-provider`} look="pill" />
   </div>
@@ -79,7 +80,8 @@ const panelPrefix = `example-${name}`;
   }
   {
     Guide && (
-      <div class="example-guide mt-6">
+      <div class="example-guide mt-12">
+        <h2 class={`mt-0 ${SECTION_HEADING}`} id={`${name}-how`}>{GUIDE_HEADING}</h2>
         <Guide />
       </div>
     )

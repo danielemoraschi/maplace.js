@@ -11,8 +11,12 @@ export const TITLE_LIMIT = 60;
  * shows the site's name above every result anyway (the `WebSite` in `structured-data.ts`).
  */
 export function pageTitle(heading: string): string {
-  const named = `${heading} · ${SITE_NAME}`;
-  return named.length <= TITLE_LIMIT ? named : heading;
+  return firstTitleWithin([`${heading} · ${SITE_NAME}`], heading);
+}
+
+/** The first of `candidates`, in the caller's order, that search shows whole; else `fallback` (W87). */
+export function firstTitleWithin(candidates: readonly string[], fallback: string): string {
+  return candidates.find((candidate) => candidate.length <= TITLE_LIMIT) ?? fallback;
 }
 
 /**

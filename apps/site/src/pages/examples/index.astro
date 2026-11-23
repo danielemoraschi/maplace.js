@@ -4,13 +4,14 @@ import MarkdownLink from "../../components/MarkdownLink.astro";
 import { EXAMPLES_PAGE_ROUTE } from "../../examples/example-sections.ts";
 import { EXAMPLES_DESCRIPTION, EXAMPLES_HEADING, EXAMPLES_INTRO } from "../../examples/examples-page.ts";
 import Base from "../../layouts/Base.astro";
+import { pageTitle } from "../../site/head-meta-tags.ts";
 ---
 
 {/*
   Every example by category, each with its picture (W72): the home page's index, as a page, in its
   grounds (W66): the title on map water, run up under the header, the index on the night band.
 */}
-<Base heading={EXAMPLES_HEADING} description={EXAMPLES_DESCRIPTION} width="full">
+<Base title={pageTitle(EXAMPLES_HEADING)} description={EXAMPLES_DESCRIPTION} width="full">
   <div class="hero-water -mt-(--spacing-header-height) border-b border-ink/15 pt-(--spacing-header-height)">
     <div class="wrap pt-12 pb-12">
       <h1 class="mt-0 mb-2 max-w-text text-title">{EXAMPLES_HEADING}</h1>

@@ -6,9 +6,7 @@ import {
   type ExamplePageEntry,
   examplePagesOf,
   findExamplePage,
-  groupHeading,
   groupPath,
-  pageHeading,
 } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import { EXAMPLES_HEADING, EXAMPLES_INTRO } from "../examples/examples-page.ts";
@@ -70,7 +68,7 @@ describe("markdownTwins", () => {
   it("heads and introduces a hub's twin as its page, then lists its examples", () => {
     for (const group of EXAMPLE_GROUPS) {
       const { markdown } = twinAt(groupPath(group));
-      const opening = `# ${groupHeading(group)}\n\n${group.intro}\n\n## Examples\n\n- [`;
+      const opening = `# ${group.heading}\n\n${group.intro}\n\n## Examples\n\n- [`;
       expect(markdown.startsWith(opening), group.id).toBe(true);
       for (const { section, path } of examplePagesOf(group))
         expect(markdown, section.name).toContain(`](${path}): `);
@@ -95,7 +93,7 @@ describe("markdownTwins", () => {
     ).toBe(true);
     expect(markdown).toContain("\n### [Markers and popups](/examples/markers/)\n");
     expect(markdown).toContain(
-      "\n- [One marker](/examples/markers/simple/): One place on a map.\n",
+      "\n- [One marker](/examples/markers/simple/): The smallest map there is: one location, drawn as one marker.\n",
     );
     expect(markdown).toContain("\n- [Default styles off](/examples/styling/unstyled/): ");
     expect(markdown.indexOf("\n## Two map providers, one API.\n")).toBeGreaterThan(
@@ -113,7 +111,7 @@ describe("markdownTwins", () => {
     ).toBe(true);
     expect(markdown).not.toContain("\n### ");
     expect(markdown).toContain(
-      "\n- [One marker](/examples/markers/simple/): One place on a map.\n",
+      "\n- [One marker](/examples/markers/simple/): The smallest map there is: one location, drawn as one marker.\n",
     );
   });
 
@@ -123,11 +121,11 @@ describe("markdownTwins", () => {
     expect(headings).toEqual(["## Examples", "## Reference"]);
   });
 
-  it("writes an example's twin as its heading, its summary, its guide, then its code", () => {
+  it("writes an example's twin as its heading, its summary, how it works, then its code", () => {
     const { section } = entryOf("custom-list");
     expect(
       exampleTwin("custom-list").startsWith(
-        `# ${pageHeading(section.title)}\n\n${section.summary}\n\nThe custom list's guide.\n\n## Code\n\n### `,
+        `# ${section.title}\n\n${section.summary}\n\n## How it works\n\nThe custom list's guide.\n\n## Code\n\n### `,
       ),
     ).toBe(true);
   });
@@ -135,11 +133,9 @@ describe("markdownTwins", () => {
   it("leaves the guide out of an example's twin that has none", () => {
     const { section } = entryOf("menu");
     const markdown = exampleTwin("menu");
-    expect(
-      markdown.startsWith(
-        `# ${pageHeading(section.title)}\n\n${section.summary}\n\n## Code\n\n### `,
-      ),
-    ).toBe(true);
+    expect(markdown.startsWith(`# ${section.title}\n\n${section.summary}\n\n## Code\n\n### `)).toBe(
+      true,
+    );
     expect(markdown).not.toContain("The custom list's guide.");
   });
 

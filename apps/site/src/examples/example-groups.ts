@@ -34,8 +34,8 @@ export interface ExampleGroup {
   /** Its page's last path segment, `/examples/<id>/`. */
   readonly id: string;
   readonly label: string;
-  /** Its page's H1, before the providers (`pageHeading`): the feature, in the words a search uses. */
-  readonly headingLead: string;
+  /** Its page's H1, and its title's lead before the providers (`groupTitle`): the feature, in the words a search uses. */
+  readonly heading: string;
   /** The paragraph under its page's H1: what its examples show, in a sentence. */
   readonly intro: string;
   /** What the index of examples says of it, on the home page and the examples page (`ExampleCategories.astro`). */

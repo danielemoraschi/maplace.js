@@ -1,3 +1,4 @@
+import { firstTitleWithin } from "../site/head-meta-tags.ts";
 import { EXAMPLE_GROUPS, type ExampleGroup, type ExampleSection } from "./example-groups.ts";
 
 export {
@@ -45,7 +46,7 @@ export const EXAMPLES_ROUTES: readonly string[] = [
   ]),
 ];
 
-/** A page's H1: its lead, then the two providers it runs on. */
+/** The H1 of a page about the choice of provider (home, the examples page): its lead, then both. */
 export function pageHeading(lead: string): string {
   return `${lead} on Google Maps and MapLibre`;
 }
@@ -55,9 +56,25 @@ export function groupPath(group: ExampleGroup): string {
   return `${EXAMPLES_PAGE_ROUTE}${group.id}/`;
 }
 
-/** The H1 of `group`'s page, on one line. */
-export function groupHeading(group: ExampleGroup): string {
-  return pageHeading(group.headingLead);
+/** How a title names the providers, once (W87): searches name one, and match it there. */
+const PROVIDERS_IN_TITLE = "Google Maps & MapLibre";
+
+/** The `<title>` of an example's page: its task, then the providers, as a JS example if it fits. */
+export function exampleTitle({ title }: ExampleSection): string {
+  return providersTitle(title, "JS example");
+}
+
+/** The `<title>` of `group`'s hub: its feature, then the providers, as examples if it fits. */
+export function groupTitle({ heading }: ExampleGroup): string {
+  return providersTitle(heading, "examples");
+}
+
+/** `lead`, then the providers and `kind` as far as search shows them whole. */
+function providersTitle(lead: string, kind: string): string {
+  return firstTitleWithin(
+    [`${lead}: ${PROVIDERS_IN_TITLE} ${kind}`, `${lead}: ${PROVIDERS_IN_TITLE}`],
+    lead,
+  );
 }
 
 /** The description of `group`'s page. */

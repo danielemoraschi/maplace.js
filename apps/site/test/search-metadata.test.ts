@@ -3,9 +3,15 @@ import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { packageManifest } from "../../../scripts/build/package.ts";
 import { pngSize } from "../../../scripts/build/png-size.ts";
-import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  exampleTitle,
+  groupPath,
+  groupTitle,
+} from "../src/examples/example-sections.ts";
 import { HOME_ROUTE } from "../src/examples/home-page.ts";
-import { PRIVACY_PAGE } from "../src/site/footer-pages.ts";
+import { BUILDER_PAGE, BUILDER_TITLE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { lastChangeOf } from "../src/site/git-dates.ts";
 import { OG_IMAGE, TITLE_LIMIT } from "../src/site/head-meta-tags.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "../src/site/markdown-routes.ts";
@@ -87,10 +93,10 @@ describe("the site's search metadata", () => {
     return node;
   };
 
-  it("holds every route's description to 80 to 160 characters", () => {
+  it("holds every route's description to 110 to 160 characters (W87)", () => {
     for (const route of SITE_ROUTES) {
       const length = headOf(route).description?.length ?? 0;
-      expect(length, `${route}: ${headOf(route).description}`).toBeGreaterThanOrEqual(80);
+      expect(length, `${route}: ${headOf(route).description}`).toBeGreaterThanOrEqual(110);
       expect(length, `${route}: ${headOf(route).description}`).toBeLessThanOrEqual(160);
     }
   });
@@ -106,6 +112,22 @@ describe("the site's search metadata", () => {
       (title) => title.length > TITLE_LIMIT,
     );
     expect(long).toEqual([]);
+  });
+
+  it("titles each example and hub with its task, then the providers once (W87)", () => {
+    for (const { path, section } of EXAMPLE_PAGE_ENTRIES)
+      expect(headOf(path).title, path).toBe(exampleTitle(section));
+    for (const group of EXAMPLE_GROUPS)
+      expect(headOf(groupPath(group)).title, group.id).toBe(groupTitle(group));
+  });
+
+  it("titles the builder by what it turns into a map (W87)", () => {
+    expect(headOf(BUILDER_PAGE.route).title).toBe(BUILDER_TITLE);
+  });
+
+  it("gives every route a title of its own", () => {
+    const titles = SITE_ROUTES.map((route) => headOf(route).title);
+    expect(new Set(titles).size).toBe(titles.length);
   });
 
   it("gives every route its tags, absolute", () => {

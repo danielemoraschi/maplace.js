@@ -1,5 +1,7 @@
 # Google Maps adapter: map IDs, routes and clustering
 
+Maplace.js draws its maps on Google Maps through its Google adapter: markers, shapes, popups, routes, marker clustering and heatmaps, on the Maps JavaScript API.
+
 `createGoogleAdapter(options)` from `@maplacejs/maplace/google` draws a store on Google Maps; `@maplacejs/maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`@maplacejs/maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store. On MapLibre: [MapLibre adapter](maplibre.md).
 
 ## Options
@@ -133,6 +135,8 @@ The element's Google provider adds Maps JS itself, from `api-key`, and so does a
 
 Maplace.js draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
 
+Example: [Map styles](../../packages/maplace/examples/styled/guide.md).
+
 ## Routes
 
 Routes use Google's Routes library, so your key needs the Routes API enabled. Without it no line draws and the `error` event says `route-failed`.
@@ -141,13 +145,19 @@ Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older 
 
 The route is Google's own line, in Google's look with its `style` over it. While a `progress` is set, Maplace.js draws it instead, in two lines along the route's path in that look: the part ahead, and the part travelled faded, `travelledStyle` over it; a transit route is then one colour. A dash (`strokeDash`) is drawn by Google's line symbols, as on any polyline: Google can't dash a stroke, so the line's own stroke is see-through under them.
 
+Example: [Driving route](../../packages/maplace/examples/route/guide.md).
+
 ## Clustering
 
 The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing Maplace.js's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)). Circles, lines and polygons are never clustered, and the selected location is drawn on its own. Only the view and half a view around it are clustered and on the map, as on MapLibre, so a map zoomed in carries the markers it shows, not every one, and a short pan draws nothing again. A cluster still in view after a longer pan keeps its marker, and its focus. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
 
+Example: [Marker clustering](../../packages/maplace/examples/big/guide.md).
+
 ## Heatmap
 
 A [heatmap](store.md#heatmaps) is drawn by Maplace.js, as Google retired its own heatmap layer in May 2026: the heat on a canvas in the map's overlay pane, over the map's tiles and, on a vector map, over its polygons too; each marker's dot, faded in near `maxZoom`, is an advanced marker, so a click or Enter on it selects its location. The heat is drawn again as the view changes. Its code loads with the map, only when the store asks for a heatmap; the CDN scripts include it.
+
+Example: [Heatmaps](../../packages/maplace/examples/earthquakes/guide.md).
 
 ## When Google refuses
 
@@ -160,6 +170,8 @@ A click on the map is reported 250 ms after it, unless a double-click comes firs
 ## Popups
 
 A popup is Google's InfoWindow, headed by the location's title. One opened by a click or from the list pans the map to show it, once Google's own pan ends, clear of what the map's corners hold when there is room (never over Google's logo or terms; with no room, Google's own pan stands). A hover's popup doesn't pan.
+
+Example: [Place cards in popups](../../packages/maplace/examples/popups/guide.md).
 
 ## On-map controls
 

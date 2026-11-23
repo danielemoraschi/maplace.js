@@ -3,8 +3,8 @@ import { getEntry, render } from "astro:content";
 import {
   type ExampleGroup,
   groupDescription,
-  groupHeading,
   groupPath,
+  groupTitle,
 } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
 import { examplesMenu } from "../site/examples-menu.ts";
@@ -28,10 +28,10 @@ const { Content: References } = await render(reference);
 ---
 
 {/* A category's hub (D31): its examples, each its own page, then the reference tables cut from the docs. */}
-<Base heading={groupHeading(group)} description={groupDescription(group)}>
+<Base title={groupTitle(group)} description={groupDescription(group)}>
   <PageColumns navLabel="Examples" links={examplesMenu()} current={groupPath(group)} fold="wide">
     <article class="min-w-0">
-      <h1 class="mt-0 mb-2 text-title">{groupHeading(group)}</h1>
+      <h1 class="mt-0 mb-2 text-title">{group.heading}</h1>
       <p class="mt-0 mb-2 max-w-text text-lg text-muted">{group.intro}</p>
       <p class="mt-0 mb-0 text-sm"><MarkdownLink route={groupPath(group)} /></p>
       <section

@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import MarkdownLink from "../components/MarkdownLink.astro";
 import PageColumns from "../components/PageColumns.astro";
 import Base from "../layouts/Base.astro";
+import { pageTitle } from "../site/head-meta-tags.ts";
 import { docRoute, REPO_DOCS } from "../site/repo-docs.ts";
 
 // A page per repo document the site renders (src/site/repo-docs.ts).
@@ -17,7 +18,7 @@ const sections = headings.filter(({ depth }) => depth === 2);
 const links = REPO_DOCS.map(({ id, label }) => ({ href: docRoute(id), label }));
 ---
 
-<Base heading={doc.data.title} description={doc.data.description}>
+<Base title={pageTitle(doc.data.title)} description={doc.data.description}>
   <PageColumns
     navLabel="Documentation"
     links={links}

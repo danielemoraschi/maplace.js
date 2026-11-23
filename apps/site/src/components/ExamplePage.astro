@@ -1,6 +1,6 @@
 ---
 import { sharingImageOf } from "../examples/example-images.ts";
-import { type ExamplePageEntry, pageHeading } from "../examples/example-sections.ts";
+import { type ExamplePageEntry, exampleTitle } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
 import { examplesMenu } from "../site/examples-menu.ts";
 import type { NavLink } from "../site/nav-link.ts";
@@ -20,7 +20,7 @@ const { section } = entry;
 
 {/* An example's page (D31): its map, its four versions' code, its guide. */}
 <Base
-  heading={pageHeading(section.title)}
+  title={exampleTitle(section)}
   description={section.description}
   sharingImage={sharingImageOf(section)}
 >

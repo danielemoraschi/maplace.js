@@ -1,3 +1,5 @@
+import { pageTitle } from "./head-meta-tags.ts";
+
 /** A page of the site's own, outside the docs, which the footer links. */
 export interface SitePage {
   readonly route: string;
@@ -10,7 +12,7 @@ export const PRIVACY_PAGE: SitePage = {
   route: "/privacy/",
   label: "Privacy",
   description:
-    "What Maplace.js's site sends where, what it keeps in your browser, and your rights.",
+    "What Maplace.js's site sends where, what it keeps in your browser, which maps load only with your consent, and your rights over your data.",
 };
 
 export const CHANGELOG_PAGE: SitePage = {
@@ -33,6 +35,9 @@ export const BUILDER_PAGE: SitePage = {
   description:
     "Paste a CSV, JSON, GeoJSON (FeatureCollection only) or a Maplace.js 0.2 config and get a <maplace-map> to copy, with a live preview, all in your browser.",
 };
+
+/** The builder's title in search: what it turns into a map, as its footer label can't say (W87). */
+export const BUILDER_TITLE = pageTitle("Map snippet builder: CSV or GeoJSON to a map");
 
 /** The footer's links, in order. */
 export const FOOTER_PAGES: readonly SitePage[] = [

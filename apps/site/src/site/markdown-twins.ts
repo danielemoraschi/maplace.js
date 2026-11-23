@@ -4,9 +4,7 @@ import {
   EXAMPLES_PAGE_ROUTE,
   type ExampleGroup,
   type ExamplePageEntry,
-  groupHeading,
   groupPath,
-  pageHeading,
 } from "../examples/example-sections.ts";
 import { EXAMPLES_HEADING, EXAMPLES_INTRO } from "../examples/examples-page.ts";
 import { HOME_HEADING, HOME_INTRO, HOME_ROUTE } from "../examples/home-page.ts";
@@ -98,7 +96,7 @@ function examplePageMarkdown(
   guides: readonly StoredMarkdown[],
 ): string {
   const body = exampleMarkdown(section.name, guideOf(guides, section.name));
-  return markdownPage(pageHeading(section.title), section.summary, body);
+  return markdownPage(section.title, section.summary, body);
 }
 
 /** The example `name`'s guide, if it has one; one stored without Markdown throws. */
@@ -112,5 +110,5 @@ function guideOf(guides: readonly StoredMarkdown[], name: string): string | unde
 function hubMarkdown(group: ExampleGroup, references: readonly StoredMarkdown[]): string {
   const examples = `## Examples\n\n${exampleListMarkdown(group)}`;
   const reference = `## Reference\n\n${requiredBody(references, group.id, "groupReferences").trim()}`;
-  return markdownPage(groupHeading(group), group.intro, `${examples}\n\n${reference}`);
+  return markdownPage(group.heading, group.intro, `${examples}\n\n${reference}`);
 }

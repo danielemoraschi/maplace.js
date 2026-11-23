@@ -1,6 +1,7 @@
 ---
 import type { ComponentProps } from "astro/types";
 import Base from "../layouts/Base.astro";
+import { pageTitle } from "../site/head-meta-tags.ts";
 import OnThisPage from "./OnThisPage.astro";
 import PinnedColumn from "./PinnedColumn.astro";
 
@@ -18,7 +19,7 @@ interface Props {
 const { title, description, contents } = Astro.props;
 ---
 
-<Base heading={title} description={description}>
+<Base title={pageTitle(title)} description={description}>
   <div
     class:list={[
       "pt-8",

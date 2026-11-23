@@ -1,4 +1,4 @@
-# Store and list view
+# Headless map store and synced list view
 
 The store is Maplace.js's headless map state: locations, selection, hover, filter, view and route. It draws nothing itself. An adapter draws it on a map ([Google](google.md) or [MapLibre](maplibre.md)) and list views render it as a list; both ask the store for changes, so the map and the list stay in step.
 
@@ -51,6 +51,8 @@ createGoogleMap("#simple-vanilla-map", {
 A popup follows the selection (or with `openOn: "hover"` the hover, and the selection while nothing is hovered). On a shape it points at a centre point: a circle's centre, the centre of a polygon's bounds (of a multipolygon's largest polygon), halfway along a polyline. A touch hovers no list entry and no DOM marker (every Google marker, and MapLibre's with an icon or `editable`), so with `openOn: "hover"` a tap opens the popup by selecting; a click keeps it open once the pointer leaves, until another location is hovered. MapLibre's pins and shapes can still be hovered by the mouse events a browser sends after a tap. A popup showing the hovered location, not the selected one, lets the pointer through to the map: what it covers is hovered and clicked as if it were not there; the selected location's popup takes the pointer, for its close button and links.
 
 Each link goes to the point the popup points at, as coordinates, opens in a new tab and sends no referrer: nothing loads until it is clicked, and no key or billing is involved. They end the element `popupOpen` gives, after the content. A location with no content has no popup, so no link. With `openOn: "hover"` a link is `invalid-input`: a pointer can't reach a link that closes as it leaves. An adapter of your own ([Adapters](#adapters)) draws its own from `popup`.
+
+Example: [Place cards in popups](../../packages/maplace/examples/popups/guide.md).
 
 ## The first view
 
@@ -150,6 +152,8 @@ A route is one path through your own locations, in order; it needs the `route` c
 
 The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`, `to`, its distance and duration, and its turn-by-turn `steps`), the total `distanceMeters` and `durationSeconds`, and the `path`. A route is computed only when its stops, `via`, their positions, the travel mode or `avoid` change, since each computation may be billed (the same things avoided in another order are no change); a change of `style` alone redraws the line. On Google: [routes](google.md#routes).
 
+Example: [Driving route](../../packages/maplace/examples/route/guide.md).
+
 ## Heatmaps
 
 `heatmap` draws markers as a heatmap, weighted by their [`weight`](locations.md#markers) (1 when unset, so without weights it shows how many there are): the markers in its `groups`, or every marker when `groups` is left out. Other markers stay pins at every zoom. The heat's markers are locations as any other, so the list, its search and a filter narrow the heat with them, and the heaviest marker sets the scale, hidden ones included, so a filter doesn't reshade the rest.
@@ -160,6 +164,8 @@ The result, `routeResult` and `routeChange`'s `result`, has `legs` (each `from`,
 | `maxZoom` | `number` | The zoom the heat gives way to its dots at, 3 to 25; default 9 |
 
 Over the 2 zooms below `maxZoom` the heat fades into a dot per marker, sized and coloured by its weight against the heaviest; a click on a dot selects its location and opens its popup. The selected or hovered one is drawn as a pin over the heat at any zoom. A marker in the heat can't have an `icon` or be `editable` (`invalid-input`): it is drawn as heat and a dot, and a page's icon for every marker (`markerIcon`, the store's or React's) doesn't apply to it. MapLibre draws the heat and the dots in its own layers, under every pin and shape; Google, on a canvas over the map, the dots as markers. The heat's code loads only for a map that asks for one.
+
+Example: [Heatmaps](../../packages/maplace/examples/earthquakes/guide.md).
 
 ## List view options
 
@@ -196,6 +202,8 @@ With `heading`, `scope`, `search` or `groupFilter`, `element` is a block holding
 
 With `search`, typing sets the filter's `query` once it pauses for 150 ms, and keeps the rest of the filter, so the map narrows with the list; the camera stays, and choosing an entry pans to it. The box follows the store: a page's `setFilter` without a query empties it, so a page with its own controls too spreads `getSnapshot().filter`. A query outlives the box, and a location it hides can't be selected, as for any filter: a page's own `select` throws, so check `listedLocations(getSnapshot())` or clear the query first. A `listed: false` location that matches stays on the map, while the status counts only the list. With a `scope`, a match outside "This area" leaves the empty-area status to speak.
 
+Examples: [List beside the map](../../packages/maplace/examples/side-list/guide.md), and with `search`, [Search box](../../packages/maplace/examples/search/guide.md).
+
 ### Subgroups
 
 A location's `group` can be a path of up to 3 names, outermost first (1.2): `group: ["Europe", "Italy"]`. A name and a path of that one name are the same group, so a store of names behaves as before.
@@ -206,6 +214,8 @@ A location's `group` can be a path of up to 3 names, outermost first (1.2): `gro
 
 The list sets the store's hover from the pointer and keyboard focus, so the map highlights what the list points at; hover never moves the map. Its default styles put every selector in `:where()`, so any rule of the page wins; its element carries `maplace-list-view`, and [Styling](styling.md) lists its classes and how to turn the defaults off.
 
+Example: [Filter by group](../../packages/maplace/examples/offices/guide.md).
+
 ## Distances
 
 A list with `sort: "distance"` lists nearest first once there is an origin, after the filter and `scope` have narrowed it, ties in data order. With no origin, or once it is cleared, it is back in data order, with no distances. Focus stays on its entry through a sort, and a new origin scrolls the list to its top unless focus is in it.
@@ -215,6 +225,8 @@ A list with `sort: "distance"` lists nearest first once there is an origin, afte
 - **The words** are two significant figures in the browser's language: "0.85 km", "12 km", "1,200 km". A `render` gets `distance` (metres) and `distanceLabel`, and shows either.
 - **`distanceTo(origin, location)`** gives the metres, for a page's own list; `listedLocations` stays in data order. An origin that isn't a point is `invalid-input`.
 - **Any point** can be the origin. A click: `map.on("mapClick", ({ position }) => map.setOrigin(position))`. A location: `map.setOrigin({ lat: rome.lat, lng: rome.lng })`. An address a visitor types: [your own form](locations.md#a-visitors-address).
+
+Example: [Sort by distance](../../packages/maplace/examples/nearest/guide.md).
 
 ### The "My location" control
 
@@ -227,6 +239,8 @@ Refused, unavailable, timed out, not on HTTPS, or no geolocation at all: the lin
 ## Listed locations
 
 `listedLocations(snapshot)` returns what the lists list, in data order: the locations shown under the filter, without those with `listed: false`. A list of your own built from it lists the same as Maplace.js's. The map's view never narrows it: a list with `scope` narrows them to its view in "This area".
+
+Example: [Restyled venue map](../../packages/maplace/examples/whats-on/guide.md).
 
 ## On every map
 

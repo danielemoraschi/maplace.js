@@ -4,11 +4,14 @@ import {
   EXAMPLE_GROUPS,
   EXAMPLE_PAGE_ENTRIES,
   EXAMPLE_SECTIONS,
+  type ExampleGroup,
+  type ExampleSection,
+  exampleTitle,
   findExamplePage,
   findGroupAtPath,
   groupDescription,
-  groupHeading,
   groupPath,
+  groupTitle,
 } from "./example-sections.ts";
 import { exampleNames, exampleProviders } from "./example-sources.ts";
 import { HOME_INTRO } from "./home-page.ts";
@@ -83,14 +86,30 @@ describe("EXAMPLE_GROUPS", () => {
     expect(ids).not.toContain("styles");
   });
 
-  it("describes each hub and each example's page by its own description, 80 to 160 characters", () => {
+  it("describes each hub and each example's page by its own description, 120 to 160 characters (W87)", () => {
     for (const group of EXAMPLE_GROUPS) expect(groupDescription(group)).toBe(group.description);
     const described = [...EXAMPLE_GROUPS, ...EXAMPLE_SECTIONS];
     for (const { description } of described) {
-      expect(description.length, description).toBeGreaterThanOrEqual(80);
+      expect(description.length, description).toBeGreaterThanOrEqual(120);
       expect(description.length, description).toBeLessThanOrEqual(160);
     }
     expect(new Set(described.map(({ description }) => description)).size).toBe(described.length);
+  });
+
+  it("describes each page in search words, not its title again nor the providers twice (W87)", () => {
+    const pages = [
+      ...EXAMPLE_GROUPS.map(({ heading, description }) => ({
+        title: heading,
+        description,
+      })),
+      ...EXAMPLE_SECTIONS,
+    ];
+    for (const { title, description } of pages) {
+      expect(description.startsWith(`${title}:`), description).toBe(false);
+      expect(description, title).not.toContain("in JavaScript");
+      for (const provider of ["Google Maps", "MapLibre"])
+        expect(description.split(provider).length - 1, description).toBeLessThanOrEqual(1);
+    }
   });
 
   it("puts every example's page under its hub, in its groups' order", () => {
@@ -100,18 +119,36 @@ describe("EXAMPLE_GROUPS", () => {
     }
   });
 
-  it("heads each hub with the feature in task words", () => {
-    expect(EXAMPLE_GROUPS.map(groupHeading)).toEqual([
-      "Custom markers and popups on Google Maps and MapLibre",
-      "Lists and menus on Google Maps and MapLibre",
-      "Search and filters on Google Maps and MapLibre",
-      "Circles and polygons on Google Maps and MapLibre",
-      "Lines and routes on Google Maps and MapLibre",
-      "Marker clustering and heatmaps on Google Maps and MapLibre",
-      "Data visualization dashboards on Google Maps and MapLibre",
-      "Live data and loading on Google Maps and MapLibre",
-      "Map styles and customizations on Google Maps and MapLibre",
+  it("heads each hub with the feature in task words, the providers left to its title", () => {
+    expect(EXAMPLE_GROUPS.map(({ heading }) => heading)).toEqual([
+      "Custom markers and popups",
+      "Lists and menus",
+      "Search and filters",
+      "Circles and polygons",
+      "Lines and routes",
+      "Marker clustering and heatmaps",
+      "Data visualization dashboards",
+      "Live data and loading",
+      "Map styles and customizations",
     ]);
+  });
+
+  it("titles an example's page with its task, then both providers, as a JS example when it fits", () => {
+    const byName = (name: string) => findExamplePage(name)?.section as ExampleSection;
+    expect(exampleTitle(byName("big"))).toBe(
+      "Marker clustering: Google Maps & MapLibre JS example",
+    );
+    expect(exampleTitle(byName("click-to-add"))).toBe(
+      "Click to add and drag markers: Google Maps & MapLibre",
+    );
+  });
+
+  it("titles a hub with its lead and both providers, after a colon", () => {
+    const byId = (id: string) => findGroupAtPath(`/examples/${id}/`) as ExampleGroup;
+    expect(groupTitle(byId("lists"))).toBe("Lists and menus: Google Maps & MapLibre examples");
+    expect(groupTitle(byId("clusters-heatmaps"))).toBe(
+      "Marker clustering and heatmaps: Google Maps & MapLibre",
+    );
   });
 
   it("introduces each hub by its own paragraph, apart from the home page's", () => {
@@ -124,10 +161,10 @@ describe("EXAMPLE_GROUPS", () => {
     expect(new Set(titles).size).toBe(titles.length);
   });
 
-  it("titles no section as its group's heading lead", () => {
+  it("titles no section as its group's heading", () => {
     for (const group of EXAMPLE_GROUPS) {
       for (const section of group.sections)
-        expect(section.title, section.name).not.toBe(group.headingLead);
+        expect(section.title, section.name).not.toBe(group.heading);
     }
   });
 

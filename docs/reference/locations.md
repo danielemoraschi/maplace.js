@@ -55,6 +55,8 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `icon` | [`Icon`](#icons) | A custom marker in place of the provider's own | `icon` (a URL), or a `<template data-icon>` child |
 | `weight` | `number` | Its weight on a [heatmap](store.md#heatmaps), against the other markers' (1.2); 1 when unset |
 
+Example: [Custom marker icons](../../packages/maplace/examples/markers/guide.md).
+
 ## Circles
 
 | Field | Type | What | In HTML |
@@ -66,6 +68,8 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 | `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
+
+Example: [Circles](../../packages/maplace/examples/circles/guide.md).
 
 ## Polylines
 
@@ -84,12 +88,14 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 
 A polyline or a polygon is one location with a `path`; in HTML, give it in the map's inline JSON script ([the element's data](element.md#data)).
 
+Example: [Editable polyline](../../packages/maplace/examples/polyline/guide.md).
+
 ### Curves and great circles
 
 Two ways to draw a line other than straight. Either is drawn the same on every map, crosses ±180 the short way, and keeps its popup and fit-all on the drawn line; neither is editable, as an edit would write the drawn points back as the path.
 
 - `geodesic: true` follows the earth: on a flat map, a long line bows towards the pole, as a flight does.
-- `curve` bows each segment for the look, with no geographic meaning: a lane, a link between two places. [Trade lanes](../../packages/maplace/examples/trade-lanes/) bows its lanes this way:
+- `curve` bows each segment for the look, with no geographic meaning: a lane, a link between two places. [Trade routes](../../packages/maplace/examples/trade-lanes/guide.md) bows its lanes this way:
 
 ```ts
 const lane = { id: "rotterdam-new-york", type: "polyline", curve: -0.2,
@@ -165,6 +171,8 @@ const maplace = createGoogleMap("#flights-vanilla-map", {
 flown.addEventListener("input", () => maplace.setLocations(flightsWith(flown.valueAsNumber)));
 ```
 
+Example: [Flight paths](../../packages/maplace/examples/flights/guide.md).
+
 ## Polygons
 
 | Field | Type | What | In HTML |
@@ -176,6 +184,8 @@ flown.addEventListener("input", () => maplace.setLocations(flightsWith(flown.val
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 | `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
+
+Example: [Editable polygon](../../packages/maplace/examples/polygon/guide.md).
 
 ## Multipolygons
 
@@ -189,6 +199,8 @@ Several polygons that are one location, such as a country with its islands: draw
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 | `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
+
+Example: [Choropleth of the world](../../packages/maplace/examples/choropleth/guide.md).
 
 ## Styles
 
@@ -265,6 +277,8 @@ A feature without an `id`, or with another geometry (`MultiPoint`, `MultiLineStr
 - typed properties: `locationsFromGeoJSON<Shop>(json)` types each location's `data`, as `createMaplace<Shop>()` does.
 
 On `<maplace-map>`, set the `locations` property to the result. With React, compute it once, at module scope or in `useMemo`: `<MaplaceProvider locations>` applies every new array it is given.
+
+Example: [GeoJSON layer](../../packages/maplace/examples/geojson/guide.md).
 
 ## Addresses to coordinates
 

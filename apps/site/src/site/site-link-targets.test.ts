@@ -10,7 +10,7 @@ import { exampleGuides } from "./example-guides-loader.ts";
 import { examplesPageIndexMarkdown } from "./example-index-markdown.ts";
 import { groupReferenceMarkdown } from "./group-references-loader.ts";
 import { homeMarkdown } from "./home-markdown.ts";
-import { docRoute, REPO_DOCS } from "./repo-docs.ts";
+import { docRoute, REPO_DOCS, repoDoc } from "./repo-docs.ts";
 import { repoDocMarkdown, siteMarkdownOf } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
 
@@ -131,5 +131,14 @@ describe("the site's doc pages", () => {
     };
     const examplesPage = { route: EXAMPLES_PAGE_ROUTE, markdown: examplesPageIndexMarkdown() };
     expect(brokenSiteLinks([...pages, ...examples, ...hubs, home, examplesPage])).toEqual([]);
+  });
+
+  it("link example pages from the docs on what the examples show (W87)", () => {
+    const examplePaths = new Set(EXAMPLE_PAGE_ENTRIES.map(({ path }) => path));
+    for (const id of ["store", "google", "maplibre", "locations"]) {
+      const markdown = repoDocMarkdown(repoDoc(id), settings);
+      const linked = [...markdown.matchAll(/\]\((\/examples\/[^)#]+)\)/g)].map(([, path]) => path);
+      expect(linked.filter((path) => examplePaths.has(path ?? "")).length, id).toBeGreaterThan(0);
+    }
   });
 });

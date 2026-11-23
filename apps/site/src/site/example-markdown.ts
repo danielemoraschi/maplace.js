@@ -6,12 +6,15 @@ import {
   exampleStylesheets,
 } from "../examples/example-sources.ts";
 
+/** Over an example's guide, on its page and in its twin (W87). */
+export const GUIDE_HEADING = "How it works";
+
 /** Over an example's stylesheets in its twin, apart from any one version's files. */
 export const STYLESHEETS_HEADING = "### The stylesheet every version links";
 
-/** The example `name`'s page as Markdown, under its heading and summary: its guide if it has one, then its code. */
+/** The example `name`'s page as Markdown, under its heading and summary: how it works if it has a guide, then its code. */
 export function exampleMarkdown(name: string, guide: string | undefined): string {
-  const guideBlock = guide === undefined ? [] : [guide.trim()];
+  const guideBlock = guide === undefined ? [] : [`## ${GUIDE_HEADING}`, guide.trim()];
   return [...guideBlock, "## Code", codeMarkdown(name)].join("\n\n");
 }
 

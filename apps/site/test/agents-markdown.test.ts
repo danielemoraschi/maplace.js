@@ -5,6 +5,7 @@ import { packageManifest, readRootFile } from "../../../scripts/build/package.ts
 import { CHANGELOG_FILE, listLines } from "../../../scripts/docs/changelog-lines.ts";
 import { captures, section } from "../../../scripts/docs/markdown.ts";
 import { PACKAGE_NAME } from "../../../scripts/release/published-package.ts";
+import { findExamplePage } from "../src/examples/example-sections.ts";
 import { AGENT_LINKS, LLMS_TXT_ROUTE, skillInstallCommand } from "../src/site/agent-links.ts";
 import { AGENTS_PAGE, BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import {
@@ -74,7 +75,7 @@ describe("a page's Markdown", () => {
 
   it("has an example's guide and code", async () => {
     const markdown = await (await served("/examples/lists/custom-list/index.md")).text();
-    expect(markdown.startsWith("# Custom list on Google Maps and MapLibre\n")).toBe(true);
+    expect(markdown.startsWith(`# ${findExamplePage("custom-list")?.section.title}\n`)).toBe(true);
     expect(markdown).toContain("defineListView");
     expect(markdown).toContain("examples/custom-list/maplibre/");
   });

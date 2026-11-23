@@ -43,7 +43,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/element.md",
     title: "The element: a web component for Google Maps and MapLibre",
     description:
-      "The maplace-map and maplace-location elements: attributes, properties, events, providers and list views.",
+      "The <maplace-map> web component: Google Maps or MapLibre with markers and a synced list from HTML attributes, with its properties, events and list views.",
     label: "Element",
   },
   {
@@ -57,9 +57,9 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "store",
     file: "docs/reference/store.md",
-    title: "Store and list view",
+    title: "Headless map store and synced list view",
     description:
-      "The headless store: its options, methods, state and events, the first view of a map, and its list view.",
+      "The headless map store behind every Maplace.js map: options, methods, state and events, the first view, routes, heatmaps, distances and its list view.",
     label: "Store",
   },
   {
@@ -67,7 +67,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/google.md",
     title: "Google Maps adapter: map IDs, routes and clustering",
     description:
-      "The Google Maps adapter: options, your own map, loading Maps JS, map IDs, routes and clustering.",
+      "Use Maplace.js with Google Maps: adapter options, your own map, loading the Maps JavaScript API, map IDs, routes, marker clustering and heatmaps.",
     label: "Google",
   },
   {
@@ -83,7 +83,7 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/react.md",
     title: "React components for Google Maps and MapLibre",
     description:
-      "The React binding of Maplace.js: provider, map, list, map controls and the hook that reads the store.",
+      "React components for Google Maps and MapLibre: the provider, the map, the list, map controls, and the hook that reads the store, from @maplacejs/maplace/react.",
     label: "React",
   },
   {
@@ -91,21 +91,21 @@ export const REPO_DOCS: readonly RepoDoc[] = [
     file: "docs/reference/styling.md",
     title: "Styling markers, popups and the list with CSS",
     description:
-      "Maplace.js's default styles, turning them off, and the classes to style its markup by.",
+      "Style Maplace.js markers, popups, cluster badges and the location list with CSS: its default styles, turning them off, and the classes to style by.",
     label: "Styling",
   },
   {
     id: "accessibility",
     file: "docs/reference/accessibility.md",
-    title: "Accessibility",
+    title: "Accessible maps: keyboard and screen reader support",
     description:
-      "What Maplace.js does for a keyboard and a screen reader, what was tested and on what, and what wasn't.",
+      "Keyboard and screen reader support in Maplace.js maps: what the map and its list do for each, what was tested and on what, and what wasn't yet.",
     label: "Accessibility",
   },
   {
     id: "api",
     file: "docs/reference/api.md",
-    title: "API reference",
+    title: "Maplace.js API reference: exports, errors, capabilities",
     description:
       "Every export of every entry of the @maplacejs/maplace package, with its error codes and the capabilities of each map provider.",
     label: "API",
@@ -113,9 +113,9 @@ export const REPO_DOCS: readonly RepoDoc[] = [
   {
     id: "migrating",
     file: "MIGRATION.md",
-    title: "Migrating from the 0.2 jQuery plugin",
+    title: "Migrating from the Maplace.js 0.2 jQuery plugin",
     description:
-      "Every 0.2 option, location field, method and callback, and what 1.0 does with it.",
+      "Upgrade from the Maplace.js 0.2 jQuery plugin to 1.0: every 0.2 option, location field, method and callback, and what 1.0 does with each of them.",
     label: "Migrating",
   },
 ];

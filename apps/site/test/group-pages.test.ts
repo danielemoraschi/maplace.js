@@ -8,11 +8,10 @@ import {
   EXAMPLE_GROUPS,
   EXAMPLE_PAGE_ENTRIES,
   EXAMPLE_SECTIONS,
-  groupHeading,
   groupPath,
-  pageHeading,
 } from "../src/examples/example-sections.ts";
 import { codeTabsOf, exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
+import { GUIDE_HEADING } from "../src/site/example-markdown.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 import { chooseProvider } from "./home-sections.ts";
 import {
@@ -80,6 +79,7 @@ const builtFacts = async (page: Page) => ({
       above: text(heading?.previousElementSibling),
       under: text(heading?.nextElementSibling),
       h1s: document.querySelectorAll("h1").length,
+      h2s: [...section.querySelectorAll("h2")].map(text),
     };
   }),
   heldMaps: await page.locator("section.example maplace-map[hold]").count(),
@@ -139,14 +139,15 @@ describe("the examples' pages, as built and before consent (W38)", () => {
     visitingPages(EXAMPLE_PAGES.length * 2),
   );
 
-  it("head each example's page with its title in task words, its category above, unnumbered, its summary under (W63)", () => {
+  it("head each example's page with its title in task words, its category above, unnumbered, its summary under (W63), then its map and code and how it works (W87)", () => {
     expect(pages.map(({ heading }) => heading)).toEqual(
       EXAMPLE_PAGE_ENTRIES.map(({ group, section }) => ({
         id: section.name,
-        words: pageHeading(section.title),
+        words: section.title,
         above: group.label,
         under: section.summary,
         h1s: 1,
+        h2s: ["Map and code", GUIDE_HEADING],
       })),
     );
   });
@@ -159,7 +160,7 @@ describe("the examples' pages, as built and before consent (W38)", () => {
         intro: await page.locator("h1 + p").textContent(),
       }));
       expect(hubs).toEqual(
-        EXAMPLE_GROUPS.map((group) => ({ words: groupHeading(group), intro: group.intro })),
+        EXAMPLE_GROUPS.map((group) => ({ words: group.heading, intro: group.intro })),
       );
     },
     visitingPages(EXAMPLE_GROUPS.length),

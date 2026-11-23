@@ -1,6 +1,6 @@
-# API reference
+# Maplace.js API reference: exports, errors, capabilities
 
-Every export of every entry, with where it is explained, then the error codes and the capabilities. One package, one version for all entries; the package is ES modules only.
+Every export of every entry of `@maplacejs/maplace`, the Maplace.js package for Google Maps and MapLibre, with where it is explained, then the error codes and the capabilities. One package, one version for all entries; the package is ES modules only.
 
 ## `@maplacejs/maplace`
 

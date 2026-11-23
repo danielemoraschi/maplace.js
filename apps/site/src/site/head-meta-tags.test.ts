@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { headMetaTags, type MetaTag, OG_IMAGE, pageTitle } from "./head-meta-tags.ts";
+import {
+  firstTitleWithin,
+  headMetaTags,
+  type MetaTag,
+  OG_IMAGE,
+  pageTitle,
+} from "./head-meta-tags.ts";
 import { SITE_MAINTAINER } from "./site-owner.ts";
 
 const PAGE = {
@@ -47,7 +53,17 @@ describe("pageTitle", () => {
   });
 
   it("leaves a longer heading alone, the site's name shown by search apart", () => {
-    const heading = "Marker clustering and heatmaps on Google Maps and MapLibre";
+    const heading = "Marker clustering and heatmaps: Google Maps & MapLibre";
     expect(pageTitle(heading)).toBe(heading);
+  });
+});
+
+describe("firstTitleWithin", () => {
+  it("takes the first title within 60 characters, in the order given", () => {
+    expect(firstTitleWithin(["x".repeat(61), "x".repeat(60), "y"], "short")).toBe("x".repeat(60));
+  });
+
+  it("falls back when none fits", () => {
+    expect(firstTitleWithin(["x".repeat(70)], "y".repeat(65))).toBe("y".repeat(65));
   });
 });
