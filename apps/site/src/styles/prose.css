@@ -1,6 +1,6 @@
 /* Text the site doesn't write, so no utility can reach it: Shiki's code, rendered Markdown. */
 @layer components {
-  /* Square but where a page rounds its code (`--code-corner`, an example's: `frame.css`). */
+  /* Rounded by the site (`--code-corner`, `base.css`). */
   pre.astro-code,
   .folded-host {
     border-radius: var(--code-corner, 0);

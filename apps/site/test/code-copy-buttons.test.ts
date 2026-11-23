@@ -46,6 +46,17 @@ describe("a code block's copy button (W66)", () => {
     30_000,
   );
 
+  it("rounds a doc's code as an example's, its button covering the corner a long line runs under", async () => {
+    const { page, context } = await opened(site, docRoute("getting-started"), DESKTOP);
+    const { frame, block, button } = firstShownBlock(page);
+    expect(await block.evaluate((pre) => pre.scrollWidth > pre.clientWidth)).toBe(true);
+    expect(await block.evaluate((pre) => getComputedStyle(pre).borderTopRightRadius)).toBe("22px");
+    const [frameBox, buttonBox] = [await boxOf(frame), await boxOf(button)];
+    expect(frameBox.x + frameBox.width - (buttonBox.x + buttonBox.width)).toBe(0);
+    expect(buttonBox.y - frameBox.y).toBe(0);
+    await context.close();
+  }, 30_000);
+
   describe("on a Google host page, Google's loader folded", () => {
     const LOADER_SUMMARY = "Google's bootstrap loader, with your API key";
     const hostOf = async (copying: boolean) => {

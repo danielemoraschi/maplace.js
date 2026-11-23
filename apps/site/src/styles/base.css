@@ -4,6 +4,8 @@
     color-scheme: light;
     /* An anchor's target lands below the sticky header, not under it. */
     scroll-padding-top: var(--spacing-header);
+    /* Every code block rounded as the home page's panels are (W66), a doc's as an example's. */
+    --code-corner: var(--radius-panel);
   }
 
   *,

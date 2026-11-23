@@ -55,12 +55,11 @@
   opacity: 0;
 }
 /*
- * An example's map, code and own buttons rounded, as the home page's panels are (W66); the
- * builder's, which set none of these, stay square.
+ * An example's map and own buttons rounded, as the home page's panels are (W66), as every code
+ * block is (`base.css`); the builder's, which set none of these, stay square.
  */
 .example {
   --map-corner: var(--radius-panel);
-  --code-corner: var(--radius-panel);
   --button-corner: 12px;
 }
 /*
