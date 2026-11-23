@@ -89,6 +89,22 @@ describe("a code block's copy button (W66)", () => {
       await context.close();
     }, 30_000);
 
+    it("frames and folds a long block written in once its version and provider are chosen, its copy taking every line (W83)", async () => {
+      const visit = await visitSection(site, "markers");
+      await visit.context.grantPermissions(["clipboard-read", "clipboard-write"]);
+      await chooseVersion(visit.page, "markers", "Bundler");
+      await chooseProvider(visit.page, "Google");
+      const frame = visit.section.locator("[data-code-frame][data-fold]").filter({ visible: true });
+      const fold = frame.first().locator("[data-code-fold] button");
+      expect(Math.round((await boxOf(frame.first().locator("> :first-child"))).height)).toBe(250);
+      const lines = Number((await fold.textContent())?.match(/^Show all (\d+) lines$/)?.[1]);
+      await fold.click();
+      await frame.first().getByRole("button", { name: "Copy code" }).click();
+      const copied = await visit.page.evaluate(() => navigator.clipboard.readText());
+      expect(copied.trimEnd().split("\n")).toHaveLength(lines);
+      await visit.context.close();
+    }, 30_000);
+
     it("shows 15.625rem of it, then all of it and back on its button, the copy taking every line", async () => {
       const { page, context } = await opened(site, findExamplePage("markers")?.path ?? "", DESKTOP);
       await context.grantPermissions(["clipboard-read", "clipboard-write"]);

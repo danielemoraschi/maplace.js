@@ -17,7 +17,8 @@ const LIBRARY = {
 };
 
 const { "@graph": graph } = structuredData(PAGE, LIBRARY);
-const nodeOfType = (type: string) => graph.find((node) => node["@type"] === type);
+const nodeOfType = (type: string, inGraph = graph) =>
+  inGraph.find((node) => node["@type"] === type);
 
 describe("structuredData", () => {
   it("describes the page, dated", () => {
@@ -65,5 +66,33 @@ describe("jsonLdText", () => {
     const text = jsonLdText(structuredData({ ...PAGE, description }, LIBRARY));
     expect(text).not.toContain("<");
     expect(JSON.parse(text)["@graph"].at(-1).description).toBe(description);
+  });
+});
+
+describe("structuredData's breadcrumbs (W83)", () => {
+  const trail = [
+    { name: "Home", path: "/" },
+    { name: "Store", path: "/store/" },
+  ];
+
+  it("adds a BreadcrumbList the page names when it has a trail, each item absolute", () => {
+    const { "@graph": withTrail } = structuredData({ ...PAGE, trail }, LIBRARY);
+    const list = nodeOfType("BreadcrumbList", withTrail);
+    expect(list).toEqual({
+      "@id": `${PAGE.url}#breadcrumb`,
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://maplacejs.com/" },
+        { "@type": "ListItem", position: 2, name: "Store", item: PAGE.url },
+      ],
+    });
+    expect(nodeOfType("WebPage", withTrail)?.breadcrumb).toEqual({
+      "@id": `${PAGE.url}#breadcrumb`,
+    });
+  });
+
+  it("adds none without a trail", () => {
+    expect(nodeOfType("BreadcrumbList")).toBeUndefined();
+    expect(nodeOfType("WebPage")).not.toHaveProperty("breadcrumb");
   });
 });

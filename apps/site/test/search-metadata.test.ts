@@ -4,9 +4,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { packageManifest } from "../../../scripts/build/package.ts";
 import { pngSize } from "../../../scripts/build/png-size.ts";
 import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
+import { HOME_ROUTE } from "../src/examples/home-page.ts";
 import { PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import { lastChangeOf } from "../src/site/git-dates.ts";
-import { OG_IMAGE } from "../src/site/head-meta-tags.ts";
+import { OG_IMAGE, TITLE_LIMIT } from "../src/site/head-meta-tags.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "../src/site/markdown-routes.ts";
 import { strayRequests } from "../src/site/offsite-requests.ts";
 import { pageSources } from "../src/site/page-sources.ts";
@@ -100,6 +101,13 @@ describe("the site's search metadata", () => {
     }
   });
 
+  it("titles every route within 60 characters, what search shows of a title (W83)", () => {
+    const long = SITE_ROUTES.map((route) => headOf(route).title).filter(
+      (title) => title.length > TITLE_LIMIT,
+    );
+    expect(long).toEqual([]);
+  });
+
   it("gives every route its tags, absolute", () => {
     for (const route of SITE_ROUTES) {
       const { canonical, description, metas, title } = headOf(route);
@@ -140,6 +148,19 @@ describe("the site's search metadata", () => {
     });
     const response = await fetch(new URL(images[0] ?? "", site.url));
     expect(response.headers.get("content-type")).toBe("image/jpeg");
+  });
+
+  it("gives every route but home a BreadcrumbList from Home to itself, its page naming it (W83)", () => {
+    expect(headOf(HOME_ROUTE).graphs[0]?.some((node) => node["@type"] === "BreadcrumbList")).toBe(
+      false,
+    );
+    for (const route of SITE_ROUTES.filter((route) => route !== HOME_ROUTE)) {
+      const list = nodeOf(route, "BreadcrumbList");
+      const items = list.itemListElement as readonly { item: string }[];
+      expect(items[0]?.item, route).toBe(`${PUBLIC_SITE}/`);
+      expect(items.at(-1)?.item, route).toBe(headOf(route).canonical);
+      expect(nodeOf(route, "WebPage").breadcrumb, route).toEqual({ "@id": list["@id"] });
+    }
   });
 
   it("writes JSON-LD that parses and names what the page shows", () => {

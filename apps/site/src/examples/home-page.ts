@@ -1,3 +1,4 @@
+import { SITE_NAME } from "../site/head-meta-tags.ts";
 import { docRoute } from "../site/repo-docs.ts";
 import { pageHeading } from "./example-sections.ts";
 import type { VersionKind } from "./example-versions.ts";
@@ -12,6 +13,9 @@ export const HOME_INTRO =
 /** The home page's description, for search and sharing. */
 export const HOME_DESCRIPTION =
   "A JavaScript library for Google Maps and MapLibre: a list of locations becomes a map with markers, popups and a click to add one, in a few lines.";
+
+/** The home page's `<title>`, leading with the site's name, within `TITLE_LIMIT` (W83). */
+export const HOME_TITLE = `${SITE_NAME} · markers and lists for Google Maps and MapLibre`;
 
 /** The home page's H1, on one line. */
 export const HOME_HEADING = pageHeading("A JavaScript library for markers");

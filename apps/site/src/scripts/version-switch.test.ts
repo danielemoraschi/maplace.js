@@ -62,13 +62,16 @@ const togglesChecked = () =>
 
 const storage = () => sessionStorage;
 
+/** What the toggles tell of each section they show (W83: its code written in then). */
+const told = vi.fn<(section: HTMLElement) => void>();
+
 /** What adds a root's sections to those the page's toggles switch. */
 let followToggle: (root: ParentNode) => void;
 
 /** Starts the page's tabs and toggles, then its sections. */
 function startSwitches(): void {
   startTabs(document);
-  followToggle = startProviderToggle(document, storage);
+  followToggle = startProviderToggle(document, storage, told);
   followToggle(document);
 }
 
@@ -126,6 +129,15 @@ describe("startProviderToggle", () => {
     expect(sessionStorage.getItem(PROVIDER_CHOICE_KEY)).toBe("google");
   });
 
+  it("tells of each section it shows, on a tab or a provider chosen (W83)", () => {
+    told.mockClear();
+    chooseVersion("simple", "vanilla");
+    expect(told.mock.calls.map(([section]) => section.id)).toEqual(["simple"]);
+    told.mockClear();
+    chooseProvider("google");
+    expect(told.mock.calls.map(([section]) => section.id)).toEqual(["simple", "big", "route"]);
+  });
+
   it("shows the chosen version on the page's provider, the others hidden", () => {
     chooseVersion("simple", "vanilla");
     expect(shown("simple")).toEqual(["maplibre vanilla"]);
@@ -151,6 +163,12 @@ describe("startProviderToggle", () => {
     startSwitches();
     expect(shown("simple")).toEqual(["google html"]);
     expect(sessionStorage.getItem(PROVIDER_CHOICE_KEY)).toBe("google");
+  });
+
+  it("tells of each section it opens on a kept provider, its code written in at load (W83)", () => {
+    told.mockClear();
+    startPage("google");
+    expect(told.mock.calls.map(([section]) => section.id)).toEqual(["simple", "big", "route"]);
   });
 
   it("opens on the provider kept for the visit, with no fade", () => {
@@ -199,7 +217,7 @@ describe("startProviderToggle", () => {
         setItem: (_key: string, value: string) => kept.push(value),
       }) as unknown as Storage;
     document.body.innerHTML = section("simple");
-    const follow = startProviderToggle(document, counting);
+    const follow = startProviderToggle(document, counting, () => {});
     follow(document);
     follow(addPanel("menu"));
     follow(addPanel("tabs"));

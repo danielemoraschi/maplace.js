@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { headMetaTags, type MetaTag, OG_IMAGE } from "./head-meta-tags.ts";
+import { headMetaTags, type MetaTag, OG_IMAGE, pageTitle } from "./head-meta-tags.ts";
 import { SITE_MAINTAINER } from "./site-owner.ts";
 
 const PAGE = {
@@ -38,5 +38,16 @@ describe("headMetaTags", () => {
 
   it("names the author", () => {
     expect(contentOf(tags, "author")).toBe(SITE_MAINTAINER);
+  });
+});
+
+describe("pageTitle", () => {
+  it("keeps the site's name after a heading that fits it within 60 characters", () => {
+    expect(pageTitle("API reference")).toBe("API reference · Maplace.js");
+  });
+
+  it("leaves a longer heading alone, the site's name shown by search apart", () => {
+    const heading = "Marker clustering and heatmaps on Google Maps and MapLibre";
+    expect(pageTitle(heading)).toBe(heading);
   });
 });

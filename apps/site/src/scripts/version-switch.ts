@@ -26,7 +26,8 @@ const SECTION = "[data-version-switch]";
  * names (`data-version`), on the provider the toggles chose:
  * - in its frame, that `[data-live-version]`, faded in, the others hidden at once, each with its
  *   own notes, shown and hidden with it (`frame.css`);
- * - in each code tab, the provider's files.
+ * - in each code tab, the provider's files;
+ * then `onShown` is told of it (an example's code written in once shown, `deferred-code.ts`).
  *
  * A choice on any toggle is checked on all of them. Sections are rendered on the first provider;
  * on another, chosen earlier in the visit or before a section came, they are shown on it at once,
@@ -35,11 +36,15 @@ const SECTION = "[data-version-switch]";
 export function startProviderToggle(
   page: Document,
   storage: () => Storage,
+  onShown: (section: HTMLElement) => void,
 ): (root: ParentNode) => void {
   if (page.querySelector(PROVIDER_TOGGLE) === null) return () => {};
   const sections: HTMLElement[] = [];
   let pageProvider = providerAtStart(page, storage);
-  const showSection = (section: HTMLElement, show: Show) => showChoice(section, pageProvider, show);
+  const showSection = (section: HTMLElement, show: Show) => {
+    showChoice(section, pageProvider, show);
+    onShown(section);
+  };
 
   page.addEventListener("change", (event) => {
     const toggle = (event.target as Element).closest(PROVIDER_TOGGLE);

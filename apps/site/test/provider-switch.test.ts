@@ -77,6 +77,11 @@ describe("the examples' provider toggle, on a section", () => {
     expect(await radio(page, "Google").isChecked()).toBe(true);
     const section = await sectionOf(page, "simple");
     expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
+    // Its HTML code on Google written in at load, framed (W83).
+    const code = section
+      .locator('[role="tabpanel"] [data-code-frame] pre.astro-code')
+      .filter({ visible: true });
+    expect(await code.count()).toBeGreaterThan(0);
     // Same browser, same site data, a tab of its own: kept in the tab's session only.
     const other = await context.newPage();
     await other.goto(new URL(FIRST_EXAMPLES_PAGE, site.url).href);

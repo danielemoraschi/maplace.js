@@ -3,12 +3,12 @@ import type { ExampleGroup } from "../example-groups.ts";
 export const dashboards: ExampleGroup = {
   id: "dashboards",
   label: "Data dashboards",
-  headingLead: "Map dashboards and data visualization",
+  headingLead: "Data visualization dashboards",
   intro:
     "Figures on a map: viewers by region as cards with a period switch, each country's share as a badge, cities as bubbles sized by population, and countries shaded by a value.",
   summary: "Cards with a period switch, shares by country, bubbles, and a choropleth.",
   description:
-    "Map dashboards and data visualization on Google Maps or MapLibre: cards by region, shares by country, a bubble map and a choropleth.",
+    "Data visualization dashboards on Google Maps or MapLibre: cards by region, shares by country, a bubble map and a choropleth.",
   references: [
     { doc: "locations", heading: "## Markers" },
     { doc: "locations", heading: "## Polylines" },

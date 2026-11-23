@@ -3,6 +3,18 @@ import { SITE_MAINTAINER } from "./site-owner.ts";
 /** The site's name, wherever search and sharing show it. */
 export const SITE_NAME = "Maplace.js";
 
+/** About what search shows of a title before cutting it (W83). */
+export const TITLE_LIMIT = 60;
+
+/**
+ * A page's title: its heading, then the site's name where both fit within `TITLE_LIMIT`. Search
+ * shows the site's name above every result anyway (the `WebSite` in `structured-data.ts`).
+ */
+export function pageTitle(heading: string): string {
+  const named = `${heading} · ${SITE_NAME}`;
+  return named.length <= TITLE_LIMIT ? named : heading;
+}
+
 /**
  * The site's sharing image, `src/assets/og-image.png`: its size every sharing image's, an example
  * page's own included (W65), and its alt the site's.

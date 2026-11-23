@@ -8,6 +8,7 @@ import {
 } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
 import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
+import { shownFirst } from "../examples/live-versions.ts";
 import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
@@ -61,9 +62,16 @@ const panelPrefix = `example-${name}`;
         aria-labelledby={versionTabId(panelPrefix, kind)}
         hidden={index !== 0}
       >
+        {/* Only the version and provider shown first are written in; the others wait in a template until shown (`deferred-code.ts`). */}
         {codes.map((code) => (
           <ProviderPart provider={code.provider}>
-            <ExampleFiles version={code} />
+            {shownFirst({ kind, provider: code.provider }) ? (
+              <ExampleFiles version={code} />
+            ) : (
+              <template data-deferred-files>
+                <ExampleFiles version={code} />
+              </template>
+            )}
           </ProviderPart>
         ))}
       </div>

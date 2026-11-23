@@ -1,4 +1,4 @@
-# Locations: markers, circles, polylines, polygons and multipolygons
+# Locations: markers, circles, polylines and polygons
 
 A location is one item of your data: a marker, a circle, a polyline, a polygon or a multipolygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (Maplace.js never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
 

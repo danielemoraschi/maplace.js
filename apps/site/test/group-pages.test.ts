@@ -12,7 +12,7 @@ import {
   groupPath,
   pageHeading,
 } from "../src/examples/example-sections.ts";
-import { exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
+import { codeTabsOf, exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 import { chooseProvider } from "./home-sections.ts";
 import {
@@ -96,6 +96,17 @@ const builtFacts = async (page: Page) => ({
       anchors.map((a) => [a.closest("section")?.id, a.getAttribute("href"), a.textContent]),
     ),
   idsTwice: await duplicateIds(page),
+  // Only the version shown first, on the provider shown first, is in the page (W83).
+  code: await page.locator("section.example").evaluate((section) => {
+    const firstPart = section.querySelector('[role="tabpanel"] > [data-provider-files]');
+    const blocks = [...section.querySelectorAll("pre.astro-code")];
+    return {
+      name: section.id,
+      blocksElsewhere: blocks.filter((block) => !firstPart?.contains(block)).length,
+      deferred: section.querySelectorAll("template[data-deferred-files]").length,
+      elements: document.querySelectorAll("*").length,
+    };
+  }),
   versions: await page.evaluate(() => {
     const versions = [...document.querySelectorAll<HTMLElement>("[data-live-version]")];
     return {
@@ -222,6 +233,15 @@ describe("the examples' pages, as built and before consent (W38)", () => {
     const saving = versions.reduce((sum, { saving }) => sum + saving, 0);
     expect(saving, "polygon's versions, each with its saved note").toBe(8);
     expect(versions.reduce((sum, { savingElsewhere }) => sum + savingElsewhere, 0)).toBe(0);
+  });
+
+  it("write only the version and provider shown first into the page, the rest kept for their tab (W83)", () => {
+    const parts = (name: string) => codeTabsOf(name).flatMap(({ codes }) => codes).length;
+    for (const { code } of pages) {
+      expect([code.blocksElsewhere, code.deferred], code.name).toEqual([0, parts(code.name) - 1]);
+    }
+    const whatsOn = pages.find(({ code }) => code.name === "whats-on");
+    expect(whatsOn?.code.elements).toBeLessThan(4_000);
   });
 
   it("give every example's Google map the site's map ID, but styled's own", () => {

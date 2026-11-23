@@ -108,7 +108,7 @@ describe("EXAMPLE_GROUPS", () => {
       "Circles and polygons on Google Maps and MapLibre",
       "Lines and routes on Google Maps and MapLibre",
       "Marker clustering and heatmaps on Google Maps and MapLibre",
-      "Map dashboards and data visualization on Google Maps and MapLibre",
+      "Data visualization dashboards on Google Maps and MapLibre",
       "Live data and loading on Google Maps and MapLibre",
       "Map styles and customizations on Google Maps and MapLibre",
     ]);

@@ -11,6 +11,7 @@ import { byProvider, providerOf } from "./by-provider.ts";
 import { addCodeCopyButtons } from "./code-copy.ts";
 import { startCodeFolds } from "./code-fold.ts";
 import { startCopyButtons } from "./copy-buttons.ts";
+import { expandShownCode } from "./deferred-code.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
@@ -29,9 +30,15 @@ import { startProviderToggle } from "./version-switch.ts";
 // An old link to an example on a page that no longer holds it goes to the one that does (W63).
 followSectionAnchor(location, document);
 
-// Code blocks get their copy buttons and folds first: a long block is drawn folded (W79), so
-// nothing that fails later may leave it with no button to open it.
+// Code blocks get their copy buttons and folds first (W79), so nothing that fails later leaves a
+// long block folded with no button; `prepareCode` does the same for an example's version written
+// in later (`deferred-code.ts`).
 const codeCopy = document.querySelector<HTMLTemplateElement>("#code-copy");
+const prepareCode = (root: ParentNode) => {
+  if (codeCopy) addCodeCopyButtons(root, codeCopy);
+  startCopyButtons(root);
+  startCodeFolds(root);
+};
 if (codeCopy) addCodeCopyButtons(document.querySelector("main") ?? document, codeCopy);
 startCopyButtons(document);
 startCodeFolds(document);
@@ -89,7 +96,11 @@ const startSections = sectionStarter({
   whenVisible,
   release,
   startVersion,
-  followToggle: startProviderToggle(document, () => sessionStorage),
+  followToggle: startProviderToggle(
+    document,
+    () => sessionStorage,
+    (section) => expandShownCode(section, prepareCode),
+  ),
   reload: reloadPage,
   latch,
 });

@@ -13,12 +13,14 @@ import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { LLMS_TXT_ROUTE } from "../site/agent-links.ts";
 import { AGENT_SKILLS_INDEX_PATH } from "../site/agent-skill-paths.ts";
-import { type SharingImage, SITE_NAME } from "../site/head-meta-tags.ts";
+import { pageTitle, type SharingImage } from "../site/head-meta-tags.ts";
 import { markdownAddressAt } from "../site/markdown-routes.ts";
 
 interface Props {
-  /** The page's heading: its title is that, then the site's name. */
+  /** The page's heading: its title too, the site's name after it where both fit (`pageTitle`). */
   heading: string;
+  /** The page's `<title>` where it isn't its heading's (the home page's, leading with the site's name). */
+  documentTitle?: string | undefined;
   description: string;
   /** The page's own sharing image, for `SearchMetadata`. */
   sharingImage?: SharingImage | undefined;
@@ -29,8 +31,8 @@ interface Props {
   width?: "measure" | "full";
 }
 
-const { heading, description, sharingImage, width = "measure" } = Astro.props;
-const title = `${heading} · ${SITE_NAME}`;
+const { heading, documentTitle, description, sharingImage, width = "measure" } = Astro.props;
+const title = documentTitle ?? pageTitle(heading);
 const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
 
