@@ -48,7 +48,18 @@ describe("a code block's copy button (W66)", () => {
 
   it("rounds a doc's code as an example's, its button covering the corner a long line runs under", async () => {
     const { page, context } = await opened(site, docRoute("getting-started"), DESKTOP);
-    const { frame, block, button } = firstShownBlock(page);
+    // The first block whose lines run past it, whichever fonts the browser draws them in.
+    const frame = page
+      .locator("main [data-code-frame]")
+      .filter({ visible: true })
+      .filter({ has: page.locator("pre.astro-code") })
+      .nth(
+        await page
+          .locator("main [data-code-frame]:visible pre.astro-code")
+          .evaluateAll((pres) => pres.findIndex((pre) => pre.scrollWidth > pre.clientWidth)),
+      );
+    const block = frame.locator("pre").first();
+    const button = frame.getByRole("button", { name: "Copy code" });
     expect(await block.evaluate((pre) => pre.scrollWidth > pre.clientWidth)).toBe(true);
     expect(await block.evaluate((pre) => getComputedStyle(pre).borderTopRightRadius)).toBe("22px");
     const [frameBox, buttonBox] = [await boxOf(frame), await boxOf(button)];

@@ -5,20 +5,21 @@ import { navCurrent, SITE_NAV_LINKS } from "../site/site-nav.ts";
 import { GITHUB_MARK_PATH } from "../site/star-button-markup.ts";
 
 const here = Astro.url.pathname;
-// One row at every width, short enough to fit beside the name on a 320px phone (W67); narrower
+// One row at every width, short enough to fit beside the name on a 320px phone (W67), with 8px
+// to spare there for fonts drawn wider (Linux's, a pixel past on CI); narrower
 // still (a phone's text zoomed), it scrolls on its own rather than the page. The repository's link
 // joins it from 22.5rem (360px), where it fits, the footer having one on every screen. Padded,
 // with as much margin taken back, as wide as a link's focus ring, which the scrolling box would
 // otherwise clip.
 const NAV =
-  "ms-auto -my-1.5 -me-1.5 flex min-w-0 items-baseline gap-x-6 overflow-x-auto p-1.5 text-base font-medium whitespace-nowrap [scrollbar-width:none] max-[24rem]:gap-x-4";
+  "ms-auto -my-1.5 -me-1.5 flex min-w-0 items-baseline gap-x-6 overflow-x-auto p-1.5 text-base font-medium whitespace-nowrap [scrollbar-width:none] max-[24rem]:gap-x-4 max-[22.5rem]:gap-x-3";
 const NAV_LINK =
   "text-muted no-underline hover:text-ink aria-[current]:text-ink aria-[current]:underline aria-[current]:decoration-accent aria-[current]:decoration-2 aria-[current]:underline-offset-[0.35em]";
 ---
 
 {/* The prototype's header (W66): frosted over what scrolls under it, a hairline below. */}
 <header class="sticky top-0 z-10 h-(--spacing-header-height) border-b border-ink/15 bg-paper/78 backdrop-blur-[16px] backdrop-saturate-150">
-  <div class="wrap flex h-full items-baseline gap-x-6 pt-[1.3rem] max-[24rem]:gap-x-4">
+  <div class="wrap flex h-full items-baseline gap-x-6 pt-[1.3rem] max-[24rem]:gap-x-4 max-[22.5rem]:gap-x-3">
     <a class="shrink-0 font-display text-lede leading-none font-extrabold tracking-[-0.02em] no-underline" href="/">
       <img src={faviconUrl} width="22" height="22" alt="" class="me-2 inline-block align-[-0.2em]" />Maplace.js
     </a>
