@@ -50,7 +50,7 @@ export const HERO_TABLE: readonly HeroCard[] = [
   { name: "menu", row: 5, column: 2 },
   { name: "brand", row: 5, column: 3 },
   { name: "big", row: 5, column: 4 },
-  { name: "styled", row: 6, column: 1 },
+  { name: "simple", row: 6, column: 1 },
   { name: "polyline", row: 6, column: 2 },
   { name: "this-area", row: 6, column: 3 },
   { name: "tabs", row: 6, column: 4 },
@@ -67,7 +67,7 @@ export const HERO_TABLE: readonly HeroCard[] = [
   { name: "mixed", row: 4, column: 6, shownFrom: 2400 },
   { name: "custom-list", row: 5, column: 5, shownFrom: 2400 },
   { name: "side-list", row: 4, column: 7, shownFrom: 2600 },
-  { name: "simple", row: 5, column: 6, shownFrom: 2600 },
+  { name: "styled", row: 5, column: 6, shownFrom: 2600 },
   { name: "polygon", row: 6, column: 5, shownFrom: 2600 },
 ];
 
