@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-23 Added `markerIcon` on `<maplace-map>`, the store's `markerIcon` set from a page's script (a function building each marker's icon from its location, as for locations from `src`), read when the store is made, as `sanitize` is; it wins over the map's `<template data-icon>`.
+- 2026-11-23 Changed a `<maplace-map>` with `hold` to make its store on `release()` (or when `maplace`, `locations` or `route` is first read), not when it connects, so a page's scripts can set its properties first; a bad attribute value is still said at once, and the misuse of its locations, `route`, `src` and `selected-id`, and a refused `sanitize` or `markerIcon` once its store is made.
 - 2026-11-22 Added `src` on `<maplace-map>`: its locations from a URL, a list of locations or a GeoJSON FeatureCollection, loaded once the map opens past `hold`, the latest `src` winning; a failed load is a `locations-load-failed` `maplace-error`, the locations kept.
 - 2026-11-22 Added a `<maplace-location>`'s `data-*` attributes as its `data`, as `dataset` holds them (`data-time-zone` is `timeZone`), watched like its other attributes.
 - 2026-11-21 Added `markerIcon`, the icon of every marker without its own, on `createMaplace` and the shortcut maps, and as a `<template data-icon>` child of `<maplace-map>`; a location's `icon` overrides it.

@@ -17,7 +17,7 @@ import { reapplyOwnProperties } from "./own-properties";
 import { createSetupRetry } from "./setup-retry";
 import { createStandingMisuse } from "./standing-misuse";
 import { isStoreAttribute, STORE_ATTRIBUTES } from "./store-attributes";
-import { type Sanitize, StoreFeed } from "./store-feed";
+import { StoreFeed } from "./store-feed";
 import { createUrlState } from "./url-state";
 import { MAPLACE_VERSION } from "./version";
 
@@ -86,12 +86,20 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#feed.giveLocations(locations);
   }
 
-  get sanitize(): Sanitize | undefined {
-    return this.#feed.sanitize;
+  get sanitize(): MaplaceMapElement["sanitize"] {
+    return this.#feed.properties.get("sanitize");
   }
 
-  set sanitize(sanitize: Sanitize | undefined) {
-    this.#feed.giveSanitize(sanitize);
+  set sanitize(sanitize: MaplaceMapElement["sanitize"]) {
+    this.#feed.properties.give("sanitize", sanitize);
+  }
+
+  get markerIcon(): MaplaceMapElement["markerIcon"] {
+    return this.#feed.properties.get("markerIcon");
+  }
+
+  set markerIcon(markerIcon: MaplaceMapElement["markerIcon"]) {
+    this.#feed.properties.give("markerIcon", markerIcon);
   }
 
   /** The page's own routing, which a provider without routing of its own reads when the map opens. */
@@ -130,9 +138,10 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   attributeChangedCallback(name: string, previous: string | null, value: string | null): void {
-    if (previous === value || this.#feed.created === undefined) return;
+    // A map held when it opened has no store before release, its attributes checked still.
+    if (previous === value || !(this.#heldAtOpen || this.#feed.created)) return;
     if (name === "hold") this.#checkHold();
-    else if (isStoreAttribute(name)) this.#feed.checkAttributes();
+    else if (isStoreAttribute(name)) this.#feed.attributeChanged();
     else if (name === "provider") this.#reopenSession();
     else if (isListAttribute(name)) this.#lists?.rebuildSoon();
     else if (name === "failure-label") wordFailurePanel(this, this.#pane);
@@ -146,18 +155,19 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   /**
-   * Creates the store, then, unless held, its list, the file `src` names and the map: a held
-   * page's scripts, and the list views they define, may run only on release.
+   * Unless held, creates the store, its list, the file `src` names and the map; a held map only
+   * checks its attributes, its store made on release, after the page's scripts set what it takes.
    */
   #open(): void {
     if (!this.isConnected) return;
-    const store = this.#feed.store();
     this.#checkHold();
     this.#heldAtOpen = this.#holdsAsWritten();
     if (this.#isHeld()) {
+      this.#feed.recheckAttributes();
       this.#panel.show();
       return;
     }
+    const store = this.#feed.store();
     this.#lists ??= createListKeeper(this, {
       store,
       misuse: this.#misuse,

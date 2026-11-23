@@ -24,11 +24,13 @@ describe("@maplacejs/maplace/element/maplibre", () => {
     expect(factory(host).capabilities.has("route")).toBe(true);
   });
 
-  it("has computeRoute as a property of the defined element, which Svelte sets as one", () => {
+  it("has its page properties on the defined element's prototype, which Svelte sets as such", () => {
     // Svelte sets a prop as a property only when the element's prototype has its setter.
     const prototype = customElements.get("maplace-map")?.prototype;
     const setter = (name: string) => Object.getOwnPropertyDescriptor(prototype, name)?.set;
-    expect(["locations", "route", "sanitize", "computeRoute"].map(setter)).not.toContain(undefined);
+    expect(
+      ["locations", "route", "sanitize", "markerIcon", "computeRoute"].map(setter),
+    ).not.toContain(undefined);
   });
 
   it("throws misuse naming computeRoute when it isn't a function", () => {

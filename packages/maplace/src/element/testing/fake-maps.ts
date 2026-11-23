@@ -20,9 +20,26 @@ export function lastAdapter(): FakeAdapter {
 export async function mapFrom(html: string): Promise<MaplaceMapElement> {
   document.body.innerHTML = html;
   await nextTask();
-  const map = document.querySelector("maplace-map");
+  return mapIn(document);
+}
+
+function mapIn(root: ParentNode): MaplaceMapElement {
+  const map = root.querySelector("maplace-map");
   if (map === null) throw new Error("no <maplace-map> in the html");
   return map;
+}
+
+/** A `<maplace-map>` from `html`, not yet connected: for what a page does before it connects. */
+export function unconnectedMap(html: string): MaplaceMapElement {
+  const page = document.createElement("div");
+  page.innerHTML = html;
+  return mapIn(page);
+}
+
+/** `map` connected as the page's body, once it opened. */
+export async function connect(map: MaplaceMapElement): Promise<void> {
+  document.body.replaceChildren(map);
+  await nextTask();
 }
 
 export { nextTask } from "../../adapter-kit/chunks";

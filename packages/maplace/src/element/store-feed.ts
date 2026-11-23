@@ -1,11 +1,4 @@
-import {
-  createMaplace,
-  type Location,
-  type Maplace,
-  type MaplaceOptions,
-  type Route,
-} from "../index";
-import { elementMisuse } from "./element-error";
+import { createMaplace, type Location, type Maplace, type Route } from "../index";
 import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
 import { iconTemplateOf } from "./location-templates";
@@ -17,9 +10,7 @@ import {
   readStoreAttributes,
   type StoreAttributes,
 } from "./store-attributes";
-
-/** What the store renders `html` through, as its `sanitize` option. */
-export type Sanitize = NonNullable<MaplaceOptions["sanitize"]>;
+import { StoreProperties } from "./store-properties";
 
 /**
  * The element's store and what feeds it: the `locations` and `route` properties, or the
@@ -33,9 +24,8 @@ export class StoreFeed {
   readonly #onStoreChange: () => void;
   #store: Maplace | undefined;
   /** What the store took from its attributes: `cluster`, the link switches, the labels, the view. */
-  #attributes: StoreAttributes = {};
-  /** Given before the store exists, or what the store was created with. */
-  #sanitize: Sanitize | undefined;
+  #attributes: StoreAttributes | undefined;
+  readonly properties: StoreProperties;
   /** What waits for the store, and a route waiting for the file's locations too. */
   readonly #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
   #locationsGiven = false;
@@ -48,6 +38,7 @@ export class StoreFeed {
     this.#misuse = misuse;
     this.#onStoreChange = onStoreChange;
     this.#pendingSelection = new PendingSelection(() => this.#store, misuse);
+    this.properties = new StoreProperties(misuse);
     this.#src = new SrcSource(host, misuse, (read) => this.#apply(read, this.#misuse.attempt));
   }
 
@@ -59,20 +50,6 @@ export class StoreFeed {
   /** The store, created on first use. */
   store(): Maplace {
     return this.#store ?? this.#create();
-  }
-
-  get sanitize(): Sanitize | undefined {
-    return this.#sanitize;
-  }
-
-  /** `sanitize` from the property: taken until the store exists, misuse once it does. */
-  giveSanitize(sanitize: Sanitize | undefined): void {
-    if (this.#store === undefined) this.#sanitize = sanitize;
-    else if (sanitize === this.#sanitize) this.#misuse.clear("sanitize");
-    else {
-      const problem = "sanitize can't change once the map is created";
-      this.#misuse.fail("sanitize", elementMisuse(problem, { field: "sanitize" }));
-    }
   }
 
   /** Locations from the property: from now on the element's children are not read. */
@@ -97,9 +74,10 @@ export class StoreFeed {
 
   /**
    * Selects `id` once the locations show it, winning over `selected-id` unless it names the same
-   * location; an id they never show is dropped, silently, when something else is selected.
+   * location; an id they never show is dropped, silently, when something else is selected. No id,
+   * nothing from the address waits.
    */
-  selectOnceShown(id: string): void {
+  selectOnceShown(id: string | undefined): void {
     this.#pendingSelection.fromAddress(id);
     this.#pendingSelection.trySelect();
   }
@@ -129,51 +107,49 @@ export class StoreFeed {
     this.#src.holdLoads();
   }
 
-  /**
-   * A blank label, a bad switch or a bad view stands as misuse, as does a change once the store
-   * took them.
-   */
-  checkAttributes(): void {
-    checkStoreAttributes(this.#host, this.#attributes, this.#misuse);
+  /** The store's attributes, checked again: only a new misuse is said. */
+  recheckAttributes(): void {
+    checkStoreAttributes(this.#host, this.#attributes, this.#misuse.retry);
+  }
+
+  /** A store attribute changed: once the store took them, any change is misuse, said each time. */
+  attributeChanged(): void {
+    const run = this.#attributes === undefined ? this.#misuse.retry : this.#misuse.attempt;
+    checkStoreAttributes(this.#host, this.#attributes, run);
   }
 
   /**
    * The store from `cluster`, the labels, the link switches, the view, the map's icon template and
-   * `sanitize`, fixed for its life (a template added later changes nothing), then fed what waited
-   * for it. It is listened to only then: the state the store starts from is no event, as an
-   * <input value> is no change. A bad label, switch or view is said last, as a listener may read
-   * the store.
+   * the `sanitize` and `markerIcon` properties (over the template), fixed for its life (a template
+   * added later changes nothing), then fed what waited for it. It is listened to only then: the
+   * state the store starts from is no event, as an <input value> is no change. A refused property
+   * and a bad label, switch or view are said last, as a listener may read the store: a refused
+   * property is left out, so a store always exists.
    */
   #create(): Maplace {
-    this.#attributes = readStoreAttributes(this.#host);
-    const store = this.#createStore();
-    this.#store = store;
-    this.#feedPending();
-    this.#listenTo(store);
-    this.checkAttributes();
-    return store;
-  }
-
-  /** A store always exists: one `sanitize` the store refuses is left out, standing as misuse. */
-  #createStore(): Maplace {
+    const attributes = readStoreAttributes(this.#host);
+    const { options, refused } = this.properties.take();
     // The map's own <template data-icon>, built once: a Node the store copies for each marker.
-    const options = { ...this.#attributes, markerIcon: iconTemplateOf(this.#host)?.() };
-    const sanitize = this.#sanitize;
-    if (sanitize === undefined) return createMaplace(options);
-    const store = this.#misuse.attempt("sanitize", () => createMaplace({ ...options, sanitize }));
-    if (store !== undefined) return store;
-    this.#sanitize = undefined;
-    return createMaplace(options);
+    const markerIcon = options.markerIcon ?? iconTemplateOf(this.#host)?.();
+    const store = createMaplace({ ...attributes, ...options, markerIcon });
+    this.#store = store;
+    this.#attributes = attributes;
+    this.#feedPending(attributes);
+    this.#listenTo(store);
+    for (const [name, error] of refused) this.#misuse.fail(name, error);
+    // A held map's were said at open: only a new misuse is said.
+    this.recheckAttributes();
+    return store;
   }
 
   /**
    * `selected-id`, then the locations so far through the same path as any later ones, then the
    * route.
    */
-  #feedPending(): void {
+  #feedPending({ view }: StoreAttributes): void {
     // A first view of the page's stands: `selected-id` selects without moving off it.
     this.#pendingSelection.fromAttribute(this.#host.getAttribute("selected-id") ?? undefined, {
-      pan: this.#attributes.view === undefined,
+      pan: view === undefined,
     });
     const { locations } = this.#pending;
     delete this.#pending.locations;

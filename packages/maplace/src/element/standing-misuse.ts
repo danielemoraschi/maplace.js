@@ -1,5 +1,6 @@
 import { MaplaceError } from "../index";
 import { dispatchElementEvent } from "./event-forwarding";
+import type { StoreProperty } from "./store-properties";
 
 /**
  * What a misuse is about: what is refused stays refused until that part is given again, valid.
@@ -11,9 +12,10 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `route`: the `route` property;
  * - `list`: the list's attributes (`LIST_ATTRIBUTES`), or a list view not defined yet (tried
  *   again when one is);
- * - `store`: the store's attributes (`STORE_ATTRIBUTES`), which it took when it was created;
+ * - `store`: the store's attributes (`STORE_ATTRIBUTES`): a bad value, or a change once the store
+ *   took them;
  * - `hold`: the attribute, a value neither true nor false, until corrected or the map is released;
- * - `sanitize`: the property, which the store also took when it was created.
+ * - `sanitize`, `markerIcon`: the properties, which the store also took when it was created.
  */
 export type MisuseCause =
   | "setup"
@@ -24,7 +26,7 @@ export type MisuseCause =
   | "list"
   | "hold"
   | "store"
-  | "sanitize";
+  | StoreProperty;
 
 /** The misuse standing on an element, which is in error while any does. */
 export interface StandingMisuse {

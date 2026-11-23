@@ -1,7 +1,7 @@
 import type { Adapter, ControlPosition } from "../adapter";
 import type { MaplaceEvents } from "../events";
 import type { ListView, ListViewOptions } from "../list-view";
-import type { Location } from "../location";
+import type { Icon, Location } from "../location";
 import type { Route } from "../route";
 import type { RouteComputer } from "../route-request";
 import type { LoadState, Maplace } from "../store";
@@ -122,7 +122,8 @@ export { defineListView } from "./list-views";
  * - `skip-map-label`, `selected-label`: the words of the link past the map and of the announcement
  *   of a selection; can't change afterwards.
  * - A `<template data-icon>` child (the map's own, not a location's) is the icon of every marker
- *   without its own, the store's `markerIcon`; read once, when the store is made.
+ *   without its own, the store's `markerIcon`; read once, when the store is made. The
+ *   `markerIcon` property (1.3) wins over it.
  * - `my-location`: puts the "My location" button on the map, which asks for the visitor's position
  *   only when pressed; read when the map opens, as are `my-location-label` (its words),
  *   `my-location-unavailable-label` (what it says when no position comes) and
@@ -134,8 +135,8 @@ export { defineListView } from "./list-views";
  *   can't change afterwards.
  * - `open-in-maps-label`, `directions-label`: the words of the popup's two links, "Open in Maps" and "Directions"
  *   by default; do nothing without their switch; can't change afterwards.
- * - `hold`: stay idle, with no provider request and no list built, until `release()` (a boolean,
- *   as `group-counts`; any other value holds too, and is misuse).
+ * - `hold`: stay idle, with no provider request, no list built and (1.3) no store made, until
+ *   `release()` (a boolean, as `group-counts`; any other value holds too, and is misuse).
  * - `loading`: `lazy` = the map stays idle until the element comes within 100px of the viewport (the
  *   list is built at once), on each connect until `release()`; read when the map would open, as
  *   `hold` is.
@@ -153,8 +154,9 @@ export { defineListView } from "./list-views";
  * - provider attributes, such as `api-key` and `map-id` for Google, or `map-style` for MapLibre,
  *   read when the map opens.
  *
- * The store is created when the element first connects (or `maplace`, `locations` or `route` is
- * first read), from `cluster`, `heatmap`, `center` and `zoom`, `sanitize`, `selected-id` and the
+ * The store is created when the element first connects, or, for a map with `hold` (1.3), on
+ * `release()` (either way, sooner if `maplace`, `locations` or `route` is read first), from
+ * `cluster`, `heatmap`, `center` and `zoom`, `sanitize`, `markerIcon`, `selected-id` and the
  * locations, and lives as long as the element: disconnected, the map closes and the store goes
  * back to `idle`, keeping its locations, selection and listeners; connected again, a new map
  * opens. A move within one task keeps the map. A map waits for the document to parse its children
@@ -163,7 +165,9 @@ export { defineListView } from "./list-views";
  *
  * Misuse sets `loadState` to `error` and dispatches `maplace-error`; it is never silent. It stands
  * until corrected: bad locations or route keep the previous ones until valid ones are given, and
- * a `selected-id` the locations don't have is selected once they do.
+ * a `selected-id` the locations don't have is selected once they do. A held map checks its
+ * attributes while it waits; the misuse of its locations, `route`, `src` and `selected-id`, and a
+ * refused `sanitize` or `markerIcon`, is said once its store is made.
  */
 export interface MaplaceMapElement extends HTMLElement {
   locations: readonly Location[];
@@ -174,6 +178,13 @@ export interface MaplaceMapElement extends HTMLElement {
    * so set it before the map opens; set later, it is misuse.
    */
   sanitize: ((html: string) => string) | undefined;
+  /**
+   * The icon of every marker without its own, the store's `markerIcon` (1.3): an image URL, a node,
+   * or a function building each marker's icon from its location, as `({ data }) => …`. Read when
+   * the store is made, as `sanitize` is, so set it before the map opens (and before reading
+   * `maplace`); set later, it is misuse. It wins over the map's `<template data-icon>`.
+   */
+  markerIcon: Icon | undefined;
   /**
    * The page's own routing, for a provider with none of its own: MapLibre's reads it when the map
    * opens (as `createMapLibreAdapter({ computeRoute })`), so `route` draws there; Google's has

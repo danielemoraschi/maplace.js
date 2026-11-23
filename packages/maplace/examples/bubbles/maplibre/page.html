@@ -2,9 +2,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
 <!-- The world's largest cities as bubbles, each as big as its population, the list beside
      it, which "This area" narrows to the map's view, and under the map the legend's sizes and a
-     count of what it shows. The cities and their bubbles are written in the page, largest first so
-     the small bubbles are drawn over the big ones; a bubble's area is its population, Tokyo's 37M
-     is 56px across. The populations are rounded, for the example. -->
+     count of what it shows. The cities come from cities.json, largest first so the small bubbles
+     are drawn over the big ones; a bubble's area is its population, Tokyo's 37M is 56px across.
+     The populations are rounded, for the example. -->
 <!-- This example's look lives in the examples' styles/bubbles.css, which every version links. -->
 <link rel="stylesheet" href="../../styles/bubbles.css">
 <style>
@@ -14,131 +14,8 @@
     #bubbles-maplibre-map > .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
   }
 </style>
-<maplace-map id="bubbles-maplibre-map" list="maplibre-bubbles-cities" list-heading="Cities" list-scope="viewport">
-  <maplace-location location-id="tokyo" lat="35.6895" lng="139.6917" title="Tokyo" data-population="37000000">
-    <template data-icon><span class="bubble" style="width: 56px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="delhi" lat="28.6139" lng="77.209" title="Delhi" data-population="33800000">
-    <template data-icon><span class="bubble" style="width: 53.5px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="shanghai" lat="31.2304" lng="121.4737" title="Shanghai" data-population="29900000">
-    <template data-icon><span class="bubble" style="width: 50.3px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="dhaka" lat="23.8103" lng="90.4125" title="Dhaka" data-population="23900000">
-    <template data-icon><span class="bubble" style="width: 45px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="sao-paulo" lat="-23.5505" lng="-46.6333" title="São Paulo" data-population="22800000">
-    <template data-icon><span class="bubble" style="width: 44px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="cairo" lat="30.0444" lng="31.2357" title="Cairo" data-population="22600000">
-    <template data-icon><span class="bubble" style="width: 43.8px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="mexico-city" lat="19.4326" lng="-99.1332" title="Mexico City" data-population="22500000">
-    <template data-icon><span class="bubble" style="width: 43.7px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="beijing" lat="39.9042" lng="116.4074" title="Beijing" data-population="22200000">
-    <template data-icon><span class="bubble" style="width: 43.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="mumbai" lat="19.076" lng="72.8777" title="Mumbai" data-population="21700000">
-    <template data-icon><span class="bubble" style="width: 42.9px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="new-york" lat="40.7128" lng="-74.006" title="New York" data-population="18900000">
-    <template data-icon><span class="bubble" style="width: 40px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="osaka" lat="34.6937" lng="135.5023" title="Osaka" data-population="18900000">
-    <template data-icon><span class="bubble" style="width: 40px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="chongqing" lat="29.4316" lng="106.9123" title="Chongqing" data-population="17800000">
-    <template data-icon><span class="bubble" style="width: 38.8px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="karachi" lat="24.8607" lng="67.0011" title="Karachi" data-population="17600000">
-    <template data-icon><span class="bubble" style="width: 38.6px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="kinshasa" lat="-4.4419" lng="15.2663" title="Kinshasa" data-population="17000000">
-    <template data-icon><span class="bubble" style="width: 38px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="lagos" lat="6.5244" lng="3.3792" title="Lagos" data-population="16500000">
-    <template data-icon><span class="bubble" style="width: 37.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="istanbul" lat="41.0082" lng="28.9784" title="Istanbul" data-population="15800000">
-    <template data-icon><span class="bubble" style="width: 36.6px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="buenos-aires" lat="-34.6037" lng="-58.3816" title="Buenos Aires" data-population="15600000">
-    <template data-icon><span class="bubble" style="width: 36.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="kolkata" lat="22.5726" lng="88.3639" title="Kolkata" data-population="15600000">
-    <template data-icon><span class="bubble" style="width: 36.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="manila" lat="14.5995" lng="120.9842" title="Manila" data-population="14900000">
-    <template data-icon><span class="bubble" style="width: 35.5px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="guangzhou" lat="23.1291" lng="113.2644" title="Guangzhou" data-population="14600000">
-    <template data-icon><span class="bubble" style="width: 35.2px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="tianjin" lat="39.3434" lng="117.3616" title="Tianjin" data-population="14400000">
-    <template data-icon><span class="bubble" style="width: 34.9px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="lahore" lat="31.5204" lng="74.3587" title="Lahore" data-population="14400000">
-    <template data-icon><span class="bubble" style="width: 34.9px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="bengaluru" lat="12.9716" lng="77.5946" title="Bengaluru" data-population="14000000">
-    <template data-icon><span class="bubble" style="width: 34.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="rio-de-janeiro" lat="-22.9068" lng="-43.1729" title="Rio de Janeiro" data-population="13800000">
-    <template data-icon><span class="bubble" style="width: 34.2px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="shenzhen" lat="22.5431" lng="114.0579" title="Shenzhen" data-population="13500000">
-    <template data-icon><span class="bubble" style="width: 33.8px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="moscow" lat="55.7558" lng="37.6173" title="Moscow" data-population="12700000">
-    <template data-icon><span class="bubble" style="width: 32.8px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="los-angeles" lat="34.0522" lng="-118.2437" title="Los Angeles" data-population="12500000">
-    <template data-icon><span class="bubble" style="width: 32.5px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="chennai" lat="13.0827" lng="80.2707" title="Chennai" data-population="12300000">
-    <template data-icon><span class="bubble" style="width: 32.3px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="bogota" lat="4.711" lng="-74.0721" title="Bogotá" data-population="11600000">
-    <template data-icon><span class="bubble" style="width: 31.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="jakarta" lat="-6.2088" lng="106.8456" title="Jakarta" data-population="11400000">
-    <template data-icon><span class="bubble" style="width: 31.1px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="paris" lat="48.8566" lng="2.3522" title="Paris" data-population="11300000">
-    <template data-icon><span class="bubble" style="width: 30.9px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="lima" lat="-12.0464" lng="-77.0428" title="Lima" data-population="11300000">
-    <template data-icon><span class="bubble" style="width: 30.9px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="bangkok" lat="13.7563" lng="100.5018" title="Bangkok" data-population="11200000">
-    <template data-icon><span class="bubble" style="width: 30.8px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="hyderabad" lat="17.385" lng="78.4867" title="Hyderabad" data-population="11100000">
-    <template data-icon><span class="bubble" style="width: 30.7px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="seoul" lat="37.5665" lng="126.978" title="Seoul" data-population="10000000">
-    <template data-icon><span class="bubble" style="width: 29.1px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="london" lat="51.5074" lng="-0.1278" title="London" data-population="9800000">
-    <template data-icon><span class="bubble" style="width: 28.8px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="nagoya" lat="35.1815" lng="136.9066" title="Nagoya" data-population="9500000">
-    <template data-icon><span class="bubble" style="width: 28.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="tehran" lat="35.6892" lng="51.389" title="Tehran" data-population="9500000">
-    <template data-icon><span class="bubble" style="width: 28.4px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="chicago" lat="41.8781" lng="-87.6298" title="Chicago" data-population="8900000">
-    <template data-icon><span class="bubble" style="width: 27.5px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="johannesburg" lat="-26.2041" lng="28.0473" title="Johannesburg" data-population="6400000">
-    <template data-icon><span class="bubble" style="width: 23.3px"></span></template>
-  </maplace-location>
-  <maplace-location location-id="sydney" lat="-33.8688" lng="151.2093" title="Sydney" data-population="5200000">
-    <template data-icon><span class="bubble" style="width: 21px"></span></template>
-  </maplace-location>
-</maplace-map>
+<maplace-map id="bubbles-maplibre-map" list="maplibre-bubbles-cities" list-heading="Cities" list-scope="viewport"
+  src="/examples/data/cities.json"></maplace-map>
 <p class="bubbles-legend">Population
   <span class="bubbles-size"><span class="bubble" aria-hidden="true" style="width: 50.4px"></span>30M</span>
   <span class="bubbles-size"><span class="bubble" aria-hidden="true" style="width: 29.1px"></span>10M</span>
@@ -146,13 +23,23 @@
 </p>
 <p>Now in view <output id="bubbles-maplibre-in-view">–</output></p>
 <script>
-  // The list's entries and the count under the map, the page's own: defined as the page is read,
-  // so the map finds them when it opens.
+  // The markers, the list's entries and the count under the map, the page's own: defined as the
+  // page is read, so the map finds them when it opens.
   {
     const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
     const map = document.getElementById("bubbles-maplibre-map");
-    // A city's population, from its <maplace-location>'s data-population (its data).
-    const populationOf = ({ data }) => Number(data.population);
+    // A city's population, from its data in cities.json.
+    const populationOf = ({ data }) => data.population;
+
+    // A city's marker: a circle as big as its population, none under 6px across. Set before the
+    // map is made (below, by reading map.maplace), which takes it then.
+    map.markerIcon = (city) => {
+      const bubble = document.createElement("span");
+      bubble.className = "bubble";
+      const diameter = Math.max(6, Math.sqrt(populationOf(city) / 37e6) * 56);
+      bubble.style.width = bubble.style.height = `${diameter}px`;
+      return bubble;
+    };
 
     // A city in the list: its name, then its population.
     const cityEntry = ({ location }) => {

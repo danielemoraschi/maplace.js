@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   adaptersMade,
+  errorsOn,
   eventsOn,
   lastAdapter,
   MILAN,
@@ -120,6 +121,31 @@ describe("<maplace-map> on a provider", () => {
     expect(adaptersMade).toHaveLength(before + 1);
     expect(map.loadState).toBe("loading");
     expect(map.querySelector('[role="listbox"]')?.textContent).toContain("Rome");
+  });
+
+  it("takes a sanitize set while held, as its store is made on release", async () => {
+    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    const sanitize = (html: string) => html;
+    map.sanitize = sanitize;
+    map.release();
+    expect([errors, map.sanitize]).toEqual([[], sanitize]);
+  });
+
+  it("takes a store attribute changed while held, as its store reads them on release", async () => {
+    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    map.setAttribute("cluster", "");
+    map.release();
+    expect([errors, lastAdapter().mounted?.cluster]).toEqual([[], true]);
+  });
+
+  it("makes a held map's store when its maplace is first read, taking what was given by then", async () => {
+    const map = await mapFrom(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    expect(map.maplace.getSnapshot().locations.map(({ id }) => id)).toEqual(["rome"]);
+    map.sanitize = (html: string) => html;
+    expect(errors.map(({ field }) => field)).toEqual(["sanitize"]);
   });
 
   it("keeps its map and list when the page replaces its children", async () => {

@@ -73,7 +73,7 @@ type MapAttribute =
 
 /** The properties a template sets on the map; both frameworks set a defined element's own. */
 type MapProperties = Partial<
-  Pick<MaplaceMapElement, "locations" | "route" | "sanitize" | "computeRoute">
+  Pick<MaplaceMapElement, "locations" | "route" | "sanitize" | "markerIcon" | "computeRoute">
 >;
 
 type MapTemplate = Attributes<MapAttribute> &
