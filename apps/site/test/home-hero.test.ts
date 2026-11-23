@@ -5,13 +5,14 @@ import {
   HERO_TABLE,
   heroCards,
   hiddenBelowWidths,
+  shownFromWidths,
   TABLE_FROM,
 } from "../src/examples/hero-table.ts";
 import { HOME_HEADING, HOME_INTRO, WAYS_IN_NOTES } from "../src/examples/home-page.ts";
 import { componentOf } from "../src/examples/ways-in-files.ts";
 import { skillInstallCommand } from "../src/site/agent-links.ts";
 import { docRoute } from "../src/site/repo-docs.ts";
-import { cardsUnderCopy, tableTurnFunctions } from "./hero-table-probe.ts";
+import { cardsUnderCopy, cardsUnseen, tableTurnFunctions } from "./hero-table-probe.ts";
 import { chooseProvider } from "./home-sections.ts";
 import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
@@ -35,6 +36,17 @@ const showCodeFor = (page: Page, provider: "MapLibre" | "Google") =>
 
 /** The hero's table of examples. */
 const heroTable = (page: Page) => page.locator('[aria-hidden="true"]:has([data-hero-card])');
+
+/**
+ * The cards the table lays at `width`: none below `TABLE_FROM`, else those laid from it or a
+ * narrower one, but for those that step out below a wider one.
+ */
+function cardsLaidAt(width: number): string[] {
+  if (width < TABLE_FROM) return [];
+  return HERO_TABLE.filter(
+    ({ shownFrom, hiddenBelow }) => (shownFrom ?? 0) <= width && width >= (hiddenBelow ?? 0),
+  ).map(({ name }) => name);
+}
 
 describe("the home page's hero (W66)", () => {
   it("heads the page with the library on map water, run up under the header, and gets started on Getting started", async () => {
@@ -136,13 +148,11 @@ describe("the home page's hero (W66)", () => {
   }, 30_000);
 
   it("keeps the copy clear of the cards, with nothing to scroll sideways, at every width the table lies beside it", async () => {
-    // Either side of where the table moves beside the copy and of each width a card steps out
-    // below (`hero-table.ts`), and the common screens between.
-    const edges = [TABLE_FROM, ...hiddenBelowWidths(HERO_TABLE)].flatMap((width) => [
-      width - 1,
-      width,
-    ]);
-    const widths = [...new Set([...edges, 1152, 1200, 1240, 1340, 1440, 1600, 1800])].sort(
+    // Either side of where the table moves beside the copy, of each width a card steps out
+    // below and of each a card is laid from (`hero-table.ts`), and the common screens between.
+    const steps = [TABLE_FROM, ...hiddenBelowWidths(HERO_TABLE), ...shownFromWidths(HERO_TABLE)];
+    const edges = steps.flatMap((width) => [width - 1, width]);
+    const widths = [...new Set([...edges, 1152, 1200, 1240, 1340, 1440, 1600, 1800, 2560])].sort(
       (a, b) => a - b,
     );
     const { page, context } = await opened(site, "/", { width: TABLE_FROM, height: 900 });
@@ -150,15 +160,55 @@ describe("the home page's hero (W66)", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.evaluate(() => document.fonts.ready);
     const crowded: Record<number, string[]> = {};
+    const misLaid: Record<number, string[]> = {};
+    const unseen: Record<number, string[]> = {};
+    const cards = heroTable(page).locator("[data-hero-card]");
     for (const width of widths) {
       await page.setViewportSize({ width, height: 900 });
       const under = await page.evaluate(cardsUnderCopy);
       if (under.length > 0) crowded[width] = under;
+      // The cards laid are those the table lays at this width, no more, no fewer.
+      const laid = await cards.evaluateAll((all) =>
+        all.filter((card) => card.checkVisibility()).map((card) => card.dataset.heroCard ?? ""),
+      );
+      const expected = cardsLaidAt(width);
+      if (laid.sort().join() !== expected.sort().join()) misLaid[width] = laid;
+      // A card laid from this width shows there, at least in part: its picture is fetched for a
+      // reason.
+      const laidFromHere = HERO_TABLE.filter(({ shownFrom }) => shownFrom === width);
+      if (laidFromHere.length > 0) {
+        const hidden = await page.evaluate(
+          cardsUnseen,
+          laidFromHere.map(({ name }) => name),
+        );
+        if (hidden.length > 0) unseen[width] = hidden;
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${width}`).toBe(
         width,
       );
     }
     expect(crowded).toEqual({});
+    expect(misLaid).toEqual({});
+    expect(unseen).toEqual({});
+    await context.close();
+  }, 30_000);
+
+  it("keeps every card the size and the place by the copy it has at 1680px on a wider screen", async () => {
+    const { page, context } = await opened(site, "/", { width: 1680, height: 1000 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const cards = heroTable(page).locator("[data-hero-card]");
+    const measure = async () => {
+      const first = await boxOf(cards.first());
+      const heading = await boxOf(page.locator("h1"));
+      return {
+        size: Math.round(first.width),
+        byTheCopy: Math.round(first.x - heading.x),
+      };
+    };
+    const atNormal = await measure();
+    await page.setViewportSize({ width: 2560, height: 1300 });
+    const atWide = await measure();
+    expect([atWide.size, atWide.byTheCopy]).toEqual([atNormal.size, atNormal.byTheCopy]);
     await context.close();
   }, 30_000);
 

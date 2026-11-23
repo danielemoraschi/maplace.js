@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HERO_TABLE, heroCards, hiddenBelowWidths } from "./hero-table.ts";
+import { HERO_TABLE, heroCards, hiddenBelowWidths, shownFromWidths } from "./hero-table.ts";
 
 describe("the home page's table of examples", () => {
   it("lays only examples with a page and a thumbnail, every card of the table", () => {
@@ -19,8 +19,27 @@ describe("the home page's table of examples", () => {
     expect(cards.map(({ name }) => name)).toEqual(["brand", "simple", "route"]);
   });
 
-  it("keeps every card within the four columns", () => {
-    expect(HERO_TABLE.every(({ column }) => column >= 1 && column <= 4)).toBe(true);
+  it("keeps every card within the seven rows, the table's height wherever it lies", () => {
+    expect(HERO_TABLE.every(({ row }) => row >= 1 && row <= 7)).toBe(true);
+  });
+
+  it("lays a card past the four columns only from a width", () => {
+    const outside = HERO_TABLE.filter(({ column }) => column > 4);
+    expect(outside.every(({ shownFrom }) => shownFrom !== undefined)).toBe(true);
+  });
+
+  it("lands the cards a wider screen brings after the others, so a narrower one lands as before", () => {
+    const cards = heroCards([
+      { name: "simple", row: 1, column: 5, shownFrom: 1700 },
+      { name: "route", row: 2, column: 1 },
+      { name: "brand", row: 1, column: 1 },
+    ]);
+    expect(cards.map(({ name }) => name)).toEqual(["brand", "route", "simple"]);
+  });
+
+  it("shows every example on the table once", () => {
+    const names = HERO_TABLE.map(({ name }) => name);
+    expect(new Set(names).size).toBe(names.length);
   });
 
   it("names two cards laid on one cell", () => {
@@ -37,6 +56,10 @@ describe("the home page's table of examples", () => {
     expect(
       hiddenBelowWidths([...HERO_TABLE, { name: "x", row: 9, column: 1, hiddenBelow: 1100 }]),
     ).toEqual([1100, 1200, 1260]);
+  });
+
+  it("gives the widths cards are laid from, in px, once each", () => {
+    expect(shownFromWidths(HERO_TABLE)).toEqual([1700, 2000, 2400, 2600]);
   });
 
   it("names a card whose example has no page", () => {

@@ -36,6 +36,27 @@ export function cardsUnderCopy(): string[] {
 }
 
 /**
+ * Of the cards `names`, those no part of which shows on the screen below the page's header and
+ * above the hero's foot: sampled every 16px, the cards made to take the pointer while it looks.
+ */
+export function cardsUnseen(names: readonly string[]): string[] {
+  const top = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+  const bottom = document.querySelector(".hero-water")?.getBoundingClientRect().bottom ?? 0;
+  const hittable = document.createElement("style");
+  hittable.textContent = "[data-hero-card] { pointer-events: auto }";
+  document.head.append(hittable);
+  const seen = new Set<string>();
+  for (let y = top + 4; y < bottom; y += 16) {
+    for (let x = 0; x < innerWidth; x += 16) {
+      const card = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-hero-card]");
+      if (card?.dataset.heroCard !== undefined) seen.add(card.dataset.heroCard);
+    }
+  }
+  hittable.remove();
+  return names.filter((name) => !seen.has(name));
+}
+
+/**
  * The transform functions the table rests on and those of each frame of its turn, by name, as the
  * page's stylesheets hold them, `@layer` blocks and all.
  */

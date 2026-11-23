@@ -14,17 +14,25 @@ export const TABLE_FROM = 901;
  */
 export type HiddenBelow = 1100 | 1200 | 1260;
 
-/** A card on the table: its example, its cell (from 1, four columns), and where it steps out. */
+/** The widths in px a card past the four columns is laid from, its picture unfetched below. */
+export type ShownFrom = 1700 | 2000 | 2400 | 2600;
+
+/**
+ * A card on the table: its example, its cell (from 1, in seven rows), where it steps out, and,
+ * past the four columns, from where it is laid.
+ */
 export interface HeroCard {
   readonly name: string;
   readonly row: number;
   readonly column: number;
   readonly hiddenBelow?: HiddenBelow;
+  readonly shownFrom?: ShownFrom;
 }
 
 /**
- * The prototype's table, its cells and their widths, with the cards where the user placed them;
- * polygon, tags and mixed, with no cell left, off it.
+ * The prototype's table, its cells and their widths, with the cards where the user placed them,
+ * and past its top right the cells a wider screen brings into view below the page's header, each
+ * laid from about the width that shows a part of it (`home-hero.test.ts` holds each to that).
  */
 export const HERO_TABLE: readonly HeroCard[] = [
   { name: "share-by-country", row: 1, column: 3, hiddenBelow: 1260 },
@@ -41,15 +49,26 @@ export const HERO_TABLE: readonly HeroCard[] = [
   { name: "css-markers", row: 5, column: 1 },
   { name: "menu", row: 5, column: 2 },
   { name: "brand", row: 5, column: 3 },
-  { name: "live-data", row: 5, column: 4 },
+  { name: "big", row: 5, column: 4 },
   { name: "styled", row: 6, column: 1 },
   { name: "polyline", row: 6, column: 2 },
   { name: "this-area", row: 6, column: 3 },
   { name: "tabs", row: 6, column: 4 },
-  { name: "big", row: 7, column: 2 },
+  { name: "live-data", row: 7, column: 2 },
   { name: "search", row: 7, column: 3 },
   { name: "markers", row: 7, column: 4 },
   { name: "link-to-place", row: 7, column: 1 },
+  { name: "offices", row: 1, column: 5, shownFrom: 1700 },
+  { name: "bubbles", row: 2, column: 5, shownFrom: 1700 },
+  { name: "nearest", row: 3, column: 5, shownFrom: 1700 },
+  { name: "tags", row: 2, column: 6, shownFrom: 2000 },
+  { name: "click-to-add", row: 3, column: 6, shownFrom: 2000 },
+  { name: "geojson", row: 4, column: 5, shownFrom: 2000 },
+  { name: "mixed", row: 4, column: 6, shownFrom: 2400 },
+  { name: "custom-list", row: 5, column: 5, shownFrom: 2400 },
+  { name: "side-list", row: 4, column: 7, shownFrom: 2600 },
+  { name: "simple", row: 5, column: 6, shownFrom: 2600 },
+  { name: "polygon", row: 6, column: 5, shownFrom: 2600 },
 ];
 
 /** A card with the picture it shows: its example's thumbnail. */
@@ -58,23 +77,35 @@ export interface PlacedCard extends HeroCard {
 }
 
 /**
- * `table`'s cards in reading order, each with its example's thumbnail; throws, naming the card,
- * for one lacking an example or a thumbnail, or lying on another's cell.
+ * `table`'s cards in the order they land, each with its example's thumbnail; throws, naming the
+ * card, for one lacking an example or a thumbnail, or lying on another's cell.
  */
 export function heroCards(table: readonly HeroCard[]): readonly PlacedCard[] {
   refuseSharedCells(table);
-  return [...table].sort(inReadingOrder).map(placedCard);
+  return [...table].sort(inLandingOrder).map(placedCard);
 }
 
 /** The widths, in px, below which some card steps out (`HiddenBelow`), smallest first. */
 export function hiddenBelowWidths(table: readonly HeroCard[]): readonly number[] {
-  const widths = table.flatMap(({ hiddenBelow }) => (hiddenBelow ? [hiddenBelow] : []));
-  return [...new Set(widths)].sort((a, b) => a - b);
+  return distinctWidths(table.map(({ hiddenBelow }) => hiddenBelow));
 }
 
-/** Row by row, left to right: the order the cards land in, whatever the table's order. */
-function inReadingOrder(a: HeroCard, b: HeroCard): number {
-  return a.row - b.row || a.column - b.column;
+/** The widths, in px, from which some card is laid (`ShownFrom`), smallest first. */
+export function shownFromWidths(table: readonly HeroCard[]): readonly number[] {
+  return distinctWidths(table.map(({ shownFrom }) => shownFrom));
+}
+
+function distinctWidths(widths: readonly (number | undefined)[]): readonly number[] {
+  const defined = widths.filter((width) => width !== undefined);
+  return [...new Set(defined)].sort((a, b) => a - b);
+}
+
+/**
+ * Row by row, left to right, whatever the table's order, those a wider screen brings last: a
+ * narrower one sees its cards land as they always did.
+ */
+function inLandingOrder(a: HeroCard, b: HeroCard): number {
+  return (a.shownFrom ?? 0) - (b.shownFrom ?? 0) || a.row - b.row || a.column - b.column;
 }
 
 function refuseSharedCells(table: readonly HeroCard[]): void {
