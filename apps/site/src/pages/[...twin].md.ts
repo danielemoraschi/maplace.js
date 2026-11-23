@@ -9,6 +9,7 @@ export const getStaticPaths = (async () => {
     docs: await getCollection("docs"),
     changelog: await getCollection("changelog"),
     guides: await getCollection("exampleGuides"),
+    references: await getCollection("groupReferences"),
   });
   return twins.map(({ address, markdown }) => ({
     params: { twin: address.slice(1).replace(/\.md$/, "") },

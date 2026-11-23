@@ -1,0 +1,82 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map and its list mount on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<!-- This example's look lives in the examples' styles/bubbles.css, which every version links. -->
+<link rel="stylesheet" href="../../styles/bubbles.css">
+<style>
+  #bubbles-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #bubbles-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #bubbles-maplibre-script-list { display: contents; }
+  #bubbles-maplibre-script-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #bubbles-maplibre-script-map-and-list { flex-direction: column; height: 36rem; }
+    #bubbles-maplibre-script-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="bubbles-maplibre-script-map-and-list">
+  <div id="bubbles-maplibre-script-map"></div>
+  <div id="bubbles-maplibre-script-list"></div>
+</div>
+<p class="bubbles-legend" id="bubbles-maplibre-script-legend">Population</p>
+<p>Now in view <output id="bubbles-maplibre-script-in-view">–</output></p>
+<script type="module">
+  // Tokyo's 37M, the largest city in the file, is 56px across; a bubble's area is its population.
+  const LARGEST = 37e6;
+  const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
+  // A circle as big as a population, none under 6px across.
+  const bubble = (population) => {
+    const circle = document.createElement("span");
+    circle.className = "bubble";
+    const diameter = Math.max(6, Math.sqrt(population / LARGEST) * 56);
+    circle.style.width = circle.style.height = `${diameter}px`;
+    return circle;
+  };
+  // Whether a city is inside the bounds, which may cross the antimeridian (west > east).
+  const inView = ({ lat, lng }, { north, south, east, west }) => {
+    const inLongitude = west <= east ? lng >= west && lng <= east : lng >= west || lng <= east;
+    return lat >= south && lat <= north && inLongitude;
+  };
+  // How many cities, and how many people in them: "12 cities · 210M people".
+  const summaryOf = (cities) => {
+    const people = cities.reduce((sum, { data }) => sum + data.population, 0);
+    return `${cities.length} cities · ${compact.format(people)} people`;
+  };
+  // A city in the list: its name, then its population.
+  const cityEntry = ({ location }) => {
+    const entry = document.createElement("span");
+    entry.className = "bubbles-city";
+    const population = document.createElement("span");
+    population.className = "bubbles-population";
+    population.textContent = compact.format(location.data.population);
+    entry.append(location.title, population);
+    return entry;
+  };
+
+  const maplace = Maplace.createMapLibreMap("#bubbles-maplibre-script-map", {
+    view: { kind: "fit-all", padding: 32 },
+    list: { container: "#bubbles-maplibre-script-list", heading: "Cities", scope: "viewport", render: cityEntry },
+  });
+
+  // The legend's sizes, drawn as the bubbles are.
+  for (const population of [30e6, 10e6, 3e6]) {
+    const size = document.createElement("span");
+    size.className = "bubbles-size";
+    const circle = bubble(population);
+    circle.setAttribute("aria-hidden", "true");
+    size.append(circle, compact.format(population));
+    document.getElementById("bubbles-maplibre-script-legend").append(size);
+  }
+
+  // The file lists the largest first, so the small bubbles are drawn over the big ones.
+  const cities = await fetch("/examples/data/cities.json").then((response) => response.json());
+  maplace.setLocations(cities.map((city) => ({ ...city, icon: () => bubble(city.data.population) })));
+
+  // What the map shows: now, if it has settled while the file loaded, then after each move.
+  const inViewNow = document.getElementById("bubbles-maplibre-script-in-view");
+  const showInView = (bounds) => {
+    if (bounds) inViewNow.value = summaryOf(cities.filter((city) => inView(city, bounds)));
+  };
+  showInView(maplace.getSnapshot().viewport?.bounds);
+  maplace.on("viewportChange", ({ viewport }) => showInView(viewport.bounds));
+</script>

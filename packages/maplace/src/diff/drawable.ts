@@ -4,7 +4,7 @@ import { isMarkerLocation, type Location } from "../location";
 import { type HeatmapOptions, isHeatMarker } from "../options";
 import { type ContentContext, contentRenderer, sameContentSource } from "./content";
 import { geometryOf } from "./geometry";
-import { iconRenderer, sameIconSource } from "./icon";
+import { type IconContext, iconRenderer, sameIconSource } from "./icon";
 import { keepIfSame } from "./same";
 import { type DrawStyles, styleOf } from "./style";
 
@@ -12,7 +12,7 @@ import { type DrawStyles, styleOf } from "./style";
  * What drawables depend on besides the location: the store's options, and where the page's own
  * code reports failing while an adapter draws. Fixed for one attachment.
  */
-export interface DrawContext extends ContentContext, DrawStyles {
+export interface DrawContext extends ContentContext, IconContext, DrawStyles {
   /** Which markers are drawn as heat. */
   readonly heatmap?: HeatmapOptions | undefined;
 }
@@ -87,7 +87,7 @@ function iconRendererOf(
   previous: DrawnLocation | undefined,
   context: DrawContext,
 ): Drawable["renderIcon"] {
-  return previous !== undefined && sameIconSource(previous.location, location)
+  return previous !== undefined && sameIconSource(previous.location, location, context.markerIcon)
     ? previous.drawable.renderIcon
     : iconRenderer(location, context);
 }

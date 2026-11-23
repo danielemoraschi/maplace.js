@@ -18,7 +18,7 @@ describe("circles on MapLibre", () => {
     await adapter.apply(adding(small, big));
     adapter.setView({ kind: "center", center: ORIGIN, zoom: 12 });
     await probe.settle();
-    clickCanvas(map, { at: ORIGIN });
+    clickCanvas(map, ORIGIN);
     expect(host.reportsOf("reportSelectionChange")).toEqual([["small"]]);
   });
 

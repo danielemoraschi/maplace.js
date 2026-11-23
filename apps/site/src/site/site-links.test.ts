@@ -13,10 +13,10 @@ describe("withSiteLinks", () => {
     );
   });
 
-  it("sends a link with an anchor of its own to that anchor, on a section's page", () => {
-    const toSection = { ...links, routes: { "a/guide.md": "/examples/a/#a" } };
-    expect(withSiteLinks("[a](a/guide.md) [b](a/guide.md#more)", toSection)).toBe(
-      "[a](/examples/a/#a) [b](/examples/a/#more)",
+  it("sends a link to a guide to its example's page, its anchor kept", () => {
+    const toExample = { ...links, routes: { "a/guide.md": "/examples/g/a/" } };
+    expect(withSiteLinks("[a](a/guide.md) [b](a/guide.md#more)", toExample)).toBe(
+      "[a](/examples/g/a/) [b](/examples/g/a/#more)",
     );
   });
 

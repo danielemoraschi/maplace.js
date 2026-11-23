@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import {
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
+  groupPath,
+} from "../examples/example-sections.ts";
+import { HOME_ROUTE } from "../examples/home-page.ts";
 import { exampleGuides } from "./example-guides-loader.ts";
-import { docRoute, REPO_DOCS } from "./repo-docs.ts";
+import { examplesPageIndexMarkdown } from "./example-index-markdown.ts";
+import { groupReferenceMarkdown } from "./group-references-loader.ts";
+import { homeMarkdown } from "./home-markdown.ts";
+import { docRoute, REPO_DOCS, repoDoc } from "./repo-docs.ts";
 import { repoDocMarkdown, siteMarkdownOf } from "./repo-docs-loader.ts";
 import { brokenSiteLinks, type DocPage, headingSlug } from "./site-link-targets.ts";
 
@@ -95,25 +104,41 @@ describe("the site's doc pages", () => {
     blobBase: "https://github.com/o/r/blob/abc123/",
   };
 
-  it("link only to pages, headings and example sections the site has, and so do the example guides", () => {
+  it("link only to pages and headings the site has, as do the guides, the reference tables, the home page's index and the examples page", () => {
     const pages = REPO_DOCS.map((doc) => ({
       route: docRoute(doc.id),
       markdown: repoDocMarkdown(doc, settings),
     }));
-    // Each group's page as the site writes it: each section, its id standing as a heading's, then
-    // its guide.
+    // Each example's page as the site writes it: its section's id standing as a heading's, then its
+    // guide; each hub, its reference tables cut from the docs.
     const guides = new Map(
       exampleGuides().map(({ name, markdown, file }) => [
         name,
         siteMarkdownOf(markdown, file, settings.blobBase),
       ]),
     );
-    const groups = EXAMPLE_GROUPS.map((group) => ({
-      route: groupPath(group),
-      markdown: group.sections
-        .map(({ name }) => `# ${name}\n\n${guides.get(name) ?? ""}`)
-        .join("\n\n"),
+    const examples = EXAMPLE_PAGE_ENTRIES.map(({ path, section }) => ({
+      route: path,
+      markdown: `# ${section.name}\n\n${guides.get(section.name) ?? ""}`,
     }));
-    expect(brokenSiteLinks([...pages, ...groups])).toEqual([]);
+    const hubs = EXAMPLE_GROUPS.map((group) => ({
+      route: groupPath(group),
+      markdown: groupReferenceMarkdown(group, settings),
+    }));
+    const home = {
+      route: HOME_ROUTE,
+      markdown: homeMarkdown(),
+    };
+    const examplesPage = { route: EXAMPLES_PAGE_ROUTE, markdown: examplesPageIndexMarkdown() };
+    expect(brokenSiteLinks([...pages, ...examples, ...hubs, home, examplesPage])).toEqual([]);
+  });
+
+  it("link example pages from the docs on what the examples show (W87)", () => {
+    const examplePaths = new Set(EXAMPLE_PAGE_ENTRIES.map(({ path }) => path));
+    for (const id of ["store", "google", "maplibre", "locations"]) {
+      const markdown = repoDocMarkdown(repoDoc(id), settings);
+      const linked = [...markdown.matchAll(/\]\((\/examples\/[^)#]+)\)/g)].map(([, path]) => path);
+      expect(linked.filter((path) => examplePaths.has(path ?? "")).length, id).toBeGreaterThan(0);
+    }
   });
 });

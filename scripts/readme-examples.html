@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Maplace.js: the README's picture of the examples</title>
+    <!--
+      The README's picture of the examples (W73), drawn by scripts/readme-examples.ts. The six
+      large cards come first: the grid places its cards in this order, and small ones first would
+      take the centre's columns. Each run of four small cards after them fills one row's columns
+      1, 2, 5 and 6, the outer two fading out.
+    -->
+    <base href="../apps/site/src/assets/shots/thumbnails/" />
+    <style>
+      main {
+        /* A large card is two small ones and the gap between them, across and down. */
+        --card: 200px;
+        --gap: 16px;
+        --pair: calc(2 * var(--card) + var(--gap));
+        display: grid;
+        grid-template-columns: repeat(2, var(--card)) repeat(2, var(--pair)) repeat(2, var(--card));
+        grid-auto-rows: calc(var(--card) / 1.6); /* the thumbnails' 640×400 */
+        grid-auto-flow: dense;
+        gap: var(--gap);
+        width: max-content;
+        /* Clear between the side columns, so the large cards never fade. */
+        mask-image: linear-gradient(to right, transparent, #000 var(--pair) calc(100% - var(--pair)), transparent);
+      }
+      .large { grid-row: span 2; grid-column: 3; }
+      .large:nth-child(even) { grid-column: 4; }
+      img {
+        width: 100%; height: 100%; box-sizing: border-box; object-fit: cover;
+        border: 1px solid rgb(128 128 128 / 0.35); border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img class="large" src="audience.jpg" alt="" />
+      <img class="large" src="circles.jpg" alt="" />
+      <img class="large" src="share-by-country.jpg" alt="" />
+      <img class="large" src="choropleth.jpg" alt="" />
+      <img class="large" src="offices.jpg" alt="" />
+      <img class="large" src="popups.jpg" alt="" />
+
+      <img src="tags.jpg" alt="" />
+      <img src="route.jpg" alt="" />
+      <img src="earthquakes.jpg" alt="" />
+      <img src="whats-on.jpg" alt="" />
+
+      <img src="polygon.jpg" alt="" />
+      <img src="flights.jpg" alt="" />
+      <img src="team.jpg" alt="" />
+      <img src="nearest.jpg" alt="" />
+
+      <img src="click-to-add.jpg" alt="" />
+      <img src="trade-lanes.jpg" alt="" />
+      <img src="brand.jpg" alt="" />
+      <img src="bubbles.jpg" alt="" />
+
+      <img src="geojson.jpg" alt="" />
+      <img src="mixed.jpg" alt="" />
+      <img src="css-markers.jpg" alt="" />
+      <img src="custom-list.jpg" alt="" />
+
+      <img src="link-to-place.jpg" alt="" />
+      <img src="menu.jpg" alt="" />
+      <img src="big.jpg" alt="" />
+      <img src="live-data.jpg" alt="" />
+
+      <img src="markers.jpg" alt="" />
+      <img src="this-area.jpg" alt="" />
+      <img src="search.jpg" alt="" />
+      <img src="tabs.jpg" alt="" />
+    </main>
+  </body>
+</html>

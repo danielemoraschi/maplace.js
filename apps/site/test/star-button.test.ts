@@ -7,7 +7,7 @@ import { starButtonShadow, starCountMarkup } from "../src/site/star-button-marku
 const GITHUB_BUTTONS = createRequire(import.meta.url).resolve("github-buttons/dist/buttons.js");
 const STARS = 1234;
 
-/** The hero's link as github-buttons took it: it draws GitHub's button in its place. */
+/** A page's link as github-buttons takes it: it draws GitHub's button in its place. */
 const GITHUB_LINK = `<a class="github-button" href="${REPOSITORY_URL}" data-size="large" data-show-count="true" aria-label="danielemoraschi/maplace.js on GitHub">GitHub</a>`;
 
 /** A page holding `content` at its top-left corner, so both buttons are drawn at one spot. */
@@ -37,7 +37,7 @@ async function drawnByGitHub(page: Page): Promise<void> {
   await expect.poll(() => page.locator("a.github-button").count()).toBe(0);
 }
 
-/** The site's button, its shadow root as the hero writes it and its count as the script adds it. */
+/** The site's button, its shadow root as `starButtonShadow` writes it and its count as the script adds it. */
 async function drawnBySite(page: Page): Promise<void> {
   await page.setContent(pageOf("<span></span>"));
   await page.evaluate(

@@ -1,258 +1,61 @@
-/** A section of an examples' page: one example, its live map and its code. */
+import { circlesPolygons } from "./groups/circles-polygons.ts";
+import { clustersHeatmaps } from "./groups/clusters-heatmaps.ts";
+import { dashboards } from "./groups/dashboards.ts";
+import { linesRoutes } from "./groups/lines-routes.ts";
+import { lists } from "./groups/lists.ts";
+import { liveData } from "./groups/live-data.ts";
+import { markers } from "./groups/markers.ts";
+import { search } from "./groups/search.ts";
+import { styling } from "./groups/styling.ts";
+
+/** An example: a page of its own under its feature's hub, its live map and its code. */
 export interface ExampleSection {
   /** Its folder in `packages/maplace/examples/`. */
   readonly name: string;
   readonly title: string;
   readonly summary: string;
+  /** Its page's description, for search and sharing: 80 to 160 characters, unlike its summary. */
+  readonly description: string;
   /** Its list drawn its own way (as tabs, or in its own CSS), not in the site's panel beside the map. */
   readonly drawsOwnList?: true;
   /** Its map framed its own way: the site draws no border around it. */
   readonly drawsOwnFrame?: true;
 }
 
-/** A group of the home page's examples: its own page, and a link in the examples' bar. */
+/** Where a hub cuts a reference table: the doc's id in `REPO_DOCS`, the heading's line. */
+export interface ReferenceCut {
+  readonly doc: string;
+  /** The heading line exactly, `## Markers`, as `reference-check.ts` names a table. */
+  readonly heading: string;
+}
+
+/** A feature's examples: a hub page listing them, and the side column's and home page's heading over them. */
 export interface ExampleGroup {
-  /** Its page's last path segment, `/examples/<id>/`, but for the first group's, the home page. */
+  /** Its page's last path segment, `/examples/<id>/`. */
   readonly id: string;
   readonly label: string;
-  /** Its page's H1's first line, before `HEADING_TAIL`: what its examples show. */
-  readonly headingLead: string;
-  /** The hero's paragraph under the H1 on its page: what its examples show, in a sentence. */
+  /** Its page's H1, and its title's lead before the providers (`groupTitle`): the feature, in the words a search uses. */
+  readonly heading: string;
+  /** The paragraph under its page's H1: what its examples show, in a sentence. */
   readonly intro: string;
+  /** What the index of examples says of it, on the home page and the examples page (`ExampleCategories.astro`). */
   readonly summary: string;
   /** Its page's description, for search and sharing: 80 to 160 characters, unlike the summary it shows. */
   readonly description: string;
+  /** The reference tables its page shows, cut from the docs (`group-references-loader.ts`). */
+  readonly references: readonly ReferenceCut[];
   readonly sections: readonly ExampleSection[];
 }
 
-/** The examples in their groups, each group a page; the sections numbered in this order (W38). */
+/** The examples by feature, the hubs in this order, each listing its examples in its own file's order (D31). */
 export const EXAMPLE_GROUPS: readonly ExampleGroup[] = [
-  {
-    id: "basics",
-    label: "Basics",
-    headingLead: "A JavaScript library for markers",
-    intro:
-      "Maplace.js puts your locations on Google Maps or MapLibre: markers, shapes and routes, and the list or menu that goes with them, in sync with the map. One script tag, with a Maps key on Google and none on MapLibre; npm and React too.",
-    summary: "Places on a map: one pin, your own markers, popups, and a click to add one.",
-    description:
-      "A JavaScript library for Google Maps and MapLibre: a list of locations becomes a map with markers, popups and a click to add one, in a few lines.",
-    sections: [
-      { name: "simple", title: "One marker", summary: "One place on a map." },
-      {
-        name: "markers",
-        title: "Custom marker icons",
-        summary: "Image icons, an icon of your own markup, and a place with its own zoom.",
-      },
-      {
-        name: "popups",
-        title: "Place cards in popups",
-        summary:
-          "A place card in each popup: photo, rating, hours, and buttons to open it in Maps or get there.",
-      },
-      {
-        name: "click-to-add",
-        title: "Click to add and drag markers",
-        summary: "A click on the map adds a pin there, and every pin drags to a new place.",
-      },
-    ],
-  },
-  {
-    id: "lists",
-    label: "Lists",
-    headingLead: "A list beside the map,",
-    intro:
-      "Your locations as a list kept in sync with the map: a select menu, tag filters, nested groups with a checkbox each, a search box, nearest first, only what's in view, your own markup, or tabs with a details panel.",
-    summary:
-      "The list beside the map, your way: a menu, tags, nested groups, a search box, nearest first, what's in view, your own markup, or tabs.",
-    description:
-      "A list beside the map on Google Maps or MapLibre, in sync with it: a select menu, tag and group filters, a search box, nearest first, what's in view, or tabs.",
-    sections: [
-      {
-        name: "menu",
-        title: "Select menu",
-        summary: "A native select on the map, grouped by region, with an entry for all.",
-      },
-      {
-        name: "tags",
-        title: "Filter by tags",
-        summary: "Places with several tags: tick some to see those with all of them.",
-      },
-      {
-        name: "offices",
-        title: "Filter by group",
-        summary:
-          "Offices by region and country, nested in the list, with a checkbox for each region and country.",
-      },
-      {
-        name: "search",
-        title: "Search box",
-        summary: "A box above the list that narrows the list and the map as you type.",
-      },
-      {
-        name: "nearest",
-        title: "Nearest first",
-        summary: "A button on the map that sorts the list by distance from the visitor.",
-      },
-      {
-        name: "this-area",
-        title: "This area",
-        summary: "A switch above the list: every place, or only those in view as the map moves.",
-      },
-      {
-        name: "custom-list",
-        title: "Your own list",
-        summary: "Define your own: here a radio per place, and one to fit all, on the map.",
-      },
-      {
-        name: "tabs",
-        title: "Tabs",
-        summary: "The list outside the map; a details panel follows the selection.",
-        drawsOwnList: true,
-      },
-    ],
-  },
-  {
-    id: "shapes",
-    label: "Shapes",
-    headingLead: "Circles, lines and areas",
-    intro:
-      "Circles, polylines, great-circle flights and polygons in your own colours, with popups and markers on the same map. Circles, polylines and polygons can be made editable, each edit written back to your data.",
-    summary:
-      "Circles, lines (straight, bowed or on great circles) and areas in their own colours, some to edit, and all of them with markers on one map.",
-    description:
-      "Circles, polylines, great-circle flights and polygons on Google Maps or MapLibre, in your own colours, with popups and markers; editable as an option.",
-    sections: [
-      {
-        name: "circles",
-        title: "Circles",
-        summary: "Areas in their own colours, with popups; resize the third and see its radius.",
-      },
-      {
-        name: "polyline",
-        title: "Editable polyline",
-        summary: "A trail to edit, with places along it.",
-      },
-      {
-        name: "flights",
-        title: "Flights",
-        summary:
-          "Great circles from one city to eight, the scheduled ones dashed; slide the flight to New York along its way.",
-      },
-      {
-        name: "trade-lanes",
-        title: "Trade lanes",
-        summary: "Air and sea lanes by colour; hover one, pick one for its volume.",
-      },
-      {
-        name: "polygon",
-        title: "Editable polygon",
-        summary: "An area to edit: drag a corner, and the edit is written back.",
-      },
-      {
-        name: "mixed",
-        title: "Markers and shapes together",
-        summary: "A marker, a circle, an area and a line on one map and in one list.",
-      },
-    ],
-  },
-  {
-    id: "data-routes",
-    label: "Data & routes",
-    headingLead: "Live data, clusters and routes",
-    intro:
-      "Locations fetched as JSON and swapped in live, markers grouped into clusters that show a count, the world's countries shaded by a value, a month of earthquakes as a heatmap, a map that loads only when the visitor presses a button, a link that opens the map on a place, and a driving route through your stops.",
-    summary:
-      "Data fetched and swapped in live, thousands of points clustered, countries shaded by a value, a heatmap of earthquakes, a drive through your places, a map loaded on a press, a link to a place.",
-    description:
-      "Live data, clustering, a choropleth, a heatmap, a map loaded on demand, a link to a place and a driving route: on Google Maps or MapLibre.",
-    sections: [
-      {
-        name: "live-data",
-        title: "Live data from JSON",
-        summary:
-          "Data sets, fetched and swapped in live: markers, an area, a circle, and on Google a route.",
-      },
-      {
-        name: "big",
-        title: "Marker clustering",
-        summary: "4,000 points, those near each other drawn as one badge counting them.",
-      },
-      {
-        name: "choropleth",
-        title: "Choropleth of the world",
-        summary:
-          "Every country filled by its GDP per person, its value on hover, with a legend on the map.",
-      },
-      {
-        name: "earthquakes",
-        title: "Heatmaps",
-        summary:
-          "A month of earthquakes as a heatmap by magnitude, dots when zoomed in, volcanoes as pins, a checkbox for each.",
-      },
-      {
-        name: "route",
-        title: "Driving route",
-        summary:
-          "A drive through your own places, with directions by leg: Google computes it live; on MapLibre it's one stored route, as your own routing service would answer.",
-      },
-      {
-        name: "load-on-demand",
-        title: "Load on demand",
-        summary: "A panel in the map's place: nothing draws until the visitor presses its button.",
-      },
-      {
-        name: "link-to-place",
-        title: "Link to a place",
-        summary: "A link to the place picked, shown under the map, that opens the map on it.",
-      },
-    ],
-  },
-  {
-    id: "styling",
-    label: "Styling",
-    headingLead: "Your own look",
-    intro:
-      "The provider's map styles, markers of your own HTML and CSS, one brand palette for areas, cluster badges and the list, or Maplace.js's styles turned off for yours.",
-    summary: "Your map's look: the provider's own styles, and Maplace.js's parts drawn your way.",
-    description:
-      "Your own look on Google Maps or MapLibre: map styles, custom HTML markers, brand colours, or Maplace.js's own styles turned off.",
-    sections: [
-      {
-        name: "whats-on",
-        title: "Restyled venue map",
-        summary:
-          "A dark frame, pins coloured by category, a legend that filters them and a card of the venues, or of the one picked.",
-        drawsOwnFrame: true,
-      },
-      {
-        name: "team",
-        title: "A team around the world",
-        summary:
-          "Faces for markers, list entries of your own with each person's local time, filtered by team.",
-      },
-      {
-        name: "styled",
-        title: "Map styles",
-        summary:
-          "The provider's own looks: a choice of styles, and on Google the map-type control.",
-      },
-      {
-        name: "css-markers",
-        title: "HTML markers with CSS states",
-        summary: "Pins of your own markup, their hovered and selected looks in your CSS.",
-      },
-      {
-        name: "brand",
-        title: "Brand colours",
-        summary: "One palette across the delivery areas, the cluster badges and the list.",
-        drawsOwnList: true,
-      },
-      {
-        name: "unstyled",
-        title: "Default styles off",
-        summary:
-          "Maplace.js's styles off and nothing in their place: the map and its list as your page shows them, with no CSS but a height.",
-      },
-    ],
-  },
+  markers,
+  lists,
+  search,
+  circlesPolygons,
+  linesRoutes,
+  clustersHeatmaps,
+  dashboards,
+  liveData,
+  styling,
 ];

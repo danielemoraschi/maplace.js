@@ -1,8 +1,7 @@
 ---
 import { filesAsShown } from "../examples/bootstrap-fold.ts";
 import type { ExampleCode } from "../examples/example-sources.ts";
-import FoldedHost from "./FoldedHost.astro";
-import SourceCode from "./SourceCode.astro";
+import ExampleFile from "./ExampleFile.astro";
 
 interface Props {
   /** One version's code on one provider: its files, in the order a reader reads them. */
@@ -13,16 +12,9 @@ const { version } = Astro.props;
 ---
 
 {
-  filesAsShown(version).map(({ file, code, lang, host }) => (
-    <figure class="m-0 mb-4">
-      {host === undefined ? (
-        <SourceCode code={code} lang={lang} />
-      ) : (
-        <FoldedHost parts={host} lang={lang} />
-      )}
-      <figcaption class="mt-2 text-xs text-muted">
-        examples/{version.folder}/{file}, the file the tests run
-      </figcaption>
-    </figure>
+  filesAsShown(version).map((shown) => (
+    <div class="mb-4">
+      <ExampleFile shown={shown} />
+    </div>
   ))
 }

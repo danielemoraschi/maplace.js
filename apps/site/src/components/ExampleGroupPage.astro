@@ -1,40 +1,54 @@
 ---
+import { getEntry, render } from "astro:content";
 import {
   type ExampleGroup,
   groupDescription,
   groupPath,
   groupTitle,
-  sectionNumber,
 } from "../examples/example-sections.ts";
 import Base from "../layouts/Base.astro";
-import ExampleGroupBar from "./ExampleGroupBar.astro";
-import ExampleSection from "./ExampleSection.astro";
-import Hero from "./Hero.astro";
-import InstallBox from "./InstallBox.astro";
+import { examplesMenu } from "../site/examples-menu.ts";
+import type { NavLink } from "../site/nav-link.ts";
+import ExampleList from "./ExampleList.astro";
+import MapImagesCredit from "./MapImagesCredit.astro";
 import MarkdownLink from "./MarkdownLink.astro";
+import NeighbourLinks from "./NeighbourLinks.astro";
+import PageColumns from "./PageColumns.astro";
 
 interface Props {
   group: ExampleGroup;
+  previous: NavLink | undefined;
+  next: NavLink | undefined;
 }
 
-const { group } = Astro.props;
+const { group, previous, next } = Astro.props;
+const reference = await getEntry("groupReferences", group.id);
+if (reference === undefined) throw new Error(`the groupReferences collection has no ${group.id}`);
+const { Content: References } = await render(reference);
 ---
 
-{/* Every group's page is the home page with that group's examples: its panel is what another group's page fetches to switch to it in place (`group-switch.ts`). */}
+{/* A category's hub (D31): its examples, each its own page, then the reference tables cut from the docs. */}
 <Base title={groupTitle(group)} description={groupDescription(group)}>
-  <Hero group={group} />
-  <InstallBox />
-  <ExampleGroupBar current={group} />
-  {/* After the bar, not on it: the page's scroll padding already counts it, so the landing holds it under the header. */}
-  <div id="examples"></div>
-  {/* Its own top padding, not its summary's margin: a switch lands the panel's top under the bar. */}
-  <div class="pt-5" data-group-panel={group.id}>
-    <p class="m-0 max-w-text text-lg text-muted">{group.summary}</p>
-    <p class="mt-1 mb-0 text-sm"><MarkdownLink route={groupPath(group)} /></p>
-    {
-      group.sections.map((section) => (
-        <ExampleSection number={sectionNumber(section)} {...section} />
-      ))
-    }
-  </div>
+  <PageColumns navLabel="Examples" links={examplesMenu()} current={groupPath(group)} fold="wide">
+    <article class="min-w-0">
+      <h1 class="mt-0 mb-2 text-title">{group.heading}</h1>
+      <p class="mt-0 mb-2 max-w-text text-lg text-muted">{group.intro}</p>
+      <p class="mt-0 mb-0 text-sm"><MarkdownLink route={groupPath(group)} /></p>
+      <section
+        id="examples"
+        aria-labelledby="examples-title"
+        class="mt-12 border-t-3 border-ink pt-4"
+      >
+        <h2 id="examples-title" class="mt-0 mb-6 text-3xl">Examples</h2>
+        <ExampleList group={group} />
+        <MapImagesCredit class="mt-8" />
+      </section>
+      {/* Its rule is its heading's, as a doc's are (`prose.css`). */}
+      <section id="reference" aria-labelledby="reference-title" class="doc-content mt-12">
+        <h2 id="reference-title" class="mt-0">Reference</h2>
+        <References />
+      </section>
+      <NeighbourLinks previous={previous} next={next} />
+    </article>
+  </PageColumns>
 </Base>

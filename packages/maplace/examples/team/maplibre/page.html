@@ -1,9 +1,9 @@
 <!doctype html>
 <script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
-<!-- A team around the world: each person's face on the map, their initials on their team's colour,
-     and the list beside it, each entry their role and city and the time where they are, which
-     turns as each minute begins; filtered by team, or searched by name, city or role. On
-     MapLibre, the earth as a globe, with a toggle on the map to flatten it. -->
+<!-- A team around the world, from team.json: each person's face on the map, their initials on
+     their team's colour, and the list beside it, each entry their role and city and the time
+     where they are, which turns as each minute begins; filtered by team, or searched by name,
+     city or role. On MapLibre, the earth as a globe, with a toggle on the map to flatten it. -->
 <!-- This example's look lives in the examples' styles/team.css, which every version links. -->
 <link rel="stylesheet" href="../../styles/team.css">
 <style>
@@ -14,88 +14,8 @@
   }
 </style>
 <maplace-map id="team-maplibre-map" list="maplibre-team-members" list-heading="The team" group-counts
-  group-filter search search-label="Find someone" globe>
-  <maplace-location location-id="ana-maria-ruiz" lat="19.4326" lng="-99.1332" title="Ana María Ruiz" group="Design"
-    search-text="Mexico City Product designer" data-role="Product designer" data-city="Mexico City" data-time-zone="America/Mexico_City">
-    <template data-icon><span class="team-avatar" data-team="Design">AR</span></template>
-  </maplace-location>
-  <maplace-location location-id="kofi-mensah" lat="5.6037" lng="-0.187" title="Kofi Mensah" group="Engineering"
-    search-text="Accra Backend engineer" data-role="Backend engineer" data-city="Accra" data-time-zone="Africa/Accra">
-    <template data-icon><span class="team-avatar" data-team="Engineering">KM</span></template>
-  </maplace-location>
-  <maplace-location location-id="priya-raman" lat="12.9716" lng="77.5946" title="Priya Raman" group="Engineering"
-    search-text="Bengaluru Frontend engineer" data-role="Frontend engineer" data-city="Bengaluru" data-time-zone="Asia/Kolkata">
-    <template data-icon><span class="team-avatar" data-team="Engineering">PR</span></template>
-  </maplace-location>
-  <maplace-location location-id="sven-lindqvist" lat="59.3293" lng="18.0686" title="Sven Lindqvist" group="Engineering"
-    search-text="Stockholm Engineering lead" data-role="Engineering lead" data-city="Stockholm" data-time-zone="Europe/Stockholm">
-    <template data-icon><span class="team-avatar" data-team="Engineering">SL</span></template>
-  </maplace-location>
-  <maplace-location location-id="hana-sato" lat="34.6937" lng="135.5023" title="Hana Sato" group="Support"
-    search-text="Osaka Support lead" data-role="Support lead" data-city="Osaka" data-time-zone="Asia/Tokyo">
-    <template data-icon><span class="team-avatar" data-team="Support">HS</span></template>
-  </maplace-location>
-  <maplace-location location-id="lucas-ferreira" lat="-23.5505" lng="-46.6333" title="Lucas Ferreira" group="Support"
-    search-text="São Paulo Support engineer" data-role="Support engineer" data-city="São Paulo" data-time-zone="America/Sao_Paulo">
-    <template data-icon><span class="team-avatar" data-team="Support">LF</span></template>
-  </maplace-location>
-  <maplace-location location-id="amara-okafor" lat="6.5244" lng="3.3792" title="Amara Okafor" group="Design"
-    search-text="Lagos Interaction designer" data-role="Interaction designer" data-city="Lagos" data-time-zone="Africa/Lagos">
-    <template data-icon><span class="team-avatar" data-team="Design">AO</span></template>
-  </maplace-location>
-  <maplace-location location-id="tom-gallagher" lat="53.3498" lng="-6.2603" title="Tom Gallagher" group="Growth"
-    search-text="Dublin Account manager" data-role="Account manager" data-city="Dublin" data-time-zone="Europe/Dublin">
-    <template data-icon><span class="team-avatar" data-team="Growth">TG</span></template>
-  </maplace-location>
-  <maplace-location location-id="mei-lin" lat="25.033" lng="121.5654" title="Mei Lin" group="Engineering"
-    search-text="Taipei Data engineer" data-role="Data engineer" data-city="Taipei" data-time-zone="Asia/Taipei">
-    <template data-icon><span class="team-avatar" data-team="Engineering">ML</span></template>
-  </maplace-location>
-  <maplace-location location-id="rajesh-thapa" lat="27.7172" lng="85.324" title="Rajesh Thapa" group="Engineering"
-    search-text="Kathmandu QA engineer" data-role="QA engineer" data-city="Kathmandu" data-time-zone="Asia/Kathmandu">
-    <template data-icon><span class="team-avatar" data-team="Engineering">RT</span></template>
-  </maplace-location>
-  <maplace-location location-id="chloe-martin" lat="45.764" lng="4.8357" title="Chloé Martin" group="Design"
-    search-text="Lyon Product manager" data-role="Product manager" data-city="Lyon" data-time-zone="Europe/Paris">
-    <template data-icon><span class="team-avatar" data-team="Design">CM</span></template>
-  </maplace-location>
-  <maplace-location location-id="jack-wilson" lat="-37.8136" lng="144.9631" title="Jack Wilson" group="Growth"
-    search-text="Melbourne Growth lead" data-role="Growth lead" data-city="Melbourne" data-time-zone="Australia/Melbourne">
-    <template data-icon><span class="team-avatar" data-team="Growth">JW</span></template>
-  </maplace-location>
-  <maplace-location location-id="aroha-ngata" lat="-41.2865" lng="174.7762" title="Aroha Ngata" group="Support"
-    search-text="Wellington Support engineer" data-role="Support engineer" data-city="Wellington" data-time-zone="Pacific/Auckland">
-    <template data-icon><span class="team-avatar" data-team="Support">AN</span></template>
-  </maplace-location>
-  <maplace-location location-id="daniel-cohen" lat="32.0853" lng="34.7818" title="Daniel Cohen" group="Engineering"
-    search-text="Tel Aviv Platform engineer" data-role="Platform engineer" data-city="Tel Aviv" data-time-zone="Asia/Jerusalem">
-    <template data-icon><span class="team-avatar" data-team="Engineering">DC</span></template>
-  </maplace-location>
-  <maplace-location location-id="sofia-rossi" lat="45.4642" lng="9.19" title="Sofia Rossi" group="Design"
-    search-text="Milan Content designer" data-role="Content designer" data-city="Milan" data-time-zone="Europe/Rome">
-    <template data-icon><span class="team-avatar" data-team="Design">SR</span></template>
-  </maplace-location>
-  <maplace-location location-id="marcus-johnson" lat="33.749" lng="-84.388" title="Marcus Johnson" group="Growth"
-    search-text="Atlanta Partnerships" data-role="Partnerships" data-city="Atlanta" data-time-zone="America/New_York">
-    <template data-icon><span class="team-avatar" data-team="Growth">MJ</span></template>
-  </maplace-location>
-  <maplace-location location-id="emily-tremblay" lat="45.5017" lng="-73.5673" title="Emily Tremblay" group="Support"
-    search-text="Montréal Support engineer" data-role="Support engineer" data-city="Montréal" data-time-zone="America/Toronto">
-    <template data-icon><span class="team-avatar" data-team="Support">ET</span></template>
-  </maplace-location>
-  <maplace-location location-id="diego-alvarez" lat="-34.6037" lng="-58.3816" title="Diego Alvarez" group="Engineering"
-    search-text="Buenos Aires Mobile engineer" data-role="Mobile engineer" data-city="Buenos Aires" data-time-zone="America/Argentina/Buenos_Aires">
-    <template data-icon><span class="team-avatar" data-team="Engineering">DA</span></template>
-  </maplace-location>
-  <maplace-location location-id="leah-park" lat="47.6062" lng="-122.3321" title="Leah Park" group="Design"
-    search-text="Seattle User researcher" data-role="User researcher" data-city="Seattle" data-time-zone="America/Los_Angeles">
-    <template data-icon><span class="team-avatar" data-team="Design">LP</span></template>
-  </maplace-location>
-  <maplace-location location-id="yusuf-demir" lat="41.0082" lng="28.9784" title="Yusuf Demir" group="Growth"
-    search-text="Istanbul Growth marketer" data-role="Growth marketer" data-city="Istanbul" data-time-zone="Europe/Istanbul">
-    <template data-icon><span class="team-avatar" data-team="Growth">YD</span></template>
-  </maplace-location>
-</maplace-map>
+  group-filter search search-label="Find someone" globe
+  src="/examples/data/team.json"></maplace-map>
 <script>
   {
     const map = document.getElementById("team-maplibre-map");
@@ -141,11 +61,19 @@
       return element;
     };
 
-    // A person's entry in the list, the page's own: their face (their location's own icon), name,
-    // role and city from their <maplace-location>'s data- attributes, and the time where they are.
+    // A person's marker, and their face in the list: their initials on their team's colour.
+    const avatarOf = ({ group, data }) => {
+      const avatar = span("team-avatar", data.initials);
+      avatar.dataset.team = group;
+      return avatar;
+    };
+    map.markerIcon = avatarOf;
+
+    // A person's entry in the list, the page's own: their face, name, role and city from their
+    // data in team.json, and the time where they are.
     const memberItem = ({ location }) => {
-      const person = map.querySelector(`maplace-location[location-id="${CSS.escape(location.id)}"]`).dataset;
-      const face = location.icon(location, { selected: false, hovered: false });
+      const person = location.data;
+      const face = avatarOf(location);
       face.setAttribute("aria-hidden", "true");
       return span("team-member", face, span("team-member-text",
         span("team-member-name", location.title),

@@ -2,7 +2,7 @@
 
 Picking a place opens a card: its title as the popup's heading, then its photo, category, opening hours and rating, and two buttons, one showing the place in a maps site, one getting directions there.
 
-- **Try it**: pick the Colosseum's pin for its card. "Open in Maps" and "Directions" go to Google Maps on Google and to OpenStreetMap on MapLibre, in a new tab; the card's look, buttons included, is the example's stylesheet. The ratings, reviews and hours are sample figures.
+- **Note**: the ratings, reviews and hours are sample figures.
 - **HTML**: a `<template>` inside each `<maplace-location>` holds its card ([Templates](../../../../docs/reference/element.md#templates)), and `open-in-maps-link` and `directions-link` on `<maplace-map>` add the two links, styled through `.maplace-popup-links` ([Styling](../../../../docs/reference/styling.md)), and `center` and `zoom` set the first view ([Map attributes](../../../../docs/reference/element.md#map-attributes)).
 - **Script** and **Bundler**: each place's details in its `data`, and `content`, a function filling the page's card `<template>` from them ([Content](../../../../docs/reference/locations.md#content)); `popup: { openInMapsLink: true, directionsLink: true }` in the map's options ([Popup options](../../../../docs/reference/store.md#popup-options)), and `view` for the first view ([The first view](../../../../docs/reference/store.md#the-first-view)).
 - **React**: `popupContent` on `<MaplaceMap>` renders the card from `data` ([`<MaplaceMap>`](../../../../docs/reference/react.md#maplacemap)), and the same `popup` and `view` are props of `<MaplaceProvider>` ([`<MaplaceProvider>`](../../../../docs/reference/react.md#maplaceprovider)).

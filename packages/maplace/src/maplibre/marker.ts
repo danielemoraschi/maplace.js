@@ -1,3 +1,6 @@
+import { anchorFor, isPinIcon, paintPin } from "../adapter-kit/pin-icon";
+import { pinLiftOf } from "../adapter-kit/pin-image";
+import { pinLookIn } from "../adapter-kit/pin-looks";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { isInFront, stackRank } from "../adapter-kit/stacking";
 import type { Drawable } from "../drawable";
@@ -5,10 +8,9 @@ import type { MarkerGeometry } from "../geometry";
 import type { LocationState } from "../location";
 import { sameState } from "../location-state";
 import type { ClusterMember } from "./clustering";
-import { createDomMarker, createPinIcon, type DomMarker } from "./dom-marker";
+import { createDomMarker, type DomMarker } from "./dom-marker";
 import type { LocationProperties } from "./feature-set";
 import { pinFeature } from "./location-features";
-import { PIN_SIZE } from "./pin-image";
 import type { PlacedMarker, PlacingSite } from "./placed-location";
 
 /**
@@ -28,7 +30,8 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   const { id } = drawable;
   let drawn = drawable;
   let look = site.lookOf(id);
-  let pinIcon: HTMLElement | undefined;
+  /** The pin a draggable marker shows in the DOM, made the first time it does. */
+  let ownPin: HTMLImageElement | undefined;
   let icon = iconFor(drawable, look.state);
   let dom: DomMarker | undefined;
   let folded = false;
@@ -41,14 +44,17 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   /**
    * What the marker shows in the DOM: the page's icon; else, while it can be dragged, the pin, as
    * only a DOM marker drags; else nothing, a pin in the pin layer. A heat marker shows nothing
-   * there, whatever icon the page draws for every marker (React's `markerIcon`): it is heat.
+   * there, whatever icon the page draws for every marker (a `markerIcon`, the store's or React's):
+   * it is heat.
    */
   function iconFor(shown: Drawable, state: LocationState): Node | undefined {
     if (shown.heatWeight !== undefined) return undefined;
     const pageIcon = shown.renderIcon?.(state);
     if (pageIcon !== undefined || !shown.editable) return pageIcon;
-    pinIcon ??= createPinIcon(site.mounted.map.getContainer().ownerDocument);
-    return pinIcon;
+    // One pin in the state's look: the same node, so a drag in progress keeps hold of it.
+    const document = site.mounted.map.getContainer().ownerDocument;
+    ownPin = paintPin(document, pinLookIn(site.pinLooks, state), ownPin);
+    return ownPin;
   }
 
   /**
@@ -57,7 +63,7 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
    */
   function changesIcon(next: Drawable): boolean {
     if (next.renderIcon !== drawn.renderIcon) return true;
-    const showsPageIcon = icon !== undefined && icon !== pinIcon;
+    const showsPageIcon = icon !== undefined && !isPinIcon(icon);
     return next.editable !== drawn.editable && !showsPageIcon;
   }
 
@@ -98,13 +104,17 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     const sent = pins.featureOf(id);
     if (moved || sent === undefined) pins.put(feature);
     else if (!sameHeat(sent.properties, feature.properties)) pins.restyle(feature.properties);
-    if (isInFront(look.state)) frontPins.show(id, pointOf(drawn), rank());
+    if (isInFront(look.state)) frontPins.show(id, pointOf(drawn), rank(), look.state);
     else frontPins.hide(id);
   }
 
-  /** Shows the icon in its DOM marker, made the first time it is drawn: none for one never seen. */
+  /**
+   * Shows the icon in its DOM marker, made the first time it is drawn and again, focus kept, for an
+   * icon met at another anchor: none for one never seen.
+   */
   function showIcon(built: Node): void {
     hidePin();
+    const focused = takeOffIfMetElsewhere(built);
     if (dom === undefined) {
       if (!isDrawn()) return;
       const draggable = drawn.editable;
@@ -114,6 +124,22 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
       dom.restack(rank());
     }
     dom.setVisible(isDrawn());
+    if (focused) dom.marker.getElement().focus();
+  }
+
+  /**
+   * Takes the DOM marker off when `built` meets the point at another anchor, which MapLibre's
+   * `Marker` can't change, unless it is being dragged: whether it held the keyboard's focus.
+   */
+  function takeOffIfMetElsewhere(built: Node): boolean {
+    if (dom === undefined || dom.anchor === anchorFor(built) || dom.isDragged()) return false;
+    const element = dom.marker.getElement();
+    const focused = element.contains(element.ownerDocument.activeElement);
+    // Taken off under the pointer, it hears no `pointerleave`: the pointer lets it go here.
+    if (element.matches(":hover")) site.hover.leave("pointer", id);
+    dom.remove();
+    dom = undefined;
+    return focused;
   }
 
   /** Takes its pin out of the pin layer, and from in front of it. */
@@ -129,8 +155,8 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     isInDom: () => dom !== undefined || frontPins.isShown(id),
     rank,
     popupPlace: () =>
-      dom === undefined
-        ? { at: pointOf(drawn), lift: PIN_SIZE.height }
+      dom === undefined || isPinIcon(icon)
+        ? { at: pointOf(drawn), lift: pinLiftOf(site.pinLooks) }
         : { at: pointOf(drawn), marker: dom.marker.getElement() },
     update(next) {
       const moved = next.geometry !== drawn.geometry;

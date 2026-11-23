@@ -150,13 +150,14 @@ describe("<maplace-map>'s load panel", () => {
 
   it("hides in the error state, and returns when the misuse is corrected", async () => {
     styledPage();
-    const map = await heldMap('selected-id="missing"');
+    // A held map has no store before release: a bad attribute value is the misuse it says.
+    const map = await heldMap('selected-label=" "');
     errorsOn(map);
     await nextTask();
     expect(map.loadState).toBe("error");
     const panel = panelIn(map);
     expect(panel === null ? "none" : getComputedStyle(panel).display).toBe("none");
-    map.locations = [{ id: "missing", lat: 1, lng: 2, title: "Found" }];
+    map.removeAttribute("selected-label");
     await expect.poll(() => map.loadState).toBe("idle");
     expect(getComputedStyle(panelIn(map) as Element).display).toBe("grid");
   });

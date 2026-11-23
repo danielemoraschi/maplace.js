@@ -4,18 +4,8 @@
     color-scheme: light;
     /* An anchor's target lands below the sticky header, not under it. */
     scroll-padding-top: var(--spacing-header);
-  }
-
-  /* On an examples' page, below the examples' bar held under the header too. */
-  :root:has([data-group-bar]) {
-    scroll-padding-top: calc(var(--spacing-header) + var(--spacing-group-bar));
-  }
-
-  /* The bar's two rows below 48rem, the toggle's then the links' (`ExampleGroupBar.astro`). */
-  @media (width < 48rem) {
-    :root {
-      --spacing-group-bar: 5.8125rem;
-    }
+    /* Every code block rounded as the home page's panels are (W66), a doc's as an example's. */
+    --code-corner: var(--radius-panel);
   }
 
   *,

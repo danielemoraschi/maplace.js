@@ -2,6 +2,14 @@ import type { Geometry } from "../geometry";
 import type { ResolvedView } from "../viewport";
 import { type CameraMove, type CameraSite, cameraMove } from "./camera-move";
 import type { DiffQueue } from "./diff-queue";
+import {
+  deeperInsets,
+  type Insets,
+  insetsLeavingRoom,
+  NO_INSETS,
+  sameInsets,
+  sizeClearOf,
+} from "./panel-insets";
 import type { MapSize } from "./web-mercator";
 
 /** The view the map was last moved to, while nothing else has moved it. */
@@ -19,7 +27,14 @@ export interface ViewSite {
   sizeOf(): MapSize | undefined;
   /** Where a placed location is drawn now. */
   geometryOf(id: string): Geometry | undefined;
-  move(move: CameraMove): void;
+  /** What maplace's panels cover of the map's edges now: a fit keeps clear of it where there is room. */
+  panelInsets(): Insets;
+  /** What a fit always keeps clear of, whatever the room: a provider's own (MapLibre's attribution). */
+  keptClear(): Insets;
+  /** Whether anything a fit keeps clear of now reaches into the map inside `insets`. */
+  reachesInto(insets: Insets): boolean;
+  /** Moves the camera, a fit kept clear of `insets` as well as its own padding. */
+  move(move: CameraMove, insets: Insets): void;
   readonly standing: StandingView;
 }
 
@@ -30,8 +45,24 @@ export interface ViewFollower {
   sync(): void;
   /** The map's size or projection changed: the standing view is shown again. */
   resized(): void;
+  /**
+   * What covers the map's edges may have changed (a panel placed, grown or gone): a standing fit is
+   * shown again if it no longer keeps clear of it.
+   */
+  panelsSettled(): void;
   open(site: ViewSite): void;
   close(): void;
+}
+
+/** What a move to `view` keeps clear of: the panels where they leave room, and the provider's own. */
+function clearOfFor(site: ViewSite, size: MapSize, view: ResolvedView): Insets {
+  const panels = insetsLeavingRoom(site.panelInsets(), size, paddingOf(view));
+  return deeperInsets(panels, site.keptClear());
+}
+
+/** The padding a view keeps around what it fits; none for a view that fits nothing. */
+function paddingOf(view: ResolvedView): number {
+  return view.kind === "fit-bounds" ? view.padding : 0;
 }
 
 /** A view still to show, and how many diffs the store had applied when it sent it. */
@@ -51,16 +82,30 @@ export function createViewFollower(
 ): ViewFollower {
   let waiting: WaitingView | undefined;
   let site: ViewSite | undefined;
+  /** What the last move kept clear of. */
+  let clearOfAtMove: Insets = NO_INSETS;
+  /** What covered the map's edges at the last move, kept clear of or not (the room rule). */
+  let coveredAtMove: Insets = NO_INSETS;
 
   function sync(): void {
     if (site === undefined || waiting === undefined) return;
     const size = site.sizeOf();
     if (size === undefined) return;
-    const move = cameraMove(waiting.view, cameraSiteFor(site, waiting, size));
+    const clearOf = clearOfFor(site, size, waiting.view);
+    const move = cameraMove(waiting.view, cameraSiteFor(site, waiting, sizeClearOf(size, clearOf)));
     if (move === undefined) return;
     site.standing.shown(waiting.view);
     waiting = undefined;
-    site.move(move);
+    clearOfAtMove = clearOf;
+    coveredAtMove = deeperInsets(site.panelInsets(), site.keptClear());
+    site.move(move, clearOf);
+  }
+
+  /** Shows the standing view again: the map changed under it. */
+  function showStanding(): void {
+    const view = site?.standing.standing();
+    waiting ??= view && { view, diffsBefore: drawing.applied() };
+    sync();
   }
 
   /** The map as `waiting` sees it: no location is known until the diffs before it are drawn. */
@@ -78,10 +123,21 @@ export function createViewFollower(
       sync();
     },
     sync,
-    resized() {
+    resized: showStanding,
+    panelsSettled() {
       const view = site?.standing.standing();
-      waiting ??= view && { view, diffsBefore: drawing.applied() };
-      sync();
+      const size = site?.sizeOf();
+      if (site === undefined || view?.kind !== "fit-bounds" || size === undefined) return;
+      // Fitted again only when a panel reaches past what covered the map at the fit, and the fit
+      // would change: a list narrowing as the visitor types, whichever edge it now counts on and
+      // kept clear of or not, leaves the camera where it is (RFC); a panel that grows fits again.
+      if (sameInsets(clearOfFor(site, size, view), clearOfAtMove)) {
+        // The fit stands as it is with what covers the map now: a panel that came too large to
+        // keep clear of is part of what it was fitted with from here on.
+        coveredAtMove = deeperInsets(coveredAtMove, site.panelInsets());
+        return;
+      }
+      if (site.reachesInto(coveredAtMove)) showStanding();
     },
     open(next) {
       site = next;

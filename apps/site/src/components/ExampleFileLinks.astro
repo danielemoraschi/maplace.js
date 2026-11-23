@@ -2,23 +2,28 @@
 import type { ExampleFileLink } from "../examples/example-file-links.ts";
 
 interface Props {
-  /** What the files are to the example: "Fetches", "Styled by". */
-  lead: string;
-  links: readonly ExampleFileLink[];
+  /** Each kind of file the example uses, as "Fetches" or "Styled by" and its files. */
+  parts: readonly { lead: string; links: readonly ExampleFileLink[] }[];
 }
 
-const { lead, links } = Astro.props;
+const shown = Astro.props.parts.filter(({ links }) => links.length > 0);
 ---
 
+{/* The files an example uses beside its code, on one line: each kind led by what it is to the example. */}
 {
-  links.length > 0 && (
-    <p class="mt-1 mb-0 text-sm text-muted">
-      {lead}{" "}
-      {links.map(({ file, url, onlyOn }, index) => (
+  shown.length > 0 && (
+    <p class="mt-2 mb-0 text-sm text-muted">
+      {shown.map(({ lead, links }, part) => (
         <>
-          {index > 0 && ", "}
-          <a href={url} target="_blank" rel="noopener">{file}</a>
-          {onlyOn && ` (used by ${onlyOn})`}
+          {part > 0 && <span aria-hidden="true"> · </span>}
+          {lead}{" "}
+          {links.map(({ file, url, onlyOn }, index) => (
+            <>
+              {index > 0 && ", "}
+              <a href={url} target="_blank" rel="noopener">{file}</a>
+              {onlyOn && ` (used by ${onlyOn})`}
+            </>
+          ))}
         </>
       ))}
     </p>

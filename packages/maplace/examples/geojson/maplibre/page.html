@@ -1,0 +1,17 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #geojson-maplibre-map { height: 36rem; }
+    #geojson-maplibre-map > .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<!-- A GeoJSON file as the map's layer: the park an area, its avenue a line, its places markers, each feature's about property in the popup a click opens. -->
+<maplace-map id="geojson-maplibre-map" list></maplace-map>
+<script type="module">
+  const response = await fetch("/examples/data/regents-park.json");
+  document.getElementById("geojson-maplibre-map").locations = Maplace.locationsFromGeoJSON(await response.json()).map(
+    (feature) => ({ ...feature, content: feature.data?.about }),
+  );
+</script>

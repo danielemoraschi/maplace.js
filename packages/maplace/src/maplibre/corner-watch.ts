@@ -27,13 +27,17 @@ const INERT: CornerWatch = { settle() {}, stop() {} };
  * attribution folding) or what a corner holds changes (a list's entries). A map without MapLibre's
  * corners gets a watch that does nothing.
  */
-export function watchCorners(map: MapLibreMap): CornerWatch {
+export function watchCorners(map: MapLibreMap, onSettled: () => void): CornerWatch {
   const container = map.getContainer();
   const corners = cornerElementsIn(container);
-  return corners === undefined ? INERT : cornerWatchOn(container, corners);
+  return corners === undefined ? INERT : cornerWatchOn(container, corners, onSettled);
 }
 
-function cornerWatchOn(container: HTMLElement, corners: CornerElements): CornerWatch {
+function cornerWatchOn(
+  container: HTMLElement,
+  corners: CornerElements,
+  onSettled: () => void,
+): CornerWatch {
   let pendingFrame: number | undefined;
 
   function cancelPendingFrame(): void {
@@ -41,8 +45,14 @@ function cornerWatchOn(container: HTMLElement, corners: CornerElements): CornerW
     pendingFrame = undefined;
   }
 
+  /** Lays the corners out, then says so: what they cover may have changed. */
   function settle(): void {
     cancelPendingFrame();
+    layOut();
+    onSettled();
+  }
+
+  function layOut(): void {
     for (let round = 0; round < SETTLE_ROUNDS; round += 1) {
       const measured = measureCorners(container, corners);
       if (!holdsAnyPanel(measured)) {

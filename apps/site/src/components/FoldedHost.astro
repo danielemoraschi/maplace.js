@@ -1,20 +1,23 @@
 ---
 import type { HostParts } from "../examples/bootstrap-fold.ts";
 import type { ExampleFile } from "../examples/example-sources.ts";
+import { foldMarks } from "../site/foldable-code.ts";
 import SourceCode from "./SourceCode.astro";
 
 interface Props {
+  /** The whole file, which its copy button copies. */
+  code: string;
   parts: HostParts;
   lang: ExampleFile["lang"];
 }
 
-const { parts, lang } = Astro.props;
+const { code, parts, lang } = Astro.props;
 ---
 
-<div class="folded-host bg-code-paper py-4 text-code-ink">
+<div class="folded-host bg-code-paper py-4 text-code-ink" data-copy-text={code} {...foldMarks(code)}>
   <SourceCode code={parts.before} lang={lang} />
   <details>
-    <summary class="cursor-pointer px-5 py-1 font-code text-sm">
+    <summary class="cursor-pointer px-5 py-1 font-code text-sm select-none">
       Google's bootstrap loader, with your API key: from Google's docs
     </summary>
     <SourceCode code={parts.loader} lang={lang} />

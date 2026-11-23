@@ -1,0 +1,51 @@
+---
+import type { NavLink } from "../site/nav-link.ts";
+
+interface Props {
+  links: readonly NavLink[];
+  /** The href of the page shown, marked. */
+  current: string;
+}
+
+const { links, current } = Astro.props;
+const marked = (href: string) => (href === current ? "page" : undefined);
+/**
+ * A list of pages: a rule beside it, its links indented. Every row about 28px, spaced by its
+ * padding, not its line height, so a name that wraps reads as one item (W85).
+ */
+const RULED = "border-l-3 border-ink pl-4";
+/** In a sectioned list the rule moves from the list to each section's pages. */
+const sectioned = links.some(({ children }) => children !== undefined);
+/** The page shown's link, marked by its `aria-current`: set once on the list for all its links. */
+const CURRENT =
+  "[&_[aria-current=page]]:font-semibold [&_[aria-current=page]]:underline [&_[aria-current=page]]:decoration-accent [&_[aria-current=page]]:decoration-2 [&_[aria-current=page]]:underline-offset-3";
+---
+
+<ul
+  class:list={[
+    "m-0 list-none text-sm leading-[1.4] [&_li]:py-1",
+    sectioned ? "p-0" : RULED,
+    CURRENT,
+  ]}
+>
+  {
+    links.map(({ href, label, children }) => (
+      <li>
+        <a href={href} aria-current={marked(href)} class:list={["no-underline", children && "font-semibold"]}>
+          {label}
+        </a>
+        {children && (
+          <ul class:list={["m-0 mt-2 mb-2 list-none", RULED]}>
+            {children.map((child) => (
+              <li>
+                <a href={child.href} aria-current={marked(child.href)} class="no-underline">
+                  {child.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))
+  }
+</ul>

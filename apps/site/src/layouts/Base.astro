@@ -6,20 +6,30 @@ import "../styles/site.css";
 // Imported, not in public/: the build names it by its content, so a new icon is a new URL and no
 // browser keeps showing the old one.
 import faviconUrl from "../assets/favicon.svg?no-inline";
+import CodeCopyTemplate from "../components/CodeCopyTemplate.astro";
 import SearchMetadata from "../components/SearchMetadata.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { CONSENT_GRANTED, CONSENT_KEY } from "../consent/consent-store.ts";
 import { LLMS_TXT_ROUTE } from "../site/agent-links.ts";
 import { AGENT_SKILLS_INDEX_PATH } from "../site/agent-skill-paths.ts";
+import type { SharingImage } from "../site/head-meta-tags.ts";
 import { markdownAddressAt } from "../site/markdown-routes.ts";
 
 interface Props {
+  /** The page's `<title>`, within `TITLE_LIMIT`: most pages' `pageTitle` of their heading. */
   title: string;
   description: string;
+  /** The page's own sharing image, for `SearchMetadata`. */
+  sharingImage?: SharingImage | undefined;
+  /**
+   * How wide its content runs: within the site's measure, ending a space above the footer, or edge
+   * to edge, each part holding its own measure and its own end (the home page's grounds, W66).
+   */
+  width?: "measure" | "full";
 }
 
-const { title, description } = Astro.props;
+const { title, description, sharingImage, width = "measure" } = Astro.props;
 const ownMarkdown = markdownAddressAt(Astro.url.pathname);
 ---
 
@@ -33,7 +43,7 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
     {ownMarkdown && <link rel="alternate" type="text/markdown" href={ownMarkdown} />}
     <link rel="describedby" href={LLMS_TXT_ROUTE} />
     <link rel="describedby" href={AGENT_SKILLS_INDEX_PATH} type="application/json" />
-    <SearchMetadata title={title} description={description} />
+    <SearchMetadata title={title} description={description} sharingImage={sharingImage} />
     <link rel="icon" href={faviconUrl} type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {/* Before the first paint, so a returning visitor's placeholders never show. */}
@@ -42,13 +52,15 @@ const ownMarkdown = markdownAddressAt(Astro.url.pathname);
         if (localStorage.getItem(key) === granted) document.documentElement.dataset.maps = "on";
       } catch {}
     </script>
+    <slot name="head" />
   </head>
   {/* A column at least the screen's height, so a short page's footer still sits at the bottom. */}
   <body class="flex min-h-dvh flex-col">
     <SiteHeader />
     {/* Its own stacking context: a map's z-indexes (Google's run to millions) stay under the header. */}
-    <main class="wrap isolate grow"><slot /></main>
+    <main class:list={["isolate grow", { "wrap pb-16": width === "measure" }]}><slot /></main>
     <SiteFooter />
+    <CodeCopyTemplate />
     <script>
       import "../scripts/site.ts";
     </script>

@@ -50,7 +50,7 @@ export function assembleGoogleAdapter(
   const originDot = createGoogleOriginDot(state);
   const camera = createCamera(state, drawing);
   const routing = createGoogleRouting(state, drawing);
-  const controls = createControls(options.colorScheme);
+  const controls = createControls(camera.panelsSettled, options.colorScheme);
   const heat = createHeatPart(state);
   const parts = [
     mapClicks,

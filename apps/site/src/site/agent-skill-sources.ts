@@ -1,7 +1,5 @@
-import { section } from "../../../../scripts/docs/markdown.ts";
 import { exampleFile, langOf } from "../examples/example-sources.ts";
-import { docRoute, REPO_DOCS } from "./repo-docs.ts";
-import { type RepoDocSettings, repoDocMarkdown } from "./repo-docs-loader.ts";
+import { docSectionOnSite, type RepoDocSettings } from "./repo-docs-loader.ts";
 import { SITE_LINK } from "./site-link-targets.ts";
 
 /** What the skill is written from. */
@@ -20,10 +18,7 @@ export function exampleSnippet(folder: string, file: string): string {
 
 /** The text under `heading` of the doc page `id`, every link working from outside the site. */
 export function docSection(id: string, heading: string, settings: AgentSkillSettings): string {
-  const doc = REPO_DOCS.find((each) => each.id === id);
-  if (doc === undefined) throw new Error(`${id} isn't in REPO_DOCS`);
-  const text = section(repoDocMarkdown(doc, settings), heading, doc.file);
-  return withAbsoluteSiteLinks(text, pageUrl(docRoute(id), settings.site)).trim();
+  return withAbsoluteSiteLinks(docSectionOnSite(id, heading, settings), settings.site).trim();
 }
 
 export function pageUrl(route: string, site: string): string {
@@ -34,7 +29,7 @@ export function codeList(names: readonly string[]): string {
   return names.map((name) => `\`${name}\``).join(", ");
 }
 
-/** `markdown` with its rooted and same-page links absolute, from `page` on the site. */
-function withAbsoluteSiteLinks(markdown: string, page: string): string {
-  return markdown.replaceAll(SITE_LINK, (_, target: string) => `](${new URL(target, page).href})`);
+/** `markdown` with its rooted links absolute, on the site at `site`. */
+function withAbsoluteSiteLinks(markdown: string, site: string): string {
+  return markdown.replaceAll(SITE_LINK, (_, target: string) => `](${pageUrl(target, site)})`);
 }

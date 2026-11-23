@@ -11,9 +11,15 @@ beforeAll(() => {
 });
 
 function hostWith(html: string): HTMLElement {
+  const host = unconnectedHostWith(html);
+  document.body.replaceChildren(host);
+  return host;
+}
+
+/** A host never in the page, as a script builds a map before it appends it. */
+function unconnectedHostWith(html: string): HTMLElement {
   const host = document.createElement("div");
   host.innerHTML = html;
-  document.body.replaceChildren(host);
   return host;
 }
 
@@ -55,6 +61,47 @@ describe("readLocationSource", () => {
     host.querySelector("maplace-location")?.setAttribute("tags", "parking open-late");
     expect(readLocationSource(host)[0]).not.toBe(first);
     expect(readLocationSource(host)[0]?.tags).toEqual(["parking", "open-late"]);
+  });
+
+  it("reads a location again when one of its data-* attributes changes", async () => {
+    const host = hostWith(ROME);
+    const [first] = readLocationSource(host);
+    host.querySelector("maplace-location")?.setAttribute("data-population", "37000000");
+    await nextTask();
+    expect(readLocationSource(host)[0]).not.toBe(first);
+    expect(readLocationSource(host)[0]?.data).toEqual({ population: "37000000" });
+  });
+
+  it("keeps a location the same when a data-* attribute is set to its own value", async () => {
+    const host = hostWith(ROME.replace("<maplace-location", '<maplace-location data-city="Rome"'));
+    const [first] = readLocationSource(host);
+    host.querySelector("maplace-location")?.setAttribute("data-city", "Rome");
+    await nextTask();
+    expect(readLocationSource(host)[0]).toBe(first);
+  });
+
+  it("reads nothing again for an attribute that is neither data-* nor read", async () => {
+    const host = hostWith(ROME);
+    const [first] = readLocationSource(host);
+    host.querySelector("maplace-location")?.setAttribute("class", "pinned");
+    await nextTask();
+    expect(readLocationSource(host)[0]).toBe(first);
+  });
+
+  it("reads a data-* change of a location never connected, after its location was read", async () => {
+    const host = unconnectedHostWith(ROME);
+    readLocationSource(host);
+    host.querySelector("maplace-location")?.setAttribute("data-city", "Rome");
+    await nextTask();
+    expect(readLocationSource(host)[0]?.data).toEqual({ city: "Rome" });
+  });
+
+  it("reads a template added to a location never connected, after its location was read", async () => {
+    const host = unconnectedHostWith(ROME);
+    readLocationSource(host);
+    host.querySelector("maplace-location")?.append(document.createElement("template"));
+    await nextTask();
+    expect(readLocationSource(host)[0]?.content).toBeTypeOf("function");
   });
 
   it("watches the tags attribute, so a change reaches the store", () => {

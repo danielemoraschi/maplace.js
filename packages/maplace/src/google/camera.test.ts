@@ -1,12 +1,14 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FIT_MAX_ZOOM } from "../adapter-kit/camera-move";
+import { CONTROL_CLASS } from "../adapter-kit/control-styles";
 import {
   markerDrawable,
   polygonDrawable,
   reshaped,
   squareAround,
 } from "../testing/conformance/fixtures";
+import { type LaidOutBox, laidOutAt } from "./testing/laid-out";
 import { cameraOnStubs, opened } from "./testing/stub-camera";
 
 afterEach(() => vi.unstubAllGlobals());
@@ -75,7 +77,7 @@ describe("the Google camera", () => {
     const { map, camera } = opened();
     const box = { south: -20, west: 170, north: 0, east: -170 };
     camera.setView({ kind: "fit-bounds", bounds: box, padding: 40 });
-    expect(map.fitBounds).toHaveBeenCalledWith(box, 40);
+    expect(map.fitBounds).toHaveBeenCalledWith(box, { top: 40, right: 40, bottom: 40, left: 40 });
     const point = { south: 10, west: 20, north: 10, east: 20 };
     camera.setView({ kind: "fit-bounds", bounds: point, padding: 40 });
     expect(map.moveCamera).toHaveBeenCalledWith({
@@ -93,5 +95,52 @@ describe("the Google camera", () => {
     destroy();
     camera.setView({ kind: "center", center: { lat: 5, lng: 6 }, zoom: 4 });
     expect(map.moveCamera).toHaveBeenCalledOnce();
+  });
+});
+
+/** A maplace panel on `map`'s div, its box and the map's set as a browser would lay them out. */
+function panelOn(map: { getDiv(): HTMLElement }, box: LaidOutBox) {
+  const div = map.getDiv();
+  laidOutAt(div, [0, 0, 512, 512]);
+  const panel = document.createElement("div");
+  panel.className = CONTROL_CLASS;
+  laidOutAt(panel, box);
+  div.append(panel);
+  return panel;
+}
+
+describe("the Google camera's fit clear of maplace's panels (N32)", () => {
+  const box = { south: -20, west: 170, north: 0, east: -170 };
+
+  it("pads a fit by a panel on the map, on the edge it costs the map less", () => {
+    const { map, camera } = opened();
+    panelOn(map, [312, 10, 190, 60]);
+    camera.setView({ kind: "fit-bounds", bounds: box, padding: 40 });
+    expect(map.fitBounds).toHaveBeenCalledWith(box, { top: 110, right: 40, bottom: 40, left: 40 });
+  });
+
+  it("fits a standing fit again on the map's idle after a panel came, and not after nothing changed", () => {
+    const { map, camera } = opened();
+    camera.setView({ kind: "fit-bounds", bounds: box, padding: 40 });
+    map.trigger("idle");
+    expect(map.fitBounds).toHaveBeenCalledOnce();
+    panelOn(map, [312, 10, 190, 60]);
+    map.trigger("idle");
+    expect(map.fitBounds).toHaveBeenLastCalledWith(box, {
+      top: 110,
+      right: 40,
+      bottom: 40,
+      left: 40,
+    });
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+  });
+
+  it("stops listening for the map's idle once destroyed", () => {
+    const { map, camera, destroy } = opened();
+    camera.setView({ kind: "fit-bounds", bounds: box, padding: 40 });
+    destroy();
+    panelOn(map, [312, 10, 190, 60]);
+    map.trigger("idle");
+    expect(map.fitBounds).toHaveBeenCalledOnce();
   });
 });

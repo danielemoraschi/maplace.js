@@ -1,9 +1,31 @@
 import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_GROUPS, groupPath } from "../src/examples/example-sections.ts";
-import { chooseProvider, chooseVersion, groupLink, sectionPage } from "./home-sections.ts";
-import { ASKED, SETTLE_MS, settled, siteBuiltBeforeTests } from "./site-session.ts";
-import { firstMap, footerToggle, loadMapButton, openHome, placeholder } from "./visitor.ts";
+import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
+import { SITE_ROUTES } from "../src/site/site-routes.ts";
+import { contrastRatio } from "./contrast.ts";
+import { mapLibreDrawn } from "./drawn-on-maplibre.ts";
+import { reportedPolicy } from "./header-rules.ts";
+import { chooseProvider, chooseVersion, sectionPage } from "./home-sections.ts";
+import { ON_MAPLIBRE } from "./maplibre-session.ts";
+import {
+  ASKED,
+  EXAMPLE_MAPS,
+  SETTLE_MS,
+  scrollPastShownMaps,
+  settled,
+  siteBuiltBeforeTests,
+  visitingPages,
+} from "./site-session.ts";
+import {
+  consentFromFooter,
+  FIRST_EXAMPLES_PAGE,
+  firstMap,
+  footerToggle,
+  grantConsent,
+  loadMapButton,
+  openExamplesPage,
+  placeholder,
+} from "./visitor.ts";
 
 const site = siteBuiltBeforeTests();
 
@@ -34,12 +56,13 @@ const consentKept = (context: BrowserContext) =>
 describe("the site's consent to its maps", () => {
   it("asks no map provider anything until the visitor loads the maps, then Google for Maps JS", async () => {
     const { page, context, offsite, mapProviders, fetched, mapsJsRequests } = await site.visitor();
-    // Route and big share Data & routes' page.
-    await openHome(page, site.url, sectionPage("route"));
+    await openExamplesPage(page, site.url, sectionPage("route"));
     await chooseProvider(page, "Google");
     // A version chosen before consent waits too, as the pages' own scripts wait for their maps:
-    // big's 4,000 points aren't fetched by its page or its React version.
+    // big's 4,000 points aren't fetched by its page or its React version, on Google as chosen.
     await chooseVersion(page, "route", "Bundler");
+    await page.waitForTimeout(SETTLE_MS);
+    await openExamplesPage(page, site.url, sectionPage("big"));
     await chooseVersion(page, "big", "React");
     await page.waitForTimeout(SETTLE_MS);
     expect(mapProviders()).toEqual([]);
@@ -52,35 +75,40 @@ describe("the site's consent to its maps", () => {
     await context.close();
   }, 30_000);
 
-  it("asks no map provider anything before consent on any group, loaded or switched to in place", async () => {
-    const { page, context, offsite, mapProviders } = await site.visitor();
-    const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
-    const scrollPastShownMaps = async () => {
-      for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
-    };
-    for (const group of EXAMPLE_GROUPS) {
-      await page.goto(new URL(groupPath(group), site.url).href);
-      await scrollPastShownMaps();
-    }
-    // Back home, every other group switched to in place: their panels fetched, held still.
-    await page.goto(site.url);
-    for (const group of EXAMPLE_GROUPS.slice(1)) {
-      await groupLink(page, group.label).click();
-      await page.waitForURL(new URL(groupPath(group), site.url).href);
-      await scrollPastShownMaps();
-    }
-    await page.waitForTimeout(SETTLE_MS);
-    expect(mapProviders()).toEqual([]);
-    expect(offsite()).toEqual([]);
-    await context.close();
-  }, 60_000);
+  it(
+    "asks no map provider anything before consent on any example's page",
+    async () => {
+      const { page, context, offsite, mapProviders } = await site.visitor();
+      const routes = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
+      await scrollPastShownMaps(page, site.url, routes, page.locator(EXAMPLE_MAPS));
+      await page.waitForTimeout(SETTLE_MS);
+      expect(mapProviders()).toEqual([]);
+      expect(offsite()).toEqual([]);
+      await context.close();
+    },
+    visitingPages(EXAMPLE_PAGE_ENTRIES.length),
+  );
+
+  it.each([FIRST_EXAMPLES_PAGE, "/builder/"])(
+    "draws the Load maps button's text at 4.5:1 or more against its red, on %s",
+    async (route) => {
+      const { page, context } = await site.visitor();
+      await openExamplesPage(page, site.url, route);
+      const { color, backgroundColor } = await placeholder(page).evaluate((button) =>
+        getComputedStyle(button),
+      );
+      expect(contrastRatio(color, backgroundColor)).toBeGreaterThanOrEqual(4.5);
+      await context.close();
+    },
+    30_000,
+  );
 
   it("remembers consent: the next visit loads the maps with no placeholder shown", async () => {
     const { page, context, mapProviders } = await site.visitor();
-    await openHome(page, site.url);
+    await openExamplesPage(page, site.url);
     await placeholder(page).click();
     const next = await context.newPage();
-    await next.goto(site.url, { waitUntil: "domcontentloaded" });
+    await next.goto(new URL(FIRST_EXAMPLES_PAGE, site.url).href, { waitUntil: "domcontentloaded" });
     expect(await placeholder(next).isVisible()).toBe(false);
     const before = mapProviders().length;
     await firstMap(next).scrollIntoViewIfNeeded();
@@ -90,7 +118,7 @@ describe("the site's consent to its maps", () => {
 
   it("forgets consent from the footer: the page reloads with the maps off", async () => {
     const { page, context, mapProviders } = await site.visitor();
-    await openHome(page, site.url);
+    await openExamplesPage(page, site.url);
     await placeholder(page).click();
     await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
     // A MapLibre map, the first one, asks OpenFreeMap more than once as it opens.
@@ -109,26 +137,57 @@ describe("the site's consent to its maps", () => {
 
   it("turns the maps on from the footer as from a placeholder", async () => {
     const { page, context, mapProviders } = await site.visitor();
-    await openHome(page, site.url);
-    await footerToggle(page).click();
+    await openExamplesPage(page, site.url);
+    await consentFromFooter(page);
     await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
     await context.close();
   }, 30_000);
 
   it("shows no load panel of the library's on a map still held after consent", async () => {
     const { page, context } = await site.visitor();
-    await openHome(page, site.url, sectionPage("route"));
+    await openExamplesPage(page, site.url);
     await placeholder(page).click();
-    // Load on demand's map keeps its panel: it holds itself, for its reader to press.
-    const others = "maplace-map:not([data-held-by-example])";
-    const panels = `${others}:state(idle) .maplace-load-panel`;
+    const maps = "maplace-map:not([data-held-by-example])";
+    const panels = `${maps}:state(idle) .maplace-load-panel`;
     expect(new Set(await displaysOf(page, panels))).toEqual(new Set(["none"]));
-    // One not released yet hides its panel too, until pressing it can load the map.
+    expect(await placeholder(page).isVisible()).toBe(false);
+    expect(await loadMapButton(page.locator(maps)).count()).toBe(0);
+    await context.close();
+  }, 30_000);
+
+  it("hides the load panel of Load the map on click's map until it is released, after consent", async () => {
+    const { page, context } = await site.visitor();
+    await openExamplesPage(page, site.url, sectionPage("load-on-demand"));
+    await placeholder(page).click();
+    // Its map holds itself, for its reader to press; one not released yet hides the library's panel,
+    // until pressing it can load the map.
     const unreleased =
       '[data-held-by-example]:not([data-held-by-example="open"]) .maplace-load-panel';
     expect(new Set(await displaysOf(page, unreleased))).toEqual(new Set(["none"]));
     expect(await placeholder(page).isVisible()).toBe(false);
-    expect(await loadMapButton(page.locator(others)).count()).toBe(0);
     await context.close();
   }, 30_000);
+});
+
+describe("every page with the maps on, its reported policy enforced (W81)", () => {
+  it(
+    "breaks nothing: no load blocked, no error, MapLibre drawing",
+    async () => {
+      const { page, context, errors } = await site.visitor({ openFreeMap: "local" });
+      const policy = reportedPolicy();
+      // On every response from the site, as `_headers`' `/*` rule: a worker's policy is its own.
+      await context.route(`${site.url}**`, async (route) => {
+        const response = await route.fetch();
+        const headers = { ...response.headers(), "content-security-policy": policy };
+        await route.fulfill({ response, headers });
+      });
+      await grantConsent(page, site.url);
+      await expect.poll(() => mapLibreDrawn(firstMap(page)), ON_MAPLIBRE).toBe(true);
+      await scrollPastShownMaps(page, site.url, SITE_ROUTES, page.locator("maplace-map"));
+      // Chromium logs every load the policy blocks as an error, naming the directive.
+      expect(errors()).toEqual([]);
+      await context.close();
+    },
+    visitingPages(SITE_ROUTES.length + 1),
+  );
 });

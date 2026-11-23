@@ -105,13 +105,14 @@ Maplace.js builds its list once its script has run, and a map with `hold` only o
 | `open-in-maps-label` | The words of the link to the provider's maps site; "Open in Maps" when left out; does nothing without `open-in-maps-link`; can't change once the store exists; a blank one is misuse |
 | `directions-link` | Adds a link at the end of each popup, to directions to the location: Google Maps on Google, OpenStreetMap on MapLibre; can't change once the store exists |
 | `directions-label` | The words of the link to directions; "Directions" when left out; does nothing without `directions-link`; can't change once the store exists; a blank one is misuse |
-| `hold` | Stays idle, with no provider request and no list built, until `release()`. A switch, as `fit-all` is, except that a value neither true nor false holds too, as well as being misuse, so a typo can't load a map before consent. Read when the map would open: writing `false` later opens nothing, `release()` does |
+| `hold` | Stays idle, with no provider request, no list built and (1.3) no store made, until `release()`. A switch, as `fit-all` is, except that a value neither true nor false holds too, as well as being misuse, so a typo can't load a map before consent. Read when the map would open: writing `false` later opens nothing, `release()` does |
 | `loading` | `lazy`: the map stays idle until it comes within 100px of the viewport, then loads (its list is built at once), on each connect until `release()`; read when the map would open, as `hold` is. Any other value, or none, loads at once |
 | `load-label` | The words of the [load panel](#load-states)'s button; "Load map" when blank or left out; live |
 | `load-from-label` | The words before the name on that panel; "Loads from" when blank or left out; live |
 | `failure-label` | The words of the panel a map shows [when it can't be used](#load-states); "The map couldn't load." when blank or left out; live |
 | `center` | The map's first centre, `"lat,lng"` (`center="41.9,12.5"`), with `zoom`; can't change once the store exists |
 | `zoom` | The map's first zoom, with `center`; can't change once the store exists |
+| `src` | (1.3) The URL of a JSON file of its locations, fetched once the map opens past `hold`; see [Data](#data) |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address naming another location wins; `center` and `zoom` win for the first view |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
@@ -124,14 +125,15 @@ The map opens on the location a [`url-state`](#url-state) address names, if not 
 | Property | What |
 |---|---|
 | `locations` | The locations, as an array; once set, it wins over those written inside the element |
-| `route` | The [route](store.md#routes), or `undefined` |
+| `route` | The [route](store.md#routes) drawn, or `undefined` (until the store exists, even after a route is set) |
 | `sanitize` | The store's `sanitize` option, so locations given as JSON or through `locations` can use `html`. Set it before the map opens; set later, it is misuse |
+| `markerIcon` | (1.3) The store's `markerIcon`, the icon of every marker without its own: an image URL, a node, or a function building each marker's icon from its location (`({ data }) => …`). Read when the store is made, as `sanitize` is, so a page's script sets it before the map opens, and before it reads `maplace`; set later, it is misuse. It wins over the map's `<template data-icon>` |
 | `computeRoute` | Your own routing, for a map on MapLibre, which has none ([routes on MapLibre](maplibre.md#routes)); read when the map opens, so set it before; Google ignores it. On MapLibre, not a function is misuse |
 | `maplace` | The underlying [store](store.md), for anything the attributes don't cover |
 | `loadState` | `error` while a misuse stands, else the store's: `idle`, `loading`, `ready` or `error` |
 | `release` | `release()` starts loading at once an element held with `hold` or waiting with `loading="lazy"` |
 
-The store is created when the element first connects (or `maplace`, `locations` or `route` is first read), from `cluster`, `center` and `zoom`, `sanitize`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
+The store is created when the element first connects, or, for a map with `hold` (1.3), on `release()` (either way, sooner if `maplace` or `locations` is read first), from `cluster`, `center` and `zoom`, `sanitize`, `markerIcon`, `selected-id` and the locations, and lives as long as the element. Removed from the page, the map closes and the store goes back to `idle`, keeping its locations, selection and listeners; connected again, a new map opens. A move within one task keeps the map.
 
 With its built-in providers the element creates its own map. A page with a map of its own takes the parts instead ([on Google](google.md#your-own-map), [on MapLibre](maplibre.md#your-own-map)).
 
@@ -150,13 +152,13 @@ The store's [events](store.md#events), as DOM events on the element, named in lo
 | `maplace-popupclose` | `popupClose` |
 | `maplace-viewportchange` | `viewportChange` |
 | `maplace-routechange` | `routeChange` |
-| `maplace-error` | `error`, and the element's own [misuse](#misuse) |
+| `maplace-error` | `error`, the element's own [misuse](#misuse), and `locations-load-failed`, a `src` file that didn't load ([Data](#data)) |
 
 ## Load states
 
 The element's `loadState` is shown as the custom state `:state(idle)` (also `loading`, `ready` and `error`), so CSS styles the map in each, such as a consent placeholder. The element never writes its own attributes or styles; its default styles, and how to turn them off, are on [Styling](styling.md). A map with `hold` asks nothing of its provider until `release()`: a consent banner calls it once the visitor agrees, and a held map builds its list on release too. A map with `loading="lazy"` stays idle until it comes near the viewport, so a map below the fold costs no map load (Google bills each) until the visitor scrolls to it; one in a hidden panel (a closed tab, `<details>`, `display: none`) loads once shown. Its list is built at once; with `hold` as well, it waits for `release()`, which loads it wherever it is.
 
-The [Load on demand](../../packages/maplace/examples/load-on-demand/guide.md) example shows it. While it waits, with `hold` or off-screen with `loading="lazy"`, a map shows a panel in its pane: a button calling `release()` and a line naming whom it loads from. The panel asks no provider anything, and leaves as the map opens, focus passing to the pane if it held it. A placeholder a page draws with `:state(idle)` shows beside it, unless the page replaces or hides the panel, and in the `error` state the panel is hidden until the misuse is corrected.
+The [Load the map on click](../../packages/maplace/examples/load-on-demand/guide.md) example shows it. While it waits, with `hold` or off-screen with `loading="lazy"`, a map shows a panel in its pane: a button calling `release()` and a line naming whom it loads from. The panel asks no provider anything, and leaves as the map opens, focus passing to the pane if it held it. A placeholder a page draws with `:state(idle)` shows beside it, unless the page replaces or hides the panel, and in the `error` state the panel is hidden until the misuse is corrected.
 
 | The map | The line |
 |---|---|
@@ -184,10 +186,11 @@ With `url-state`, the page's address says which location is selected, so a link 
 - The location the address names is selected as soon as the locations show it, over `selected-id`. A link naming a location that isn't there is ignored, never an error.
 - An address naming no location gets `selected-id`'s written in, with no new history entry, when the element connects before its store is created (a script reading `maplace` first writes nothing).
 - Each later selection is a new history entry, and back and forward select again; a cleared selection takes the parameter out, in place when the page took the location away (new locations, a filter), so the entry you leave doesn't name a location that's gone. Only that parameter changes: the rest of the query and the hash are kept.
+- A map with `hold` follows back and forward before its store is made (1.3), selecting on `release()` what the address names then; an address naming no location by then leaves `selected-id` to be selected, where a map with a store clears the selection.
 - A bare `url-state` (or `"true"`) is the `location` parameter. With several maps on a page, give each its own: `url-state="office"`.
 - The attribute is read when the element connects.
 
-With React, or a store of your own, read and write the address around `select`, as the [Link to a place](../../packages/maplace/examples/link-to-place/guide.md) example does.
+With React, or a store of your own, read and write the address around `select`, as the [Shareable link to a place](../../packages/maplace/examples/link-to-place/guide.md) example does.
 
 ## Location attributes
 
@@ -211,13 +214,17 @@ With React, or a store of your own, read and write the address around `select`, 
 
 Each attribute sets the [location field](locations.md) of the same meaning. Booleans are as HTML writes them: present, empty or `"true"` is true, `"false"` false, anything else misuse naming the attribute.
 
+Its `data-*` attributes (1.3) are its `data`, as [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset) holds them: `data-time-zone="Asia/Tokyo"` is `data.timeZone`, every value a string, and a change is read as any attribute's is. Every `data-*` attribute counts, so one a framework adds (Vue's scoped `data-v-…`) is there too, harmless.
+
 ## Templates
 
-A `<template>` child of `<maplace-location>` is the popup's content, and a `<template data-icon>` child the marker, in place of `icon` (one element, or a span around the rest), cloned for each state: the location's `icon` is then a function building it, which a list view of yours can call too. Templates are the page's own markup and trusted, so they skip `sanitize`; `html` set through `locations` still needs it.
+A `<template>` child of `<maplace-location>` is the popup's content, and a `<template data-icon>` child the marker, in place of `icon` (one element, or a span around the rest), cloned for each state: the location's `icon` is then a function building it, which a list view of yours can call too. A `<template data-icon>` child of `<maplace-map>` itself is the icon of every marker without its own, the store's [`markerIcon`](store.md#options): one element, or a span around the rest, copied once for each marker and kept across its states; it is read once, when the store is made, as the map's other store attributes are, so one added later changes nothing; the `markerIcon` property (1.3) wins over it. Templates are the page's own markup and trusted, so they skip `sanitize`; `html` set through `locations` still needs it.
 
 ## Data
 
-A map's locations come from the `locations` property once it is set; else from one inline `<script type="application/json">` child, or from `<maplace-location>` children. Both a script and location children is misuse. Children and the script are watched for changes. The element never fetches: to load data from a URL, fetch it and set `locations`.
+A map's locations come from the `locations` property once it is set; else from one inline `<script type="application/json">` child, from `<maplace-location>` children, or (1.3) from the JSON file its `src` attribute names. Both a script and location children is misuse, as is `src` beside either, or blank. Children and the script are watched for changes.
+
+`src` names a list of locations, as the inline script holds, or a GeoJSON FeatureCollection, read as [`locationsFromGeoJSON`](locations.md#from-geojson) reads one. The file is fetched once the map opens past `hold`, so a held map asks nothing before `release()`; with `loading="lazy"` it is fetched at once, for the list. A change of `src` loads the new file, and a slower answer to an earlier one is dropped; removing it reads the element's inside again. A file that isn't JSON, or holds neither shape, is misuse until a good one loads; while the map is in the page, setting `src` again, even to the same URL, fetches it again. A load that fails (the network, or an answer that isn't OK) is a `maplace-error` with the code `locations-load-failed`, the element's own (the store's `error` listeners don't hear it): the locations and `loadState` stay as they were, and setting `src` again, even to the same URL, or connecting the map again, tries once more. A map removed mid-load drops the load. `html` in the file needs [`sanitize`](#properties-and-methods), as through `locations`. A `route` given before the file `src` names has loaded (a held map's included) waits for its locations, and after a load that fails or a file refused, for the next file, fetching nothing: until then `route` reads the one drawn. A page that acts on each load, fitting the map to it or routing through it, fetches the file itself and sets `locations`.
 
 <!-- example: packages/maplace/examples/polygon/page.html -->
 ```html
@@ -245,7 +252,7 @@ A map waits for the document to parse its children before it opens, whether pars
 
 `defineListView(name, factory)` registers a list view for `list="<name>"`. The factory gets the store and a setup: `options`, the list options from the attributes (`fitAll`, `fitAllLabel`, `heading`, `groupCounts`, `scope`, `sort`, `distanceUnit`, `areaOnlyLabel`, `showAllLabel`, `emptyAreaLabel`, `search`, `searchLabel`, `noMatchesLabel`, `matchesLabel`, `groupFilter`, `groupFilterLabel`; a switch and its label come as written, so a view of yours that shows a fit-all entry or a search box checks `fitAll` or `search`, and brings its own words when the label is missing), and `listed()`, the locations Maplace.js's own lists show now, to read again on each store change; a list with `scope` narrows them to its view in "This area", so a view of yours with `scope` scopes itself. It returns a [`ListView`](store.md#list-view-options), placed by `list-position` as the built-in ones are. A name defined after the map opened builds its list then. Defining a built-in name (`select`, `true`), or one already given to another factory, throws; a `list` naming a view not defined is misuse until it is. `listed()` stays in data order: a view with `sort` sorts itself, with [`distanceTo`](store.md#distances).
 
-A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/) defines one.
+A page on the CDN script, which imports nothing, calls it as `Maplace.defineListView`. [The custom-list example](../../packages/maplace/examples/custom-list/guide.md) defines one.
 
 A list view is also how the element puts a control of yours on the map, since it gives no adapter to call `mountControl` on. The view's element can be anything, and it can hold a built-in list beside your control:
 
@@ -268,7 +275,7 @@ Then `list="list-and-picker" list-position="top-right"` puts both in that corner
 
 ## Misuse
 
-Where no caller can catch a throw, misuse sets the element's error state (`loadState` and `:state(error)`) and dispatches `maplace-error`; nothing fails silently. The error stands until the misuse is corrected: bad locations or a bad route keep the previous ones until valid ones are given, and a `selected-id` the locations don't have is selected once they do. The codes are in the [API reference](api.md#misuse-codes), the rules in [RFC §3 Errors](../rfc-1.0.md#errors).
+Where no caller can catch a throw, misuse sets the element's error state (`loadState` and `:state(error)`) and dispatches `maplace-error`; nothing fails silently. The error stands until the misuse is corrected: bad locations or a bad route keep the previous ones until valid ones are given, and a `selected-id` the locations don't have is selected once they do. A held map checks its attributes while it waits; the misuse of its locations, `route`, `src` and `selected-id`, and a refused `sanitize` or `markerIcon` needs its store, so it is said once the store is made. The codes are in the [API reference](api.md#misuse-codes), the rules in [RFC §3 Errors](../rfc-1.0.md#errors).
 
 ## Vue and Svelte
 
@@ -312,9 +319,9 @@ Svelte takes the tags as they are:
 ```
 
 - **Attributes** are written as in HTML; a JSON one, such as `map-options` or a location's `shape-style`, is a string, written out or made with `JSON.stringify`. A switch, such as `cluster` or `hold`, takes `false` as `"false"`, which is how both frameworks write it, and that is off (`hold` only as the map would open: `release()` opens a held map); other attributes are written or left out, never given `false`. Svelte 5 writes a bare attribute as `"true"`, which `list` takes as the built-in list. A location's `listed` and `editable` take `false` as `"false"`, their off value.
-- **`locations`** is a property, as are `route`, `sanitize` and `computeRoute`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
+- **`locations`** is a property, as are `route`, `sanitize`, `markerIcon` and `computeRoute`: Vue sets each as one with `.prop` (`:locations.prop`), even before the element is defined. Svelte sets one as a property (`locations={…}`) once the element is defined, so the entry is imported before the component mounts.
 - **Events** are listened to by their [names](#events): `@maplace-selectionchange` in Vue, `onmaplace-selectionchange` in Svelte 5 and `on:maplace-selectionchange` in Svelte 4, the event typed with its `detail`; a listener for another event, such as a page's own, types its parameter itself.
 - **Popups and icons** in Vue come through `locations`, not a `<maplace-location>`'s `<template>` child: Vue renders a template's children into the element, not its content, so the child arrives empty.
 - **Anything more** goes through the element itself, taken with `ref` in Vue or `bind:this` in Svelte: its [properties and methods](#properties-and-methods), such as its `maplace` store.
 
-The types of `@maplacejs/maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those four properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.
+The types of `@maplacejs/maplace/element` reach both frameworks' template checks (vue-tsc, svelte-check): the elements' attributes, those five properties and the events; other attributes, such as `class`, pass. A project with neither loads none of their types.

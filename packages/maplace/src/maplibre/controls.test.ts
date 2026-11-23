@@ -12,7 +12,7 @@ describe("the MapLibre adapter's controls", () => {
   afterEach(() => document.body.replaceChildren());
 
   it("places a control mounted before the map opened once it opens, and takes it off on close", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const node = button();
     controls.mountControl(node, "top-left");
     const { container, close } = openedControls(controls);
@@ -22,7 +22,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("leaves a node mounted after destroy where it is, and keeps nothing to place", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     controls.release();
     const node = button();
     const sidebar = document.createElement("aside");
@@ -34,7 +34,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("moves a node mounted again to its new corner, leaving nothing in the first", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { corner } = openedControls(controls);
     const node = button();
     controls.mountControl(node, "top-left");
@@ -44,7 +44,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("leaves a node mounted again where the first remover can't reach it", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { corner } = openedControls(controls);
     const node = button();
     const removeFirst = controls.mountControl(node, "top-left");
@@ -54,7 +54,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("takes a control off when removed, safely twice, and out of the page", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { corner } = openedControls(controls);
     const node = button();
     const remove = controls.mountControl(node, "top-right");
@@ -65,7 +65,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("places only the last corner of a node mounted twice before the map opens", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const node = button();
     controls.mountControl(node, "top-left");
     controls.mountControl(node, "bottom-right");
@@ -75,7 +75,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("takes every control off on destroy, and a remover after it takes the node out of the page, as Google's does", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { corner, destroy } = openedControls(controls);
     const node = button();
     const remove = controls.mountControl(node, "top-left");
@@ -87,7 +87,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("leaves the page's own control in the same corner through remove and destroy", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { map, corner, destroy } = openedControls(controls);
     const own = document.createElement("div");
     const pageControl: IControl = { onAdd: () => own, onRemove: () => own.remove() };
@@ -100,7 +100,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("holds each control in a panel of maplace's own that MapLibre lays out", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { corner } = openedControls(controls);
     const node = button();
     controls.mountControl(node, "top-left");
@@ -111,7 +111,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("leaves the page's node as it was given", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     openedControls(controls);
     const node = button();
     node.className = "pages";
@@ -124,7 +124,7 @@ describe("the MapLibre adapter's controls", () => {
   it("gives the map's document the panel's styles, not the node's, once the control is on the map", () => {
     const [nodes, maps] = [frameDocument(), frameDocument()];
     const sheetsOf = (page: Document) => page.adoptedStyleSheets.map(cssTextOf);
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { container } = openedControls(controls);
     maps.body.append(container);
     controls.mountControl(nodes.createElement("button"), "top-left");
@@ -133,7 +133,7 @@ describe("the MapLibre adapter's controls", () => {
   });
 
   it("takes its controls off when the map closes, and places none later", () => {
-    const controls = createControls();
+    const controls = createControls(() => {});
     const { corner, close } = openedControls(controls);
     controls.mountControl(button(), "top-left");
     close();

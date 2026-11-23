@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ControlPosition } from "../adapter";
 import { frameDocument } from "../testing/iframes";
 import { panelOf } from "../testing/panel-of";
@@ -7,13 +7,14 @@ import { cssTextOf } from "../testing/selectors";
 import { type Controls, createControls } from "./controls";
 import type { ColorScheme } from "./options";
 import { STUB_CONTROL_POSITIONS, type StubMap } from "./testing/stub-libraries";
+import { latestResizeObserver, stubResizeObserver } from "./testing/stub-resize-observer";
 import { stubMounted } from "./testing/stub-site";
 
 /** Controls on a stub map, before it opens; `corner` lists the page nodes Google holds there. */
-function controlsOnStubs(colorScheme?: ColorScheme) {
+function controlsOnStubs(colorScheme?: ColorScheme, onPanelsSettled = () => {}) {
   const { mounted, close } = stubMounted();
   const map = mounted.map as unknown as StubMap;
-  const controls = createControls(colorScheme);
+  const controls = createControls(onPanelsSettled, colorScheme);
   const corner = (position: keyof typeof STUB_CONTROL_POSITIONS) =>
     map.controls[STUB_CONTROL_POSITIONS[position]]
       ?.getArray()
@@ -166,5 +167,43 @@ describe("the Google adapter's controls", () => {
     close();
     mount(controls, "top-left");
     expect(corner("LEFT_TOP")).toEqual([]);
+  });
+});
+
+describe("the Google adapter's controls and what their panels cover (N32)", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    vi.unstubAllGlobals();
+  });
+
+  function watched() {
+    stubResizeObserver();
+    const panelsSettled = vi.fn();
+    const stubs = controlsOnStubs(undefined, panelsSettled);
+    stubs.open();
+    return { ...stubs, panelsSettled, observer: latestResizeObserver() };
+  }
+
+  it("watches a placed panel and tells the camera when it resizes", () => {
+    const { controls, observer, panelsSettled } = watched();
+    mount(controls, "top-right");
+    expect(observer.targets.size).toBe(1);
+    observer.resized();
+    expect(panelsSettled).toHaveBeenCalledOnce();
+  });
+
+  it("stops watching a panel the page took off", () => {
+    const { controls, observer } = watched();
+    const { remove } = mount(controls, "top-right");
+    remove();
+    expect(observer.targets.size).toBe(0);
+  });
+
+  it("taking the controls off as the map closes tells the camera nothing", () => {
+    const { controls, observer, panelsSettled, close } = watched();
+    mount(controls, "top-right");
+    close();
+    observer.resized();
+    expect(panelsSettled).not.toHaveBeenCalled();
   });
 });

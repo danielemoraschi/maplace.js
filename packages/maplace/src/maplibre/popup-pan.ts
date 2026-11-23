@@ -1,12 +1,12 @@
 import type { Map as MapLibreMap, Popup } from "maplibre-gl";
 import { panShift, type ShownControl } from "../adapter-kit/popup-shift";
+import { ATTRIBUTION_CLASS } from "./attribution";
 import { cornerElementsIn } from "./corner-measure";
 
 /**
  * MapLibre's attribution, which a popup may cover when nothing else leaves it room: on a phone it
  * shows open, two lines tall, until the user first drags the map.
  */
-const ATTRIBUTION_CLASS = "maplibregl-ctrl-attrib";
 
 /**
  * Pans the map so the popup is inside it and clear of what its corners show (maplace's panels,

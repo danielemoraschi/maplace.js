@@ -5,7 +5,6 @@ import { DISTANCE_CLASS } from "../../../packages/maplace/src/views/option-node.
 import { mapLibreVersionIn } from "./drawn-on-maplibre.ts";
 import {
   chooseVersion,
-  leaveOnlySection,
   pageMapState,
   sectionOf,
   sectionPage,
@@ -41,8 +40,7 @@ describe("the My location control on the built site", () => {
     await context.addInitScript(countAsks);
     const asks = () => page.evaluate(() => (window as unknown as { asks: number }).asks);
 
-    await page.goto(new URL(`${sectionPage("nearest")}#nearest`, site.url).href);
-    await leaveOnlySection(page, "nearest");
+    await page.goto(new URL(sectionPage("nearest"), site.url).href);
     const section = await sectionOf(page, "nearest");
     await chooseVersion(page, "nearest", versionChoice("html").label);
     await loadMapsButtons(section).click();

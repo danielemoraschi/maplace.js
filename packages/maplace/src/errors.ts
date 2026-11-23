@@ -8,8 +8,15 @@ export type MisuseCode =
   | "already-attached"
   | "destroyed";
 
-/** Runtime failure: emitted as an `error` event, never thrown. */
-export type RuntimeCode = "provider-load-failed" | "provider-auth-failed" | "route-failed";
+/**
+ * Runtime failure: emitted as an `error` event, never thrown; `locations-load-failed` (1.3) only
+ * as the element's `maplace-error`.
+ */
+export type RuntimeCode =
+  | "provider-load-failed"
+  | "provider-auth-failed"
+  | "route-failed"
+  | "locations-load-failed";
 
 export type ErrorCode = MisuseCode | RuntimeCode;
 

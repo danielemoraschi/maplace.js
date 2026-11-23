@@ -24,6 +24,14 @@ describe("the list's default styles", () => {
     expect(style.cursor).toBe("pointer");
   });
 
+  it("round each option and the search box at 0.5rem", async () => {
+    const { list } = await listed({ locations }, { search: true, searchLabel: "Find" });
+    const search = list.element.querySelector(".maplace-search");
+    expect(search).not.toBeNull();
+    expect(getComputedStyle(optionTitled(list.element, "Alpha")).borderRadius).toBe("8px");
+    expect(getComputedStyle(search as Element).borderRadius).toBe("8px");
+  });
+
   it.each(["black", "white"])("show the selection on a page whose text is %s", async (color) => {
     document.body.style.color = color;
     const { maplace, list } = await listed({ locations });
@@ -38,6 +46,30 @@ describe("the list's default styles", () => {
     const style = getComputedStyle(headingIn(list.element));
     expect(Number(style.fontWeight)).toBeGreaterThanOrEqual(600);
     expect(style.paddingTop).not.toBe("0px");
+  });
+
+  it("set a native select in, level with its heading's words", async () => {
+    const { list } = await listed({ locations }, { as: "select", heading: "Choose a location:" });
+    const { block, select } = selectListIn(list.element);
+    const words = document.createRange();
+    words.selectNodeContents(headingIn(block));
+    expect(words.getBoundingClientRect().left).toBe(select.getBoundingClientRect().left);
+  });
+
+  it("keep a set-in select inside its list on a page that makes selects full width", async () => {
+    const rule = Object.assign(document.createElement("style"), { id: "page-rule" });
+    rule.textContent = "select { width: 100%; }";
+    document.head.append(rule);
+    const { list } = await listed({ locations }, { as: "select", heading: "Choose a location:" });
+    const { block, select } = selectListIn(list.element);
+    expect(select.getBoundingClientRect().right).toBeLessThanOrEqual(
+      block.getBoundingClientRect().right,
+    );
+  });
+
+  it("leave a native select with no heading where the page puts it", async () => {
+    const { list } = await listed({ locations }, { as: "select" });
+    expect(getComputedStyle(list.element).margin).toBe("0px");
   });
 
   it("indent a subgroup's heading and options under its parent's", async () => {
@@ -123,6 +155,12 @@ describe("the list's default styles", () => {
 
 function headingIn(list: Element): HTMLElement {
   return list.querySelector(".maplace-list-heading") as HTMLElement;
+}
+
+/** A select list with a heading: the block holding both, and its select. */
+function selectListIn(element: Element): { block: Element; select: HTMLSelectElement } {
+  const block = element.closest(".maplace-list") ?? element;
+  return { block, select: block.querySelector("select") as HTMLSelectElement };
 }
 
 function optionTitled(list: Element, title: string): HTMLElement {

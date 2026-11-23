@@ -3,7 +3,8 @@ import { getEntry } from "astro:content";
 import HeldMaps from "../components/HeldMaps.astro";
 import ProviderSwitch from "../components/ProviderSwitch.astro";
 import Base from "../layouts/Base.astro";
-import { BUILDER_PAGE, PRIVACY_PAGE } from "../site/footer-pages.ts";
+import { BUILDER_PAGE, BUILDER_TITLE, PRIVACY_PAGE } from "../site/footer-pages.ts";
+import { docRoute } from "../site/repo-docs.ts";
 
 const install = await getEntry("install", "element");
 if (install === undefined) throw new Error("the install collection has no element entry");
@@ -16,12 +17,12 @@ const HEADING = "m-0 text-2xl";
 const NUMBER = "text-accent";
 ---
 
-<Base title={`${BUILDER_PAGE.label} · Maplace.js`} description={BUILDER_PAGE.description}>
+<Base title={BUILDER_TITLE} description={BUILDER_PAGE.description}>
   <div class="pt-8 pb-12">
     <h1 class="mt-0 mb-4 text-title">{BUILDER_PAGE.label}</h1>
     <p class="mt-0 mb-8 max-w-text text-muted">
-      Paste a CSV, JSON, GeoJSON or a 0.2 config, and get a <code>&lt;maplace-map&gt;</code> to
-      copy. It all stays in <a href={`${PRIVACY_PAGE.route}#builder`}>your browser</a>.
+      Paste a CSV, JSON, GeoJSON (FeatureCollection only) or a 0.2 config, and get
+      a <code>&lt;maplace-map&gt;</code> to copy. It all stays in <a href={`${PRIVACY_PAGE.route}#builder`}>your browser</a>.
     </p>
 
     <div class="grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-x-8 gap-y-10 max-[60rem]:grid-cols-[minmax(0,1fr)]">
@@ -47,7 +48,7 @@ const NUMBER = "text-accent";
       <section class={BLOCK}>
         <div class="mb-3 flex items-center justify-between gap-4">
           <h2 class={HEADING}><span class={NUMBER}>02</span> Preview</h2>
-          <ProviderSwitch legend="Preview and write the snippet for" />
+          <ProviderSwitch name="provider" legend="Preview and write the snippet for" />
         </div>
         <div data-version-switch="builder" data-builder-preview>
           <HeldMaps />
@@ -84,6 +85,25 @@ const NUMBER = "text-accent";
         data-builder-code
         class="m-0 max-h-[28rem] overflow-auto border-2 border-ink bg-surface px-4 py-3 whitespace-pre data-long:pb-12 data-long:[mask-image:linear-gradient(to_bottom,black_calc(100%-3rem),transparent)]"
       ></pre>
+    </section>
+
+    {/* What the tool reads and writes, in the words a search for it uses (W87). */}
+    <section aria-labelledby="builder-reads-heading" class={`${BLOCK} mt-10 max-w-text`}>
+      <h2 id="builder-reads-heading" class={`${HEADING} mb-3`}>What you can paste</h2>
+      <p class="mt-0 mb-3">
+        The builder turns a list of locations into a map snippet for Google Maps or MapLibre, so
+        you can try Maplace.js on your own data before writing any code. It reads:
+      </p>
+      <ul class="mt-0 mb-3 ps-5">
+        <li><strong>CSV</strong> with a header row: a spreadsheet of places, exported, becomes markers with their titles, groups and tags.</li>
+        <li><strong>JSON</strong>: an array of locations with <code>lat</code> and <code>lng</code>, as Maplace.js takes them.</li>
+        <li><strong>GeoJSON</strong>: a FeatureCollection's points become markers, its lines and polygons shapes.</li>
+        <li><strong>A Maplace.js 0.2 config</strong>: the jQuery plugin's options, turned into 1.0's element; <a href={docRoute("migrating")}>Migrating</a> maps every option.</li>
+      </ul>
+      <p class="m-0">
+        What you copy is a <code>&lt;maplace-map&gt;</code> with the pinned CDN script it needs;{" "}
+        <a href={docRoute("element")}>the element's reference</a> has every attribute it takes.
+      </p>
     </section>
 
     {install.data.providers.map(({ provider, cdnSnippet }) => (

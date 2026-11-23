@@ -6,7 +6,7 @@ import { exampleGuides, exampleGuidesLoader } from "./example-guides-loader.ts";
 describe("exampleGuides", () => {
   it("reads each example's guide, the custom list's among them", () => {
     const guide = exampleGuides().find(({ name }) => name === "custom-list");
-    expect(guide?.markdown).toMatch(/^# Your own list/);
+    expect(guide?.markdown).toMatch(/^# Custom list/);
   });
 });
 

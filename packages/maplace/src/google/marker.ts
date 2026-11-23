@@ -1,5 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 
+import { isPinIcon, paintPin } from "../adapter-kit/pin-icon";
+import { pinLookIn } from "../adapter-kit/pin-looks";
 import { placementOf } from "../adapter-kit/placement";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { isInFront, stackRank } from "../adapter-kit/stacking";
@@ -13,9 +15,10 @@ import type { PlacedMarker, PlacingSite } from "./placed-location";
 
 /**
  * One advanced marker: clickable and focusable, titled for screen readers, dragged by the user
- * when `editable`, showing the page's icon or Google's default pin, its `zIndex` the stacking
- * rank (Google advises one on all markers or none). Each change redoes only what it touches. Where
- * it goes, on the map or into a cluster, is the map's marker layer's to say, from its look.
+ * when `editable`, showing the page's icon, its bottom on the point as Google's own marker's, else
+ * maplace's pin or a heat marker's dot, its middle there, its `zIndex` the stacking rank (Google
+ * advises one on all markers or none). Each change redoes only what it touches. Where it goes,
+ * on the map or into a cluster, is the map's marker layer's to say, from its look.
  */
 export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker {
   const order = site.nextOrder();
@@ -27,16 +30,31 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
     mounted: site.mounted,
     isEditable: () => drawn.editable,
   });
-  /** Google's default pin, drawn over a heat marker's dot while it is in front. */
-  let pin: HTMLElement | undefined;
-  const pinOf = () => {
-    pin ??= new site.mounted.libraries.marker.PinElement();
+  const document = site.mounted.map.getDiv().ownerDocument;
+  /** The `anchorTop` this marker was last given: Google's getter reads its own default back. */
+  let anchorTop: string | null | undefined;
+  const anchorOn = (next: string | null) => {
+    if (next === anchorTop) return;
+    anchorTop = next;
+    marker.anchorTop = next;
+  };
+  /** This marker's pin, made the first time it shows one and painted for each state after. */
+  let pin: HTMLImageElement | undefined;
+  const paintedPin = (state: LocationState) => {
+    pin = paintPin(document, pinLookIn(site.pinLooks, state), pin);
     return pin;
   };
   const show = (shown: Drawable, state: LocationState) => {
     const { heat } = site.mounted;
-    if (shown.heatWeight === undefined || heat === undefined) showIcon(marker, shown, state);
-    else heat.showMarker(marker, shown.heatWeight, isInFront(state) ? pinOf() : undefined);
+    if (shown.heatWeight === undefined || heat === undefined) {
+      // A page's icon first: maplace's pin is painted only for a marker showing none.
+      const icon = shown.renderIcon?.(state) ?? paintedPin(state);
+      anchorOn(isPinIcon(icon) ? MIDDLE_ON_POINT : null);
+      showIcon(marker, icon);
+    } else {
+      anchorOn(MIDDLE_ON_POINT);
+      heat.showMarker(marker, shown.heatWeight, isInFront(state) ? paintedPin(state) : undefined);
+    }
   };
   show(drawable, look.state);
   const { markers } = site.mounted;
@@ -79,6 +97,9 @@ export function placeMarker(drawable: Drawable, site: PlacingSite): PlacedMarker
   };
 }
 
+/** Google's `anchorTop` for a marker whose middle is on its point: maplace's pin, a heat dot. */
+const MIDDLE_ON_POINT = "-50%";
+
 /** Whether a new look moves the marker: shown or not, in a cluster or standing alone. */
 function placedElsewhere(look: Look, next: Look): boolean {
   return placementOf(look.visible, look.state) !== placementOf(next.visible, next.state);
@@ -109,14 +130,12 @@ function titleOf(drawable: Drawable): string {
 }
 
 /**
- * The page's icon for this state, as the marker's only child; with none, Google draws its
- * default pin. Children, not `content`, which Maps JS deprecates. An icon already there stays,
- * so a CSS transition on its `data-selected` runs.
+ * The icon for this state, the page's or maplace's pin, as the marker's only child. Children, not
+ * `content`, which Maps JS deprecates. An icon already there stays, so a CSS transition on its
+ * `data-selected` runs.
  */
-function showIcon(marker: HTMLElement, drawable: Drawable, state: LocationState): void {
-  const icon = drawable.renderIcon?.(state);
-  if (icon === undefined) marker.replaceChildren();
-  else if (!isOnlyChild(marker, icon)) marker.replaceChildren(icon);
+function showIcon(marker: HTMLElement, icon: Node): void {
+  if (!isOnlyChild(marker, icon)) marker.replaceChildren(icon);
 }
 
 function isOnlyChild(marker: HTMLElement, icon: Node): boolean {

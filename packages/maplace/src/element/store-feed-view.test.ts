@@ -21,12 +21,12 @@ describe("StoreFeed, the first view from center and zoom", () => {
     const { host, feed, misuse, errors } = syncedFeed(ITALY);
     feed.store();
     host.setAttribute("center", "45,9");
-    feed.checkAttributes();
+    feed.attributeChanged();
     expect(errors.map(({ message }) => message)).toEqual([
       expect.stringMatching(/\bcenter\b.* can't change/),
     ]);
     host.setAttribute("center", "44,11");
-    feed.checkAttributes();
+    feed.attributeChanged();
     expect(misuse.stands()).toBe(false);
   });
 

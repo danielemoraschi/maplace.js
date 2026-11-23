@@ -1,0 +1,16 @@
+---
+import { FIRST_PROVIDER, type Provider } from "../examples/example-providers.ts";
+
+interface Props {
+  /** The provider what it holds is for: shown only while that one is chosen (`version-switch.ts`). */
+  provider: Provider;
+  class?: string;
+}
+
+const { provider, class: placed } = Astro.props;
+---
+
+{/* One provider's part of a section (its files, its npm command): the first provider's shown as the page loads, the others' once chosen. */}
+<div data-provider-files={provider} hidden={provider !== FIRST_PROVIDER} class={placed}>
+  <slot />
+</div>

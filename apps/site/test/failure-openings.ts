@@ -1,16 +1,10 @@
 import type { Page } from "playwright";
 import type { Provider } from "../src/examples/example-providers.ts";
-import {
-  chooseProvider,
-  chooseVersion,
-  leaveOnlySection,
-  sectionOf,
-  sectionPage,
-} from "./home-sections.ts";
+import { chooseProvider, chooseVersion, sectionOf, sectionPage } from "./home-sections.ts";
 import type { SiteSession } from "./site-session.ts";
-import { footerToggle, openHome, type VisitorOptions } from "./visitor.ts";
+import { consentFromFooter, openExamplesPage, type VisitorOptions } from "./visitor.ts";
 
-/** A section opened on its own, a provider and a version chosen, before consenting. */
+/** An example's page opened, a provider and a version chosen, before consenting. */
 export interface Opening {
   readonly example: string;
   readonly provider: Provider;
@@ -27,16 +21,15 @@ export const simpleFromScript = (provider: Provider): Opening => ({
   version: "Script",
 });
 
-/** A visitor seeing the site as `options` say, on `opening`'s section alone, then consenting. */
+/** A visitor seeing the site as `options` say, on `opening`'s example's page, then consenting. */
 export async function sectionFrom(site: SiteSession, options: VisitorOptions, opening: Opening) {
   const { example, provider, version, beforeConsent } = opening;
   const visit = await site.visitor(options);
   const { page } = visit;
-  await openHome(page, site.url, sectionPage(example));
-  await leaveOnlySection(page, example);
+  await openExamplesPage(page, site.url, sectionPage(example));
   if (provider === "google") await chooseProvider(page, "Google");
   await chooseVersion(page, example, version);
   await beforeConsent?.(page);
-  await footerToggle(page).click();
+  await consentFromFooter(page);
   return { ...visit, section: await sectionOf(page, example) };
 }

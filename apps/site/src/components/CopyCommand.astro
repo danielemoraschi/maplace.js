@@ -1,0 +1,22 @@
+---
+import CopyButton from "./CopyButton.astro";
+
+interface Props {
+  /** The command, shown after a prompt and copied whole. */
+  command: string;
+}
+
+const { command } = Astro.props;
+---
+
+{/* One command to copy (W66), a pill as the prototype has it: its words, wrapping where a phone is too narrow for them, a button copying them that marks what came of it, and a status saying it (`copy-buttons.ts`). */}
+<div class="relative flex max-w-full items-stretch rounded-full border border-ink/15 bg-paper font-code text-sm max-[26rem]:rounded-2xl max-[26rem]:text-xs">
+  <code class="min-w-0 bg-transparent py-[0.85rem] ps-5 pe-1.5 [overflow-wrap:anywhere]"
+    ><span aria-hidden="true" class="text-muted">$ </span><span data-copy-source>{command}</span></code
+  >
+  <CopyButton
+    label={`Copy ${command}`}
+    class="grid place-items-center border-0 bg-transparent ps-2 pe-4 text-muted hover:text-ink data-[copied=done]:text-accent"
+    statusClass="end-2 bottom-full mb-1.5 bg-ink text-paper"
+  />
+</div>

@@ -2,35 +2,53 @@
 import { FIRST_PROVIDER, PROVIDER_LABELS } from "../examples/example-providers.ts";
 
 interface Props {
-  /** Where the page places it. */
-  class?: string;
+  /**
+   * Its radios' name: the document's own for each toggle, as radios sharing a name form one group
+   * across the page. The toggles are kept in step by `version-switch.ts`.
+   */
+  name: string;
   /** What the choice is for, to a screen reader. */
   legend?: string;
+  /** The builder's square switch, or the pill of an example's page and the home page (W66). */
+  look?: "square" | "pill";
 }
 
-const { class: placement, legend = "Run the examples on" } = Astro.props;
+const { name, legend = "Run the examples on", look = "square" } = Astro.props;
+/** Each look's classes: the box, the chosen provider's ground (inset on the pill), a segment. */
+const LOOKS = {
+  square: {
+    box: "h-(--spacing-toggle-height) w-(--spacing-toggle-width) border-2 border-ink text-sm font-medium",
+    ground: "inset-y-0 start-0 w-1/2",
+    label: "px-3.5 py-1 text-center",
+  },
+  pill: {
+    box: "h-11 w-[15rem] rounded-full border border-ink/15 text-base font-semibold max-[26rem]:w-[12.5rem] max-[26rem]:text-sm",
+    ground: "inset-y-1 start-1 w-[calc(50%-0.25rem)] rounded-full",
+    label: "grid place-items-center",
+  },
+} as const;
 ---
 
 <fieldset
   data-provider-choice
   class:list={[
-    "group/provider relative m-0 grid h-(--spacing-toggle-height) w-(--spacing-toggle-width) shrink-0 grid-cols-2 border-2 border-ink bg-paper p-0 text-sm font-medium",
-    placement,
+    "group/provider relative m-0 grid shrink-0 grid-cols-2 bg-paper p-0",
+    LOOKS[look].box,
   ]}
 >
   <legend class="sr-only">{legend}</legend>
   {/* The chosen provider's ground, sliding under the second segment when that one is checked. */}
   <span
     aria-hidden="true"
-    class="pointer-events-none absolute inset-y-0 start-0 w-1/2 bg-ink transition-transform duration-150 ease-out group-has-[label:last-of-type>input:checked]/provider:translate-x-full rtl:group-has-[label:last-of-type>input:checked]/provider:-translate-x-full motion-reduce:transition-none"
+    class:list={[LOOKS[look].ground, "pointer-events-none absolute bg-ink transition-transform duration-150 ease-out group-has-[label:last-of-type>input:checked]/provider:translate-x-full rtl:group-has-[label:last-of-type>input:checked]/provider:-translate-x-full motion-reduce:transition-none"]}
   ></span>
   {
     PROVIDER_LABELS.map(({ provider, label }) => (
-      <label class="relative cursor-pointer px-3.5 py-1 text-center transition-colors duration-150 has-checked:text-paper has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent motion-reduce:transition-none">
+      <label class:list={[LOOKS[look].label, "relative cursor-pointer transition-colors duration-150 has-checked:text-paper has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent motion-reduce:transition-none"]}>
         <input
           class="absolute inset-0 m-0 cursor-[inherit] appearance-none opacity-0"
           type="radio"
-          name="provider"
+          name={name}
           value={provider}
           checked={provider === FIRST_PROVIDER}
           autocomplete="off"

@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
-import type { MaplaceMapElement } from "./index";
-import { adaptersMade, errorsOn, lastAdapter, mapFrom, nextTask, ROME } from "./testing/fake-maps";
+import {
+  adaptersMade,
+  connect,
+  errorsOn,
+  lastAdapter,
+  mapFrom,
+  nextTask,
+  ROME,
+  unconnectedMap,
+} from "./testing/fake-maps";
+
+const HELD_BLANK_LABEL = `<maplace-map selected-label=" " hold>${ROME}</maplace-map>`;
 
 describe("<maplace-map> misuse, never silent, standing until corrected", () => {
   it("keeps its locations through bad ones, in error until good ones come", async () => {
@@ -118,14 +128,13 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
   });
 
   it("a blank label stands as misuse, keeping the other label and a valid sanitize", async () => {
-    const page = document.createElement("div");
-    page.innerHTML = `<maplace-map selected-label=" " skip-map-label="Oltre" hold>${ROME}</maplace-map>`;
-    const map = page.firstElementChild as MaplaceMapElement;
+    const map = unconnectedMap(
+      `<maplace-map selected-label=" " skip-map-label="Oltre" hold>${ROME}</maplace-map>`,
+    );
     const sanitize = (html: string) => html;
     map.sanitize = sanitize;
     const errors = errorsOn(map);
-    document.body.append(page);
-    await nextTask();
+    await connect(map);
     expect(errors.map(({ message }) => message)).toEqual([
       expect.stringMatching(/selected-label must not be blank/),
     ]);
@@ -133,19 +142,60 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
     expect(map.loadState).toBe("error");
     map.removeAttribute("selected-label");
     expect(map.loadState).toBe("idle");
-    page.remove();
+  });
+
+  it("reports a held map's blank label once, through release and a reconnect", async () => {
+    const map = unconnectedMap(HELD_BLANK_LABEL);
+    const errors = errorsOn(map);
+    await connect(map);
+    map.release();
+    map.remove();
+    await nextTask();
+    await connect(map);
+    expect(errors.map(({ field }) => field)).toEqual(["selected-label"]);
+  });
+
+  it("reports a store attribute changed after its maplace was read, before it connected", () => {
+    const map = document.createElement("maplace-map");
+    const errors = errorsOn(map);
+    expect(map.maplace).toBeDefined();
+    map.setAttribute("cluster", "");
+    expect(errors.map(({ message }) => message)).toEqual([
+      expect.stringMatching(/can't change once the map is created/),
+    ]);
+  });
+
+  it("keeps a store attribute changed after its maplace was read standing as misuse once it connects held", async () => {
+    const map = unconnectedMap(`<maplace-map hold>${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    expect(map.maplace).toBeDefined();
+    map.setAttribute("cluster", "");
+    await connect(map);
+    expect([map.loadState, errors.map(({ field }) => field)]).toEqual(["error", [undefined]]);
+  });
+
+  it("says a held map's unknown selected-id on release, as its store is made then", async () => {
+    const map = await mapFrom(`<maplace-map hold selected-id="milan">${ROME}</maplace-map>`);
+    const errors = errorsOn(map);
+    expect(map.loadState).toBe("idle");
+    map.release();
+    expect([map.loadState, errors.map(({ code }) => code)]).toEqual(["error", ["unknown-id"]]);
+  });
+
+  it("doesn't say a held map's standing blank label again when another store attribute changes", async () => {
+    const map = unconnectedMap(HELD_BLANK_LABEL);
+    const errors = errorsOn(map);
+    await connect(map);
+    map.setAttribute("cluster", "");
+    expect(errors.map(({ field }) => field)).toEqual(["selected-label"]);
   });
 
   it("gives a listener hearing of a blank label the one store", async () => {
-    const page = document.createElement("div");
-    page.innerHTML = `<maplace-map selected-label=" " hold>${ROME}</maplace-map>`;
-    const map = page.firstElementChild as MaplaceMapElement;
+    const map = unconnectedMap(HELD_BLANK_LABEL);
     const stores: unknown[] = [];
     map.addEventListener("maplace-error", () => stores.push(map.maplace));
-    document.body.append(page);
-    await nextTask();
+    await connect(map);
     expect(stores).toEqual([map.maplace]);
-    page.remove();
   });
 
   it("refuses a label changed once the map is created, until put back", async () => {
@@ -156,6 +206,17 @@ describe("<maplace-map> misuse, never silent, standing until corrected", () => {
       expect.stringMatching(/can't change once the map is created/),
     ]);
     expect(map.loadState).toBe("error");
+    map.setAttribute("selected-label", "Scelto");
+    expect(map.loadState).toBe("loading");
+  });
+
+  it("counts a map icon template added later as no store-attribute change", async () => {
+    const map = await mapFrom(`<maplace-map selected-label="Scelto">${ROME}</maplace-map>`);
+    const icon = document.createElement("template");
+    icon.setAttribute("data-icon", "");
+    icon.innerHTML = "<b>pin</b>";
+    map.prepend(icon);
+    map.setAttribute("selected-label", "Altro");
     map.setAttribute("selected-label", "Scelto");
     expect(map.loadState).toBe("loading");
   });

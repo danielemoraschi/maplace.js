@@ -20,6 +20,8 @@ export interface HandleDrags {
   moved(handle: EditHandle): void;
   /** The handle was let go. */
   dropped(handle: EditHandle): void;
+  /** The handle was pressed: a drag may follow. */
+  pressed(event: PointerEvent): void;
 }
 
 /** The shape a handle edits, on its map. */
@@ -60,6 +62,7 @@ export function placeHandle(place: HandlePlace, owner: HandleOwner): EditHandle 
   markAsOwnMarker(element);
   element.addEventListener("pointerenter", () => pointedAt.add(handle));
   element.addEventListener("pointerleave", () => pointedAt.delete(handle));
+  element.addEventListener("pointerdown", owner.drags.pressed);
   return handle;
 }
 

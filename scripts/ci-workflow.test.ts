@@ -7,12 +7,16 @@ import { jobsOf, stepsOf, stepWith } from "./checks/workflow-text.ts";
 /**
  * Holds CI to its rules: Chromium's install to its package cache (T23: Ubuntu's mirror has been
  * slow enough to run out the job's time), the site's builds to their full history, and what runs
- * only on main (R8: the billed tests, Sonar, the preview) to main, where work merges.
+ * only on main (R8: Sonar, the preview) to main, where work merges, and the billed tests to main and
+ * next (R11), so a release's real-Maps run happens before it reaches main.
  */
 const workflow = readFileSync(resolve(ROOT, ".github/workflows/ci.yml"), "utf8");
 
-/** The branch CI runs its billed tests, Sonar and the preview on. */
+/** The branch CI runs Sonar and the preview on, and its billed tests. */
 const MAIN = "main";
+
+/** The library's next version (R11): its billed tests run there too, before a release reaches main. */
+const NEXT = "next";
 
 /** Where apt keeps the packages between runs. */
 const PACKAGES = "~/.cache/chromium-packages";
@@ -39,13 +43,17 @@ it("gives every job that builds the site its full history, or every page is date
   for (const job of buildingTheSite) expect(job).toContain("fetch-depth: 0");
 });
 
-it("runs the billed tests, Sonar and the preview on main alone", () => {
-  const gated = [...workflow.matchAll(/github\.ref == 'refs\/heads\/([^']+)'/g)].map(
-    ([, branch]) => branch,
-  );
-  expect(gated.length).toBeGreaterThanOrEqual(4);
+it("runs the billed tests on main and next, each since its own last passed run", () => {
+  const step = stepHaving("id: real-maps");
+  expect(new Set(branchesGated(step))).toEqual(new Set([MAIN, NEXT]));
+  expect(/--branch (\S+)/.exec(step)?.[1]).toBe('"$GITHUB_REF_NAME"');
+});
+
+it("runs Sonar and the preview on main alone", () => {
+  const outsideRealMaps = workflow.replace(stepHaving("id: real-maps"), "");
+  const gated = branchesGated(outsideRealMaps);
+  expect(gated.length).toBeGreaterThanOrEqual(3);
   expect(new Set(gated)).toEqual(new Set([MAIN]));
-  expect(/--branch (\S+)/.exec(stepHaving("gh run list"))?.[1]).toBe(MAIN);
 });
 
 it("checks the preview at the alias it uploads, main's", () => {
@@ -57,4 +65,11 @@ it("checks the preview at the alias it uploads, main's", () => {
 /** The text of the one step of CI that has `part`. */
 function stepHaving(part: string): string {
   return stepsOf(workflow)[stepWith(workflow, part)] ?? "";
+}
+
+/** The branches `text`'s `if:` conditions run on, as each names one. */
+function branchesGated(text: string): string[] {
+  return [...text.matchAll(/github\.ref == 'refs\/heads\/([^']+)'/g)].map(
+    ([, branch]) => branch ?? "",
+  );
 }

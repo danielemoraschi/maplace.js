@@ -1,29 +1,49 @@
 ---
 import faviconUrl from "../assets/favicon.svg?no-inline";
+import { REPOSITORY_URL } from "../site/repo-docs.ts";
 import { navCurrent, SITE_NAV_LINKS } from "../site/site-nav.ts";
+import { GITHUB_MARK_PATH } from "../site/star-button-markup.ts";
 
 const here = Astro.url.pathname;
-// One row whatever the width: it scrolls sideways where it doesn't fit beside the name, its end
-// faded (`--nav-fade` wide) as the cue, padded as wide, so the last link comes clear of the fade.
+// One row at every width, short enough to fit beside the name on a 320px phone (W67), with 8px
+// to spare there for fonts drawn wider (Linux's, a pixel past on CI); narrower
+// still (a phone's text zoomed), it scrolls on its own rather than the page. The repository's link
+// joins it from 22.5rem (360px), where it fits, the footer having one on every screen. Padded,
+// with as much margin taken back, as wide as a link's focus ring, which the scrolling box would
+// otherwise clip.
 const NAV =
-  "ms-auto flex min-w-0 gap-x-5 overflow-x-auto pb-1 text-md font-medium whitespace-nowrap [scrollbar-width:none] [--nav-fade:2rem] max-[28rem]:pe-(--nav-fade) max-[28rem]:[mask-image:linear-gradient(to_right,black_calc(100%-var(--nav-fade)),transparent)]";
+  "ms-auto -my-1.5 -me-1.5 flex min-w-0 items-baseline gap-x-6 overflow-x-auto p-1.5 text-base font-medium whitespace-nowrap [scrollbar-width:none] max-[24rem]:gap-x-4 max-[22.5rem]:gap-x-3";
 const NAV_LINK =
-  "border-b-3 border-transparent no-underline aria-[current]:border-accent";
+  "text-muted no-underline hover:text-ink aria-[current]:text-ink aria-[current]:underline aria-[current]:decoration-accent aria-[current]:decoration-2 aria-[current]:underline-offset-[0.35em]";
 ---
 
-<header class="sticky top-0 z-10 h-(--spacing-header-height) border-b-3 border-ink bg-[rgb(255_255_255/0.5)] backdrop-blur-[20px]">
-  <div class="wrap flex items-baseline gap-x-6 pt-4.5 pb-3.25">
-    <a class="shrink-0 font-display text-2xl leading-none font-extrabold tracking-[-0.03em] no-underline" href="/">
-      <img src={faviconUrl} width="24" height="24" alt="" class="me-2 inline-block align-[-0.2em]" />Maplace.js
+{/* The prototype's header (W66): frosted over what scrolls under it, a hairline below. */}
+<header class="sticky top-0 z-10 h-(--spacing-header-height) border-b border-ink/15 bg-paper/78 backdrop-blur-[16px] backdrop-saturate-150">
+  <div class="wrap flex h-full items-baseline gap-x-6 pt-[1.3rem] max-[24rem]:gap-x-4 max-[22.5rem]:gap-x-3">
+    <a class="shrink-0 font-display text-lede leading-none font-extrabold tracking-[-0.02em] no-underline" href="/">
+      <img src={faviconUrl} width="22" height="22" alt="" class="me-2 inline-block align-[-0.2em]" />Maplace.js
     </a>
     <nav aria-label="Site" class={NAV}>
       {
         SITE_NAV_LINKS.map((link) => (
           <a href={link.href} aria-current={navCurrent(link, here)} class={NAV_LINK}>
-            {link.label}
+            {link.shortLabel === undefined ? (
+              link.label
+            ) : (
+              <>
+                <span class="max-[48rem]:hidden">{link.label}</span>
+                <span class="min-[48rem]:hidden">{link.shortLabel}</span>
+              </>
+            )}
           </a>
         ))
       }
+      <a href={REPOSITORY_URL} class="hidden self-center text-muted no-underline hover:text-ink min-[22.5rem]:inline-flex">
+        <svg viewBox="0 0 16 16" width="21" height="21" fill="currentColor" aria-hidden="true">
+          <path d={GITHUB_MARK_PATH} />
+        </svg>
+        <span class="sr-only">GitHub</span>
+      </a>
     </nav>
   </div>
 </header>

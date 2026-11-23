@@ -1,4 +1,5 @@
 /// <reference types="google.maps" />
+import { pageIconOf } from "../../testing/page-icon";
 import type { PlacedMarker } from "../placed-location";
 import { type ProbeTarget, probedPoint } from "./probe-target";
 
@@ -20,7 +21,7 @@ export function markerTarget(marker: Marker, onMap: () => boolean): ProbeTarget 
       geometry: { type: "marker", ...probedPoint(marker.position) },
       title: marker.title || undefined,
       visible: shown(),
-      icon: marker.firstChild ?? undefined,
+      icon: pageIconOf(marker),
       style: undefined,
     }),
     stack: () => marker.zIndex ?? 0,

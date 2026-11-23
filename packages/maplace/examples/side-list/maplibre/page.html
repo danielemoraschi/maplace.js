@@ -1,0 +1,18 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #side-list-maplibre-map { height: 36rem; }
+    #side-list-maplibre-map > .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<!-- A list beside the map, where a list goes unless it is given a corner: the places under their regions, and a first entry that fits them all. -->
+<maplace-map id="side-list-maplibre-map" list list-heading="Cities" fit-all fit-all-label="All cities">
+  <maplace-location location-id="edinburgh" lat="55.9533" lng="-3.1883" title="Edinburgh" group="North"></maplace-location>
+  <maplace-location location-id="glasgow" lat="55.8642" lng="-4.2518" title="Glasgow" group="North"></maplace-location>
+  <maplace-location location-id="belfast" lat="54.5973" lng="-5.9301" title="Belfast" group="North"></maplace-location>
+  <maplace-location location-id="london" lat="51.5074" lng="-0.1278" title="London" group="South"></maplace-location>
+  <maplace-location location-id="bristol" lat="51.4545" lng="-2.5879" title="Bristol" group="South"></maplace-location>
+  <maplace-location location-id="cardiff" lat="51.4816" lng="-3.1791" title="Cardiff" group="South"></maplace-location>
+</maplace-map>

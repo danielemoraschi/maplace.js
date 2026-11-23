@@ -1,0 +1,14 @@
+---
+import { EXAMPLES_INTRO } from "../examples/examples-page.ts";
+import { HOME_ROUTE } from "../examples/home-page.ts";
+import ExampleCategories from "./ExampleCategories.astro";
+import MarkdownLink from "./MarkdownLink.astro";
+---
+
+{/* The home page's index of every example (D31), as the examples page shows it (W72). */}
+<section id="examples" aria-labelledby="examples-title" class="pt-16">
+  <h2 id="examples-title" class="headline m-0 text-section leading-[1.06]">Examples</h2>
+  <p class="mt-3 mb-2 max-w-text text-lede leading-[1.45] text-muted">{EXAMPLES_INTRO}</p>
+  <p class="mt-0 mb-8 text-sm"><MarkdownLink route={HOME_ROUTE} /></p>
+  <ExampleCategories headingDepth={3} />
+</section>

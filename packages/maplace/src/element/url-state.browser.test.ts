@@ -13,14 +13,18 @@ function atAddress(parameters: Record<string, string>): void {
   onTestFinished(() => history.replaceState(history.state, "", before));
 }
 
-function withParameters(parameters: Record<string, string>): URL {
+/** The frame's address with `parameters` set, or taken out where `undefined`. */
+function withParameters(parameters: Record<string, string | undefined>): URL {
   const address = new URL(location.href);
-  for (const [name, value] of Object.entries(parameters)) address.searchParams.set(name, value);
+  for (const [name, value] of Object.entries(parameters)) {
+    if (value === undefined) address.searchParams.delete(name);
+    else address.searchParams.set(name, value);
+  }
   return address;
 }
 
-/** Back or forward to the frame's address with `parameters` added, as the browser does it. */
-function popTo(parameters: Record<string, string>): void {
+/** Back or forward to the frame's address with `parameters` set, as the browser does it. */
+function popTo(parameters: Record<string, string | undefined>): void {
   history.replaceState(history.state, "", withParameters(parameters));
   dispatchEvent(new PopStateEvent("popstate"));
 }
@@ -87,6 +91,24 @@ describe("<maplace-map url-state>", () => {
     const map = await mapFrom(`<maplace-map url-state hold>${ROME}${MILAN}</maplace-map>`);
     expect(map.maplace.getSnapshot().selectedId).toBe("milan");
     expect(adaptersMade.length).toBe(opened);
+  });
+
+  it("selects on release the location the address names after back and forward while held", async () => {
+    atAddress({ location: "rome" });
+    const map = await mapFrom(`<maplace-map url-state hold>${ROME}${MILAN}</maplace-map>`);
+    popTo({ location: "milan" });
+    map.release();
+    expect(map.maplace.getSnapshot().selectedId).toBe("milan");
+  });
+
+  it("leaves selected-id to select on release after back to an address naming none while held", async () => {
+    atAddress({ location: "milan" });
+    const map = await mapFrom(
+      `<maplace-map url-state selected-id="rome" hold>${ROME}${MILAN}</maplace-map>`,
+    );
+    popTo({ location: undefined });
+    map.release();
+    expect(map.maplace.getSnapshot().selectedId).toBe("rome");
   });
 
   it("selects the address's location while a lazy map waits, and its list shows it", async () => {

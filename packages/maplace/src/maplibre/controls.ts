@@ -25,9 +25,10 @@ interface MountedControl {
  * control mechanism, in the corner asked for (maplace's corner names are MapLibre's), the panels in
  * different corners clearing each other (`corner-watch.ts`). One mounted before the map opens
  * waits for it; a node mounted again moves to its new corner; its remover takes it off the map and
- * out of the page.
+ * out of the page. `onPanelsSettled` hears each time the panels are laid out, what they cover
+ * having maybe grown.
  */
-export function createControls(): Controls {
+export function createControls(onPanelsSettled: () => void): Controls {
   const byNode = new Map<HTMLElement, MountedControl>();
   let map: MapLibreMap | undefined;
   let cornerWatch: CornerWatch | undefined;
@@ -40,7 +41,7 @@ export function createControls(): Controls {
   /** Lays the corners out for the panels just placed, the first panel starting the watch. */
   function layOutCorners(): void {
     if (map === undefined || byNode.size === 0) return;
-    cornerWatch ??= watchCorners(map);
+    cornerWatch ??= watchCorners(map, onPanelsSettled);
     cornerWatch.settle();
   }
 

@@ -1,6 +1,23 @@
 ---
-import ExampleGroupPage from "../components/ExampleGroupPage.astro";
-import { HOME_GROUP } from "../examples/example-sections.ts";
+// The home page's headlines (`headline`): Bricolage's variable cut, its latin file asked for with the
+// page, so the H1 doesn't reflow as it comes in.
+import "@fontsource-variable/bricolage-grotesque/wdth.css";
+import headlineFont from "@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wdth-normal.woff2?url";
+import ExampleIndex from "../components/ExampleIndex.astro";
+import Hero from "../components/Hero.astro";
+import MapProviders from "../components/MapProviders.astro";
+import { HOME_DESCRIPTION, HOME_TITLE } from "../examples/home-page.ts";
+import Base from "../layouts/Base.astro";
 ---
 
-<ExampleGroupPage group={HOME_GROUP} />
+{/* Edge to edge (W66): the hero on map water, then the index and the providers on the night band. */}
+<Base title={HOME_TITLE} description={HOME_DESCRIPTION} width="full">
+  <link slot="head" rel="preload" href={headlineFont} as="font" type="font/woff2" crossorigin />
+  <Hero />
+  <div class="band-dark pb-8">
+    <div class="wrap pt-4">
+      <ExampleIndex />
+      <MapProviders />
+    </div>
+  </div>
+</Base>

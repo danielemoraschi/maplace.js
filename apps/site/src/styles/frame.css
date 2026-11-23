@@ -37,7 +37,30 @@
   :where(.maplace-google-map, .maplace-maplibre-map):where(
     :not([data-own-frame] *, [data-maplace-unstyled] *)
   ) {
+  overflow: hidden;
   border: 2px solid var(--color-ink);
+  border-radius: var(--map-corner, 0);
+  /* A map in fullscreen (Google's button) fills the screen: no frame. */
+  &:fullscreen {
+    border: 0;
+    border-radius: 0;
+  }
+}
+/*
+ * While the maps are off, the stand-in over each map (`ConsentPlaceholder.astro`) is all that
+ * shows: what it covers, the map's frame or an example's own, would edge its rounded corners. Unseen,
+ * not hidden: the page under it still runs as before.
+ */
+[data-maps="off"] .version {
+  opacity: 0;
+}
+/*
+ * An example's map and own buttons rounded, as the home page's panels are (W66), as every code
+ * block is (`base.css`); the builder's, which set none of these, stay square.
+ */
+.example {
+  --map-corner: var(--radius-panel);
+  --button-corner: 12px;
 }
 /*
  * A list beside the map, in every version, as a white panel set apart from it, under the map on a
@@ -132,9 +155,9 @@
 
 /*
  * A page's own buttons in the site's look, the map's own (Google's or MapLibre's) left alone, and
- * the element's own load panel and the list's group filter, which keep the look a reader's page
- * gives them. All but `.version` in `:where()`, so the rule weighs one class and any rule of the
- * example's own wins.
+ * the element's own load panel and a list's own (its "All" and "This area" switch, its group
+ * filter), which keep the look a reader's page gives them, their pressed state with it. All but
+ * `.version` in `:where()`, so the rule weighs one class and any rule of the example's own wins.
  */
 .version
   :where(button):where(
@@ -142,10 +165,11 @@
       .maplace-google-map *,
       .maplace-maplibre-map *,
       .maplace-load-panel *,
-      .maplace-group-filter *
+      .maplace-list-view *
     )
   ) {
   @apply button-plain;
+  border-radius: var(--button-corner, 0);
 }
 
 /*

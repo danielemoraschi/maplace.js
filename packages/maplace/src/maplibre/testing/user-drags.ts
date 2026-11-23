@@ -14,12 +14,6 @@ export function pagePointOf(map: MapLibreMap, at: LatLng): PagePoint {
   return { x: box.left + x, y: box.top + y };
 }
 
-/** The middle of a pin's round head, where a user grabs it: as far below its top as it is wide. */
-export function pinHeadOf(icon: Element): PagePoint {
-  const box = icon.getBoundingClientRect();
-  return { x: box.left + box.width / 2, y: box.top + box.width / 2 };
-}
-
 /** The middle of `element` on the test page. */
 export function middleOf(element: Element): PagePoint {
   const box = element.getBoundingClientRect();

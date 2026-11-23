@@ -29,7 +29,7 @@ async function hoverPopupOverArea() {
   });
   const { map } = await onMapLibre(maplace);
   await vi.waitFor(() => {
-    moveOverCanvas(map, { at: CENTRE });
+    moveOverCanvas(map, CENTRE);
     expect(maplace.getSnapshot().hoveredId).toBe("area");
   });
   const popup = await vi.waitFor(() => queried(map.getContainer(), ".maplibregl-popup"));

@@ -1,0 +1,97 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "regents-park",
+      "properties": {
+        "title": "Regent's Park",
+        "group": "Area",
+        "about": "166 hectares of gardens, lawns and sports fields, inside the Outer Circle."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-0.147, 51.5232],
+            [-0.1462, 51.529],
+            [-0.1467, 51.532],
+            [-0.1475, 51.5355],
+            [-0.1525, 51.5365],
+            [-0.158, 51.5355],
+            [-0.1622, 51.5334],
+            [-0.1665, 51.5285],
+            [-0.1585, 51.5245],
+            [-0.1525, 51.5232],
+            [-0.147, 51.5232]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "broad-walk",
+      "properties": {
+        "title": "The Broad Walk",
+        "group": "Path",
+        "about": "The park's tree-lined avenue, from Park Square up to the zoo."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-0.1482, 51.5245], [-0.1484, 51.529], [-0.1487, 51.5322], [-0.149, 51.535]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "london-zoo",
+      "properties": {
+        "title": "London Zoo",
+        "group": "Places",
+        "about": "The world's oldest scientific zoo, opened in 1828."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-0.1534, 51.5353]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "the-hub",
+      "properties": {
+        "title": "The Hub",
+        "group": "Places",
+        "about": "A sports pavilion under a grass roof, among the playing fields."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-0.1567, 51.5313]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "boating-lake",
+      "properties": {
+        "title": "Boating Lake",
+        "group": "Places",
+        "about": "Rowing boats and pedalos on the park's lake, from spring to autumn."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-0.1612, 51.5265]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "queen-marys-gardens",
+      "properties": {
+        "title": "Queen Mary's Gardens",
+        "group": "Places",
+        "about": "London's largest collection of roses, about 12,000 plants."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-0.153, 51.5265]
+      }
+    }
+  ]
+}

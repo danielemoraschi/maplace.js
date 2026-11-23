@@ -132,3 +132,13 @@ originStore.setOrigin(undefined);
 // @ts-expect-error an origin is a point
 originStore.setOrigin("rome");
 expectTypeOf(originStore.getSnapshot().origin).toEqualTypeOf<LatLng | undefined>();
+
+// A store's markerIcon reads a typed store's own data, as a location's icon does.
+createMaplace<{ starred?: boolean }>({
+  markerIcon: (location) => {
+    expectTypeOf(location.data?.starred).toEqualTypeOf<boolean | undefined>();
+    return document.createElement("span");
+  },
+});
+// @ts-expect-error a markerIcon is a URL, a node or a function
+createMaplace({ markerIcon: 7 });

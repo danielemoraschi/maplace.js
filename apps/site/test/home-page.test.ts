@@ -1,163 +1,117 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { Page } from "playwright";
+import type { Locator, Page } from "playwright";
 import { describe, expect, it } from "vitest";
-import { STAR_COUNT_PATH } from "../src/site/star-count-api.ts";
 import {
-  chooseProvider,
-  chooseTab,
-  chooseVersion,
-  sectionPage,
-  shownNotes,
-  visitSection,
-} from "./home-sections.ts";
-import { recordAnimations } from "./recorded-animations.ts";
-import { ASKED, opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { DESKTOP, footerToggle, openHome, PHONE, placeholder } from "./visitor.ts";
+  EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
+  EXAMPLES_PAGE_ROUTE,
+  groupPath,
+} from "../src/examples/example-sections.ts";
+import { WAYS_IN_GOOGLE_LOADER } from "../src/examples/home-page.ts";
+import { docRoute } from "../src/site/repo-docs.ts";
+import { chooseProvider } from "./home-sections.ts";
+import { opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
+import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
+
+/** The band's ground, as a computed colour. */
+const NIGHT = "rgb(18, 26, 34)";
+/** The hero's ground, map water. */
+const WATER = "rgb(207, 227, 234)";
 
 const site = siteBuiltBeforeTests();
 
-describe("the home page's star button", () => {
-  /** The star button's own shadow root, drawn by the page (W44). */
-  const starButton = (page: Page) => page.locator("[data-star-button]");
+describe("the home page's night band (W66)", () => {
+  /** The ground `node` sits on: its first own or ancestor's background, as the page draws it. */
+  const groundOf = (node: Locator) =>
+    node.evaluate((start) => {
+      let ground: Element | null = start;
+      while (ground && getComputedStyle(ground).backgroundColor === "rgba(0, 0, 0, 0)")
+        ground = ground.parentElement;
+      return ground && getComputedStyle(ground).backgroundColor;
+    });
+  /** A category row's ground and text, as the page draws them. */
+  const rowColours = async (page: Page) => {
+    const row = page.getByRole("link", { name: "Markers and popups" }).first();
+    return [await groundOf(row), await row.evaluate((link) => getComputedStyle(link).color)];
+  };
 
-  it("is drawn by the site, its count asked of the site itself and nothing of GitHub", async () => {
-    const { page, context, fetched, offsite } = await site.visitor();
-    await page.goto(site.url);
-    await expect(starButton(page).locator(".btn span").textContent()).resolves.toBe("GitHub");
-    // The fallback link, for a browser that can't attach the shadow root, stays out of sight.
-    expect(await starButton(page).locator(":scope > a").isVisible()).toBe(false);
-    await expect.poll(() => fetched(STAR_COUNT_PATH), ASKED).toBe(true);
-    expect(offsite()).toEqual([]);
-    await context.close();
-  }, 30_000);
-
-  it("shows the site's star count beside the button", async () => {
-    const { page, context } = await site.visitor();
-    await page.route(`**${STAR_COUNT_PATH}`, (route) => route.fulfill({ json: { stars: 1234 } }));
-    await page.goto(site.url);
-    await expect
-      .poll(() => starButton(page).locator(".social-count").textContent(), ASKED)
-      .toBe("1,234");
-    await context.close();
-  }, 30_000);
-});
-
-describe("the home page's headings and install box", () => {
-  it("offers each provider's npm command and pinned script", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    expect(await page.locator("#npm-install-google").textContent()).toBe(
-      "npm install @maplacejs/maplace",
-    );
-    expect(await page.locator("#npm-install-maplibre").textContent()).toBe(
-      "npm install @maplacejs/maplace maplibre-gl",
-    );
-    for (const provider of ["google", "maplibre"]) {
-      expect(await page.locator(`#pinned-script-${provider}`).textContent()).toContain(
-        "integrity=",
-      );
-    }
-    await context.close();
-  }, 30_000);
-
-  const npmCommand = (page: Page) => page.locator("#npm-install-google");
-  const installSummary = (page: Page) => page.locator("summary").filter({ hasText: "Install" });
-
-  it("is folded on every screen, and opens from its heading by keyboard", async () => {
+  it("draws the index on the night ground on the home page and the examples page, under its title on map water there", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
-    expect(await npmCommand(page).isVisible(), "desktop").toBe(false);
+    expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
+    await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
+    expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
+    expect(await groundOf(page.locator("h1"))).toBe(WATER);
+    await context.close();
+  }, 30_000);
+
+  it("ends every page on the night footer, a divider above it (W82)", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const ground = () =>
+      page.getByRole("contentinfo").evaluate((footer) => {
+        const { backgroundColor, borderTopWidth } = getComputedStyle(footer);
+        return { backgroundColor, borderTopWidth };
+      });
+    expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
+    await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
+    expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
+    await page.goto(new URL(docRoute("getting-started"), site.url).href);
+    expect(await ground()).toEqual({ backgroundColor: NIGHT, borderTopWidth: "1px" });
+    await context.close();
+  }, 30_000);
+
+  it("sets the providers side by side, one above the other on a phone", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const names = page.getByRole("heading", { level: 3, name: /^(MapLibre|Google Maps)$/ });
+    const sideBySide = async () => {
+      const [first, second] = [await boxOf(names.first()), await boxOf(names.last())];
+      return first.y === second.y && second.x > first.x;
+    };
+    expect(await sideBySide()).toBe(true);
     await page.setViewportSize(PHONE);
-    expect(await npmCommand(page).isVisible(), "phone").toBe(false);
-    await installSummary(page).focus();
-    await page.keyboard.press("Enter");
-    expect(await npmCommand(page).isVisible()).toBe(true);
-    await context.close();
-  }, 30_000);
-
-  it("ends with the version and its hash, and nothing else", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url, { waitUntil: "domcontentloaded" });
-    const note = page.getByText("checked by the browser against its hash");
-    expect(await note.textContent()).toMatch(
-      /^Maplace\.js \S+, checked by the browser against its hash\.$/,
-    );
-    expect(await note.locator("a").count()).toBe(0);
+    expect(await sideBySide()).toBe(false);
     await context.close();
   }, 30_000);
 });
 
-describe("Data & routes' examples", () => {
-  it("runs a page's scripts as its map opens: route's stops, big's points", async () => {
-    const { page, context, fetched } = await site.visitor();
-    await openHome(page, site.url, sectionPage("route"));
-    await placeholder(page).click();
-    await chooseProvider(page, "Google");
-    await page.locator("#route-map").scrollIntoViewIfNeeded();
-    await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () => (document.getElementById("route-map") as { route?: unknown } | null)?.route,
-          ),
-        ASKED,
-      )
-      .toMatchObject({ stops: ["milan", "zurich", "paris", "munich"], via: ["zurich"] });
-    await page.locator("#big-map").scrollIntoViewIfNeeded();
-    await expect.poll(() => fetched("/examples/data/points-4k.json"), ASKED).toBe(true);
-    await context.close();
-  }, 30_000);
+describe("the index of examples, on the home page and the examples page (W63, W72)", () => {
+  // The home page's sits under its h2 "Examples", the examples page's right under its H1.
+  const INDEXES = [
+    { route: "/", within: "section#examples", indexHeading: "h2", categoryHeading: "h3" },
+    { route: EXAMPLES_PAGE_ROUTE, within: "main", indexHeading: "h1", categoryHeading: "h2" },
+  ];
 
-  it("runs the chosen version once consented, its map in a box", async () => {
-    const { page, context, fetched } = await site.visitor({ google: "stubbed" });
-    await openHome(page, site.url, sectionPage("route"));
-    // Chosen before consent, so big's page map, hidden, is never released: only its React
-    // version can fetch the points.
-    await chooseProvider(page, "Google");
-    await chooseVersion(page, "route", "Bundler");
-    await chooseVersion(page, "big", "React");
-    await footerToggle(page).click();
-    await page.locator("#route-vanilla-map").scrollIntoViewIfNeeded();
-    await expect
-      .poll(() => page.locator('#route-vanilla-list [role="listbox"]').count(), ASKED)
-      .toBe(1);
-    const box = await page.locator("#route-vanilla-map").boundingBox();
-    expect(box?.height).toBeGreaterThan(0);
-    await page.locator("#big-react-root").scrollIntoViewIfNeeded();
-    await expect.poll(() => fetched("/examples/data/points-4k.json"), ASKED).toBe(true);
-    const reactMap = await page.locator("#big-react-root .map").boundingBox();
-    expect(reactMap?.height).toBeGreaterThan(0);
-    await context.close();
-  }, 30_000);
-});
-
-describe("the home page's code tabs", () => {
-  it("shows a host's Google loader as one closed line, opened on a click", async () => {
-    const { page, context } = await site.visitor();
-    await page.goto(site.url);
-    await chooseProvider(page, "Google");
-    const section = await chooseTab(page, "simple", "Bundler");
-    const loader = section.getByRole("group").filter({ hasText: "Google's bootstrap loader" });
-    expect(await loader.getAttribute("open")).toBeNull();
-    expect(await loader.getByText("importLibrary").isVisible()).toBe(false);
-    await loader.getByText("Google's bootstrap loader").click();
-    expect(await loader.getByText("importLibrary").isVisible()).toBe(true);
-    await context.close();
-  }, 30_000);
-
-  it("fades in the panel a tab shows, the one left hidden at once, unless asked for less motion", async () => {
-    const { page, context } = await site.visitor();
-    const animated = await recordAnimations(page);
-    await page.goto(site.url);
-    await chooseTab(page, "simple", "HTML");
-    expect(await animated()).toEqual(["example-simple-html"]);
-    expect(await page.locator("#example-simple-map").isHidden()).toBe(true);
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await chooseTab(page, "simple", "React");
-    expect(await page.locator("#example-simple-react").isVisible()).toBe(true);
-    expect(await animated()).toEqual(["example-simple-html"]);
-    await context.close();
-  }, 30_000);
+  it.each(INDEXES)(
+    "heads the index on $route, then lists every category, a level under, linking its hub, then each of its examples by its title alone, unnumbered, linking its page with its thumbnail, credits the map images once, and draws no map",
+    async ({ route, within, indexHeading, categoryHeading }) => {
+      const { page, context } = await opened(site, route, DESKTOP);
+      const index = page.locator(within);
+      const levels = await index
+        .locator(":is(h1, h2, h3)")
+        .evaluateAll((headings) => headings.map(({ tagName }) => tagName.toLowerCase()));
+      expect(levels).toEqual([indexHeading, ...EXAMPLE_GROUPS.map(() => categoryHeading)]);
+      const pages = await index
+        .locator(`${categoryHeading} a`)
+        .evaluateAll((links) => links.map((link) => [link.textContent, link.getAttribute("href")]));
+      expect(pages).toEqual(EXAMPLE_GROUPS.map((group) => [group.label, groupPath(group)]));
+      const examples = await index
+        .locator("li a")
+        .evaluateAll((links) =>
+          links.map((link) => [
+            link.textContent?.replace(/\s+/g, " ").trim(),
+            link.getAttribute("href"),
+          ]),
+        );
+      expect(examples).toEqual(
+        EXAMPLE_PAGE_ENTRIES.map(({ section, path }) => [section.title, path]),
+      );
+      expect(await index.locator('li a img[alt=""]').count()).toBe(EXAMPLE_PAGE_ENTRIES.length);
+      expect(await index.getByText("Map images:").count()).toBe(1);
+      expect(await page.locator("maplace-map, section.example").count()).toBe(0);
+      await context.close();
+    },
+    30_000,
+  );
 });
 
 describe("the site's map ID", () => {
@@ -172,28 +126,50 @@ describe("the site's map ID", () => {
   });
 });
 
-describe("polygon's saved note", () => {
-  /** Calls the `save` polygon's versions call with an edit, as one would. */
-  const save = (page: Page, title: string) =>
-    page.evaluate((saved) => {
-      const pageGlobals = globalThis as unknown as { save(location: object): void };
-      pageGlobals.save({ id: "park", title: saved, path: [1, 2, 3] });
-    }, title);
+describe("the home page's controls (W66)", () => {
+  it("tells a module's Google reader the page loads Google's loader first, and no one else", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const note = page.getByText(WAYS_IN_GOOGLE_LOADER);
+    const shownAt = async (tab: string, provider: "MapLibre" | "Google") => {
+      await page.getByRole("tab", { name: tab }).click();
+      await chooseProvider(page, provider, "Show the code for");
+      return note.filter({ visible: true }).count();
+    };
+    expect(await shownAt("Bundler", "MapLibre")).toBe(0);
+    expect(await shownAt("Bundler", "Google")).toBe(1);
+    expect(await shownAt("React", "Google")).toBe(1);
+    expect(await shownAt("HTML", "Google")).toBe(0);
+    expect(await shownAt("Script", "Google")).toBe(0);
+    await context.close();
+  }, 30_000);
 
-  it("says what the shown version saved, each version keeping its own", async () => {
-    const { page, context, section } = await visitSection(site, "polygon");
-    await chooseVersion(page, "polygon", "Bundler");
-    const saved = shownNotes(section).locator("[data-saved]");
-    await save(page, "Park");
-    expect(await saved.textContent()).toBe("Saved: Park, 3 points.");
-    expect(await saved.isVisible()).toBe(true);
-    await chooseVersion(page, "polygon", "Script");
-    expect(await saved.isVisible(), "the Script version saved nothing").toBe(false);
-    const bundlerSave = section.getByText("Saved: Park, 3 points.");
-    expect(await bundlerSave.isVisible(), "the hidden Bundler version's save").toBe(false);
-    await chooseVersion(page, "polygon", "Bundler");
-    expect(await saved.textContent()).toBe("Saved: Park, 3 points.");
-    expect(await saved.isVisible()).toBe(true);
+  it("draws the focus ring of every copy button, switch segment and code block whole", async () => {
+    const { page, context } = await opened(site, "/", DESKTOP);
+    const clipped = await page.evaluate(() => {
+      // The ring as base.css draws it: 3px, 2px out.
+      const ring = 5;
+      const controls = [
+        ...document.querySelectorAll("[data-copy]"),
+        ...document.querySelectorAll("[data-provider-choice] label"),
+        // The shown code, a scroller a keyboard reaches (`<Code>`'s tabindex).
+        ...document.querySelectorAll('[role="tabpanel"] pre[tabindex]'),
+      ].filter((control) => control.checkVisibility());
+      return controls.filter((control) => {
+        const box = control.getBoundingClientRect();
+        for (let up = control.parentElement; up; up = up.parentElement) {
+          if (getComputedStyle(up).overflow === "visible") continue;
+          const room = up.getBoundingClientRect();
+          return (
+            box.left - ring < room.left ||
+            box.right + ring > room.right ||
+            box.top - ring < room.top ||
+            box.bottom + ring > room.bottom
+          );
+        }
+        return false;
+      }).length;
+    });
+    expect(clipped).toBe(0);
     await context.close();
   }, 30_000);
 });

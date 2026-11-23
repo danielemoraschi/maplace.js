@@ -51,6 +51,7 @@ export function createAttacher<Data>({
     hoveredStyle: options?.hoveredStyle,
     activeStyle: options?.activeStyle,
     heatmap: options?.heatmap,
+    markerIcon: options?.markerIcon,
   };
   const popup = resolvePopup(options);
   const reports = createReports({ state, loadStates, openOn: popup.openOn });

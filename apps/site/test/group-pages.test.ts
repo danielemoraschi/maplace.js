@@ -6,16 +6,25 @@ import { exampleData } from "../src/examples/example-data.ts";
 import type { Provider } from "../src/examples/example-providers.ts";
 import {
   EXAMPLE_GROUPS,
+  EXAMPLE_PAGE_ENTRIES,
   EXAMPLE_SECTIONS,
-  groupHeading,
   groupPath,
-  HOME_GROUP,
 } from "../src/examples/example-sections.ts";
-import { exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
+import { codeTabsOf, exampleFile, exampleProviders } from "../src/examples/example-sources.ts";
+import { GUIDE_HEADING } from "../src/site/example-markdown.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
-import { chooseProvider, groupLink } from "./home-sections.ts";
-import { ASKED, SETTLE_MS, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
-import { boxOf, duplicateIds, grantConsent, type VisitorOptions } from "./visitor.ts";
+import { chooseProvider } from "./home-sections.ts";
+import {
+  ASKED,
+  EXAMPLE_MAPS,
+  SETTLE_MS,
+  SITE_MAP_ID,
+  scrollPastShownMaps,
+  siteBuiltBeforeTests,
+  visitEach,
+  visitingPages,
+} from "./site-session.ts";
+import { duplicateIds, grantConsent } from "./visitor.ts";
 
 /** One page map per example (D23) on each of its providers, across the examples' pages. */
 const PAGE_MAP_COUNT = EXAMPLE_SECTIONS.flatMap(({ name }) => exampleProviders(name)).length;
@@ -33,31 +42,46 @@ const EXAMPLES = "../../../packages/maplace/examples/";
 
 const site = siteBuiltBeforeTests();
 
-/** What `look` finds on each examples' page, in the groups' order, one page after another. */
-async function onEveryGroupPage<Found>(
+/** Every example's page, in its groups' order. */
+const EXAMPLE_PAGES = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
+
+/** What `look` finds on each page at `routes`, one page after another. */
+async function onEveryPage<Found>(
+  routes: readonly string[],
   look: (page: Page) => Promise<Found>,
-  visiting: VisitorOptions = {},
 ): Promise<Found[]> {
-  const { page, context } = await site.visitor(visiting);
-  const found: Found[] = [];
-  for (const group of EXAMPLE_GROUPS) {
-    await page.goto(new URL(groupPath(group), site.url).href, { waitUntil: "domcontentloaded" });
-    found.push(await look(page));
-  }
+  const { page, context } = await site.visitor();
+  const found = await visitEach(page, site.url, routes, () => look(page));
   await context.close();
   return found;
 }
 
+/** The heights of every map an example's page shows, on each provider in turn. */
+async function mapHeights(page: Page): Promise<number[]> {
+  const onMapLibre = await shownMapHeights(page, "maplibre");
+  await chooseProvider(page, "Google");
+  const onGoogle = await shownMapHeights(page, "google");
+  await chooseProvider(page, "MapLibre");
+  return [...onMapLibre, ...onGoogle];
+}
+
 /** What a page's markup says, as built: nothing laid out or run. */
 const builtFacts = async (page: Page) => ({
-  headings: await page.locator("section.example").evaluateAll((sections) =>
-    sections.map((section) => {
-      const heading = section.querySelector("h2");
-      // A landmark named by its own heading.
-      const named = document.getElementById(section.getAttribute("aria-labelledby") ?? "");
-      return [section.id, named === heading ? heading?.textContent?.trim() : "unnamed"];
-    }),
-  ),
+  // The section, named by its own heading, the page's H1; the line above it and the paragraph under it.
+  heading: await page.locator("section.example").evaluate((section) => {
+    const heading = section.querySelector("h1");
+    const named = document.getElementById(section.getAttribute("aria-labelledby") ?? "");
+    const text = (element: Element | null | undefined) =>
+      element?.textContent?.replace(/\s+/g, " ").trim();
+    return {
+      id: section.id,
+      words: named === heading ? text(heading) : "unnamed",
+      above: text(heading?.previousElementSibling),
+      under: text(heading?.nextElementSibling),
+      h1s: document.querySelectorAll("h1").length,
+      h2s: [...section.querySelectorAll("h2")].map(text),
+    };
+  }),
   heldMaps: await page.locator("section.example maplace-map[hold]").count(),
   dataLinks: await page
     .locator("section.example")
@@ -72,6 +96,17 @@ const builtFacts = async (page: Page) => ({
       anchors.map((a) => [a.closest("section")?.id, a.getAttribute("href"), a.textContent]),
     ),
   idsTwice: await duplicateIds(page),
+  // Only the version shown first, on the provider shown first, is in the page (W83).
+  code: await page.locator("section.example").evaluate((section) => {
+    const firstPart = section.querySelector('[role="tabpanel"] > [data-provider-files]');
+    const blocks = [...section.querySelectorAll("pre.astro-code")];
+    return {
+      name: section.id,
+      blocksElsewhere: blocks.filter((block) => !firstPart?.contains(block)).length,
+      deferred: section.querySelectorAll("template[data-deferred-files]").length,
+      elements: document.querySelectorAll("*").length,
+    };
+  }),
   versions: await page.evaluate(() => {
     const versions = [...document.querySelectorAll<HTMLElement>("[data-live-version]")];
     return {
@@ -91,21 +126,50 @@ const builtFacts = async (page: Page) => ({
     ),
 });
 
-describe("the examples' pages, as built (W38)", () => {
-  let pages: Awaited<ReturnType<typeof builtFacts>>[];
-  beforeAll(async () => {
-    pages = await onEveryGroupPage(builtFacts);
-  }, 60_000);
+describe("the examples' pages, as built and before consent (W38)", () => {
+  let pages: (Awaited<ReturnType<typeof builtFacts>> & { mapHeights: number[] })[];
+  beforeAll(
+    async () => {
+      // The markup first, as built; then the maps' boxes, each provider shown in turn.
+      pages = await onEveryPage(EXAMPLE_PAGES, async (page) => ({
+        ...(await builtFacts(page)),
+        mapHeights: await mapHeights(page),
+      }));
+    },
+    visitingPages(EXAMPLE_PAGES.length * 2),
+  );
 
-  it("number the sections 01–24 across the pages, each its group's", () => {
-    let number = 0;
-    const expected = EXAMPLE_GROUPS.map(({ sections }) =>
-      sections.map(({ name, title }) => {
-        number += 1;
-        return [name, `${String(number).padStart(2, "0")} ${title}`];
-      }),
+  it("head each example's page with its title in task words, its category above, unnumbered, its summary under (W63), then its map and code and how it works (W87)", () => {
+    expect(pages.map(({ heading }) => heading)).toEqual(
+      EXAMPLE_PAGE_ENTRIES.map(({ group, section }) => ({
+        id: section.name,
+        words: section.title,
+        above: group.label,
+        under: section.summary,
+        h1s: 1,
+        h2s: ["Map and code", GUIDE_HEADING],
+      })),
     );
-    expect(pages.map(({ headings }) => headings)).toEqual(expected);
+  });
+
+  it(
+    "head each hub with its heading in task words, its intro under it (W63)",
+    async () => {
+      const hubs = await onEveryPage(EXAMPLE_GROUPS.map(groupPath), async (page) => ({
+        words: await page.locator("h1").textContent(),
+        intro: await page.locator("h1 + p").textContent(),
+      }));
+      expect(hubs).toEqual(
+        EXAMPLE_GROUPS.map((group) => ({ words: group.heading, intro: group.intro })),
+      );
+    },
+    visitingPages(EXAMPLE_GROUPS.length),
+  );
+
+  it("give every map a box, as a map without one never comes into view to be released", () => {
+    const heights = pages.flatMap(({ mapHeights }) => mapHeights);
+    expect(heights).toHaveLength(PAGE_MAP_COUNT);
+    expect(heights.filter((height) => height === 0)).toEqual([]);
   });
 
   it("hold every example's map on each of its providers", () => {
@@ -115,7 +179,8 @@ describe("the examples' pages, as built (W38)", () => {
   it("link the data an example fetches to the site's own copy, in a new tab", async () => {
     const links = pages.flatMap(({ dataLinks }) => dataLinks);
     expect(new Set(links.map(([, target]) => target))).toEqual(new Set(["_blank"]));
-    expect(links.map(([href]) => href).sort()).toEqual(
+    // countries.json twice: choropleth and share-by-country both fetch it.
+    expect([...new Set(links.map(([href]) => href))].sort()).toEqual(
       exampleData()
         .map(({ name }) => `/examples/data/${name}.json`)
         .sort(),
@@ -130,11 +195,22 @@ describe("the examples' pages, as built (W38)", () => {
   it("link the stylesheet an example's versions link to the site's copy, once, under its section", async () => {
     expect(pages.flatMap(({ stylesheetLinks }) => stylesheetLinks)).toEqual([
       ["popups", "/examples/styles/popups.css", "popups.css"],
+      ["audience", "/examples/styles/audience.css", "audience.css"],
+      ["share-by-country", "/examples/styles/share-by-country.css", "share-by-country.css"],
+      ["bubbles", "/examples/styles/bubbles.css", "bubbles.css"],
       ["choropleth", "/examples/styles/choropleth.css", "choropleth.css"],
       ["whats-on", "/examples/styles/whats-on.css", "whats-on.css"],
       ["team", "/examples/styles/team.css", "team.css"],
     ]);
-    for (const file of ["popups.css", "choropleth.css", "whats-on.css", "team.css"]) {
+    for (const file of [
+      "popups.css",
+      "audience.css",
+      "share-by-country.css",
+      "bubbles.css",
+      "choropleth.css",
+      "whats-on.css",
+      "team.css",
+    ]) {
       const served = await fetch(new URL(`/examples/styles/${file}`, site.url));
       expect(served.headers.get("content-type"), file).toMatch(/^text\/css/);
       expect(await served.text(), file).toBe(exampleFile("styles", file));
@@ -160,6 +236,15 @@ describe("the examples' pages, as built (W38)", () => {
     expect(versions.reduce((sum, { savingElsewhere }) => sum + savingElsewhere, 0)).toBe(0);
   });
 
+  it("write only the version and provider shown first into the page, the rest kept for their tab (W83)", () => {
+    const parts = (name: string) => codeTabsOf(name).flatMap(({ codes }) => codes).length;
+    for (const { code } of pages) {
+      expect([code.blocksElsewhere, code.deferred], code.name).toEqual([0, parts(code.name) - 1]);
+    }
+    const whatsOn = pages.find(({ code }) => code.name === "whats-on");
+    expect(whatsOn?.code.elements).toBeLessThan(4_000);
+  });
+
   it("give every example's Google map the site's map ID, but styled's own", () => {
     const notTheSite = pages.flatMap(({ mapIds }) => mapIds).filter(([, id]) => id !== SITE_MAP_ID);
     expect(notTheSite).toEqual([["styled", "DEMO_MAP_ID"]]);
@@ -167,72 +252,28 @@ describe("the examples' pages, as built (W38)", () => {
 });
 
 describe("the examples' pages, shown (W38)", () => {
-  it("give every map a box, as a map without one never comes into view to be released", async () => {
-    const heights = await onEveryGroupPage(async (page) => {
-      const onMapLibre = await shownMapHeights(page, "maplibre");
+  it(
+    "once the maps are on, send every request off the site to a third party the privacy page names",
+    async () => {
+      const visit = await site.visitor();
+      const { page, offsite, mapProviders, mapsJsRequests, context } = visit;
+      await grantConsent(page, site.url);
+      /** Every example's page in turn, scrolled past its shown maps. */
+      const scrollPastEveryExamplesMaps = async () => {
+        await scrollPastShownMaps(page, site.url, EXAMPLE_PAGES, page.locator(EXAMPLE_MAPS));
+        await pause(SETTLE_MS);
+      };
+      // Every map on MapLibre, the pages' first provider: none of it billed by Google.
+      await scrollPastEveryExamplesMaps();
+      await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
+      expect(mapProviders().filter((url) => thirdPartyOf(url) === GOOGLE_MAPS)).toEqual([]);
       await chooseProvider(page, "Google");
-      const onGoogle = await shownMapHeights(page, "google");
-      await chooseProvider(page, "MapLibre");
-      return [...onMapLibre, ...onGoogle];
-    });
-    expect(heights.flat()).toHaveLength(PAGE_MAP_COUNT);
-    expect(heights.flat().filter((height) => height === 0)).toEqual([]);
-  }, 60_000);
-
-  it("once the maps are on, send every request off the site to a third party the privacy page names", async () => {
-    const visit = await site.visitor();
-    const { page, offsite, mapProviders, mapsJsRequests, context } = visit;
-    await grantConsent(page, site.url);
-    const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
-    /** Every group in turn, switched to in place from the bar, scrolled past its shown maps. */
-    const scrollPastEveryGroupsMaps = async () => {
-      for (const group of EXAMPLE_GROUPS) {
-        await groupLink(page, group.label).click();
-        await page.waitForURL(new URL(groupPath(group), site.url).href);
-        for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
-      }
+      await scrollPastEveryExamplesMaps();
+      await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
       await pause(SETTLE_MS);
-    };
-    // Every map on MapLibre, the pages' first provider: none of it billed by Google.
-    await scrollPastEveryGroupsMaps();
-    await expect.poll(() => mapProviders().length, ASKED).toBeGreaterThan(0);
-    expect(mapProviders().filter((url) => thirdPartyOf(url) === GOOGLE_MAPS)).toEqual([]);
-    expect(new URL(page.url()).pathname, "the last group shown").not.toBe(groupPath(HOME_GROUP));
-    await chooseProvider(page, "Google");
-    await scrollPastEveryGroupsMaps();
-    await expect.poll(() => mapsJsRequests().length, ASKED).toBeGreaterThan(0);
-    await pause(SETTLE_MS);
-    expect(offsite().filter((url) => !goesToMapProvider(url))).toEqual([]);
-    await context.close();
-  }, 120_000);
-});
-
-describe("the examples' pages' hero (W62)", () => {
-  /**
-   * The H1's words, the paragraph under it, and how far the H1 stays left of the hero's drawing
-   * from 70rem, where the drawing shows; once fonts are in.
-   */
-  const heroFit = async (page: Page) => {
-    await page.evaluate(() => document.fonts.ready);
-    const heading = page.locator("h1");
-    // biome-ignore lint/performance/useDomNodeTextContent: Playwright's, and the text as rendered: the H1's <br>s are its spaces.
-    const words = (await heading.innerText()).replace(/\s+/g, " ");
-    const intro = await page.locator("[data-hero-intro]").textContent();
-    const drawing = await boxOf(page.locator("svg:has(+ h1)"));
-    const textRight = await heading.evaluate((h1) => {
-      const range = document.createRange();
-      range.selectNodeContents(h1);
-      return Math.max(...[...range.getClientRects()].map((rect) => rect.right));
-    });
-    return { words, intro, clearance: drawing.x - textRight };
-  };
-
-  it("heads and introduces each group's page as its own, the lead clear of the drawing beside it", async () => {
-    const fits = await onEveryGroupPage(heroFit, { viewport: { width: 1120, height: 800 } });
-    for (const [index, group] of EXAMPLE_GROUPS.entries()) {
-      expect(fits[index]?.words, group.id).toBe(`${groupHeading(group)}.`);
-      expect(fits[index]?.intro, group.id).toBe(group.intro);
-      expect(fits[index]?.clearance, group.id).toBeGreaterThan(0);
-    }
-  }, 60_000);
+      expect(offsite().filter((url) => !goesToMapProvider(url))).toEqual([]);
+      await context.close();
+    },
+    visitingPages(EXAMPLE_PAGES.length * 2),
+  );
 });

@@ -1,6 +1,6 @@
 import type { MaplaceOptions, PopupOptions } from "../index";
 import { OPEN_ON } from "../validate/popup";
-import { booleanOrRaw } from "./attribute-values";
+import { booleanOrRaw, textOf } from "./attribute-values";
 import { elementMisuse } from "./element-error";
 import { oneOfAttribute, switchAttribute } from "./element-list";
 import { HEATMAP_ATTRIBUTES, heatmapOf } from "./heatmap-attributes";
@@ -63,26 +63,34 @@ export function readStoreAttributes(host: HTMLElement): StoreAttributes {
 }
 
 /**
- * A blank label, a bad switch, popup opening, heatmap (beside cluster, or a max zoom without it or
- * out of range) or view stands as misuse, as does a change from what the store `taken`.
+ * A bad value stands as misuse, run as `run` says, as does a change from what a store `taken`:
+ * before there is one, the values alone are checked.
  */
 export function checkStoreAttributes(
   host: HTMLElement,
-  taken: StoreAttributes,
-  misuse: StandingMisuse,
+  taken: StoreAttributes | undefined,
+  run: StandingMisuse["attempt"],
 ): void {
-  misuse.attempt("store", () => {
-    const blank = LABEL_ATTRIBUTES.find((name) => host.getAttribute(name)?.trim() === "");
-    if (blank !== undefined) throw elementMisuse(`${blank} must not be blank`, { field: blank });
-    for (const name of SWITCH_ATTRIBUTES) switchAttribute(host, name);
-    popupOpeningOf(host);
-    heatmapOf(host);
-    firstViewOf(host);
+  run("store", () => {
+    checkValues(host);
+    if (taken === undefined) return;
     if (JSON.stringify(readStoreAttributes(host)) !== JSON.stringify(taken)) {
       const problem = `${STORE_ATTRIBUTES.join(", ")} can't change once the map is created`;
       throw elementMisuse(problem);
     }
   });
+}
+
+/**
+ * A blank label, a bad switch, popup opening, heatmap (beside cluster, or a max zoom without it or
+ * out of range) or view is misuse: thrown.
+ */
+function checkValues(host: HTMLElement): void {
+  for (const name of LABEL_ATTRIBUTES) textOf(host, name);
+  for (const name of SWITCH_ATTRIBUTES) switchAttribute(host, name);
+  popupOpeningOf(host);
+  heatmapOf(host);
+  firstViewOf(host);
 }
 
 /**

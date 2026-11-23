@@ -6,13 +6,14 @@ import {
   chooseTab,
   chooseVersion,
   providerToggle,
+  providerTogglesIn,
   providerVersionIn,
   sectionOf,
   visitSection,
 } from "./home-sections.ts";
 import { ON_MAPLIBRE, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
 import { ASKED, opened, SETTLE_MS } from "./site-session.ts";
-import { type Box, boxOf, DESKTOP, loadMapsButtons } from "./visitor.ts";
+import { type Box, boxOf, DESKTOP, FIRST_EXAMPLES_PAGE, loadMapsButtons } from "./visitor.ts";
 
 const site = siteOnMapLibreBeforeTests();
 
@@ -35,8 +36,9 @@ describe("the examples' provider toggle, on a section", () => {
     const section = await chooseTab(page, "simple", "Bundler");
     const shown = (text: string) =>
       section.getByRole("tabpanel").getByText(text).filter({ visible: true }).count();
-    expect(await shown("examples/simple/maplibre/vanilla.ts")).toBe(1);
-    expect(await shown("examples/simple/vanilla.ts")).toBe(0);
+    // Each provider's module, told apart by the entry it imports.
+    expect(await shown('"@maplacejs/maplace/maplibre"')).toBe(1);
+    expect(await shown('"@maplacejs/maplace/google"')).toBe(0);
     expect(await shown("Google's bootstrap loader")).toBe(0);
     await context.close();
   }, 30_000);
@@ -67,7 +69,7 @@ describe("the examples' provider toggle, on a section", () => {
   }, 30_000);
 
   it("keeps Google for the tab's visit: after a reload, not in a tab of its own", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     await chooseProvider(page, "Google");
     await page.reload();
     const radio = (on: Page, name: string) =>
@@ -75,24 +77,67 @@ describe("the examples' provider toggle, on a section", () => {
     expect(await radio(page, "Google").isChecked()).toBe(true);
     const section = await sectionOf(page, "simple");
     expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
+    // Its HTML code on Google written in at load, framed (W83).
+    const code = section
+      .locator('[role="tabpanel"] [data-code-frame] pre.astro-code')
+      .filter({ visible: true });
+    expect(await code.count()).toBeGreaterThan(0);
     // Same browser, same site data, a tab of its own: kept in the tab's session only.
     const other = await context.newPage();
-    await other.goto(site.url);
+    await other.goto(new URL(FIRST_EXAMPLES_PAGE, site.url).href);
     expect(await radio(other, "MapLibre").isChecked()).toBe(true);
     await context.close();
   }, 30_000);
 
+  it("has one toggle on an example's page, MapLibre first and chosen", async () => {
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
+    expect(await providerTogglesIn(page).count()).toBe(1);
+    expect(await providerToggle(page).locator("label").allTextContents()).toEqual([
+      "MapLibre",
+      "Google",
+    ]);
+    expect(await providerToggle(page).getByRole("radio").first().isChecked()).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("carries the provider chosen to the next example's page in the tab", async () => {
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
+    await chooseProvider(page, "Google");
+    await page.getByRole("navigation", { name: "Previous and next" }).getByRole("link").click();
+    await page.waitForURL(new URL("/examples/markers/markers/", site.url).href);
+    const google = providerToggle(page).getByRole("radio", { name: "Google", exact: true });
+    expect(await google.isChecked()).toBe(true);
+    const section = await sectionOf(page, "markers");
+    expect(await providerVersionIn(section, "google", "html").isVisible()).toBe(true);
+    await context.close();
+  }, 30_000);
+
+  it("sets the switch under the tabs on a phone, at their start and of their height", async () => {
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, { width: 320, height: 700 });
+    const tabs = await boxOf(page.locator("main [role=tablist]").first());
+    const toggle = await boxOf(providerToggle(page));
+    expect(toggle.y).toBeGreaterThanOrEqual(tabs.y + tabs.height);
+    expect(toggle.x).toBeCloseTo(tabs.x, 0);
+    expect(toggle.height).toBeCloseTo(tabs.height, 0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+    await context.close();
+  }, 30_000);
+
   it("keeps the dark ground under the chosen provider on a right-to-left page", async () => {
-    const { page, context } = await opened(site, "/", DESKTOP);
+    const { page, context } = await opened(site, FIRST_EXAMPLES_PAGE, DESKTOP);
     await page.evaluate(() => {
       document.documentElement.dir = "rtl";
     });
     const toggle = providerToggle(page);
-    const groundAt = async () => (await boxOf(toggle.locator("span[aria-hidden]"))).x;
+    // The pill's ground is inset from the switch's edge: it lies within the chosen segment.
+    const groundWithin = async (name: string) => {
+      const ground = await boxOf(toggle.locator("span[aria-hidden]"));
+      const chosen = await boxOf(toggle.locator("label", { hasText: name }));
+      return ground.x >= chosen.x && ground.x + ground.width <= chosen.x + chosen.width;
+    };
     for (const name of ["Google", "MapLibre"]) {
       await chooseProvider(page, name);
-      const chosen = await boxOf(toggle.locator("label", { hasText: name }));
-      await expect.poll(groundAt).toBeCloseTo(chosen.x, 0);
+      await expect.poll(() => groundWithin(name)).toBe(true);
     }
     await context.close();
   }, 30_000);

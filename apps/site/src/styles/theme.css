@@ -6,10 +6,15 @@
   --color-ink: #111;
   --color-muted: #55554f;
   --color-wash: #edede6;
-  --color-accent: #e4322b;
+  --color-accent: #cf2b24;
   --color-on-accent: #fff;
   --color-code-paper: #111;
   --color-code-ink: #f2f2ec;
+
+  /* The corner of a panel: the home page's, an example's map and code (W66). */
+  --radius-panel: 22px;
+  /* Inside a panel's 1px border: what it holds at its edge, rounded to meet it. */
+  --radius-panel-inset: calc(var(--radius-panel) - 1px);
 
   --font-*: initial;
   --font-display: "Bricolage Grotesque", system-ui, sans-serif;
@@ -21,25 +26,37 @@
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
   --text-md: 0.9375rem;
+  --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.75rem;
   --text-title: clamp(2.25rem, 5vw, 3.25rem);
-  --text-hero: clamp(2.125rem, 9vw, 4.5rem);
+  --text-hero: clamp(2.25rem, 5vw, 3.75rem);
+  /* The home page's (W66): a section's headline, and the paragraph that opens a part of it. */
+  --text-section: clamp(1.75rem, 3.4vw, 3rem);
+  --text-lede: 1.3125rem;
 
   --spacing-gutter: clamp(16px, 4vw, 40px);
-  /* The header's own height (`SiteHeader.astro`), where the examples' bar is held under it. */
-  --spacing-header-height: 4.0625rem;
+  /* The header's own height (`SiteHeader.astro`). */
+  --spacing-header-height: 4rem;
   /* What the sticky header covers at the top of the screen, a little more than its height. */
   --spacing-header: calc(var(--spacing-header-height) + 0.4375rem);
-  /* The examples' bar (`ExampleGroupBar.astro`) from 48rem; below, its two rows' (`base.css`). */
-  --spacing-group-bar: 3.6875rem;
-  /* The examples' provider toggle (`ProviderSwitch.astro`). */
+  /* The builder's square provider toggle (`ProviderSwitch.astro`), over its preview. */
   --spacing-toggle-width: 11.5rem;
   --spacing-toggle-height: 2.125rem;
   /* An example's map: the height its hosts give it. */
   --spacing-map: 24rem;
-  --container-measure: 72rem;
+  --container-measure: 76rem;
   --container-text: 48rem;
+
+  /* A card of the home page's table settling onto it (W66): its one motion. */
+  --animate-land: land 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes land {
+    from {
+      transform: translateZ(260px);
+      opacity: 0;
+    }
+  }
 }

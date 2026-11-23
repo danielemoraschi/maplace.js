@@ -1,12 +1,12 @@
 import type { Marker } from "maplibre-gl";
 import { reportElementHover } from "../adapter-kit/hover-reports";
+import { anchorFor, type IconAnchor } from "../adapter-kit/pin-icon";
 import type { Drawable } from "../drawable";
 import type { LatLng } from "../geometry";
 import { lngLatOf } from "./conversions";
 import { endDragsTheMapMisses } from "./drag-release";
 import { selectLocation } from "./map-clicks";
 import { reportMarkerDrags } from "./marker-drags";
-import { PIN_SIZE, pinImageUrl } from "./pin-image";
 import type { PlacingSite } from "./placed-location";
 
 /**
@@ -15,6 +15,8 @@ import type { PlacingSite } from "./placed-location";
  */
 export interface DomMarker {
   readonly marker: Marker;
+  /** What of it meets its point, fixed once made: MapLibre's `Marker` keeps its anchor. */
+  readonly anchor: IconAnchor;
   /** Shows `icon` as the only child; an icon already there stays, so its CSS transition runs. */
   showIcon(icon: Node): void;
   /** Where the page has it. */
@@ -28,6 +30,8 @@ export interface DomMarker {
    * nothing.
    */
   setDraggable(draggable: boolean): void;
+  /** Whether a user is dragging it now. */
+  isDragged(): boolean;
   /** Takes it off the map for good, at once: a drag under way ends there, reporting nothing. */
   remove(): void;
 }
@@ -84,9 +88,9 @@ export interface DomMarkerLook {
 }
 
 /**
- * A DOM marker at the drawable's point, its bottom middle there as Google's pin's tip: a pressable
- * element named by its title, selecting the location when pressed, dragged while `draggable`,
- * reporting its input while the map is live.
+ * A DOM marker at the drawable's point, met there by what of its icon `anchorFor` says: a
+ * pressable element named by its title, selecting the location when pressed, dragged while
+ * `draggable`, reporting its input while the map is live.
  */
 export function createDomMarker(
   drawable: Drawable,
@@ -103,7 +107,8 @@ export function createDomMarker(
   element.style.display = "grid";
   element.append(icon);
   setTitle(element, drawable.title);
-  const marker = new maplibre.Marker({ element, anchor: "bottom", draggable });
+  const anchor = anchorFor(icon);
+  const marker = new maplibre.Marker({ element, anchor, draggable });
   marker.setLngLat(lngLatOf(at));
   showDragCursor(element, draggable);
   // The pointer over it, or keyboard focus shown on it, hovers it.
@@ -143,6 +148,7 @@ export function createDomMarker(
 
   return {
     marker,
+    anchor,
     showIcon(next) {
       if (element.firstChild !== next || element.childNodes.length !== 1)
         element.replaceChildren(next);
@@ -161,6 +167,7 @@ export function createDomMarker(
       showDragCursor(element, next);
       if (!next) cutDragShort();
     },
+    isDragged: () => drags.isUnderWay(),
     remove() {
       asked = false;
       shown = false;
@@ -177,16 +184,4 @@ function showDragCursor(element: HTMLElement, draggable: boolean): void {
 function setTitle(element: HTMLElement, title: string | undefined): void {
   if (title === undefined) element.removeAttribute("aria-label");
   else element.setAttribute("aria-label", title);
-}
-
-/**
- * The default pin as an image, sized as the layer draws it, its tip at the bottom middle.
- */
-export function createPinIcon(document: Document): HTMLElement {
-  const image = document.createElement("img");
-  image.src = pinImageUrl(document);
-  image.alt = "";
-  image.width = PIN_SIZE.width;
-  image.height = PIN_SIZE.height;
-  return image;
 }

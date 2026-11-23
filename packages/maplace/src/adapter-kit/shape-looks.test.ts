@@ -8,6 +8,7 @@ import {
   SELECTED_LINE_LOOK,
   SELECTED_LOOK,
   sameStyles,
+  showsEditHandles,
   styleInState,
 } from "./shape-looks";
 
@@ -118,5 +119,26 @@ describe("styleInState: an active shape", () => {
     const active = shape(circle, { active: true, activeStyle: { fill: "#ff0000" } });
     expect(styleInState(active, SELECTED)).toEqual(SELECTED_LOOK);
     expect(styleInState(active, HOVERED)).toEqual(HOVERED_LOOK);
+  });
+});
+
+describe("showsEditHandles", () => {
+  const shown = (state: typeof REST) => ({ state, visible: true });
+
+  it("shows an editable shape's handles while it is hovered or selected, none at rest", () => {
+    expect(showsEditHandles({ editable: true }, shown(HOVERED), false)).toBe(true);
+    expect(showsEditHandles({ editable: true }, shown(SELECTED), false)).toBe(true);
+    expect(showsEditHandles({ editable: true }, shown(REST), false)).toBe(false);
+  });
+
+  it("keeps them at rest while a press on them is held", () => {
+    expect(showsEditHandles({ editable: true }, shown(REST), true)).toBe(true);
+  });
+
+  it("shows none on a shape hidden or not editable, a press held or not", () => {
+    expect(showsEditHandles({ editable: true }, { state: SELECTED, visible: false }, true)).toBe(
+      false,
+    );
+    expect(showsEditHandles({ editable: false }, shown(SELECTED), true)).toBe(false);
   });
 });

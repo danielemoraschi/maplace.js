@@ -5,6 +5,7 @@ import { packageManifest, readRootFile } from "../../../scripts/build/package.ts
 import { CHANGELOG_FILE, listLines } from "../../../scripts/docs/changelog-lines.ts";
 import { captures, section } from "../../../scripts/docs/markdown.ts";
 import { PACKAGE_NAME } from "../../../scripts/release/published-package.ts";
+import { findExamplePage } from "../src/examples/example-sections.ts";
 import { AGENT_LINKS, LLMS_TXT_ROUTE, skillInstallCommand } from "../src/site/agent-links.ts";
 import { AGENTS_PAGE, BUILDER_PAGE, PRIVACY_PAGE } from "../src/site/footer-pages.ts";
 import {
@@ -14,8 +15,14 @@ import {
 } from "../src/site/markdown-routes.ts";
 import { REPO_DOCS } from "../src/site/repo-docs.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
-import { groupLink } from "./home-sections.ts";
-import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
+import { linkFor, linkRules, MAX_HEADER_RULES, rulePatterns } from "./header-rules.ts";
+import {
+  opened,
+  PUBLIC_SITE,
+  siteBuiltBeforeTests,
+  visitEach,
+  visitingPages,
+} from "./site-session.ts";
 import { DESKTOP } from "./visitor.ts";
 
 const NOT_FOUND_PAGE = "/404.html";
@@ -36,23 +43,6 @@ function robotsDirectives(text: string): { name: string; value: string }[] {
       return { name: line.slice(0, colon), value: line.slice(colon + 2) };
     });
 }
-
-interface LinkRule {
-  readonly route: string;
-  readonly target: string;
-}
-
-const LINK_RULE = /^(\S+)\n {2}Link: <([^>]+)>; rel="alternate"; type="text\/markdown"$/gm;
-
-/** The `Link` rules of a `_headers` file, whatever else it holds. */
-function linkRules(headers: string): LinkRule[] {
-  return [...headers.matchAll(LINK_RULE)].map((rule) => ({
-    route: rule[1] as string,
-    target: rule[2] as string,
-  }));
-}
-
-const byRoute = (a: LinkRule, b: LinkRule) => a.route.localeCompare(b.route);
 
 describe("a page's Markdown", () => {
   it("is served for every page with Markdown", async () => {
@@ -83,11 +73,17 @@ describe("a page's Markdown", () => {
     expect(markdown.match(/<time /g)).toHaveLength(listLines(readRootFile(CHANGELOG_FILE)).length);
   });
 
-  it("has a group's guides and code", async () => {
-    const markdown = await (await served("/examples/lists/index.md")).text();
-    expect(markdown).toContain("## Your own list");
+  it("has an example's guide and code", async () => {
+    const markdown = await (await served("/examples/lists/custom-list/index.md")).text();
+    expect(markdown.startsWith(`# ${findExamplePage("custom-list")?.section.title}\n`)).toBe(true);
     expect(markdown).toContain("defineListView");
     expect(markdown).toContain("examples/custom-list/maplibre/");
+  });
+
+  it("has a hub's examples and reference", async () => {
+    const markdown = await (await served("/examples/lists/index.md")).text();
+    expect(markdown).toContain("(/examples/lists/custom-list/)");
+    expect(markdown).toContain("\n## Reference\n");
   });
 });
 
@@ -125,27 +121,64 @@ describe("robots.txt", () => {
 });
 
 describe("_headers", () => {
-  it("has one Link rule per route with Markdown, and no other", () => {
-    const rules = linkRules(readFileSync(join(site.dir, "_headers"), "utf8"));
-    expect([...rules].sort(byRoute)).toEqual(
-      MARKDOWN_ROUTES.map((route) => ({ route, target: markdownAddress(route) })).sort(byRoute),
-    );
+  const text = () => readFileSync(join(site.dir, "_headers"), "utf8");
+
+  it("names every route's Markdown in a Link rule", () => {
+    const links = linkRules(text());
+    for (const route of MARKDOWN_ROUTES)
+      expect(linkFor(links, route, "alternate"), route).toBe(markdownAddress(route));
+  });
+
+  it("has no Link rule matching nothing: each page's Markdown, or each Markdown's page", () => {
+    const pathsFor: Record<string, readonly string[]> = {
+      alternate: MARKDOWN_ROUTES,
+      canonical: MARKDOWN_ROUTES.map(markdownAddress),
+    };
+    for (const { pattern, rel, match } of linkRules(text())) {
+      const paths = pathsFor[rel] ?? [];
+      expect(
+        paths.filter((path) => match(path)),
+        `${pattern} ${rel}`,
+      ).not.toEqual([]);
+    }
+  });
+
+  it("gives a page without Markdown, and its address plus index.md, no Link rule", () => {
+    const links = linkRules(text());
+    const withoutMarkdown = SITE_ROUTES.filter((route) => !MARKDOWN_ROUTES.includes(route));
+    for (const route of withoutMarkdown) {
+      const matching = links.filter(
+        ({ rel, match }) =>
+          (rel === "alternate" && match(route)) ||
+          (rel === "canonical" && match(markdownAddress(route))),
+      );
+      expect(matching, route).toEqual([]);
+    }
+  });
+
+  it("holds 99 rules or fewer, leaving CI's preview its own under Cloudflare's limit", () => {
+    // `ci.yml` adds a `/*` rule (noindex) to the preview's copy.
+    expect(rulePatterns(text()).length).toBeLessThan(MAX_HEADER_RULES);
   });
 });
 
 describe("a page's head and its link", () => {
-  it("names its twin on a page with Markdown, in its head and on the page", async () => {
-    for (const route of MARKDOWN_ROUTES) {
-      const { page, context } = await open(route);
-      const alternate = page.locator('link[rel="alternate"][type="text/markdown"]');
-      expect(await alternate.getAttribute("href"), route).toBe(markdownAddress(route));
-      const shown = page.locator('main a[type="text/markdown"]:visible');
-      expect(await shown.count(), route).toBe(1);
-      expect(await shown.textContent(), route).toBe("Markdown");
-      expect(await shown.getAttribute("href"), route).toBe(markdownAddress(route));
+  it(
+    "names its twin on a page with Markdown, in its head and on the page",
+    async () => {
+      const { page, context } = await site.visitor();
+      await visitEach(page, site.url, MARKDOWN_ROUTES, async (route) => {
+        const alternate = page.locator('link[rel="alternate"][type="text/markdown"]');
+        expect(await alternate.getAttribute("href"), route).toBe(markdownAddress(route));
+        const shown = page.locator('main a[type="text/markdown"]:visible');
+        expect(await shown.count(), route).toBe(1);
+        expect(await shown.textContent(), route).toBe("Markdown");
+        expect(await shown.getAttribute("href"), route).toBe(markdownAddress(route));
+      });
       await context.close();
-    }
-  }, 60_000);
+    },
+    visitingPages(MARKDOWN_ROUTES.length),
+  );
 
   it("names none on a page without Markdown", async () => {
     for (const route of [BUILDER_PAGE.route, PRIVACY_PAGE.route, AGENTS_PAGE.route]) {
@@ -168,9 +201,9 @@ describe("a page's head and its link", () => {
     expect(html).not.toContain('rel="alternate"');
   });
 
-  it("carries the group's Markdown link on switching group in place", async () => {
+  it("carries a hub's Markdown link on its page, reached from the home page's index", async () => {
     const { page, context } = await open("/");
-    await groupLink(page, "Lists").click();
+    await page.locator("section#examples h3 a", { hasText: "Lists and menus" }).click();
     await page.waitForURL(new URL("/examples/lists/", site.url).href);
     const shown = page.locator('main a[type="text/markdown"]:visible');
     await shown.first().waitFor();

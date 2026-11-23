@@ -28,7 +28,7 @@ export class PendingSelection {
     this.#attributeOptions = options;
   }
 
-  fromAddress(id: string): void {
+  fromAddress(id: string | undefined): void {
     this.#fromAddress = id;
   }
 

@@ -1,89 +1,87 @@
 ---
 import { getEntry, render } from "astro:content";
 import { fetchedDataLinks, stylesheetLinks } from "../examples/example-file-links.ts";
-import { FIRST_PROVIDER } from "../examples/example-providers.ts";
-import type { ExampleSection } from "../examples/example-sections.ts";
+import { type ExamplePageEntry, groupPath } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
+import { versionPanelId, versionTabId } from "../examples/example-versions.ts";
+import { shownFirst } from "../examples/live-versions.ts";
+import { GUIDE_HEADING } from "../site/example-markdown.ts";
 import ExampleFileLinks from "./ExampleFileLinks.astro";
 import ExampleFiles from "./ExampleFiles.astro";
 import MapFrame from "./MapFrame.astro";
-import VersionSwitch from "./VersionSwitch.astro";
+import MarkdownLink from "./MarkdownLink.astro";
+import ProviderPart from "./ProviderPart.astro";
+import ProviderSwitch from "./ProviderSwitch.astro";
+import VersionTabs from "./VersionTabs.astro";
 
-interface Props extends ExampleSection {
-  number: number;
+interface Props {
+  entry: ExamplePageEntry;
 }
 
-const { number, name, title, summary, drawsOwnList, drawsOwnFrame } = Astro.props;
+const { group, section, path } = Astro.props.entry;
+const { name, title, summary, drawsOwnList, drawsOwnFrame } = section;
 const codeTabs = codeTabsOf(name);
 const codes = codeTabs.flatMap(({ codes }) => codes);
 const dataLinks = fetchedDataLinks(codes);
 const styleLinks = stylesheetLinks(exampleStylesheets(codes));
 const guide = await getEntry("exampleGuides", name);
 const Guide = guide && (await render(guide)).Content;
-const tabs = [
-  { tab: "map", label: "Map" },
-  ...codeTabs.map(({ kind, label }) => ({ tab: kind, label })),
-];
+// Its sections' headings, ruled as a hub's are.
+const SECTION_HEADING = "mb-6 border-t-3 border-ink pt-4 text-3xl";
 // `example-` keeps the site's ids apart from the pages' own (`route-map`).
-const panel = (tab: string) => `example-${name}-${tab}`;
+const panelPrefix = `example-${name}`;
 ---
 
-<section
-  class="example mt-12 border-t-3 border-ink pt-4"
-  id={name}
-  aria-labelledby={`${name}-title`}
-  data-version-switch={name}
->
-  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1" data-heading-row>
-    <h2 class="m-0 text-3xl" id={`${name}-title`}>
-      <span class="text-accent">{String(number).padStart(2, "0")}</span>{" "}{title}
-    </h2>
-    <p class="m-0 text-muted">{summary}</p>
+{/* An example's page's body: its heading, then its map run from a version, that version's code, its guide. */}
+<section class="example" id={name} aria-labelledby={`${name}-title`} data-version-switch={name}>
+  <p class="mt-0 mb-1 text-sm font-semibold"><a href={groupPath(group)}>{group.label}</a></p>
+  <h1 class="mt-0 mb-2 text-title" id={`${name}-title`}>{title}</h1>
+  <p class="mt-0 mb-2 max-w-text text-lg text-muted">{summary}</p>
+  <p class="mt-0 mb-0 text-sm"><MarkdownLink route={path} /></p>
+  {/* Over the tabs, as they run the map and show the code under it. */}
+  <h2 class={`mt-10 ${SECTION_HEADING}`} id={`${name}-map-code`}>Map and code</h2>
+  {/* One control: a tab runs the map from its version and shows that version's code under it. */}
+  {/* Spaced apart on one row; on a phone, the switch wraps under the tabs at the start. */}
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+    <VersionTabs codeTabs={codeTabs} label={`Run ${title} from`} panelPrefix={panelPrefix} />
+    <ProviderSwitch name={`${name}-provider`} look="pill" />
   </div>
-  <ExampleFileLinks lead="Fetches" links={dataLinks} />
-  <ExampleFileLinks lead="Styled by" links={styleLinks} />
-  <div
-    class="mt-4 mb-3 flex flex-wrap"
-    role="tablist"
-    aria-label={`${title}: the map and its code`}
-  >
-    {
-      tabs.map(({ tab, label }, index) => (
-        <button
-          type="button"
-          role="tab"
-          class="border-0 bg-transparent px-3.5 py-1 text-sm font-medium aria-selected:bg-ink aria-selected:text-paper disabled:cursor-not-allowed disabled:text-muted disabled:opacity-60"
-          id={`${panel(tab)}-tab`}
-          aria-controls={panel(tab)}
-          aria-selected={index === 0 ? "true" : "false"}
-          tabindex={index === 0 ? 0 : -1}
-        >
-          {label}
-        </button>
-      ))
-    }
-  </div>
-  <div role="tabpanel" id={panel("map")} aria-labelledby={`${panel("map")}-tab`}>
-    <VersionSwitch name={name} />
-    <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
-  </div>
+  <MapFrame name={name} drawsOwnList={drawsOwnList} drawsOwnFrame={drawsOwnFrame} />
+  {/* What the map loads beside its code: its data and its stylesheet, each linked. */}
+  <ExampleFileLinks
+    parts={[
+      { lead: "Fetches", links: dataLinks },
+      { lead: "Styled by", links: styleLinks },
+    ]}
+  />
   {
-    codeTabs.map(({ kind, codes }) => (
-      <div role="tabpanel" id={panel(kind)} aria-labelledby={`${panel(kind)}-tab`} hidden>
+    codeTabs.map(({ kind, codes }, index) => (
+      <div
+        role="tabpanel"
+        class="mt-4"
+        id={versionPanelId(panelPrefix, kind)}
+        aria-labelledby={versionTabId(panelPrefix, kind)}
+        hidden={index !== 0}
+      >
+        {/* Only the version and provider shown first are written in; the others wait in a template until shown (`deferred-code.ts`). */}
         {codes.map((code) => (
-          <div
-            data-provider-files={code.provider}
-            hidden={code.provider !== FIRST_PROVIDER}
-          >
-            <ExampleFiles version={code} />
-          </div>
+          <ProviderPart provider={code.provider}>
+            {shownFirst({ kind, provider: code.provider }) ? (
+              <ExampleFiles version={code} />
+            ) : (
+              <template data-deferred-files>
+                <ExampleFiles version={code} />
+              </template>
+            )}
+          </ProviderPart>
         ))}
       </div>
     ))
   }
   {
     Guide && (
-      <div class="example-guide mt-6 max-w-text">
+      <div class="example-guide mt-12">
+        <h2 class={`mt-0 ${SECTION_HEADING}`} id={`${name}-how`}>{GUIDE_HEADING}</h2>
         <Guide />
       </div>
     )

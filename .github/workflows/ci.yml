@@ -3,12 +3,12 @@ name: CI
 on:
   push:
   pull_request:
-  # On main, runs the real Google Maps tests whatever changed.
+  # On main or next, runs the real Google Maps tests whatever changed.
   workflow_dispatch:
 
 permissions:
   contents: read
-  actions: read # the last CI run passed on main, for scripts/real-maps.ts
+  actions: read # the last CI run passed on main or next, for scripts/real-maps.ts
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -56,12 +56,13 @@ jobs:
         with:
           path: ~/.cache/chromium-packages
           key: ${{ steps.chromium-packages.outputs.cache-primary-key }}
-      # Real Google Maps (T2) on main only: fork PRs get no secrets, and every map is billed, so
-      # only when main changed more than prose or MapLibre's own files since the last commit verify
-      # passed on (scripts/real-maps.ts; a cancelled run's changes count too), or on a run
-      # started by hand. Without the key the Maps tests would only skip, so a missing secret fails.
+      # Real Google Maps (T2) on main and next only (next too, so a release's run comes before it
+      # reaches main): fork PRs get no secrets, and every map is billed, so only when the branch
+      # changed more than prose or MapLibre's own files since the last commit verify passed on there
+      # (scripts/real-maps.ts; a cancelled run's changes count too), or on a run started by hand.
+      # Without the key the Maps tests would only skip, so a missing secret fails.
       - id: real-maps
-        if: github.ref == 'refs/heads/main' && !github.event.repository.fork
+        if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next') && !github.event.repository.fork
         env:
           GH_TOKEN: ${{ github.token }}
           BY_HAND: ${{ github.event_name == 'workflow_dispatch' }}
@@ -69,7 +70,7 @@ jobs:
           # The last run whose verify passed, whatever deploy-preview did after it.
           base=""
           if [ "$BY_HAND" != "true" ]; then
-            for run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch main \
+            for run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch "$GITHUB_REF_NAME" \
               --status completed --limit 20 --json databaseId,event \
               --jq '.[] | select(.event != "pull_request") | .databaseId'); do
               base=$(gh run view "$run" --repo "$GITHUB_REPOSITORY" --json headSha,jobs \

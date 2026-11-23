@@ -5,11 +5,12 @@ import { type Conversion, convertPasted } from "./builder-convert.ts";
 import { previewLocationsOf } from "./builder-popups.ts";
 import { type Note, PasteRefused } from "./builder-report.ts";
 import { writeSnippet } from "./builder-snippet.ts";
-import { chosenProvider } from "./version-switch.ts";
+import { copyOrSelect, REFUSED_STATUS } from "./copy-text.ts";
+import { chosenProvider, PROVIDER_TOGGLE } from "./version-switch.ts";
 
 /**
- * Pixels around the preview's locations: clears a pin's height above a point, and the attribution
- * box, up to about 75 tall in the narrowest frame, below one. The default 40 leaves both on them.
+ * Pixels around the preview's locations: clears the attribution box, up to about 75 tall in the
+ * narrowest frame, below a point. The default 40 leaves it over the lowest pins.
  */
 export const PREVIEW_FIT_PADDING = 80;
 
@@ -54,7 +55,7 @@ const elementsOf = (page: Document) => ({
 export function startBuilder(page: Document): void {
   const elements = elementsOf(page);
   const { paste, status, code, copy, copied } = elements;
-  const toggle = required(page, "[data-provider-choice]");
+  const toggle = required(page, PROVIDER_TOGGLE);
   const maps = [...page.querySelectorAll<PreviewMap>("[data-builder-preview] maplace-map")];
   const pinOf = (provider: Provider) =>
     required(page, `[data-pinned-script="${provider}"]`).textContent ?? "";
@@ -112,22 +113,12 @@ export function startBuilder(page: Document): void {
       render();
     }
     if (copy.disabled) return;
-    void copyText(code.textContent ?? "").then((words) => {
-      copied.textContent = words;
+    void copyOrSelect(code).then((done) => {
+      copied.textContent = done ? "Copied" : REFUSED_STATUS;
     });
   });
   render();
   showViewWhenDefined(maps, () => conversion);
-}
-
-/** Copies `text`, and what to tell the reader; a page off HTTPS has no clipboard at all. */
-async function copyText(text: string): Promise<string> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return "Copied";
-  } catch {
-    return "Select the code to copy it";
-  }
 }
 
 function showStatus(status: HTMLElement, words: string, refused: boolean): void {

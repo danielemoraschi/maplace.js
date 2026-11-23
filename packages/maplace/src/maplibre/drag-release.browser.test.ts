@@ -9,7 +9,7 @@ import type { MapLibreState } from "./map-state";
 import { editingMarker, expectOneChangeEndingTheEdits } from "./testing/editable-marker";
 import { holdDrag, holdTouchDrag } from "./testing/held-drag";
 import { mountedMapLibre } from "./testing/mounted";
-import { type PagePoint, pagePointOf, pinHeadOf } from "./testing/user-drags";
+import { middleOf, type PagePoint, pagePointOf } from "./testing/user-drags";
 
 afterEach(unmountAll);
 
@@ -18,10 +18,14 @@ const BACK_OVER_THE_MAP: LatLng = { lat: -1, lng: -1 };
 /** Where a drag is held when the browser ends it. */
 const HELD_AT: LatLng = { lat: 0.5, lng: 1.5 };
 
-/** An editable polygon on a map at zoom 7 over the origin: its corner `CORNER` is a handle. */
+/**
+ * An editable polygon on a map at zoom 7 over the origin, selected as a user picks it before
+ * dragging: its corner `CORNER` is a handle.
+ */
 async function editingPolygon() {
   const mounted = await mountedMapLibre();
   await mounted.adapter.apply(adding({ ...polygonDrawable("p"), editable: true }));
+  mounted.adapter.present(presented({ selectedId: "p" }));
   mounted.adapter.setView({ kind: "center", center: ORIGIN, zoom: 7 });
   await mounted.probe.settle();
   return mounted;
@@ -58,7 +62,7 @@ describe("a MapLibre drag let go outside the map", () => {
 
   it("ends an editable marker's drag let go outside the map there, reporting its change once", async () => {
     const { map, host, marker } = await editingMarker();
-    const from = pinHeadOf(marker.getElement().firstElementChild as Element);
+    const from = middleOf(marker.getElement().firstElementChild as Element);
     await commands.pressMouse([from, rightOfTheMap(map, from)]);
     expectOneChangeEndingTheEdits(host);
     const left = marker.getLngLat();

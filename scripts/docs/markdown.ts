@@ -151,7 +151,7 @@ function isImageAt(text: string, offset: number): boolean {
 }
 
 /** Each table of `text`: a run of lines starting with `|`, trimmed. */
-function tablesIn(text: string): string[][] {
+export function tablesIn(text: string): string[][] {
   const tables: string[][] = [];
   let table: string[] | undefined;
   for (const line of text.split("\n").map((untrimmed) => untrimmed.trim())) {

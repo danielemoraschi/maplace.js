@@ -83,6 +83,6 @@ function naturalHeightOf(list: HTMLElement): number {
   return list.offsetHeight + scrolled;
 }
 
-function isShown(element: Element): boolean {
+export function isShown(element: Element): boolean {
   return element.getClientRects().length > 0;
 }

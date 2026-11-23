@@ -60,9 +60,11 @@ function followAddress(
     () => {
       const store = feed.created;
       const id = idInAddress(parameter);
-      if (store === undefined || id === lastId) return;
+      if (id === lastId) return;
       lastId = id;
-      selectFromAddress(store, id);
+      // A held map's store comes on release: it selects what the address names then.
+      if (store === undefined) feed.selectOnceShown(id);
+      else selectFromAddress(store, id);
     },
     { signal },
   );

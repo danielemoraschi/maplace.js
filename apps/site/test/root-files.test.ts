@@ -3,6 +3,9 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ROOT } from "../../../scripts/build/package.ts";
 import { pngSize } from "../../../scripts/build/png-size.ts";
+import { MARKDOWN_ROUTES, markdownAddress } from "../src/site/markdown-routes.ts";
+import { docRoute } from "../src/site/repo-docs.ts";
+import { SITE_ROUTES } from "../src/site/site-routes.ts";
 
 /**
  * What the site serves at fixed addresses from `public/` (W59): the redirects Cloudflare applies,
@@ -24,18 +27,34 @@ function redirectRules(text: string): string[][] {
 
 describe("_redirects", () => {
   const rules = redirectRules(publicFile("/_redirects").toString("utf8"));
+  /** Every page the site has, and its Markdown where it has any. */
+  const pages = new Set([...SITE_ROUTES, ...MARKDOWN_ROUTES.map(markdownAddress)]);
 
-  it("redirects 0.2's script paths to the same file on jsDelivr at 0.2.10, and the older touch-icon name to the touch icon", () => {
+  it("redirects 0.2's script paths, the older touch-icon name, the examples' pages before W63 and /docs/", () => {
     const scripts = ["/dist/maplace.min.js", "/dist/maplace.js", "/src/maplace.js"];
+    const movedPages = [
+      ["/examples/shapes/", "/examples/circles-polygons/"],
+      ["/examples/data-routes/", "/examples/live-data/"],
+    ];
     expect(rules).toEqual([
       ...scripts.map((path) => [path, `${OLD_SITE_RELEASE}${path}`, "301"]),
       ["/apple-touch-icon-precomposed.png", "/apple-touch-icon.png", "301"],
+      ...movedPages.flatMap(([from = "", to = ""]) => [
+        [from, to, "301"],
+        [markdownAddress(from), markdownAddress(to), "301"],
+      ]),
+      ...["/docs", "/docs/"].map((guess) => [guess, docRoute("getting-started"), "301"]),
     ]);
   });
 
-  it("redirects only to files the site has, or to another origin", () => {
+  it("redirects only to files or pages the site has, or to another origin", () => {
     const localTargets = rules.map(([, to = ""]) => to).filter((to) => to.startsWith("/"));
-    for (const to of localTargets) expect(existsSync(resolve(PUBLIC, `.${to}`)), to).toBe(true);
+    for (const to of localTargets)
+      expect(pages.has(to) || existsSync(resolve(PUBLIC, `.${to}`)), to).toBe(true);
+  });
+
+  it("redirects no page the site has, which would hide it", () => {
+    expect(rules.map(([from = ""]) => from).filter((from) => pages.has(from))).toEqual([]);
   });
 });
 

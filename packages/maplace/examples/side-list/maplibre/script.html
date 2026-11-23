@@ -1,0 +1,31 @@
+<!doctype html>
+<!-- A page of your own script: the MapLibre CDN script, which bundles maplibre-gl and its stylesheet, what the map and its list mount on, and the map made with Maplace. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<style>
+  #side-list-maplibre-script-map-and-list { display: flex; height: 24rem; }
+  #side-list-maplibre-script-map { flex: 1 1 auto; min-width: 0; }
+  #side-list-maplibre-script-list { display: contents; }
+  #side-list-maplibre-script-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #side-list-maplibre-script-map-and-list { flex-direction: column; height: 36rem; }
+    #side-list-maplibre-script-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<div id="side-list-maplibre-script-map-and-list">
+  <div id="side-list-maplibre-script-map"></div>
+  <div id="side-list-maplibre-script-list"></div>
+</div>
+<script type="module">
+  Maplace.createMapLibreMap("#side-list-maplibre-script-map", {
+    locations: [
+      { id: "edinburgh", lat: 55.9533, lng: -3.1883, title: "Edinburgh", group: "North" },
+      { id: "glasgow", lat: 55.8642, lng: -4.2518, title: "Glasgow", group: "North" },
+      { id: "belfast", lat: 54.5973, lng: -5.9301, title: "Belfast", group: "North" },
+      { id: "london", lat: 51.5074, lng: -0.1278, title: "London", group: "South" },
+      { id: "bristol", lat: 51.4545, lng: -2.5879, title: "Bristol", group: "South" },
+      { id: "cardiff", lat: 51.4816, lng: -3.1791, title: "Cardiff", group: "South" },
+    ],
+    list: { container: "#side-list-maplibre-script-list", heading: "Cities", fitAll: true, fitAllLabel: "All cities" },
+  });
+</script>

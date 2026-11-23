@@ -2,6 +2,20 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-23 Fixed a map fitted to its locations leaving some under Maplace.js's own panels on the map (a list or select in a corner), on Google and MapLibre: a fit keeps clear of them, each padding the edge where it costs the map less, and a fit nobody has moved fits again when one grows into what it kept clear.
+- 2026-11-23 Added `markerIcon` on `<maplace-map>`, the store's `markerIcon` set from a page's script (a function building each marker's icon from its location, as for locations from `src`), read when the store is made, as `sanitize` is; it wins over the map's `<template data-icon>`.
+- 2026-11-23 Fixed reading `route` on a `<maplace-map>` making its store: a framework that reads a property before binding `undefined` (Vue) no longer has a later `sanitize` or `markerIcon` refused; `route` reads `undefined` until the store exists.
+- 2026-11-23 Fixed a `<maplace-location>` read before it was connected missing a later template or `data-*` change.
+- 2026-11-23 Changed a `<maplace-map>` with `hold` to make its store on `release()` (or when `maplace` or `locations` is first read), not when it connects, so a page's scripts can set its properties first; a bad attribute value is still said at once, and the misuse of its locations, `route`, `src` and `selected-id`, and a refused `sanitize` or `markerIcon` once its store is made.
+- 2026-11-22 Added `src` on `<maplace-map>`: its locations from a URL, a list of locations or a GeoJSON FeatureCollection, loaded once the map opens past `hold`, the latest `src` winning; a failed load is a `locations-load-failed` `maplace-error`, the locations kept.
+- 2026-11-22 Added a `<maplace-location>`'s `data-*` attributes as its `data`, as `dataset` holds them (`data-time-zone` is `timeZone`), watched like its other attributes.
+- 2026-11-21 Added `markerIcon`, the icon of every marker without its own, on `createMaplace` and the shortcut maps, and as a `<template data-icon>` child of `<maplace-map>`; a location's `icon` overrides it.
+- 2026-11-21 Changed an editable shape's handles: shown only while it is hovered or selected, on Google and MapLibre, so markers on it stay clear at rest; a press on a handle keeps them through its drag. The conformance suite's editing checks select a location before dragging it.
+- 2026-11-21 Changed the default pin to a red dot in a white ring, centred on its point, larger while hovered or selected (selected in a halo of its colour), on Google and MapLibre; on MapLibre, of two pins overlapping, the one whose dot is nearer takes the pointer, and a map fitted to its locations keeps them clear of the attribution while it is open.
+- 2026-11-21 Fixed a native select under a list heading: set in level with the heading, with room under it, no longer flush with the panel's edge.
+- 2026-11-19 Added `--maplace-pin-background` and `--maplace-pin-border`, which colour the default pins.
+- 2026-11-19 Changed the list's rounded corners to 0.5rem.
+
 ## 1.2.0 (2026-11-19)
 
 - 2026-11-18 Added dashed and dotted lines: `strokeDash` (`"solid"`, `"dashed"`, `"dotted"`) in a polyline's style and the route's, scaled by the line's width and kept in every state, on Google and MapLibre.

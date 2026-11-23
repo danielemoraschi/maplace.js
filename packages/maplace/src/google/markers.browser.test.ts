@@ -1,11 +1,18 @@
-import { afterEach, expect, it, onTestFinished } from "vitest";
+import { afterEach, expect, it, onTestFinished, vi } from "vitest";
 import { commands, userEvent } from "vitest/browser";
-import { adding, markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
+import { isPinIcon } from "../adapter-kit/pin-icon";
+import { pinImageSize, pinRadiusOf } from "../adapter-kit/pin-image";
+import { pinLooksOf } from "../adapter-kit/pin-looks";
+import { createMaplace } from "../maplace/create";
+import { adding, markerDrawable, ORIGIN, presented } from "../testing/conformance/fixtures";
 import { unmountAll } from "../testing/conformance/harness";
 import { sizedContainer } from "../testing/container";
+import { offPoint } from "../testing/off-point";
+import { queried } from "../testing/queried";
 import { frames } from "./frames";
 import { clickHoldPassed, drawnMarker } from "./testing/map-waits";
 import { centreOf, tabTo } from "./testing/page-input";
+import { onGoogle } from "./testing/store-on-google";
 import { mountedGoogle, pageMapIn, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
 
@@ -47,6 +54,43 @@ describeWithMaps("Google markers under real input", () => {
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["a"]]);
     await userEvent.unhover(marker);
     expect(host.reportsOf("reportHoverChange")).toEqual([["a"], [undefined]]);
+  });
+
+  it("draws a default marker as maplace's pin, its dot on the point, larger while selected, back once deselected", async () => {
+    const { adapter, state } = await mountedGoogle();
+    adapter.setView({ kind: "center", center: ORIGIN, zoom: 5 });
+    await adapter.apply(adding(markerDrawable("a", ORIGIN, NAMED)));
+    const marker = await drawnMarker(state, "a");
+    const pin = marker.firstElementChild as HTMLImageElement;
+    expect(isPinIcon(pin)).toBe(true);
+    const looks = pinLooksOf(document.body);
+    const point = centreOf(state.mounted?.map.getDiv() as HTMLElement);
+    const onPoint = () => offPoint(pin, point) <= 1;
+    await expect.poll(onPoint).toBe(true);
+    adapter.present(presented({ selectedId: "a" }));
+    await expect.poll(() => pin.getBoundingClientRect().width).toBe(pinImageSize(looks.selected));
+    expect(onPoint()).toBe(true);
+    adapter.present(presented({}));
+    await expect.poll(() => pin.getBoundingClientRect().width).toBe(pinImageSize(looks.resting));
+    expect(onPoint()).toBe(true);
+  });
+
+  it("opens a selected pin's popup with its tail just above the dot, clear of it", async () => {
+    const content = document.createElement("p");
+    content.textContent = "One";
+    const maplace = createMaplace({
+      locations: [{ id: "a", ...ORIGIN, title: "Alpha", content }],
+      view: { kind: "center", center: ORIGIN, zoom: 5 },
+    });
+    await onGoogle(maplace);
+    maplace.select("a");
+    const pin = await vi.waitFor(() => queried(document.body, ".maplace-pin"));
+    const tail = await vi.waitFor(() => queried(document.body, ".gm-style-iw-tc"));
+    const halo = pinRadiusOf(pinLooksOf(document.body).selected);
+    // From the selected dot's top, halo included, up to the tail's tip: never into the dot.
+    const gap = () => centreOf(pin).y - halo - tail.getBoundingClientRect().bottom;
+    await expect.poll(gap).toBeGreaterThanOrEqual(-1);
+    expect(gap()).toBeLessThan(20);
   });
 
   it("reports the pointer onto a marker and off it", async () => {

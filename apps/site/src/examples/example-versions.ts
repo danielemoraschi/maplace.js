@@ -21,6 +21,16 @@ export const VERSION_LABELS: readonly [VersionLabel, ...VersionLabel[]] = [
   { kind: "react", label: "React" },
 ];
 
+/** The id of a section's panel for `kind`: `example-route-html`. */
+export function versionPanelId(prefix: string, kind: VersionKind): string {
+  return `${prefix}-${kind}`;
+}
+
+/** The id of the tab that shows `versionPanelId(prefix, kind)`. */
+export function versionTabId(prefix: string, kind: VersionKind): string {
+  return `${versionPanelId(prefix, kind)}-tab`;
+}
+
 /** The version a section shows until the visitor chooses another: its page. */
 export const FIRST_VERSION: VersionKind = VERSION_LABELS[0].kind;
 

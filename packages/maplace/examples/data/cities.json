@@ -1,0 +1,289 @@
+[
+  {
+    "id": "tokyo",
+    "title": "Tokyo",
+    "lat": 35.6895,
+    "lng": 139.6917,
+    "data": { "population": 37000000 }
+  },
+  {
+    "id": "delhi",
+    "title": "Delhi",
+    "lat": 28.6139,
+    "lng": 77.209,
+    "data": { "population": 33800000 }
+  },
+  {
+    "id": "shanghai",
+    "title": "Shanghai",
+    "lat": 31.2304,
+    "lng": 121.4737,
+    "data": { "population": 29900000 }
+  },
+  {
+    "id": "dhaka",
+    "title": "Dhaka",
+    "lat": 23.8103,
+    "lng": 90.4125,
+    "data": { "population": 23900000 }
+  },
+  {
+    "id": "sao-paulo",
+    "title": "São Paulo",
+    "lat": -23.5505,
+    "lng": -46.6333,
+    "data": { "population": 22800000 }
+  },
+  {
+    "id": "cairo",
+    "title": "Cairo",
+    "lat": 30.0444,
+    "lng": 31.2357,
+    "data": { "population": 22600000 }
+  },
+  {
+    "id": "mexico-city",
+    "title": "Mexico City",
+    "lat": 19.4326,
+    "lng": -99.1332,
+    "data": { "population": 22500000 }
+  },
+  {
+    "id": "beijing",
+    "title": "Beijing",
+    "lat": 39.9042,
+    "lng": 116.4074,
+    "data": { "population": 22200000 }
+  },
+  {
+    "id": "mumbai",
+    "title": "Mumbai",
+    "lat": 19.076,
+    "lng": 72.8777,
+    "data": { "population": 21700000 }
+  },
+  {
+    "id": "new-york",
+    "title": "New York",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "data": { "population": 18900000 }
+  },
+  {
+    "id": "osaka",
+    "title": "Osaka",
+    "lat": 34.6937,
+    "lng": 135.5023,
+    "data": { "population": 18900000 }
+  },
+  {
+    "id": "chongqing",
+    "title": "Chongqing",
+    "lat": 29.4316,
+    "lng": 106.9123,
+    "data": { "population": 17800000 }
+  },
+  {
+    "id": "karachi",
+    "title": "Karachi",
+    "lat": 24.8607,
+    "lng": 67.0011,
+    "data": { "population": 17600000 }
+  },
+  {
+    "id": "kinshasa",
+    "title": "Kinshasa",
+    "lat": -4.4419,
+    "lng": 15.2663,
+    "data": { "population": 17000000 }
+  },
+  {
+    "id": "lagos",
+    "title": "Lagos",
+    "lat": 6.5244,
+    "lng": 3.3792,
+    "data": { "population": 16500000 }
+  },
+  {
+    "id": "istanbul",
+    "title": "Istanbul",
+    "lat": 41.0082,
+    "lng": 28.9784,
+    "data": { "population": 15800000 }
+  },
+  {
+    "id": "buenos-aires",
+    "title": "Buenos Aires",
+    "lat": -34.6037,
+    "lng": -58.3816,
+    "data": { "population": 15600000 }
+  },
+  {
+    "id": "kolkata",
+    "title": "Kolkata",
+    "lat": 22.5726,
+    "lng": 88.3639,
+    "data": { "population": 15600000 }
+  },
+  {
+    "id": "manila",
+    "title": "Manila",
+    "lat": 14.5995,
+    "lng": 120.9842,
+    "data": { "population": 14900000 }
+  },
+  {
+    "id": "guangzhou",
+    "title": "Guangzhou",
+    "lat": 23.1291,
+    "lng": 113.2644,
+    "data": { "population": 14600000 }
+  },
+  {
+    "id": "tianjin",
+    "title": "Tianjin",
+    "lat": 39.3434,
+    "lng": 117.3616,
+    "data": { "population": 14400000 }
+  },
+  {
+    "id": "lahore",
+    "title": "Lahore",
+    "lat": 31.5204,
+    "lng": 74.3587,
+    "data": { "population": 14400000 }
+  },
+  {
+    "id": "bengaluru",
+    "title": "Bengaluru",
+    "lat": 12.9716,
+    "lng": 77.5946,
+    "data": { "population": 14000000 }
+  },
+  {
+    "id": "rio-de-janeiro",
+    "title": "Rio de Janeiro",
+    "lat": -22.9068,
+    "lng": -43.1729,
+    "data": { "population": 13800000 }
+  },
+  {
+    "id": "shenzhen",
+    "title": "Shenzhen",
+    "lat": 22.5431,
+    "lng": 114.0579,
+    "data": { "population": 13500000 }
+  },
+  {
+    "id": "moscow",
+    "title": "Moscow",
+    "lat": 55.7558,
+    "lng": 37.6173,
+    "data": { "population": 12700000 }
+  },
+  {
+    "id": "los-angeles",
+    "title": "Los Angeles",
+    "lat": 34.0522,
+    "lng": -118.2437,
+    "data": { "population": 12500000 }
+  },
+  {
+    "id": "chennai",
+    "title": "Chennai",
+    "lat": 13.0827,
+    "lng": 80.2707,
+    "data": { "population": 12300000 }
+  },
+  {
+    "id": "bogota",
+    "title": "Bogotá",
+    "lat": 4.711,
+    "lng": -74.0721,
+    "data": { "population": 11600000 }
+  },
+  {
+    "id": "jakarta",
+    "title": "Jakarta",
+    "lat": -6.2088,
+    "lng": 106.8456,
+    "data": { "population": 11400000 }
+  },
+  {
+    "id": "paris",
+    "title": "Paris",
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "data": { "population": 11300000 }
+  },
+  {
+    "id": "lima",
+    "title": "Lima",
+    "lat": -12.0464,
+    "lng": -77.0428,
+    "data": { "population": 11300000 }
+  },
+  {
+    "id": "bangkok",
+    "title": "Bangkok",
+    "lat": 13.7563,
+    "lng": 100.5018,
+    "data": { "population": 11200000 }
+  },
+  {
+    "id": "hyderabad",
+    "title": "Hyderabad",
+    "lat": 17.385,
+    "lng": 78.4867,
+    "data": { "population": 11100000 }
+  },
+  {
+    "id": "seoul",
+    "title": "Seoul",
+    "lat": 37.5665,
+    "lng": 126.978,
+    "data": { "population": 10000000 }
+  },
+  {
+    "id": "london",
+    "title": "London",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "data": { "population": 9800000 }
+  },
+  {
+    "id": "nagoya",
+    "title": "Nagoya",
+    "lat": 35.1815,
+    "lng": 136.9066,
+    "data": { "population": 9500000 }
+  },
+  {
+    "id": "tehran",
+    "title": "Tehran",
+    "lat": 35.6892,
+    "lng": 51.389,
+    "data": { "population": 9500000 }
+  },
+  {
+    "id": "chicago",
+    "title": "Chicago",
+    "lat": 41.8781,
+    "lng": -87.6298,
+    "data": { "population": 8900000 }
+  },
+  {
+    "id": "johannesburg",
+    "title": "Johannesburg",
+    "lat": -26.2041,
+    "lng": 28.0473,
+    "data": { "population": 6400000 }
+  },
+  {
+    "id": "sydney",
+    "title": "Sydney",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "data": { "population": 5200000 }
+  }
+]

@@ -6,7 +6,7 @@ import { showStarCount } from "./star-count.ts";
 
 const REPO = "https://github.com/o/r";
 
-/** Two star buttons, as the hero draws one: GitHub's button in an open shadow root. */
+/** Two star buttons, as a page draws one: GitHub's button in an open shadow root. */
 function drawButtons(): HTMLElement[] {
   document.body.innerHTML = "<span data-star-button></span><span data-star-button></span>";
   const buttons = [...document.querySelectorAll<HTMLElement>("[data-star-button]")];

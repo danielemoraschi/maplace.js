@@ -1,0 +1,63 @@
+---
+import type { ComponentProps } from "astro/types";
+import type { NavLink } from "../site/nav-link.ts";
+import ColumnHeading from "./ColumnHeading.astro";
+import NavList from "./NavList.astro";
+import OnThisPage from "./OnThisPage.astro";
+import PinnedColumn from "./PinnedColumn.astro";
+
+interface Props {
+  /** The pages' list's name: its nav's label, and its heading beside the page's contents. */
+  navLabel: string;
+  links: readonly NavLink[];
+  /** The href of the page shown. */
+  current: string;
+  /** The page's headings, linked under the pages' list, the column pinned whole: none on the examples pages. */
+  onThisPage?: ComponentProps<typeof OnThisPage>["headings"];
+  /**
+   * Where the column folds into a disclosure above the content: below 800px for a doc's text, below
+   * 64rem for the examples, so a section's list keeps a map beside it (the library's breakpoint
+   * reads the screen, not the column).
+   */
+  fold: "narrow" | "wide";
+}
+
+const { navLabel, links, current, onThisPage, fold } = Astro.props;
+const FOLDS = {
+  narrow: {
+    grid: "max-[800px]:grid-cols-[minmax(0,1fr)]",
+    column: "max-[800px]:hidden",
+    folded: "max-[800px]:block",
+  },
+  wide: {
+    grid: "max-[64rem]:grid-cols-[minmax(0,1fr)]",
+    column: "max-[64rem]:hidden",
+    folded: "max-[64rem]:block",
+  },
+} as const;
+const folds = FOLDS[fold];
+---
+
+<div class:list={["grid grid-cols-[13rem_minmax(0,1fr)] gap-10 pt-8", folds.grid]}>
+  <div class={folds.column}>
+    <PinnedColumn>
+      <div class="flex flex-col gap-y-8">
+        <nav aria-label={navLabel}>
+          {/* Named only to tell it from the page's contents below it: alone, the list needs no heading. */}
+          {onThisPage && <ColumnHeading>{navLabel}</ColumnHeading>}
+          <NavList links={links} current={current} />
+        </nav>
+        {onThisPage && <OnThisPage label="On this page" headings={onThisPage} />}
+      </div>
+    </PinnedColumn>
+  </div>
+  <nav aria-label={navLabel} class:list={["hidden", folds.folded]}>
+    <details class="border-b border-ink pb-2">
+      <summary class="cursor-pointer text-sm font-semibold">{navLabel}</summary>
+      <div class="mt-2">
+        <NavList links={links} current={current} />
+      </div>
+    </details>
+  </nav>
+  <slot />
+</div>

@@ -162,7 +162,7 @@ describe("the npm ESM build", () => {
   it.each([
     ["MapLibre's heat layers", "heatmap-density"],
     ["Google's heat overlay", "getWorldWidth"],
-    ["Google's heat dots", "translate(-50%,50%)"],
+    ["Google's heat dots", "top:50%;transform:translate(-50%,-50%)"],
   ])("loads %s only on demand, in a chunk of their own", (_name, marker) => {
     const built = [...scripts(join(packageDir, "dist"))];
     const holding = built.filter(([, text]) => text.includes(marker));

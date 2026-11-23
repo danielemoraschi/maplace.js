@@ -1,5 +1,5 @@
 import { inAnyGroup, type LocationGroup } from "./group-path";
-import { isMarkerLocation, type Location, type MarkerLocation } from "./location";
+import { type Icon, isMarkerLocation, type Location, type MarkerLocation } from "./location";
 import type { PopupOptions } from "./popup";
 import type { ShapeStyle } from "./style";
 import type { View } from "./viewport";
@@ -18,8 +18,8 @@ export const HEATMAP_ZOOMS = { min: 3, max: 25 } as const;
  * marker when `groups` is left out. Below `maxZoom` (default 9, zooms as in `Viewport`, 3 to 25)
  * they are heat; over the 2 zooms before it the heat fades into a dot per marker, sized by its
  * weight, which a click selects. The selected or hovered one is drawn as a pin over them. Other
- * markers stay pins. A marker in the heat can't have an `icon` or be `editable`. Needs the
- * `heatmap` capability; not with `cluster`.
+ * markers stay pins. A marker in the heat can't have an `icon` or be `editable`, and draws no
+ * `markerIcon`. Needs the `heatmap` capability; not with `cluster`.
  */
 export interface HeatmapOptions {
   /** A group here takes its subgroups, as in `setFilter`. */
@@ -52,6 +52,11 @@ export interface MaplaceOptions<Data = unknown> {
    * location's `activeStyle` overrides it.
    */
   readonly activeStyle?: ShapeStyle | undefined;
+  /**
+   * The icon of every marker without its own: a URL, a Node (copied for each marker) or a
+   * function of the location and its state; a location's `icon` overrides it.
+   */
+  readonly markerIcon?: Icon<Data> | undefined;
   /** Cluster markers; needs the `cluster` capability. */
   readonly cluster?: boolean | undefined;
   /** Draws markers, by group, as a heatmap when zoomed out; not with `cluster`. */

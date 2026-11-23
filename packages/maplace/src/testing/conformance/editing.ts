@@ -9,6 +9,7 @@ import {
   markerDrawable,
   ORIGIN,
   polygonDrawable,
+  presented,
   reshaped,
   updating,
 } from "./fixtures";
@@ -62,9 +63,19 @@ function caseChecks(
   const drawable = { ...edit.drawable, editable: true };
   const { id } = drawable;
 
+  /**
+   * `added` on a mounted subject, selected as a user picks a location before dragging it: an
+   * adapter may show a shape's handles only then.
+   */
+  async function picked(added: Drawable) {
+    const mounted = await mountSubject(subject);
+    await mounted.adapter.apply(adding(added));
+    mounted.adapter.present(presented({ selectedId: added.id }));
+    return mounted;
+  }
+
   it.runIf(editable)(`reports where an edit left an editable ${name}`, async () => {
-    const { adapter, probe, host } = await mountSubject(subject);
-    await adapter.apply(adding(drawable));
+    const { probe, host } = await picked(drawable);
     probe.drag(id, edited);
     expect(host.reportsOf("reportLocationChange")).toEqual([[id, edited]]);
   });
@@ -72,8 +83,7 @@ function caseChecks(
   it.runIf(editable)(
     `reports an edited ${name} as it is edited, the last edit where the change leaves it`,
     async () => {
-      const { adapter, probe, host } = await mountSubject(subject);
-      await adapter.apply(adding(drawable));
+      const { probe, host } = await picked(drawable);
       probe.drag(id, edited);
       expect(host.reportsIn(...EDITING).slice(-2)).toEqual([
         ["reportLocationEdit", id, edited],
@@ -86,8 +96,7 @@ function caseChecks(
   it.runIf(editable)(
     `takes the store's write-back of an edited ${name} without moving it or reporting again`,
     async () => {
-      const { adapter, probe, host } = await mountSubject(subject);
-      await adapter.apply(adding(drawable));
+      const { adapter, probe, host } = await picked(drawable);
       probe.drag(id, edited);
       const edits = host.reportsOf("reportLocationEdit").length;
       // The store writes back a copy, as it freezes what it keeps.
@@ -100,8 +109,7 @@ function caseChecks(
   );
 
   it(`doesn't let a ${name} that isn't editable be changed`, async () => {
-    const { adapter, probe, host } = await mountSubject(subject);
-    await adapter.apply(adding(edit.drawable));
+    const { probe, host } = await picked(edit.drawable);
     probe.drag(id, edited);
     expect(host.reportsIn(...EDITING)).toEqual([]);
     expect(probe.location(id)?.geometry).toEqual(edit.drawable.geometry);

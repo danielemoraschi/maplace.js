@@ -1,0 +1,74 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- The world's largest cities as bubbles, each as big as its population, the list beside
+     it, which "This area" narrows to the map's view, and under the map the legend's sizes and a
+     count of what it shows. The cities come from cities.json, largest first so the small bubbles
+     are drawn over the big ones; a bubble's area is its population, Tokyo's 37M is 56px across.
+     The populations are rounded, for the example. -->
+<!-- This example's look lives in the examples' styles/bubbles.css, which every version links. -->
+<link rel="stylesheet" href="../styles/bubbles.css">
+<style>
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #bubbles-map { height: 36rem; }
+    #bubbles-map > .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<maplace-map id="bubbles-map" api-key="YOUR_KEY" list="bubbles-cities" list-heading="Cities" list-scope="viewport"
+  src="/examples/data/cities.json"></maplace-map>
+<p class="bubbles-legend">Population
+  <span class="bubbles-size"><span class="bubble" aria-hidden="true" style="width: 50.4px"></span>30M</span>
+  <span class="bubbles-size"><span class="bubble" aria-hidden="true" style="width: 29.1px"></span>10M</span>
+  <span class="bubbles-size"><span class="bubble" aria-hidden="true" style="width: 15.9px"></span>3M</span>
+</p>
+<p>Now in view <output id="bubbles-in-view">–</output></p>
+<script>
+  // The markers, the list's entries and the count under the map, the page's own: defined as the
+  // page is read, so the map finds them when it opens.
+  {
+    const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
+    const map = document.getElementById("bubbles-map");
+    // A city's population, from its data in cities.json.
+    const populationOf = ({ data }) => data.population;
+
+    // A city's marker: a circle as big as its population, none under 6px across. Set before the
+    // map is made (below, by reading map.maplace), which takes it then.
+    map.markerIcon = (city) => {
+      const bubble = document.createElement("span");
+      bubble.className = "bubble";
+      const diameter = Math.max(6, Math.sqrt(populationOf(city) / 37e6) * 56);
+      bubble.style.width = bubble.style.height = `${diameter}px`;
+      return bubble;
+    };
+
+    // A city in the list: its name, then its population.
+    const cityEntry = ({ location }) => {
+      const entry = document.createElement("span");
+      entry.className = "bubbles-city";
+      const population = document.createElement("span");
+      population.className = "bubbles-population";
+      population.textContent = compact.format(populationOf(location));
+      entry.append(location.title, population);
+      return entry;
+    };
+    Maplace.defineListView("bubbles-cities", (maplace, { options }) =>
+      Maplace.createListView(maplace, { ...options, render: cityEntry }));
+
+    // Whether a city is inside the bounds, which may cross the antimeridian (west > east).
+    const inView = ({ lat, lng }, { north, south, east, west }) => {
+      const inLongitude = west <= east ? lng >= west && lng <= east : lng >= west || lng <= east;
+      return lat >= south && lat <= north && inLongitude;
+    };
+    // How many cities, and how many people in them: "12 cities · 210M people".
+    const summaryOf = (cities) => {
+      const people = cities.reduce((sum, city) => sum + populationOf(city), 0);
+      return `${cities.length} cities · ${compact.format(people)} people`;
+    };
+    // What the map shows, after each move, its first included.
+    const inViewNow = document.getElementById("bubbles-in-view");
+    map.maplace.on("viewportChange", ({ viewport }) => {
+      const { locations } = map.maplace.getSnapshot();
+      if (viewport.bounds) inViewNow.value = summaryOf(locations.filter((city) => inView(city, viewport.bounds)));
+    });
+  }
+</script>

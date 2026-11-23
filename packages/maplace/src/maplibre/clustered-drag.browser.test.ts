@@ -54,7 +54,7 @@ describe("a clustered MapLibre marker dragged through a regroup", () => {
     expect(changes.map(([id]) => id)).toEqual(["a"]);
     const [[, geometry] = []] = changes;
     expect(geometry).toMatchObject({ type: "marker" });
-    // Where it was let go, east of where it stood: a press keeps its offset from the pin's tip.
+    // Where it was let go, east of where it stood: a press keeps its offset from the pin's point.
     expect((geometry as LatLng).lng).toBeCloseTo(to.lng, 4);
     expect(element.isConnected).toBe(false);
     expect(clustersOn(container).counts).toEqual([3]);

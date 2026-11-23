@@ -1,0 +1,32 @@
+---
+import CopyButton from "./CopyButton.astro";
+---
+
+{/*
+  The frame each code block goes into (`code-copy.ts`), its copy button filling the top right corner,
+  so a long line scrolls under it and never shows past it, and the
+  status beside it, cloned from here so its look stays in markup Tailwind reads. A long block is
+  folded (`code-fold.ts`, `data-fold`; its height is `styles/code.css`'s), fading into the button
+  that shows the rest, which then sits in room the block makes for it at its foot.
+*/}
+<template id="code-copy">
+  <div
+    class="relative [&[data-fold=open]>:first-child]:pb-14"
+    data-code-frame
+  >
+    <CopyButton
+      label="Copy code"
+      class="absolute end-0 top-0 grid size-12 place-items-center rounded-bl-md rounded-tr-(--code-corner) border-0 bg-code-paper text-code-ink/60 hover:text-code-ink data-[copied=done]:text-code-ink"
+      statusClass="end-13 top-2.5 bg-paper text-ink"
+    />
+    <div
+      data-code-fold
+      class="pointer-events-none absolute inset-x-0 bottom-0 hidden justify-center rounded-(--code-corner) bg-linear-to-t from-code-paper from-35% to-transparent pt-20 pb-3 [[data-fold=folded]_&]:flex [[data-fold=open]_&]:flex [[data-fold=open]_&]:bg-none [[data-fold=open]_&]:pt-0"
+    >
+      <button
+        type="button"
+        class="pointer-events-auto rounded-full border border-code-ink/25 bg-code-paper px-3.5 py-1 font-body text-sm text-code-ink/80 hover:border-code-ink/50 hover:text-code-ink"
+      ></button>
+    </div>
+  </div>
+</template>

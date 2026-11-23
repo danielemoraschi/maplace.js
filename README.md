@@ -5,7 +5,7 @@
 
 <p align="center"><b>Your locations on a map, with a list in sync.</b><br>On Google Maps or MapLibre: one script tag, npm or React.</p>
 
-<p align="center"><a href="https://maplacejs.com">Website</a> · <a href="https://maplacejs.com/getting-started/">Documentation</a> · <a href="https://maplacejs.com/#examples">Examples</a> · <a href="https://maplacejs.com/builder/">Snippet builder</a> · <a href="https://maplacejs.com/migrating/">Migrating from 0.2</a></p>
+<p align="center"><a href="https://maplacejs.com">Website</a> · <a href="https://maplacejs.com/getting-started/">Documentation</a> · <a href="https://maplacejs.com/examples/">Examples</a> · <a href="https://maplacejs.com/builder/">Snippet builder</a> · <a href="https://maplacejs.com/migrating/">Migrating from 0.2</a></p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@maplacejs/maplace"><img alt="npm version" src="https://img.shields.io/npm/v/@maplacejs/maplace"></a>
@@ -14,7 +14,7 @@
   <a href="https://www.npmjs.com/package/@maplacejs/maplace"><img alt="TypeScript types included" src="https://img.shields.io/npm/types/@maplacejs/maplace"></a>
 </p>
 
-<p align="center"><img src="docs/media/maplibre-demo.gif" width="800" alt="A map of Italy on MapLibre beside a list of Rome, Milan and Venice. Picking Rome, then Milan, in the list pans the map to each and opens its popup; clicking Venice's marker on the map highlights it in the list."></p>
+<p align="center"><a href="https://maplacejs.com/examples/"><img src="docs/media/examples.webp" width="800" alt="See Maplace.js's examples: thumbnails of their maps, from dashboards to routes and popups, more fading out at the sides."></a><br><a href="https://maplacejs.com/examples/">See all examples</a></p>
 
 <p align="center"><sub><i>Maplace.js is a hobby project I maintain part-time, so support is best-effort.</i></sub></p>
 <!-- /readme-only -->
@@ -67,11 +67,11 @@ On either:
 
 - `list` puts a list beside the map; `list="select"` makes it a native `<select>`, `list="<name>"` your own view, given to `defineListView(name, (maplace, { options, listed }) => listView)`, which lists what `listed()` gives, as Maplace.js's lists do (`listedLocations(snapshot)` from `@maplacejs/maplace` gives the same to a list of your own outside the element, both before a scoped list narrows it to the map's view; a map held with `hold` builds its list on `release()`, once your view is defined); `list-position` places it on the map or outside it, `list-heading` shows a heading above it (on the map too), naming it for screen readers, and `list-scope="viewport"` shows a switch above it, "All" or "This area", which lists only what is in the map's view and follows the map. The list and popups come with default styles in `:where()`: any rule of yours wins, and `data-maplace-unstyled` turns them off ([Styling](docs/reference/styling.md) lists the classes to style instead). What goes on the map sits in a panel like the provider's own controls (`.maplace-control`): in the map's colour scheme on Google, light on MapLibre.
 
-A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS). A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
+A location's popup is a `<template>` child, and a marker's own look an `icon` image URL or a `<template data-icon>` child (one element, marked `data-selected` and `data-hovered` while in that state, for your CSS); a `<template data-icon>` child of `<maplace-map>` itself is the look of every marker without its own. A location's `zoom` is where selecting it shows it, from a click on its marker or in the list too, and `listed="false"` keeps it on the map and out of the list; `editable` lets the user drag or reshape it. Both are booleans as HTML writes them: present, or `"true"`, is true.
 
 A circle's styles (colours, opacities, stroke width) are JSON objects in `shape-style`, `selected-style`, `hovered-style` and `active-style`: `<maplace-location type="circle" … selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>`.
 
-Locations can also come from an inline `<script type="application/json">` child or the element's `locations` property. The element never fetches: load your data and assign it.
+Locations can also come from an inline `<script type="application/json">` child, a JSON file its `src` attribute names, or the element's `locations` property.
 
 ## One script per page
 
@@ -302,7 +302,7 @@ export function CityMap() {
 - [maplacejs.com](https://maplacejs.com): every example running live, and these docs.
 - [Reference](docs/reference/api.md): every export, with where it is explained, its error codes and each provider's capabilities.
 - [The 1.0 RFC](docs/rfc-1.0.md): the API, its rules, errors and numbers.
-- [Examples](packages/maplace/examples/): twenty-eight scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and on MapLibre too, in each one's `maplibre/` folder.
+- [Examples](https://maplacejs.com/examples/): thirty-six scenarios, each as an HTML page, a page of your own script on `Maplace`, vanilla TypeScript and React on Google, and on MapLibre too; their files are in [`packages/maplace/examples/`](packages/maplace/examples/).
 - [MIGRATION.md](MIGRATION.md): from 0.2, option by option.
 - [CHANGELOG.md](CHANGELOG.md).
 - [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md).

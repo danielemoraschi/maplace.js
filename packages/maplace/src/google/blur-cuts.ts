@@ -1,3 +1,4 @@
+import { isMainPress } from "../adapter-kit/handle-press";
 import type { MountedMap } from "./mounted-map";
 
 /** What gives a location back its editing, once the press a blur cut short has ended. */
@@ -73,11 +74,10 @@ function watchBlurs(mounted: MountedMap): Set<BlurCut> {
     giveBack();
   };
 
-  // The main button, or a finger: another button's release may go to a menu the page never sees.
   element.addEventListener(
     "pointerdown",
     (event) => {
-      held = !event.button;
+      held = isMainPress(event);
     },
     options,
   );

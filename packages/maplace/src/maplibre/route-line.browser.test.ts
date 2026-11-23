@@ -46,7 +46,7 @@ describe("the route on MapLibre", () => {
   it("takes no click: a click on the route is a click on the map", async () => {
     const { map, host } = await routedMap();
     await expect.poll(() => renderedIds(map, [ROUTE_LAYER]), RENDER_WAIT).toEqual(["route"]);
-    clickCanvas(map, { at: MIDWAY });
+    clickCanvas(map, MIDWAY);
     await expect.poll(() => host.reportsOf("reportMapClick").length).toBe(1);
     expect(host.reportsOf("reportSelectionChange")).toEqual([]);
   });

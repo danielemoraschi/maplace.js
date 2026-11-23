@@ -1,7 +1,9 @@
 import type { Marker } from "maplibre-gl";
+import { paintPin } from "../adapter-kit/pin-icon";
+import { type PinLook, type PinLooks, pinLookIn } from "../adapter-kit/pin-looks";
 import type { LatLng } from "../geometry";
+import type { LocationState } from "../location";
 import { lngLatOf } from "./conversions";
-import { createPinIcon } from "./dom-marker";
 import type { MountedMapLibre } from "./mounted-map";
 
 /**
@@ -12,23 +14,29 @@ import type { MountedMapLibre } from "./mounted-map";
  * under each in the layer still takes the pointer, so clicks and hover stay one path.
  */
 export interface FrontPins {
-  /** Shows `id`'s pin in front at `at`, stacked by `rank`; again, it only moves and restacks. */
-  show(id: string, at: LatLng, rank: number): void;
+  /**
+   * Shows `id`'s pin in front at `at`, stacked by `rank`, in the look of its `state`; again, it
+   * only moves, restacks and repaints.
+   */
+  show(id: string, at: LatLng, rank: number, state: LocationState): void;
   hide(id: string): void;
   isShown(id: string): boolean;
 }
 
-/** The map's front pins: a marker each while shown, kept for the next one once hidden. */
-export function createFrontPins({ map, maplibre }: MountedMapLibre): FrontPins {
+/** The map's front pins in `looks`: a marker each while shown, kept for the next once hidden. */
+export function createFrontPins({ map, maplibre }: MountedMapLibre, looks: PinLooks): FrontPins {
   const shown = new Map<string, Marker>();
   const spare: Marker[] = [];
   const document = map.getContainer().ownerDocument;
-  const newMarker = () => new maplibre.Marker({ element: pinElement(document), anchor: "bottom" });
+  const newMarker = (look: PinLook) =>
+    new maplibre.Marker({ element: pinElement(document, look), anchor: "center" });
 
   return {
-    show(id, at, rank) {
+    show(id, at, rank, state) {
       const known = shown.get(id);
-      const marker = known ?? spare.pop() ?? newMarker();
+      const look = pinLookIn(looks, state);
+      const marker = known ?? spare.pop() ?? newMarker(look);
+      paintPin(document, look, marker.getElement() as HTMLImageElement);
       marker.setLngLat(lngLatOf(at));
       marker.getElement().style.zIndex = String(rank);
       if (known === undefined) {
@@ -47,9 +55,9 @@ export function createFrontPins({ map, maplibre }: MountedMapLibre): FrontPins {
   };
 }
 
-/** The pin's image, letting the pointer through to the pin under it in the layer. */
-function pinElement(document: Document): HTMLElement {
-  const image = createPinIcon(document);
+/** The pin's image in `look`, letting the pointer through to the pin under it in the layer. */
+function pinElement(document: Document, look: PinLook): HTMLElement {
+  const image = paintPin(document, look);
   image.style.pointerEvents = "none";
   return image;
 }

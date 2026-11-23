@@ -34,11 +34,15 @@ const circleOf = (radius: number, center: LatLng = ORIGIN): CircleGeometry => ({
   radius,
 });
 
-/** An editable shape on a map at zoom 7 over the origin, where a user drags its handles. */
+/**
+ * An editable shape on a map at zoom 7 over the origin, where a user drags its handles: the first
+ * shape selected, as a user picks it before dragging.
+ */
 async function editing(...drawables: Drawable[]) {
   const mounted = await mountedMapLibre();
   const { map, adapter, probe } = mounted;
   await adapter.apply(adding(...drawables));
+  adapter.present(presented({ selectedId: drawables[0]?.id }));
   adapter.setView({ kind: "center", center: ORIGIN, zoom: 7 });
   await probe.settle();
   const drag = (from: LatLng, to: LatLng) =>
@@ -156,15 +160,16 @@ describe("editing shapes on MapLibre", () => {
     expect(handleCount()).toBe(0);
     await adapter.apply(updating(circle));
     expect(handleCount()).toBe(5);
-    adapter.present(presented({ hiddenIds: new Set(["c"]) }));
+    adapter.present(presented({ selectedId: "c", hiddenIds: new Set(["c"]) }));
     expect(handleCount()).toBe(0);
-    adapter.present(presented({}));
+    adapter.present(presented({ selectedId: "c" }));
     expect(handleCount()).toBe(5);
   });
 
   it("takes the handles off a page's own map when destroyed, the map kept", async () => {
     const { map, adapter, destroy } = await mountedOnPageMap();
     await adapter.apply(adding(editable(circleDrawable("c"))));
+    adapter.present(presented({ selectedId: "c" }));
     const handles = () => map.getCanvasContainer().querySelectorAll(".maplace-edit-handle");
     expect(handles()).toHaveLength(5);
     destroy();
@@ -205,9 +210,32 @@ describe("editing shapes on MapLibre", () => {
     expect(handleCount()).toBe(0);
   });
 
-  it("shows handles on a shape added as editable, with no presentation after it", async () => {
+  it("shows an editable shape's handles only while it is hovered or selected, none at rest", async () => {
     const { adapter, container } = await mountedMapLibre();
+    const handleCount = () => container.querySelectorAll(".maplace-edit-handle").length;
     await adapter.apply(adding(editable(polygonDrawable("p"))));
-    expect(container.querySelectorAll(".maplace-edit-handle")).toHaveLength(16);
+    expect(handleCount()).toBe(0);
+    adapter.present(presented({ hoveredId: "p" }));
+    expect(handleCount()).toBe(16);
+    adapter.present(presented({ selectedId: "p" }));
+    expect(handleCount()).toBe(16);
+    adapter.present(presented({}));
+    expect(handleCount()).toBe(0);
   });
+
+  it.each([
+    ["turns `editable` off", { editable: false }, {}],
+    ["hides the shape", {}, { hiddenIds: new Set(["p"]) }],
+  ])(
+    "takes the handles off mid-drag when the page %s, the shape back as the store has it",
+    async (_, change, shown) => {
+      const polygon = editable(polygonDrawable("p"));
+      const { adapter, state, probe, handleCount } = await editing(polygon);
+      startDrag(state, "p", { lat: 1.5, lng: 1.5 });
+      await adapter.apply(updating({ ...polygon, ...change }));
+      adapter.present(presented({ selectedId: "p", ...shown }));
+      expect(handleCount()).toBe(0);
+      expect(probe.location("p")?.geometry).toEqual(polygon.geometry);
+    },
+  );
 });

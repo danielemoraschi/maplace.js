@@ -2,28 +2,27 @@ import { describe, expect, it } from "vitest";
 import { fencedBlocks } from "../../../../scripts/docs/markdown.ts";
 import {
   EXAMPLE_GROUPS,
-  EXAMPLE_SECTIONS,
-  type ExampleSection,
-  findGroupOfSection,
-  groupHeading,
+  EXAMPLE_PAGE_ENTRIES,
+  type ExamplePageEntry,
+  examplePagesOf,
+  findExamplePage,
   groupPath,
 } from "../examples/example-sections.ts";
 import { codeTabsOf, exampleStylesheets } from "../examples/example-sources.ts";
+import { EXAMPLES_HEADING, EXAMPLES_INTRO } from "../examples/examples-page.ts";
+import { HOME_HEADING, HOME_INTRO } from "../examples/home-page.ts";
 import { CHANGELOG_ENTRY } from "./changelog-loader.ts";
+import { STYLESHEETS_HEADING } from "./example-markdown.ts";
 import { CHANGELOG_PAGE } from "./footer-pages.ts";
 import { MARKDOWN_ROUTES, markdownAddress } from "./markdown-routes.ts";
-import {
-  type MarkdownTwin,
-  markdownTwins,
-  STYLESHEETS_HEADING,
-  type StoredPages,
-} from "./markdown-twins.ts";
+import { type MarkdownTwin, markdownTwins, type StoredPages } from "./markdown-twins.ts";
 import { REPO_DOCS } from "./repo-docs.ts";
 
 const STORED: StoredPages = {
   docs: REPO_DOCS.map(({ id }) => ({ id, body: `The body of ${id}.\n` })),
   changelog: [{ id: CHANGELOG_ENTRY, body: "## Unreleased\n" }],
   guides: [{ id: "custom-list", body: "The custom list's guide." }],
+  references: EXAMPLE_GROUPS.map(({ id }) => ({ id, body: `The tables of ${id}.\n` })),
 };
 
 const TWINS = markdownTwins(STORED);
@@ -34,24 +33,16 @@ function twinAt(route: string): MarkdownTwin {
   return twin;
 }
 
-/** The example section named `name`. */
-function sectionNamed(name: string): ExampleSection {
-  const section = EXAMPLE_SECTIONS.find((each) => each.name === name);
-  if (section === undefined) throw new Error(`no section ${name}`);
-  return section;
+/** The example named `name`'s page. */
+function entryOf(name: string): ExamplePageEntry {
+  const entry = findExamplePage(name);
+  if (entry === undefined) throw new Error(`no example ${name}`);
+  return entry;
 }
 
-/** The twin of the group page holding the section named `name`, under that section's heading. */
-function twinSectionOf(name: string): string {
-  const group = findGroupOfSection(name);
-  if (group === undefined) throw new Error(`no group holds ${name}`);
-  return sectionOf(twinAt(groupPath(group)).markdown, sectionNamed(name).title);
-}
-
-/** `markdown` under the heading `## title`, up to the next section's. */
-function sectionOf(markdown: string, title: string): string {
-  const [, after = ""] = markdown.split(`\n## ${title}\n`);
-  return after.split("\n## ")[0] as string;
+/** The twin of the example named `name`'s page. */
+function exampleTwin(name: string): string {
+  return twinAt(entryOf(name).path).markdown;
 }
 
 describe("markdownTwins", () => {
@@ -74,57 +65,100 @@ describe("markdownTwins", () => {
     );
   });
 
-  it("heads and introduces a group's twin as its page, then its summary", () => {
+  it("heads and introduces a hub's twin as its page, then lists its examples", () => {
     for (const group of EXAMPLE_GROUPS) {
       const { markdown } = twinAt(groupPath(group));
-      const opening = `# ${groupHeading(group)}\n\n${group.intro}\n\n${group.summary}\n`;
+      const opening = `# ${group.heading}\n\n${group.intro}\n\n## Examples\n\n- [`;
       expect(markdown.startsWith(opening), group.id).toBe(true);
+      for (const { section, path } of examplePagesOf(group))
+        expect(markdown, section.name).toContain(`](${path}): `);
     }
   });
 
-  it("writes a group's sections in order, each with its summary", () => {
-    const lists = EXAMPLE_GROUPS.find(({ id }) => id === "lists");
-    const { markdown } = twinAt("/examples/lists/");
-    expect(markdown).toContain(`\n\n${lists?.summary}\n\n`);
-    const headings = markdown.split("\n").filter((line) => line.startsWith("## "));
-    expect(headings).toEqual(lists?.sections.map(({ title }) => `## ${title}`));
-    for (const section of lists?.sections ?? []) {
-      expect(sectionOf(markdown, section.title).trimStart().startsWith(section.summary)).toBe(true);
+  it("ends a hub's twin with its reference tables, as its page does", () => {
+    for (const group of EXAMPLE_GROUPS) {
+      const { markdown } = twinAt(groupPath(group));
+      expect(markdown.endsWith(`\n## Reference\n\nThe tables of ${group.id}.\n`), group.id).toBe(
+        true,
+      );
     }
   });
 
-  it("puts a section's guide under it, and leaves it out for an example without one", () => {
-    const { markdown } = twinAt("/examples/lists/");
-    expect(sectionOf(markdown, sectionNamed("custom-list").title)).toContain(
-      "The custom list's guide.",
+  it("writes the home page's twin as its index: each hub, then its examples", () => {
+    const { markdown } = twinAt("/");
+    expect(
+      markdown.startsWith(
+        `# ${HOME_HEADING}\n\n${HOME_INTRO}\n\n## Examples\n\n${EXAMPLES_INTRO}\n\n### `,
+      ),
+    ).toBe(true);
+    expect(markdown).toContain("\n### [Markers and popups](/examples/markers/)\n");
+    expect(markdown).toContain(
+      "\n- [One marker](/examples/markers/simple/): The smallest map there is: one location, drawn as one marker.\n",
     );
-    const menu = sectionOf(markdown, sectionNamed("menu").title);
-    expect(menu).not.toContain("The custom list's guide.");
-    expect(menu).toContain("### ");
+    expect(markdown).toContain("\n- [Default styles off](/examples/styling/unstyled/): ");
+    expect(markdown.indexOf("\n## Two map providers, one API.\n")).toBeGreaterThan(
+      markdown.indexOf("/examples/styling/unstyled/"),
+    );
+    expect(markdown).toContain("\n### MapLibre\n\n- No key: ");
+  });
+
+  it("writes the examples page's twin as its heading, intro, then each category as ## with its examples", () => {
+    const { markdown } = twinAt("/examples/");
+    expect(
+      markdown.startsWith(
+        `# ${EXAMPLES_HEADING}\n\n${EXAMPLES_INTRO}\n\n## [Markers and popups](/examples/markers/)\n`,
+      ),
+    ).toBe(true);
+    expect(markdown).not.toContain("\n### ");
+    expect(markdown).toContain(
+      "\n- [One marker](/examples/markers/simple/): The smallest map there is: one location, drawn as one marker.\n",
+    );
+  });
+
+  it("writes a hub's twin under two headings, its examples and its reference, as its page", () => {
+    const { markdown } = twinAt("/examples/lists/");
+    const headings = markdown.split("\n").filter((line) => line.startsWith("## "));
+    expect(headings).toEqual(["## Examples", "## Reference"]);
+  });
+
+  it("writes an example's twin as its heading, its summary, how it works, then its code", () => {
+    const { section } = entryOf("custom-list");
+    expect(
+      exampleTwin("custom-list").startsWith(
+        `# ${section.title}\n\n${section.summary}\n\n## How it works\n\nThe custom list's guide.\n\n## Code\n\n### `,
+      ),
+    ).toBe(true);
+  });
+
+  it("leaves the guide out of an example's twin that has none", () => {
+    const { section } = entryOf("menu");
+    const markdown = exampleTwin("menu");
+    expect(markdown.startsWith(`# ${section.title}\n\n${section.summary}\n\n## Code\n\n### `)).toBe(
+      true,
+    );
+    expect(markdown).not.toContain("The custom list's guide.");
   });
 
   it("gives every file of every version on every provider back as written, in its fence", () => {
-    for (const group of EXAMPLE_GROUPS) {
-      const { markdown } = twinAt(groupPath(group));
-      for (const { name } of group.sections) {
-        for (const code of codeTabsOf(name).flatMap(({ codes }) => codes)) {
-          for (const { file, lang, code: text } of code.files) {
-            const where = `${code.folder}/${file}`;
-            expect(markdown, where).toContain(`\`packages/maplace/examples/${where}\``);
-            expect(fencedBlocks(markdown, lang), where).toContain(text.trimEnd());
-          }
+    for (const { path, section } of EXAMPLE_PAGE_ENTRIES) {
+      const { markdown } = twinAt(path);
+      for (const code of codeTabsOf(section.name).flatMap(({ codes }) => codes)) {
+        for (const { file, lang, code: text } of code.files) {
+          const where = `${code.folder}/${file}`;
+          expect(markdown, where).toContain(`\`packages/maplace/examples/${where}\``);
+          expect(fencedBlocks(markdown, lang), where).toContain(text.trimEnd());
         }
       }
     }
   });
 
-  it("gives the stylesheet a section's versions link once, under its own heading, as written", () => {
-    const section = twinSectionOf("whats-on");
+  it("gives the stylesheet an example's versions link once, under its own heading, as written", () => {
+    const markdown = exampleTwin("whats-on");
     const [stylesheet] = exampleStylesheets(codeTabsOf("whats-on").flatMap(({ codes }) => codes));
-    const [, underHeading = ""] = section.split(`${STYLESHEETS_HEADING}\n\n`);
+    const [, underHeading = ""] = markdown.split(`${STYLESHEETS_HEADING}\n\n`);
     expect(underHeading.startsWith("`packages/maplace/examples/styles/whats-on.css`")).toBe(true);
-    expect(section.split("`packages/maplace/examples/styles/whats-on.css`")).toHaveLength(2);
-    expect(fencedBlocks(section, "css")).toEqual([stylesheet?.code.trimEnd()]);
+    expect(markdown.split("`packages/maplace/examples/styles/whats-on.css`")).toHaveLength(2);
+    expect(fencedBlocks(markdown, "css")).toEqual([stylesheet?.code.trimEnd()]);
   });
 
   it("refuses a doc with no Markdown, naming it", () => {
@@ -136,6 +170,12 @@ describe("markdownTwins", () => {
   it("refuses a guide stored without its Markdown", () => {
     expect(() => markdownTwins({ ...STORED, guides: [{ id: "custom-list" }] })).toThrow(
       "the exampleGuides collection has no Markdown for custom-list",
+    );
+  });
+
+  it("refuses a category stored without its reference tables, naming it", () => {
+    expect(() => markdownTwins({ ...STORED, references: [] })).toThrow(
+      "the groupReferences collection has no Markdown for markers",
     );
   });
 

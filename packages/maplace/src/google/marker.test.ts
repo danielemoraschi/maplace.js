@@ -3,6 +3,7 @@ import { describe, expect, it, onTestFinished, vi } from "vitest";
 import type { Drawable } from "../drawable";
 import type { LocationState } from "../location";
 import { markerDrawable, ORIGIN } from "../testing/conformance/fixtures";
+import { pinIconOf } from "../testing/page-icon";
 import { mapClicks } from "./map-clicks";
 import { placeMarker } from "./marker";
 import type { StubMap } from "./testing/stub-libraries";
@@ -25,7 +26,8 @@ describe("placeMarker", () => {
       map: site.mounted.map,
       hidden: false,
     });
-    expect(a.marker.childNodes).toHaveLength(0);
+    expect(a.marker.childNodes).toHaveLength(1);
+    expect(pinIconOf(a.marker)).toBeDefined();
   });
 
   it("titles a location without one with an empty title", () => {
@@ -57,12 +59,13 @@ describe("placeMarker", () => {
     expect(renderIcon).toHaveBeenCalledTimes(1);
   });
 
-  it("brings Google's default pin back when a later icon builds nothing", () => {
+  it("brings maplace's pin back when a later icon builds nothing", () => {
     const { placed: a } = placed(
       markerDrawable("a", ORIGIN, { renderIcon: () => document.createElement("i") }),
     );
     a.update(markerDrawable("a", ORIGIN, { renderIcon: () => undefined }));
-    expect(a.marker.childNodes).toHaveLength(0);
+    expect(a.marker.childNodes).toHaveLength(1);
+    expect(pinIconOf(a.marker)).toBeDefined();
   });
 
   it("rebuilds the icon and restacks only when the state changes", () => {

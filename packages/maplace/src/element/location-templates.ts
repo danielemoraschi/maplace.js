@@ -12,11 +12,19 @@ export interface LocationTemplates {
  */
 export function templatesOf(element: Element): LocationTemplates {
   const popup = element.querySelector<HTMLTemplateElement>(":scope > template:not([data-icon])");
-  const icon = element.querySelector<HTMLTemplateElement>(":scope > template[data-icon]");
   return {
     content: popup ? () => popup.content.cloneNode(true) : undefined,
-    icon: icon ? () => iconFrom(icon) : undefined,
+    icon: iconTemplateOf(element),
   };
+}
+
+/**
+ * `element`'s own `<template data-icon>` (a `<maplace-location>`'s, or the map's for every marker
+ * without one) as a builder of a fresh copy for each call; none without one.
+ */
+export function iconTemplateOf(element: Element): (() => Element) | undefined {
+  const icon = element.querySelector<HTMLTemplateElement>(":scope > template[data-icon]");
+  return icon ? () => iconFrom(icon) : undefined;
 }
 
 /** A marker is one element: the template's, when it holds just one, else a span around it all. */

@@ -51,7 +51,7 @@ describe("writeSnippet's children form", () => {
     const { text, popupsAsWritten } = write([{ ...location, html: "<b>x</b>" }]);
     expect(popupsAsWritten).toBe(true);
     expect(text).toContain("used as written");
-    const child = page(text).querySelector("maplace-location") as Element;
+    const child = page(text).querySelector("maplace-location") as HTMLElement;
     expect(child.querySelector("template")?.innerHTML).toBe("<b>x</b>");
     expect(locationFromAttributes(child)).toEqual(location);
   });
@@ -60,7 +60,7 @@ describe("writeSnippet's children form", () => {
     const location = { id: "a", lat: 1, lng: 2, group: ["Europe", "Italy"] };
     const child = page(write([{ ...location, html: "<b>x</b>" }]).text).querySelector(
       "maplace-location",
-    ) as Element;
+    ) as HTMLElement;
     expect(locationFromAttributes(child)).toEqual(location);
   });
 
@@ -80,7 +80,7 @@ describe("writeSnippet's children form", () => {
       style: { stroke: "#111" },
     };
     const { text } = write([circle, { id: "m", lat: 1, lng: 2, html: "x" }]);
-    const child = page(text).querySelector("maplace-location") as Element;
+    const child = page(text).querySelector("maplace-location") as HTMLElement;
     expect(locationFromAttributes(child)).toEqual(circle);
   });
 

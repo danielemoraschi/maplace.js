@@ -1,7 +1,7 @@
 import { drawableParts } from "../adapter-kit/line-parts";
 import type { Look } from "../adapter-kit/presentation-changes";
 import { sameGeometry } from "../adapter-kit/same-geometry";
-import { sameLooks, styleInState } from "../adapter-kit/shape-looks";
+import { sameLooks, showsEditHandles, styleInState } from "../adapter-kit/shape-looks";
 import { frontRank, shapeStackRank } from "../adapter-kit/stacking";
 import { anchorOf } from "../anchor";
 import type { Drawable } from "../drawable";
@@ -16,7 +16,8 @@ import type { PlacedShape, PlacingSite } from "./placed-location";
 /**
  * One circle, polyline, polygon or multipolygon, a feature in the shape layers: drawn in its style
  * for its state, and stacked by its size, the later added in front among one size. A change sends it
- * again only when it changed what is drawn. An editable one shown has handles a user drags.
+ * again only when it changed what is drawn. An editable one shown has handles a user drags while
+ * it is hovered or selected, kept through a press on one until the pointer next moves after it.
  */
 export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
   const order = site.nextOrder();
@@ -51,14 +52,23 @@ export function placeShape(drawable: Drawable, site: PlacingSite): PlacedShape {
     else putParts(shapes, keys, parts, { id: drawn.id, rank, strokeRank: strokeRank + PART_LIFT });
   }
 
-  /** Handles while it is editable and shown, moved when the store `reshaped` it. */
+  /**
+   * Handles while it is editable and shown, and hovered or selected or one of them is pressed or
+   * dragged; moved when the store `reshaped` it.
+   */
   function syncEditing({ reshaped }: { readonly reshaped: boolean }): void {
     // Followed first: a drag cut short by stopping goes back to what the store sent last.
     if (reshaped) editing?.follow(drawn.geometry);
-    const wanted = drawn.editable && look.visible;
+    const wanted = showsEditHandles(drawn, look, editing?.isHeld() === true);
     if (wanted && editing === undefined) {
       const { mounted, hover } = site;
-      editing = editShape(drawn.geometry, { mounted, hover, id: drawn.id, onEdit: showEdit });
+      editing = editShape(drawn.geometry, {
+        mounted,
+        hover,
+        id: drawn.id,
+        onEdit: showEdit,
+        pressOver: () => syncEditing({ reshaped: false }),
+      });
     } else if (!wanted && editing !== undefined) {
       editing.stop();
       editing = undefined;

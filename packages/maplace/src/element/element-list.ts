@@ -1,7 +1,7 @@
 import { type Adapter, CONTROL_POSITIONS, type ControlPosition } from "../adapter";
 import { adoptCarriedStyles } from "../adopted-styles";
 import { type ListViewOptions, listedLocations, type Maplace, type MaplaceError } from "../index";
-import { booleanOrRaw } from "./attribute-values";
+import { booleanOrRaw, textOf } from "./attribute-values";
 import { PLACED_LIST_CLASS } from "./default-styles";
 import { elementMisuse } from "./element-error";
 import type { ElementListOptions, ListPosition } from "./index";
@@ -124,13 +124,6 @@ export function switchAttribute(host: HTMLElement, name: string): boolean | unde
   const value = booleanOrRaw(host, name);
   if (typeof value !== "string") return value;
   throw elementMisuse(`${name} must be true or false, got "${value}"`, { field: name });
-}
-
-/** `name`'s text, refused when blank: for every view, the page's own as maplace's. */
-function textOf(host: HTMLElement, name: string): string | undefined {
-  const text = host.getAttribute(name) ?? undefined;
-  if (text?.trim() === "") throw elementMisuse(`${name} must not be blank`, { field: name });
-  return text;
 }
 
 /** A switch adding what only a list has room for (`search`, `group-filter`): misuse on a select. */

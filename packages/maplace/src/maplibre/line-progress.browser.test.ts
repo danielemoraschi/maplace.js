@@ -71,7 +71,7 @@ describe("a line's progress on MapLibre", () => {
 
   it("finds the line under the pointer on its travelled part", async () => {
     const { map, host } = await shown(lineAt(0.6));
-    clickCanvas(map, { at: pointAlong({ id: "l", type: "polyline", path: PATH }, 0.2) });
+    clickCanvas(map, pointAlong({ id: "l", type: "polyline", path: PATH }, 0.2));
     await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["l"]]);
   });
 

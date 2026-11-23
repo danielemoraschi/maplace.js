@@ -2,6 +2,7 @@ import { defineCollection } from "astro:content";
 import { agentSkillLoader } from "./site/agent-skill-loader.ts";
 import { changelogLoader } from "./site/changelog-loader.ts";
 import { exampleGuidesLoader } from "./site/example-guides-loader.ts";
+import { groupReferencesLoader } from "./site/group-references-loader.ts";
 import { installLoader } from "./site/install-loader.ts";
 import { repoDocsLoader } from "./site/repo-docs-loader.ts";
 import { searchFactsLoader } from "./site/search-facts-loader.ts";
@@ -11,6 +12,7 @@ export const collections = {
   changelog: defineCollection({ loader: changelogLoader() }),
   docs: defineCollection({ loader: repoDocsLoader() }),
   exampleGuides: defineCollection({ loader: exampleGuidesLoader() }),
+  groupReferences: defineCollection({ loader: groupReferencesLoader() }),
   install: defineCollection({ loader: installLoader() }),
   searchFacts: defineCollection({ loader: searchFactsLoader() }),
 };

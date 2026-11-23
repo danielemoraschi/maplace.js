@@ -71,7 +71,7 @@ describe("startConsent", () => {
     expect(reload).toHaveBeenCalledOnce();
   });
 
-  it("opens the maps from a placeholder added after it started, a group's panel fetched later", () => {
+  it("opens the maps from a placeholder added after it started", () => {
     const { doc, openMaps, store } = page();
     const later = doc.createElement("div");
     later.innerHTML = "<p><button data-maps-grant>Load maps</button></p>";

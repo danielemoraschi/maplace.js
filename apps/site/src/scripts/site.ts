@@ -8,11 +8,14 @@ import type { LiveVersion } from "../examples/example-versions.ts";
 import { runPageScripts } from "../examples/page-scripts.ts";
 import { byKind } from "./by-kind.ts";
 import { byProvider, providerOf } from "./by-provider.ts";
+import { addCodeCopyButtons } from "./code-copy.ts";
+import { startCodeFolds } from "./code-fold.ts";
+import { startCopyButtons } from "./copy-buttons.ts";
+import { expandShownCode } from "./deferred-code.ts";
 import { googleScriptReady, googleVersionReady, type PageMapsJs } from "./google-version-ready.ts";
-import { fetchGroupPanel } from "./group-panels.ts";
-import { startGroupSwitch } from "./group-switch.ts";
 import { noteMapsJsFailure, noteVersionStartFailure } from "./map-failures.ts";
 import { askBootstrapForMapsJs, mapsJsOnPage, watchMapsJs } from "./maps-on-page.ts";
+import { showCurrentInPinnedColumn } from "./menu-in-view.ts";
 import { followNavFocus } from "./nav-in-view.ts";
 import { pageMapRelease } from "./page-map-release.ts";
 import { provideSave } from "./page-save.ts";
@@ -21,12 +24,24 @@ import { importAsModule, scriptVersionStart } from "./script-version.ts";
 import { followSectionAnchor } from "./section-anchor.ts";
 import { sectionStarter } from "./section-start.ts";
 import { installMaplace } from "./site-maplace.ts";
-import { showStarCount } from "./star-count.ts";
 import { versionStarter } from "./version-start.ts";
 import { startProviderToggle } from "./version-switch.ts";
 
-// An old home page link to an example on another group's page goes there (W38).
-followSectionAnchor(location);
+// An old link to an example on a page that no longer holds it goes to the one that does (W63).
+followSectionAnchor(location, document);
+
+// Code blocks get their copy buttons and folds first (W79), so nothing that fails later leaves a
+// long block folded with no button; `prepareCode` does the same for an example's version written
+// in later (`deferred-code.ts`).
+const codeCopy = document.querySelector<HTMLTemplateElement>("#code-copy");
+const prepareCode = (root: ParentNode) => {
+  if (codeCopy) addCodeCopyButtons(root, codeCopy);
+  startCopyButtons(root);
+  startCodeFolds(root);
+};
+if (codeCopy) addCodeCopyButtons(document.querySelector("main") ?? document, codeCopy);
+startCopyButtons(document);
+startCodeFolds(document);
 
 // Every map on the site is held (`<maplace-map hold>`): nothing from Google Maps or OpenFreeMap
 // loads until the visitor consents, then each map as it comes into view. A provider's element
@@ -81,7 +96,11 @@ const startSections = sectionStarter({
   whenVisible,
   release,
   startVersion,
-  followToggle: startProviderToggle(document, () => sessionStorage),
+  followToggle: startProviderToggle(
+    document,
+    () => sessionStorage,
+    (section) => expandShownCode(section, prepareCode),
+  ),
   reload: reloadPage,
   latch,
 });
@@ -89,11 +108,11 @@ const startSections = sectionStarter({
 provideSave(globalThis, document);
 followNavFocus(document);
 startSections(document);
-startGroupSwitch({ document, startSections, fetchPanel: fetchGroupPanel, leave: location });
-void showStarCount(document);
 startConsent({
   document,
   store: createConsentStore(() => localStorage),
   openMaps: latch.turnOn,
   reload: reloadPage,
 });
+// Read once the sections have changed the page, sharing the layout its first frame needs.
+showCurrentInPinnedColumn(document);

@@ -9,12 +9,14 @@ const changelog = await getEntry("changelog", CHANGELOG_ENTRY);
 if (changelog === undefined) {
   throw new Error("the changelog collection has no entry (content.config.ts)");
 }
-const { Content } = await render(changelog);
+const { Content, headings } = await render(changelog);
+const versions = headings.filter(({ depth }) => depth === 2);
 ---
 
 <ProsePage
   title={CHANGELOG_PAGE.label}
   description={CHANGELOG_PAGE.description}
+  contents={{ label: "Versions", headings: versions }}
 >
   <Fragment slot="lede">
     Every change to the Maplace.js library that a reader would notice, newest first, with the issue it closed if any.

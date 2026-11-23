@@ -99,6 +99,7 @@ export const MAP_ELEMENT_PROPERTIES = everyName<
   locations: true,
   route: true,
   sanitize: true,
+  markerIcon: true,
   computeRoute: true,
   maplace: true,
   loadState: true,

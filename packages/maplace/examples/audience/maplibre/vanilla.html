@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- The page vanilla.ts runs on: what the module mounts on, and the module, which brings maplibre-gl and its stylesheet. -->
+<!-- This example's look lives in the examples' styles/audience.css, which every version links. -->
+<link rel="stylesheet" href="../../styles/audience.css">
+<style>
+  #audience-maplibre-vanilla-map-and-list { display: flex; height: 24rem; }
+  #audience-maplibre-vanilla-map { flex: 1 1 auto; min-width: 0; }
+  #audience-maplibre-vanilla-list { display: contents; }
+  #audience-maplibre-vanilla-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #audience-maplibre-vanilla-map-and-list { flex-direction: column; height: 36rem; }
+    #audience-maplibre-vanilla-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<p><label for="audience-maplibre-vanilla-period">Period</label> <select id="audience-maplibre-vanilla-period">
+  <option value="1M">Last month</option>
+  <option value="3M">Last 3 months</option>
+  <option value="1Y" selected>Last year</option>
+</select></p>
+<div id="audience-maplibre-vanilla-map-and-list">
+  <div id="audience-maplibre-vanilla-map"></div>
+  <div id="audience-maplibre-vanilla-list"></div>
+</div>
+<p>All viewers <output id="audience-maplibre-vanilla-total"></output></p>
+<script type="module" src="./vanilla.ts"></script>

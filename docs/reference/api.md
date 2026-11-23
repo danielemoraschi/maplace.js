@@ -1,6 +1,6 @@
-# API reference
+# Maplace.js API reference: exports, errors, capabilities
 
-Every export of every entry, with where it is explained, then the error codes and the capabilities. One package, one version for all entries; the package is ES modules only.
+Every export of every entry of `@maplacejs/maplace`, the Maplace.js package for Google Maps and MapLibre, with where it is explained, then the error codes and the capabilities. One package, one version for all entries; the package is ES modules only.
 
 ## `@maplacejs/maplace`
 
@@ -144,6 +144,7 @@ Before `attach` the store skips capability checks; `attach` checks the current s
 | `provider-load-failed` | The provider, or a part it loads (maplibre-gl, its worker, a style, the clusterer), failed to load; on Google also your own map made without a map ID |
 | `provider-auth-failed` | The provider refused the key: Google's, or a style's server (HTTP 401 or 403) |
 | `route-failed` | A route couldn't be computed |
+| `locations-load-failed` | (1.3) The file a `<maplace-map>`'s [`src`](element.md#data) names didn't load: the element's `maplace-error` only, its locations kept |
 
 For the first two, `loadState` becomes `error` and `whenReady()` rejects; one that comes after `ready` moves `loadState` from `ready` to `error`. A map Maplace.js creates also says so on the map when it can't be used: a [panel](styling.md#classes) in its container, none on your own map. An `icon`, `content` or `sanitize` function of yours that fails while the map draws is an `invalid-input` error event naming the location and the field: the map stays ready.
 

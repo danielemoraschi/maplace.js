@@ -1,18 +1,44 @@
 ---
+import type { ComponentProps } from "astro/types";
 import Base from "../layouts/Base.astro";
+import { pageTitle } from "../site/head-meta-tags.ts";
+import OnThisPage from "./OnThisPage.astro";
+import PinnedColumn from "./PinnedColumn.astro";
 
 interface Props {
   title: string;
   description: string;
+  /**
+   * The page's headings, listed beside it under this name (the changelog's versions, W82): the
+   * page then runs to the site's width, as a doc does, the list folded away below 800px. Without
+   * them, one column at a reading width.
+   */
+  contents?: ComponentProps<typeof OnThisPage> | undefined;
 }
 
-const { title, description } = Astro.props;
+const { title, description, contents } = Astro.props;
 ---
 
-<Base title={`${title} · Maplace.js`} description={description}>
-  <article class="prose-page max-w-text pt-8">
-    <h1 class="mt-0 mb-4 text-title">{title}</h1>
-    <p class="mt-0 mb-6 text-muted"><slot name="lede" /></p>
-    <slot />
-  </article>
+<Base title={pageTitle(title)} description={description}>
+  <div
+    class:list={[
+      "pt-8",
+      contents && "grid grid-cols-[13rem_minmax(0,1fr)] gap-10 max-[800px]:grid-cols-[minmax(0,1fr)]",
+    ]}
+  >
+    {
+      contents && (
+        <div class="max-[800px]:hidden">
+          <PinnedColumn>
+            <OnThisPage {...contents} />
+          </PinnedColumn>
+        </div>
+      )
+    }
+    <article class:list={["prose-page", !contents && "max-w-text"]}>
+      <h1 class="mt-0 mb-4 text-title">{title}</h1>
+      <p class="mt-0 mb-6 text-muted"><slot name="lede" /></p>
+      <slot />
+    </article>
+  </div>
 </Base>

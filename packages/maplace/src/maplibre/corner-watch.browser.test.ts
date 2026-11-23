@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { frames } from "../google/frames";
 import { sizedContainer } from "../testing/container";
 import { panelControl } from "./control-panel";
@@ -32,7 +32,7 @@ function watchedPageMap() {
     node.append(Object.assign(document.createElement("div"), { style: "height: 2000px" }));
     map.addControl(panelControl(node), "bottom-left");
   };
-  watch = watchCorners(map);
+  watch = watchCorners(map, () => {});
   return { container, corners, properties, panel, watch };
 }
 
@@ -62,6 +62,15 @@ async function resizesOf(element: Element): Promise<() => Promise<void>> {
 }
 
 describe("watchCorners", () => {
+  it("tells its caller after each settle, what the panels cover having maybe changed (N32)", () => {
+    const map = pageMapIn(sizedContainer());
+    const onSettled = vi.fn();
+    watch = watchCorners(map, onSettled);
+    watch.settle();
+    watch.settle();
+    expect(onSettled).toHaveBeenCalledTimes(2);
+  });
+
   it("writes nothing on a map with no maplace panel", async () => {
     const { container, properties, watch } = watchedPageMap();
     watch.settle();

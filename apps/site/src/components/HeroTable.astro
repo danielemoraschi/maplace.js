@@ -1,0 +1,67 @@
+---
+import { Image } from "astro:assets";
+import { HERO_TABLE, type HiddenBelow, heroCards, type ShownFrom } from "../examples/hero-table.ts";
+
+/**
+ * A card that would run under the copy at a width steps out there, its picture never fetched: its
+ * literal class, as Tailwind reads `.astro` files only. Its cell is its own, so no other card moves.
+ */
+const HIDDEN_BELOW: Readonly<Record<HiddenBelow, string>> = {
+  1100: "max-[1100px]:hidden",
+  1200: "max-[1200px]:hidden",
+  1260: "max-[1260px]:hidden",
+};
+
+/** A card a wider screen brings into view, laid from its width: its literal class, as above. */
+const SHOWN_FROM: Readonly<Record<ShownFrom, string>> = {
+  1700: "hidden min-[1700px]:block",
+  2000: "hidden min-[2000px]:block",
+  2400: "hidden min-[2400px]:block",
+  2600: "hidden min-[2600px]:block",
+};
+
+/** The first card lands this long after the page opens, and each next one this long after it. */
+const FIRST_LANDING_MS = 150;
+const LANDING_STEP_MS = 45;
+---
+
+{/*
+  The hero's table (W66): the examples' thumbnails as a flat grid laid on a tilted table, beside
+  the copy from 901px (`TABLE_FROM`), left off a phone, at a set height from the hero's top so a
+  longer code panel never moves it; its tilt and its turn as the page scrolls away are
+  `table-turn`'s. It is 84rem wide at every width, and its frame stops growing at 105rem, its
+  width at 1680px (W77), so a wider screen shows more cards past its top right, not bigger
+  ones. A picture, not a way in: the index below links every example, so it is hidden from
+  screen readers and takes no pointer.
+*/}
+<div
+  aria-hidden="true"
+  class="pointer-events-none absolute top-0 h-[59rem] -right-[20%] left-[max(20%,calc((100%-var(--container-measure))/2+6.5rem))] z-0 max-w-[105rem] perspective-[2400px] max-[901px]:hidden"
+>
+  <div
+    class="table-turn absolute top-1/2 left-1/2 grid w-[84rem] auto-cols-[calc((100%-3*var(--gap))/4)] gap-(--gap) [--gap:calc(var(--spacing)*5)] transform-3d [--table-x:-40%]"
+  >
+    {
+      heroCards(HERO_TABLE).map(({ name, thumbnail, row, column, hiddenBelow, shownFrom }, index) => (
+        <div
+          data-hero-card={name}
+          class:list={[
+            "animate-land motion-reduce:animate-none",
+            hiddenBelow && HIDDEN_BELOW[hiddenBelow],
+            shownFrom && SHOWN_FROM[shownFrom],
+          ]}
+          style={`grid-area: ${row} / ${column}; animation-delay: ${FIRST_LANDING_MS + index * LANDING_STEP_MS}ms`}
+        >
+          <Image
+            src={thumbnail}
+            alt=""
+            width={320}
+            format="webp"
+            loading="lazy"
+            class="block aspect-[8/5] h-auto w-full rounded-lg border border-ink/15 bg-paper object-cover"
+          />
+        </div>
+      ))
+    }
+  </div>
+</div>

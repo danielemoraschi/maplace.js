@@ -35,6 +35,12 @@ describe("validateOptions", () => {
     );
   });
 
+  it.each([7, {}, null])("refuses a markerIcon of %j, no URL, node or function", (markerIcon) => {
+    expect(() => validateOptions({ markerIcon })).toThrow(
+      expect.objectContaining({ field: "options.markerIcon" }),
+    );
+  });
+
   it("refuses an icon on a heat marker among the first locations", () => {
     const locations = [{ id: "q", lat: 0, lng: 0, group: "quakes", icon: "x" }];
     expect(() => validateOptions({ heatmap: { groups: ["quakes"] }, locations })).toThrow(

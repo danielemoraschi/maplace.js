@@ -1,0 +1,96 @@
+<!doctype html>
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element-maplibre.iife.js"></script>
+<!-- Six countries, each in its own colour with its share in a badge, and the list beside the
+     map as the legend: each country's name by a swatch of its colour, its share, and a row of ten
+     dots with the share filled in, after an entry that shows them all; a click on a badge picks
+     its country. -->
+<!-- This example's look lives in the examples' styles/share-by-country.css, which every version links. -->
+<link rel="stylesheet" href="../../styles/share-by-country.css">
+<style>
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #share-by-country-maplibre-map { height: 36rem; }
+    #share-by-country-maplibre-map > .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<maplace-map id="share-by-country-maplibre-map" list="maplibre-share-by-country-legend" list-heading="Share by country" fit-all fit-all-label="All countries"></maplace-map>
+<script>
+  // The legend's entries, the page's own: a view defined as the page is read, so the map finds
+  // it when it opens; the module below gives the map its countries.
+  {
+    const span = (className, ...children) => {
+      const element = document.createElement("span");
+      element.className = className;
+      element.append(...children);
+      return element;
+    };
+    // A country in the list: its name with its colour's swatch and its share, then ten dots, the share filled in.
+    const shareEntry = ({ location }) => {
+      const { share, colour } = location.data;
+      const dots = span("share-dots");
+      dots.setAttribute("aria-hidden", "true");
+      for (let tenth = 0; tenth < 10; tenth++) {
+        const dot = span("share-dot");
+        dot.toggleAttribute("data-filled", tenth < share / 10);
+        dots.append(dot);
+      }
+      const entry = span("share-entry", span("share-head", span("share-name", location.title), span("share-figure", `${share}%`)), dots);
+      entry.style.setProperty("--colour", colour);
+      return entry;
+    };
+    Maplace.defineListView("maplibre-share-by-country-legend", (maplace, { options }) =>
+      Maplace.createListView(maplace, { ...options, render: shareEntry }));
+  }
+</script>
+<script type="module">
+  const span = (className, ...children) => {
+    const element = document.createElement("span");
+    element.className = className;
+    element.append(...children);
+    return element;
+  };
+  // A country's share on the map: the figure in a ring of its colour.
+  const badgeIcon = ({ data }) => {
+    const badge = span("share-badge", `${data.share}%`);
+    badge.style.setProperty("--colour", data.colour);
+    return badge;
+  };
+  // Each country's share, the colour it is drawn in, and where its badge sits. The shares are
+  // made up, for the example.
+  const shares = [
+    { id: "USA", share: 30, colour: "#1d4ed8", badge: { lat: 33, lng: -98 } },
+    { id: "IND", share: 20, colour: "#c2410c", badge: { lat: 16, lng: 78 } },
+    { id: "GBR", share: 20, colour: "#15803d", badge: { lat: 51, lng: -1.5 } },
+    { id: "BRA", share: 10, colour: "#6d28d9", badge: { lat: -16, lng: -52 } },
+    { id: "SAU", share: 10, colour: "#b45309", badge: { lat: 19, lng: 45 } },
+    { id: "AUS", share: 10, colour: "#be185d", badge: { lat: -31, lng: 134 } },
+  ];
+  const countries = Maplace.locationsFromGeoJSON(await fetch("/examples/data/countries.json").then((response) => response.json()));
+
+  // Each country in its colour, then its badge: in the shares' order, so the list is too.
+  const locations = shares.flatMap(({ id, share, colour, badge }) => {
+    const country = countries.find((location) => location.id === id);
+    if (country === undefined) throw new Error(`countries.json has no ${id} to shade`);
+    const data = { share, colour };
+    return [
+      {
+        ...country,
+        data,
+        style: { fill: colour, fillOpacity: 0.85, stroke: "#ffffff", strokeWidth: 1 },
+        hoveredStyle: { fillOpacity: 1 },
+        selectedStyle: { fillOpacity: 1, stroke: "#111827", strokeWidth: 2 },
+      },
+      { id: `${id}-badge`, title: `${country.title}: ${share}%`, ...badge, listed: false, data, icon: badgeIcon },
+    ];
+  });
+
+  const map = document.getElementById("share-by-country-maplibre-map");
+  map.locations = locations;
+  const { maplace } = map;
+  maplace.fitAll({ padding: 48 });
+
+  // A click on a badge selects its country, as a click on its entry does.
+  maplace.on("selectionChange", ({ id }) => {
+    if (id?.endsWith("-badge")) maplace.select(id.replace(/-badge$/, ""));
+  });
+</script>

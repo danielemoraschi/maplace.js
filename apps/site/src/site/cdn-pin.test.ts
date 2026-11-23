@@ -96,9 +96,24 @@ describe("pinOfVersion once the version is on npm", () => {
 describe("cdnPin", () => {
   beforeEach(() => {
     vi.resetModules();
+    vi.stubEnv("MODE", "production"); // a site build: `astro build`
   });
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it("pins the repo's own scripts on the dev server once, and asks npm nothing", async () => {
+    vi.stubEnv("MODE", "development"); // `astro dev`
+    const fetchUrl = vi.fn<Fetch>();
+    vi.stubGlobal("fetch", fetchUrl);
+    const { cdnPin } = await import("./cdn-pin.ts");
+    const pin = await cdnPin();
+    await cdnPin();
+    expect(builtCdnScript).toHaveBeenCalledTimes(Object.keys(CDN_SCRIPTS).length);
+    expect(pin.version).toBe(VERSION);
+    expect(pin.integrityOf(CDN_SCRIPTS.plain)).toBe(integrityOf(BYTES.plain));
+    expect(fetchUrl).not.toHaveBeenCalled();
   });
 
   it("pins the manifest's version, reading npm once per build", async () => {

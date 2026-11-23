@@ -1,11 +1,13 @@
 import type { Loader } from "astro/loaders";
 import { type Pin, withPinnedScripts } from "../../../../scripts/build/cdn-pins.ts";
 import { readRootFile } from "../../../../scripts/build/package.ts";
+import { section } from "../../../../scripts/docs/markdown.ts";
 import { cdnPin } from "./cdn-pin.ts";
 import { withLinksFromRoot } from "./doc-relative-links.ts";
 import { GUIDE_ROUTES } from "./guide-routes.ts";
-import { DOC_ROUTES, REPO_DOCS, type RepoDoc } from "./repo-docs.ts";
+import { DOC_ROUTES, docRoute, REPO_DOCS, type RepoDoc, repoDoc } from "./repo-docs.ts";
 import { siteBlobBase } from "./site-blob-base.ts";
+import { rooted, SITE_LINK } from "./site-link-targets.ts";
 import { withSiteLinks } from "./site-links.ts";
 
 /** The content loader of the `docs` collection: each repo document, rendered. */
@@ -34,6 +36,19 @@ export interface RepoDocSettings {
   readonly pin: Pin;
   /** Where the repo's other files are read. */
   readonly blobBase: string;
+}
+
+/**
+ * The text under `heading` of the doc page `id`, as the site shows it, moved off its page: its
+ * links to the page's own headings rooted at the page, `#icons` → `/locations/#icons`.
+ */
+export function docSectionOnSite(id: string, heading: string, settings: RepoDocSettings): string {
+  const doc = repoDoc(id);
+  const route = docRoute(id);
+  return section(repoDocMarkdown(doc, settings), heading, doc.file).replaceAll(
+    SITE_LINK,
+    (link, target: string) => link.replace(`](${target}`, `](${rooted(target, route)}`),
+  );
 }
 
 /** `doc`'s Markdown as the site shows it: titled by the page, pinned, its links working. */

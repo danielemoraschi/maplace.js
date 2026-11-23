@@ -1,3 +1,12 @@
+# Every response (W81). The referrer policy is the browsers' default, which the maps' key allows.
+# The full policy only reports, for now: it allows the inline scripts and styles the build writes.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: frame-ancestors 'self'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.ggpht.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.googleusercontent.com https://tiles.openfreemap.org; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' data: blob: https://*.googleapis.com https://*.google.com https://*.gstatic.com https://tiles.openfreemap.org; worker-src 'self' blob:; frame-src https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self'
+
 # Cloudflare Workers static assets: what Astro writes under /_astro/ is named by its content.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
@@ -5,14 +14,14 @@
 # Each page with Markdown behind it names it, for agents that read headers (W41).
 /
   Link: </index.md>; rel="alternate"; type="text/markdown"
-/examples/lists/
-  Link: </examples/lists/index.md>; rel="alternate"; type="text/markdown"
-/examples/shapes/
-  Link: </examples/shapes/index.md>; rel="alternate"; type="text/markdown"
-/examples/data-routes/
-  Link: </examples/data-routes/index.md>; rel="alternate"; type="text/markdown"
-/examples/styling/
-  Link: </examples/styling/index.md>; rel="alternate"; type="text/markdown"
+/examples/
+  Link: </examples/index.md>; rel="alternate"; type="text/markdown"
+# Each category's hub, and every example's page under it: one rule for each kind, as a rule each
+# would pass Cloudflare's limit of 100.
+/examples/:group/
+  Link: </examples/:group/index.md>; rel="alternate"; type="text/markdown"
+/examples/:group/:example/
+  Link: </examples/:group/:example/index.md>; rel="alternate"; type="text/markdown"
 /changelog/
   Link: </changelog/index.md>; rel="alternate"; type="text/markdown"
 /getting-started/
@@ -47,14 +56,12 @@
 # Each page's Markdown names the page as the one to index, so search lists the page alone.
 /index.md
   Link: <https://maplacejs.com/>; rel="canonical"
-/examples/lists/index.md
-  Link: <https://maplacejs.com/examples/lists/>; rel="canonical"
-/examples/shapes/index.md
-  Link: <https://maplacejs.com/examples/shapes/>; rel="canonical"
-/examples/data-routes/index.md
-  Link: <https://maplacejs.com/examples/data-routes/>; rel="canonical"
-/examples/styling/index.md
-  Link: <https://maplacejs.com/examples/styling/>; rel="canonical"
+/examples/index.md
+  Link: <https://maplacejs.com/examples/>; rel="canonical"
+/examples/:group/index.md
+  Link: <https://maplacejs.com/examples/:group/>; rel="canonical"
+/examples/:group/:example/index.md
+  Link: <https://maplacejs.com/examples/:group/:example/>; rel="canonical"
 /changelog/index.md
   Link: <https://maplacejs.com/changelog/>; rel="canonical"
 /getting-started/index.md

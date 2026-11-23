@@ -1,6 +1,7 @@
 /// <reference types="google.maps" preserve="true" />
 
 import type { HoverReports } from "../adapter-kit/hover-reports";
+import type { PinLooks } from "../adapter-kit/pin-looks";
 import type { Look } from "../adapter-kit/presentation-changes";
 import type { Drawable } from "../drawable";
 import type { Geometry, LatLng } from "../geometry";
@@ -46,6 +47,8 @@ export interface PlacingSite {
   readonly mounted: MountedMap;
   lookOf(id: string): Look;
   readonly hover: HoverReports;
+  /** The default pins' looks, in the colours the page set when the map opened. */
+  readonly pinLooks: PinLooks;
   /** The next marker's place in the order added. */
   nextOrder(): number;
 }

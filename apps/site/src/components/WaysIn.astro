@@ -1,0 +1,59 @@
+---
+import { codeTabsOf } from "../examples/example-sources.ts";
+import { isModuleVersion, versionPanelId, versionTabId } from "../examples/example-versions.ts";
+import { WAYS_IN_GOOGLE_LOADER, WAYS_IN_NOTES } from "../examples/home-page.ts";
+import { waysInFiles } from "../examples/ways-in-files.ts";
+import ExampleFile from "./ExampleFile.astro";
+import ProviderPart from "./ProviderPart.astro";
+import ProviderSwitch from "./ProviderSwitch.astro";
+import VersionTabs from "./VersionTabs.astro";
+
+/** The example the hero shows in each of its ways: one place on a map. */
+const SHOWN = "simple";
+const codeTabs = codeTabsOf(SHOWN);
+// Never the example's own ids (`simple-…`), which an old `/#simple` link follows to its page.
+const PANEL_PREFIX = "ways-in";
+---
+
+{/*
+  The four ways in (W66): the Simple example's code by way of using Maplace.js and by provider,
+  with no map, no caption, and only the part a reader writes (`ways-in-files.ts`; the example's
+  page shows and names every file). Inside the hero's `data-version-switch`, so `tabs.ts` and
+  `version-switch.ts` drive it as they drive an example's page, and the provider chosen holds for
+  the visit.
+*/}
+<div class="mt-12">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <VersionTabs codeTabs={codeTabs} label="Ways to use Maplace.js" panelPrefix={PANEL_PREFIX} />
+    <ProviderSwitch name={`${PANEL_PREFIX}-provider`} legend="Show the code for" look="pill" />
+  </div>
+  {
+    codeTabs.map(({ kind, codes }, index) => (
+      <div
+        role="tabpanel"
+        id={versionPanelId(PANEL_PREFIX, kind)}
+        aria-labelledby={versionTabId(PANEL_PREFIX, kind)}
+        hidden={index !== 0}
+        class="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] rounded-panel border border-ink/15 bg-paper shadow-[0_1px_2px_rgb(27_36_48/0.08),0_18px_40px_-16px_rgb(27_36_48/0.32)] max-[54rem]:grid-cols-1"
+      >
+        <div class="grid content-start gap-3 p-6">
+          <p class="headline m-0 text-lede leading-tight">{WAYS_IN_NOTES[kind].title}</p>
+          <p class="m-0 text-muted">{WAYS_IN_NOTES[kind].text}</p>
+          {isModuleVersion(kind) && (
+            <ProviderPart provider="google">
+              <p class="m-0 text-muted">{WAYS_IN_GOOGLE_LOADER}</p>
+            </ProviderPart>
+          )}
+        </div>
+        {/* Rounded at the panel's corners itself, the panel clipping nothing, so the code's focus ring shows whole. */}
+        <div class="min-w-0 rounded-e-panel-inset bg-code-paper max-[54rem]:rounded-none max-[54rem]:rounded-b-panel-inset [&_pre]:m-0 [&_pre]:rounded-e-panel-inset [&_pre]:px-5 [&_pre]:py-4 max-[54rem]:[&_pre]:rounded-none max-[54rem]:[&_pre]:rounded-b-panel-inset">
+          {codes.map((code) => (
+            <ProviderPart provider={code.provider}>
+              {waysInFiles(code).map((shown) => <ExampleFile shown={shown} />)}
+            </ProviderPart>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</div>

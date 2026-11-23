@@ -1,5 +1,7 @@
 # MapLibre adapter: styles, tiles and clustering
 
+Maplace.js draws its maps on MapLibre GL JS through its MapLibre adapter: markers, shapes, popups, marker clustering and heatmaps, on free vector tiles with no key.
+
 `createMapLibreAdapter(options)` from `@maplacejs/maplace/maplibre` draws a store on MapLibre GL JS; `@maplacejs/maplace/maplibre` is the only entry that knows `maplibre-gl`. The element's MapLibre provider (`@maplacejs/maplace/element/maplibre`, and the MapLibre CDN script) makes the same adapter from the element's attributes. The map draws OpenFreeMap's `bright` style unless you give another, so it needs no key and no map ID.
 
 The store, its list, its events and its errors are the same as on Google; what differs is in [capabilities](api.md#capabilities): routes only through your own routing ([routes](#routes)). Provider options belong to the adapter, never to the store. On Google: [Google adapter](google.md).
@@ -155,6 +157,8 @@ A style that fails to load is `provider-load-failed`, or `provider-auth-failed` 
 
 A dark map is a dark style (`map-style`), since MapLibre has no colour scheme option.
 
+Example: [Map styles](../../packages/maplace/examples/styled/guide.md).
+
 ## Hidden maps
 
 A browser keeps about 16 WebGL contexts per page, one per MapLibre map, and takes the oldest away past that, leaving that map blank. So a map Maplace.js creates gives its context back while it's hidden (`display: none`, `hidden`, a closed tab) and the page's maps hold more than 8, the map hidden longest first, and takes it back once shown, drawing again from its style. Below 8, a hidden map keeps its context, so it shows again at once, without drawing from scratch. A map hidden with `visibility` or `opacity` keeps its context, and so does your own map (`map`). More than about 16 maps on show at once is past the browser's limit. Checked in Chromium.
@@ -165,13 +169,15 @@ Maplace.js speaks one zoom on every provider: Google's. MapLibre's tiles are 512
 
 ## Markers and shapes
 
-A marker with no icon is a pin like Google's, drawn in a layer of the map rather than the DOM, so thousands stay fast. The selected or hovered pin is drawn again in front, and is reached by keyboard through the list.
+A marker with no icon is a pin, a dot centred on its point, drawn in a layer of the map rather than the DOM, so thousands stay fast. The selected or hovered pin is drawn again in front, and is reached by keyboard through the list.
 
 A marker with an `icon` is a DOM marker, focusable and pressed by Enter or Space. An `editable` marker is a DOM marker showing the pin, dragged there.
 
 Circles are polygons of 128 points on the sphere, their radius in metres as on Google. Polylines, polygons and each of a multipolygon's polygons across ±180 are drawn the short way.
 
-An `editable` shape gets Google's handles: one on each point and one between each two, and a circle's centre and four radius handles. They work with the pointer only. A shape's `locationEdit` comes as the drag goes, and its `locationChange` on release.
+An `editable` shape gets Google's handles while it is hovered or selected, so markers on it stay clear at rest: one on each point and one between each two, and a circle's centre and four radius handles. They work with the pointer only. A shape's `locationEdit` comes as the drag goes, and its `locationChange` on release.
+
+Example: [Markers and shapes together](../../packages/maplace/examples/mixed/guide.md).
 
 ### The origin's dot
 
@@ -181,6 +187,8 @@ The dot at the store's [origin](store.md#distances) is a DOM marker of its own, 
 
 A popup is MapLibre's, headed by the location's title. One opened by a click pans the map to show it, clear of what the map's corners hold when there is room, and takes focus when the map held it, as Google's does. A hover's popup does neither.
 
+Example: [Place cards in popups](../../packages/maplace/examples/popups/guide.md).
+
 ## Clustering
 
 The `cluster` option (the element's `cluster` attribute) groups markers with `supercluster`, on Google's clusterer's settings (60 px, up to zoom 16, at the rounded zoom), so the same clusters show at the same view on either map. They are Maplace.js's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)).
@@ -189,9 +197,13 @@ A click or Enter on a cluster eases to the zoom at which it splits. Circles, lin
 
 supercluster loads with the map, so `whenReady` waits for it, and a failed load is `provider-load-failed`. The MapLibre CDN script includes it: there is no separate cluster script.
 
+Example: [Marker clustering](../../packages/maplace/examples/big/guide.md).
+
 ## Heatmap
 
 A [heatmap](store.md#heatmaps) is drawn in MapLibre's own `heatmap` and `circle` layers, reading the markers' source: under every pin and shape, and kept through a restyle as the pins are. A click on a dot finds its location as a click on a pin does. Its layers load with the map, only when the store asks for a heatmap; the MapLibre CDN script includes them.
+
+Example: [Heatmaps](../../packages/maplace/examples/earthquakes/guide.md).
 
 ## Routes
 
@@ -320,11 +332,13 @@ function instructionOf({ type, modifier = "" }: OsrmStep["maneuver"], name: stri
 }
 ```
 
+Example: [Driving route](../../packages/maplace/examples/route/guide.md).
+
 ## On-map controls
 
 What goes on the map (`createMapLibreMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like MapLibre's own controls, `.maplace-control`, in MapLibre's corners with their margins. It is light, as MapLibre's controls are, and `.maplace-control { color-scheme: dark }` gives a dark one.
 
-Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. Classes and how to turn the defaults off: [Styling](styling.md).
+Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. While the attribution is open (a compact one until the first drag), a fit to the locations keeps them above it, fitted again as its credit arrives, and clear of Maplace.js's panels too ([The first view](store.md#the-first-view)). Classes and how to turn the defaults off: [Styling](styling.md).
 
 ## Globe
 

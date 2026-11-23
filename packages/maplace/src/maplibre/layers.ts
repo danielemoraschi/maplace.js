@@ -1,7 +1,11 @@
 import type { FilterSpecification, LayerSpecification, Map as MapLibreMap } from "maplibre-gl";
+import { PIN_PIXEL_RATIO, pinImageData } from "../adapter-kit/pin-image";
+import type { PinLook } from "../adapter-kit/pin-looks";
 import { linePaint, outlinePaint, ROUTE_DEFAULTS, styled } from "./line-paint";
-import { addPinImage, PIN_IMAGE } from "./pin-image";
 import { whenStyleLoaded } from "./style-load";
+
+/** The default marker's image, by name on the map. */
+export const PIN_IMAGE = "maplace-pin";
 
 /** Where default markers are: a pin each, stacked in the order added. */
 export const PIN_SOURCE = "maplace-pins";
@@ -90,7 +94,7 @@ const LAYERS: readonly LayerSpecification[] = [
     filter: PINNED as never,
     layout: {
       "icon-image": PIN_IMAGE,
-      "icon-anchor": "bottom",
+      "icon-anchor": "center",
       // Every pin shown, however crowded, and every one under the pointer found.
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
@@ -102,12 +106,13 @@ const LAYERS: readonly LayerSpecification[] = [
 const EMPTY: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
 
 /**
- * Adds what maplace draws on: its pin image, sources and layers, on top of the page's style.
+ * Adds what maplace draws on: its pin image in `pinLook`, sources and layers, on top of the
+ * page's style.
  * Again after a restyle took them off: what is already there stays, as a page keeping maplace's
  * layers through its restyle (`transformStyle`) has them.
  */
-export function addLayers(map: MapLibreMap): void {
-  addPinImage(map);
+export function addLayers(map: MapLibreMap, pinLook: PinLook): void {
+  addPinImage(map, pinLook);
   for (const source of OWN_SOURCES) {
     if (map.getSource(source) === undefined) {
       map.addSource(source, { type: "geojson", data: EMPTY, promoteId: "key" });
@@ -131,4 +136,11 @@ function takeOffLayers(map: MapLibreMap): void {
   }
   for (const id of OWN_SOURCES) if (map.getSource(id) !== undefined) map.removeSource(id);
   if (map.hasImage(PIN_IMAGE)) map.removeImage(PIN_IMAGE);
+}
+
+/** Adds the default marker's pin, in `look`, to the map's images, once. */
+function addPinImage(map: MapLibreMap, look: PinLook): void {
+  if (map.hasImage(PIN_IMAGE)) return;
+  const data = pinImageData(map.getContainer().ownerDocument, look);
+  if (data !== undefined) map.addImage(PIN_IMAGE, data, { pixelRatio: PIN_PIXEL_RATIO });
 }

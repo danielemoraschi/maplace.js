@@ -2,6 +2,7 @@ import type { Browser, BrowserContext, ConsoleMessage, Locator, Page } from "pla
 import { MAPS_SCRIPT_ORIGIN } from "../../../packages/maplace/src/google/maps-script-url.ts";
 import { TEST_STYLE } from "../../../packages/maplace/src/maplibre/testing/test-style.ts";
 import { OPENFREEMAP_STYLES } from "../../../packages/maplace/src/testing/examples/openfreemap-styles.ts";
+import { EXAMPLE_PAGE_ENTRIES, type ExamplePageEntry } from "../src/examples/example-sections.ts";
 import { HELD_BY_EXAMPLE_ATTRIBUTE } from "../src/examples/page-scripts.ts";
 import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-parties.ts";
 
@@ -182,17 +183,38 @@ function recordErrors(page: Page, refused: ReadonlySet<string>): readonly string
  */
 export const addedByBootstrap = (url: string) => url.includes("__ib__");
 
-/** The page's first map: every section has one, so a locator for all would match them all. */
-export const firstMap = (page: Page) => page.locator("maplace-map").first();
+/**
+ * The page's first map shown, on the provider chosen: every section has one on each, so a locator
+ * for all would match them all.
+ */
+export const firstMap = (page: Page) =>
+  page.locator("maplace-map").filter({ visible: true }).first();
 
 /** The footer's switch that turns the maps on, or off, on every page. */
 export const footerToggle = (page: Page) => page.locator("[data-maps-toggle]");
 
 /**
- * Opens the home page of the site at `siteUrl`, or the examples' page at `route`, and scrolls to
- * its first map.
+ * Turns the maps on from the footer's toggle, as a visitor does, then back to where the page was:
+ * the footer ends the page, and a map loads only once in view.
  */
-export async function openHome(page: Page, siteUrl: string, route = "/"): Promise<void> {
+export async function consentFromFooter(page: Page): Promise<void> {
+  const at = await page.evaluate(() => scrollY);
+  await footerToggle(page).click();
+  await page.evaluate((top) => scrollTo(0, top), at);
+}
+
+/** The first example's page: the site's first page with maps, the home page and the hubs having none (W63). */
+export const FIRST_EXAMPLES_PAGE = (EXAMPLE_PAGE_ENTRIES[0] as ExamplePageEntry).path;
+
+/**
+ * Opens the example's page at `route` of the site at `siteUrl`, the first example's unless given,
+ * and scrolls to its first map.
+ */
+export async function openExamplesPage(
+  page: Page,
+  siteUrl: string,
+  route = FIRST_EXAMPLES_PAGE,
+): Promise<void> {
   await page.goto(new URL(route, siteUrl).href);
   await firstMap(page).scrollIntoViewIfNeeded();
 }
@@ -201,7 +223,7 @@ export async function openHome(page: Page, siteUrl: string, route = "/"): Promis
 export const loadMapsButtons = (scope: Page | Locator) =>
   scope.getByRole("button", { name: "Load maps", exact: true });
 
-/** The button a version of the Load on demand example opens its map with. */
+/** The button a version of the Load the map on click example opens its map with. */
 export const loadMapButton = (version: Locator) =>
   version.getByRole("button", { name: "Load map", exact: true });
 
@@ -233,9 +255,9 @@ export async function boxOf(locator: Locator): Promise<Box> {
   return box;
 }
 
-/** Consents to the maps from the first placeholder of the home page of the site at `siteUrl`. */
+/** Consents to the maps from the first placeholder of the first example's page of the site at `siteUrl`. */
 export async function grantConsent(page: Page, siteUrl: string): Promise<void> {
-  await openHome(page, siteUrl);
+  await openExamplesPage(page, siteUrl);
   await placeholder(page).click();
 }
 

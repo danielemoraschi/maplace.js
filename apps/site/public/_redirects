@@ -5,3 +5,12 @@
 /src/maplace.js https://cdn.jsdelivr.net/npm/maplace-js@0.2.10/src/maplace.js 301
 # The name older iOS asks for: the one touch icon answers both.
 /apple-touch-icon-precomposed.png /apple-touch-icon.png 301
+# The examples' pages before W63 (D31) that no page has the address of now: each to the page
+# holding its first examples, whose anchors then send the rest on (`section-anchor.ts`).
+/examples/shapes/ /examples/circles-polygons/ 301
+/examples/shapes/index.md /examples/circles-polygons/index.md 301
+/examples/data-routes/ /examples/live-data/ 301
+/examples/data-routes/index.md /examples/live-data/index.md 301
+# The address readers and crawlers guess for the docs (W68): the docs begin at Getting started.
+/docs /getting-started/ 301
+/docs/ /getting-started/ 301

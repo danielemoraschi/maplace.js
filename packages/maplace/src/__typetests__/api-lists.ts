@@ -10,7 +10,12 @@ export const API_LISTS = {
     "already-attached",
     "destroyed",
   ],
-  runtimeCodes: ["provider-load-failed", "provider-auth-failed", "route-failed"],
+  runtimeCodes: [
+    "provider-load-failed",
+    "provider-auth-failed",
+    "route-failed",
+    "locations-load-failed",
+  ],
   events: [
     "selectionChange",
     "hoverChange",

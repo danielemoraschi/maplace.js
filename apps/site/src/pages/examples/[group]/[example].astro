@@ -1,0 +1,18 @@
+---
+import ExamplePage from "../../../components/ExamplePage.astro";
+import { EXAMPLE_PAGE_ENTRIES } from "../../../examples/example-sections.ts";
+import { exampleLink } from "../../../site/examples-menu.ts";
+import { withNeighbours } from "../../../site/neighbour-links.ts";
+
+/** Every example's page, under its category's hub, with its neighbours across the categories. */
+export function getStaticPaths() {
+  return withNeighbours(EXAMPLE_PAGE_ENTRIES, exampleLink).map(({ item, previous, next }) => ({
+    params: { group: item.group.id, example: item.section.name },
+    props: { entry: item, previous, next },
+  }));
+}
+
+const { entry, previous, next } = Astro.props;
+---
+
+<ExamplePage entry={entry} previous={previous} next={next} />

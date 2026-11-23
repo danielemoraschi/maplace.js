@@ -1,4 +1,6 @@
+import { audience } from "./behaviours/audience";
 import { brand } from "./behaviours/brand";
+import { bubbles } from "./behaviours/bubbles";
 import { choropleth } from "./behaviours/choropleth";
 import { circles } from "./behaviours/circles";
 import { clickToAdd } from "./behaviours/click-to-add";
@@ -6,6 +8,7 @@ import { cssMarkers } from "./behaviours/css-markers";
 import { customList } from "./behaviours/custom-list";
 import { earthquakes } from "./behaviours/earthquakes";
 import { flights } from "./behaviours/flights";
+import { geojson } from "./behaviours/geojson";
 import { linkToPlace } from "./behaviours/link-to-place";
 import { liveData, liveDataWithoutRoute } from "./behaviours/live-data";
 import { loadOnDemand } from "./behaviours/load-on-demand";
@@ -20,6 +23,8 @@ import { popups } from "./behaviours/popups";
 import type { ExampleBehaviour } from "./behaviours/reading";
 import { route } from "./behaviours/route";
 import { search } from "./behaviours/search";
+import { shareByCountry } from "./behaviours/share-by-country";
+import { sideList } from "./behaviours/side-list";
 import { styledOnGoogle, styledOnMapLibre } from "./behaviours/styled";
 import { tabs } from "./behaviours/tabs";
 import { tags } from "./behaviours/tags";
@@ -38,6 +43,7 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   popups,
   "click-to-add": clickToAdd,
   circles,
+  "side-list": sideList,
   menu,
   tabs,
   search,
@@ -52,6 +58,10 @@ const BEHAVIOURS: Readonly<Record<string, ExampleBehaviour>> = {
   polygon,
   mixed,
   "live-data": liveData,
+  geojson,
+  audience,
+  "share-by-country": shareByCountry,
+  bubbles,
   choropleth,
   earthquakes,
   "load-on-demand": loadOnDemand,

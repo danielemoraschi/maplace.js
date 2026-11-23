@@ -12,12 +12,13 @@ describe("exampleFilePaths", () => {
   it("is each file of the extension, by its folder and name", () => {
     expect(exampleFilePaths("svg").map(({ params }) => params)).toEqual([
       { folder: "data/icons", name: "a" },
-      { folder: "data/icons", name: "b" },
-      { folder: "data/icons", name: "c" },
     ]);
     expect(exampleFilePaths("css").map(({ params }) => params)).toEqual([
+      { folder: "styles", name: "audience" },
+      { folder: "styles", name: "bubbles" },
       { folder: "styles", name: "choropleth" },
       { folder: "styles", name: "popups" },
+      { folder: "styles", name: "share-by-country" },
       { folder: "styles", name: "team" },
       { folder: "styles", name: "whats-on" },
     ]);

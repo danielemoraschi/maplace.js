@@ -1,5 +1,7 @@
 # Google Maps adapter: map IDs, routes and clustering
 
+Maplace.js draws its maps on Google Maps through its Google adapter: markers, shapes, popups, routes, marker clustering and heatmaps, on the Maps JavaScript API.
+
 `createGoogleAdapter(options)` from `@maplacejs/maplace/google` draws a store on Google Maps; `@maplacejs/maplace/google` is the only entry that knows `google.maps`. The element's Google provider (`@maplacejs/maplace/element/google`, and the CDN script) makes the same adapter from the element's attributes. Provider options belong to the adapter, never to the store. On MapLibre: [MapLibre adapter](maplibre.md).
 
 ## Options
@@ -133,6 +135,8 @@ The element's Google provider adds Maps JS itself, from `api-key`, and so does a
 
 Maplace.js draws advanced markers only (Google deprecated the legacy `Marker`), so every map has a map ID: yours, or Google's `DEMO_MAP_ID`, for development, when you give none, which warns once in the console ([key and map ID](setup.md#key-and-map-id)). A map is styled through its map ID's Cloud styling, plus `colorScheme`; `DEMO_MAP_ID` carries none.
 
+Example: [Map styles](../../packages/maplace/examples/styled/guide.md).
+
 ## Routes
 
 Routes use Google's Routes library, so your key needs the Routes API enabled. Without it no line draws and the `error` event says `route-failed`.
@@ -141,13 +145,19 @@ Routes use Google's Routes library, which needs Maps JS 3.63 or later; an older 
 
 The route is Google's own line, in Google's look with its `style` over it. While a `progress` is set, Maplace.js draws it instead, in two lines along the route's path in that look: the part ahead, and the part travelled faded, `travelledStyle` over it; a transit route is then one colour. A dash (`strokeDash`) is drawn by Google's line symbols, as on any polyline: Google can't dash a stroke, so the line's own stroke is see-through under them.
 
+Example: [Driving route](../../packages/maplace/examples/route/guide.md).
+
 ## Clustering
 
 The `cluster` option (the element's `cluster` attribute) groups markers with `@googlemaps/markerclusterer`, drawing Maplace.js's own cluster markers: a count, titled "Cluster of N locations", styled by `.maplace-cluster` ([cluster badges](styling.md#cluster-badges)). Circles, lines and polygons are never clustered, and the selected location is drawn on its own. Only the view and half a view around it are clustered and on the map, as on MapLibre, so a map zoomed in carries the markers it shows, not every one, and a short pan draws nothing again. A cluster still in view after a longer pan keeps its marker, and its focus. The clusterer loads with the map, so `whenReady` waits for it; a failed load is `provider-load-failed`. On the CDN, a map with `cluster` needs `maplace-element-cluster.iife.js`, which bundles it; on the plain script it fails to load, naming the cluster script.
 
+Example: [Marker clustering](../../packages/maplace/examples/big/guide.md).
+
 ## Heatmap
 
 A [heatmap](store.md#heatmaps) is drawn by Maplace.js, as Google retired its own heatmap layer in May 2026: the heat on a canvas in the map's overlay pane, over the map's tiles and, on a vector map, over its polygons too; each marker's dot, faded in near `maxZoom`, is an advanced marker, so a click or Enter on it selects its location. The heat is drawn again as the view changes. Its code loads with the map, only when the store asks for a heatmap; the CDN scripts include it.
+
+Example: [Heatmaps](../../packages/maplace/examples/earthquakes/guide.md).
 
 ## When Google refuses
 
@@ -155,15 +165,17 @@ Google refusing the key (an invalid key, a referrer the key doesn't allow, the A
 
 ## Clicks and edits
 
-A click on the map is reported 250 ms after it, unless a double-click comes first, so a double-click zoom neither fires `mapClick` nor clears the selection; a location clicked within those 250 ms drops the map's click. A marker reports its drag as it moves (`locationEdit`); Google says where a shape's handle went only when it is let go, so a shape's `locationEdit` comes once, with its `locationChange`. A window losing focus ends a marker's drag where it was, with its `locationChange`; a shape's handle drag is cut short instead, nothing reported and the shape left where the store has it, as Google gives no handle place until it is let go.
+A click on the map is reported 250 ms after it, unless a double-click comes first, so a double-click zoom neither fires `mapClick` nor clears the selection; a location clicked within those 250 ms drops the map's click. An `editable` shape shows its handles while it is hovered or selected, so markers on it stay clear at rest. A marker reports its drag as it moves (`locationEdit`); Google says where a shape's handle went only when it is let go, so a shape's `locationEdit` comes once, with its `locationChange`. A window losing focus ends a marker's drag where it was, with its `locationChange`; a shape's handle drag is cut short instead, nothing reported and the shape left where the store has it, as Google gives no handle place until it is let go.
 
 ## Popups
 
 A popup is Google's InfoWindow, headed by the location's title. One opened by a click or from the list pans the map to show it, once Google's own pan ends, clear of what the map's corners hold when there is room (never over Google's logo or terms; with no room, Google's own pan stands). A hover's popup doesn't pan.
 
+Example: [Place cards in popups](../../packages/maplace/examples/popups/guide.md).
+
 ## On-map controls
 
-What goes on the map (`createGoogleMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like Google's own controls, `.maplace-control`, in Google's corners: `top-left` under Google's Map/Satellite toggle, `bottom-left` above its logo, in the map's corner as on MapLibre and clear of the terms on a narrow map, and the right ones in Google's corner of that name.
+What goes on the map (`createGoogleMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like Google's own controls, `.maplace-control`, in Google's corners: `top-left` under Google's Map/Satellite toggle, `bottom-left` above its logo, in the map's corner as on MapLibre and clear of the terms on a narrow map, and the right ones in Google's corner of that name. A fit keeps the locations clear of these panels, fitted again once Google has drawn them ([The first view](store.md#the-first-view)).
 
 On a map Maplace.js creates, its lists scroll within the map, clear of Google's own controls: on the left of the toggle and of its logo and terms, on the right of the fullscreen button, the camera control and Pegman, which Google stacks on that side. On a map too short for them, a list on the right keeps at least 7em and may cover them. A list in a left corner has the most room. The room is set aside for each side, not measured: it stays when those controls are turned off in `mapOptions`, and two lists on one side can overlap; a rule of the page, such as `.maplace-control .maplace-list { max-height: 90% }`, takes it back. Classes and how to turn the defaults off: [Styling](styling.md).
 

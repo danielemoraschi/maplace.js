@@ -1,0 +1,114 @@
+<!doctype html>
+<!-- A page of your own script: the CDN script, what the map and its list mount on, and the map made with Maplace, which adds Maps JS with your key. -->
+<script src="https://cdn.jsdelivr.net/npm/@maplacejs/maplace@1/dist/maplace-element.iife.js"></script>
+<!-- This example's look lives in the examples' styles/audience.css, which every version links. -->
+<link rel="stylesheet" href="../styles/audience.css">
+<style>
+  #audience-script-map-and-list { display: flex; height: 24rem; }
+  #audience-script-map { flex: 1 1 auto; min-width: 0; }
+  #audience-script-list { display: contents; }
+  #audience-script-list .maplace-list-view { flex: 0 1 16rem; }
+  /* On a phone the list goes under the map, its half staying that size. */
+  @media (width < 40rem) {
+    #audience-script-map-and-list { flex-direction: column; height: 36rem; }
+    #audience-script-list .maplace-list-view { flex: 0 0 50%; max-height: 50%; }
+  }
+</style>
+<p><label for="audience-script-period">Period</label> <select id="audience-script-period">
+  <option value="1M">Last month</option>
+  <option value="3M">Last 3 months</option>
+  <option value="1Y" selected>Last year</option>
+</select></p>
+<div id="audience-script-map-and-list">
+  <div id="audience-script-map"></div>
+  <div id="audience-script-list"></div>
+</div>
+<p>All viewers <output id="audience-script-total"></output></p>
+<script type="module">
+  const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
+  const whole = new Intl.NumberFormat("en");
+  const span = (className, ...children) => {
+    const element = document.createElement("span");
+    element.className = className;
+    element.append(...children);
+    return element;
+  };
+  // A region on the map: its genre's letter, the genre, and its viewers.
+  const regionCard = ({ data }) => {
+    const card = span(
+      "audience-card",
+      span("audience-badge", data.genre.charAt(0)),
+      span("audience-card-text", span("audience-genre", data.genre), span("audience-viewers", compact.format(data.viewers))),
+    );
+    card.dataset.genre = data.genre;
+    return card;
+  };
+  // A region in the list: its name and viewers, its genre and share, and the share as a bar on a track.
+  const regionEntry = ({ location }) => {
+    const { genre, viewers, share } = location.data;
+    const bar = span("audience-bar");
+    bar.style.width = `${share}%`;
+    const track = span("audience-track", bar);
+    track.setAttribute("aria-hidden", "true");
+    const entry = span(
+      "audience-entry",
+      span("audience-entry-title", location.title),
+      span("audience-entry-viewers", compact.format(viewers)),
+      span("audience-entry-genre", genre),
+      span("audience-entry-share", `${share}%`),
+      track,
+    );
+    entry.dataset.genre = genre;
+    return entry;
+  };
+
+  const maplace = Maplace.createGoogleMap("#audience-script-map", {
+    apiKey: "YOUR_KEY",
+    // Every region in view, with room at the edges for the cards.
+    view: { kind: "fit-all", padding: 64 },
+    list: { container: "#audience-script-list", heading: "By region", render: regionEntry },
+  });
+
+  const audience = await fetch("/examples/data/audience.json").then((response) => response.json());
+  // Every region's viewers in a period, added up.
+  const totalFor = (period) => audience.regions.reduce((sum, { viewers }) => sum + viewers[period], 0);
+  // Each region with its figures for a period, an arc to it from the studio, and the studio.
+  const locationsFor = (period) => {
+    const { studio, regions } = audience;
+    const total = totalFor(period);
+    return [
+      ...regions.map(({ id, title, lat, lng, genre, viewers }) => ({
+        id,
+        title,
+        lat,
+        lng,
+        icon: regionCard,
+        data: { genre, viewers: viewers[period], share: Math.round((viewers[period] / total) * 100) },
+      })),
+      ...regions.map(({ id, title, lat, lng }) => ({
+        id: `${id}-arc`,
+        type: "polyline",
+        title: `${studio.title} → ${title}`,
+        path: [{ lat: studio.lat, lng: studio.lng }, { lat, lng }],
+        curve: 0.2,
+        listed: false,
+        style: { stroke: "#6d28d9", strokeWidth: 2, strokeOpacity: 0.7 },
+      })),
+      { id: "studio", ...studio, listed: false },
+    ];
+  };
+
+  const total = document.getElementById("audience-script-total");
+  const period = document.getElementById("audience-script-period");
+  const showPeriod = () => {
+    maplace.setLocations(locationsFor(period.value));
+    total.value = whole.format(totalFor(period.value));
+  };
+  showPeriod();
+  period.addEventListener("change", showPeriod);
+
+  // A click on an arc selects its region, as a click on the region's card does.
+  maplace.on("selectionChange", ({ id }) => {
+    if (id?.endsWith("-arc")) maplace.select(id.replace(/-arc$/, ""));
+  });
+</script>

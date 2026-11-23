@@ -113,6 +113,7 @@ export const STORE_NAMES = {
     selectedStyle: true,
     hoveredStyle: true,
     activeStyle: true,
+    markerIcon: true,
     cluster: true,
     heatmap: true,
     view: true,

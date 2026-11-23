@@ -7,6 +7,8 @@ const EXAMPLES = new URL("../../../../packages/maplace/examples/", import.meta.u
 describe("exampleData", () => {
   it("is each data file the example pages fetch, by the name in its path", () => {
     expect(exampleData().map(({ name }) => name)).toEqual([
+      "audience",
+      "cities",
       "countries",
       "earthquakes",
       "live-data-a",
@@ -16,6 +18,7 @@ describe("exampleData", () => {
       "live-data-e",
       "offices",
       "points-4k",
+      "regents-park",
       "route-milan-munich",
       "team",
       "volcanoes",
@@ -29,11 +32,11 @@ describe("servedExampleFiles", () => {
 
   it("is every file under the examples' data/ and styles/, by its path there", () => {
     expect(served.map(({ path }) => path)).toEqual([
+      "data/audience.json",
+      "data/cities.json",
       "data/countries.json",
       "data/earthquakes.json",
       "data/icons/a.svg",
-      "data/icons/b.svg",
-      "data/icons/c.svg",
       "data/live-data-a.json",
       "data/live-data-b.json",
       "data/live-data-c.json",
@@ -44,11 +47,15 @@ describe("servedExampleFiles", () => {
       "data/photos/duomo.webp",
       "data/photos/st-marks.webp",
       "data/points-4k.json",
+      "data/regents-park.json",
       "data/route-milan-munich.json",
       "data/team.json",
       "data/volcanoes.json",
+      "styles/audience.css",
+      "styles/bubbles.css",
       "styles/choropleth.css",
       "styles/popups.css",
+      "styles/share-by-country.css",
       "styles/team.css",
       "styles/whats-on.css",
     ]);

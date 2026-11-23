@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { PACKAGE_DIR, ROOT } from "../../../../scripts/build/package.ts";
 import { CHANGELOG_FILE } from "../../../../scripts/docs/changelog-lines.ts";
-import { EXAMPLE_GROUPS, groupPath } from "../examples/example-sections.ts";
+import { EXAMPLE_GROUPS, EXAMPLE_PAGE_ENTRIES, groupPath } from "../examples/example-sections.ts";
 import { AGENTS_PAGE, BUILDER_PAGE, CHANGELOG_PAGE, PRIVACY_PAGE } from "./footer-pages.ts";
 import { PRIVACY_SOURCES, pageSources } from "./page-sources.ts";
 import { docRoute, REPO_DOCS } from "./repo-docs.ts";
@@ -26,21 +26,51 @@ describe("pageSources", () => {
     for (const { id, file } of REPO_DOCS) expect(pageSources(docRoute(id)), id).toEqual([file]);
   });
 
-  it("dates a group's page from each of its examples", () => {
-    for (const group of EXAMPLE_GROUPS) {
-      const sources = pageSources(groupPath(group));
-      for (const { name } of group.sections) {
-        expect(sources, group.id).toContain(`${PACKAGE_DIR}/examples/${name}`);
-      }
+  it("dates an example's page from its example, its category's texts and the shared data and stylesheets", () => {
+    for (const { group, section, path } of EXAMPLE_PAGE_ENTRIES) {
+      const sources = pageSources(path);
+      expect(sources, section.name).toEqual(
+        expect.arrayContaining([
+          `${PACKAGE_DIR}/examples/${section.name}`,
+          `apps/site/src/examples/groups/${group.id}.ts`,
+          `${PACKAGE_DIR}/examples/data`,
+          `${PACKAGE_DIR}/examples/styles`,
+        ]),
+      );
     }
   });
 
-  it("dates a group's page from the examples' shared data and stylesheets", () => {
-    for (const group of EXAMPLE_GROUPS) {
-      const sources = pageSources(groupPath(group));
-      expect(sources, group.id).toContain(`${PACKAGE_DIR}/examples/data`);
-      expect(sources, group.id).toContain(`${PACKAGE_DIR}/examples/styles`);
-    }
+  it("dates a hub from its texts and the reference docs its tables are cut from, not its examples' code", () => {
+    const sources = pageSources("/examples/markers/");
+    expect(sources).toContain("apps/site/src/examples/groups/markers.ts");
+    expect(sources).toContain("docs/reference/locations.md");
+    expect(sources).toContain("docs/reference/store.md");
+    for (const group of EXAMPLE_GROUPS)
+      expect(pageSources(groupPath(group)).join(), group.id).not.toContain(`${PACKAGE_DIR}/`);
+  });
+
+  it("dates the examples page from its texts and every category's", () => {
+    expect(pageSources("/examples/")).toEqual([
+      "apps/site/src/examples/examples-page.ts",
+      "apps/site/src/examples/groups",
+      "apps/site/src/examples/example-groups.ts",
+      "apps/site/src/examples/example-sections.ts",
+    ]);
+  });
+
+  it("dates the home page from its words, the Simple example, the install and skills commands, and the index's texts", () => {
+    const sources = pageSources("/");
+    expect(sources).toEqual(
+      expect.arrayContaining([
+        "apps/site/src/examples/home-page.ts",
+        "apps/site/src/components/Hero.astro",
+        "packages/maplace/examples/simple",
+        "apps/site/src/site/install-loader.ts",
+        "apps/site/src/site/agent-links.ts",
+        "apps/site/src/examples/groups",
+      ]),
+    );
+    expect(sources).not.toContain("README.md");
   });
 
   it("dates the changelog's page from the changelog", () => {

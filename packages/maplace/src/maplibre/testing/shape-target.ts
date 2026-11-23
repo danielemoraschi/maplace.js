@@ -25,7 +25,7 @@ export function shapeTarget(
   const sourceOnMap = () => map.getSource(SHAPE_SOURCE) !== undefined;
   const feature = () => sent.featureOf(SHAPE_SOURCE, shapeKeys(placed.drawable().id).own);
   const shown = () => feature() !== undefined;
-  const point = () => ({ at: pointOn(placed.drawable().geometry) });
+  const point = () => pointOn(placed.drawable().geometry);
   return {
     isMarker: false,
     onMap: () => (stillPlaced() && sourceOnMap()) || shown(),

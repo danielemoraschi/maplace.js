@@ -1,4 +1,4 @@
-# Locations: markers, circles, polylines, polygons and multipolygons
+# Locations: markers, circles, polylines and polygons
 
 A location is one item of your data: a marker, a circle, a polyline, a polygon or a multipolygon. Locations are a union on `type`; one without a `type` is a marker. Ids are yours (Maplace.js never generates them) and must be unique; coordinates are `lat` and `lng`, in degrees. Optional fields accept an explicit `undefined`, so mapping your data across stays simple. Any other field throws `invalid-input`: your own fields go in `data`. The full rules are in [RFC §3 Shape](../rfc-1.0.md#shape).
 
@@ -44,7 +44,7 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `zoom` | `number` | The zoom selecting it shows it at, centred where its popup points; a `select()`'s own `zoom` wins | `zoom` |
 | `visible` | `boolean` | `false` keeps it in the data but not drawn, listed or selected. Default `true` | |
 | `listed` | `boolean` | `false` leaves it out of every list view; the map still draws it and it is selected there. Default `true` | `listed` |
-| `editable` | `boolean` | Lets the user drag a marker or reshape a shape; needs the `edit` capability; not with a polyline's `curve` or `geodesic`, nor on a multipolygon | `editable` |
+| `editable` | `boolean` | Lets the user drag a marker or reshape a shape, whose handles show while it is hovered or selected; needs the `edit` capability; not with a polyline's `curve` or `geodesic`, nor on a multipolygon | `editable` |
 | `data` | your type | Your own fields, handed back to content, icon and render functions | |
 
 ## Markers
@@ -54,6 +54,8 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `lat`, `lng` | `number` | Where it is: `lat` from -90 to 90, `lng` from -180 to 180 | `lat`, `lng` |
 | `icon` | [`Icon`](#icons) | A custom marker in place of the provider's own | `icon` (a URL), or a `<template data-icon>` child |
 | `weight` | `number` | Its weight on a [heatmap](store.md#heatmaps), against the other markers' (1.2); 1 when unset |
+
+Example: [Custom marker icons](../../packages/maplace/examples/markers/guide.md).
 
 ## Circles
 
@@ -66,6 +68,8 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 | `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
+
+Example: [Circles](../../packages/maplace/examples/circles/guide.md).
 
 ## Polylines
 
@@ -84,12 +88,14 @@ On a page with the element, a `<maplace-location>` sets the same fields from its
 
 A polyline or a polygon is one location with a `path`; in HTML, give it in the map's inline JSON script ([the element's data](element.md#data)).
 
+Example: [Editable polyline](../../packages/maplace/examples/polyline/guide.md).
+
 ### Curves and great circles
 
 Two ways to draw a line other than straight. Either is drawn the same on every map, crosses ±180 the short way, and keeps its popup and fit-all on the drawn line; neither is editable, as an edit would write the drawn points back as the path.
 
 - `geodesic: true` follows the earth: on a flat map, a long line bows towards the pole, as a flight does.
-- `curve` bows each segment for the look, with no geographic meaning: a lane, a link between two places. [Trade lanes](../../packages/maplace/examples/trade-lanes/) bows its lanes this way:
+- `curve` bows each segment for the look, with no geographic meaning: a lane, a link between two places. [Trade routes](../../packages/maplace/examples/trade-lanes/guide.md) bows its lanes this way:
 
 ```ts
 const lane = { id: "rotterdam-new-york", type: "polyline", curve: -0.2,
@@ -165,6 +171,8 @@ const maplace = createGoogleMap("#flights-vanilla-map", {
 flown.addEventListener("input", () => maplace.setLocations(flightsWith(flown.valueAsNumber)));
 ```
 
+Example: [Flight paths](../../packages/maplace/examples/flights/guide.md).
+
 ## Polygons
 
 | Field | Type | What | In HTML |
@@ -176,6 +184,8 @@ flown.addEventListener("input", () => maplace.setLocations(flightsWith(flown.val
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 | `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
+
+Example: [Editable polygon](../../packages/maplace/examples/polygon/guide.md).
 
 ## Multipolygons
 
@@ -189,6 +199,8 @@ Several polygons that are one location, such as a country with its islands: draw
 | `hoveredStyle` | `ShapeStyle` | Drawn over `style` while hovered and not selected | `hovered-style` (JSON) |
 | `active` | `boolean` | Marks it as the page's current one: drawn in the hovered look while neither hovered nor selected, not lifted above other shapes | `active` |
 | `activeStyle` | `ShapeStyle` | Drawn over `style` while active, neither hovered nor selected | `active-style` (JSON) |
+
+Example: [Choropleth of the world](../../packages/maplace/examples/choropleth/guide.md).
 
 ## Styles
 
@@ -227,13 +239,15 @@ A marker's `icon` is one of:
 - a DOM node;
 - a function of the location and its state (`{ selected, hovered }`) returning a node, run again only for markers whose state changed.
 
+A marker without an `icon` takes the store's [`markerIcon`](store.md#options), the same three kinds, for every marker of the map (a node copied for each), else maplace's default pin.
+
 For another size, give a sized `<img>`. For another anchor, move the node with CSS: `display: block; transform: translateY(50%)` puts its centre on the point. A popup still opens from the node's place before the move.
 
-A DOM marker carries `data-selected` and `data-hovered` while in that state, so `[data-selected]` in CSS styles it. An `icon` or `content` function that throws, or returns something other than a node, is an `invalid-input` error event naming the location and the field: the map stays ready and draws the default marker, or opens no popup ([RFC §3 Errors](../rfc-1.0.md#errors)).
+A DOM marker carries `data-selected` and `data-hovered` while in that state, so `[data-selected]` in CSS styles it. An `icon`, `markerIcon` or `content` function that throws, or returns something other than a node, is an `invalid-input` error event naming the location and the field: the map stays ready and draws the default marker, or opens no popup ([RFC §3 Errors](../rfc-1.0.md#errors)).
 
 ## From GeoJSON
 
-`locationsFromGeoJSON` turns a GeoJSON FeatureCollection into locations, ready for `setLocations`. It is in the core entry, so it needs no provider; on the CDN scripts it is `Maplace.locationsFromGeoJSON`.
+`locationsFromGeoJSON` turns a GeoJSON FeatureCollection into locations, ready for `setLocations`. It is in the core entry, so it needs no provider; on the CDN scripts it is `Maplace.locationsFromGeoJSON`. A `<maplace-map>` reads a file of one itself when its [`src`](element.md#data) names it (1.3).
 
 <!-- example: packages/maplace/examples/migrate/from-geojson.ts -->
 ```ts
@@ -263,6 +277,8 @@ A feature without an `id`, or with another geometry (`MultiPoint`, `MultiLineStr
 - typed properties: `locationsFromGeoJSON<Shop>(json)` types each location's `data`, as `createMaplace<Shop>()` does.
 
 On `<maplace-map>`, set the `locations` property to the result. With React, compute it once, at module scope or in `useMemo`: `<MaplaceProvider locations>` applies every new array it is given.
+
+Example: [GeoJSON layer](../../packages/maplace/examples/geojson/guide.md).
 
 ## Addresses to coordinates
 
