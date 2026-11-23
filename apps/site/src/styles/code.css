@@ -13,4 +13,12 @@
     --astro-code-token-punctuation: #b5b5ad;
     --astro-code-token-link: #9ecbff;
   }
+
+  /* A long line scrolls on a thin bar in the code's own colours: the browser's light default
+     reads as a stripe under the dark block where scrollbars always show (Chrome on Windows,
+     macOS set to show them). */
+  .astro-code {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-code-ink) 35%, transparent) transparent;
+  }
 }
