@@ -19,7 +19,7 @@ const { label, headings } = Astro.props;
 {/* The page's headings beside it, in a column pinned whole (`PinnedColumn.astro`). */}
 <nav aria-label={label}>
   <ColumnHeading>{label}</ColumnHeading>
-  <ol class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[2]">
+  <ol class="m-0 list-none border-l-3 border-ink pl-4 text-sm leading-[1.4] [&_li]:py-1">
     {
       headings.map(({ slug, text }) => (
         <li>
