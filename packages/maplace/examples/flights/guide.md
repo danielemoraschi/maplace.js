@@ -1,4 +1,4 @@
-# Flights
+# Flight paths
 
 London's flights out, each along its great circle, the shortest way on the earth: a polyline of two points with `geodesic: true`, listed beside the map, while the cities and the plane are on the map only. The flights still scheduled are dashed, and the one to New York is in the air: drawn active, travelled as far as the slider says, with its plane there.
 

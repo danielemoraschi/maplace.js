@@ -9,7 +9,9 @@ interface Props {
 
 const { links, current } = Astro.props;
 const marked = (href: string) => (href === current ? "page" : undefined);
-/** A list of sections, each a bold link over its pages, stands without a rule or indent. */
+/** A list of pages: a rule beside it, its links indented. */
+const RULED = "border-l-3 border-ink pl-4";
+/** In a sectioned list the rule moves from the list to each section's pages. */
 const sectioned = links.some(({ children }) => children !== undefined);
 /** The page shown's link, marked by its `aria-current`: set once on the list for all its links. */
 const CURRENT =
@@ -19,7 +21,7 @@ const CURRENT =
 <ul
   class:list={[
     "m-0 list-none text-sm leading-[2]",
-    sectioned ? "p-0" : "border-l-3 border-ink pl-4",
+    sectioned ? "p-0" : RULED,
     CURRENT,
   ]}
 >
@@ -30,7 +32,7 @@ const CURRENT =
           {label}
         </a>
         {children && (
-          <ul class="m-0 mb-2 list-none p-0 leading-[1.75]">
+          <ul class:list={["m-0 mb-2 list-none leading-[1.75]", RULED]}>
             {children.map((child) => (
               <li>
                 <a href={child.href} aria-current={marked(child.href)} class="no-underline">

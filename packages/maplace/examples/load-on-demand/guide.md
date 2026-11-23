@@ -1,4 +1,4 @@
-# Load on demand
+# Load the map on click
 
 The map stays idle in its place, its tiles and its provider's requests waiting, until the visitor presses a button: for a heavy map low on a page, or to ask first.
 

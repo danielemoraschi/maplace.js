@@ -155,7 +155,7 @@ describe("the site's consent to its maps", () => {
     await context.close();
   }, 30_000);
 
-  it("hides the load panel of Load on demand's map until it is released, after consent", async () => {
+  it("hides the load panel of Load the map on click's map until it is released, after consent", async () => {
     const { page, context } = await site.visitor();
     await openExamplesPage(page, site.url, sectionPage("load-on-demand"));
     await placeholder(page).click();

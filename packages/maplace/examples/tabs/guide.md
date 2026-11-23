@@ -1,4 +1,4 @@
-# Tabs
+# List with a details panel
 
 The list stays outside the map, as a list does unless it is given a corner, and becomes a row of tabs above it, with a panel under them that follows the selection.
 

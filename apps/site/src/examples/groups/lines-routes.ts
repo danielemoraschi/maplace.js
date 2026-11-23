@@ -23,7 +23,7 @@ export const linesRoutes: ExampleGroup = {
     },
     {
       name: "flights",
-      title: "Flights",
+      title: "Flight paths",
       summary:
         "Great circles from one city to eight, the scheduled ones dashed; slide the flight to New York along its way.",
       description:
@@ -31,10 +31,10 @@ export const linesRoutes: ExampleGroup = {
     },
     {
       name: "trade-lanes",
-      title: "Trade lanes",
+      title: "Trade routes",
       summary: "Air and sea lanes by colour; hover one, pick one for its volume.",
       description:
-        "Trade lanes on Google Maps and MapLibre: air and sea routes by colour, highlighted on hover, with a lane's volume when picked.",
+        "Trade routes on Google Maps and MapLibre: air and sea routes by colour, highlighted on hover, with a lane's volume when picked.",
     },
     {
       name: "route",

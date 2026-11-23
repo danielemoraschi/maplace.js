@@ -223,7 +223,7 @@ export async function openExamplesPage(
 export const loadMapsButtons = (scope: Page | Locator) =>
   scope.getByRole("button", { name: "Load maps", exact: true });
 
-/** The button a version of the Load on demand example opens its map with. */
+/** The button a version of the Load the map on click example opens its map with. */
 export const loadMapButton = (version: Locator) =>
   version.getByRole("button", { name: "Load map", exact: true });
 

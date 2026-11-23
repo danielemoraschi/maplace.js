@@ -1,4 +1,4 @@
-# Select menu
+# Dropdown of places
 
 A native `<select>` on the map, top right, its places under their regions and a first entry that shows them all. Without `list-position` (or with the list mounted on a node of yours, or `<LocationList>` outside the `<MaplaceMap>`), the same menu sits beside the map instead.
 

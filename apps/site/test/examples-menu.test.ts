@@ -40,7 +40,7 @@ describe("the examples pages' menu (W63)", () => {
     }
   }, 30_000);
 
-  it("stands without a heading over it, a rule beside it or an indent under its categories", async () => {
+  it("stands without a heading over it, each category's examples ruled and indented under it (W85)", async () => {
     const { page, context } = await opened(site, "/examples/search/tags/", DESKTOP);
     const look = await examplesNav(page).evaluate((nav) => {
       const list = nav.querySelector("ul") as HTMLElement;
@@ -52,7 +52,11 @@ describe("the examples pages' menu (W63)", () => {
         indents: [list, example].map((each) => getComputedStyle(each).paddingLeft),
       };
     });
-    expect(look).toEqual({ first: "UL", rule: "0px", indents: ["0px", "0px"] });
+    expect(look).toEqual({ first: "UL", rule: "0px", indents: ["0px", "16px"] });
+    const ruled = await examplesNav(page)
+      .locator("li > ul")
+      .evaluateAll((lists) => lists.map((list) => getComputedStyle(list).borderLeftWidth));
+    expect(new Set(ruled)).toEqual(new Set(["3px"]));
     await context.close();
   }, 30_000);
 

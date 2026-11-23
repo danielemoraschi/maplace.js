@@ -1,4 +1,4 @@
-# This area
+# Search this area
 
 The list on the map, top left, has a switch above it: every place, or only those in view as the map moves.
 

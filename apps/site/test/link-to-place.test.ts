@@ -25,7 +25,7 @@ async function opened(addressTail: string, { kind, label }: VersionChoice) {
   return { ...visit, version: mapLibreVersionIn(visit.section, kind) };
 }
 
-describe.concurrent("the Link to a place example on the built site", () => {
+describe.concurrent("the Shareable link to a place example on the built site", () => {
   it.for(VERSION_LABELS)(
     "opens its $label version on the place the address names, and back steps through picks",
     { timeout: SECTION_MS },

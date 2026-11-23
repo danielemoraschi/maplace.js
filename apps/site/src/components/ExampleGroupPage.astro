@@ -43,11 +43,8 @@ const { Content: References } = await render(reference);
         <ExampleList group={group} />
         <MapImagesCredit class="mt-8" />
       </section>
-      <section
-        id="reference"
-        aria-labelledby="reference-title"
-        class="doc-content mt-12 max-w-text border-t-3 border-ink pt-4"
-      >
+      {/* Its rule is its heading's, as a doc's are (`prose.css`). */}
+      <section id="reference" aria-labelledby="reference-title" class="doc-content mt-12">
         <h2 id="reference-title" class="mt-0">Reference</h2>
         <References />
       </section>

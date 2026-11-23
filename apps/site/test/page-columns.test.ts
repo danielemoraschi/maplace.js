@@ -12,15 +12,15 @@ const FIRST_DOC = docRoute(REPO_DOCS[0]?.id ?? "");
 /** A screen wider than the site's measure, where a capped column would stop short of it. */
 const WIDE = { width: 1440, height: 900 };
 
-/** How far short of the site's measure, the main column's content box, the article stops. */
-const shortOfMeasure = (page: Page) =>
-  page.evaluate(() => {
+/** How far short of the site's measure, the main column's content box, `part` stops. */
+const shortOfMeasure = (page: Page, part = "article") =>
+  page.evaluate((selector) => {
     const main = document.querySelector("main") as HTMLElement;
-    const article = document.querySelector("article") as HTMLElement;
+    const measured = document.querySelector(selector) as HTMLElement;
     const measureEnd =
       main.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(main).paddingRight);
-    return Math.round(measureEnd - article.getBoundingClientRect().right);
-  });
+    return Math.round(measureEnd - measured.getBoundingClientRect().right);
+  }, part);
 
 describe("a doc's page and the changelog, beside their column (W82)", () => {
   it.each([FIRST_DOC, CHANGELOG_PAGE.route])(
@@ -68,6 +68,36 @@ describe("a doc's page and the changelog, beside their column (W82)", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       PHONE.width,
     );
+    await context.close();
+  }, 30_000);
+});
+
+describe("an examples hub and an example's page (W85)", () => {
+  const HUB = "/examples/markers/";
+  const EXAMPLE = "/examples/clusters-heatmaps/big/";
+
+  it.each([
+    [HUB, "#reference"],
+    [EXAMPLE, ".example-guide"],
+  ])(
+    "run %s's %s to the site's width on a wide screen",
+    async (route, part) => {
+      const { page, context } = await opened(site, route, WIDE);
+      const short = await shortOfMeasure(page, part);
+      expect(short).toBe(0);
+      await context.close();
+    },
+    30_000,
+  );
+
+  it("draws one rule above the hub's Reference, not two", async () => {
+    const { page, context } = await opened(site, HUB, DESKTOP);
+    const rules = await page.locator("#reference").evaluate((section) => {
+      const heading = section.querySelector("h2") as HTMLElement;
+      return [section, heading].filter((box) => getComputedStyle(box).borderTopWidth !== "0px")
+        .length;
+    });
+    expect(rules).toBe(1);
     await context.close();
   }, 30_000);
 });

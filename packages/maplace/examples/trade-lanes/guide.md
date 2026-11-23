@@ -1,4 +1,4 @@
-# Trade lanes
+# Trade routes
 
 Sea and air lanes between ports and airports, each a bowed line in its mode's colour, listed under Sea and Air.
 

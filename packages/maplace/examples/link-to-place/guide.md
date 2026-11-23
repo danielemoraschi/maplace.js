@@ -1,4 +1,4 @@
-# Link to a place
+# Shareable link to a place
 
 The page's address names the place picked, and the line under the map gives its link: following it opens the map on that place, and the back button steps through what was picked. "View all", the list's first entry, takes it out again.
 

@@ -35,14 +35,14 @@ export const search: ExampleGroup = {
     },
     {
       name: "nearest",
-      title: "Nearest first",
+      title: "Sort by distance",
       summary: "A button on the map that sorts the list by distance from the visitor.",
       description:
         "Sort map locations by distance from the visitor on Google Maps and MapLibre: a button on the map orders the list nearest first.",
     },
     {
       name: "this-area",
-      title: "This area",
+      title: "Search this area",
       summary: "A switch above the list: every place, or only those in view as the map moves.",
       description:
         "Show only the places in view as the map moves, on Google Maps and MapLibre: a switch above the list between every place and this area.",

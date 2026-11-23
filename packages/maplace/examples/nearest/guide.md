@@ -1,4 +1,4 @@
-# Nearest first
+# Sort by distance
 
 The **My location** button on the map asks the browser for the visitor's position only when it is pressed, then sorts the list nearest first, each entry saying how far in a straight line, marks the place with a dot and moves the map there.
 

@@ -1,4 +1,4 @@
-# Your own list
+# Custom list
 
 Maplace.js's lists are views of its store, and yours can be any element you build: one that calls the store's `select` and `fitAll`, and redraws when the store changes. This one is a radio per place and one to fit them all; each version below shows a way to put it on the map, and it can sit beside the map as any list can.
 

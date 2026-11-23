@@ -74,7 +74,7 @@ describe("a page's Markdown", () => {
 
   it("has an example's guide and code", async () => {
     const markdown = await (await served("/examples/lists/custom-list/index.md")).text();
-    expect(markdown.startsWith("# Your own list on Google Maps and MapLibre\n")).toBe(true);
+    expect(markdown.startsWith("# Custom list on Google Maps and MapLibre\n")).toBe(true);
     expect(markdown).toContain("defineListView");
     expect(markdown).toContain("examples/custom-list/maplibre/");
   });

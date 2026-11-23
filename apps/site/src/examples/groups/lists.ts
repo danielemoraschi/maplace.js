@@ -21,24 +21,24 @@ export const lists: ExampleGroup = {
     },
     {
       name: "menu",
-      title: "Select menu",
+      title: "Dropdown of places",
       summary: "A native select on the map, grouped by region, with an entry for all.",
       description:
-        "A select menu of map locations on Google Maps and MapLibre: a native select on the map, grouped by region, with an entry to show them all.",
+        "A dropdown of map locations on Google Maps and MapLibre: a native select on the map, grouped by region, with an entry to show them all.",
     },
     {
       name: "custom-list",
-      title: "Your own list",
+      title: "Custom list",
       summary: "Define your own: here a radio per place, and one to fit all, on the map.",
       description:
-        "Your own list of map locations on Google Maps and MapLibre in JavaScript: here a radio button per place, and one to fit them all.",
+        "A custom list of map locations on Google Maps and MapLibre in JavaScript: here a radio button per place, and one to fit them all.",
     },
     {
       name: "tabs",
-      title: "Tabs",
+      title: "List with a details panel",
       summary: "The list outside the map; a details panel follows the selection.",
       description:
-        "Map locations as tabs outside the map on Google Maps and MapLibre, with a details panel that follows the place selected.",
+        "A list of map locations outside the map on Google Maps and MapLibre, with a details panel that follows the place selected.",
       drawsOwnList: true,
     },
   ],
