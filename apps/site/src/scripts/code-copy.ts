@@ -4,6 +4,8 @@
  */
 const CODE_BLOCKS = ".folded-host, pre.astro-code";
 const FOLDED_HOST = ".folded-host";
+/** The frame a code block goes into, from `CodeCopyTemplate.astro`. */
+export const CODE_FRAME = "[data-code-frame]";
 
 /**
  * Every code block under `root` gets a copy of `template`'s frame (`CodeCopyTemplate.astro`): the

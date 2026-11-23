@@ -1,5 +1,6 @@
 import type { Page } from "playwright";
 import { describe, expect, it } from "vitest";
+import { findExamplePage } from "../src/examples/example-sections.ts";
 import { exampleFile } from "../src/examples/example-sources.ts";
 import { docRoute } from "../src/site/repo-docs.ts";
 import { chooseProvider, chooseVersion, visitSection } from "./home-sections.ts";
@@ -72,6 +73,40 @@ describe("a code block's copy button (W66)", () => {
         .poll(() => page.evaluate(() => getSelection()?.toString() ?? ""))
         .toContain("importLibrary");
       expect(await page.evaluate(() => getSelection()?.toString())).not.toContain(LOADER_SUMMARY);
+      await context.close();
+    }, 30_000);
+  });
+
+  describe("a long block's fold", () => {
+    it("is drawn folded before the site's script runs, so it never shows whole first", async () => {
+      const { page, context } = await site.visitor({ viewport: DESKTOP });
+      await page.route("**/*", (route) =>
+        route.request().resourceType() === "script" ? route.abort() : route.continue(),
+      );
+      await page.goto(new URL(findExamplePage("markers")?.path ?? "", site.url).href);
+      const block = page.locator("main [data-foldable]").filter({ visible: true }).first();
+      expect(Math.round((await boxOf(block)).height)).toBe(250);
+      await context.close();
+    }, 30_000);
+
+    it("shows 15.625rem of it, then all of it and back on its button, the copy taking every line", async () => {
+      const { page, context } = await opened(site, findExamplePage("markers")?.path ?? "", DESKTOP);
+      await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+      const frame = page.locator("main [data-code-frame][data-fold]").filter({ visible: true });
+      const block = frame.first().locator("> :first-child");
+      const fold = frame.first().locator("[data-code-fold] button");
+      const height = async () => Math.round((await boxOf(block)).height);
+      expect(await height()).toBe(250);
+      expect(await fold.getAttribute("aria-expanded")).toBe("false");
+      const lines = Number((await fold.textContent())?.match(/\d+/)?.[0]);
+      await fold.click();
+      expect(await fold.textContent()).toBe("Show less");
+      expect(await height()).toBeGreaterThan(375);
+      await frame.first().getByRole("button", { name: "Copy code" }).click();
+      const copied = await page.evaluate(() => navigator.clipboard.readText());
+      expect(copied.trimEnd().split("\n")).toHaveLength(lines);
+      await fold.click();
+      expect(await height()).toBe(250);
       await context.close();
     }, 30_000);
   });

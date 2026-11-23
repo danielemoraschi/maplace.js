@@ -4,6 +4,7 @@ import { defaultClientConditions } from "vite";
 import { exampleFailureNotes } from "./src/site/example-failure-notes.ts";
 import { exampleMapId } from "./src/site/example-map-id.ts";
 import { exampleModulesRun } from "./src/site/example-modules-run.ts";
+import { foldableCode } from "./src/site/foldable-code.ts";
 import { mapLibreStylesheetEmptied } from "./src/site/maplibre-stylesheet-plugin.ts";
 import { mapsSettingsCheck } from "./src/site/maps-settings-check.ts";
 import { PREBUNDLED_DEPS } from "./src/site/prebundled-deps.ts";
@@ -24,7 +25,7 @@ export default defineConfig({
       SITE_MAPS_MAP_ID: envField.string({ context: "client", access: "public", optional: true }),
     },
   },
-  markdown: { shikiConfig: { theme: "css-variables" } },
+  markdown: { shikiConfig: { theme: "css-variables", transformers: [foldableCode] } },
   // Off: its Audit app re-checks the whole page after every DOM change, which the maps make
   // all the time; in Safari that took 40% of a dev page's CPU.
   devToolbar: { enabled: false },

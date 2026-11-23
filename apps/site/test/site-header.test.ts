@@ -166,8 +166,9 @@ describe("the site's header", () => {
 
   it("stays at the top as the page scrolls, drawn above what scrolls under it", async () => {
     const { page, context } = await opened(site, "/examples/styling/whats-on/", DESKTOP);
-    await page.mouse.wheel(0, 2500);
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(2000);
+    // Far enough for the page to run under it, long code blocks folded (W79).
+    await page.mouse.wheel(0, 1500);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(1000);
     expect((await header(page).boundingBox())?.y).toBe(0);
     expect(await drawnOnTop(header(page))).toBe(true);
     await context.close();

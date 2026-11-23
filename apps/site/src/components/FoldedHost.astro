@@ -1,6 +1,7 @@
 ---
 import type { HostParts } from "../examples/bootstrap-fold.ts";
 import type { ExampleFile } from "../examples/example-sources.ts";
+import { foldMarks } from "../site/foldable-code.ts";
 import SourceCode from "./SourceCode.astro";
 
 interface Props {
@@ -13,7 +14,7 @@ interface Props {
 const { code, parts, lang } = Astro.props;
 ---
 
-<div class="folded-host bg-code-paper py-4 text-code-ink" data-copy-text={code}>
+<div class="folded-host bg-code-paper py-4 text-code-ink" data-copy-text={code} {...foldMarks(code)}>
   <SourceCode code={parts.before} lang={lang} />
   <details>
     <summary class="cursor-pointer px-5 py-1 font-code text-sm select-none">
