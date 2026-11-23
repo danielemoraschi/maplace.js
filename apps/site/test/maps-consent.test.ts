@@ -1,14 +1,19 @@
 import type { BrowserContext, Page } from "playwright";
 import { describe, expect, it } from "vitest";
 import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
+import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { contrastRatio } from "./contrast.ts";
+import { mapLibreDrawn } from "./drawn-on-maplibre.ts";
+import { reportedPolicy } from "./header-rules.ts";
 import { chooseProvider, chooseVersion, sectionPage } from "./home-sections.ts";
+import { ON_MAPLIBRE } from "./maplibre-session.ts";
 import {
   ASKED,
+  EXAMPLE_MAPS,
   SETTLE_MS,
+  scrollPastShownMaps,
   settled,
   siteBuiltBeforeTests,
-  visitEach,
   visitingPages,
 } from "./site-session.ts";
 import {
@@ -16,6 +21,7 @@ import {
   FIRST_EXAMPLES_PAGE,
   firstMap,
   footerToggle,
+  grantConsent,
   loadMapButton,
   openExamplesPage,
   placeholder,
@@ -73,17 +79,8 @@ describe("the site's consent to its maps", () => {
     "asks no map provider anything before consent on any example's page",
     async () => {
       const { page, context, offsite, mapProviders } = await site.visitor();
-      const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
       const routes = EXAMPLE_PAGE_ENTRIES.map(({ path }) => path);
-      await visitEach(
-        page,
-        site.url,
-        routes,
-        async () => {
-          for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
-        },
-        "load",
-      );
+      await scrollPastShownMaps(page, site.url, routes, page.locator(EXAMPLE_MAPS));
       await page.waitForTimeout(SETTLE_MS);
       expect(mapProviders()).toEqual([]);
       expect(offsite()).toEqual([]);
@@ -170,4 +167,27 @@ describe("the site's consent to its maps", () => {
     expect(await placeholder(page).isVisible()).toBe(false);
     await context.close();
   }, 30_000);
+});
+
+describe("every page with the maps on, its reported policy enforced (W81)", () => {
+  it(
+    "breaks nothing: no load blocked, no error, MapLibre drawing",
+    async () => {
+      const { page, context, errors } = await site.visitor({ openFreeMap: "local" });
+      const policy = reportedPolicy();
+      // On every response from the site, as `_headers`' `/*` rule: a worker's policy is its own.
+      await context.route(`${site.url}**`, async (route) => {
+        const response = await route.fetch();
+        const headers = { ...response.headers(), "content-security-policy": policy };
+        await route.fulfill({ response, headers });
+      });
+      await grantConsent(page, site.url);
+      await expect.poll(() => mapLibreDrawn(firstMap(page)), ON_MAPLIBRE).toBe(true);
+      await scrollPastShownMaps(page, site.url, SITE_ROUTES, page.locator("maplace-map"));
+      // Chromium logs every load the policy blocks as an error, naming the directive.
+      expect(errors()).toEqual([]);
+      await context.close();
+    },
+    visitingPages(SITE_ROUTES.length + 1),
+  );
 });

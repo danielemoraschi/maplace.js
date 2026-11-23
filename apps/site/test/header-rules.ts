@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 /** A `Link` header of a `_headers` rule: the paths the rule matches, the header's rel and target. */
 export interface LinkRule {
   readonly pattern: string;
@@ -20,20 +22,57 @@ export function rulePatterns(text: string): string[] {
     .filter((line) => line.trim() !== "" && !line.startsWith("#") && !line.startsWith(" "));
 }
 
-/** Every `Link` header of the `_headers` file `text`, under the rule that sets it. */
-export function linkRules(text: string): LinkRule[] {
-  const links: LinkRule[] = [];
+/** A header line of a `_headers` file, under the rule's path it follows. */
+interface HeaderLine {
+  readonly pattern: string;
+  readonly line: string;
+}
+
+/** Every header line of the `_headers` file `text`, trimmed, comments and blank lines left out. */
+function headerLines(text: string): HeaderLine[] {
+  const lines: HeaderLine[] = [];
   let pattern = "";
   for (const line of text.split("\n")) {
     if (line.startsWith("#") || line.trim() === "") continue;
-    if (!line.startsWith(" ")) pattern = line.trim();
-    const link = LINK.exec(line.trim());
-    if (link !== null) {
-      const [, target = "", rel = ""] = link;
-      links.push({ pattern, rel, target, match: matcher(pattern) });
-    }
+    if (line.startsWith(" ")) lines.push({ pattern, line: line.trim() });
+    else pattern = line.trim();
   }
-  return links;
+  return lines;
+}
+
+/**
+ * The headers the rules written with `pattern` in the `_headers` file `text` set, by name, as
+ * the preview's appended `/*` rule (`ci.yml`) joins the site's: a header set twice keeps the last.
+ */
+export function ruleHeaders(text: string, pattern: string): Record<string, string> {
+  const lines = headerLines(text).filter((header) => header.pattern === pattern);
+  return Object.fromEntries(
+    lines.map(({ line }) => {
+      const colon = line.indexOf(":");
+      return [line.slice(0, colon), line.slice(colon + 1).trim()];
+    }),
+  );
+}
+
+/** What the site's `_headers` sets on every response (W81), as the build copies it. */
+export const everyResponseHeaders = () =>
+  ruleHeaders(readFileSync(new URL("../public/_headers", import.meta.url), "utf8"), "/*");
+
+/** The policy every response carries to report, not block, what it disallows, for now. */
+export function reportedPolicy(): string {
+  const policy = everyResponseHeaders()["Content-Security-Policy-Report-Only"];
+  if (policy === undefined) throw new Error("_headers' /* rule reports no policy");
+  return policy;
+}
+
+/** Every `Link` header of the `_headers` file `text`, under the rule that sets it. */
+export function linkRules(text: string): LinkRule[] {
+  return headerLines(text).flatMap(({ pattern, line }) => {
+    const link = LINK.exec(line);
+    if (link === null) return [];
+    const [, target = "", rel = ""] = link;
+    return [{ pattern, rel, target, match: matcher(pattern) }];
+  });
 }
 
 /**

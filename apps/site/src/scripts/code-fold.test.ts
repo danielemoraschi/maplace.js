@@ -50,7 +50,7 @@ describe("startCodeFolds", () => {
 
   it("folds on a page that isn't a secure context, as over a LAN address, where crypto.randomUUID is missing", () => {
     vi.stubGlobal("crypto", {});
-    const { frame, block, button } = frameOf(29);
+    const { block, button } = frameOf(29);
     startCodeFolds(document);
     expect([button.textContent, button.getAttribute("aria-controls")]).toEqual([
       "Show all 29 lines",

@@ -17,8 +17,10 @@ import { GOOGLE_MAPS, goesToMapProvider, thirdPartyOf } from "../src/site/third-
 import { chooseProvider } from "./home-sections.ts";
 import {
   ASKED,
+  EXAMPLE_MAPS,
   SETTLE_MS,
   SITE_MAP_ID,
+  scrollPastShownMaps,
   siteBuiltBeforeTests,
   visitEach,
   visitingPages,
@@ -235,18 +237,9 @@ describe("the examples' pages, shown (W38)", () => {
       const visit = await site.visitor();
       const { page, offsite, mapProviders, mapsJsRequests, context } = visit;
       await grantConsent(page, site.url);
-      const shownMaps = page.locator("section.example maplace-map").filter({ visible: true });
       /** Every example's page in turn, scrolled past its shown maps. */
       const scrollPastEveryExamplesMaps = async () => {
-        await visitEach(
-          page,
-          site.url,
-          EXAMPLE_PAGES,
-          async () => {
-            for (const map of await shownMaps.all()) await map.scrollIntoViewIfNeeded();
-          },
-          "load",
-        );
+        await scrollPastShownMaps(page, site.url, EXAMPLE_PAGES, page.locator(EXAMPLE_MAPS));
         await pause(SETTLE_MS);
       };
       // Every map on MapLibre, the pages' first provider: none of it billed by Google.

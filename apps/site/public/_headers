@@ -1,3 +1,12 @@
+# Every response (W81). The referrer policy is the browsers' default, which the maps' key allows.
+# The full policy only reports, for now: it allows the inline scripts and styles the build writes.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: frame-ancestors 'self'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.ggpht.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.googleusercontent.com https://tiles.openfreemap.org; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' data: blob: https://*.googleapis.com https://*.google.com https://*.gstatic.com https://tiles.openfreemap.org; worker-src 'self' blob:; frame-src https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self'
+
 # Cloudflare Workers static assets: what Astro writes under /_astro/ is named by its content.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
