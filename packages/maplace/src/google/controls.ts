@@ -29,11 +29,17 @@ interface MountedControl {
  * given an element of maplace's own holding the page's node, never the node: the control's panel
  * (`control-styles.ts`), in the map's colour scheme. Taking every control off as the map closes
  * matters for the page's own map, which stays on the page. Google keeps a control's keys, wheel
- * and drags from the map by itself (measured on 3.66), so nothing here does.
+ * and drags from the map by itself (measured on 3.66), so nothing here does. `onPanelsSettled`
+ * hears when a panel resizes, so a fit keeps clear of it.
  */
-export function createControls(colorScheme: ColorScheme = "light"): Controls {
+export function createControls(
+  onPanelsSettled: () => void,
+  colorScheme: ColorScheme = "light",
+): Controls {
   const byNode = new Map<HTMLElement, MountedControl>();
   let openMap: MountedMap | undefined;
+  /** What tells the camera the panels changed size (N32); only while the map is open. */
+  let resizes: ResizeObserver | undefined;
   let destroyed = false;
 
   function corner(
@@ -51,9 +57,11 @@ export function createControls(colorScheme: ColorScheme = "light"): Controls {
     adoptStyles(mapDocument, CONTROL_STYLES);
     adoptCarriedStyles(mapDocument);
     held.push(control.panel);
+    resizes?.observe(control.panel);
   }
 
   function takeOff(control: MountedControl, from = openMap): void {
+    resizes?.unobserve(control.panel);
     const held = corner(control, from);
     if (held === undefined) return;
     const index = held.getArray().indexOf(control.panel);
@@ -72,8 +80,11 @@ export function createControls(colorScheme: ColorScheme = "light"): Controls {
     part: {
       open(mounted) {
         openMap = mounted;
+        resizes = new ResizeObserver(() => onPanelsSettled());
         for (const control of byNode.values()) place(control);
         mounted.onDestroy(() => {
+          resizes?.disconnect();
+          resizes = undefined;
           openMap = undefined;
           for (const control of byNode.values()) takeOff(control, mounted);
         });

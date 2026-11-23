@@ -338,7 +338,7 @@ Example: [Driving route](../../packages/maplace/examples/route/guide.md).
 
 What goes on the map (`createMapLibreMap`'s `list`, the element's `list-position`, `<LocationList position>`, `<MapControl>`) sits in a panel like MapLibre's own controls, `.maplace-control`, in MapLibre's corners with their margins. It is light, as MapLibre's controls are, and `.maplace-control { color-scheme: dark }` gives a dark one.
 
-Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. While the attribution is open (a compact one until the first drag), a fit to the locations keeps them above it, fitted again as its credit arrives. Classes and how to turn the defaults off: [Styling](styling.md).
+Maplace.js's lists scroll within the map, one it creates or the page's own, clear of what the corners below them hold, MapLibre's attribution included; on a narrow map a bottom-left corner holding a Maplace.js panel sits above the attribution. While the attribution is open (a compact one until the first drag), a fit to the locations keeps them above it, fitted again as its credit arrives, and clear of Maplace.js's panels too ([The first view](store.md#the-first-view)). Classes and how to turn the defaults off: [Styling](styling.md).
 
 ## Globe
 

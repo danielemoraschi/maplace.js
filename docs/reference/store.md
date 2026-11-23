@@ -56,7 +56,7 @@ Example: [Place cards in popups](../../packages/maplace/examples/popups/guide.md
 
 ## The first view
 
-The first view is the `view` option when given, else the selected location (at its own `zoom`; a marker without one is centred at 15, a shape fitted), else all locations fitted, with 40 px of padding, as `fitAll` and `fitBounds` use by default. A fit never zooms in past 15: a box that would need more (one location, or locations metres apart) is centred at 15.
+The first view is the `view` option when given, else the selected location (at its own `zoom`; a marker without one is centred at 15, a shape fitted), else all locations fitted, with 40 px of padding, as `fitAll` and `fitBounds` use by default. A fit never zooms in past 15: a box that would need more (one location, or locations metres apart) is centred at 15. A fit also keeps clear of Maplace.js's panels on the map (a list or select in a corner), each padding the edge where it costs the map less, unless they would leave less than a quarter of the map; a fit nobody has moved fits again when one grows into what it kept clear.
 
 `view` is one of four shapes, every field required:
 

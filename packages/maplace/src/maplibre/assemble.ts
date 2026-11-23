@@ -49,7 +49,7 @@ export function assembleMapLibreAdapter(
   const popup = createPopup(state);
   const originDot = createMapLibreOriginDot(state);
   const camera = createCamera(state, drawing);
-  const controls = createControls();
+  const controls = createControls(camera.panelsSettled);
   const pointedAt = (event: MapMouseEvent) => locationAt(state, event.point);
   const routing =
     options.computeRoute && createMapLibreRouting(state, drawing, options.computeRoute);
@@ -63,10 +63,12 @@ export function assembleMapLibreAdapter(
     mapClicks(pointedAt),
     layerHover(pointedAt, drawing.hover),
     viewportReports,
+    // The controls before the camera: panels mounted before the map opens are placed when the first
+    // view is fitted, clear of them.
+    controls.part,
     camera.part,
     ...(routing ? [routing.part] : []),
     popup.part,
-    controls.part,
     originDot.part,
   ];
   const failures = options.map ? PAGE_MAP_FAILURES : createMapFailureNotice();

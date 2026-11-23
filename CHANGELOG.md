@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-23 Fixed a map fitted to its locations leaving some under Maplace.js's own panels on the map (a list or select in a corner), on Google and MapLibre: a fit keeps clear of them, each padding the edge where it costs the map less, and a fit nobody has moved fits again when one grows into what it kept clear.
 - 2026-11-23 Added `markerIcon` on `<maplace-map>`, the store's `markerIcon` set from a page's script (a function building each marker's icon from its location, as for locations from `src`), read when the store is made, as `sanitize` is; it wins over the map's `<template data-icon>`.
 - 2026-11-23 Fixed reading `route` on a `<maplace-map>` making its store: a framework that reads a property before binding `undefined` (Vue) no longer has a later `sanitize` or `markerIcon` refused; `route` reads `undefined` until the store exists.
 - 2026-11-23 Fixed a `<maplace-location>` read before it was connected missing a later template or `data-*` change.
