@@ -6,6 +6,7 @@ import { dispatchElementEvent } from "./event-forwarding";
  * - `setup`: no provider to start with, or one that failed to (tried again on an attribute
  *   change, or when a provider is registered);
  * - `data`: the locations;
+ * - `src`: the attribute, blank or beside locations written inside the element;
  * - `selection`: a `selected-id` the locations don't have, until they do or something is selected;
  * - `route`: the `route` property;
  * - `list`: the list's attributes (`LIST_ATTRIBUTES`), or a list view not defined yet (tried
@@ -17,6 +18,7 @@ import { dispatchElementEvent } from "./event-forwarding";
 export type MisuseCause =
   | "setup"
   | "data"
+  | "src"
   | "selection"
   | "route"
   | "list"

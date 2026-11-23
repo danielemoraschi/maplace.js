@@ -10,6 +10,7 @@ import { forwardEvents } from "./event-forwarding";
 import { readLocationSource, watchLocationSource } from "./location-sources";
 import { iconTemplateOf } from "./location-templates";
 import { PendingSelection } from "./pending-selection";
+import { SrcSource } from "./src-source";
 import type { StandingMisuse } from "./standing-misuse";
 import {
   checkStoreAttributes,
@@ -22,8 +23,9 @@ export type Sanitize = NonNullable<MaplaceOptions["sanitize"]>;
 
 /**
  * The element's store and what feeds it: the `locations` and `route` properties, or the
- * locations written inside the element, and the selection the page's address names. Values given
- * before the store exists wait for it.
+ * locations written inside the element, or the file its `src` names (fetched once the map opens
+ * past `hold`), and the selection the page's address names. Values given before the store exists
+ * wait for it, as a route given while a file loads waits for its locations.
  */
 export class StoreFeed {
   readonly #host: HTMLElement;
@@ -34,16 +36,19 @@ export class StoreFeed {
   #attributes: StoreAttributes = {};
   /** Given before the store exists, or what the store was created with. */
   #sanitize: Sanitize | undefined;
-  #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
+  /** What waits for the store, and a route waiting for the file's locations too. */
+  readonly #pending: { locations?: readonly Location[]; route?: Route | undefined } = {};
   #locationsGiven = false;
   readonly #pendingSelection: PendingSelection;
   #stopWatching: (() => void) | undefined;
+  readonly #src: SrcSource;
 
   constructor(host: HTMLElement, misuse: StandingMisuse, onStoreChange: () => void) {
     this.#host = host;
     this.#misuse = misuse;
     this.#onStoreChange = onStoreChange;
     this.#pendingSelection = new PendingSelection(() => this.#store, misuse);
+    this.#src = new SrcSource(host, misuse, (read) => this.#apply(read, this.#misuse.attempt));
   }
 
   /** The store, if created yet. */
@@ -74,13 +79,19 @@ export class StoreFeed {
   giveLocations(locations: readonly Location[]): void {
     this.#locationsGiven = true;
     this.stopWatching();
+    this.#src.stop();
     if (this.#store === undefined) this.#pending.locations = locations;
     else this.#apply(() => locations, this.#misuse.attempt);
   }
 
+  /**
+   * A route's stops are ids: one given before the file `src` names has loaded waits for its
+   * locations, `src` read as it stands (a change in the same task not yet heard).
+   */
   giveRoute(route: Route | undefined): void {
     const store = this.#store;
-    if (store === undefined) this.#pending.route = route;
+    this.#readSrc();
+    if (store === undefined || this.#src.awaiting) this.#pending.route = route;
     else this.#misuse.attempt("route", () => store.setRoute(route));
   }
 
@@ -106,6 +117,16 @@ export class StoreFeed {
   stopWatching(): void {
     this.#stopWatching?.();
     this.#stopWatching = undefined;
+  }
+
+  /** The map opened past `hold`: the file `src` names may load from now on. */
+  allowFileLoads(): void {
+    this.#src.allowLoads();
+  }
+
+  /** The map closed: no file loads until it opens again. */
+  holdFileLoads(): void {
+    this.#src.holdLoads();
   }
 
   /**
@@ -154,13 +175,13 @@ export class StoreFeed {
     this.#pendingSelection.fromAttribute(this.#host.getAttribute("selected-id") ?? undefined, {
       pan: this.#attributes.view === undefined,
     });
-    const { locations, route } = this.#pending;
-    this.#pending = {};
+    const { locations } = this.#pending;
+    delete this.#pending.locations;
     // Given locations are checked as given, whatever they are.
     if (this.#locationsGiven)
       this.#apply(() => locations as readonly Location[], this.#misuse.attempt);
     else this.#readSource();
-    if (route !== undefined) this.giveRoute(route);
+    this.#giveWaitingRoute();
   }
 
   #listenTo(store: Maplace): void {
@@ -170,12 +191,35 @@ export class StoreFeed {
   }
 
   #readSource(): void {
-    // Read again on their own: only a new misuse of them is reported.
-    if (!this.#locationsGiven)
+    if (this.#locationsGiven) return;
+    if (this.#host.hasAttribute("src")) {
+      this.#readSrc();
+    } else {
+      this.#src.stop();
+      // Read again on their own: only a new misuse of them is reported.
       this.#apply(() => readLocationSource(this.#host), this.#misuse.retry);
+    }
   }
 
-  /** Gives the store the locations `read` returns, run as `run` says, then the selection waiting. */
+  /** Reads `src` once the store exists, unless the locations were given. */
+  #readSrc(): void {
+    if (this.#store !== undefined && !this.#locationsGiven && this.#host.hasAttribute("src")) {
+      this.#src.read();
+    }
+  }
+
+  /** The route given before the store or the file, if any: `undefined` given clears it. */
+  #giveWaitingRoute(): void {
+    if (!("route" in this.#pending)) return;
+    const { route } = this.#pending;
+    delete this.#pending.route;
+    this.giveRoute(route);
+  }
+
+  /**
+   * Gives the store the locations `read` returns, run as `run` says, then the selection and any
+   * route waiting for them.
+   */
   #apply(read: () => readonly Location[], run: StandingMisuse["attempt"]): void {
     const store = this.#store;
     if (store === undefined) return;
@@ -184,5 +228,6 @@ export class StoreFeed {
       return true;
     });
     if (applied) this.#pendingSelection.trySelect();
+    this.#giveWaitingRoute();
   }
 }

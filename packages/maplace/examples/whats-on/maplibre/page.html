@@ -149,7 +149,7 @@
     maplace.on('selectionChange', ({ id }) => writeName(id));
 
     // The card beside the map: the venue selected, its details from its location's data-
-    // attributes, its category marked for its colour, made from the card's template and in the card
+    // attributes (its data), its category marked for its colour, made from the card's template and in the card
     // only while a venue is selected, with a × closing it; or, while none is, the venues shown,
     // each a button selecting it, under the category shown alone, if any, written again only when
     // the venues shown change, as a hover changes the store too. Not a live region either.
@@ -201,13 +201,12 @@
         venuePart.remove();
         return;
       }
-      const details = document.querySelector(`#whats-on-maplibre-map > [location-id="${CSS.escape(id)}"]`).dataset;
       venuePart.dataset.category = selected.group;
       write('.venue-category', selected.group);
       write('.venue-name', selected.title);
-      write('.venue-address', details.address);
-      write('.venue-since', details.since);
-      write('.venue-known-for', details.knownFor);
+      write('.venue-address', selected.data.address);
+      write('.venue-since', selected.data.since);
+      write('.venue-known-for', selected.data.knownFor);
       if (!venuePart.isConnected) card.append(venuePart);
     };
     writeCard(maplace.getSnapshot().selectedId);

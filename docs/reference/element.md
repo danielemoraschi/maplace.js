@@ -112,6 +112,7 @@ Maplace.js builds its list once its script has run, and a map with `hold` only o
 | `failure-label` | The words of the panel a map shows [when it can't be used](#load-states); "The map couldn't load." when blank or left out; live |
 | `center` | The map's first centre, `"lat,lng"` (`center="41.9,12.5"`), with `zoom`; can't change once the store exists |
 | `zoom` | The map's first zoom, with `center`; can't change once the store exists |
+| `src` | (1.3) The URL of a JSON file of its locations, fetched once the map opens past `hold`; see [Data](#data) |
 | `selected-id` | The location selected at start, like `<input value>`; later changes go through `maplace`; a [`url-state`](#url-state) address naming another location wins; `center` and `zoom` win for the first view |
 | `url-state` | Keeps the selection in the page's address, as `?location=<id>` or the parameter it names; see [URL state](#url-state) |
 
@@ -150,7 +151,7 @@ The store's [events](store.md#events), as DOM events on the element, named in lo
 | `maplace-popupclose` | `popupClose` |
 | `maplace-viewportchange` | `viewportChange` |
 | `maplace-routechange` | `routeChange` |
-| `maplace-error` | `error`, and the element's own [misuse](#misuse) |
+| `maplace-error` | `error`, the element's own [misuse](#misuse), and `locations-load-failed`, a `src` file that didn't load ([Data](#data)) |
 
 ## Load states
 
@@ -211,13 +212,17 @@ With React, or a store of your own, read and write the address around `select`, 
 
 Each attribute sets the [location field](locations.md) of the same meaning. Booleans are as HTML writes them: present, empty or `"true"` is true, `"false"` false, anything else misuse naming the attribute.
 
+Its `data-*` attributes (1.3) are its `data`, as [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset) holds them: `data-time-zone="Asia/Tokyo"` is `data.timeZone`, every value a string, and a change is read as any attribute's is. Every `data-*` attribute counts, so one a framework adds (Vue's scoped `data-v-…`) is there too, harmless.
+
 ## Templates
 
 A `<template>` child of `<maplace-location>` is the popup's content, and a `<template data-icon>` child the marker, in place of `icon` (one element, or a span around the rest), cloned for each state: the location's `icon` is then a function building it, which a list view of yours can call too. A `<template data-icon>` child of `<maplace-map>` itself is the icon of every marker without its own, the store's [`markerIcon`](store.md#options): one element, or a span around the rest, copied once for each marker and kept across its states; it is read once, when the store is made, as the map's other store attributes are, so one added later changes nothing. Templates are the page's own markup and trusted, so they skip `sanitize`; `html` set through `locations` still needs it.
 
 ## Data
 
-A map's locations come from the `locations` property once it is set; else from one inline `<script type="application/json">` child, or from `<maplace-location>` children. Both a script and location children is misuse. Children and the script are watched for changes. The element never fetches: to load data from a URL, fetch it and set `locations`.
+A map's locations come from the `locations` property once it is set; else from one inline `<script type="application/json">` child, from `<maplace-location>` children, or (1.3) from the JSON file its `src` attribute names. Both a script and location children is misuse, as is `src` beside either, or blank. Children and the script are watched for changes.
+
+`src` names a list of locations, as the inline script holds, or a GeoJSON FeatureCollection, read as [`locationsFromGeoJSON`](locations.md#from-geojson) reads one. The file is fetched once the map opens past `hold`, so a held map asks nothing before `release()`; with `loading="lazy"` it is fetched at once, for the list. A change of `src` loads the new file, and a slower answer to an earlier one is dropped; removing it reads the element's inside again. A file that isn't JSON, or holds neither shape, is misuse until a good one loads. A load that fails (the network, or an answer that isn't OK) is a `maplace-error` with the code `locations-load-failed`, the element's own (the store's `error` listeners don't hear it): the locations and `loadState` stay as they were, and setting `src` again, even to the same URL, tries once more. `html` in the file needs [`sanitize`](#properties-and-methods), as through `locations`. A `route` given before the file `src` names has loaded (a held map's included) waits for its locations, and after a load that fails, for the next file: until then `route` reads the one drawn. A page that acts on each load, fitting the map to it or routing through it, fetches the file itself and sets `locations`.
 
 <!-- example: packages/maplace/examples/polygon/page.html -->
 ```html

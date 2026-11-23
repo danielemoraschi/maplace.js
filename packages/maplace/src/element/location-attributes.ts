@@ -47,7 +47,7 @@ const NO_TEMPLATES: LocationTemplates = { content: undefined, icon: undefined };
  * numbers or JSON, so the store's own checks name the field and the value.
  */
 export function locationFromAttributes(
-  element: Element,
+  element: HTMLElement,
   { content, icon }: LocationTemplates = NO_TEMPLATES,
 ): Location {
   const type = element.getAttribute("type") ?? undefined;
@@ -69,9 +69,16 @@ export function locationFromAttributes(
     active: booleanOrRaw(element, "active"),
     content,
     icon: icon ?? element.getAttribute("icon") ?? undefined,
+    data: dataFrom(element),
     ...geometry,
     ...stylesFromAttributes(element),
   }) as unknown as Location;
+}
+
+/** The `data-*` attributes, as `dataset` holds them (`data-time-zone` is `timeZone`); none, no data. */
+function dataFrom(element: HTMLElement): DOMStringMap | undefined {
+  const data = { ...element.dataset };
+  return Object.keys(data).length > 0 ? data : undefined;
 }
 
 /** Whether a `group` attribute's text is read as a path, written as JSON: it starts with `[`. */

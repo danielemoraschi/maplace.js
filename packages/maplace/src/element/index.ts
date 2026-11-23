@@ -64,7 +64,8 @@ export { defineListView } from "./list-views";
 /**
  * `<maplace-map>`: a map plus an optional list. Its locations come from the `locations` property
  * once set; else from one inline `<script type="application/json">` child, or from
- * `<maplace-location>` children (both is misuse). Children and the script are watched.
+ * `<maplace-location>` children (both is misuse), or from the file `src` names. Children and the
+ * script are watched.
  *
  * Attributes:
  * - `provider`: registered provider name; defaults to the only one registered. A change opens
@@ -103,6 +104,13 @@ export { defineListView } from "./list-views";
  * - `center`, `zoom`: the map's first view, given together (`center="41.9,12.5" zoom="6"`), over
  *   `selected-id`'s location, which is selected without moving the map (its popup may still pan
  *   to fit); can't change afterwards.
+ * - `src` (1.3): the URL of a JSON file of the locations, a list of them or a GeoJSON
+ *   FeatureCollection (read as `locationsFromGeoJSON` reads one), fetched once the map opens past
+ *   `hold`; a change loads the new file, a slower answer to an earlier one dropped. Blank, or with
+ *   locations written inside the element, it is misuse. A load that fails is a `maplace-error`
+ *   with the runtime code `locations-load-failed`, the element's only, its locations and
+ *   `loadState` kept; a file that isn't JSON, or holds neither shape, is misuse until a good one
+ *   loads. A route given before the file has loaded waits for its locations.
  * - `selected-id`: the initial selection, like `<input value>` (a `url-state` address naming
  *   another location wins); later changes go through `maplace`.
  * - `cluster`: cluster markers (a boolean, as `group-counts`; a CDN page needs the cluster build);
@@ -193,9 +201,10 @@ export interface MaplaceMapElement extends HTMLElement {
  * it at, `weight` a marker's weight on a heatmap (1 when absent), `listed="false"` keeps it out of
  * the list (on the map still), `editable` lets the user drag or reshape it and `active` marks a
  * shape active (each true when present with no value, or `"true"`), and the four style attributes
- * a shape's `style`, `selectedStyle`, `hoveredStyle` and `activeStyle` as JSON; a `<template>`
- * child is trusted popup content, and a `<template data-icon>` child the marker, in place of
- * `icon`.
+ * a shape's `style`, `selectedStyle`, `hoveredStyle` and `activeStyle` as JSON; its `data-*`
+ * attributes (1.3) are its `data`, as `dataset` holds them (`data-time-zone` is `timeZone`, every
+ * value a string); a `<template>` child is trusted popup content, and a `<template data-icon>`
+ * child the marker, in place of `icon`.
  */
 export interface MaplaceLocationElement extends HTMLElement {
   readonly location: Location;

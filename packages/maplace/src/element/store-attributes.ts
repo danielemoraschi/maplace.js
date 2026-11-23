@@ -1,6 +1,6 @@
 import type { MaplaceOptions, PopupOptions } from "../index";
 import { OPEN_ON } from "../validate/popup";
-import { booleanOrRaw } from "./attribute-values";
+import { booleanOrRaw, textOf } from "./attribute-values";
 import { elementMisuse } from "./element-error";
 import { oneOfAttribute, switchAttribute } from "./element-list";
 import { HEATMAP_ATTRIBUTES, heatmapOf } from "./heatmap-attributes";
@@ -72,8 +72,7 @@ export function checkStoreAttributes(
   misuse: StandingMisuse,
 ): void {
   misuse.attempt("store", () => {
-    const blank = LABEL_ATTRIBUTES.find((name) => host.getAttribute(name)?.trim() === "");
-    if (blank !== undefined) throw elementMisuse(`${blank} must not be blank`, { field: blank });
+    for (const name of LABEL_ATTRIBUTES) textOf(host, name);
     for (const name of SWITCH_ATTRIBUTES) switchAttribute(host, name);
     popupOpeningOf(host);
     heatmapOf(host);

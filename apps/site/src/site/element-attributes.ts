@@ -25,6 +25,7 @@ const MAP_READS = [
   "failure-label",
   "load-from-label",
   "selected-id",
+  "src",
   "url-state",
   "my-location",
   "my-location-label",

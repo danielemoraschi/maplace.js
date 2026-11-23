@@ -1,3 +1,6 @@
+import type { MaplaceErrorDetails } from "../index";
+import { elementMisuse } from "./element-error";
+
 /**
  * The attribute's value, or `undefined` when missing or empty: an attribute left empty is not
  * given, so an empty `api-key` is no key rather than an empty one.
@@ -47,4 +50,20 @@ export function booleanOrRaw(element: Element, name: string): boolean | string |
 /** `text`'s words, as `class` holds its: none in a blank one, and a word can't hold a space. */
 export function wordsOf(text: string): string[] {
   return text.split(/\s+/).filter(Boolean);
+}
+
+/** `name`'s text, refused when blank: misuse naming it. */
+export function textOf(host: Element, name: string): string | undefined {
+  const text = host.getAttribute(name) ?? undefined;
+  if (text?.trim() === "") throw elementMisuse(`${name} must not be blank`, { field: name });
+  return text;
+}
+
+/** `text` parsed as JSON; text that isn't is misuse naming `source`, with `details`. */
+export function jsonIn(text: string, source: string, details?: MaplaceErrorDetails): unknown {
+  try {
+    return JSON.parse(text);
+  } catch (cause) {
+    throw elementMisuse(`${source} is not valid JSON`, { ...details, cause });
+  }
 }

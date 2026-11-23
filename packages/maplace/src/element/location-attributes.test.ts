@@ -39,6 +39,19 @@ describe("locationFromAttributes", () => {
     }
   });
 
+  it("copies data-* attributes into data, keyed as dataset keys them", () => {
+    const person = element({
+      "location-id": "a",
+      "data-role": "Lead",
+      "data-time-zone": "Asia/Tokyo",
+    });
+    expect(locationFromAttributes(person).data).toEqual({ role: "Lead", timeZone: "Asia/Tokyo" });
+  });
+
+  it("gives no data to a location without data-* attributes", () => {
+    expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("data");
+  });
+
   it("no attribute, no tags", () => {
     expect(locationFromAttributes(element({ "location-id": "a" }))).not.toHaveProperty("tags");
   });

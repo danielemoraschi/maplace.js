@@ -2,6 +2,8 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-22 Added `src` on `<maplace-map>`: its locations from a URL, a list of locations or a GeoJSON FeatureCollection, loaded once the map opens past `hold`, the latest `src` winning; a failed load is a `locations-load-failed` `maplace-error`, the locations kept.
+- 2026-11-22 Added a `<maplace-location>`'s `data-*` attributes as its `data`, as `dataset` holds them (`data-time-zone` is `timeZone`), watched like its other attributes.
 - 2026-11-21 Added `markerIcon`, the icon of every marker without its own, on `createMaplace` and the shortcut maps, and as a `<template data-icon>` child of `<maplace-map>`; a location's `icon` overrides it.
 - 2026-11-21 Changed an editable shape's handles: shown only while it is hovered or selected, on Google and MapLibre, so markers on it stay clear at rest; a press on a handle keeps them through its drag. The conformance suite's editing checks select a location before dragging it.
 - 2026-11-21 Changed the default pin to a red dot in a white ring, centred on its point, larger while hovered or selected (selected in a halo of its colour), on Google and MapLibre; on MapLibre, of two pins overlapping, the one whose dot is nearer takes the pointer, and a map fitted to its locations keeps them clear of the attribution while it is open.

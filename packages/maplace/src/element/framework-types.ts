@@ -40,6 +40,7 @@ type NamedMapAttribute =
   | "failure-label"
   | "load-from-label"
   | "selected-id"
+  | "src"
   | "url-state"
   | "api-key"
   | "map-id"

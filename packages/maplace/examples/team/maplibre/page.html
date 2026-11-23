@@ -142,9 +142,9 @@
     };
 
     // A person's entry in the list, the page's own: their face (their location's own icon), name,
-    // role and city from their <maplace-location>'s data- attributes, and the time where they are.
+    // role and city from their <maplace-location>'s data- attributes (its data), and the time where they are.
     const memberItem = ({ location }) => {
-      const person = map.querySelector(`maplace-location[location-id="${CSS.escape(location.id)}"]`).dataset;
+      const person = location.data;
       const face = location.icon(location, { selected: false, hovered: false });
       face.setAttribute("aria-hidden", "true");
       return span("team-member", face, span("team-member-text",

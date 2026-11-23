@@ -151,9 +151,8 @@
   {
     const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
     const map = document.getElementById("bubbles-maplibre-map");
-    // A city's population, from its <maplace-location>'s data-population.
-    const populationOf = ({ id }) =>
-      Number(map.querySelector(`maplace-location[location-id="${CSS.escape(id)}"]`).dataset.population);
+    // A city's population, from its <maplace-location>'s data-population (its data).
+    const populationOf = ({ data }) => Number(data.population);
 
     // A city in the list: its name, then its population.
     const cityEntry = ({ location }) => {

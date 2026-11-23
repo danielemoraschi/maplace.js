@@ -71,7 +71,7 @@ A location's popup is a `<template>` child, and a marker's own look an `icon` im
 
 A circle's styles (colours, opacities, stroke width) are JSON objects in `shape-style`, `selected-style`, `hovered-style` and `active-style`: `<maplace-location type="circle" … selected-style='{"stroke":"#c2410c","fill":"#f97316"}'>`.
 
-Locations can also come from an inline `<script type="application/json">` child or the element's `locations` property. The element never fetches: load your data and assign it.
+Locations can also come from an inline `<script type="application/json">` child, a JSON file its `src` attribute names, or the element's `locations` property.
 
 ## One script per page
 

@@ -1,6 +1,6 @@
 # Live data from JSON
 
-Data sets your page fetches and swaps in while the map stays: markers, an area, a circle, and on Google a route through some of them. The map's element never fetches anything itself.
+Data sets your page fetches and swaps in while the map stays: markers, an area, a circle, and on Google a route through some of them. The page fetches each set itself, since it fits the map and sets a route after each one; a map that only shows one file names it with `src`.
 
 - **Note**: a slower answer to an earlier press is dropped, so the map always shows the last set asked for.
 - **HTML**: `list` on an empty `<maplace-map>`, and a script assigning the `locations` property, and on Google `route` ([Properties and methods](../../../../docs/reference/element.md#properties-and-methods)), then calling `maplace.fitAll()`.

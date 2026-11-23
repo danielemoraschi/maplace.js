@@ -146,8 +146,8 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
   }
 
   /**
-   * Creates the store, then, unless held, its list and the map: a held page's scripts, and the
-   * list views they define, may run only on release.
+   * Creates the store, then, unless held, its list, the file `src` names and the map: a held
+   * page's scripts, and the list views they define, may run only on release.
    */
   #open(): void {
     if (!this.isConnected) return;
@@ -164,6 +164,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
       show: (list) => this.#session?.showList(list),
     });
     this.#lists.open();
+    this.#feed.allowFileLoads();
     this.#camera ??= createCameraKeeper(store);
     if (!this.#released && this.#session === undefined) this.#nearView.start();
     this.#openSession();
@@ -208,6 +209,7 @@ export class MaplaceMap extends HTMLElement implements MaplaceMapElement {
     this.#ownNodesWatch.disconnect();
     this.#failureWatch.disconnect();
     this.#feed.stopWatching();
+    this.#feed.holdFileLoads();
     this.#urlState.stop();
   }
 

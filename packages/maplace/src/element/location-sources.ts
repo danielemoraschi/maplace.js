@@ -1,4 +1,5 @@
 import type { Location } from "../index";
+import { jsonIn, textOf } from "./attribute-values";
 import { elementMisuse } from "./element-error";
 import { MaplaceLocation } from "./location-element";
 import { oncePerTask } from "./once-per-task";
@@ -30,8 +31,22 @@ export function readLocationSource(host: Element): readonly Location[] {
 }
 
 /**
- * Calls `onChange` once for the changes made together to what `readLocationSource` reads: a
- * child added or removed, a `<maplace-location>` changed, or the JSON script's text. Children the
+ * The URL `src` names, if any. Blank is misuse, as is `src` beside locations written inside the
+ * element, which it would hide.
+ */
+export function srcOf(host: Element): string | undefined {
+  const src = textOf(host, "src");
+  if (host.querySelector(`:scope > ${JSON_SCRIPT}, :scope > maplace-location`) !== null) {
+    throw elementMisuse("give locations through src or inside the element, not both", {
+      field: "src",
+    });
+  }
+  return src;
+}
+
+/**
+ * Calls `onChange` once for the changes made together to where the locations come from: a child
+ * added or removed, a `<maplace-location>` changed, the JSON script's text, or `src`. Children the
  * parser adds after the map connects arrive this way too.
  */
 export function watchLocationSource(host: Element, onChange: () => void): () => void {
@@ -46,9 +61,10 @@ export function watchLocationSource(host: Element, onChange: () => void): () => 
   const childrenWatch = new MutationObserver((records) => {
     const changed = sourcesChanged(records);
     if (changed.scripts) watchScripts();
-    if (changed.scripts || changed.locations) schedule();
+    const srcChanged = records.some(({ type }) => type === "attributes");
+    if (changed.scripts || changed.locations || srcChanged) schedule();
   });
-  childrenWatch.observe(host, { childList: true });
+  childrenWatch.observe(host, { childList: true, attributeFilter: ["src"] });
   watchScripts();
   const stopListening = onLocationSourceChange(host, schedule);
   return () => {
@@ -90,12 +106,7 @@ function parsedLocations(script: HTMLScriptElement): readonly Location[] {
 }
 
 function parsedText(text: string): readonly Location[] {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(text);
-  } catch (cause) {
-    throw elementMisuse("its JSON script is not valid JSON", { cause });
-  }
+  const parsed = jsonIn(text, "its JSON script");
   if (!Array.isArray(parsed))
     throw elementMisuse("its JSON script must hold an array of locations");
   return parsed;

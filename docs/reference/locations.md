@@ -235,7 +235,7 @@ A DOM marker carries `data-selected` and `data-hovered` while in that state, so 
 
 ## From GeoJSON
 
-`locationsFromGeoJSON` turns a GeoJSON FeatureCollection into locations, ready for `setLocations`. It is in the core entry, so it needs no provider; on the CDN scripts it is `Maplace.locationsFromGeoJSON`.
+`locationsFromGeoJSON` turns a GeoJSON FeatureCollection into locations, ready for `setLocations`. It is in the core entry, so it needs no provider; on the CDN scripts it is `Maplace.locationsFromGeoJSON`. A `<maplace-map>` reads a file of one itself when its [`src`](element.md#data) names it (1.3).
 
 <!-- example: packages/maplace/examples/migrate/from-geojson.ts -->
 ```ts
