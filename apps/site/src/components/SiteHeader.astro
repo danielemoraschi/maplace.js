@@ -7,8 +7,9 @@ import { GITHUB_MARK_PATH } from "../site/star-button-markup.ts";
 const here = Astro.url.pathname;
 // One row at every width, short enough to fit beside the name on a 320px phone (W67); narrower
 // still (a phone's text zoomed), it scrolls on its own rather than the page. The repository's link
-// joins it from 48rem, the footer having one on every screen. Padded, with as much margin taken
-// back, as wide as a link's focus ring, which the scrolling box would otherwise clip.
+// joins it from 22.5rem (360px), where it fits, the footer having one on every screen. Padded,
+// with as much margin taken back, as wide as a link's focus ring, which the scrolling box would
+// otherwise clip.
 const NAV =
   "ms-auto -my-1.5 -me-1.5 flex min-w-0 items-baseline gap-x-6 overflow-x-auto p-1.5 text-base font-medium whitespace-nowrap [scrollbar-width:none] max-[24rem]:gap-x-4";
 const NAV_LINK =
@@ -36,7 +37,7 @@ const NAV_LINK =
           </a>
         ))
       }
-      <a href={REPOSITORY_URL} class="hidden self-center text-muted no-underline hover:text-ink min-[48rem]:inline-flex">
+      <a href={REPOSITORY_URL} class="hidden self-center text-muted no-underline hover:text-ink min-[22.5rem]:inline-flex">
         <svg viewBox="0 0 16 16" width="21" height="21" fill="currentColor" aria-hidden="true">
           <path d={GITHUB_MARK_PATH} />
         </svg>

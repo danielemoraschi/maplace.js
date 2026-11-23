@@ -21,7 +21,7 @@ async function headerBottom(page: Page): Promise<number> {
 }
 
 describe("the site's header", () => {
-  it("links Documentation and Examples (Docs on a phone), and the repository from 48rem, the footer's on every screen", async () => {
+  it("links Documentation and Examples (Docs on a phone), and the repository from a 360px phone, the footer's on every screen", async () => {
     const { page, context } = await opened(site, "/", DESKTOP);
     const labels = await siteNav(page).getByRole("link").allInnerTexts();
     expect(labels).toEqual(["Documentation", "Examples", "GitHub"]);
@@ -29,7 +29,12 @@ describe("the site's header", () => {
     expect(await repository.getAttribute("href")).toBe(REPOSITORY_URL);
     expect(await repository.isVisible()).toBe(true);
     await page.setViewportSize(PHONE);
+    expect(await repository.isVisible()).toBe(true);
+    // Narrower than 360px it would run past the name: it steps out, the nav not scrolling.
+    await page.setViewportSize({ width: 320, height: 640 });
     expect(await repository.isVisible()).toBe(false);
+    expect(await siteNav(page).evaluate((nav) => nav.scrollWidth - nav.clientWidth)).toBe(0);
+    await page.setViewportSize(PHONE);
     // biome-ignore lint/performance/useDomNodeTextContent: the label as shown, the hidden one left out.
     expect(await siteNav(page).getByRole("link").first().innerText()).toBe("Docs");
     const toRepo = `a[href="${REPOSITORY_URL}"]`;
@@ -122,19 +127,26 @@ describe("the site's header", () => {
     await page.evaluate(() => document.fonts.ready);
     const fit = () =>
       siteNav(page).evaluate((nav) => {
-        const tops = [...nav.querySelectorAll("a")]
+        // One row: every link's middle within a link's height of the others' (the GitHub mark is
+        // centred, the words on their baseline).
+        const boxes = [...nav.querySelectorAll("a")]
           .map((link) => link.getBoundingClientRect())
-          .filter(({ width }) => width > 0)
-          .map(({ top }) => top);
+          .filter(({ width }) => width > 0);
+        const middles = boxes.map(({ top, height }) => top + height / 2);
+        const lowest = Math.min(...boxes.map(({ height }) => height));
         return {
           navScrolls: nav.scrollWidth > nav.clientWidth,
           pageScrolls: document.documentElement.scrollWidth > innerWidth,
-          rows: new Set(tops).size,
+          oneRow: Math.max(...middles) - Math.min(...middles) < lowest,
         };
       });
     for (const width of [320, 375]) {
       await page.setViewportSize({ width, height: 700 });
-      expect(await fit(), `${width}`).toEqual({ navScrolls: false, pageScrolls: false, rows: 1 });
+      expect(await fit(), `${width}`).toEqual({
+        navScrolls: false,
+        pageScrolls: false,
+        oneRow: true,
+      });
     }
     await page.setViewportSize({ width: 256, height: 700 });
     const narrow = await fit();
