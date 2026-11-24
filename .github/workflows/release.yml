@@ -9,7 +9,8 @@
 #             `next` for a pre-release, `latest` otherwise. A version already on npm is skipped.
 #   announce  jsDelivr checked against the published README (npm run release-cdn, retrying while it lags), then the
 #             GitHub release, its notes the version's CHANGELOG lines (npm run release-notes). An existing release
-#             is skipped.
+#             is skipped. Last, jsDelivr's floating URLs (@1, @latest…) purged until each answers the release
+#             (npm run release-cdn-purge); a failure there fails nothing.
 #   deploy    the site to production (deploy.yml): the release's library, with main's site, example and doc changes
 #             pushed since, if any; after announce, so a version whose CDN check fails isn't offered; never for a
 #             pre-release, which the site doesn't pin apart. It can also be dispatched by hand, as Deploy, which
@@ -19,7 +20,8 @@
 # until it is on npm. An announce stopped by the CDN check comes after an irreversible publish, and the GitHub
 # release isn't made until it passes: re-run it when the CDN lagged or was down; a hash that stays different or an
 # origin that stays refused can't be fixed on this version: the fix ships as the next patch release, and that one's
-# dispatch isn't blocked, as this one is on npm. A deploy refused because CI hadn't passed on main's newer site,
+# dispatch isn't blocked, as this one is on npm. A floating URL still on the version before is purged again by
+# hand: npm run release-cdn-purge <version>. A deploy refused because CI hadn't passed on main's newer site,
 # example or doc commit is re-run once it has.
 # A push made with GITHUB_TOKEN starts no CI run: the release job's own checks are the release commit's gate.
 name: Release
@@ -142,7 +144,7 @@ jobs:
   announce:
     needs: [release, publish]
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # the CDN check's retries (scripts/release/cdn-check.ts), then the release
+    timeout-minutes: 20 # the CDN check's retries (scripts/release/cdn-check.ts), the release, then the purge's
     permissions:
       contents: write # the GitHub release
     env:
@@ -173,6 +175,13 @@ jobs:
           if [ "$PRERELEASE" = true ]; then prerelease=(--prerelease); fi
           gh release create "$TAG" --verify-tag --title "Maplace.js $VERSION" \
             --notes-file "$RUNNER_TEMP/notes.md" "${prerelease[@]}"
+      # After the release: if it fails, `@1` and the like trail by at most 12 hours, and it fails
+      # nothing. The deploy waits for it: seconds, or LONGEST_FOLLOW_MS while an alias lags. Its
+      # retry: npm run release-cdn-purge <version>.
+      - name: jsDelivr's floating URLs (@1, @latest…) move to the release
+        continue-on-error: true
+        timeout-minutes: 5 # LONGEST_FOLLOW_MS and Node's start: a step stuck past it fails alone
+        run: npm run --silent release-cdn-purge -- "$VERSION"
 
   deploy:
     needs: [release, announce]

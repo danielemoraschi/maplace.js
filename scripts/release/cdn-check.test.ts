@@ -4,6 +4,7 @@ import { ROOT } from "../build/package.ts";
 import { integrityOf } from "../build/subresource-integrity.ts";
 import { bundleInMemory } from "../checks/in-memory-bundle.ts";
 import { CDN_DEADLINE_MS, cdnProblems, checkableVersion } from "./cdn-check.ts";
+import { toolsOnFakeClock } from "./fake-clock.ts";
 import { packedPackage, registryHolding } from "./fake-registry.ts";
 import type { Fetch } from "./published-package.ts";
 
@@ -42,28 +43,16 @@ function world(answer: (file: string) => Response, npm: Fetch = NPM) {
   );
 }
 
-/** A clock that only `wait` moves. */
-function tools(fetchUrl: Fetch) {
-  let time = 1_000;
-  return {
-    fetchUrl,
-    now: () => time,
-    wait: vi.fn(async (ms: number) => {
-      time += ms;
-    }),
-    log: vi.fn(),
-    elapsed: () => time - 1_000,
-  };
-}
-
 describe("cdnProblems", () => {
   it("passes when each script's hash is the published README's and the origin is allowed", async () => {
-    await expect(cdnProblems(VERSION, tools(world(servedWith("*"))))).resolves.toEqual([]);
+    await expect(cdnProblems(VERSION, toolsOnFakeClock(world(servedWith("*"))))).resolves.toEqual(
+      [],
+    );
   });
 
   it("sends an Origin header", async () => {
     const fetchUrl = world(servedWith("*"));
-    await cdnProblems(VERSION, tools(fetchUrl));
+    await cdnProblems(VERSION, toolsOnFakeClock(fetchUrl));
     const [, init] = fetchUrl.mock.calls.find(([url]) => url.startsWith(CDN)) ?? [];
     expect(new Headers(init?.headers).get("origin")).toMatch(/^https:\/\//);
     expect(init?.signal).toBeInstanceOf(AbortSignal);
@@ -71,11 +60,11 @@ describe("cdnProblems", () => {
 
   it("accepts the origin named back as well as *", async () => {
     const named = servedWith("https://example.com");
-    await expect(cdnProblems(VERSION, tools(world(named)))).resolves.toEqual([]);
+    await expect(cdnProblems(VERSION, toolsOnFakeClock(world(named)))).resolves.toEqual([]);
   });
 
   it("fails on a hash that isn't the README's, naming both", async () => {
-    const check = tools(world(servedWith("*", "tampered();")));
+    const check = toolsOnFakeClock(world(servedWith("*", "tampered();")));
     const problems = await cdnProblems(VERSION, check);
     expect(problems).toContain(
       `a.iife.js: jsDelivr serves ${hash("tampered();")}, the README pins ${hash(SCRIPTS["a.iife.js"])}`,
@@ -83,13 +72,13 @@ describe("cdnProblems", () => {
   });
 
   it("fails when the response doesn't allow the origin", async () => {
-    const check = tools(world(servedWith("https://other.example")));
+    const check = toolsOnFakeClock(world(servedWith("https://other.example")));
     const [problem] = await cdnProblems(VERSION, check);
     expect(problem).toContain("Access-Control-Allow-Origin: https://other.example");
   });
 
   it("fails when no Access-Control-Allow-Origin comes back", async () => {
-    const [problem] = await cdnProblems(VERSION, tools(world(servedWith(null))));
+    const [problem] = await cdnProblems(VERSION, toolsOnFakeClock(world(servedWith(null))));
     expect(problem).toContain("Access-Control-Allow-Origin: null");
   });
 
@@ -100,7 +89,7 @@ describe("cdnProblems", () => {
       url.endsWith("a.iife.js")
         ? Promise.reject(new TypeError("fetch failed", { cause: new Error("ECONNRESET") }))
         : fetchUrl(url, init);
-    const problems = await cdnProblems(VERSION, tools(failing));
+    const problems = await cdnProblems(VERSION, toolsOnFakeClock(failing));
     expect(problems[0]).toBe("a.iife.js: jsDelivr can't be read: fetch failed (ECONNRESET)");
     expect(problems[1]).toContain("b.iife.js: jsDelivr serves");
   });
@@ -109,7 +98,7 @@ describe("cdnProblems", () => {
     let lagging = true;
     const serve = servedWith("*");
     const npm = vi.fn(NPM);
-    const check = tools(
+    const check = toolsOnFakeClock(
       world((file) => (lagging ? new Response("", { status: 404 }) : serve(file)), npm),
     );
     check.wait.mockImplementation(async () => {
@@ -123,7 +112,10 @@ describe("cdnProblems", () => {
 
   it("reports npm's failure once", async () => {
     const unavailable: Fetch = async () => new Response("", { status: 503 });
-    const [problem] = await cdnProblems(VERSION, tools(world(servedWith("*"), unavailable)));
+    const [problem] = await cdnProblems(
+      VERSION,
+      toolsOnFakeClock(world(servedWith("*"), unavailable)),
+    );
     expect(problem).toMatch(/npm answered 503$/);
   });
 
@@ -131,7 +123,7 @@ describe("cdnProblems", () => {
     let onNpm = false;
     const npm: Fetch = (url, init) =>
       onNpm ? NPM(url, init) : Promise.resolve(new Response("", { status: 404 }));
-    const check = tools(world(servedWith("*"), npm));
+    const check = toolsOnFakeClock(world(servedWith("*"), npm));
     check.wait.mockImplementation(async () => {
       onNpm = true;
     });
@@ -141,7 +133,7 @@ describe("cdnProblems", () => {
 
   it("gives up at the deadline, with the last attempt's problems, never waiting past it", async () => {
     let attempt = 0;
-    const check = tools(
+    const check = toolsOnFakeClock(
       world(() => {
         attempt += 1;
         return new Response("", { status: 500 + (attempt > 2 ? 3 : 0) });
@@ -165,12 +157,12 @@ describe("cdnProblems", () => {
       await release.promise;
       return serve(url.slice(CDN.length));
     };
-    await expect(cdnProblems(VERSION, tools(fetchUrl))).resolves.toEqual([]);
+    await expect(cdnProblems(VERSION, toolsOnFakeClock(fetchUrl))).resolves.toEqual([]);
   });
 
   it("fails when the published README pins nothing", async () => {
     const npm = registryHolding(VERSION, packedPackage(VERSION, { "README.md": "# maplace" }));
-    const [problem] = await cdnProblems(VERSION, tools(world(servedWith("*"), npm)));
+    const [problem] = await cdnProblems(VERSION, toolsOnFakeClock(world(servedWith("*"), npm)));
     expect(problem).toContain("README pins no script");
   });
 });
@@ -184,15 +176,15 @@ describe("checkableVersion", () => {
   });
 });
 
-describe("scripts/release-cdn.ts", () => {
+describe.each(["release-cdn", "release-cdn-purge"])("scripts/%s.ts", (script) => {
   it("runs on Node alone, so announce needs no npm ci", async () => {
     const { metafile } = await bundleInMemory({
-      entryPoints: [resolve(ROOT, "scripts/release-cdn.ts")],
+      entryPoints: [resolve(ROOT, `scripts/${script}.ts`)],
       bundle: true,
       format: "esm",
       platform: "node",
       packages: "external",
-      outfile: resolve(ROOT, ".vitest/release-cdn.js"),
+      outfile: resolve(ROOT, `.vitest/${script}.js`),
     });
     const imported = Object.values(metafile.inputs).flatMap(({ imports }) => imports);
     const external = imported.filter((item) => item.external).map(({ path }) => path);

@@ -24,6 +24,7 @@
     "release": "node scripts/release.ts",
     "release-notes": "node scripts/release-notes.ts",
     "release-cdn": "node scripts/release-cdn.ts",
+    "release-cdn-purge": "node scripts/release-cdn-purge.ts",
     "site:dev": "npm run dev -w site",
     "site:build": "npm run build -w site"
   },

@@ -3,8 +3,9 @@ import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { parse } from "yaml";
 import { ROOT } from "../build/package.ts";
-import { jobNamed } from "../checks/workflow-text.ts";
+import { jobNamed, stepsOf, stepWith } from "../checks/workflow-text.ts";
 import { CDN_DEADLINE_MS, LONGEST_CDN_ATTEMPT_MS } from "./cdn-check.ts";
+import { LONGEST_FOLLOW_MS } from "./cdn-follow.ts";
 
 /** Holds the workflow, which can't run before R3, to the code and to its safety rules. */
 const workflow = readFileSync(resolve(ROOT, ".github/workflows/release.yml"), "utf8");
@@ -14,6 +15,7 @@ const scripts = Object.keys(
 );
 
 const CDN_CHECK = "run: npm run --silent release-cdn";
+const CDN_PURGE = "run: npm run --silent release-cdn-purge";
 
 it("runs only the repo's own npm scripts", () => {
   const called = [...workflow.matchAll(/npm run (?:--silent )?([\w-]+)/g)].map(([, name]) => name);
@@ -72,9 +74,27 @@ it("gives the CDN check no token", () => {
   expect(afterCheck).toContain("GH_TOKEN");
 });
 
-it("leaves the CDN check's retries room inside announce's timeout", () => {
+it("leaves the CDN check's and the purge's retries room inside announce's timeout", () => {
   const minutes = Number(/timeout-minutes: (\d+)/.exec(jobNamed("announce", workflow))?.[1]);
-  expect(minutes * 60_000).toBeGreaterThan(CDN_DEADLINE_MS + LONGEST_CDN_ATTEMPT_MS);
+  expect(minutes * 60_000).toBeGreaterThan(
+    CDN_DEADLINE_MS + LONGEST_CDN_ATTEMPT_MS + LONGEST_FOLLOW_MS,
+  );
+});
+
+it("moves jsDelivr's floating URLs after the GitHub release, never stopping the deploy", () => {
+  const announce = jobNamed("announce", workflow);
+  const purge = stepWith(announce, CDN_PURGE);
+  expect(purge).toBeGreaterThan(stepWith(announce, "gh release create"));
+  const step = stepsOf(announce)[purge];
+  expect(step).toMatch(/^\s+continue-on-error: true$/m);
+  // A job's timeout isn't an error the step continues on: the step's own ends it first.
+  const minutes = Number(/timeout-minutes: (\d+)/.exec(step ?? "")?.[1]);
+  expect(minutes * 60_000).toBeGreaterThan(LONGEST_FOLLOW_MS);
+});
+
+it("gives the purge no token", () => {
+  const announce = jobNamed("announce", workflow);
+  expect(stepsOf(announce)[stepWith(announce, CDN_PURGE)]).not.toContain("GH_TOKEN");
 });
 
 it("builds what it publishes from the lockfile", () => {

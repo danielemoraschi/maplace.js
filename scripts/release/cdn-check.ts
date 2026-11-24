@@ -1,6 +1,7 @@
 import { pinnedIntegritiesIn } from "../build/cdn-pins.ts";
 import { integrityOf } from "../build/subresource-integrity.ts";
 import { reasonOf } from "./error-reason.ts";
+import { JSDELIVR_CDN, jsDelivrPath } from "./jsdelivr.ts";
 import {
   type Fetch,
   LONGEST_NPM_READ_MS,
@@ -10,6 +11,7 @@ import {
   UNPUBLISHED_VERSION,
 } from "./published-package.ts";
 import { ReleaseRefused } from "./release-refused.ts";
+import { problemsUntilDeadline, type RetryTools } from "./retry-problems.ts";
 import { parseVersion } from "./versions.ts";
 
 /** A new file on jsDelivr can lag a publish: how long the check gives it. */
@@ -21,13 +23,6 @@ export const LONGEST_CDN_ATTEMPT_MS = LONGEST_NPM_READ_MS + READ_TIMEOUT_MS;
 
 /** Any third-party page: `crossorigin="anonymous"` needs the CDN to allow it. */
 const PAGE_ORIGIN = "https://example.com";
-
-interface CdnCheckTools {
-  readonly fetchUrl: Fetch;
-  readonly wait: (ms: number) => Promise<unknown>;
-  readonly now: () => number;
-  readonly log: (line: string) => void;
-}
 
 /** `asked` as a version the check can read; refused, with no network, when it can't be on npm. */
 export function checkableVersion(asked: string): string {
@@ -45,23 +40,22 @@ export function checkableVersion(asked: string): string {
  */
 export async function cdnProblems(
   version: string,
-  { fetchUrl, wait, now, log }: CdnCheckTools,
+  { fetchUrl, ...clock }: RetryTools,
 ): Promise<readonly string[]> {
-  const deadline = now() + CDN_DEADLINE_MS;
   let pins: ReadonlyMap<string, string> | undefined;
-  for (;;) {
-    let problems: readonly string[];
+  const attempt = async () => {
     try {
       pins ??= await pinsOnNpm(version, fetchUrl);
-      problems = await problemsServing(version, pins, fetchUrl);
+      return await problemsServing(version, pins, fetchUrl);
     } catch (error) {
-      problems = [(error as Error).message];
+      return [(error as Error).message];
     }
-    if (problems.length === 0) return [];
-    if (now() + CDN_RETRY_WAIT_MS > deadline) return problems;
-    log(`Not yet: ${problems.join("; ")}`);
-    await wait(CDN_RETRY_WAIT_MS);
-  }
+  };
+  return problemsUntilDeadline(
+    attempt,
+    { deadlineMs: CDN_DEADLINE_MS, waitMs: CDN_RETRY_WAIT_MS },
+    clock,
+  );
 }
 
 /** Refused while npm's read lags the publish, and for a README that pins nothing to compare. */
@@ -96,10 +90,11 @@ async function problemServing(
   integrity: string,
   fetchUrl: Fetch,
 ): Promise<string | undefined> {
-  const response = await fetchUrl(
-    `https://cdn.jsdelivr.net/npm/${PACKAGE_NAME}@${version}/dist/${file}`,
-    { headers: { Origin: PAGE_ORIGIN }, signal: AbortSignal.timeout(READ_TIMEOUT_MS) },
-  );
+  const exactVersion = `@${version}`;
+  const response = await fetchUrl(`${JSDELIVR_CDN}${jsDelivrPath(exactVersion, file)}`, {
+    headers: { Origin: PAGE_ORIGIN },
+    signal: AbortSignal.timeout(READ_TIMEOUT_MS),
+  });
   if (!response.ok) return `${file}: jsDelivr answered ${response.status}`;
   const served = integrityOf(new Uint8Array(await response.arrayBuffer()));
   if (served !== integrity)
