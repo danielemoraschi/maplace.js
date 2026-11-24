@@ -3,9 +3,10 @@ import { expect } from "vitest";
 import { commands } from "vitest/browser";
 import type { LatLng } from "../../geometry";
 import type { ViewportPoint } from "../../testing/mouse-commands";
+import { type Finger, holdTouchAt } from "../../testing/touch";
 import { type HeldMouse, holdMouseAt } from "./held-mouse";
 
-/** A user's mouse on a Google map: trusted input at places given in degrees. */
+/** A user's mouse and finger on a Google map: trusted input at places given in degrees. */
 export interface MapInput {
   click(at: LatLng): Promise<void>;
   /** Clicks `count` times in one gesture: 2 is a double-click. */
@@ -14,9 +15,11 @@ export interface MapInput {
   drag(move: { readonly from: LatLng; readonly to: LatLng }): Promise<void>;
   /** Presses at `at` and holds the button, let go after the test if not before. */
   hold(at: LatLng): Promise<HeldMouse<LatLng>>;
+  /** Touches the map at `at` and holds the finger there, cancelled after the test if still down. */
+  touch(at: LatLng): Promise<Finger<LatLng>>;
 }
 
-/** Mouse input on `map`, once Google can place points on it. */
+/** Mouse and touch input on `map`, once Google can place points on it. */
 export async function inputOn(map: google.maps.Map): Promise<MapInput> {
   const projection = await projectionOf(map);
   const onScreen = (at: LatLng): ViewportPoint => {
@@ -33,6 +36,10 @@ export async function inputOn(map: google.maps.Map): Promise<MapInput> {
     async hold(at) {
       const held = await holdMouseAt(onScreen(at));
       return { moveTo: (to) => held.moveTo(onScreen(to)), release: held.release };
+    },
+    async touch(at) {
+      const finger = await holdTouchAt(onScreen(at));
+      return { ...finger, moveTo: (to) => finger.moveTo(onScreen(to)) };
     },
   };
 }

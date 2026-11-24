@@ -28,6 +28,12 @@ const MARKER_STEP: ViewportPoint = { x: 40, y: 20 };
 /** Each leg of a handle's held drag: about 20 px up and 30 px right at zoom 7. */
 const HANDLE_STEP: LatLng = { lat: 0.22, lng: 0.33 };
 
+/** `from` moved on by `legs` legs of a handle's held drag. */
+export const handleLeg = (from: LatLng, legs: number): LatLng => ({
+  lat: from.lat + legs * HANDLE_STEP.lat,
+  lng: from.lng + legs * HANDLE_STEP.lng,
+});
+
 /** The polygon fixture's corner a control drag moves, outward, clear of the hole and the others. */
 const CONTROL_CORNER: LatLng = { lat: 1, lng: -1 };
 
@@ -92,14 +98,10 @@ export async function holdHandleDrag(
   await pointerTakenByHandle(input, polygonOn(state, id), from);
   const centre = map.getCenter()?.toJSON();
   const held = await input.hold(from);
-  const leg = (legs: number) => ({
-    lat: from.lat + legs * HANDLE_STEP.lat,
-    lng: from.lng + legs * HANDLE_STEP.lng,
-  });
-  await held.moveTo(leg(1));
+  await held.moveTo(handleLeg(from, 1));
   // A press that missed the handle pans the map: the drag holds it still.
   expect(map.getCenter()?.toJSON()).toEqual(centre);
-  return { moveOn: () => held.moveTo(leg(2)), release: held.release };
+  return { moveOn: () => held.moveTo(handleLeg(from, 2)), release: held.release };
 }
 
 /**
@@ -110,14 +112,22 @@ export async function controlDrag(
   mounted: Awaited<ReturnType<typeof mountedAround>>,
   polygon: Drawable,
 ): Promise<Drawable> {
-  const { host, adapter } = mounted;
+  const { host } = mounted;
   const drag = await holdHandleDrag(mounted, polygon.id, CONTROL_CORNER);
   await drag.moveOn();
   await drag.release();
   await expect.poll(() => changesOf(host, polygon.id).length).toBe(1);
   await wait(QUIET_MS);
   expect(changesOf(host, polygon.id)).toHaveLength(1);
-  const [, , moved] = changesOf(host, polygon.id)[0] as [string, string, Geometry];
+  return storeLastChange(mounted, polygon);
+}
+
+/** Writes the last change reported of `polygon` back, as the store would; returns `polygon` as stored. */
+export async function storeLastChange(
+  { host, adapter }: Awaited<ReturnType<typeof mountedAround>>,
+  polygon: Drawable,
+): Promise<Drawable> {
+  const [, , moved] = changesOf(host, polygon.id).at(-1) as [string, string, Geometry];
   const stored = reshaped(polygon, moved);
   await adapter.apply(updating(stored));
   return stored;

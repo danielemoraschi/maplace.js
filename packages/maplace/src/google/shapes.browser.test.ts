@@ -16,7 +16,7 @@ import type { RecordingHost } from "../testing/conformance/recording-host";
 import { cameraAt } from "./testing/camera-at";
 import { placedShapeOn, polygonOn } from "./testing/held-drags";
 import { inputOn } from "./testing/map-input";
-import { clickHoldPassed } from "./testing/map-waits";
+import { clickHoldPassed, QUIET_MS, wait } from "./testing/map-waits";
 import { pointerTakenByHandle, pointerTakenByShape } from "./testing/shape-pointer";
 import { mountedGoogle, TEST_OPTIONS } from "./testing/subject";
 import { describeWithMaps } from "./testing/with-maps";
@@ -27,6 +27,8 @@ const ZOOM = 7;
 const METRES_PER_DEGREE = 111_319.49;
 /** On the polygon fixture's ring, outside its hole. */
 const IN_RING = { lat: 0.75, lng: 0.75 };
+/** Off the polygon fixture, inside the map. */
+const OFF_SHAPES = { lat: 1.5, lng: 1.5 };
 
 /**
  * Google drawing `drawables` around the origin, with a user's mouse on the map: an editable one
@@ -82,11 +84,17 @@ describeWithMaps("Google shapes under real input", () => {
     expect(host.reportsOf("reportSelectionChange")).toEqual([]);
   });
 
-  it("reports the pointer onto a shape and off it", async () => {
+  it("reports the pointer onto a shape and off it, and a tap selecting it as hovering nothing", async () => {
     const { input, host } = await drawnOnMap(polygonDrawable("p"));
     await input.pointTo(IN_RING);
-    await input.pointTo({ lat: 1.5, lng: 1.5 });
+    await input.pointTo(OFF_SHAPES);
     await expect.poll(() => host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
+
+    // On the same map, sparing a billed load: Google sends a tap a mouseover and no mouseout.
+    await (await input.touch(IN_RING)).lift();
+    await expect.poll(() => host.reportsOf("reportSelectionChange")).toEqual([["p"]]);
+    await wait(QUIET_MS);
+    expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
   });
 
   it("gives the click to the smaller of two overlapping shapes, whatever is selected", async () => {

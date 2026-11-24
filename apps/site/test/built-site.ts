@@ -6,6 +6,7 @@ import { type PreviewServer, preview } from "vite";
 import { ROOT } from "../../../scripts/build/package.ts";
 import { newTempDir, removeTempDir } from "../../../scripts/build/temp-dir.ts";
 import { withLock } from "./build-lock.ts";
+import { everyResponseHeaders } from "./header-rules.ts";
 
 const SITE = resolve(ROOT, "apps/site");
 const ASTRO = resolve(ROOT, "node_modules/.bin/astro");
@@ -89,12 +90,13 @@ async function buildSite(outDir: string, env: Record<string, string>): Promise<v
   }
 }
 
+/** `dir` served with what `_headers` sets on every response, its policy among them, as the live site. */
 function serve(dir: string): Promise<PreviewServer> {
   return preview({
     configFile: false,
     logLevel: "silent",
     root: dir,
     build: { outDir: "." },
-    preview: { host: "127.0.0.1", port: 4390 },
+    preview: { host: "127.0.0.1", port: 4390, headers: everyResponseHeaders() },
   });
 }

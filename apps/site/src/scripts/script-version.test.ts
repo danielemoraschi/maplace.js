@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { INERT_SCRIPT_TYPE } from "../examples/page-scripts.ts";
-import { scriptVersionStart } from "./script-version.ts";
+import { importAsModule, scriptVersionStart } from "./script-version.ts";
 
 const PROGRAM = "window.ran = true;";
 
@@ -51,5 +51,22 @@ describe("scriptVersionStart", () => {
     });
     expect(runModule).not.toHaveBeenCalled();
     expect(inert(version)).not.toBeNull();
+  });
+});
+
+describe("importAsModule", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  // The site's policy (W81) allows module scripts from `blob:`, not from `data:`. happy-dom can't
+  // import a `blob:` module, so the import fails here: the URL is revoked all the same.
+  it("imports its program from a text/javascript blob, revoked once the import settles", async () => {
+    const made = vi.spyOn(URL, "createObjectURL");
+    const revoked = vi.spyOn(URL, "revokeObjectURL");
+    await importAsModule(PROGRAM).catch(() => {});
+    const [blob] = made.mock.calls[0] ?? [];
+    expect(blob).toBeInstanceOf(Blob);
+    expect((blob as Blob).type).toBe("text/javascript");
+    expect(await (blob as Blob).text()).toBe(PROGRAM);
+    expect(revoked).toHaveBeenCalledWith(made.mock.results[0]?.value);
   });
 });

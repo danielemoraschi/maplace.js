@@ -73,6 +73,6 @@ export function reportElementHover(element: HTMLElement, id: string, hover: Hove
  * off what it hovered (a pin, by the mouse events a tap sends). Only touch is left out: a pointer
  * event made with no type still hovers.
  */
-function isTouch(event: PointerEvent): boolean {
-  return event.pointerType === "touch";
+export function isTouch(event: Event | undefined): boolean {
+  return (event as Partial<PointerEvent> | undefined)?.pointerType === "touch";
 }

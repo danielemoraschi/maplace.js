@@ -4,7 +4,7 @@ import { EXAMPLE_PAGE_ENTRIES } from "../src/examples/example-sections.ts";
 import { SITE_ROUTES } from "../src/site/site-routes.ts";
 import { contrastRatio } from "./contrast.ts";
 import { mapLibreDrawn } from "./drawn-on-maplibre.ts";
-import { reportedPolicy } from "./header-rules.ts";
+import { enforcedPolicy } from "./header-rules.ts";
 import { chooseProvider, chooseVersion, sectionPage } from "./home-sections.ts";
 import { ON_MAPLIBRE } from "./maplibre-session.ts";
 import {
@@ -169,21 +169,24 @@ describe("the site's consent to its maps", () => {
   }, 30_000);
 });
 
-describe("every page with the maps on, its reported policy enforced (W81)", () => {
+describe("every page with the maps on, under the site's policy (W81)", () => {
   it(
-    "breaks nothing: no load blocked, no error, MapLibre drawing",
+    "is served the policy, and it breaks nothing: no load blocked, no error, MapLibre drawing",
     async () => {
       const { page, context, errors } = await site.visitor({ openFreeMap: "local" });
-      const policy = reportedPolicy();
-      // On every response from the site, as `_headers`' `/*` rule: a worker's policy is its own.
-      await context.route(`${site.url}**`, async (route) => {
-        const response = await route.fetch();
-        const headers = { ...response.headers(), "content-security-policy": policy };
-        await route.fulfill({ response, headers });
+      // The policy each page and script of the site came with, by kind: the server sends it.
+      const policies = { document: new Set<string>(), script: new Set<string>() };
+      page.on("response", (response) => {
+        const kind = response.request().resourceType();
+        if (!response.url().startsWith(site.url) || !(kind === "document" || kind === "script"))
+          return;
+        policies[kind].add(response.headers()["content-security-policy"] ?? "none");
       });
       await grantConsent(page, site.url);
       await expect.poll(() => mapLibreDrawn(firstMap(page)), ON_MAPLIBRE).toBe(true);
       await scrollPastShownMaps(page, site.url, SITE_ROUTES, page.locator("maplace-map"));
+      const policy = enforcedPolicy();
+      expect(policies).toEqual({ document: new Set([policy]), script: new Set([policy]) });
       // Chromium logs every load the policy blocks as an error, naming the directive.
       expect(errors()).toEqual([]);
       await context.close();

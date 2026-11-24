@@ -26,9 +26,16 @@ export function scriptVersionStart(
   };
 }
 
-/** `program` run as written, as an imported module: a throw as it runs rejects the import. */
-export function importAsModule(program: string): Promise<unknown> {
-  return import(
-    /* @vite-ignore */ `data:text/javascript;charset=utf-8,${encodeURIComponent(program)}`
-  );
+/**
+ * `program` run as written, as an imported module: a throw as it runs rejects the import. From a
+ * `blob:` URL: the site's policy (W81) allows scripts from `blob:`, not from `data:`. A program
+ * fetches its data from the site's root and imports nothing, so the URL it runs at changes nothing.
+ */
+export async function importAsModule(program: string): Promise<unknown> {
+  const url = URL.createObjectURL(new Blob([program], { type: "text/javascript" }));
+  try {
+    return await import(/* @vite-ignore */ url);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }

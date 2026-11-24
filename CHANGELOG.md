@@ -2,6 +2,7 @@
 
 One dated line per change a reader would notice, newest first, written in the commit that makes it (1.0.0, a rewrite, is summarised in one entry instead); an issue the change closes is named as `#N` at the line's end. Lines above the first version heading are unreleased: the next release lists them under its own heading and turns them into its release notes.
 
+- 2026-11-24 Fixed a tap on a shape on a Google map leaving it hovered: a touch hovers no shape, as it hovers no marker
 - 2026-11-24 Changed the MapLibre CDN script to bundle maplibre-gl 6.18.0, and `Maplace.maplibre` with it: its map loads on a page opened directly as a file (`file://`), with no web server
 - 2026-11-24 Changed MapLibre's worker error to name a content security policy (`worker-src`) first, and a page opened as a file only for maplibre-gl before 6.17
 - 2026-11-23 Fixed a map fitted to its locations leaving some under Maplace.js's own panels on the map (a list or select in a corner), on Google and MapLibre: a fit keeps clear of them, each padding the edge where it costs the map less, and a fit nobody has moved fits again when one grows into what it kept clear.

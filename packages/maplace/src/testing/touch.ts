@@ -4,10 +4,10 @@ import { onTestFinished } from "vitest";
 import { cdp } from "vitest/browser";
 import type { ViewportPoint } from "./mouse-commands";
 
-/** A finger a test holds on the screen. */
-export interface Finger {
+/** A finger a test holds on the screen, moved to points given as `Point`. */
+export interface Finger<Point = ViewportPoint> {
   /** Moves the finger to `point`, then waits a frame, as a finger moves about once a frame. */
-  moveTo(point: ViewportPoint): Promise<void>;
+  moveTo(point: Point): Promise<void>;
   /** Lifts the finger, then waits a frame; called again, it does nothing. */
   lift(): Promise<void>;
   /**

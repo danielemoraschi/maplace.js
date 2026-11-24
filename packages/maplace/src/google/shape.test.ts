@@ -139,6 +139,13 @@ describe("shape placers", () => {
     expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
   });
 
+  it("hover nothing from a touch, letting go of what the pointer hovered", () => {
+    const { stub, host } = placed(polygonDrawable("p"));
+    stub.trigger("mouseover");
+    stub.trigger("mouseover", { domEvent: { pointerType: "touch" } });
+    expect(host.reportsOf("reportHoverChange")).toEqual([["p"], [undefined]]);
+  });
+
   it("drop a map click still held when one is clicked", () => {
     vi.useFakeTimers();
     onTestFinished(() => {

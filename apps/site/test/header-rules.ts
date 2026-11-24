@@ -58,10 +58,10 @@ export function ruleHeaders(text: string, pattern: string): Record<string, strin
 export const everyResponseHeaders = () =>
   ruleHeaders(readFileSync(new URL("../public/_headers", import.meta.url), "utf8"), "/*");
 
-/** The policy every response carries to report, not block, what it disallows, for now. */
-export function reportedPolicy(): string {
-  const policy = everyResponseHeaders()["Content-Security-Policy-Report-Only"];
-  if (policy === undefined) throw new Error("_headers' /* rule reports no policy");
+/** The content security policy every response carries, enforced. */
+export function enforcedPolicy(): string {
+  const policy = everyResponseHeaders()["Content-Security-Policy"];
+  if (policy === undefined) throw new Error("_headers' /* rule enforces no policy");
   return policy;
 }
 
