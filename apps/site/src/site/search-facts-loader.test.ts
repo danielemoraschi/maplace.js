@@ -11,7 +11,10 @@ import {
 } from "./search-facts-loader.ts";
 import { SITE_ROUTES } from "./site-routes.ts";
 
-describe("searchFacts", () => {
+/** Dating the site runs git once per route: seconds, more under the full suite's load. */
+const DATING_MS = 20_000;
+
+describe("searchFacts", { timeout: DATING_MS }, () => {
   it("dates every route of the site, each its sources' last change", () => {
     const { modifiedOn } = searchFacts();
     expect(Object.keys(modifiedOn)).toEqual(SITE_ROUTES);
@@ -40,7 +43,7 @@ describe("requiredText", () => {
   });
 });
 
-describe("searchFactsLoader", () => {
+describe("searchFactsLoader", { timeout: DATING_MS }, () => {
   it("keeps one entry, cleared first", async () => {
     const calls: unknown[] = [];
     const store = { clear: () => calls.push("clear"), set: (entry: unknown) => calls.push(entry) };

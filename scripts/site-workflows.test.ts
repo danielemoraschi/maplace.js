@@ -118,6 +118,7 @@ describe("offsite.yml", () => {
     const expiry = stepWith(offsite, `node scripts/security-txt-expiry.ts ${SITE}`);
     expect(expiry).toBeGreaterThan(stepWith(offsite, OFFSITE_CHECK));
     expect(stepsOf(offsite)[expiry], "run whatever the offsite check found").toContain(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: a GitHub Actions expression, not a template
       "if: ${{ !cancelled() }}",
     );
   });
