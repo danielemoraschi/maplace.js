@@ -10,14 +10,13 @@ import {
 } from "../src/examples/example-sections.ts";
 import { WAYS_IN_GOOGLE_LOADER } from "../src/examples/home-page.ts";
 import { docRoute } from "../src/site/repo-docs.ts";
+import { HERO_LIGHT, WATER } from "./hero-ground.ts";
 import { chooseProvider } from "./home-sections.ts";
 import { opened, SITE_MAP_ID, siteBuiltBeforeTests } from "./site-session.ts";
 import { boxOf, DESKTOP, PHONE } from "./visitor.ts";
 
 /** The band's ground, as a computed colour. */
 const NIGHT = "rgb(18, 26, 34)";
-/** The hero's ground, map water. */
-const WATER = "rgb(207, 227, 234)";
 
 const site = siteBuiltBeforeTests();
 
@@ -42,6 +41,10 @@ describe("the home page's night band (W66)", () => {
     await page.goto(new URL(EXAMPLES_PAGE_ROUTE, site.url).href);
     expect(await rowColours(page)).toEqual([NIGHT, "rgb(230, 236, 240)"]);
     expect(await groundOf(page.locator("h1"))).toBe(WATER);
+    const hero = page.locator(".hero-water");
+    expect(await hero.evaluate((ground) => getComputedStyle(ground).backgroundImage)).toBe(
+      HERO_LIGHT,
+    );
     await context.close();
   }, 30_000);
 

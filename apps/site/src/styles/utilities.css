@@ -18,14 +18,14 @@
 /*
  * The home page's two grounds (W66), its own: each redefines the tokens the utilities read, so
  * whatever it holds keeps its utilities and takes its colours. `hero-water`: the hero, slate on
- * map water (`#cfe3ea`); `band-dark`: the band below it, the map at night.
+ * map water (`#cfe3ea`) lit from its top right; `band-dark`: the band below it, the map at night.
  */
 @utility hero-water {
   --color-paper: #f2f5f3;
   --color-ink: #1b2430;
   --color-muted: #566270;
   --color-wash: #e3eae7;
-  background: #cfe3ea;
+  background: linear-gradient(215deg, #f7fafb 20%, #cfe3ea 75%) #cfe3ea;
   color: var(--color-ink);
 }
 

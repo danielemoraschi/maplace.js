@@ -12,6 +12,7 @@ import { HOME_HEADING, HOME_INTRO, WAYS_IN_NOTES } from "../src/examples/home-pa
 import { componentOf } from "../src/examples/ways-in-files.ts";
 import { skillInstallCommand } from "../src/site/agent-links.ts";
 import { docRoute } from "../src/site/repo-docs.ts";
+import { HERO_LIGHT, WATER } from "./hero-ground.ts";
 import { cardsUnderCopy, cardsUnseen, tableTurnFunctions } from "./hero-table-probe.ts";
 import { chooseProvider } from "./home-sections.ts";
 import { opened, PUBLIC_SITE, siteBuiltBeforeTests } from "./site-session.ts";
@@ -23,7 +24,6 @@ const codeOf = (folder: string, file: string) => exampleFile(folder, file).trimE
 const site = siteBuiltBeforeTests();
 
 /** The hero's ground, as a computed colour. */
-const WATER = "rgb(207, 227, 234)";
 const SKILLS = skillInstallCommand(new URL(PUBLIC_SITE));
 const npmCommand = (provider: "google" | "maplibre") =>
   provider === "google"
@@ -59,9 +59,13 @@ describe("the home page's hero (W66)", () => {
       const [hero] = document
         .elementsFromPoint(innerWidth / 2, 8)
         .filter((at) => at.closest("main"));
-      return hero && getComputedStyle(hero.closest(".hero-water") ?? hero).backgroundColor;
+      if (!hero) return undefined;
+      const { backgroundColor, backgroundImage } = getComputedStyle(
+        hero.closest(".hero-water") ?? hero,
+      );
+      return { backgroundColor, backgroundImage };
     });
-    expect(underHeader).toBe(WATER);
+    expect(underHeader).toEqual({ backgroundColor: WATER, backgroundImage: HERO_LIGHT });
     const headlineFonts = await page.evaluate(async () => {
       await document.fonts.ready;
       const preloaded = document.querySelector<HTMLLinkElement>(

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>Maplace.js: the Open Graph image</title>
     <!--
-      The site's sharing image, in the home page's look (W66, W85): its hero on map water, the
+      The site's sharing image, in the home page's look (W66, W85): its hero on map water lit from its top right, the
       headline set as the home page sets it, the examples' table tilted at the right, the night band
       at its foot; its colours and type are the `hero-water`, `band-dark` and `headline` utilities'
       (`src/styles/utilities.css`), written out. Drawn by `node scripts/og-image.ts` into
@@ -26,7 +26,7 @@
       html, body { margin: 0; }
       body {
         position: relative; width: 1200px; height: 630px; overflow: hidden;
-        background: #cfe3ea; color: #1b2430;
+        background: linear-gradient(215deg, #f7fafb 20%, #cfe3ea 75%) #cfe3ea; color: #1b2430;
         font-family: "Instrument Sans", sans-serif;
       }
       .name {
