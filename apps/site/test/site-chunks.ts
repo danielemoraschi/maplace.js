@@ -17,3 +17,11 @@ export function mapLibreLibraryChunk(dir: string): string {
   if (library === undefined) throw new Error("the site's build has no maplibre-gl library chunk");
   return `/_astro/${library}`;
 }
+
+/** The path of maplibre-gl's worker file in the site built in `dir`, as the build copies it. */
+export function mapLibreWorkerFile(dir: string): string {
+  const astro = join(dir, "_astro");
+  const worker = readdirSync(astro).find((file) => /^maplibre-gl-worker\.[^/]+\.mjs$/.test(file));
+  if (worker === undefined) throw new Error("the site's build has no maplibre-gl worker");
+  return join(astro, worker);
+}

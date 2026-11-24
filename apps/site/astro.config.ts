@@ -6,6 +6,7 @@ import { exampleMapId } from "./src/site/example-map-id.ts";
 import { exampleModulesRun } from "./src/site/example-modules-run.ts";
 import { foldableCode } from "./src/site/foldable-code.ts";
 import { mapLibreStylesheetEmptied } from "./src/site/maplibre-stylesheet-plugin.ts";
+import { mapLibreWorkerUnmapped } from "./src/site/maplibre-worker-plugin.ts";
 import { mapsSettingsCheck } from "./src/site/maps-settings-check.ts";
 import { PREBUNDLED_DEPS } from "./src/site/prebundled-deps.ts";
 
@@ -37,6 +38,7 @@ export default defineConfig({
       exampleMapId(),
       exampleFailureNotes(),
       mapLibreStylesheetEmptied(),
+      mapLibreWorkerUnmapped(),
     ],
     resolve: { conditions: ["maplace:source", ...defaultClientConditions] },
     optimizeDeps: { include: [...PREBUNDLED_DEPS] },

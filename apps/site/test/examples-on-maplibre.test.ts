@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   OPENFREEMAP_DARK as DARK,
@@ -27,7 +29,12 @@ import {
 } from "./home-sections.ts";
 import { expectLeftOpensAsShown, LEFT_WHILE_LOADING } from "./left-while-loading.ts";
 import { ON_MAPLIBRE, SECTION_MS, siteOnMapLibreBeforeTests } from "./maplibre-session.ts";
-import { MAPLIBRE_GL_CHUNKS, mapLibreLibraryChunk, VANILLA_CHUNK } from "./site-chunks.ts";
+import {
+  MAPLIBRE_GL_CHUNKS,
+  mapLibreLibraryChunk,
+  mapLibreWorkerFile,
+  VANILLA_CHUNK,
+} from "./site-chunks.ts";
 import { holdsItself, loadMapButton, loadMapsButtons } from "./visitor.ts";
 
 /**
@@ -267,4 +274,11 @@ describe("a MapLibre version's start", () => {
     );
     await context.close();
   }, 60_000);
+
+  it("serves maplibre-gl's worker naming no source map, as the site serves none beside it", () => {
+    const worker = mapLibreWorkerFile(site.dir);
+    const namesMap = readFileSync(worker, "utf8").includes("//# sourceMappingURL=");
+    expect(namesMap, "the worker names a source map").toBe(false);
+    expect(readdirSync(dirname(worker)).filter((file) => file.endsWith(".map"))).toEqual([]);
+  });
 });
