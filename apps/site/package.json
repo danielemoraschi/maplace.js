@@ -14,7 +14,7 @@
     "@fontsource/bricolage-grotesque": "5.3.0",
     "@maplacejs/maplace": "*",
     "astro": "7.4.12",
-    "maplibre-gl": "^6.16.0",
+    "maplibre-gl": "^6.18.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

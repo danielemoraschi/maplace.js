@@ -45,7 +45,7 @@ In 1.0 the element does the same, loading Google Maps itself:
 </maplace-map>
 ```
 
-On MapLibre, the same page loads `maplace-element-maplibre.iife.js` and drops `api-key` ([quick start](README.md#quick-start)); [open the page from a web server](docs/reference/setup.md#use-a-web-server-for-maplibre), not directly as a file.
+On MapLibre, the same page loads `maplace-element-maplibre.iife.js` and drops `api-key` ([quick start](README.md#quick-start)).
 
 A page that builds the map in its own script, as 0.2's did, calls `Maplace.createGoogleMap` on the same CDN script, with no build step: `Maplace` is a namespace now, not a constructor, and the key goes in the options, Maplace.js loading Google Maps with it:
 

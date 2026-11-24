@@ -61,7 +61,7 @@ On MapLibre, with no key and no map ID:
 </maplace-map>
 ```
 
-- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. [Open the page from a web server](docs/reference/setup.md#use-a-web-server-for-maplibre), a local one is fine, not directly as a file. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: centre and zoom are the [`center` and `zoom` attributes](docs/reference/element.md#map-attributes)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
+- The MapLibre script bundles MapLibre GL JS, its worker and its stylesheet, so the page loads it alone. The map draws OpenFreeMap's `bright` style (OpenStreetMap data, free, no key). `map-style` takes another style URL or a JSON style, and `map-options` takes MapLibre's map options as JSON (not its container, style, centre, zoom or bounds: centre and zoom are the [`center` and `zoom` attributes](docs/reference/element.md#map-attributes)). Change either and the map opens again where it was ([MapLibre adapter](docs/reference/maplibre.md#provider-attributes)). A page with a content security policy allows the script's worker and images: `worker-src blob:` and `img-src data: blob:` ([Content Security Policy](docs/reference/setup.md#content-security-policy)).
 
 On either:
 

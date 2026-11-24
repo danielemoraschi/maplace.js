@@ -18,7 +18,7 @@ const REFUSED = new Set([401, 403]);
 
 /**
  * MapLibre's words for its worker failing, which a map whose dispatcher hears it before maplace's
- * watch (a page's own, made first) fires like any error. Pinned by `maplibre-on-file.test.ts`.
+ * watch (a page's own, made first) fires like any error. Pinned by `maplibre-cdn-worker.test.ts`.
  */
 const WORKER_FAILED = "Worker failed to load";
 

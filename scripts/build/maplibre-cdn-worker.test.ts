@@ -6,10 +6,14 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { builtCdnScript, CDN_SCRIPTS } from "./cdn-builds.ts";
 import { tempDir } from "./temp-dir.ts";
 
-// The MapLibre CDN script on a page opened as a file, where its module blob worker never starts:
-// the worker's failure, one `error` event early on, in every timing a map can meet it. A dead
-// worker lasts as long as its page, so each case is a fresh page. This pins MapLibre's wording
-// too (`WORKER_FAILED`, maplibre/map-errors.ts): an upgrade rewording it fails here.
+// The MapLibre CDN script's worker. Blocked by the page's content security policy, it never starts:
+// its failure, one `error` event early on, in every timing a map can meet it. A dead worker lasts
+// as long as its page, so each case is a fresh page. This pins MapLibre's wording too
+// (`WORKER_FAILED`, maplibre/map-errors.ts): an upgrade rewording it fails here. Opened as a file
+// with no such policy, the worker starts: maplibre-gl 6.17 and later need no web server.
+
+/** A content security policy that lets no worker start. */
+const NO_WORKERS = `<meta http-equiv="Content-Security-Policy" content="worker-src 'none'">`;
 
 const STYLE = { version: 8, sources: {}, layers: [] };
 const INLINE = JSON.stringify(STYLE);
@@ -46,7 +50,7 @@ interface Outcome {
 }
 
 let browser: Browser;
-const folder = tempDir("on-file");
+const folder = tempDir("cdn-worker");
 let pages = 0;
 
 beforeAll(async () => {
@@ -58,12 +62,19 @@ afterAll(async () => {
   await browser?.close();
 });
 
-/** `body` in a new context, opened as a file; closed when `check` is done. */
-async function onFile(body: string, check: (page: Page) => Promise<void>): Promise<void> {
+/** A page of `head` and `body` in a new context, opened as a file; closed when `check` is done. */
+async function onPage(
+  head: string,
+  body: string,
+  check: (page: Page) => Promise<void>,
+): Promise<void> {
   pages += 1;
   const file = join(folder, `page-${pages}.html`);
   const script = `<script src="${CDN_SCRIPTS.maplibre}"></script>`;
-  await writeFile(file, `<!doctype html><body>${script}${RECORDER}${body}</body>`);
+  await writeFile(
+    file,
+    `<!doctype html><head>${head}</head><body>${script}${RECORDER}${body}</body>`,
+  );
   const context = await browser.newContext();
   try {
     await context.route("https://style.maplace.test/**", async (route) => {
@@ -78,6 +89,10 @@ async function onFile(body: string, check: (page: Page) => Promise<void>): Promi
     await context.close();
   }
 }
+
+/** `body` on a page whose policy blocks the worker. */
+const withWorkersBlocked = (body: string, check: (page: Page) => Promise<void>) =>
+  onPage(NO_WORKERS, body, check);
 
 function outcomeOf(page: Page, id: string): Promise<Outcome> {
   return page.evaluate((id) => {
@@ -115,26 +130,30 @@ async function expectWorkerFailure(page: Page, id: string, panel: string | null 
   expect(outcome.errors[0]?.code).toBe("provider-load-failed");
   expect(outcome.errors[0]?.message).toMatch(/worker/i);
   expect(outcome.errors[0]?.message).not.toMatch(/style/i);
+  expect(outcome.errors[0]?.message).toMatch(/content security policy/);
   expect(outcome.panel, id).toBe(panel);
 }
 
-describe("the MapLibre script opened as a file", { timeout: 60_000 }, () => {
+describe("the MapLibre script with its worker blocked", { timeout: 60_000 }, () => {
   it.each([
     ["an inline style", INLINE],
     ["a style answering at once", styleAfter(0)],
     ["a slower style", styleAfter(1500)],
   ])("%s: error, naming the worker, not the style", (_, style) =>
-    onFile(element("map", style), (page) => expectWorkerFailure(page, "map")),
+    withWorkersBlocked(element("map", style), (page) => expectWorkerFailure(page, "map")),
   );
 
   it("a second map beside the first: each error, naming the worker", () =>
-    onFile(element("first", INLINE) + element("second", styleAfter(800)), async (page) => {
-      await expectWorkerFailure(page, "first");
-      await expectWorkerFailure(page, "second");
-    }));
+    withWorkersBlocked(
+      element("first", INLINE) + element("second", styleAfter(800)),
+      async (page) => {
+        await expectWorkerFailure(page, "first");
+        await expectWorkerFailure(page, "second");
+      },
+    ));
 
   it("an element added after the first map failed", () =>
-    onFile(element("first", INLINE), async (page) => {
+    withWorkersBlocked(element("first", INLINE), async (page) => {
       await expectWorkerFailure(page, "first");
       await page.evaluate(
         (html) => document.body.insertAdjacentHTML("beforeend", html),
@@ -144,7 +163,7 @@ describe("the MapLibre script opened as a file", { timeout: 60_000 }, () => {
     }));
 
   it("Maplace.createMapLibreMap added after the first map failed", () =>
-    onFile(element("first", INLINE), async (page) => {
+    withWorkersBlocked(element("first", INLINE), async (page) => {
       await expectWorkerFailure(page, "first");
       await page.evaluate(() =>
         (window as never as { createdMap(id: string): void }).createdMap("later"),
@@ -153,7 +172,7 @@ describe("the MapLibre script opened as a file", { timeout: 60_000 }, () => {
     }));
 
   it("a map destroyed, then another: the second fails too", () =>
-    onFile("<script>window.createdMap('first')</script>", async (page) => {
+    withWorkersBlocked("<script>window.createdMap('first')</script>", async (page) => {
       await expectWorkerFailure(page, "first");
       await page.evaluate(() => {
         const scope = window as never as {
@@ -167,7 +186,7 @@ describe("the MapLibre script opened as a file", { timeout: 60_000 }, () => {
     }));
 
   it("a page's own map with a slower style: error naming the worker, and no panel", () =>
-    onFile(
+    withWorkersBlocked(
       `<div id="own" style="width:400px;height:300px"></div>
       <script>
         const map = new Maplace.maplibre.Map({ container: "own", style: "${styleAfter(1500)}" });
@@ -175,5 +194,51 @@ describe("the MapLibre script opened as a file", { timeout: 60_000 }, () => {
           .attach(Maplace.createMapLibreAdapter({ map }), "#own");
       </script>`,
       (page) => expectWorkerFailure(page, "own", null),
+    ));
+});
+
+describe("the MapLibre script opened as a file", { timeout: 60_000 }, () => {
+  it("the element with a style URL: ready, with no error", () =>
+    onPage("", element("map", styleAfter(0)), async (page) => {
+      await page.waitForFunction(
+        () =>
+          (document.getElementById("map") as { loadState?: string } | null)?.loadState === "ready",
+        null,
+        { timeout: 15_000 },
+      );
+      // The worker's failure, were it to come, comes on the heels of the style.
+      await page.waitForTimeout(200);
+      expect(await outcomeOf(page, "map")).toEqual({ loadState: "ready", errors: [], panel: null });
+    }));
+
+  it("a page's own map loads its GeoJSON in the worker, with no error", () =>
+    onPage(
+      "",
+      `<div id="own" style="width:400px;height:300px"></div>
+      <script>
+        const points = {
+          type: "geojson",
+          data: { type: "Point", coordinates: [12.5, 41.9] },
+        };
+        const style = {
+          version: 8,
+          sources: { points },
+          layers: [{ id: "points", type: "circle", source: "points" }],
+        };
+        const map = new Maplace.maplibre.Map({ container: "own", style });
+        window.watched("own", Maplace.createMaplace({ locations: [] }))
+          .attach(Maplace.createMapLibreAdapter({ map }), "#own");
+        map.on("idle", () => (window.loaded = map.isSourceLoaded("points")));
+      </script>`,
+      async (page) => {
+        await page.waitForFunction(() => (window as { loaded?: boolean }).loaded === true, null, {
+          timeout: 15_000,
+        });
+        expect(await outcomeOf(page, "own")).toEqual({
+          loadState: "ready",
+          errors: [],
+          panel: null,
+        });
+      },
     ));
 });

@@ -12,7 +12,7 @@ export interface WorkerWatch {
 }
 
 const WORKER_FAILURE =
-  "mount: MapLibre's worker failed to load: a page opened as a file can't start it, so serve the page; a content security policy must allow it (worker-src); a worker URL must be right";
+  "mount: MapLibre's worker failed to load: a content security policy must allow it (worker-src); a worker URL must be right; maplibre-gl before 6.17 needs a served page";
 
 /** One per dispatcher, so tests can pass a fake, and two copies of maplibre-gl don't mix. */
 const watches = new WeakMap<Dispatcher, WorkerWatch>();

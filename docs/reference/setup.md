@@ -52,7 +52,7 @@ On MapLibre, its own script, with no key:
 </maplace-map>
 ```
 
-[Open the page from a web server](#use-a-web-server-for-maplibre). The script bundles maplibre-gl, its worker and its stylesheet, clustering included; `map-style` and `map-options` are its [provider attributes](maplibre.md#provider-attributes).
+The script bundles maplibre-gl, its worker and its stylesheet, clustering included; `map-style` and `map-options` are its [provider attributes](maplibre.md#provider-attributes).
 
 ## With a script of your own
 
@@ -97,10 +97,6 @@ On MapLibre, the MapLibre script's `Maplace` has `createMapLibreMap` and `create
 
 Every example on the site has this version, under its Script tab.
 
-## Use a web server for MapLibre
-
-A MapLibre page has to be opened from a web server, and a local one such as `http://localhost` is fine. Opened directly as a file (`file://`), the map can't start its worker and says it couldn't load.
-
 ## With npm
 
 ```sh
@@ -139,7 +135,7 @@ createGoogleMap("#simple-vanilla-map", {
 
 For the element from npm, `import "@maplacejs/maplace/element/google"` defines it with the Google provider; it adds Maps JS itself as on the CDN, or takes the page's when the page loaded it first. With React: [React](react.md). Routes are Google's, and need Maps JS 3.63 or later. Every entry and what it gives: [API reference](api.md).
 
-On MapLibre, the page installs maplibre-gl beside Maplace.js (`npm install @maplacejs/maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `@maplacejs/maplace/maplibre` makes the store in one call, and `import "@maplacejs/maplace/element/maplibre"` defines the element with the MapLibre provider. The simple example's MapLibre version is the whole page:
+On MapLibre, the page installs maplibre-gl beside Maplace.js (`npm install @maplacejs/maplace maplibre-gl`) and imports its stylesheet, `maplibre-gl/dist/maplibre-gl.css`, in its module. It needs no loader script and no key. [`createMapLibreMap`](maplibre.md#createmaplibremap) from `@maplacejs/maplace/maplibre` makes the store in one call, and `import "@maplacejs/maplace/element/maplibre"` defines the element with the MapLibre provider. On maplibre-gl before 6.17, a page opened directly as a file (`file://`) can't start its worker: open it from a web server, a local one is fine. The simple example's MapLibre version is the whole page:
 
 <!-- example: packages/maplace/examples/simple/maplibre/vanilla.html -->
 ```html
